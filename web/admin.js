@@ -1,6 +1,6 @@
 'use strict';
 window.AdminPanel=(()=>{
-  let root=null,cfg=null,dash=null,worldCfg=null,active='overview';
+  let root=null,cfg=null,dash=null,worldCfg=null,topupCfg=null,active='overview';
   const el=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n;};
   const field=(parent,label,id,type='text',step=null)=>{const l=el('label','admin-field',label),i=document.createElement('input');i.id=id;i.type=type;if(step)i.step=step;l.append(i);parent.append(l);return i;};
   const textarea=(parent,label,id,placeholder='')=>{const l=el('label','admin-field',label),i=document.createElement('textarea');i.id=id;i.placeholder=placeholder;l.append(i);parent.append(l);return i;};
@@ -52,20 +52,43 @@ window.AdminPanel=(()=>{
     const r=await api('/api/admin/mail/send',payload);status('Đã gửi '+r.id);await refreshDashboard();
   }catch(e){status(e.message,false);}}
   function renderOrders(body){
+    const catalog=card('Gói nạp · cấu hình server-side');
+    const ta=textarea(catalog,'Package Catalog JSON','admin-topup-json','{"packages":[...]}');
+    ta.value=JSON.stringify(topupCfg||{packages:[]},null,2);
+    catalog.append(btn('Lưu gói nạp',saveTopupPackages,'primary'),btn('Khôi phục mặc định',resetTopupPackages,'danger'));
+    body.append(catalog);
+
     const c=card('Duyệt đơn nạp');
     const list=el('div','admin-list');const orders=dash?.orders||[];
     if(!orders.length)list.append(el('p','admin-note','Chưa có đơn nạp.'));
     for(const o of orders){const row=el('article','admin-row');const info=el('div','admin-row-main');
-      info.append(el('b','',o.id),el('span','',`${o.server_id} · ${o.uid} · ${o.character_name}`),el('small','',`${o.package||'(chưa ghi gói)'} · ${o.status}`));
+      info.append(el('b','',o.id),el('span','',`${o.server_id} · ${o.uid} · ${o.character_name}`),
+        el('small','',`${o.package_name||o.package||'(chưa ghi gói)'}${o.price_label?' · '+o.price_label:''} · ${o.status}`));
       row.append(info);
-      if(o.status==='pending'){const reward=document.createElement('input');reward.placeholder='Reward JSON, vd {"2":1000}';reward.className='admin-inline-json';
-        row.append(reward,btn('Duyệt',()=>reviewOrder(o.id,'approve',reward.value),'primary'),btn('Từ chối',()=>reviewOrder(o.id,'reject',''),'danger'));
+      if(o.status==='pending'){
+        if(Number(o.manual_reward||0)){
+          const reward=document.createElement('input');reward.placeholder='Reward JSON, vd {"2":1000}';reward.className='admin-inline-json';
+          row.append(reward,btn('Duyệt',()=>reviewOrder(o.id,'approve',reward.value),'primary'),btn('Từ chối',()=>reviewOrder(o.id,'reject',''),'danger'));
+        }else{
+          row.append(el('code','admin-inline-json',JSON.stringify(o.reward||{})),btn('Duyệt đúng gói',()=>reviewOrder(o.id,'approve',''),'primary'),btn('Từ chối',()=>reviewOrder(o.id,'reject',''),'danger'));
+        }
       }else row.append(el('small','',o.reviewed_at?'Đã xử lý':''));
       list.append(row);
     }c.append(list);body.append(c);
   }
+  async function saveTopupPackages(){try{
+    const raw=JSON.parse(val('admin-topup-json')||'{}');
+    topupCfg=await api('/api/admin/topup-packages',{action:'save',config:raw});
+    status('Đã lưu catalog gói nạp.');
+    render();
+  }catch(e){status(e.message,false);}}
+  async function resetTopupPackages(){try{
+    topupCfg=await api('/api/admin/topup-packages',{action:'reset'});
+    status('Đã khôi phục catalog gói nạp mặc định.');
+    render();
+  }catch(e){status(e.message,false);}}
   async function reviewOrder(id,action,rewardText){try{
-    const reward=action==='approve'?JSON.parse(rewardText||'{}'):{};
+    const reward=action==='approve'&&rewardText?JSON.parse(rewardText):{};
     await api('/api/admin/order/review',{order_id:id,action,reward});status(action==='approve'?'Đã duyệt đơn và gửi thưởng qua thư.':'Đã từ chối đơn.');await refreshDashboard();render();
   }catch(e){status(e.message,false);}}
   function renderPlayers(body){
@@ -213,7 +236,7 @@ window.AdminPanel=(()=>{
   function renderGame(){if(typeof window.render==='function')window.render();}
   function renderAudit(body){const c=card('Audit Log');const list=el('div','admin-list');for(const a of dash?.audit||[]){const row=el('article','admin-row');const info=el('div','admin-row-main');info.append(el('b','',a.action),el('span','',a.target),el('small','',new Date(a.at*1000).toLocaleString()+' · '+a.operator));row.append(info);list.append(row);}c.append(list);body.append(c);}
   const val=id=>document.getElementById(id)?.value?.trim()||'';
-  async function load(){try{ensure();[cfg,dash]=await Promise.all([api('/api/admin/config'),api('/api/admin/dashboard')]);show(active);status('Hệ Thống QTV đã sẵn sàng.');}catch(e){status(e.message,false);}}
+  async function load(){try{ensure();[cfg,dash,topupCfg]=await Promise.all([api('/api/admin/config'),api('/api/admin/dashboard'),api('/api/admin/topup-packages')]);show(active);status('Hệ Thống QTV đã sẵn sàng.');}catch(e){status(e.message,false);}}
   async function open(){ensure();root.hidden=false;await load();}
   function close(){if(root)root.hidden=true;showView('home');}
   async function logout(){developerMode=false;adminKey='';sessionStorage.setItem('gxb2-developer','0');sessionStorage.removeItem('gxb2-admin-key');if(root)root.hidden=true;state=await api('/api/state');loadFormation();showView('home');renderGame();}
