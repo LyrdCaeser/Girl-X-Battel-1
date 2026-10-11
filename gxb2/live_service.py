@@ -1301,3 +1301,48 @@ def maintenance_tick(now=None):
                       WHERE status IN ('ready','active') AND created_at<?""",(now,now-1800))
         db.commit(); db.close()
     return {"ok":True,"at":now}
+
+
+def admin_set_pvp_rating(uid, server_id, mode, rating, season_id=None, operator="SUPER_GM"):
+    uid=str(uid or '').strip(); server_id=str(server_id or '').strip().upper()
+    mode=str(mode or 'arena').strip().lower()
+    if mode not in ("arena","team","cross"): raise ValueError("Mode PvP không hợp lệ")
+    rating=max(0,min(100000,int(rating)))
+    season_id=str(season_id or current_pvp_season())
+    now=int(time.time())
+    with _lock:
+        db=_db(); db.execute("BEGIN IMMEDIATE")
+        if not db.execute("SELECT 1 FROM players WHERE uid=? AND server_id=?",(uid,server_id)).fetchone():
+            db.rollback(); db.close(); raise ValueError("Không tìm thấy UID/Server")
+        _ensure_rating(db,uid,server_id,mode,season_id,now)
+        db.execute("""UPDATE pvp_ratings SET rating=?,updated_at=?
+                      WHERE uid=? AND server_id=? AND mode=? AND season_id=?""",
+                   (rating,now,uid,server_id,mode,season_id))
+        _audit(db,"admin.pvp.rating",f"{server_id}:{uid}",
+               {"mode":mode,"season":season_id,"rating":rating},operator)
+        db.commit(); db.close()
+    return pvp_rating(uid,server_id,mode,season_id)
+
+
+def admin_add_guild_progress(uid, server_id, exp_gain=0, contribution_gain=0, operator="SUPER_GM"):
+    with _lock:
+        db=_db()
+        member=_guild_member(db,uid,server_id)
+        db.close()
+    if not member: raise ValueError("Người chơi chưa ở trong Guild")
+    result=add_guild_progress(member["guild_id"],uid,exp_gain,contribution_gain)
+    with _lock:
+        db=_db(); _audit(db,"admin.guild.progress",f"{server_id}:{uid}",
+                         {"exp_gain":int(exp_gain),"contribution_gain":int(contribution_gain),
+                          "guild_id":member["guild_id"]},operator)
+        db.commit(); db.close()
+    return result
+
+
+def admin_force_settle_guild_war(war_id, operator="SUPER_GM"):
+    result=settle_guild_war(war_id,force=True)
+    with _lock:
+        db=_db(); _audit(db,"admin.guild.war.force_settle",str(war_id),
+                         {"winner_guild":result.get("winner_guild",0)},operator)
+        db.commit(); db.close()
+    return result
