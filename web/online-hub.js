@@ -105,6 +105,18 @@ window.GxbOnline=(()=>{
     const rating=data.rating||{rating:1000,wins:0,losses:0,matches:0,season_id:'-'};
     const ratingBox=el('section','online-rating');
     ratingBox.append(el('div','',T('Season')+' '+rating.season_id),el('strong','',String(rating.rating)),el('small','',T('Wins')+' '+rating.wins+' · '+T('Losses')+' '+rating.losses+' · '+T('Matches')+' '+rating.matches));
+    const seasonReward=data.season_reward||null;
+    if(seasonReward){
+      const reward=el('div','online-season-reward');
+      reward.append(el('b','',T('Previous Season Reward')+' · '+seasonReward.season_id));
+      if(seasonReward.eligible){
+        const items=Object.entries(seasonReward.reward||{}).map(([id,n])=>'#'+id+' × '+fmt(n)).join(' · ');
+        reward.append(el('span','',items||T('No reward')));
+        if(seasonReward.claimed)reward.append(el('small','',T('Claimed')));
+        else{const claim=el('button','online-primary',T('Claim Reward'));claim.onclick=async()=>{claim.disabled=true;try{await post('/api/pvp/season/claim',{mode:pvpMode});await renderPvp(body);}catch(e){claim.disabled=false;alert(e.message);}};reward.append(claim);}
+      }else reward.append(el('small','',T('Not eligible')));
+      ratingBox.append(reward);
+    }
     body.append(ratingBox);
     const p=data.pvp||{status:'idle'};
     if(p.status==='matched'&&p.match){
