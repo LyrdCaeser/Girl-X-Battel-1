@@ -18,7 +18,7 @@ from . import fantasy_book, growth_diary, newbie_camp, friend_boss, pet_training
 from . import arena3v3
 from . import puzzle_events, firework_project, local_promotion
 from . import wish, magic_card, two_love, lost_space, vip, activity_kit, activity_draw, jackpot, blind_box, pirate, guild
-from . import home_systems, events, equipment, campaign, point_events, acquisition, clock, explore, relations, missions, shops, arena, patrol, house_exam, hero_challenge, sanctuary, internship, midas, old_campus, guild_lab, echoes, shrine, galaxy, story, dress, skins, house_dress, souls, soul_land, stellar_altar, quick_formation, ev_sand, dress_show, local_config
+from . import home_systems, events, equipment, campaign, point_events, acquisition, clock, explore, relations, missions, shops, arena, patrol, house_exam, hero_challenge, sanctuary, internship, midas, old_campus, guild_lab, echoes, shrine, galaxy, story, dress, skins, house_dress, souls, soul_land, stellar_altar, quick_formation, ev_sand, dress_show, local_config, live_service
 from .battle import attributes
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -111,7 +111,7 @@ def new_state(now=None):
     now = clock.epoch(now)
     starters = local_config.starter_girls()
     valid_starters = [tid for tid in starters if str(tid) in TABLES['partner']][:6] or list(STARTERS)
-    return {'format': 2, 'created': now, 'name': 'GxB2 Local',
+    return {'format': 2, 'created': now, 'uid': 'GXB3-000001', 'server_id': 'S1', 'name': 'Nữ Thần',
             'profile': {'avatar': 'head_1001', 'frame': 'frame_8007', 'signature': ''},
             'max_stage': 0, 'current_stage': 1, 'hang': {'since': now, 'drop_since': now},
             'battle_count': 0, 'cleared': [], 'last_battle': None, 'next_partner_id': len(valid_starters) + 1, 'summon_free_at': 0,
@@ -285,6 +285,26 @@ class Engine:
         growth_diary.observe(state, self.missions_probe(probe), player_level(state))
         newbie_camp.observe(state, self.missions_probe(dict(state)), player_level(state), self.now())
         self.db.execute('UPDATE profile SET data=? WHERE id=1', (json.dumps(state, ensure_ascii=False),))
+
+    def claim_live_mail(self, mail_id):
+        with self.lock:
+            self.db.execute('BEGIN IMMEDIATE')
+            try:
+                state = self._load()
+                uid = state.setdefault('uid', 'GXB3-000001')
+                server_id = state.setdefault('server_id', 'S1')
+                profile = live_service.player(uid, server_id)
+                if profile and profile.get('status') == 'banned':
+                    raise GameError('Tài khoản đang bị khóa')
+                attachments = live_service.claim_mail(str(mail_id), uid, server_id)
+                for item_id, amount in attachments.items():
+                    state['items'][str(item_id)] = int(state['items'].get(str(item_id), 0)) + int(amount)
+                self._save_profile(state)
+                self.db.commit()
+            except Exception:
+                self.db.rollback()
+                raise
+        return {'state': self.snapshot(), 'attachments': attachments}
 
     def growth_diary_action(self, request):
         if not isinstance(request, dict): raise GameError('Datos inválidos')
@@ -531,6 +551,8 @@ class Engine:
                     if not 1 <= len(value) <= 20 or any(ord(c) < 32 for c in value):
                         raise GameError('El nombre debe tener entre 1 y 20 caracteres')
                     state['name'] = value
+                    try: live_service.register_player(state.get('uid','GXB3-000001'), state.get('server_id','S1'), value)
+                    except Exception: pass
                 elif key == 'signature':
                     if len(value) > 100 or any(ord(c) < 32 and c != '\n' for c in value):
                         raise GameError('La firma debe tener como máximo 100 caracteres')
@@ -550,6 +572,15 @@ class Engine:
     def snapshot(self):
         with self.lock:
             state = self._load()
+        state.setdefault('uid', 'GXB3-000001')
+        state.setdefault('server_id', 'S1')
+        try:
+            player = live_service.register_player(state['uid'], state['server_id'], state['name'])
+            state['account_status'] = player.get('status','active') if player else 'active'
+            state['mail_info'] = live_service.mailbox(state['uid'], state['server_id'])
+            state['worlds'] = live_service.worlds()
+        except Exception:
+            state['account_status'] = 'active'; state['mail_info'] = []; state['worlds'] = []
         state['home_systems'] = home_systems.snapshot(state, now=self.now())
         state['event_hub'] = events.snapshot(state, now=self.now())
         state['hang_info'] = campaign.pending(state, now=self.now())
