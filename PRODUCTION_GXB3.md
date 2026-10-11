@@ -1,6 +1,6 @@
 # GXB 3 · Production / Public Server Notes
 
-> Trạng thái: nền tảng multi-user đang được chuyển từ bản Local sang server nhiều tài khoản. Tài liệu này mô tả cách chạy lớp HTTP hiện tại sau reverse proxy; chưa thay thế cho một production framework chuyên dụng.
+> Trạng thái: online core nhiều tài khoản đã hoạt động trên PostgreSQL/shared saves. Tài liệu này mô tả cách triển khai private beta/public nhỏ sau reverse proxy; transport HTTP hiện tại vẫn chưa phải kiến trúc high-scale cuối cùng.
 
 ## Bind HTTP
 
@@ -43,7 +43,7 @@ GXB3_DB_POOL_MIN=1
 GXB3_DB_POOL_MAX=12
 ```
 
-Player gameplay save hiện vẫn nằm riêng tại `state/players/<UID>/<SERVER>.sqlite3`; đây là lớp tiếp theo cần chuyển khỏi local disk khi triển khai nhiều instance.
+Player gameplay save dùng PostgreSQL shared storage theo `UID + Server` khi `GXB3_DATABASE_URL` được bật. SQLite per-player chỉ còn là fallback local/dev.
 
 ### Chuyển dữ liệu SQLite hiện có sang PostgreSQL
 
@@ -327,3 +327,54 @@ Browser dùng `EventSource`, tự reconnect khi stream được rotate. Server g
 Reverse proxy production phải tắt buffering cho SSE. App đã gửi `X-Accel-Buffering: no`.
 
 Với tải lớn hoặc realtime battle input tốc độ cao, bước scale tiếp theo vẫn nên chuyển transport sang ASGI/WebSocket + Redis pub/sub. SSE hiện phù hợp cho state/event updates của Online Hub, Guild và matchmaking; battle simulation vẫn chạy server-authoritative theo request.
+
+
+## Production secret / rate limiting
+
+SUPER GM không còn dùng khóa cố định trong source. Production phải cấp:
+
+```text
+GXB3_ADMIN_KEY=<random secret tối thiểu 24 ký tự>
+```
+
+Khi `GXB3_PRODUCTION=1`, server từ chối khởi động nếu:
+- public origin không phải HTTPS;
+- admin secret ngắn hơn 24 ký tự;
+- PostgreSQL chưa được cấu hình.
+
+Rate limiter in-process hiện bảo vệ các nhóm nhạy cảm:
+- register/login/reset password;
+- rotate recovery code;
+- tạo đơn nạp;
+- PvP queue/battle;
+- Guild chat;
+- SUPER GM endpoints.
+
+Đây là lớp bảo vệ cho một instance. Khi chạy nhiều instance, vẫn cần rate-limit chung tại reverse proxy/Redis.
+
+`GXB3_TRUST_PROXY=1` chỉ được bật khi request đi qua reverse proxy tin cậy. Khi đó app mới đọc `X-Forwarded-For` và `X-Forwarded-Proto`.
+
+Health endpoints không cần đăng nhập:
+- `GET /healthz`: process/backend health cơ bản.
+- `GET /readyz`: kiểm tra live database/world registry.
+
+## Release preflight
+
+Trên chính host/container sẽ phát hành, chạy:
+
+```bash
+python tools/production_preflight.py
+```
+
+Preflight bắt buộc:
+- production config hợp lệ;
+- PostgreSQL truy cập được;
+- battle runtime chạy thật với LuaJIT tương thích target.
+
+`--skip-battle` chỉ dùng để kiểm tra hạ tầng, không được xem là duyệt release cuối.
+
+Mẫu biến môi trường: `.env.production.example`.
+
+Mẫu Caddy reverse proxy: `deploy/Caddyfile.example`.
+
+Checklist phát hành: `RELEASE_CHECKLIST_GXB3.md`.
