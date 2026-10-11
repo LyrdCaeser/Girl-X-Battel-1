@@ -350,6 +350,14 @@ def _ensure_live(db):
     db.execute("CREATE INDEX IF NOT EXISTS idx_world_guild_members_guild ON world_guild_members(guild_id,role,joined_at)")
     db.execute("CREATE INDEX IF NOT EXISTS idx_pvp_queue_wait ON pvp_queue(mode,status,server_id,power,joined_at)")
     db.execute("CREATE INDEX IF NOT EXISTS idx_pvp_matches_players ON pvp_matches(player_a,player_b,created_at DESC)")
+    db.execute("""CREATE TABLE IF NOT EXISTS pvp_match_peers(
+        match_id TEXT NOT NULL,
+        uid TEXT NOT NULL,
+        ready INTEGER NOT NULL DEFAULT 0,
+        last_seen INTEGER NOT NULL,
+        PRIMARY KEY(match_id,uid),
+        FOREIGN KEY(match_id) REFERENCES pvp_matches(id) ON DELETE CASCADE
+    )""")
         db.execute("""CREATE TABLE IF NOT EXISTS world_guilds(
             id BIGSERIAL PRIMARY KEY,
             server_id TEXT NOT NULL,
@@ -403,6 +411,13 @@ def _ensure_live(db):
         db.execute("CREATE INDEX IF NOT EXISTS idx_world_guild_members_guild ON world_guild_members(guild_id,role,joined_at)")
         db.execute("CREATE INDEX IF NOT EXISTS idx_pvp_queue_wait ON pvp_queue(mode,status,server_id,power,joined_at)")
         db.execute("CREATE INDEX IF NOT EXISTS idx_pvp_matches_players ON pvp_matches(player_a,player_b,created_at DESC)")
+        db.execute("""CREATE TABLE IF NOT EXISTS pvp_match_peers(
+            match_id TEXT NOT NULL REFERENCES pvp_matches(id) ON DELETE CASCADE,
+            uid TEXT NOT NULL,
+            ready INTEGER NOT NULL DEFAULT 0,
+            last_seen BIGINT NOT NULL,
+            PRIMARY KEY(match_id,uid)
+        )""")
         db.execute("""INSERT INTO worlds(server_id,name,status,created_at,registration_open,character_creation_open,message)
                       VALUES('S1','Server 1','online',?,1,1,'')
                       ON CONFLICT(server_id) DO NOTHING""", (int(__import__("time").time()),))
