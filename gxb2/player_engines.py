@@ -26,7 +26,7 @@ class PlayerEnginePool:
             if engine is None:
                 path = ROOT / "state" / "players" / uid / f"{server_id}.sqlite3"
                 path.parent.mkdir(parents=True, exist_ok=True)
-                engine = Engine(path)
+                engine = Engine(path, identity=(uid, server_id))
                 engine.bind_identity(uid, server_id, character_name)
                 self._engines[key] = engine
             else:
