@@ -49,6 +49,25 @@ class LiveServiceTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             live_service.send_mail("U1", "S1", "Wrong", "Gift", "", {"1": 1})
 
+    def test_shared_guild_and_pvp_matchmaking(self):
+        live_service.register_player("U1", "S1", "Alpha")
+        live_service.register_player("U2", "S1", "Beta")
+        guild = live_service.create_world_guild("U1", "S1", "Alpha", "Moon Guild", "Welcome", 1000)
+        self.assertEqual(guild["role"], "leader")
+        joined = live_service.join_world_guild("U2", "S1", "Beta", guild["id"], 900)
+        self.assertEqual(joined["member_count"], 2)
+
+        first = live_service.enqueue_pvp("U1", "S1", "Alpha", "arena", 1000)
+        self.assertEqual(first["status"], "waiting")
+        second = live_service.enqueue_pvp("U2", "S1", "Beta", "arena", 950)
+        self.assertEqual(second["status"], "matched")
+        match = second["match"]
+        active = live_service.activate_pvp_match(match["id"], "U1")
+        self.assertEqual(active["status"], "active")
+
+        live_service.leave_world_guild("U2", "S1")
+        self.assertIsNone(live_service.guild_for_player("U2", "S1"))
+
 
 if __name__ == "__main__":
     unittest.main()
