@@ -205,7 +205,35 @@
     'Acción de arena no disponible':'Thao tác Đấu Trường không khả dụng',
     'Ya has firmado hoy. Vuelve mañana.':'Hôm nay đã điểm danh. Hãy quay lại ngày mai.',
     'No hay recompensa disponible hoy':'Hôm nay chưa có phần thưởng để nhận',
-    'Acción de evento no disponible':'Thao tác sự kiện không khả dụng'
+    'Acción de evento no disponible':'Thao tác sự kiện không khả dụng',
+    'No hay suficientes recursos para esta invocación':'Không đủ tài nguyên để Triệu Hồi',
+    'La invocación gratuita aún no está disponible':'Lượt Triệu Hồi miễn phí chưa hồi.',
+    'Tipo de invocación no disponible':'Loại Triệu Hồi này chưa khả dụng.',
+    'Cantidad de invocaciones inválida':'Số lượt Triệu Hồi không hợp lệ.',
+    'Esta invocación usa un botón de cantidad propio':'Loại Triệu Hồi này dùng nút số lượng riêng.',
+    'Chica desconocida':'Không tìm thấy Nữ Sinh.',
+    'Copias':'Số lượng',
+    'Nivel':'Cấp',
+    'Grado máximo alcanzado':'Đã đạt Bậc tối đa.',
+    'Sube primero al nivel máximo de este grado':'Hãy tăng đến cấp tối đa của Bậc hiện tại trước.',
+    'Faltan recursos para subir de grado':'Không đủ tài nguyên để tăng Bậc.',
+    'Ascensión no disponible para esta chica':'Nữ Sinh này chưa có công thức Thức Tỉnh.',
+    'Los materiales deben ser chicas distintas de la base':'Nguyên liệu phải là các Nữ Sinh khác Nữ Sinh chính.',
+    'Falta una chica de la receta':'Thiếu Nữ Sinh trong công thức.',
+    'Primero debes superar esa fase':'Bạn cần vượt ải đó trước.',
+    'Fase bloqueada':'Ải đang bị khóa.',
+    'El nivel del jugador es insuficiente para esa fase':'Cấp người chơi chưa đủ để vào ải.',
+    'No quedan fichas de Tests; se recupera una cada 30 minutos':'Đã hết Vé Thử Thách; mỗi 30 phút hồi 1 vé.',
+    'Todavía no has llegado a ese piso':'Bạn chưa đến tầng này.',
+    'Solo puedes avanzar desde el piso actual':'Chỉ có thể tiến từ tầng hiện tại.',
+    'Dificultad de Daily Quiz desconocida':'Không tìm thấy độ khó Thử Thách Hằng Ngày.',
+    'Ya se usaron los dos intentos de hoy':'Hôm nay đã dùng hết 2 lượt.',
+    'Primero debes ganar esta dificultad':'Hãy thắng độ khó này trước.',
+    'No tienes esa chica':'Bạn không sở hữu Nữ Sinh này.',
+    'Formación inválida':'Đội hình không hợp lệ.',
+    'Selecciona entre una y seis integrantes':'Hãy chọn từ 1 đến 6 Nữ Sinh.',
+    'Herramienta desconocida':'Công cụ QTV không hợp lệ.',
+    'Activa la partida de desarrollo':'Hãy đăng nhập QTV trước.'
   }));
 
   const ATTRS = ['title','aria-label','placeholder'];
@@ -260,6 +288,10 @@
     }
   }
 
+  window.GxbVi = {t: (value) => {
+    if (value === undefined || value === null) return value;
+    return translateText(String(value)).trim();
+  }};
   document.documentElement.lang = 'vi';
   document.title = 'Girls X Battle 2 · Local Việt Hóa';
   const run = () => {
