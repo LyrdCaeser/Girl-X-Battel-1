@@ -1,0 +1,12 @@
+{
+  "packages": [
+    {
+      "id": "CUSTOM",
+      "name": "Gói tùy chọn",
+      "price_label": "Liên hệ Zalo",
+      "reward": {},
+      "manual_reward": true,
+      "enabled": true
+    }
+  ]
+}
