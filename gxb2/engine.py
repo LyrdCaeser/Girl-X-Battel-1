@@ -18,7 +18,7 @@ from . import fantasy_book, growth_diary, newbie_camp, friend_boss, pet_training
 from . import arena3v3
 from . import puzzle_events, firework_project, local_promotion
 from . import wish, magic_card, two_love, lost_space, vip, activity_kit, activity_draw, jackpot, blind_box, pirate, guild
-from . import home_systems, events, equipment, campaign, point_events, acquisition, clock, explore, relations, missions, shops, arena, patrol, house_exam, hero_challenge, sanctuary, internship, midas, old_campus, guild_lab, echoes, shrine, galaxy, story, dress, skins, house_dress, souls, soul_land, stellar_altar, quick_formation, ev_sand, dress_show
+from . import home_systems, events, equipment, campaign, point_events, acquisition, clock, explore, relations, missions, shops, arena, patrol, house_exam, hero_challenge, sanctuary, internship, midas, old_campus, guild_lab, echoes, shrine, galaxy, story, dress, skins, house_dress, souls, soul_land, stellar_altar, quick_formation, ev_sand, dress_show, local_config
 from .battle import attributes
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -109,16 +109,17 @@ def player_level(state):
 
 def new_state(now=None):
     now = clock.epoch(now)
-    return {'format': 2, 'created': now, 'name': 'Preservación local',
+    starters = local_config.starter_girls()
+    valid_starters = [tid for tid in starters if str(tid) in TABLES['partner']][:6] or list(STARTERS)
+    return {'format': 2, 'created': now, 'name': 'GxB2 Local',
             'profile': {'avatar': 'head_1001', 'frame': 'frame_8007', 'signature': ''},
             'max_stage': 0, 'current_stage': 1, 'hang': {'since': now, 'drop_since': now},
-            'battle_count': 0, 'cleared': [], 'last_battle': None, 'next_partner_id': 4, 'summon_free_at': 0,
+            'battle_count': 0, 'cleared': [], 'last_battle': None, 'next_partner_id': len(valid_starters) + 1, 'summon_free_at': 0,
             'senior_summon_free_at': 0,
-            # Paquete inicial del prototipo local para probar los tres banners.
-            'items': {'1': 10000, '2': 0, '3': 0, '9': 5000, '11': 100, '12': 1000, '33': 10, '36': 10},
+            'items': local_config.starting_resources(),
             'partners': [{'partner_id': i+1, 'table_id': tid, 'lv': 1, 'grade': 0, 'awake': 0,
-                          'equips': [], 'pos': i+1, 'show_skin': 1} for i, tid in enumerate(STARTERS)],
-            'formation': [{'partner_id': i+1, 'pos': i+1} for i in range(len(STARTERS))]}
+                          'equips': [], 'pos': i+1, 'show_skin': 1} for i, tid in enumerate(valid_starters)],
+            'formation': [{'partner_id': i+1, 'pos': i+1} for i in range(len(valid_starters))]}
 
 _EQ = json.loads((ROOT / 'data/equipment.json').read_text())['items']
 DEV_GEAR = [str(r['id']) for r in _EQ.values() if r['pos'] in (1, 2, 3, 4) and r.get('job') and int(r.get('item_lv') or 0) >= 24] + \
@@ -647,14 +648,14 @@ class Engine:
         state['roster'] = []
         for partner in state['partners']:
             row = TABLES['partner'][str(partner['table_id'])]
-            cost = item_pairs(TABLES['exp_partner'][str(partner['lv'] + 1)]['cost']) if partner['lv'] < self.level_cap(partner) else {}
+            cost = {k: local_config.scale_cost(v) for k, v in item_pairs(TABLES['exp_partner'][str(partner['lv'] + 1)]['cost']).items()} if partner['lv'] < self.level_cap(partner) else {}
             stars = int(row['max_star']) + int(partner.get('awake', 0))
             grade, max_grade = int(partner.get('grade', 0)), int(row.get('max_grade') or 0)
             awake = ASCENSION.get(f"{partner['table_id']}:{stars+1}") or local_promotion.recipe(partner) or self.awake_recipe(partner)
             state['roster'].append({**partner, 'name': TABLES['names'].get(str(partner['table_id']), str(partner['table_id'])),
                                     'local_promotion': int(partner['table_id']) in local_promotion.BASE, 'stars': stars, 'level_cap': self.level_cap(partner), 'next_cost': cost,
                                     'group': int(row['group']), 'job': int(row['job']), 'max_grade': max_grade,
-                                    'grade_cost': item_pairs(row.get(f'grade_exp{grade+1}')) if grade < max_grade else {},
+                                    'grade_cost': {k: local_config.scale_cost(v) for k, v in item_pairs(row.get(f'grade_exp{grade+1}')).items()} if grade < max_grade else {},
                                     'next_awake': awake if awake and awake.get('kind') == 'awake' else None,
                                     'star_10': int(row.get('star_10') or 0), 'astral_list': int(row.get('star_origin') or 0) if stars >= 15 else 0, 'namesake': int(str(row.get('material') or '').split('|')[0] or 0) if int(row['max_star']) > 5 else int(partner['table_id']), 'potential_options': [[int(x) for x in st.split('#') if x] for st in str(row.get('potential') or '').split('|') if st] if int(row['max_star']) == 10 else [],
                                     'has_ex_skills': stars >= 10 and str(row.get('ex_skill')) == '1', 'gift_like': str(row.get('gift_type1') or ''),
@@ -1816,7 +1817,7 @@ class Engine:
                                                     'table_id': tid, 'name': TABLES['names'].get(str(tid), f'Enemigo {tid}'),
                                                     'level': unit['level']})
             win = bool(report['isWin'])
-            rewards = quiz_reward_pairs(row['reward']) if win and not practice else {}
+            rewards = {k: local_config.scale_reward(v) for k, v in quiz_reward_pairs(row['reward']).items()} if win and not practice else {}
             if not practice:
                 now = self.now()
                 tickets = info['tickets'] - 1
@@ -1909,7 +1910,7 @@ class Engine:
                                       'name': TABLES['names'].get(str(tid), f'Enemigo {tid}'), 'level': unit['level']})
                 report['display_units'] = units
             win = bool(sweep or report['isWin'])
-            rewards = quiz_reward_pairs(stage['awards']) if win and not practice else {}
+            rewards = {k: local_config.scale_reward(v) for k, v in quiz_reward_pairs(stage['awards']).items()} if win and not practice else {}
             if not practice and win:
                 try:
                     self.db.execute('BEGIN IMMEDIATE')
@@ -2055,10 +2056,18 @@ class Engine:
         return {'last_time_3': max(0, state.get('summon_free_at', 0) - interval)}
 
     def summon_pool(self, dropbox_id):
-        rows = [row for row in TABLES['dropbox'].values() if row['dropbox_id'] == dropbox_id
-                and int(row['weight']) > 0 and str(row['item']).split('#')[0] in TABLES['partner']]
-        if not rows: raise GameError('No hay personajes válidos en la tabla de invocación')
-        return rows, sum(int(row['weight']) for row in rows)
+        rows = []
+        for source in TABLES['dropbox'].values():
+            if source['dropbox_id'] != dropbox_id or str(source['item']).split('#')[0] not in TABLES['partner']:
+                continue
+            weight = local_config.summon_weight(source, TABLES['partner'])
+            if weight <= 0:
+                continue
+            row = dict(source)
+            row['_local_weight'] = weight
+            rows.append(row)
+        if not rows: raise GameError('Pool Triệu Hồi không còn phần thưởng hợp lệ theo cấu hình Local')
+        return rows, sum(int(row['_local_weight']) for row in rows)
 
     def handle(self, name: str, request: dict):
         """Apply one command transactionally; returns response + ordered push packets."""
@@ -2258,7 +2267,7 @@ class Engine:
             for _ in range(count):
                 draw = secrets.randbelow(total)
                 for row in rows:
-                    draw -= int(row['weight'])
+                    draw -= int(row.get('_local_weight', row['weight']))
                     if draw < 0: break
                 table_id = int(str(row['item']).split('#')[0])
                 if summon_id in wish.SUMMONS: table_id = wish.roll(state, table_id)
@@ -2302,7 +2311,8 @@ class Engine:
             if end > self.level_cap(partner): raise GameError('Se alcanzó el límite de nivel de este prototipo')
             costs = {}
             for level in range(partner['lv']+1, end+1):
-                for key, value in item_pairs(TABLES['exp_partner'][str(level)]['cost']).items(): costs[key] = costs.get(key, 0)+value
+                for key, value in item_pairs(TABLES['exp_partner'][str(level)]['cost']).items():
+                    costs[key] = costs.get(key, 0) + local_config.scale_cost(value)
             for key, value in costs.items():
                 if state['items'].get(str(key), 0) < value: raise GameError('No hay suficientes recursos')
             for key, value in costs.items(): state['items'][str(key)] -= value
@@ -2496,7 +2506,7 @@ class Engine:
             grade = int(host.get('grade', 0))
             if grade >= int(row.get('max_grade') or 0): raise GameError('Grado máximo alcanzado')
             if host['lv'] < self.level_cap(host): raise GameError('Sube primero al nivel máximo de este grado')
-            cost = item_pairs(row[f'grade_exp{grade+1}'])
+            cost = {k: local_config.scale_cost(v) for k, v in item_pairs(row[f'grade_exp{grade+1}']).items()}
             if any(int(state['items'].get(str(k), 0)) < n for k, n in cost.items()): raise GameError('Faltan recursos para subir de grado')
             for k, n in cost.items(): state['items'][str(k)] = int(state['items'].get(str(k), 0)) - n
             host['grade'] = grade + 1
@@ -2521,9 +2531,10 @@ class Engine:
                 if not copies:raise GameError('Necesitas una copia con sus estrellas iniciales')
                 ids=[copies[0]]+[pid for pid in ids if pid!=copies[0]]
             used = self.match_materials(owned, ids, recipe['material'], int(recipe['group']))
-            for key, amount in recipe.get('cost', {}).items():
-                if int(state['items'].get(key, 0)) < amount: raise GameError('Faltan recursos para esta ascensión')
-            for key, amount in recipe.get('cost', {}).items(): state['items'][key] -= amount
+            scaled_awake_cost = {str(key): local_config.scale_cost(amount) for key, amount in recipe.get('cost', {}).items()}
+            for key, amount in scaled_awake_cost.items():
+                if int(state['items'].get(key, 0)) < amount: raise GameError('Không đủ tài nguyên để Thức Tỉnh')
+            for key, amount in scaled_awake_cost.items(): state['items'][key] -= amount
             if recipe.get('local'):
                 host['awake'] = int(host.get('awake',0))+1
             elif star+1 == 10:
@@ -2558,7 +2569,7 @@ class Engine:
             if report['isWin'] and not state['max_stage']:
                 state['hang'] = {'since': self.now(), 'drop_since': self.now()}
             if report['isWin'] and stage_id not in state['cleared']:
-                awarded = item_pairs(stage['reward'])
+                awarded = {k: local_config.scale_reward(v) for k, v in item_pairs(stage['reward']).items()}
                 for key, count in awarded.items(): state['items'][str(key)] = state['items'].get(str(key), 0)+count
                 state['cleared'].append(stage_id)
                 campaign.change_stage(state,stage_id,now=self.now())
