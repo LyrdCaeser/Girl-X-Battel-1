@@ -37,6 +37,13 @@ class LiveServiceTests(unittest.TestCase):
         live_service.set_ban("U100", "S2", False)
         self.assertEqual(live_service.player("U100", "S2")["status"], "active")
 
+        live_service.touch_presence("U100", "S2", "Alice", level=88, power=123456)
+        online = live_service.online_players("S2")
+        self.assertEqual(online[0]["uid"], "U100")
+        board = live_service.leaderboard("S2")
+        self.assertEqual(board[0]["rank"], 1)
+        self.assertEqual(board[0]["power"], 123456)
+
     def test_name_must_match_for_gm_mail(self):
         live_service.register_player("U1", "S1", "Hero")
         with self.assertRaises(ValueError):
