@@ -1,0 +1,10 @@
+.admin-view{position:absolute;inset:0;z-index:80;background:linear-gradient(180deg,#16172a,#0b0c16);overflow:auto;padding:18px;color:#fff}
+.admin-head{display:flex;align-items:center;gap:12px;position:sticky;top:0;background:#16172a;padding:8px 0 14px;z-index:2}
+.admin-head h1{font-size:22px;margin:0;flex:1}.admin-head button,.admin-actions button,.admin-tool button{border:0;border-radius:10px;padding:10px 14px;font-weight:700}
+.admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.admin-card{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:14px}
+.admin-card h2{font-size:16px;margin:0 0 12px}.admin-card label{display:flex;flex-direction:column;gap:6px;margin:9px 0;font-size:13px}
+.admin-card input,.admin-card textarea,.admin-card select{width:100%;box-sizing:border-box;border:1px solid rgba(255,255,255,.18);background:#0e1020;color:#fff;border-radius:9px;padding:9px}
+.admin-card textarea{min-height:155px;font-family:monospace}.admin-actions{display:flex;gap:8px;margin:14px 0}.admin-actions .primary,.admin-tool .primary{background:#6f7cff;color:#fff}
+.admin-actions .danger{background:#6b2832;color:#fff}.admin-status{min-height:22px;font-size:13px;color:#d7dcff}.admin-tools{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.admin-tool{display:grid;gap:7px}.admin-note{font-size:12px;opacity:.75}
+@media(max-width:650px){.admin-grid{grid-template-columns:1fr}.admin-tools{grid-template-columns:1fr}}
