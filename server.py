@@ -5,6 +5,9 @@ from email.parser import BytesParser
 from email.policy import default
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json, re
+import hmac
+import os
+import secrets
 from pathlib import Path
 import socketserver
 import struct
@@ -154,9 +157,20 @@ class TCPHandler(socketserver.BaseRequestHandler):
             except OSError: return
 
 class HTTPHandler(BaseHTTPRequestHandler):
+    def admin_authorized(self):
+        supplied = self.headers.get('X-GXB2-Admin-Key', '')
+        expected = getattr(self.server, 'admin_key', '')
+        return bool(expected and supplied and hmac.compare_digest(supplied, expected))
+
+    def reject_unauthorized_admin_mode(self):
+        if self.headers.get('X-GXB2-Mode') == 'developer' and not self.admin_authorized():
+            self.send(403, {'error': 'QTV_KEY_REQUIRED'})
+            return True
+        return False
+
     @property
     def engine(self):
-        if self.headers.get('X-GXB2-Mode') == 'developer' and self.server.developer_engine:
+        if self.headers.get('X-GXB2-Mode') == 'developer' and self.server.developer_engine and self.admin_authorized():
             return self.server.developer_engine
         return self.server.engine
 
@@ -440,12 +454,18 @@ class HTTPHandler(BaseHTTPRequestHandler):
         if not isinstance(data, dict): raise GameError('La petición debe ser un objeto')
         return data
     def do_POST(self):
+        if self.reject_unauthorized_admin_mode():
+            return
         origin = self.headers.get('Origin')
         allowed = (f'http://127.0.0.1:{self.server.server_port}', f'http://localhost:{self.server.server_port}')
         if origin and origin not in allowed: return self.send(403, {'error': 'Origen no permitido'})
         try:
             data = self.read_body()
             path = urlparse(self.path).path
+            if path == '/api/admin/check':
+                if not self.admin_authorized():
+                    return self.send(403, {'error': 'QTV_KEY_INVALID'})
+                return self.send(200, {'ok': True})
             if path == '/api/v1':
                 if data.get('mid') != 1 or data.get('local_mode') is not True:
                     raise GameError('Este endpoint acepta solo RETRIEVE_TOKEN con local_mode=true')
@@ -459,6 +479,8 @@ class HTTPHandler(BaseHTTPRequestHandler):
                 packets = self.engine.handle(name, request)
                 return self.send(200, {'state': self.engine.snapshot(), 'messages': [{'id': mid, 'type': typ, 'data': body} for mid, typ, body in packets]})
             if path == '/api/developer':
+                if not self.admin_authorized() or self.headers.get('X-GXB2-Mode') != 'developer':
+                    return self.send(403, {'error': 'QTV_KEY_REQUIRED'})
                 return self.send(200, {'state': self.engine.developer_action(data)})
             if path == '/api/home/action':
                 return self.send(200, self.engine.home_action(data))
@@ -599,7 +621,7 @@ class HTTPHandler(BaseHTTPRequestHandler):
             print(f'Error local: {type(exc).__name__}: {exc}', flush=True)
             return self.send(500, {'error': 'Error del motor local. Consulta la terminal.'})
 
-def make_servers(engine, http_port=9080, tcp_port=9081, developer_engine=None):
+def make_servers(engine, http_port=9080, tcp_port=9081, developer_engine=None, admin_key=''):
     tcp = ThreadTCP(('127.0.0.1', tcp_port), TCPHandler)
     tcp.engine = engine
     try: http = LocalHTTPServer(('127.0.0.1', http_port), HTTPHandler)
@@ -607,6 +629,7 @@ def make_servers(engine, http_port=9080, tcp_port=9081, developer_engine=None):
         tcp.server_close()
         raise
     http.developer_engine = developer_engine
+    http.admin_key = admin_key
     http.engine = engine; http.tcp_port = tcp.server_address[1]
     return http, tcp
 
@@ -616,14 +639,16 @@ def main():
     parser.add_argument('--tcp-port', type=int, default=9081)
     parser.add_argument('--db', type=Path, default=ROOT/'state/profile.sqlite3')
     parser.add_argument('--open', action='store_true', help='Abrir la interfaz local de prueba')
+    parser.add_argument('--admin-key', default=None, help='Khóa QTV local; nếu bỏ trống sẽ dùng GXB2_ADMIN_KEY hoặc tạo khóa tạm')
     args = parser.parse_args()
+    admin_key = args.admin_key or os.environ.get('GXB2_ADMIN_KEY') or secrets.token_urlsafe(12)
     engine = Engine(args.db)
     developer = Engine(args.db.with_name(args.db.stem + ".developer.sqlite3"), developer=True)
-    http, tcp = make_servers(engine, args.http_port, args.tcp_port, developer)
+    http, tcp = make_servers(engine, args.http_port, args.tcp_port, developer, admin_key)
     threads = [threading.Thread(target=s.serve_forever, daemon=True) for s in (http, tcp)]
     for thread in threads: thread.start()
     url = f'http://localhost:{http.server_port}'
-    print(f'GxB2 local listo: {url}\nSocket de pruebas: 127.0.0.1:{tcp.server_address[1]}\nCtrl+C para detenerlo.', flush=True)
+    print(f'GxB2 Local sẵn sàng: {url}\nSocket kiểm thử: 127.0.0.1:{tcp.server_address[1]}\nKhóa QTV phiên này: {admin_key}\nCtrl+C để dừng.', flush=True)
     if args.open:
         import webbrowser
         webbrowser.open(url)
