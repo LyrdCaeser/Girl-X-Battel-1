@@ -334,6 +334,8 @@ def _ensure_live(db):
         id TEXT PRIMARY KEY,
         mode TEXT NOT NULL,
         server_id TEXT NOT NULL,
+        server_a TEXT NOT NULL DEFAULT '',
+        server_b TEXT NOT NULL DEFAULT '',
         player_a TEXT NOT NULL,
         player_b TEXT NOT NULL,
         name_a TEXT NOT NULL,
@@ -344,12 +346,42 @@ def _ensure_live(db):
         winner_uid TEXT NOT NULL DEFAULT '',
         created_at INTEGER NOT NULL,
         resolved_at INTEGER NOT NULL DEFAULT 0,
-        seed INTEGER NOT NULL DEFAULT 0
+        seed INTEGER NOT NULL DEFAULT 0,
+        snapshot_a TEXT NOT NULL DEFAULT '{}',
+        snapshot_b TEXT NOT NULL DEFAULT '{}',
+        battle_report TEXT NOT NULL DEFAULT '{}',
+        rating_delta_a INTEGER NOT NULL DEFAULT 0,
+        rating_delta_b INTEGER NOT NULL DEFAULT 0
     )""")
+    pvp_cols = {row[1] for row in db.execute("PRAGMA table_info(pvp_matches)")}
+    for col, ddl in (
+        ("server_a", "TEXT NOT NULL DEFAULT ''"),
+        ("server_b", "TEXT NOT NULL DEFAULT ''"),
+        ("snapshot_a", "TEXT NOT NULL DEFAULT '{}'"),
+        ("snapshot_b", "TEXT NOT NULL DEFAULT '{}'"),
+        ("battle_report", "TEXT NOT NULL DEFAULT '{}'"),
+        ("rating_delta_a", "INTEGER NOT NULL DEFAULT 0"),
+        ("rating_delta_b", "INTEGER NOT NULL DEFAULT 0"),
+    ):
+        if col not in pvp_cols:
+            db.execute(f"ALTER TABLE pvp_matches ADD COLUMN {col} {ddl}")
     db.execute("CREATE INDEX IF NOT EXISTS idx_world_guilds_server ON world_guilds(server_id,level DESC,exp DESC)")
     db.execute("CREATE INDEX IF NOT EXISTS idx_world_guild_members_guild ON world_guild_members(guild_id,role,joined_at)")
     db.execute("CREATE INDEX IF NOT EXISTS idx_pvp_queue_wait ON pvp_queue(mode,status,server_id,power,joined_at)")
     db.execute("CREATE INDEX IF NOT EXISTS idx_pvp_matches_players ON pvp_matches(player_a,player_b,created_at DESC)")
+    db.execute("""CREATE TABLE IF NOT EXISTS pvp_ratings(
+        uid TEXT NOT NULL,
+        server_id TEXT NOT NULL,
+        mode TEXT NOT NULL,
+        season_id TEXT NOT NULL,
+        rating INTEGER NOT NULL DEFAULT 1000,
+        wins INTEGER NOT NULL DEFAULT 0,
+        losses INTEGER NOT NULL DEFAULT 0,
+        matches INTEGER NOT NULL DEFAULT 0,
+        updated_at INTEGER NOT NULL,
+        PRIMARY KEY(uid,server_id,mode,season_id)
+    )""")
+    db.execute("CREATE INDEX IF NOT EXISTS idx_pvp_rating_board ON pvp_ratings(season_id,mode,rating DESC,wins DESC)")
     db.execute("""CREATE TABLE IF NOT EXISTS pvp_match_peers(
         match_id TEXT NOT NULL,
         uid TEXT NOT NULL,
@@ -395,6 +427,8 @@ def _ensure_live(db):
             id TEXT PRIMARY KEY,
             mode TEXT NOT NULL,
             server_id TEXT NOT NULL,
+            server_a TEXT NOT NULL DEFAULT '',
+            server_b TEXT NOT NULL DEFAULT '',
             player_a TEXT NOT NULL,
             player_b TEXT NOT NULL,
             name_a TEXT NOT NULL,
@@ -405,12 +439,37 @@ def _ensure_live(db):
             winner_uid TEXT NOT NULL DEFAULT '',
             created_at BIGINT NOT NULL,
             resolved_at BIGINT NOT NULL DEFAULT 0,
-            seed BIGINT NOT NULL DEFAULT 0
+            seed BIGINT NOT NULL DEFAULT 0,
+            snapshot_a TEXT NOT NULL DEFAULT '{}',
+            snapshot_b TEXT NOT NULL DEFAULT '{}',
+            battle_report TEXT NOT NULL DEFAULT '{}',
+            rating_delta_a INTEGER NOT NULL DEFAULT 0,
+            rating_delta_b INTEGER NOT NULL DEFAULT 0
         )""")
+        db.execute("ALTER TABLE pvp_matches ADD COLUMN IF NOT EXISTS server_a TEXT NOT NULL DEFAULT ''")
+        db.execute("ALTER TABLE pvp_matches ADD COLUMN IF NOT EXISTS server_b TEXT NOT NULL DEFAULT ''")
+        db.execute("ALTER TABLE pvp_matches ADD COLUMN IF NOT EXISTS snapshot_a TEXT NOT NULL DEFAULT '{}'")
+        db.execute("ALTER TABLE pvp_matches ADD COLUMN IF NOT EXISTS snapshot_b TEXT NOT NULL DEFAULT '{}'")
+        db.execute("ALTER TABLE pvp_matches ADD COLUMN IF NOT EXISTS battle_report TEXT NOT NULL DEFAULT '{}'")
+        db.execute("ALTER TABLE pvp_matches ADD COLUMN IF NOT EXISTS rating_delta_a INTEGER NOT NULL DEFAULT 0")
+        db.execute("ALTER TABLE pvp_matches ADD COLUMN IF NOT EXISTS rating_delta_b INTEGER NOT NULL DEFAULT 0")
         db.execute("CREATE INDEX IF NOT EXISTS idx_world_guilds_server ON world_guilds(server_id,level DESC,exp DESC)")
         db.execute("CREATE INDEX IF NOT EXISTS idx_world_guild_members_guild ON world_guild_members(guild_id,role,joined_at)")
         db.execute("CREATE INDEX IF NOT EXISTS idx_pvp_queue_wait ON pvp_queue(mode,status,server_id,power,joined_at)")
         db.execute("CREATE INDEX IF NOT EXISTS idx_pvp_matches_players ON pvp_matches(player_a,player_b,created_at DESC)")
+        db.execute("""CREATE TABLE IF NOT EXISTS pvp_ratings(
+            uid TEXT NOT NULL,
+            server_id TEXT NOT NULL,
+            mode TEXT NOT NULL,
+            season_id TEXT NOT NULL,
+            rating INTEGER NOT NULL DEFAULT 1000,
+            wins INTEGER NOT NULL DEFAULT 0,
+            losses INTEGER NOT NULL DEFAULT 0,
+            matches INTEGER NOT NULL DEFAULT 0,
+            updated_at BIGINT NOT NULL,
+            PRIMARY KEY(uid,server_id,mode,season_id)
+        )""")
+        db.execute("CREATE INDEX IF NOT EXISTS idx_pvp_rating_board ON pvp_ratings(season_id,mode,rating DESC,wins DESC)")
         db.execute("""CREATE TABLE IF NOT EXISTS pvp_match_peers(
             match_id TEXT NOT NULL REFERENCES pvp_matches(id) ON DELETE CASCADE,
             uid TEXT NOT NULL,
