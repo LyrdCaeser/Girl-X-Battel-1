@@ -1117,6 +1117,8 @@ def settle_guild_war(war_id, force=False):
             war=_refresh_single_guild_war(db,row,now)
         if war["status"]!="finished":
             db.commit(); db.close(); return war
+        if db.execute("SELECT 1 FROM guild_war_claims WHERE war_id=? LIMIT 1",(str(war_id),)).fetchone():
+            db.commit(); db.close(); return war
         reward_cfg=GUILD_ONLINE_CONFIG.get("guild_war") or {}
         winner=int(war["winner_guild"] or 0)
         for gid in (int(war["guild_a"]),int(war["guild_b"])):
@@ -1286,3 +1288,16 @@ def record_guild_war_battle(war_id, attacker_uid, defender_uid, attacker_snapsho
         updated=db.execute("SELECT * FROM guild_wars WHERE id=?",(str(war_id),)).fetchone()
         db.commit(); out={"battle_id":battle_id,"winner_uid":winner_uid,"score":score,"war":dict(updated)}
         db.close(); return out
+
+
+def maintenance_tick(now=None):
+    now=int(now or time.time())
+    refresh_guild_wars()
+    with _lock:
+        db=_db()
+        db.execute("DELETE FROM pvp_queue WHERE joined_at<?",(now-600,))
+        db.execute("DELETE FROM pvp_match_peers WHERE last_seen<?",(now-3600,))
+        db.execute("""UPDATE pvp_matches SET status='expired',resolved_at=?
+                      WHERE status IN ('ready','active') AND created_at<?""",(now,now-1800))
+        db.commit(); db.close()
+    return {"ok":True,"at":now}
