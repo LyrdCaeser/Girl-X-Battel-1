@@ -21,7 +21,7 @@ from gxb2.story import catalog as story_catalog
 from gxb2.dress import catalog as dress_catalog
 from gxb2.skins import catalog as skins_catalog
 from gxb2.souls import catalog as souls_catalog
-from gxb2 import protocol as p, local_promotion, local_config, live_service, auth, database
+from gxb2 import protocol as p, local_promotion, local_config, world_live_config, live_service, auth, database
 from gxb2.player_engines import PlayerEnginePool
 from gxb2.battle import simulate as simulate_battle
 
@@ -348,6 +348,12 @@ class HTTPHandler(BaseHTTPRequestHandler):
             if not self.admin_authorized():
                 return self.send(403, {'error': 'QTV_KEY_REQUIRED'})
             return self.send(200, local_config.public_config())
+        if path == '/api/admin/world-config':
+            if not self.admin_authorized():
+                return self.send(403, {'error': 'QTV_KEY_REQUIRED'})
+            server_id=(parse_qs(parsed.query).get('server_id') or ['S1'])[0]
+            return self.send(200, {'server_id':str(server_id).upper(),
+                                   'config':world_live_config.public_config(server_id)})
         if path == '/api/admin/dashboard':
             if not self.admin_authorized():
                 return self.send(403, {'error': 'QTV_KEY_REQUIRED'})
@@ -705,6 +711,20 @@ class HTTPHandler(BaseHTTPRequestHandler):
                 action = data.get('action')
                 if action not in ('ban','unban'): raise ValueError('Thao tác tài khoản không hợp lệ')
                 return self.send(200, live_service.set_ban(data.get('uid'), data.get('server_id'), action == 'ban', data.get('reason','')))
+            if path == '/api/admin/world-config':
+                if not self.admin_authorized(): return self.send(403, {'error': 'QTV_KEY_REQUIRED'})
+                server_id=str(data.get('server_id') or 'S1').upper()
+                action=str(data.get('action') or 'save')
+                if action=='reset':
+                    cfg=world_live_config.reset(server_id)
+                elif action=='save':
+                    cfg=world_live_config.save(server_id,data.get('config') or {})
+                else:
+                    raise ValueError('Thao tác World Live Config không hợp lệ')
+                db=live_service._db()
+                live_service._audit(db,'admin.world_live_config',server_id,{'action':action,'config':cfg},'SUPER_GM')
+                db.commit();db.close()
+                return self.send(200,{'server_id':server_id,'config':cfg})
             if path == '/api/admin/live-service':
                 if not self.admin_authorized(): return self.send(403, {'error': 'QTV_KEY_REQUIRED'})
                 action=str(data.get('action') or '')
