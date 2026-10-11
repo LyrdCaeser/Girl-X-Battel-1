@@ -261,11 +261,12 @@ Guild Mail:
 Guild Ranking:
 - xếp theo tổng Power thành viên, sau đó level/exp
 
-Guild War foundation:
-- Leader/Deputy thách đấu Guild cùng Server
-- tạo war ID `GW-...`
-- lưu thời gian bắt đầu/kết thúc, score A/B, status và winner
-- phần combat/scoring Guild War sẽ được nối tiếp sau.
+Guild War:
+- Leader/Deputy thách đấu Guild cùng Server.
+- tạo war ID `GW-...`.
+- combat server-authoritative giữa member hai Guild.
+- score A/B, battle history, Contribution, Guild EXP/Level.
+- tự settlement khi hết thời gian và gửi reward qua mailbox.
 
 ## PvP season rewards
 
@@ -278,3 +279,51 @@ Reward tier nằm trong `data/pvp_season_rewards.json`.
 - Claim được ghi vào `pvp_season_claims`, chống nhận lặp.
 - Reward được gửi qua mailbox để player tự nhận.
 - Online Hub hiển thị eligibility, reward và trạng thái claimed.
+
+
+## Guild War combat / progression
+
+Guild War hiện có combat server-authoritative:
+
+1. Member mở một Guild War đang `active`.
+2. Chọn thành viên Guild đối phương.
+3. Server xác minh attacker/defender thuộc đúng hai Guild.
+4. Server tải save thật của cả hai UID trong cùng Server.
+5. Battle engine chạy server-side với team + Pet + Guild Skills + Chime bonus A/B.
+6. Server ghi battle report và cộng score vào Guild thắng lượt.
+7. Thành viên hai phía nhận Contribution; hai Guild nhận EXP.
+8. Guild Level tự tăng theo EXP, mặc định 5.000 EXP/level, tối đa level 20.
+
+Một attacker chỉ được đánh cùng một defender một lần trong cùng Guild War. Score/reward/progression cấu hình tại `data/guild_online_config.json`.
+
+Khi `ends_at` tới:
+- maintenance loop chuyển war sang `finished`;
+- xác định winner theo score A/B;
+- reward winner/loser/draw được gửi qua mailbox;
+- `guild_war_claims` bảo đảm settlement idempotent, không phát quà lặp.
+
+Background maintenance chạy mỗi 30 giây và đồng thời dọn PvP queue/session cũ.
+
+## Realtime SSE transport
+
+Online Hub không còn phụ thuộc polling PvP 2,5 giây làm transport chính.
+
+Authenticated endpoint:
+
+```text
+GET /api/events/stream?mode=arena
+Content-Type: text/event-stream
+```
+
+Server gửi event `snapshot` chứa:
+- server time
+- online count
+- PvP session/status
+- Guild summary
+- Guild War state
+
+Browser dùng `EventSource`, tự reconnect khi stream được rotate. Server giữ mỗi stream khoảng 40 giây để tránh connection sống vô hạn trên transport hiện tại. Nếu browser không hỗ trợ EventSource thì UI fallback polling 5 giây.
+
+Reverse proxy production phải tắt buffering cho SSE. App đã gửi `X-Accel-Buffering: no`.
+
+Với tải lớn hoặc realtime battle input tốc độ cao, bước scale tiếp theo vẫn nên chuyển transport sang ASGI/WebSocket + Redis pub/sub. SSE hiện phù hợp cho state/event updates của Online Hub, Guild và matchmaking; battle simulation vẫn chạy server-authoritative theo request.
