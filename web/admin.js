@@ -1,6 +1,6 @@
 'use strict';
 window.AdminPanel=(()=>{
-  let root=null,cfg=null,dash=null,active='overview';
+  let root=null,cfg=null,dash=null,worldCfg=null,active='overview';
   const el=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n;};
   const field=(parent,label,id,type='text',step=null)=>{const l=el('label','admin-field',label),i=document.createElement('input');i.id=id;i.type=type;if(step)i.step=step;l.append(i);parent.append(l);return i;};
   const textarea=(parent,label,id,placeholder='')=>{const l=el('label','admin-field',label),i=document.createElement('textarea');i.id=id;i.placeholder=placeholder;l.append(i);parent.append(l);return i;};
@@ -126,10 +126,56 @@ window.AdminPanel=(()=>{
   function renderConfig(body){
     const grid=el('div','admin-grid');
     const res=card('Tài nguyên & Nữ Thần khởi đầu');const ta=textarea(res,'starting_resources (JSON)','admin-resources');ta.value=JSON.stringify(cfg.starting_resources,null,2);field(res,'Starter Girls (ID)','admin-starters').value=cfg.starter_girls.join(',');grid.append(res);
-    const summon=card('Tỷ lệ Triệu Hồi');for(const star of [1,2,3,4,5,6]){const i=field(summon,`${star}★ multiplier`,`admin-star-${star}`,'number','0.1');i.value=cfg.summon_rate.star_multiplier[String(star)]??1;}grid.append(summon);
-    const economy=card('Kinh tế game');field(economy,'Giá Shop ×','admin-shop','number','0.1').value=cfg.shop.price_multiplier;field(economy,'Phần thưởng ×','admin-reward','number','0.1').value=cfg.rewards.multiplier;field(economy,'Chi phí progression ×','admin-progress','number','0.1').value=cfg.progression.cost_multiplier;grid.append(economy);
-    const actions=card('Áp dụng');actions.append(btn('Lưu cấu hình',saveConfig,'primary'),btn('Khôi phục mặc định',resetConfig,'danger'));grid.append(actions);body.append(grid);
+    const summon=card('Tỷ lệ Triệu Hồi toàn game');for(const star of [1,2,3,4,5,6]){const i=field(summon,`${star}★ multiplier`,`admin-star-${star}`,'number','0.1');i.value=cfg.summon_rate.star_multiplier[String(star)]??1;}grid.append(summon);
+    const economy=card('Kinh tế toàn game');field(economy,'Giá Shop ×','admin-shop','number','0.1').value=cfg.shop.price_multiplier;field(economy,'Phần thưởng ×','admin-reward','number','0.1').value=cfg.rewards.multiplier;field(economy,'Chi phí progression ×','admin-progress','number','0.1').value=cfg.progression.cost_multiplier;grid.append(economy);
+    const actions=card('Áp dụng cấu hình toàn game');actions.append(btn('Lưu cấu hình',saveConfig,'primary'),btn('Khôi phục mặc định',resetConfig,'danger'));grid.append(actions);
+
+    const world=card('World Live Config · Shop / Event Shop / Event / Summon');
+    const select=document.createElement('select');select.id='admin-world-live-server';
+    for(const w of dash?.worlds||[]){const o=el('option','',w.server_id+' · '+w.name);o.value=w.server_id;select.append(o);}
+    select.onchange=()=>loadWorldConfig(select.value);world.append(select);
+    field(world,'Shop giá ×','admin-world-shop','number','0.1').value='1';
+    field(world,'Event Shop giá ×','admin-world-event-shop','number','0.1').value='1';
+    field(world,'Event reward ×','admin-world-event-reward','number','0.1').value='1';
+    field(world,'Shop ID tạm đóng (cách nhau dấu phẩy)','admin-world-disabled-shops').value='';
+    const flags=el('div','admin-form-row');
+    const checkin=document.createElement('label');checkin.className='admin-check';const checkinCb=document.createElement('input');checkinCb.type='checkbox';checkinCb.id='admin-world-checkin';checkinCb.checked=true;checkin.append(checkinCb,document.createTextNode('Điểm danh'));
+    const seven=document.createElement('label');seven.className='admin-check';const sevenCb=document.createElement('input');sevenCb.type='checkbox';sevenCb.id='admin-world-seven';sevenCb.checked=true;seven.append(sevenCb,document.createTextNode('Quà 7 ngày'));flags.append(checkin,seven);world.append(flags);
+    const stars=el('div','admin-form-row');for(const star of [1,2,3,4,5,6]){const wrap=el('label','admin-field',star+'★ ×');const input=document.createElement('input');input.type='number';input.step='0.1';input.id='admin-world-star-'+star;input.value='1';wrap.append(input);stars.append(wrap);}world.append(stars);
+    world.append(btn('Lưu World Live Config',saveWorldConfig,'primary'),btn('Reset World Config',resetWorldConfig,'danger'));
+    grid.append(world);body.append(grid);
+    if(select.value)loadWorldConfig(select.value);
   }
+  async function loadWorldConfig(serverId){try{
+    const out=await api('/api/admin/world-config?server_id='+encodeURIComponent(serverId));
+    worldCfg=out.config||{};
+    const shop=worldCfg.shop||{},eventShop=worldCfg.event_shop||{},eventRewards=worldCfg.event_rewards||{},stars=(worldCfg.summon_rate||{}).star_multiplier||{};
+    const set=(id,v)=>{const n=document.getElementById(id);if(n)n.value=String(v??'');};
+    set('admin-world-shop',shop.price_multiplier??1);
+    set('admin-world-event-shop',eventShop.price_multiplier??1);
+    set('admin-world-event-reward',eventRewards.multiplier??1);
+    set('admin-world-disabled-shops',(shop.disabled_shop_ids||[]).join(','));
+    const ci=document.getElementById('admin-world-checkin');if(ci)ci.checked=eventRewards.checkin_enabled!==false;
+    const sv=document.getElementById('admin-world-seven');if(sv)sv.checked=eventRewards.sevenday_enabled!==false;
+    for(const star of [1,2,3,4,5,6])set('admin-world-star-'+star,stars[String(star)]??1);
+    status('Đã tải World Live Config '+out.server_id+'.');
+  }catch(e){status(e.message,false);}}
+  async function saveWorldConfig(){try{
+    const server_id=val('admin-world-live-server')||'S1';
+    const config={
+      shop:{price_multiplier:Number(val('admin-world-shop')||1),disabled_shop_ids:val('admin-world-disabled-shops').split(',').map(x=>Number(x.trim())).filter(x=>Number.isInteger(x)&&x>0)},
+      event_shop:{price_multiplier:Number(val('admin-world-event-shop')||1)},
+      event_rewards:{multiplier:Number(val('admin-world-event-reward')||1),checkin_enabled:!!document.getElementById('admin-world-checkin')?.checked,sevenday_enabled:!!document.getElementById('admin-world-seven')?.checked},
+      summon_rate:{star_multiplier:Object.fromEntries([1,2,3,4,5,6].map(star=>[String(star),Number(val('admin-world-star-'+star)||1)]))}
+    };
+    const out=await api('/api/admin/world-config',{action:'save',server_id,config});
+    worldCfg=out.config;status('Đã áp dụng Live Config riêng cho '+out.server_id+'.');
+  }catch(e){status(e.message,false);}}
+  async function resetWorldConfig(){try{
+    const server_id=val('admin-world-live-server')||'S1';
+    const out=await api('/api/admin/world-config',{action:'reset',server_id});
+    worldCfg=out.config;await loadWorldConfig(server_id);status('Đã reset World Live Config '+out.server_id+'.');
+  }catch(e){status(e.message,false);}}
   async function saveConfig(){try{const raw={starting_resources:JSON.parse(val('admin-resources')),starter_girls:val('admin-starters').split(',').map(x=>Number(x.trim())).filter(Boolean),summon_rate:{star_multiplier:Object.fromEntries([1,2,3,4,5,6].map(s=>[String(s),Number(val(`admin-star-${s}`))]))},shop:{price_multiplier:Number(val('admin-shop'))},rewards:{multiplier:Number(val('admin-reward'))},progression:{cost_multiplier:Number(val('admin-progress'))}};cfg=await api('/api/admin/config',raw);status('Đã lưu cấu hình.');}catch(e){status(e.message,false);}}
   async function resetConfig(){try{cfg=await api('/api/admin/config',{action:'reset'});status('Đã khôi phục mặc định.');render();}catch(e){status(e.message,false);}}
   function renderTools(body){
