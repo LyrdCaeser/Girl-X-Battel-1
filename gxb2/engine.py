@@ -305,6 +305,34 @@ class Engine:
         newbie_camp.observe(state, self.missions_probe(dict(state)), player_level(state), self.now())
         self.db.execute('UPDATE profile SET data=? WHERE id=1', (json.dumps(state, ensure_ascii=False),))
 
+    def pvp_team_snapshot(self):
+        with self.lock:
+            state = self._load()
+            by_id = {int(p['partner_id']): p for p in state.get('partners', [])}
+            team = []
+            for slot in sorted(state.get('formation', []), key=lambda x: int(x.get('pos', 0))):
+                partner = by_id.get(int(slot.get('partner_id', 0)))
+                if not partner:
+                    continue
+                unit = copy.deepcopy(partner)
+                unit['pos'] = int(slot.get('pos', unit.get('pos', 0) or 0))
+                team.append(unit)
+            if not team:
+                team = [copy.deepcopy(p) for p in state.get('partners', [])[:6]]
+                for i, unit in enumerate(team, 1):
+                    unit['pos'] = i
+            if not team:
+                raise GameError('Đội hình PvP đang trống')
+            power = self._friend_power(state)
+            return {
+                'uid': state.get('uid'),
+                'server_id': state.get('server_id'),
+                'name': state.get('name'),
+                'level': player_level(state),
+                'power': int(power),
+                'team': team[:6],
+            }
+
     def claim_live_mail(self, mail_id):
         with self.lock:
             self.db.execute('BEGIN IMMEDIATE')
