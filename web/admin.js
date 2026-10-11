@@ -33,7 +33,7 @@ window.AdminPanel=(()=>{
   function renderOverview(body){
     const grid=el('div','admin-grid');
     const stats=card('Trạng thái hệ thống');
-    const values=[['Server',dash?.worlds?.length||0],['Người chơi',dash?.players?.length||0],['Đơn chờ duyệt',(dash?.orders||[]).filter(x=>x.status==='pending').length],['Audit',dash?.audit?.length||0]];
+    const values=[['Server',dash?.worlds?.length||0],['Tài khoản',dash?.accounts?.length||0],['Người chơi',dash?.players?.length||0],['Đơn chờ duyệt',(dash?.orders||[]).filter(x=>x.status==='pending').length]];
     const row=el('div','admin-stats');for(const [k,v] of values){const s=el('div','admin-stat');s.append(el('b','',String(v)),el('small','',k));row.append(s);}stats.append(row,el('p','admin-note','SUPER GM có quyền quản lý server, khóa/mở tài khoản, duyệt đơn nạp và gửi vật phẩm trực tiếp qua thư theo UID + Server + Tên Nhân Vật.'));
     grid.append(stats);
     const me=card('Player đang mở');me.append(el('p','',`UID: ${state?.uid||'-'}`),el('p','',`Server: ${state?.server_id||'-'}`),el('p','',`Tên Nhân Vật: ${state?.name||'-'}`),el('p','',`Trạng thái: ${state?.account_status||'active'}`));grid.append(me);
@@ -78,14 +78,21 @@ window.AdminPanel=(()=>{
     const needle=String(q||'').toLowerCase();
     for(const p of (dash?.players||[]).filter(x=>!needle||[x.uid,x.server_id,x.character_name].some(v=>String(v).toLowerCase().includes(needle)))){
       const row=el('article','admin-row');const info=el('div','admin-row-main');info.append(el('b','',p.character_name),el('span','',`${p.server_id} · ${p.uid}`),el('small','',p.status+(p.ban_reason?' · '+p.ban_reason:'')));row.append(info);
-      if(p.status==='banned')row.append(btn('Unban',()=>playerStatus(p,'unban'),'primary'));
-      else row.append(btn('Ban',()=>playerStatus(p,'ban'),'danger'));
+      if(p.status==='banned')row.append(btn('Unban Server',()=>playerStatus(p,'unban'),'primary'));
+      else row.append(btn('Ban Server',()=>playerStatus(p,'ban'),'danger'));
+      const account=(dash?.accounts||[]).find(a=>a.uid===p.uid);
+      if(account?.status==='banned')row.append(btn('Unban Account',()=>accountStatus(p,'unban'),'primary'));
+      else row.append(btn('Ban Account',()=>accountStatus(p,'ban'),'danger'));
       holder.append(row);
     }
   }
   async function playerStatus(p,action){try{
-    const reason=action==='ban'?(prompt('Lý do ban:','Vi phạm quy định')||'Vi phạm quy định'):'';
-    await api('/api/admin/player/status',{uid:p.uid,server_id:p.server_id,action,reason});status(action==='ban'?'Đã ban tài khoản.':'Đã unban tài khoản.');await refreshDashboard();render();
+    const reason=action==='ban'?(prompt('Lý do ban ở server '+p.server_id+':','Vi phạm quy định')||'Vi phạm quy định'):'';
+    await api('/api/admin/player/status',{uid:p.uid,server_id:p.server_id,action,reason});status(action==='ban'?'Đã ban nhân vật ở server này.':'Đã unban nhân vật ở server này.');await refreshDashboard();render();
+  }catch(e){status(e.message,false);}}
+  async function accountStatus(p,action){try{
+    const reason=action==='ban'?(prompt('Lý do khóa toàn tài khoản:','Vi phạm nghiêm trọng')||'Vi phạm nghiêm trọng'):'';
+    await api('/api/admin/account/status',{uid:p.uid,action,reason});status(action==='ban'?'Đã khóa toàn tài khoản và thu hồi phiên đăng nhập.':'Đã mở khóa tài khoản.');await refreshDashboard();render();
   }catch(e){status(e.message,false);}}
   function renderWorlds(body){
     const c=card('World / Multi-server');
