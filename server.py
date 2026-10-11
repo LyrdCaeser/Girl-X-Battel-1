@@ -513,6 +513,10 @@ class HTTPHandler(BaseHTTPRequestHandler):
                 return self.send(200, live_service.create_order(state.get('uid'), state.get('server_id'), state.get('name'), data.get('package'), data.get('note','')))
             if path == '/api/mail/claim':
                 return self.send(200, self.engine.claim_live_mail(data.get('mail_id')))
+            if self.headers.get('X-GXB2-Mode') != 'developer':
+                account_state = self.engine.snapshot()
+                if account_state.get('account_status') == 'banned':
+                    return self.send(403, {'error': 'Tài khoản đã bị khóa bởi GM'})
             if path == '/api/v1':
                 if data.get('mid') != 1 or data.get('local_mode') is not True:
                     raise GameError('Este endpoint acepta solo RETRIEVE_TOKEN con local_mode=true')
