@@ -548,3 +548,42 @@ def pvp_history(uid, limit=50):
                            WHERE player_a=? OR player_b=?
                            ORDER BY created_at DESC LIMIT ?""",(str(uid),str(uid),limit)).fetchall()
         out=[dict(r) for r in rows]; db.close(); return out
+
+
+def heartbeat_pvp_match(match_id, uid, ready=True):
+    match_id=str(match_id or '').strip(); uid=str(uid or '').strip(); now=int(time.time())
+    with _lock:
+        db=_db(); db.execute("BEGIN IMMEDIATE")
+        row=db.execute("SELECT * FROM pvp_matches WHERE id=?",(match_id,)).fetchone()
+        if not row:
+            db.rollback(); db.close(); raise ValueError("Không tìm thấy trận PvP")
+        if uid not in (row["player_a"],row["player_b"]):
+            db.rollback(); db.close(); raise ValueError("Bạn không thuộc trận PvP này")
+        db.execute("""INSERT INTO pvp_match_peers(match_id,uid,ready,last_seen)
+                      VALUES(?,?,?,?)
+                      ON CONFLICT(match_id,uid) DO UPDATE SET
+                        ready=excluded.ready,last_seen=excluded.last_seen""",
+                   (match_id,uid,1 if ready else 0,now))
+        peers=db.execute("SELECT uid,ready,last_seen FROM pvp_match_peers WHERE match_id=?",(match_id,)).fetchall()
+        online_cutoff=now-15
+        all_ready=len(peers)>=2 and all(int(p["ready"]) and int(p["last_seen"])>=online_cutoff for p in peers)
+        if all_ready and row["status"]=="ready":
+            db.execute("UPDATE pvp_matches SET status='active' WHERE id=?",(match_id,))
+        row=db.execute("SELECT * FROM pvp_matches WHERE id=?",(match_id,)).fetchone()
+        db.commit()
+        out={"match":dict(row),"peers":[dict(p) for p in peers],"all_ready":all_ready}
+        db.close(); return out
+
+
+def pvp_match_session(match_id, uid):
+    match_id=str(match_id or '').strip(); uid=str(uid or '').strip(); now=int(time.time())
+    with _lock:
+        db=_db()
+        row=db.execute("SELECT * FROM pvp_matches WHERE id=?",(match_id,)).fetchone()
+        if not row:
+            db.close(); raise ValueError("Không tìm thấy trận PvP")
+        if uid not in (row["player_a"],row["player_b"]):
+            db.close(); raise ValueError("Bạn không thuộc trận PvP này")
+        peers=db.execute("SELECT uid,ready,last_seen FROM pvp_match_peers WHERE match_id=?",(match_id,)).fetchall()
+        out={"match":dict(row),"peers":[dict(p) for p in peers],"server_time":now}
+        db.close(); return out
