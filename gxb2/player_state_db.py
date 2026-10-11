@@ -114,6 +114,13 @@ class ScopedPostgresPlayerDB:
             return BufferedCursor(rowcount=cur.rowcount)
 
         if low.startswith("select data from profile where id=1"):
+            if self._tx is not None:
+                cur = self._tx.execute(
+                    "SELECT data FROM player_profiles WHERE uid=%s AND server_id=%s FOR UPDATE",
+                    (self.uid, self.server_id),
+                )
+                rows = cur.fetchall()
+                return BufferedCursor(rows, cur.rowcount)
             return self._short_query(
                 "SELECT data FROM player_profiles WHERE uid=%s AND server_id=%s",
                 (self.uid, self.server_id),
