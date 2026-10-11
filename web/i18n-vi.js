@@ -295,6 +295,7 @@
   document.documentElement.lang = 'vi';
   document.title = 'Nữ Thần Chiến Đấu - GXB 3';
   const run = () => {
+    if (window.GxbLocale && GxbLocale.current() !== 'vi') return;
     translateNode(document.body);
     const dev = document.getElementById('dev-open');
     if (dev) dev.textContent = 'QTV';
