@@ -15,6 +15,7 @@ Nhánh phát hành hiện tại: `snez-vietnamese`.
 - [ ] Battle runtime PASS bằng LuaJIT tương thích của target; không chấp nhận CI skip làm bằng chứng runtime.
 - [ ] `GET /healthz` trả 200.
 - [ ] `GET /readyz` trả 200 và `ready:true`.
+- [ ] `python tools/release_smoke.py --base-url https://...` PASS; nếu có smoke account thì login/auth/leaderboard/guild/logout đều PASS.
 - [ ] Backup PostgreSQL thử restore được vào DB test.
 - [ ] Test ít nhất 2 account thật: Register → Login → Guild → PvP → Mail → restart → dữ liệu còn nguyên.
 - [ ] Test Guild War hai Guild thật và reward settlement sau khi hết thời gian.
