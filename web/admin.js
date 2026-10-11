@@ -33,7 +33,7 @@ window.AdminPanel=(()=>{
   function renderOverview(body){
     const grid=el('div','admin-grid');
     const stats=card('Trạng thái hệ thống');
-    const values=[['Server',dash?.worlds?.length||0],['Tài khoản',dash?.accounts?.length||0],['Người chơi',dash?.players?.length||0],['Đơn chờ duyệt',(dash?.orders||[]).filter(x=>x.status==='pending').length]];
+    const values=[['Server',dash?.worlds?.length||0],['Online',dash?.online?.length||0],['Tài khoản',dash?.accounts?.length||0],['Đơn chờ duyệt',(dash?.orders||[]).filter(x=>x.status==='pending').length]];
     const row=el('div','admin-stats');for(const [k,v] of values){const s=el('div','admin-stat');s.append(el('b','',String(v)),el('small','',k));row.append(s);}stats.append(row,el('p','admin-note','SUPER GM có quyền quản lý server, khóa/mở tài khoản, duyệt đơn nạp và gửi vật phẩm trực tiếp qua thư theo UID + Server + Tên Nhân Vật.'));
     grid.append(stats);
     const me=card('Player đang mở');me.append(el('p','',`UID: ${state?.uid||'-'}`),el('p','',`Server: ${state?.server_id||'-'}`),el('p','',`Tên Nhân Vật: ${state?.name||'-'}`),el('p','',`Trạng thái: ${state?.account_status||'active'}`));grid.append(me);
