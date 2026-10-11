@@ -5,9 +5,16 @@ import time
 from . import database
 
 
+class CompatRow(dict):
+    def __getitem__(self, key):
+        if isinstance(key, int):
+            return list(self.values())[key]
+        return super().__getitem__(key)
+
+
 class BufferedCursor:
     def __init__(self, rows=None, rowcount=0):
-        self._rows = list(rows or [])
+        self._rows = [CompatRow(r) if isinstance(r, dict) and not isinstance(r, CompatRow) else r for r in (rows or [])]
         self._index = 0
         self.rowcount = rowcount
 
