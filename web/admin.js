@@ -83,6 +83,7 @@ window.AdminPanel=(()=>{
       const account=(dash?.accounts||[]).find(a=>a.uid===p.uid);
       if(account?.status==='banned')row.append(btn('Unban Account',()=>accountStatus(p,'unban'),'primary'));
       else row.append(btn('Ban Account',()=>accountStatus(p,'ban'),'danger'));
+      row.append(btn('Thu hồi phiên',()=>revokeSessions(p.uid)));
       holder.append(row);
     }
   }
@@ -94,14 +95,24 @@ window.AdminPanel=(()=>{
     const reason=action==='ban'?(prompt('Lý do khóa toàn tài khoản:','Vi phạm nghiêm trọng')||'Vi phạm nghiêm trọng'):'';
     await api('/api/admin/account/status',{uid:p.uid,action,reason});status(action==='ban'?'Đã khóa toàn tài khoản và thu hồi phiên đăng nhập.':'Đã mở khóa tài khoản.');await refreshDashboard();render();
   }catch(e){status(e.message,false);}}
+  async function revokeSessions(uid){try{
+    const r=await api('/api/admin/account/revoke-sessions',{uid});status('Đã thu hồi '+(r.revoked||0)+' phiên đăng nhập của '+uid+'.');await refreshDashboard();
+  }catch(e){status(e.message,false);}}
   function renderWorlds(body){
     const c=card('World / Multi-server');
     const create=el('div','admin-form-row');const sid=document.createElement('input');sid.id='gm-world-id';sid.placeholder='S2';const name=document.createElement('input');name.id='gm-world-name';name.placeholder='Server 2';create.append(sid,name,btn('Tạo server',createWorld,'primary'));c.append(create);
-    const list=el('div','admin-list');for(const w of dash?.worlds||[]){const row=el('article','admin-row');const info=el('div','admin-row-main');info.append(el('b','',w.name),el('span','',w.server_id),el('small','',w.status));row.append(info);
-      const select=document.createElement('select');for(const st of ['online','maintenance','closed']){const o=el('option','',st);o.value=st;o.selected=st===w.status;select.append(o);}select.onchange=()=>worldStatus(w.server_id,select.value);row.append(select);list.append(row);}c.append(list);body.append(c);
+    const list=el('div','admin-list');for(const w of dash?.worlds||[]){const row=el('article','admin-row admin-world-row');const info=el('div','admin-row-main');info.append(el('b','',w.name),el('span','',w.server_id),el('small','',w.status+(w.message?' · '+w.message:'')));row.append(info);
+      const select=document.createElement('select');for(const st of ['online','maintenance','closed']){const o=el('option','',st);o.value=st;o.selected=st===w.status;select.append(o);}select.onchange=()=>worldStatus(w.server_id,select.value);row.append(select);
+      const reg=document.createElement('label');reg.className='admin-check';const regCb=document.createElement('input');regCb.type='checkbox';regCb.checked=!!Number(w.registration_open??1);reg.append(regCb,document.createTextNode('Đăng ký'));row.append(reg);
+      const createCbWrap=document.createElement('label');createCbWrap.className='admin-check';const createCb=document.createElement('input');createCb.type='checkbox';createCb.checked=!!Number(w.character_creation_open??1);createCbWrap.append(createCb,document.createTextNode('Tạo NV'));row.append(createCbWrap);
+      const msg=document.createElement('input');msg.className='admin-world-message';msg.placeholder='Thông báo / lý do';msg.value=w.message||'';row.append(msg);
+      row.append(btn('Lưu policy',()=>worldPolicy(w.server_id,regCb.checked,createCb.checked,msg.value),'primary'));list.append(row);}c.append(list);body.append(c);
   }
   async function createWorld(){try{await api('/api/admin/world',{action:'create',server_id:val('gm-world-id'),name:val('gm-world-name')});status('Đã tạo server.');await refreshDashboard();render();}catch(e){status(e.message,false);}}
   async function worldStatus(server_id,statusValue){try{await api('/api/admin/world',{action:'status',server_id,status:statusValue});status('Đã cập nhật '+server_id+'.');await refreshDashboard();render();}catch(e){status(e.message,false);}}
+  async function worldPolicy(server_id,registration_open,character_creation_open,message){try{
+    await api('/api/admin/world',{action:'policy',server_id,registration_open,character_creation_open,message});status('Đã lưu policy '+server_id+'.');await refreshDashboard();render();
+  }catch(e){status(e.message,false);}}
   function renderConfig(body){
     const grid=el('div','admin-grid');
     const res=card('Tài nguyên & Nữ Thần khởi đầu');const ta=textarea(res,'starting_resources (JSON)','admin-resources');ta.value=JSON.stringify(cfg.starting_resources,null,2);field(res,'Starter Girls (ID)','admin-starters').value=cfg.starter_girls.join(',');grid.append(res);
