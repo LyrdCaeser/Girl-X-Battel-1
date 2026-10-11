@@ -4,12 +4,11 @@ import hashlib
 import hmac
 import re
 import secrets
-import sqlite3
 import threading
 import time
 from pathlib import Path
 
-from . import live_service
+from . import live_service, database
 
 ROOT = Path(__file__).resolve().parents[1]
 DB_PATH = ROOT / "state" / "auth.sqlite3"
@@ -20,60 +19,7 @@ USERNAME_RE = re.compile(r"^[A-Za-z0-9_.-]{4,24}$")
 
 
 def _db():
-    DB_PATH.parent.mkdir(parents=True, exist_ok=True)
-    db = sqlite3.connect(DB_PATH, timeout=15)
-    db.row_factory = sqlite3.Row
-    db.execute("""CREATE TABLE IF NOT EXISTS accounts(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        uid TEXT UNIQUE,
-        username TEXT NOT NULL UNIQUE COLLATE NOCASE,
-        email TEXT NOT NULL DEFAULT '',
-        password_hash TEXT NOT NULL,
-        salt TEXT NOT NULL,
-        status TEXT NOT NULL DEFAULT 'active',
-        created_at INTEGER NOT NULL,
-        last_login INTEGER NOT NULL DEFAULT 0
-    )""")
-    db.execute("""CREATE UNIQUE INDEX IF NOT EXISTS idx_accounts_email
-                  ON accounts(email COLLATE NOCASE) WHERE email <> ''""")
-    cols = {row[1] for row in db.execute("PRAGMA table_info(accounts)")}
-    if "ban_reason" not in cols:
-        db.execute("ALTER TABLE accounts ADD COLUMN ban_reason TEXT NOT NULL DEFAULT ''")
-    db.execute("""CREATE TABLE IF NOT EXISTS sessions(
-        token_hash TEXT PRIMARY KEY,
-        account_id INTEGER NOT NULL,
-        server_id TEXT NOT NULL,
-        created_at INTEGER NOT NULL,
-        expires_at INTEGER NOT NULL,
-        last_seen INTEGER NOT NULL,
-        FOREIGN KEY(account_id) REFERENCES accounts(id) ON DELETE CASCADE
-    )""")
-    session_cols = {row[1] for row in db.execute("PRAGMA table_info(sessions)")}
-    if "session_id" not in session_cols:
-        db.execute("ALTER TABLE sessions ADD COLUMN session_id TEXT NOT NULL DEFAULT ''")
-    if "user_agent" not in session_cols:
-        db.execute("ALTER TABLE sessions ADD COLUMN user_agent TEXT NOT NULL DEFAULT ''")
-    if "remote_addr" not in session_cols:
-        db.execute("ALTER TABLE sessions ADD COLUMN remote_addr TEXT NOT NULL DEFAULT ''")
-    for old in db.execute("SELECT rowid FROM sessions WHERE session_id='' OR session_id IS NULL").fetchall():
-        db.execute("UPDATE sessions SET session_id=? WHERE rowid=?", ("SES-" + secrets.token_hex(8).upper(), old[0]))
-    db.execute("CREATE UNIQUE INDEX IF NOT EXISTS idx_sessions_session_id ON sessions(session_id)")
-    db.execute("""CREATE TABLE IF NOT EXISTS recovery_codes(
-        account_id INTEGER PRIMARY KEY,
-        code_hash TEXT NOT NULL,
-        created_at INTEGER NOT NULL,
-        used_at INTEGER NOT NULL DEFAULT 0,
-        FOREIGN KEY(account_id) REFERENCES accounts(id) ON DELETE CASCADE
-    )""")
-    db.execute("""CREATE TABLE IF NOT EXISTS login_attempts(
-        bucket TEXT PRIMARY KEY,
-        count INTEGER NOT NULL,
-        first_at INTEGER NOT NULL,
-        blocked_until INTEGER NOT NULL DEFAULT 0
-    )""")
-    db.commit()
-    return db
-
+    return database.connect(DB_PATH, "auth")
 
 def _hash_password(password: str, salt: bytes) -> str:
     return hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), salt, PBKDF2_ROUNDS).hex()
