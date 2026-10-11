@@ -152,7 +152,65 @@ def ensure_schema(pg):
             updated_at BIGINT NOT NULL,
             PRIMARY KEY(uid, server_id)
         )""")
+        c.execute("""CREATE TABLE IF NOT EXISTS player_profiles(
+            uid TEXT NOT NULL,
+            server_id TEXT NOT NULL,
+            data TEXT NOT NULL,
+            clock_floor BIGINT NOT NULL DEFAULT 0,
+            updated_at BIGINT NOT NULL,
+            PRIMARY KEY(uid, server_id)
+        )""")
+        c.execute("""CREATE TABLE IF NOT EXISTS player_battles(
+            uid TEXT NOT NULL,
+            server_id TEXT NOT NULL,
+            id BIGINT NOT NULL,
+            stage BIGINT,
+            report TEXT NOT NULL,
+            PRIMARY KEY(uid, server_id, id)
+        )""")
 
+
+
+def player_save_records(state_dir):
+    profiles = []
+    battles = []
+    root = state_dir / "players"
+    if not root.exists():
+        return profiles, battles
+    for uid_dir in root.iterdir():
+        if not uid_dir.is_dir():
+            continue
+        uid = uid_dir.name
+        for db_path in uid_dir.glob("*.sqlite3"):
+            server_id = db_path.stem.upper()
+            db = sqlite3.connect(db_path)
+            db.row_factory = sqlite3.Row
+            try:
+                profile = db.execute("SELECT data FROM profile WHERE id=1").fetchone()
+                if not profile:
+                    continue
+                clock = db.execute("SELECT floor FROM clock WHERE id=1").fetchone()
+                profiles.append({
+                    "uid": uid,
+                    "server_id": server_id,
+                    "data": profile["data"],
+                    "clock_floor": int(clock["floor"]) if clock else 0,
+                    "updated_at": int(db_path.stat().st_mtime),
+                })
+                try:
+                    for row in db.execute("SELECT id,stage,report FROM battles"):
+                        battles.append({
+                            "uid": uid,
+                            "server_id": server_id,
+                            "id": int(row["id"]),
+                            "stage": int(row["stage"]) if row["stage"] is not None else None,
+                            "report": row["report"],
+                        })
+                except sqlite3.OperationalError:
+                    pass
+            finally:
+                db.close()
+    return profiles, battles
 
 def main():
     ap = argparse.ArgumentParser(description="Migrate GXB3 auth/live-service SQLite data to PostgreSQL")
@@ -164,6 +222,7 @@ def main():
     auth_path = args.state_dir / "auth.sqlite3"
     live_path = args.state_dir / "live_service.sqlite3"
 
+    player_profiles, player_battles = player_save_records(args.state_dir)
     source = {
         "accounts": rows(auth_path, "accounts"),
         "sessions": rows(auth_path, "sessions"),
@@ -176,6 +235,8 @@ def main():
         "audit": rows(live_path, "audit"),
         "presence": rows(live_path, "presence"),
         "leaderboard": rows(live_path, "leaderboard"),
+        "player_profiles": player_profiles,
+        "player_battles": player_battles,
     }
 
     if args.dry_run:
@@ -197,6 +258,8 @@ def main():
         inserted["audit"] = insert_many(pg, "audit", source["audit"], ["id"])
         inserted["presence"] = insert_many(pg, "presence", source["presence"], ["uid", "server_id"])
         inserted["leaderboard"] = insert_many(pg, "leaderboard", source["leaderboard"], ["uid", "server_id"])
+        inserted["player_profiles"] = insert_many(pg, "player_profiles", source["player_profiles"], ["uid", "server_id"])
+        inserted["player_battles"] = insert_many(pg, "player_battles", source["player_battles"], ["uid", "server_id", "id"])
 
         with pg.cursor() as cur:
             cur.execute("SELECT COALESCE(MAX(id),0)+1 AS n FROM accounts")
