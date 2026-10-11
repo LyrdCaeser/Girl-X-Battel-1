@@ -720,6 +720,16 @@ class Engine:
                    {'key': 'exam', 'label': 'House Exams season ends', 'at': (state.get('house_exam_info') or {}).get('season_end', 0)}]
         state['calendar_info'] = game_calendar.snapshot(self.now(), _resets)
         state['bots_info'] = bots.snapshot(state, player_level(state), self.now())  # simulated players: rankings and chat (LOCAL-085)
+        if not self.developer:
+            try:
+                state['power'] = self._friend_power(state)
+                live_service.touch_presence(state['uid'], state['server_id'], state['name'], state['level'], state['power'])
+                state['online_count'] = len(live_service.online_players(state['server_id']))
+                state['leaderboard_preview'] = live_service.leaderboard(state['server_id'], 20)
+            except Exception:
+                state['power'] = int(state.get('power', 0))
+                state['online_count'] = 0
+                state['leaderboard_preview'] = []
         return state
 
     def tower_info(self, state):
