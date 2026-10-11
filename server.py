@@ -258,6 +258,20 @@ class HTTPHandler(BaseHTTPRequestHandler):
             server_id = (query.get('server_id') or [ctx['account']['server_id']])[0]
             limit = int((query.get('limit') or ['100'])[0])
             return self.send(200, {'server_id': server_id, 'ranking': live_service.leaderboard(server_id, limit)})
+        if path == '/api/world-guild':
+            ctx = self.auth_context(); account = ctx['account']
+            return self.send(200, {
+                'guild': live_service.guild_for_player(account['uid'], account['server_id']),
+                'guilds': live_service.world_guilds(account['server_id']),
+            })
+        if path == '/api/pvp/status':
+            ctx = self.auth_context(); account = ctx['account']
+            query = parse_qs(parsed.query)
+            mode = (query.get('mode') or [''])[0]
+            return self.send(200, {
+                'pvp': live_service.pvp_status(account['uid'], account['server_id'], mode),
+                'history': live_service.pvp_history(account['uid'], 20),
+            })
         if path == '/api/admin/config':
             if not self.admin_authorized():
                 return self.send(403, {'error': 'QTV_KEY_REQUIRED'})
@@ -628,6 +642,39 @@ class HTTPHandler(BaseHTTPRequestHandler):
                 action = data.get('action')
                 if action not in ('approve','reject'): raise ValueError('Thao tác đơn hàng không hợp lệ')
                 return self.send(200, live_service.review_order(data.get('order_id'), action == 'approve', data.get('reward') or {}, 'SUPER_GM'))
+            if path == '/api/world-guild/action':
+                ctx = self.auth_context(); account = ctx['account']; player = ctx['player']
+                current = self.engine.snapshot()
+                power = int(current.get('power', 0)); action = str(data.get('action') or '')
+                if action == 'create':
+                    result = live_service.create_world_guild(account['uid'], account['server_id'], player['character_name'],
+                                                             data.get('name'), data.get('notice',''), power)
+                elif action == 'join':
+                    result = live_service.join_world_guild(account['uid'], account['server_id'], player['character_name'],
+                                                           data.get('guild_id'), power)
+                elif action == 'leave':
+                    result = live_service.leave_world_guild(account['uid'], account['server_id'])
+                else:
+                    raise ValueError('Thao tác Guild không hợp lệ')
+                return self.send(200, {'result': result,
+                                       'guild': live_service.guild_for_player(account['uid'], account['server_id']),
+                                       'guilds': live_service.world_guilds(account['server_id'])})
+            if path == '/api/pvp/queue':
+                ctx = self.auth_context(); account = ctx['account']; player = ctx['player']
+                current = self.engine.snapshot()
+                action = str(data.get('action') or 'join')
+                mode = str(data.get('mode') or 'arena')
+                if action == 'join':
+                    result = live_service.enqueue_pvp(account['uid'], account['server_id'], player['character_name'],
+                                                      mode, int(current.get('power',0)))
+                elif action == 'cancel':
+                    result = live_service.cancel_pvp(account['uid'], account['server_id'], mode)
+                else:
+                    raise ValueError('Thao tác hàng chờ PvP không hợp lệ')
+                return self.send(200, result)
+            if path == '/api/pvp/match/activate':
+                ctx = self.auth_context(); account = ctx['account']
+                return self.send(200, {'match': live_service.activate_pvp_match(data.get('match_id'), account['uid'])})
             if path == '/api/order/create':
                 state = self.engine.snapshot()
                 return self.send(200, live_service.create_order(state.get('uid'), state.get('server_id'), state.get('name'), data.get('package'), data.get('note','')))
