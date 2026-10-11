@@ -77,5 +77,18 @@
   "Join the queue to find another online player.": "加入队列以寻找其他在线玩家。",
   "Find Match": "开始匹配",
   "Recent Matches": "最近比赛",
-  "Realtime peers": "实时连接"
+  "Realtime peers": "实时连接",
+  "Season": "赛季",
+  "Wins": "胜",
+  "Losses": "负",
+  "Matches": "场次",
+  "Start Battle": "开始战斗",
+  "Server is simulating battle…": "服务器正在模拟战斗…",
+  "The server loads both saved teams and simulates the result. The client cannot submit a winner.": "服务器读取双方已保存阵容并自行模拟结果，客户端不能提交胜负。",
+  "Season Ranking": "赛季排行",
+  "Victory": "胜利",
+  "Defeat": "失败",
+  "Rating": "PvP 评分",
+  "Rounds": "回合数",
+  "Back to PvP": "返回 PvP"
 }
