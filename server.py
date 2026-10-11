@@ -675,6 +675,12 @@ class HTTPHandler(BaseHTTPRequestHandler):
             if path == '/api/pvp/match/activate':
                 ctx = self.auth_context(); account = ctx['account']
                 return self.send(200, {'match': live_service.activate_pvp_match(data.get('match_id'), account['uid'])})
+            if path == '/api/pvp/match/heartbeat':
+                ctx = self.auth_context(); account = ctx['account']
+                return self.send(200, live_service.heartbeat_pvp_match(data.get('match_id'), account['uid'], data.get('ready', True)))
+            if path == '/api/pvp/match/session':
+                ctx = self.auth_context(); account = ctx['account']
+                return self.send(200, live_service.pvp_match_session(data.get('match_id'), account['uid']))
             if path == '/api/order/create':
                 state = self.engine.snapshot()
                 return self.send(200, live_service.create_order(state.get('uid'), state.get('server_id'), state.get('name'), data.get('package'), data.get('note','')))
