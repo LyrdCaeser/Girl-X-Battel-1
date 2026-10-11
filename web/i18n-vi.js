@@ -292,7 +292,7 @@
     if (value === undefined || value === null) return value;
     return translateText(String(value)).trim();
   }};
-  document.documentElement.lang = 'vi';
+  if (!window.GxbLocale || GxbLocale.current() === 'vi') document.documentElement.lang = 'vi';
   document.title = 'Nữ Thần Chiến Đấu - GXB 3';
   const run = () => {
     if (window.GxbLocale && GxbLocale.current() !== 'vi') return;
@@ -314,11 +314,13 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run, {once:true});
   else run();
 
-  const observer = new MutationObserver(records => {
-    for (const r of records) {
-      for (const n of r.addedNodes) translateNode(n);
-      if (r.type === 'characterData') translateNode(r.target);
-    }
-  });
-  observer.observe(document.documentElement, {subtree:true, childList:true, characterData:true});
+  if (!window.GxbLocale || GxbLocale.current() === 'vi') {
+    const observer = new MutationObserver(records => {
+      for (const r of records) {
+        for (const n of r.addedNodes) translateNode(n);
+        if (r.type === 'characterData') translateNode(r.target);
+      }
+    });
+    observer.observe(document.documentElement, {subtree:true, childList:true, characterData:true});
+  }
 })();
