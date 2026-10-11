@@ -296,6 +296,113 @@ def _ensure_live(db):
         )""")
         db.execute("CREATE INDEX IF NOT EXISTS idx_presence_server_seen ON presence(server_id,last_seen DESC)")
         db.execute("CREATE INDEX IF NOT EXISTS idx_leaderboard_server_power ON leaderboard(server_id,power DESC,level DESC)")
+    db.execute("""CREATE TABLE IF NOT EXISTS world_guilds(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        server_id TEXT NOT NULL,
+        name TEXT NOT NULL,
+        notice TEXT NOT NULL DEFAULT '',
+        owner_uid TEXT NOT NULL,
+        level INTEGER NOT NULL DEFAULT 1,
+        exp INTEGER NOT NULL DEFAULT 0,
+        created_at INTEGER NOT NULL,
+        UNIQUE(server_id,name)
+    )""")
+    db.execute("""CREATE TABLE IF NOT EXISTS world_guild_members(
+        guild_id INTEGER NOT NULL,
+        uid TEXT NOT NULL,
+        server_id TEXT NOT NULL,
+        character_name TEXT NOT NULL,
+        role TEXT NOT NULL DEFAULT 'member',
+        power INTEGER NOT NULL DEFAULT 0,
+        joined_at INTEGER NOT NULL,
+        last_seen INTEGER NOT NULL,
+        PRIMARY KEY(uid,server_id),
+        UNIQUE(guild_id,uid),
+        FOREIGN KEY(guild_id) REFERENCES world_guilds(id) ON DELETE CASCADE
+    )""")
+    db.execute("""CREATE TABLE IF NOT EXISTS pvp_queue(
+        uid TEXT NOT NULL,
+        server_id TEXT NOT NULL,
+        character_name TEXT NOT NULL,
+        mode TEXT NOT NULL,
+        power INTEGER NOT NULL DEFAULT 0,
+        joined_at INTEGER NOT NULL,
+        status TEXT NOT NULL DEFAULT 'waiting',
+        PRIMARY KEY(uid,server_id,mode)
+    )""")
+    db.execute("""CREATE TABLE IF NOT EXISTS pvp_matches(
+        id TEXT PRIMARY KEY,
+        mode TEXT NOT NULL,
+        server_id TEXT NOT NULL,
+        player_a TEXT NOT NULL,
+        player_b TEXT NOT NULL,
+        name_a TEXT NOT NULL,
+        name_b TEXT NOT NULL,
+        power_a INTEGER NOT NULL DEFAULT 0,
+        power_b INTEGER NOT NULL DEFAULT 0,
+        status TEXT NOT NULL DEFAULT 'ready',
+        winner_uid TEXT NOT NULL DEFAULT '',
+        created_at INTEGER NOT NULL,
+        resolved_at INTEGER NOT NULL DEFAULT 0,
+        seed INTEGER NOT NULL DEFAULT 0
+    )""")
+    db.execute("CREATE INDEX IF NOT EXISTS idx_world_guilds_server ON world_guilds(server_id,level DESC,exp DESC)")
+    db.execute("CREATE INDEX IF NOT EXISTS idx_world_guild_members_guild ON world_guild_members(guild_id,role,joined_at)")
+    db.execute("CREATE INDEX IF NOT EXISTS idx_pvp_queue_wait ON pvp_queue(mode,status,server_id,power,joined_at)")
+    db.execute("CREATE INDEX IF NOT EXISTS idx_pvp_matches_players ON pvp_matches(player_a,player_b,created_at DESC)")
+        db.execute("""CREATE TABLE IF NOT EXISTS world_guilds(
+            id BIGSERIAL PRIMARY KEY,
+            server_id TEXT NOT NULL,
+            name TEXT NOT NULL,
+            notice TEXT NOT NULL DEFAULT '',
+            owner_uid TEXT NOT NULL,
+            level INTEGER NOT NULL DEFAULT 1,
+            exp BIGINT NOT NULL DEFAULT 0,
+            created_at BIGINT NOT NULL,
+            UNIQUE(server_id,name)
+        )""")
+        db.execute("""CREATE TABLE IF NOT EXISTS world_guild_members(
+            guild_id BIGINT NOT NULL REFERENCES world_guilds(id) ON DELETE CASCADE,
+            uid TEXT NOT NULL,
+            server_id TEXT NOT NULL,
+            character_name TEXT NOT NULL,
+            role TEXT NOT NULL DEFAULT 'member',
+            power BIGINT NOT NULL DEFAULT 0,
+            joined_at BIGINT NOT NULL,
+            last_seen BIGINT NOT NULL,
+            PRIMARY KEY(uid,server_id),
+            UNIQUE(guild_id,uid)
+        )""")
+        db.execute("""CREATE TABLE IF NOT EXISTS pvp_queue(
+            uid TEXT NOT NULL,
+            server_id TEXT NOT NULL,
+            character_name TEXT NOT NULL,
+            mode TEXT NOT NULL,
+            power BIGINT NOT NULL DEFAULT 0,
+            joined_at BIGINT NOT NULL,
+            status TEXT NOT NULL DEFAULT 'waiting',
+            PRIMARY KEY(uid,server_id,mode)
+        )""")
+        db.execute("""CREATE TABLE IF NOT EXISTS pvp_matches(
+            id TEXT PRIMARY KEY,
+            mode TEXT NOT NULL,
+            server_id TEXT NOT NULL,
+            player_a TEXT NOT NULL,
+            player_b TEXT NOT NULL,
+            name_a TEXT NOT NULL,
+            name_b TEXT NOT NULL,
+            power_a BIGINT NOT NULL DEFAULT 0,
+            power_b BIGINT NOT NULL DEFAULT 0,
+            status TEXT NOT NULL DEFAULT 'ready',
+            winner_uid TEXT NOT NULL DEFAULT '',
+            created_at BIGINT NOT NULL,
+            resolved_at BIGINT NOT NULL DEFAULT 0,
+            seed BIGINT NOT NULL DEFAULT 0
+        )""")
+        db.execute("CREATE INDEX IF NOT EXISTS idx_world_guilds_server ON world_guilds(server_id,level DESC,exp DESC)")
+        db.execute("CREATE INDEX IF NOT EXISTS idx_world_guild_members_guild ON world_guild_members(guild_id,role,joined_at)")
+        db.execute("CREATE INDEX IF NOT EXISTS idx_pvp_queue_wait ON pvp_queue(mode,status,server_id,power,joined_at)")
+        db.execute("CREATE INDEX IF NOT EXISTS idx_pvp_matches_players ON pvp_matches(player_a,player_b,created_at DESC)")
         db.execute("""INSERT INTO worlds(server_id,name,status,created_at,registration_open,character_creation_open,message)
                       VALUES('S1','Server 1','online',?,1,1,'')
                       ON CONFLICT(server_id) DO NOTHING""", (int(__import__("time").time()),))
