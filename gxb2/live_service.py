@@ -5,7 +5,7 @@ import time
 import uuid
 from pathlib import Path
 
-from . import database
+from . import database, topup
 
 ROOT = Path(__file__).resolve().parents[1]
 PVP_SEASON_REWARDS = json.loads((ROOT / 'data/pvp_season_rewards.json').read_text())
@@ -160,13 +160,29 @@ def create_order(uid,server_id,character_name,package,note=""):
     if target["status"]=="banned": raise ValueError("Tài khoản đang bị khóa")
     if target["character_name"].casefold()!=str(character_name or '').strip().casefold():
         raise ValueError("Tên Nhân Vật không khớp UID + Server")
+    requested=str(package or '').strip()
+    pkg=topup.package(requested)
+    note=str(note or '')[:500]
+    if not pkg:
+        custom=topup.package("CUSTOM")
+        if not custom or not custom.get("manual_reward"):
+            raise ValueError("Gói nạp không tồn tại hoặc đang tạm khóa")
+        pkg=custom
+        if requested and requested.upper()!="CUSTOM":
+            note=(f"Yêu cầu gói: {requested}\n"+note)[:500]
     oid="ORD-"+uuid.uuid4().hex[:14].upper(); now=int(time.time())
+    expected={str(k):int(v) for k,v in (pkg.get("reward") or {}).items() if int(v)>0}
     with _lock:
         db=_db()
-        db.execute("""INSERT INTO orders(id,uid,server_id,character_name,package,note,status,reward,created_at)
-                      VALUES(?,?,?,?,?,?,'pending','{}',?)""",
-                   (oid,str(uid),str(server_id).upper(),target["character_name"],str(package or '')[:120],str(note or '')[:500],now))
-        _audit(db,"order.create",f"{server_id}:{uid}",{"order_id":oid,"package":package},"PLAYER")
+        db.execute("""INSERT INTO orders(
+                      id,uid,server_id,character_name,package,package_name,price_label,manual_reward,
+                      note,status,reward,created_at)
+                      VALUES(?,?,?,?,?,?,?,?,?,'pending',?,?)""",
+                   (oid,str(uid),str(server_id).upper(),target["character_name"],pkg["id"],pkg["name"],
+                    pkg.get("price_label",""),1 if pkg.get("manual_reward") else 0,note,
+                    json.dumps(expected,ensure_ascii=False),now))
+        _audit(db,"order.create",f"{server_id}:{uid}",
+               {"order_id":oid,"package":pkg["id"],"package_name":pkg["name"],"manual_reward":bool(pkg.get("manual_reward"))},"PLAYER")
         db.commit(); db.close()
     return order(oid)
 
@@ -198,20 +214,26 @@ def review_order(order_id,approve,reward=None,reviewer="GM"):
         if row["status"]!="pending": db.rollback();db.close();raise ValueError("Đơn đã được xử lý")
         clean={}
         if approve:
-            if not isinstance(reward,dict): raise ValueError("reward phải là object")
-            for k,v in reward.items():
+            manual=bool(int(row["manual_reward"] or 0))
+            source=reward if manual else json.loads(row["reward"] or "{}")
+            if not isinstance(source,dict): source={}
+            for k,v in source.items():
                 item=str(int(k)); amount=int(v)
-                if amount<0 or amount>2_000_000_000: raise ValueError("Số lượng vật phẩm không hợp lệ")
+                if amount<0 or amount>2_000_000_000:
+                    db.rollback();db.close();raise ValueError("Số lượng vật phẩm không hợp lệ")
                 if amount: clean[item]=amount
-            if not clean: db.rollback();db.close();raise ValueError("Đơn duyệt phải có reward")
+            if not clean:
+                db.rollback();db.close()
+                raise ValueError("Đơn duyệt phải có reward")
         status="approved" if approve else "rejected"; now=int(time.time())
         db.execute("UPDATE orders SET status=?,reward=?,reviewed_at=?,reviewer=? WHERE id=?",
                    (status,json.dumps(clean),now,reviewer,order_id))
-        _audit(db,"order."+status,f"{row['server_id']}:{row['uid']}",{"order_id":order_id,"reward":clean},reviewer)
+        _audit(db,"order."+status,f"{row['server_id']}:{row['uid']}",
+               {"order_id":order_id,"package":row["package"],"reward":clean},reviewer)
         db.commit(); db.close()
     if approve:
         send_mail(row["uid"],row["server_id"],row["character_name"],"Nạp thành công",
-                  f"Đơn {order_id} đã được QTV duyệt.",clean,reviewer)
+                  f"Đơn {order_id} · {row['package_name'] or row['package']} đã được QTV duyệt.",clean,reviewer)
     return order(order_id)
 
 
