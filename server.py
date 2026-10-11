@@ -696,8 +696,8 @@ class HTTPHandler(BaseHTTPRequestHandler):
                     result = live_service.create_world_guild(account['uid'], account['server_id'], player['character_name'],
                                                              data.get('name'), data.get('notice',''), power)
                 elif action == 'join':
-                    result = live_service.join_world_guild(account['uid'], account['server_id'], player['character_name'],
-                                                           data.get('guild_id'), power)
+                    result = live_service.apply_world_guild(account['uid'], account['server_id'], player['character_name'],
+                                                            data.get('guild_id'), power)
                 elif action == 'leave':
                     result = live_service.leave_world_guild(account['uid'], account['server_id'])
                 else:
