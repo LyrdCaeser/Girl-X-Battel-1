@@ -331,6 +331,9 @@ class Engine:
                 'level': player_level(state),
                 'power': int(power),
                 'team': team[:6],
+                'pet': self.battle_pet(state),
+                'guild_skills': guild_lab.skills(state),
+                'chime_bonus': chimes.bonus(state),
             }
 
     def claim_live_mail(self, mail_id):
