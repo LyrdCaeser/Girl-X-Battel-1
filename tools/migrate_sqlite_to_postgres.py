@@ -9,7 +9,7 @@ from psycopg.rows import dict_row
 
 
 AUTH_TABLES = ["accounts", "sessions", "recovery_codes", "login_attempts"]
-LIVE_TABLES = ["worlds", "players", "mail", "orders", "audit", "presence", "leaderboard", "world_guilds", "world_guild_members", "pvp_queue", "pvp_matches", "pvp_match_peers", "pvp_ratings"]
+LIVE_TABLES = ["worlds", "players", "mail", "orders", "audit", "presence", "leaderboard", "world_guilds", "world_guild_members", "world_guild_applications", "world_guild_chat", "world_guild_mail", "guild_wars", "pvp_queue", "pvp_matches", "pvp_match_peers", "pvp_ratings", "pvp_season_claims"]
 
 
 def rows(path, table):
@@ -175,6 +175,45 @@ def ensure_schema(pg):
             PRIMARY KEY(uid,server_id),
             UNIQUE(guild_id,uid)
         )""")
+        c.execute("""CREATE TABLE IF NOT EXISTS world_guild_applications(
+            guild_id BIGINT NOT NULL REFERENCES world_guilds(id) ON DELETE CASCADE,
+            uid TEXT NOT NULL,
+            server_id TEXT NOT NULL,
+            character_name TEXT NOT NULL,
+            power BIGINT NOT NULL DEFAULT 0,
+            created_at BIGINT NOT NULL,
+            status TEXT NOT NULL DEFAULT 'pending',
+            PRIMARY KEY(guild_id,uid)
+        )""")
+        c.execute("""CREATE TABLE IF NOT EXISTS world_guild_chat(
+            id BIGSERIAL PRIMARY KEY,
+            guild_id BIGINT NOT NULL REFERENCES world_guilds(id) ON DELETE CASCADE,
+            uid TEXT NOT NULL,
+            character_name TEXT NOT NULL,
+            message TEXT NOT NULL,
+            created_at BIGINT NOT NULL
+        )""")
+        c.execute("""CREATE TABLE IF NOT EXISTS world_guild_mail(
+            id TEXT PRIMARY KEY,
+            guild_id BIGINT NOT NULL REFERENCES world_guilds(id) ON DELETE CASCADE,
+            sender_uid TEXT NOT NULL,
+            title TEXT NOT NULL,
+            body TEXT NOT NULL,
+            created_at BIGINT NOT NULL
+        )""")
+        c.execute("""CREATE TABLE IF NOT EXISTS guild_wars(
+            id TEXT PRIMARY KEY,
+            server_id TEXT NOT NULL,
+            guild_a BIGINT NOT NULL REFERENCES world_guilds(id) ON DELETE CASCADE,
+            guild_b BIGINT NOT NULL REFERENCES world_guilds(id) ON DELETE CASCADE,
+            score_a BIGINT NOT NULL DEFAULT 0,
+            score_b BIGINT NOT NULL DEFAULT 0,
+            status TEXT NOT NULL DEFAULT 'scheduled',
+            starts_at BIGINT NOT NULL,
+            ends_at BIGINT NOT NULL,
+            winner_guild BIGINT NOT NULL DEFAULT 0,
+            created_at BIGINT NOT NULL
+        )""")
         c.execute("""CREATE TABLE IF NOT EXISTS pvp_queue(
             uid TEXT NOT NULL,
             server_id TEXT NOT NULL,
@@ -218,6 +257,16 @@ def ensure_schema(pg):
             losses INTEGER NOT NULL DEFAULT 0,
             matches INTEGER NOT NULL DEFAULT 0,
             updated_at BIGINT NOT NULL,
+            PRIMARY KEY(uid,server_id,mode,season_id)
+        )""")
+        c.execute("""CREATE TABLE IF NOT EXISTS pvp_season_claims(
+            uid TEXT NOT NULL,
+            server_id TEXT NOT NULL,
+            mode TEXT NOT NULL,
+            season_id TEXT NOT NULL,
+            rating INTEGER NOT NULL,
+            reward TEXT NOT NULL,
+            claimed_at BIGINT NOT NULL,
             PRIMARY KEY(uid,server_id,mode,season_id)
         )""")
         c.execute("""CREATE TABLE IF NOT EXISTS pvp_match_peers(
@@ -312,10 +361,15 @@ def main():
         "leaderboard": rows(live_path, "leaderboard"),
         "world_guilds": rows(live_path, "world_guilds"),
         "world_guild_members": rows(live_path, "world_guild_members"),
+        "world_guild_applications": rows(live_path, "world_guild_applications"),
+        "world_guild_chat": rows(live_path, "world_guild_chat"),
+        "world_guild_mail": rows(live_path, "world_guild_mail"),
+        "guild_wars": rows(live_path, "guild_wars"),
         "pvp_queue": rows(live_path, "pvp_queue"),
         "pvp_matches": rows(live_path, "pvp_matches"),
         "pvp_match_peers": rows(live_path, "pvp_match_peers"),
         "pvp_ratings": rows(live_path, "pvp_ratings"),
+        "pvp_season_claims": rows(live_path, "pvp_season_claims"),
         "player_profiles": player_profiles,
         "player_battles": player_battles,
     }
@@ -341,10 +395,15 @@ def main():
         inserted["leaderboard"] = insert_many(pg, "leaderboard", source["leaderboard"], ["uid", "server_id"])
         inserted["world_guilds"] = insert_many(pg, "world_guilds", source["world_guilds"], ["id"])
         inserted["world_guild_members"] = insert_many(pg, "world_guild_members", source["world_guild_members"], ["uid", "server_id"])
+        inserted["world_guild_applications"] = insert_many(pg, "world_guild_applications", source["world_guild_applications"], ["guild_id", "uid"])
+        inserted["world_guild_chat"] = insert_many(pg, "world_guild_chat", source["world_guild_chat"], ["id"])
+        inserted["world_guild_mail"] = insert_many(pg, "world_guild_mail", source["world_guild_mail"], ["id"])
+        inserted["guild_wars"] = insert_many(pg, "guild_wars", source["guild_wars"], ["id"])
         inserted["pvp_queue"] = insert_many(pg, "pvp_queue", source["pvp_queue"], ["uid", "server_id", "mode"])
         inserted["pvp_matches"] = insert_many(pg, "pvp_matches", source["pvp_matches"], ["id"])
         inserted["pvp_match_peers"] = insert_many(pg, "pvp_match_peers", source["pvp_match_peers"], ["match_id", "uid"])
         inserted["pvp_ratings"] = insert_many(pg, "pvp_ratings", source["pvp_ratings"], ["uid", "server_id", "mode", "season_id"])
+        inserted["pvp_season_claims"] = insert_many(pg, "pvp_season_claims", source["pvp_season_claims"], ["uid", "server_id", "mode", "season_id"])
         inserted["player_profiles"] = insert_many(pg, "player_profiles", source["player_profiles"], ["uid", "server_id"])
         inserted["player_battles"] = insert_many(pg, "player_battles", source["player_battles"], ["uid", "server_id", "id"])
 
@@ -358,6 +417,9 @@ def main():
             cur.execute("SELECT COALESCE(MAX(id),0)+1 AS n FROM world_guilds")
             next_guild = cur.fetchone()["n"]
             cur.execute("SELECT setval(pg_get_serial_sequence('world_guilds','id'), %s, false)", (next_guild,))
+            cur.execute("SELECT COALESCE(MAX(id),0)+1 AS n FROM world_guild_chat")
+            next_chat = cur.fetchone()["n"]
+            cur.execute("SELECT setval(pg_get_serial_sequence('world_guild_chat','id'), %s, false)", (next_chat,))
         pg.commit()
 
     for table, count in inserted.items():
