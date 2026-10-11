@@ -723,3 +723,265 @@ def pvp_match_result(match_id, uid):
             try: out[key]=json.loads(out.get(key) or "{}")
             except Exception: out[key]={}
         db.close(); return out
+
+
+def _guild_member(db, uid, server_id):
+    row=db.execute("""SELECT m.*,g.owner_uid,g.name AS guild_name,g.server_id AS guild_server
+                      FROM world_guild_members m
+                      JOIN world_guilds g ON g.id=m.guild_id
+                      WHERE m.uid=? AND m.server_id=?""",
+                   (str(uid),str(server_id).upper())).fetchone()
+    return dict(row) if row else None
+
+
+def _require_guild_role(db, uid, server_id, allowed):
+    member=_guild_member(db,uid,server_id)
+    if not member: raise ValueError("Bạn chưa ở trong Guild")
+    if member["role"] not in tuple(allowed):
+        raise ValueError("Bạn không có quyền thực hiện thao tác này")
+    return member
+
+
+def apply_world_guild(uid, server_id, character_name, guild_id, power=0):
+    uid=str(uid or '').strip(); server_id=str(server_id or '').strip().upper()
+    character_name=str(character_name or '').strip(); guild_id=int(guild_id); now=int(time.time())
+    with _lock:
+        db=_db(); db.execute("BEGIN IMMEDIATE")
+        if db.execute("SELECT 1 FROM world_guild_members WHERE uid=? AND server_id=?",(uid,server_id)).fetchone():
+            db.rollback(); db.close(); raise ValueError("Bạn đã ở trong một Guild")
+        if not db.execute("SELECT 1 FROM world_guilds WHERE id=? AND server_id=?",(guild_id,server_id)).fetchone():
+            db.rollback(); db.close(); raise ValueError("Guild không tồn tại")
+        db.execute("""INSERT INTO world_guild_applications(guild_id,uid,server_id,character_name,power,created_at,status)
+                      VALUES(?,?,?,?,?,?,'pending')
+                      ON CONFLICT(guild_id,uid) DO UPDATE SET
+                        character_name=excluded.character_name,power=excluded.power,
+                        created_at=excluded.created_at,status='pending'""",
+                   (guild_id,uid,server_id,character_name,max(0,int(power)),now))
+        _audit(db,"guild.apply",f"{server_id}:{guild_id}",{"uid":uid},"PLAYER")
+        db.commit(); db.close()
+    return {"ok":True}
+
+
+def guild_applications(uid, server_id):
+    with _lock:
+        db=_db()
+        member=_require_guild_role(db,uid,server_id,("leader","deputy"))
+        rows=db.execute("""SELECT guild_id,uid,server_id,character_name,power,created_at,status
+                           FROM world_guild_applications
+                           WHERE guild_id=? AND status='pending'
+                           ORDER BY power DESC,created_at ASC""",(int(member["guild_id"]),)).fetchall()
+        out=[dict(r) for r in rows]; db.close(); return out
+
+
+def review_guild_application(operator_uid, server_id, applicant_uid, approve):
+    server_id=str(server_id or '').upper(); applicant_uid=str(applicant_uid or '')
+    with _lock:
+        db=_db(); db.execute("BEGIN IMMEDIATE")
+        member=_require_guild_role(db,operator_uid,server_id,("leader","deputy"))
+        app=db.execute("""SELECT * FROM world_guild_applications
+                          WHERE guild_id=? AND uid=? AND status='pending'""",
+                       (int(member["guild_id"]),applicant_uid)).fetchone()
+        if not app:
+            db.rollback(); db.close(); raise ValueError("Không tìm thấy đơn xin vào Guild")
+        status="approved" if approve else "rejected"
+        if approve:
+            if db.execute("SELECT 1 FROM world_guild_members WHERE uid=? AND server_id=?",(applicant_uid,server_id)).fetchone():
+                db.execute("UPDATE world_guild_applications SET status='rejected' WHERE guild_id=? AND uid=?",
+                           (int(member["guild_id"]),applicant_uid))
+                db.commit(); db.close(); raise ValueError("Người chơi đã ở Guild khác")
+            guild=db.execute("SELECT * FROM world_guilds WHERE id=?",(int(member["guild_id"]),)).fetchone()
+            count=int(db.execute("SELECT COUNT(*) AS c FROM world_guild_members WHERE guild_id=?",(int(member["guild_id"]),)).fetchone()["c"])
+            capacity=20+max(0,int(guild["level"])-1)*2
+            if count>=capacity:
+                db.rollback(); db.close(); raise ValueError("Guild đã đầy")
+            now=int(time.time())
+            db.execute("""INSERT INTO world_guild_members(guild_id,uid,server_id,character_name,role,power,joined_at,last_seen)
+                          VALUES(?,?,?,?, 'member',?,?,?)""",
+                       (int(member["guild_id"]),applicant_uid,server_id,app["character_name"],int(app["power"]),now,now))
+            db.execute("""UPDATE world_guild_applications SET status='approved'
+                          WHERE guild_id=? AND uid=?""",(int(member["guild_id"]),applicant_uid))
+            db.execute("""UPDATE world_guild_applications SET status='rejected'
+                          WHERE uid=? AND server_id=? AND status='pending' AND guild_id<>?""",
+                       (applicant_uid,server_id,int(member["guild_id"])))
+        else:
+            db.execute("""UPDATE world_guild_applications SET status='rejected'
+                          WHERE guild_id=? AND uid=?""",(int(member["guild_id"]),applicant_uid))
+        _audit(db,"guild.application."+status,f"{server_id}:{member['guild_id']}",
+               {"operator":operator_uid,"applicant":applicant_uid},"PLAYER")
+        db.commit(); db.close()
+    return {"ok":True,"status":status}
+
+
+def set_guild_role(operator_uid, server_id, target_uid, role):
+    role=str(role or '').lower()
+    if role not in ("member","deputy"): raise ValueError("Role Guild không hợp lệ")
+    with _lock:
+        db=_db(); db.execute("BEGIN IMMEDIATE")
+        operator=_require_guild_role(db,operator_uid,server_id,("leader",))
+        target=db.execute("""SELECT * FROM world_guild_members WHERE guild_id=? AND uid=?""",
+                          (int(operator["guild_id"]),str(target_uid))).fetchone()
+        if not target:
+            db.rollback(); db.close(); raise ValueError("Không tìm thấy thành viên")
+        if target["role"]=="leader":
+            db.rollback(); db.close(); raise ValueError("Không thể đổi role Leader bằng thao tác này")
+        db.execute("UPDATE world_guild_members SET role=? WHERE guild_id=? AND uid=?",
+                   (role,int(operator["guild_id"]),str(target_uid)))
+        _audit(db,"guild.role",f"{server_id}:{operator['guild_id']}",
+               {"operator":operator_uid,"target":target_uid,"role":role},"PLAYER")
+        db.commit(); db.close()
+    return {"ok":True,"role":role}
+
+
+def kick_guild_member(operator_uid, server_id, target_uid):
+    with _lock:
+        db=_db(); db.execute("BEGIN IMMEDIATE")
+        operator=_require_guild_role(db,operator_uid,server_id,("leader","deputy"))
+        target=db.execute("""SELECT * FROM world_guild_members WHERE guild_id=? AND uid=?""",
+                          (int(operator["guild_id"]),str(target_uid))).fetchone()
+        if not target:
+            db.rollback(); db.close(); raise ValueError("Không tìm thấy thành viên")
+        if target["role"]=="leader":
+            db.rollback(); db.close(); raise ValueError("Không thể kick Leader")
+        if operator["role"]=="deputy" and target["role"]=="deputy":
+            db.rollback(); db.close(); raise ValueError("Deputy không thể kick Deputy khác")
+        db.execute("DELETE FROM world_guild_members WHERE guild_id=? AND uid=?",
+                   (int(operator["guild_id"]),str(target_uid)))
+        _audit(db,"guild.kick",f"{server_id}:{operator['guild_id']}",
+               {"operator":operator_uid,"target":target_uid},"PLAYER")
+        db.commit(); db.close()
+    return {"ok":True}
+
+
+def transfer_guild_leader(operator_uid, server_id, target_uid):
+    with _lock:
+        db=_db(); db.execute("BEGIN IMMEDIATE")
+        operator=_require_guild_role(db,operator_uid,server_id,("leader",))
+        target=db.execute("""SELECT * FROM world_guild_members WHERE guild_id=? AND uid=?""",
+                          (int(operator["guild_id"]),str(target_uid))).fetchone()
+        if not target:
+            db.rollback(); db.close(); raise ValueError("Không tìm thấy thành viên")
+        if str(target_uid)==str(operator_uid):
+            db.rollback(); db.close(); raise ValueError("Bạn đã là Leader")
+        gid=int(operator["guild_id"])
+        db.execute("UPDATE world_guild_members SET role='member' WHERE guild_id=? AND uid=?",(gid,str(operator_uid)))
+        db.execute("UPDATE world_guild_members SET role='leader' WHERE guild_id=? AND uid=?",(gid,str(target_uid)))
+        db.execute("UPDATE world_guilds SET owner_uid=? WHERE id=?",(str(target_uid),gid))
+        _audit(db,"guild.transfer_leader",f"{server_id}:{gid}",
+               {"from":operator_uid,"to":target_uid},"PLAYER")
+        db.commit(); db.close()
+    return {"ok":True}
+
+
+def update_world_guild(uid, server_id, notice=None):
+    with _lock:
+        db=_db()
+        member=_require_guild_role(db,uid,server_id,("leader","deputy"))
+        if notice is None:
+            db.close(); raise ValueError("Không có dữ liệu cần cập nhật")
+        value=str(notice or '')[:180]
+        db.execute("UPDATE world_guilds SET notice=? WHERE id=?",(value,int(member["guild_id"])))
+        _audit(db,"guild.notice",f"{server_id}:{member['guild_id']}",{"uid":uid},"PLAYER")
+        db.commit(); db.close()
+    return guild_for_player(uid,server_id)
+
+
+def send_guild_chat(uid, server_id, character_name, message):
+    message=" ".join(str(message or '').strip().split())
+    if not 1<=len(message)<=280: raise ValueError("Tin nhắn phải dài 1–280 ký tự")
+    now=int(time.time())
+    with _lock:
+        db=_db()
+        member=_require_guild_role(db,uid,server_id,("leader","deputy","member"))
+        if db.backend=="postgres":
+            cur=db.execute("""INSERT INTO world_guild_chat(guild_id,uid,character_name,message,created_at)
+                              VALUES(?,?,?,?,?) RETURNING id""",
+                           (int(member["guild_id"]),str(uid),str(character_name)[:40],message,now))
+            mid=int(cur.fetchone()["id"])
+        else:
+            cur=db.execute("""INSERT INTO world_guild_chat(guild_id,uid,character_name,message,created_at)
+                              VALUES(?,?,?,?,?)""",
+                           (int(member["guild_id"]),str(uid),str(character_name)[:40],message,now))
+            mid=int(cur.lastrowid)
+        db.commit(); db.close()
+    return {"id":mid,"uid":str(uid),"character_name":str(character_name),"message":message,"created_at":now}
+
+
+def guild_chat(uid, server_id, limit=100):
+    with _lock:
+        db=_db()
+        member=_require_guild_role(db,uid,server_id,("leader","deputy","member"))
+        rows=db.execute("""SELECT id,uid,character_name,message,created_at
+                           FROM world_guild_chat WHERE guild_id=?
+                           ORDER BY id DESC LIMIT ?""",(int(member["guild_id"]),max(1,min(200,int(limit))))).fetchall()
+        out=[dict(r) for r in rows]; out.reverse(); db.close(); return out
+
+
+def send_guild_mail(uid, server_id, title, body):
+    title=str(title or '').strip()[:100]; body=str(body or '').strip()[:1500]
+    if not title or not body: raise ValueError("Tiêu đề và nội dung Guild Mail không được trống")
+    now=int(time.time()); mail_id="GMAIL-"+uuid.uuid4().hex[:14].upper()
+    with _lock:
+        db=_db(); db.execute("BEGIN IMMEDIATE")
+        member=_require_guild_role(db,uid,server_id,("leader","deputy"))
+        gid=int(member["guild_id"])
+        db.execute("""INSERT INTO world_guild_mail(id,guild_id,sender_uid,title,body,created_at)
+                      VALUES(?,?,?,?,?,?)""",(mail_id,gid,str(uid),title,body,now))
+        members=db.execute("SELECT uid,server_id,character_name FROM world_guild_members WHERE guild_id=?",(gid,)).fetchall()
+        for m in members:
+            personal_id="MAIL-"+uuid.uuid4().hex[:16].upper()
+            db.execute("""INSERT INTO mail(id,uid,server_id,character_name,title,body,attachments,status,created_at,operator)
+                          VALUES(?,?,?,?,?,?,?,'pending',?,'GUILD')""",
+                       (personal_id,m["uid"],m["server_id"],m["character_name"],title,body,"{}",now))
+        _audit(db,"guild.mail",f"{server_id}:{gid}",{"sender":uid,"mail_id":mail_id,"members":len(members)},"PLAYER")
+        db.commit(); db.close()
+    return {"id":mail_id,"sent":len(members)}
+
+
+def guild_ranking(server_id, limit=100):
+    with _lock:
+        db=_db()
+        rows=db.execute("""SELECT g.id,g.server_id,g.name,g.level,g.exp,g.owner_uid,
+                                  COUNT(m.uid) AS member_count,
+                                  COALESCE(SUM(m.power),0) AS total_power
+                           FROM world_guilds g
+                           LEFT JOIN world_guild_members m ON m.guild_id=g.id
+                           WHERE g.server_id=?
+                           GROUP BY g.id,g.server_id,g.name,g.level,g.exp,g.owner_uid
+                           ORDER BY total_power DESC,g.level DESC,g.exp DESC,g.created_at ASC LIMIT ?""",
+                        (str(server_id).upper(),max(1,min(200,int(limit))))).fetchall()
+        out=[]
+        for i,r in enumerate(rows,1):
+            d=dict(r); d["rank"]=i; out.append(d)
+        db.close(); return out
+
+
+def guild_wars(server_id, limit=50):
+    with _lock:
+        db=_db()
+        rows=db.execute("""SELECT w.*,ga.name AS guild_a_name,gb.name AS guild_b_name
+                           FROM guild_wars w
+                           JOIN world_guilds ga ON ga.id=w.guild_a
+                           JOIN world_guilds gb ON gb.id=w.guild_b
+                           WHERE w.server_id=?
+                           ORDER BY w.created_at DESC LIMIT ?""",
+                        (str(server_id).upper(),max(1,min(100,int(limit))))).fetchall()
+        out=[dict(r) for r in rows]; db.close(); return out
+
+
+def schedule_guild_war(operator_uid, server_id, opponent_guild_id, duration=86400):
+    now=int(time.time()); duration=max(3600,min(172800,int(duration)))
+    with _lock:
+        db=_db(); db.execute("BEGIN IMMEDIATE")
+        member=_require_guild_role(db,operator_uid,server_id,("leader","deputy"))
+        own=int(member["guild_id"]); other=int(opponent_guild_id)
+        if own==other:
+            db.rollback(); db.close(); raise ValueError("Không thể thách đấu chính Guild của mình")
+        if not db.execute("SELECT 1 FROM world_guilds WHERE id=? AND server_id=?",(other,str(server_id).upper())).fetchone():
+            db.rollback(); db.close(); raise ValueError("Guild đối thủ không tồn tại")
+        wid="GW-"+uuid.uuid4().hex[:14].upper()
+        db.execute("""INSERT INTO guild_wars(id,server_id,guild_a,guild_b,score_a,score_b,status,starts_at,ends_at,winner_guild,created_at)
+                      VALUES(?,?,?, ?,0,0,'scheduled',?,?,0,?)""",
+                   (wid,str(server_id).upper(),own,other,now+300,now+300+duration,now))
+        _audit(db,"guild.war.schedule",wid,{"guild_a":own,"guild_b":other,"operator":operator_uid},"PLAYER")
+        db.commit(); db.close()
+    return {"id":wid,"starts_at":now+300,"ends_at":now+300+duration}
