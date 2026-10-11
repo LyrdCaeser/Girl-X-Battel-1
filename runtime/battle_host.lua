@@ -74,11 +74,13 @@ if mode=='attrs'then
  for _,item in ipairs(input.partners or input)do local hero=Hero.new();hero:populate(item);hero.local_growth=item.local_growth;hero:setGuildInfo(input.guildSkills or {});if input.chimeBonus and hero.setChimeBonus then hero:setChimeBonus(input.chimeBonus) end;local a=env.xyd.models.heroAttr:attr(hero);local r={};for k,v in pairs(a)do if type(v)=='number'then r[k]=v end end;out[tostring(item.partner_id)]=r end
  print(json(out));return
 end
-local function team(rows)
+local function team(rows,guildSkills,chimeBonus)
  local out={}
  for _,item in ipairs(rows)do
   local hero=Hero.new()
   if item.isMonster then hero:populateWithTableID(item.table_id,item)else hero:populate(item);hero.local_growth=item.local_growth end
+  if hero.setGuildInfo then hero:setGuildInfo(guildSkills or {}) end
+  if chimeBonus and hero.setChimeBonus then hero:setChimeBonus(chimeBonus) end
   out[#out+1]=hero
  end
  return out
@@ -86,7 +88,17 @@ end
 -- Servant (ReportPet.populate: pet_id, grade, lv, skills[4], ex_lv) when the local save has one selected.
 local petA=nil
 if input.petA then petA=env.require('lib.battle.ReportPet').new();petA:populate(input.petA) end
-local r=Report.new({petA=petA,herosA=team(input.teamA),herosB=team(input.teamB),guildSkillsA=input.guildSkillsA or {},guildSkillsB={},battleID=input.battle_id,random_seed=input.random_seed,battle_type=input.battle_type or 1,god_skills=input.god_skills or {},shrineId=input.shrine_id,maxRound=input.max_round,galaxy_info=input.galaxy_info,chimeBonusA=input.chimeBonusA})
+local petB=nil
+if input.petB then petB=env.require('lib.battle.ReportPet').new();petB:populate(input.petB) end
+local r=Report.new({
+ petA=petA,petB=petB,
+ herosA=team(input.teamA,input.guildSkillsA,input.chimeBonusA),
+ herosB=team(input.teamB,input.guildSkillsB,input.chimeBonusB),
+ guildSkillsA=input.guildSkillsA or {},guildSkillsB=input.guildSkillsB or {},
+ battleID=input.battle_id,random_seed=input.random_seed,battle_type=input.battle_type or 1,
+ god_skills=input.god_skills or {},shrineId=input.shrine_id,maxRound=input.max_round,
+ galaxy_info=input.galaxy_info,chimeBonusA=input.chimeBonusA,chimeBonusB=input.chimeBonusB
+})
 r:run()
 local report=r:getReport();report.random_seed=input.random_seed
 if r.getTotalHarm then report.total_harm=r:getTotalHarm() end
