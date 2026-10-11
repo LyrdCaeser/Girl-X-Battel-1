@@ -293,11 +293,16 @@
     return translateText(String(value)).trim();
   }};
   document.documentElement.lang = 'vi';
-  document.title = 'Girls X Battle 2 · Local Việt Hóa';
+  document.title = 'Nữ Thần Chiến Đấu - GXB 3';
   const run = () => {
     translateNode(document.body);
     const dev = document.getElementById('dev-open');
     if (dev) dev.textContent = 'QTV';
+    const pay = document.getElementById('payment-open');
+    if (pay && !pay.dataset.boundPayment) {
+      pay.dataset.boundPayment = '1';
+      pay.addEventListener('click', () => window.GxbPayment?.open());
+    }
     const lang = [...document.querySelectorAll('.profile-setting-row strong')]
       .find(x => x.textContent.trim() === 'Ngôn ngữ');
     if (lang) {
