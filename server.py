@@ -24,9 +24,10 @@ from gxb2.souls import catalog as souls_catalog
 from gxb2 import protocol as p, local_promotion, local_config, world_live_config, topup, live_service, auth, database
 from gxb2.player_engines import PlayerEnginePool
 from gxb2.battle import simulate as simulate_battle
+from gxb2.security import FixedWindowRateLimiter, DEFAULT_LIMITS, env_bool, validate_production_config
 
 ROOT = Path(__file__).resolve().parent
-ADMIN_KEY = 'QuangHo1997#a'
+ADMIN_KEY = os.environ.get('GXB3_ADMIN_KEY', '').strip()
 CHARACTER_ART = set(json.loads((ROOT/'web/assets/characters.json').read_text()))
 BATTLE_MAPS = set(json.loads((ROOT/'web/assets/battle-maps.json').read_text()))
 CARD_ART = set(json.loads((ROOT/'web/assets/cards.json').read_text()))
@@ -162,6 +163,29 @@ class TCPHandler(socketserver.BaseRequestHandler):
             except OSError: return
 
 class HTTPHandler(BaseHTTPRequestHandler):
+    def client_ip(self):
+        if getattr(self.server, 'trust_proxy', False):
+            forwarded=self.headers.get('X-Forwarded-For','')
+            if forwarded:
+                candidate=forwarded.split(',')[0].strip()
+                if candidate: return candidate[:128]
+        return (self.client_address[0] if self.client_address else 'unknown')[:128]
+
+    def request_is_https(self):
+        if str(getattr(self.server,'public_origin','')).startswith('https://'):
+            return True
+        return bool(getattr(self.server,'trust_proxy',False) and self.headers.get('X-Forwarded-Proto','').split(',')[0].strip().lower()=='https')
+
+    def rate_limit(self, bucket, key=None):
+        spec=DEFAULT_LIMITS.get(bucket)
+        limiter=getattr(self.server,'rate_limiter',None)
+        if not spec or limiter is None: return True
+        allowed,retry=limiter.allow(bucket,key or self.client_ip(),limit=spec[0],window=spec[1])
+        if not allowed:
+            self.send(429,{'error':'RATE_LIMITED','retry_after':retry},headers={'Retry-After':str(retry)})
+            return False
+        return True
+
     def admin_authorized(self):
         supplied = self.headers.get('X-GXB2-Admin-Key', '')
         expected = getattr(self.server, 'admin_key', '')
@@ -234,6 +258,8 @@ class HTTPHandler(BaseHTTPRequestHandler):
         self.send_header('Referrer-Policy', 'same-origin')
         self.send_header('Permissions-Policy', 'camera=(), microphone=(), geolocation=()')
         self.send_header('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'")
+        if self.request_is_https():
+            self.send_header('Strict-Transport-Security','max-age=31536000; includeSubDomains')
         self.end_headers()
         self.wfile.write(content)
     def send_sse(self, ctx, mode='arena'):
@@ -289,6 +315,14 @@ class HTTPHandler(BaseHTTPRequestHandler):
             return
         parsed = urlparse(self.path)
         path = parsed.path
+        if path == '/healthz':
+            return self.send(200,{'ok':True,'service':'gxb3','database':database.backend_name()})
+        if path == '/readyz':
+            try:
+                worlds=live_service.worlds()
+                return self.send(200,{'ready':True,'database':database.backend_name(),'worlds':len(worlds)})
+            except Exception:
+                return self.send(503,{'ready':False,'database':database.backend_name()})
         if path == '/api/auth/me':
             ctx = self.auth_context()
             return self.send(200, {'authenticated': bool(ctx), 'session': ctx, 'worlds': live_service.worlds()})
@@ -633,15 +667,24 @@ class HTTPHandler(BaseHTTPRequestHandler):
         try:
             data = self.read_body()
             path = urlparse(self.path).path
+            if path == '/api/auth/register' and not self.rate_limit('auth_register'): return
+            if path == '/api/auth/login' and not self.rate_limit('auth_login'): return
+            if path == '/api/auth/reset-password' and not self.rate_limit('auth_reset'): return
+            if path == '/api/auth/recovery-code' and not self.rate_limit('recovery_rotate'): return
+            if path == '/api/order/create' and not self.rate_limit('order_create'): return
+            if path == '/api/pvp/queue' and not self.rate_limit('pvp_queue'): return
+            if path in ('/api/pvp/match/battle','/api/guild-war/battle') and not self.rate_limit('battle'): return
+            if path.startswith('/api/admin/') and not self.rate_limit('admin'): return
+            if path == '/api/world-guild/manage' and str(data.get('action') or '') == 'chat' and not self.rate_limit('guild_chat'): return
             if path in ('/api/auth/register','/api/auth/login'):
                 if path.endswith('/register'):
                     result = auth.register(data.get('username'), data.get('password'), data.get('character_name'),
                                            data.get('server_id','S1'), data.get('email',''),
-                                           self.headers.get('User-Agent',''), self.client_address[0] if self.client_address else '')
+                                           self.headers.get('User-Agent',''), self.client_ip())
                 else:
                     result = auth.login(data.get('username'), data.get('password'), data.get('server_id','S1'),
-                                        self.client_address[0] if self.client_address else '', self.headers.get('User-Agent',''))
-                secure = self.headers.get('X-Forwarded-Proto','').lower() == 'https'
+                                        self.client_ip(), self.headers.get('User-Agent',''))
+                secure = self.request_is_https()
                 cookie = f"gxb3_session={result['token']}; Path=/; HttpOnly; SameSite=Lax; Max-Age={auth.SESSION_TTL}"
                 if secure: cookie += '; Secure'
                 body = {'account': result['account'], 'character_name': result['character_name'], 'session_id': result.get('session_id')}
@@ -1072,7 +1115,7 @@ class HTTPHandler(BaseHTTPRequestHandler):
             return self.send(500, {'error': 'Error del motor local. Consulta la terminal.'})
 
 def make_servers(engine, http_port=9080, tcp_port=9081, developer_engine=None, player_engines=None,
-                 http_host='127.0.0.1', public_origin=''):
+                 http_host='127.0.0.1', public_origin='', admin_key=None, trust_proxy=None):
     tcp = ThreadTCP(('127.0.0.1', tcp_port), TCPHandler)
     tcp.engine = engine
     try: http = LocalHTTPServer((http_host, http_port), HTTPHandler)
@@ -1081,8 +1124,10 @@ def make_servers(engine, http_port=9080, tcp_port=9081, developer_engine=None, p
         raise
     http.developer_engine = developer_engine
     http.player_engines = player_engines or PlayerEnginePool()
-    http.admin_key = ADMIN_KEY
-    http.public_origin = str(public_origin or '').strip()
+    http.admin_key = str(ADMIN_KEY if admin_key is None else admin_key).strip()
+    http.public_origin = str(public_origin or '').strip().rstrip('/')
+    http.trust_proxy = env_bool('GXB3_TRUST_PROXY',False) if trust_proxy is None else bool(trust_proxy)
+    http.rate_limiter = FixedWindowRateLimiter()
     http.engine = engine; http.tcp_port = tcp.server_address[1]
     return http, tcp
 
@@ -1103,6 +1148,13 @@ def main():
     parser.add_argument('--db', type=Path, default=ROOT/'state/profile.sqlite3')
     parser.add_argument('--open', action='store_true', help='Abrir la interfaz local de prueba')
     args = parser.parse_args()
+    warnings=validate_production_config(
+        http_host=args.http_host,
+        public_origin=args.public_origin,
+        admin_key=ADMIN_KEY,
+        database_url=(os.environ.get('GXB3_DATABASE_URL') or os.environ.get('DATABASE_URL') or ''),
+    )
+    for warning in warnings: print('GXB3 WARNING: '+warning,flush=True)
     engine = Engine(args.db)
     developer = Engine(args.db.with_name(args.db.stem + ".developer.sqlite3"), developer=True)
     player_engines = PlayerEnginePool()
@@ -1115,7 +1167,8 @@ def main():
     browse_host = 'localhost' if args.http_host in ('0.0.0.0','::') else args.http_host
     url = f'http://{browse_host}:{http.server_port}'
     public_note = args.public_origin or '(chưa cấu hình)'
-    print(f'GXB 3 server sẵn sàng: {url}\nHTTP bind: {args.http_host}:{http.server_port}\nPublic origin: {public_note}\nSocket legacy: 127.0.0.1:{tcp.server_address[1]}\nQTV: đã bật khóa cố định.\nCtrl+C để dừng.', flush=True)
+    admin_note='đã bật từ GXB3_ADMIN_KEY' if http.admin_key else 'đang tắt (chưa có GXB3_ADMIN_KEY)'
+    print(f'GXB 3 server sẵn sàng: {url}\nHTTP bind: {args.http_host}:{http.server_port}\nPublic origin: {public_note}\nSocket legacy: 127.0.0.1:{tcp.server_address[1]}\nQTV: {admin_note}.\nCtrl+C để dừng.', flush=True)
     if args.open:
         import webbrowser
         webbrowser.open(url)
