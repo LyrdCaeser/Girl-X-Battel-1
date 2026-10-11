@@ -31,7 +31,9 @@ class LocalConfigTests(unittest.TestCase):
         cfg = local_config.get()
         cfg["starting_resources"] = {1: 123, "2": 456}
         saved = local_config.save(cfg)
-        self.assertEqual(saved["starting_resources"], {"1": 123, "2": 456})
+        self.assertEqual(saved["starting_resources"]["1"], 123)
+        self.assertEqual(saved["starting_resources"]["2"], 456)
+        self.assertEqual(saved["starting_resources"]["9"], 5000)
 
     def test_summon_weight_uses_star_multiplier(self):
         cfg = local_config.get()
