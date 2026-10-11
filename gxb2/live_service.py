@@ -1293,6 +1293,7 @@ def record_guild_war_battle(war_id, attacker_uid, defender_uid, attacker_snapsho
 def maintenance_tick(now=None):
     now=int(now or time.time())
     refresh_guild_wars()
+    settle_previous_pvp_season(now)
     with _lock:
         db=_db()
         db.execute("DELETE FROM pvp_queue WHERE joined_at<?",(now-600,))
@@ -1346,3 +1347,39 @@ def admin_force_settle_guild_war(war_id, operator="SUPER_GM"):
                          {"winner_guild":result.get("winner_guild",0)},operator)
         db.commit(); db.close()
     return result
+
+
+def settle_previous_pvp_season(now=None):
+    now=int(now or time.time())
+    season_id=previous_pvp_season(now)
+    issued=0
+    with _lock:
+        db=_db(); db.execute("BEGIN IMMEDIATE")
+        rows=db.execute("""SELECT r.*,p.character_name
+                           FROM pvp_ratings r
+                           LEFT JOIN players p ON p.uid=r.uid AND p.server_id=r.server_id
+                           WHERE r.season_id=? AND r.matches>0""",(season_id,)).fetchall()
+        for row in rows:
+            if db.execute("""SELECT 1 FROM pvp_season_claims
+                             WHERE uid=? AND server_id=? AND mode=? AND season_id=?""",
+                          (row["uid"],row["server_id"],row["mode"],season_id)).fetchone():
+                continue
+            reward=pvp_season_reward(row["mode"],int(row["rating"]))
+            if not reward:
+                continue
+            db.execute("""INSERT INTO pvp_season_claims(uid,server_id,mode,season_id,rating,reward,claimed_at)
+                          VALUES(?,?,?,?,?,?,?)""",
+                       (row["uid"],row["server_id"],row["mode"],season_id,int(row["rating"]),
+                        json.dumps(reward,ensure_ascii=False),now))
+            mail_id="MAIL-"+uuid.uuid4().hex[:16].upper()
+            db.execute("""INSERT INTO mail(id,uid,server_id,character_name,title,body,attachments,status,created_at,operator)
+                          VALUES(?,?,?,?,?,?,?,'pending',?,'PVP_SEASON')""",
+                       (mail_id,row["uid"],row["server_id"],row["character_name"] or row["uid"],
+                        f"Phần thưởng PvP mùa {season_id}",
+                        f"Phần thưởng {row['mode']} · Rating {row['rating']} đã được tự động phát.",
+                        json.dumps(reward),now))
+            issued+=1
+        if issued:
+            _audit(db,"pvp.season.auto_settle",season_id,{"issued":issued},"SYSTEM")
+        db.commit(); db.close()
+    return {"season_id":season_id,"issued":issued}
