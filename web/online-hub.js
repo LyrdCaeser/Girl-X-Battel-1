@@ -1,12 +1,16 @@
 'use strict';
 window.GxbOnline=(()=>{
-  let overlay=null,tab='leaderboard',timer=null,pvpMode='arena';
+  let overlay=null,tab='leaderboard',stream=null,fallbackTimer=null,refreshing=false,pvpMode='arena';
   const el=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n;};
   const T=s=>window.GxbLocale?GxbLocale.t(s):s;
   const fmt=n=>typeof number==='function'?number(Number(n||0)):String(n||0);
   async function get(url){return api(url);}
   async function post(url,body){return api(url,body);}
-  function close(){if(timer)clearInterval(timer);timer=null;overlay?.remove();overlay=null;}
+  function close(){
+    if(stream){stream.close();stream=null;}
+    if(fallbackTimer){clearInterval(fallbackTimer);fallbackTimer=null;}
+    overlay?.remove();overlay=null;
+  }
   function shell(title){
     close();overlay=el('div','online-overlay');
     const box=el('section','online-box'),head=el('header','online-head');
@@ -17,15 +21,34 @@ window.GxbOnline=(()=>{
     box.append(nav);const body=el('div','online-body');body.id='online-body';box.append(body);overlay.append(box);
     overlay.onclick=e=>{if(e.target===overlay)close();};(window.GxbFrame?.root()||document.body).append(overlay);return box;
   }
-  async function open(next='leaderboard',mode='arena'){tab=next;pvpMode=mode;const box=shell(next==='guild'?'Guild':next==='pvp'?'PvP Match':'Leaderboard');await renderBody(box);}
-  async function renderBody(box){
-    if(timer)clearInterval(timer);timer=null;
+  async function open(next='leaderboard',mode='arena'){
+    tab=next;pvpMode=mode;
+    const box=shell(next==='guild'?'Guild':next==='pvp'?'PvP Match':'Leaderboard');
+    await renderBody(box);openRealtime(box);
+  }
+  function openRealtime(box){
+    if(stream){stream.close();stream=null;}
+    if(fallbackTimer){clearInterval(fallbackTimer);fallbackTimer=null;}
+    const refresh=async()=>{
+      if(!overlay||refreshing)return;
+      refreshing=true;
+      try{await renderBody(box,true);}catch{}finally{refreshing=false;}
+    };
+    if(window.EventSource){
+      stream=new EventSource('/api/events/stream?mode='+encodeURIComponent(pvpMode));
+      stream.addEventListener('snapshot',()=>refresh());
+      stream.onerror=()=>{};
+    }else{
+      fallbackTimer=setInterval(refresh,5000);
+    }
+  }
+  async function renderBody(box,quiet=false){
     box.querySelectorAll('.online-tabs button').forEach((b,i)=>b.classList.toggle('on',['leaderboard','guild','pvp'][i]===tab));
     const body=box.querySelector('#online-body');body.replaceChildren(el('p','online-loading',T('Loading…')));
     try{
       if(tab==='leaderboard')await renderLeaderboard(body);
       if(tab==='guild')await renderGuild(body);
-      if(tab==='pvp'){await renderPvp(body);timer=setInterval(()=>{if(overlay&&tab==='pvp')renderPvp(body,true).catch(()=>{});},2500);}
+      if(tab==='pvp')await renderPvp(body,quiet);
     }catch(e){body.replaceChildren(el('p','online-error',e.message));}
   }
   async function renderLeaderboard(body){
@@ -47,7 +70,12 @@ window.GxbOnline=(()=>{
     for(const r of (data.ranking||[]).slice(0,10)){const row=el('div','online-mini-row');row.append(el('b','','#'+r.rank+' '+r.name),el('span','',T('Power')+' '+fmt(r.total_power)),el('small','',T('Members')+' '+r.member_count));rankCard.append(row);}body.append(rankCard);
 
     if(data.guild){
-      const g=data.guild,hero=el('section','online-guild-hero');hero.append(el('small','',T('Server')+' '+g.server_id),el('h3','',g.name),el('p','',g.notice||T('No guild notice.')),el('b','',T('Members')+': '+g.member_count+' · '+T('Role')+': '+g.role));body.append(hero);
+      const g=data.guild,hero=el('section','online-guild-hero');
+      hero.append(el('small','',T('Server')+' '+g.server_id),el('h3','',g.name),
+        el('p','',g.notice||T('No guild notice.')),
+        el('b','',T('Guild Level')+' '+g.level+' · EXP '+fmt(g.exp)),
+        el('span','',T('Members')+': '+g.member_count+' · '+T('Role')+': '+g.role));
+      body.append(hero);
 
       if(['leader','deputy'].includes(g.role)){
         const manage=el('section','online-card');manage.append(el('h3','',T('Guild Management')));
@@ -67,7 +95,7 @@ window.GxbOnline=(()=>{
       }
 
       const members=el('section','online-card');members.append(el('h3','',T('Guild Members')));
-      for(const m of g.members||[]){const row=el('article','online-member');const main=el('div','online-main');main.append(el('b','',m.character_name),el('small','',m.role+' · '+m.uid));row.append(main,el('strong','online-power',fmt(m.power)));
+      for(const m of g.members||[]){const row=el('article','online-member');const main=el('div','online-main');main.append(el('b','',m.character_name),el('small','',m.role+' · '+m.uid+' · '+T('Contribution')+' '+fmt(m.contribution||0)));row.append(main,el('strong','online-power',fmt(m.power)));
         if(g.role==='leader'&&m.uid!==state?.uid){
           if(m.role==='member'){const dep=el('button','online-small',T('Make Deputy'));dep.onclick=async()=>{await post('/api/world-guild/manage',{action:'role',target_uid:m.uid,role:'deputy'});renderGuild(body);};row.append(dep);}
           if(m.role==='deputy'){const dem=el('button','online-small',T('Make Member'));dem.onclick=async()=>{await post('/api/world-guild/manage',{action:'role',target_uid:m.uid,role:'member'});renderGuild(body);};row.append(dem);}
@@ -81,7 +109,17 @@ window.GxbOnline=(()=>{
       const chatRow=el('div','online-chat-send');const chatInput=document.createElement('input');chatInput.placeholder=T('Write a message…');const send=el('button','online-primary',T('Send'));send.onclick=async()=>{if(!chatInput.value.trim())return;await post('/api/world-guild/manage',{action:'chat',message:chatInput.value});chatInput.value='';renderGuild(body);};chatRow.append(chatInput,send);chat.append(chatRow);body.append(chat);
 
       const wars=el('section','online-card');wars.append(el('h3','',T('Guild War')));
-      for(const w of data.wars||[]){const row=el('div','online-mini-row');row.append(el('b','',w.guild_a_name+' VS '+w.guild_b_name),el('span','',w.score_a+' - '+w.score_b),el('small','',w.status));wars.append(row);}
+      for(const w of data.wars||[]){
+        const row=el('div','online-war-row'),main=el('div','online-main');
+        const statusText=w.status==='scheduled'?T('Scheduled'):w.status==='active'?T('Active'):T('Finished');
+        main.append(el('b','',w.guild_a_name+' VS '+w.guild_b_name),el('span','',w.score_a+' - '+w.score_b),el('small','',statusText));
+        row.append(main);
+        if([Number(w.guild_a),Number(w.guild_b)].includes(Number(g.id))){
+          const detail=el('button','online-small',w.status==='active'?T('Battle'):T('Details'));
+          detail.onclick=()=>openGuildWar(w.id);row.append(detail);
+        }
+        wars.append(row);
+      }
       if(['leader','deputy'].includes(g.role)){
         const opponents=(data.guilds||[]).filter(x=>x.id!==g.id);if(opponents.length){const sel=document.createElement('select');for(const x of opponents){const o=el('option','',x.name);o.value=x.id;sel.append(o);}const war=el('button','online-primary',T('Challenge Guild'));war.onclick=async()=>{await post('/api/world-guild/manage',{action:'war',opponent_guild_id:Number(sel.value),duration:86400});renderGuild(body);};wars.append(sel,war);}
       }body.append(wars);
@@ -97,6 +135,46 @@ window.GxbOnline=(()=>{
     for(const g of data.guilds||[]){const row=el('article','online-guild-row'),main=el('div','online-main');main.append(el('b','',g.name),el('small','',T('Members')+': '+g.member_count+' · Lv.'+g.level));const apply=el('button','online-primary',T('Apply'));apply.onclick=async()=>{await post('/api/world-guild/manage',{action:'apply',guild_id:g.id});apply.disabled=true;apply.textContent=T('Applied');};row.append(main,apply);list.append(row);}
     if(!(data.guilds||[]).length)list.append(el('p','online-empty',T('No Guild has been created on this server.')));body.append(list);
   }
+  async function openGuildWar(warId){
+    try{
+      const data=await get('/api/guild-war?war_id='+encodeURIComponent(warId));
+      const modal=el('div','online-war-overlay'),box=el('section','online-war-box');
+      const w=data.war,head=el('header','online-war-head');
+      head.append(el('div','',w.guild_a_name+' VS '+w.guild_b_name),el('strong','',w.score_a+' - '+w.score_b));
+      const x=el('button','online-close','✕');x.onclick=()=>modal.remove();head.append(x);box.append(head);
+      box.append(el('p','online-note',T('Status')+': '+w.status+' · '+T('Guild War ID')+': '+w.id));
+      if(w.status==='active'){
+        const enemies=el('div','online-list');
+        for(const enemy of data.enemies||[]){
+          const row=el('article','online-member'),main=el('div','online-main');
+          main.append(el('b','',enemy.character_name),el('small','',enemy.uid+' · '+T('Power')+' '+fmt(enemy.power)));
+          const fight=el('button','online-fight',T('Attack'));
+          fight.onclick=async()=>{
+            fight.disabled=true;fight.textContent=T('Server is simulating battle…');
+            try{
+              const out=await post('/api/guild-war/battle',{war_id:w.id,defender_uid:enemy.uid});
+              const r=out.result||{};
+              alert((r.winner_uid===state?.uid?T('Victory'):T('Defeat'))+' · +'+fmt(r.score)+' '+T('Guild War Score'));
+              modal.remove();
+              const body=document.getElementById('online-body');if(body)renderGuild(body);
+            }catch(e){fight.disabled=false;fight.textContent=T('Attack');alert(e.message);}
+          };
+          row.append(main,fight);enemies.append(row);
+        }
+        if(!(data.enemies||[]).length)enemies.append(el('p','online-empty',T('No opponents available.')));
+        box.append(enemies);
+      }
+      const history=el('div','online-history');history.append(el('h3','',T('War Battles')));
+      for(const b of data.battles||[]){
+        const row=el('article','online-history-row');
+        row.append(el('b','',b.attacker_uid+' → '+b.defender_uid),el('span','',T('Score')+' +'+b.score),
+          el('small','',T('Winner')+': '+b.winner_uid+' · '+new Date(b.created_at*1000).toLocaleString()));
+        history.append(row);
+      }
+      box.append(history);modal.append(box);document.body.append(modal);
+    }catch(e){alert(e.message);}
+  }
+
   function matchOpponent(m){const mine=state?.uid;return m.player_a===mine?{uid:m.player_b,name:m.name_b,power:m.power_b}:{uid:m.player_a,name:m.name_a,power:m.power_a};}
   async function renderPvp(body,quiet=false){
     const data=await get('/api/pvp/status?mode='+encodeURIComponent(pvpMode));body.replaceChildren();
