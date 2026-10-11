@@ -244,6 +244,21 @@ class Engine:
         """Seconds the system clock is behind the game clock (0 when in sync)."""
         return 0 if self.developer else max(0, self._floor - int(self._raw_now()))
 
+    def bind_identity(self, uid, server_id, character_name):
+        with self.lock:
+            state = self._load()
+            changed = False
+            if state.get('uid') != str(uid):
+                state['uid'] = str(uid); changed = True
+            if state.get('server_id') != str(server_id).upper():
+                state['server_id'] = str(server_id).upper(); changed = True
+            if character_name and state.get('name') != str(character_name):
+                state['name'] = str(character_name); changed = True
+            if changed:
+                self._save_profile(state)
+                self.db.commit()
+        return self.snapshot()
+
     def close(self):
         if not self.developer and self._floor != self._floor_saved:
             self._save_floor()
