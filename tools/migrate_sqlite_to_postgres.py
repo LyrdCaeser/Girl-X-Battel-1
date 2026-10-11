@@ -9,7 +9,7 @@ from psycopg.rows import dict_row
 
 
 AUTH_TABLES = ["accounts", "sessions", "recovery_codes", "login_attempts"]
-LIVE_TABLES = ["worlds", "players", "mail", "orders", "audit", "presence", "leaderboard", "world_guilds", "world_guild_members", "world_guild_applications", "world_guild_chat", "world_guild_mail", "guild_wars", "pvp_queue", "pvp_matches", "pvp_match_peers", "pvp_ratings", "pvp_season_claims"]
+LIVE_TABLES = ["worlds", "players", "mail", "orders", "audit", "presence", "leaderboard", "world_guilds", "world_guild_members", "world_guild_applications", "world_guild_chat", "world_guild_mail", "guild_wars", "guild_war_battles", "guild_war_claims", "pvp_queue", "pvp_matches", "pvp_match_peers", "pvp_ratings", "pvp_season_claims"]
 
 
 def rows(path, table):
@@ -172,6 +172,7 @@ def ensure_schema(pg):
             power BIGINT NOT NULL DEFAULT 0,
             joined_at BIGINT NOT NULL,
             last_seen BIGINT NOT NULL,
+            contribution BIGINT NOT NULL DEFAULT 0,
             PRIMARY KEY(uid,server_id),
             UNIQUE(guild_id,uid)
         )""")
@@ -213,6 +214,27 @@ def ensure_schema(pg):
             ends_at BIGINT NOT NULL,
             winner_guild BIGINT NOT NULL DEFAULT 0,
             created_at BIGINT NOT NULL
+        )""")
+        c.execute("""CREATE TABLE IF NOT EXISTS guild_war_battles(
+            id TEXT PRIMARY KEY,
+            war_id TEXT NOT NULL REFERENCES guild_wars(id) ON DELETE CASCADE,
+            attacker_uid TEXT NOT NULL,
+            attacker_guild BIGINT NOT NULL,
+            defender_uid TEXT NOT NULL,
+            defender_guild BIGINT NOT NULL,
+            winner_uid TEXT NOT NULL DEFAULT '',
+            score BIGINT NOT NULL DEFAULT 0,
+            report TEXT NOT NULL DEFAULT '{}',
+            created_at BIGINT NOT NULL,
+            UNIQUE(war_id,attacker_uid,defender_uid)
+        )""")
+        c.execute("""CREATE TABLE IF NOT EXISTS guild_war_claims(
+            war_id TEXT NOT NULL REFERENCES guild_wars(id) ON DELETE CASCADE,
+            uid TEXT NOT NULL,
+            guild_id BIGINT NOT NULL,
+            reward TEXT NOT NULL,
+            claimed_at BIGINT NOT NULL,
+            PRIMARY KEY(war_id,uid)
         )""")
         c.execute("""CREATE TABLE IF NOT EXISTS pvp_queue(
             uid TEXT NOT NULL,
@@ -365,6 +387,8 @@ def main():
         "world_guild_chat": rows(live_path, "world_guild_chat"),
         "world_guild_mail": rows(live_path, "world_guild_mail"),
         "guild_wars": rows(live_path, "guild_wars"),
+        "guild_war_battles": rows(live_path, "guild_war_battles"),
+        "guild_war_claims": rows(live_path, "guild_war_claims"),
         "pvp_queue": rows(live_path, "pvp_queue"),
         "pvp_matches": rows(live_path, "pvp_matches"),
         "pvp_match_peers": rows(live_path, "pvp_match_peers"),
@@ -399,6 +423,8 @@ def main():
         inserted["world_guild_chat"] = insert_many(pg, "world_guild_chat", source["world_guild_chat"], ["id"])
         inserted["world_guild_mail"] = insert_many(pg, "world_guild_mail", source["world_guild_mail"], ["id"])
         inserted["guild_wars"] = insert_many(pg, "guild_wars", source["guild_wars"], ["id"])
+        inserted["guild_war_battles"] = insert_many(pg, "guild_war_battles", source["guild_war_battles"], ["id"])
+        inserted["guild_war_claims"] = insert_many(pg, "guild_war_claims", source["guild_war_claims"], ["war_id", "uid"])
         inserted["pvp_queue"] = insert_many(pg, "pvp_queue", source["pvp_queue"], ["uid", "server_id", "mode"])
         inserted["pvp_matches"] = insert_many(pg, "pvp_matches", source["pvp_matches"], ["id"])
         inserted["pvp_match_peers"] = insert_many(pg, "pvp_match_peers", source["pvp_match_peers"], ["match_id", "uid"])
