@@ -246,3 +246,63 @@ def set_world_policy(server_id, registration_open=None, character_creation_open=
         db.commit()
         row=db.execute("SELECT * FROM worlds WHERE server_id=?",(server_id,)).fetchone()
         out=dict(row); db.close(); return out
+
+
+def touch_presence(uid, server_id, character_name, level=1, power=0):
+    uid=str(uid or '').strip()
+    server_id=str(server_id or '').strip().upper()
+    character_name=str(character_name or '').strip()
+    now=int(time.time())
+    with _lock:
+        db=_db()
+        db.execute("""INSERT INTO presence(uid,server_id,character_name,last_seen)
+                      VALUES(?,?,?,?)
+                      ON CONFLICT(uid,server_id) DO UPDATE SET
+                        character_name=excluded.character_name,
+                        last_seen=excluded.last_seen""",
+                   (uid,server_id,character_name,now))
+        db.execute("""INSERT INTO leaderboard(uid,server_id,character_name,level,power,updated_at)
+                      VALUES(?,?,?,?,?,?)
+                      ON CONFLICT(uid,server_id) DO UPDATE SET
+                        character_name=excluded.character_name,
+                        level=excluded.level,
+                        power=excluded.power,
+                        updated_at=excluded.updated_at""",
+                   (uid,server_id,character_name,max(1,int(level)),max(0,int(power)),now))
+        db.commit(); db.close()
+    return {"uid":uid,"server_id":server_id,"last_seen":now}
+
+
+def online_players(server_id="", max_age=120):
+    cutoff=int(time.time())-max(15,int(max_age))
+    with _lock:
+        db=_db()
+        if server_id:
+            rows=db.execute("""SELECT p.uid,p.server_id,p.character_name,p.last_seen,l.level,l.power
+                               FROM presence p
+                               LEFT JOIN leaderboard l ON l.uid=p.uid AND l.server_id=p.server_id
+                               WHERE p.server_id=? AND p.last_seen>=?
+                               ORDER BY p.last_seen DESC LIMIT 500""",
+                            (str(server_id).upper(),cutoff)).fetchall()
+        else:
+            rows=db.execute("""SELECT p.uid,p.server_id,p.character_name,p.last_seen,l.level,l.power
+                               FROM presence p
+                               LEFT JOIN leaderboard l ON l.uid=p.uid AND l.server_id=p.server_id
+                               WHERE p.last_seen>=?
+                               ORDER BY p.last_seen DESC LIMIT 500""",
+                            (cutoff,)).fetchall()
+        out=[dict(r) for r in rows]; db.close(); return out
+
+
+def leaderboard(server_id, limit=100):
+    limit=max(1,min(500,int(limit)))
+    with _lock:
+        db=_db()
+        rows=db.execute("""SELECT uid,server_id,character_name,level,power,updated_at
+                           FROM leaderboard WHERE server_id=?
+                           ORDER BY power DESC, level DESC, updated_at ASC LIMIT ?""",
+                        (str(server_id).upper(),limit)).fetchall()
+        out=[]
+        for idx,r in enumerate(rows,1):
+            d=dict(r); d["rank"]=idx; out.append(d)
+        db.close(); return out
