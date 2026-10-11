@@ -367,6 +367,54 @@ def _ensure_live(db):
             db.execute(f"ALTER TABLE pvp_matches ADD COLUMN {col} {ddl}")
     db.execute("CREATE INDEX IF NOT EXISTS idx_world_guilds_server ON world_guilds(server_id,level DESC,exp DESC)")
     db.execute("CREATE INDEX IF NOT EXISTS idx_world_guild_members_guild ON world_guild_members(guild_id,role,joined_at)")
+    db.execute("""CREATE TABLE IF NOT EXISTS world_guild_applications(
+        guild_id INTEGER NOT NULL,
+        uid TEXT NOT NULL,
+        server_id TEXT NOT NULL,
+        character_name TEXT NOT NULL,
+        power INTEGER NOT NULL DEFAULT 0,
+        created_at INTEGER NOT NULL,
+        status TEXT NOT NULL DEFAULT 'pending',
+        PRIMARY KEY(guild_id,uid),
+        FOREIGN KEY(guild_id) REFERENCES world_guilds(id) ON DELETE CASCADE
+    )""")
+    db.execute("""CREATE TABLE IF NOT EXISTS world_guild_chat(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        guild_id INTEGER NOT NULL,
+        uid TEXT NOT NULL,
+        character_name TEXT NOT NULL,
+        message TEXT NOT NULL,
+        created_at INTEGER NOT NULL,
+        FOREIGN KEY(guild_id) REFERENCES world_guilds(id) ON DELETE CASCADE
+    )""")
+    db.execute("""CREATE TABLE IF NOT EXISTS world_guild_mail(
+        id TEXT PRIMARY KEY,
+        guild_id INTEGER NOT NULL,
+        sender_uid TEXT NOT NULL,
+        title TEXT NOT NULL,
+        body TEXT NOT NULL,
+        created_at INTEGER NOT NULL,
+        FOREIGN KEY(guild_id) REFERENCES world_guilds(id) ON DELETE CASCADE
+    )""")
+    db.execute("""CREATE TABLE IF NOT EXISTS guild_wars(
+        id TEXT PRIMARY KEY,
+        server_id TEXT NOT NULL,
+        guild_a INTEGER NOT NULL,
+        guild_b INTEGER NOT NULL,
+        score_a INTEGER NOT NULL DEFAULT 0,
+        score_b INTEGER NOT NULL DEFAULT 0,
+        status TEXT NOT NULL DEFAULT 'scheduled',
+        starts_at INTEGER NOT NULL,
+        ends_at INTEGER NOT NULL,
+        winner_guild INTEGER NOT NULL DEFAULT 0,
+        created_at INTEGER NOT NULL,
+        FOREIGN KEY(guild_a) REFERENCES world_guilds(id) ON DELETE CASCADE,
+        FOREIGN KEY(guild_b) REFERENCES world_guilds(id) ON DELETE CASCADE
+    )""")
+    db.execute("CREATE INDEX IF NOT EXISTS idx_guild_app_pending ON world_guild_applications(guild_id,status,created_at)")
+    db.execute("CREATE INDEX IF NOT EXISTS idx_guild_chat_recent ON world_guild_chat(guild_id,created_at DESC)")
+    db.execute("CREATE INDEX IF NOT EXISTS idx_guild_mail_recent ON world_guild_mail(guild_id,created_at DESC)")
+    db.execute("CREATE INDEX IF NOT EXISTS idx_guild_war_server ON guild_wars(server_id,status,starts_at)")
     db.execute("CREATE INDEX IF NOT EXISTS idx_pvp_queue_wait ON pvp_queue(mode,status,server_id,power,joined_at)")
     db.execute("CREATE INDEX IF NOT EXISTS idx_pvp_matches_players ON pvp_matches(player_a,player_b,created_at DESC)")
     db.execute("""CREATE TABLE IF NOT EXISTS pvp_ratings(
@@ -455,6 +503,49 @@ def _ensure_live(db):
         db.execute("ALTER TABLE pvp_matches ADD COLUMN IF NOT EXISTS rating_delta_b INTEGER NOT NULL DEFAULT 0")
         db.execute("CREATE INDEX IF NOT EXISTS idx_world_guilds_server ON world_guilds(server_id,level DESC,exp DESC)")
         db.execute("CREATE INDEX IF NOT EXISTS idx_world_guild_members_guild ON world_guild_members(guild_id,role,joined_at)")
+        db.execute("""CREATE TABLE IF NOT EXISTS world_guild_applications(
+            guild_id BIGINT NOT NULL REFERENCES world_guilds(id) ON DELETE CASCADE,
+            uid TEXT NOT NULL,
+            server_id TEXT NOT NULL,
+            character_name TEXT NOT NULL,
+            power BIGINT NOT NULL DEFAULT 0,
+            created_at BIGINT NOT NULL,
+            status TEXT NOT NULL DEFAULT 'pending',
+            PRIMARY KEY(guild_id,uid)
+        )""")
+        db.execute("""CREATE TABLE IF NOT EXISTS world_guild_chat(
+            id BIGSERIAL PRIMARY KEY,
+            guild_id BIGINT NOT NULL REFERENCES world_guilds(id) ON DELETE CASCADE,
+            uid TEXT NOT NULL,
+            character_name TEXT NOT NULL,
+            message TEXT NOT NULL,
+            created_at BIGINT NOT NULL
+        )""")
+        db.execute("""CREATE TABLE IF NOT EXISTS world_guild_mail(
+            id TEXT PRIMARY KEY,
+            guild_id BIGINT NOT NULL REFERENCES world_guilds(id) ON DELETE CASCADE,
+            sender_uid TEXT NOT NULL,
+            title TEXT NOT NULL,
+            body TEXT NOT NULL,
+            created_at BIGINT NOT NULL
+        )""")
+        db.execute("""CREATE TABLE IF NOT EXISTS guild_wars(
+            id TEXT PRIMARY KEY,
+            server_id TEXT NOT NULL,
+            guild_a BIGINT NOT NULL REFERENCES world_guilds(id) ON DELETE CASCADE,
+            guild_b BIGINT NOT NULL REFERENCES world_guilds(id) ON DELETE CASCADE,
+            score_a BIGINT NOT NULL DEFAULT 0,
+            score_b BIGINT NOT NULL DEFAULT 0,
+            status TEXT NOT NULL DEFAULT 'scheduled',
+            starts_at BIGINT NOT NULL,
+            ends_at BIGINT NOT NULL,
+            winner_guild BIGINT NOT NULL DEFAULT 0,
+            created_at BIGINT NOT NULL
+        )""")
+        db.execute("CREATE INDEX IF NOT EXISTS idx_guild_app_pending ON world_guild_applications(guild_id,status,created_at)")
+        db.execute("CREATE INDEX IF NOT EXISTS idx_guild_chat_recent ON world_guild_chat(guild_id,created_at DESC)")
+        db.execute("CREATE INDEX IF NOT EXISTS idx_guild_mail_recent ON world_guild_mail(guild_id,created_at DESC)")
+        db.execute("CREATE INDEX IF NOT EXISTS idx_guild_war_server ON guild_wars(server_id,status,starts_at)")
         db.execute("CREATE INDEX IF NOT EXISTS idx_pvp_queue_wait ON pvp_queue(mode,status,server_id,power,joined_at)")
         db.execute("CREATE INDEX IF NOT EXISTS idx_pvp_matches_players ON pvp_matches(player_a,player_b,created_at DESC)")
         db.execute("""CREATE TABLE IF NOT EXISTS pvp_ratings(
