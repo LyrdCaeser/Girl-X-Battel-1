@@ -64,6 +64,12 @@ class LiveServiceTests(unittest.TestCase):
         match = second["match"]
         active = live_service.activate_pvp_match(match["id"], "U1")
         self.assertEqual(active["status"], "active")
+        hb1 = live_service.heartbeat_pvp_match(match["id"], "U1", True)
+        self.assertEqual(len(hb1["peers"]), 1)
+        hb2 = live_service.heartbeat_pvp_match(match["id"], "U2", True)
+        self.assertTrue(hb2["all_ready"])
+        session = live_service.pvp_match_session(match["id"], "U1")
+        self.assertEqual(len(session["peers"]), 2)
 
         live_service.leave_world_guild("U2", "S1")
         self.assertIsNone(live_service.guild_for_player("U2", "S1"))
