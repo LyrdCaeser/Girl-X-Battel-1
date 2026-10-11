@@ -236,7 +236,8 @@ class HTTPHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         if self.reject_unauthorized_admin_mode():
             return
-        path = urlparse(self.path).path
+        parsed = urlparse(self.path)
+        path = parsed.path
         if path == '/api/auth/me':
             ctx = self.auth_context()
             return self.send(200, {'authenticated': bool(ctx), 'session': ctx, 'worlds': live_service.worlds()})
@@ -246,6 +247,17 @@ class HTTPHandler(BaseHTTPRequestHandler):
             return self.send(200, {'sessions': auth.sessions_for_token(self.session_token())})
         if path.startswith('/api/') and not self.require_auth():
             return
+        if path == '/api/world/online':
+            ctx = self.auth_context()
+            server_id = (parse_qs(parsed.query).get('server_id') or [ctx['account']['server_id']])[0]
+            rows = live_service.online_players(server_id)
+            return self.send(200, {'server_id': server_id, 'count': len(rows), 'players': rows})
+        if path == '/api/leaderboard':
+            ctx = self.auth_context()
+            query = parse_qs(parsed.query)
+            server_id = (query.get('server_id') or [ctx['account']['server_id']])[0]
+            limit = int((query.get('limit') or ['100'])[0])
+            return self.send(200, {'server_id': server_id, 'ranking': live_service.leaderboard(server_id, limit)})
         if path == '/api/admin/config':
             if not self.admin_authorized():
                 return self.send(403, {'error': 'QTV_KEY_REQUIRED'})
