@@ -283,6 +283,7 @@ class HTTPHandler(BaseHTTPRequestHandler):
                 'pvp': live_service.pvp_status(account['uid'], account['server_id'], mode),
                 'rating': live_service.pvp_rating(account['uid'], account['server_id'], mode),
                 'rating_board': live_service.pvp_rating_board(mode, limit=50),
+                'season_reward': live_service.pvp_season_claim_status(account['uid'], account['server_id'], mode),
                 'history': live_service.pvp_history(account['uid'], 20),
             })
         if path == '/api/admin/config':
@@ -704,6 +705,10 @@ class HTTPHandler(BaseHTTPRequestHandler):
                 return self.send(200, {'result': result,
                                        'guild': live_service.guild_for_player(account['uid'], account['server_id']),
                                        'guilds': live_service.world_guilds(account['server_id'])})
+            if path == '/api/pvp/season/claim':
+                ctx = self.auth_context(); account = ctx['account']; player = ctx['player']
+                return self.send(200, live_service.claim_pvp_season_reward(
+                    account['uid'], account['server_id'], player['character_name'], data.get('mode','arena')))
             if path == '/api/pvp/queue':
                 ctx = self.auth_context(); account = ctx['account']; player = ctx['player']
                 current = self.engine.snapshot()
