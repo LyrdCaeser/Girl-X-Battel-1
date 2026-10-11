@@ -9,6 +9,7 @@ from . import database
 
 ROOT = Path(__file__).resolve().parents[1]
 PVP_SEASON_REWARDS = json.loads((ROOT / 'data/pvp_season_rewards.json').read_text())
+GUILD_ONLINE_CONFIG = json.loads((ROOT / 'data/guild_online_config.json').read_text())
 DB_PATH = ROOT / "state" / "live_service.sqlite3"
 _lock = threading.RLock()
 
@@ -1050,3 +1051,234 @@ def claim_pvp_season_reward(uid, server_id, character_name, mode):
                {"mode":mode,"season":status["season_id"],"rating":status["rating"],"reward":reward},"SYSTEM")
         db.commit(); db.close()
     return {"ok":True,"mail_id":mail_id,**status}
+
+
+def _guild_level_from_exp(exp):
+    cfg=GUILD_ONLINE_CONFIG.get("guild") or {}
+    step=max(1,int(cfg.get("exp_per_level",5000)))
+    cap=max(1,int(cfg.get("max_level",20)))
+    return min(cap,1+max(0,int(exp))//step)
+
+
+def add_guild_progress(guild_id, member_uid, exp_gain=0, contribution_gain=0):
+    exp_gain=max(0,int(exp_gain)); contribution_gain=max(0,int(contribution_gain))
+    with _lock:
+        db=_db(); db.execute("BEGIN IMMEDIATE")
+        guild=db.execute("SELECT * FROM world_guilds WHERE id=?",(int(guild_id),)).fetchone()
+        if not guild:
+            db.rollback(); db.close(); raise ValueError("Guild không tồn tại")
+        new_exp=int(guild["exp"])+exp_gain
+        new_level=_guild_level_from_exp(new_exp)
+        db.execute("UPDATE world_guilds SET exp=?,level=? WHERE id=?",(new_exp,new_level,int(guild_id)))
+        if member_uid:
+            db.execute("""UPDATE world_guild_members
+                          SET contribution=contribution+?
+                          WHERE guild_id=? AND uid=?""",
+                       (contribution_gain,int(guild_id),str(member_uid)))
+        db.commit(); db.close()
+    return {"guild_id":int(guild_id),"exp":new_exp,"level":new_level,
+            "exp_gain":exp_gain,"contribution_gain":contribution_gain}
+
+
+def _refresh_single_guild_war(db, row, now):
+    war=dict(row)
+    status=war["status"]
+    if status=="scheduled" and now>=int(war["starts_at"]):
+        status="active"
+        db.execute("UPDATE guild_wars SET status='active' WHERE id=?",(war["id"],))
+        war["status"]="active"
+    if status in ("scheduled","active") and now>=int(war["ends_at"]):
+        score_a=int(war["score_a"]); score_b=int(war["score_b"])
+        winner=int(war["guild_a"]) if score_a>score_b else int(war["guild_b"]) if score_b>score_a else 0
+        db.execute("UPDATE guild_wars SET status='finished',winner_guild=? WHERE id=?",(winner,war["id"]))
+        war["status"]="finished"; war["winner_guild"]=winner
+    return war
+
+
+def settle_guild_war(war_id, force=False):
+    now=int(time.time())
+    with _lock:
+        db=_db(); db.execute("BEGIN IMMEDIATE")
+        row=db.execute("SELECT * FROM guild_wars WHERE id=?",(str(war_id),)).fetchone()
+        if not row:
+            db.rollback(); db.close(); raise ValueError("Không tìm thấy Guild War")
+        war=dict(row)
+        if force and war["status"]!="finished":
+            score_a=int(war["score_a"]); score_b=int(war["score_b"])
+            winner=int(war["guild_a"]) if score_a>score_b else int(war["guild_b"]) if score_b>score_a else 0
+            db.execute("UPDATE guild_wars SET status='finished',winner_guild=?,ends_at=? WHERE id=?",
+                       (winner,now,str(war_id)))
+            war["status"]="finished"; war["winner_guild"]=winner; war["ends_at"]=now
+        else:
+            war=_refresh_single_guild_war(db,row,now)
+        if war["status"]!="finished":
+            db.commit(); db.close(); return war
+        reward_cfg=GUILD_ONLINE_CONFIG.get("guild_war") or {}
+        winner=int(war["winner_guild"] or 0)
+        for gid in (int(war["guild_a"]),int(war["guild_b"])):
+            members=db.execute("""SELECT uid,server_id,character_name
+                                  FROM world_guild_members WHERE guild_id=?""",(gid,)).fetchall()
+            if winner==0:
+                reward=reward_cfg.get("draw_reward") or {}
+            elif gid==winner:
+                reward=reward_cfg.get("winner_reward") or {}
+            else:
+                reward=reward_cfg.get("loser_reward") or {}
+            clean={str(k):int(v) for k,v in reward.items() if int(v)>0}
+            for m in members:
+                if db.execute("SELECT 1 FROM guild_war_claims WHERE war_id=? AND uid=?",
+                              (str(war_id),m["uid"])).fetchone():
+                    continue
+                db.execute("""INSERT INTO guild_war_claims(war_id,uid,guild_id,reward,claimed_at)
+                              VALUES(?,?,?,?,?)""",
+                           (str(war_id),m["uid"],gid,json.dumps(clean),now))
+                mail_id="MAIL-"+uuid.uuid4().hex[:16].upper()
+                outcome="Hòa" if winner==0 else "Chiến thắng" if gid==winner else "Thất bại"
+                db.execute("""INSERT INTO mail(id,uid,server_id,character_name,title,body,attachments,status,created_at,operator)
+                              VALUES(?,?,?,?,?,?,?,'pending',?,'GUILD_WAR')""",
+                           (mail_id,m["uid"],m["server_id"],m["character_name"],
+                            f"Guild War · {outcome}",
+                            f"Guild War {war_id} đã kết thúc. Kết quả: {outcome}.",
+                            json.dumps(clean),now))
+        _audit(db,"guild.war.settle",str(war_id),
+               {"winner_guild":winner,"score_a":war["score_a"],"score_b":war["score_b"]},"SYSTEM")
+        db.commit(); db.close(); return war
+
+
+def refresh_guild_wars(server_id=None):
+    now=int(time.time())
+    with _lock:
+        db=_db(); db.execute("BEGIN IMMEDIATE")
+        if server_id:
+            rows=db.execute("SELECT * FROM guild_wars WHERE server_id=? ORDER BY created_at DESC",
+                            (str(server_id).upper(),)).fetchall()
+        else:
+            rows=db.execute("SELECT * FROM guild_wars ORDER BY created_at DESC").fetchall()
+        ids=[]
+        for row in rows:
+            war=_refresh_single_guild_war(db,row,now)
+            if war["status"]=="finished":
+                ids.append(war["id"])
+        db.commit(); db.close()
+    for wid in ids:
+        try: settle_guild_war(wid)
+        except Exception: pass
+
+
+def guild_war_detail(uid, server_id, war_id):
+    refresh_guild_wars(server_id)
+    with _lock:
+        db=_db()
+        member=_guild_member(db,uid,server_id)
+        if not member:
+            db.close(); raise ValueError("Bạn chưa ở trong Guild")
+        row=db.execute("""SELECT w.*,ga.name AS guild_a_name,gb.name AS guild_b_name
+                          FROM guild_wars w
+                          JOIN world_guilds ga ON ga.id=w.guild_a
+                          JOIN world_guilds gb ON gb.id=w.guild_b
+                          WHERE w.id=? AND w.server_id=?""",
+                       (str(war_id),str(server_id).upper())).fetchone()
+        if not row:
+            db.close(); raise ValueError("Không tìm thấy Guild War")
+        war=dict(row)
+        if int(member["guild_id"]) not in (int(war["guild_a"]),int(war["guild_b"])):
+            db.close(); raise ValueError("Guild của bạn không thuộc trận chiến này")
+        own_gid=int(member["guild_id"])
+        enemy_gid=int(war["guild_b"]) if own_gid==int(war["guild_a"]) else int(war["guild_a"])
+        enemies=db.execute("""SELECT uid,character_name,role,power,contribution
+                              FROM world_guild_members WHERE guild_id=?
+                              ORDER BY power DESC,joined_at ASC""",(enemy_gid,)).fetchall()
+        battles=db.execute("""SELECT id,attacker_uid,attacker_guild,defender_uid,defender_guild,winner_uid,score,created_at
+                              FROM guild_war_battles WHERE war_id=?
+                              ORDER BY created_at DESC LIMIT 100""",(str(war_id),)).fetchall()
+        out={"war":war,"own_guild_id":own_gid,"enemy_guild_id":enemy_gid,
+             "enemies":[dict(r) for r in enemies],"battles":[dict(r) for r in battles]}
+        db.close(); return out
+
+
+def prepare_guild_war_attack(uid, server_id, war_id, defender_uid):
+    refresh_guild_wars(server_id)
+    with _lock:
+        db=_db()
+        attacker=_guild_member(db,uid,server_id)
+        if not attacker:
+            db.close(); raise ValueError("Bạn chưa ở trong Guild")
+        war=db.execute("SELECT * FROM guild_wars WHERE id=? AND server_id=?",
+                       (str(war_id),str(server_id).upper())).fetchone()
+        if not war:
+            db.close(); raise ValueError("Không tìm thấy Guild War")
+        if war["status"]!="active":
+            db.close(); raise ValueError("Guild War chưa ở trạng thái chiến đấu")
+        gid=int(attacker["guild_id"])
+        if gid not in (int(war["guild_a"]),int(war["guild_b"])):
+            db.close(); raise ValueError("Guild của bạn không thuộc trận này")
+        enemy_gid=int(war["guild_b"]) if gid==int(war["guild_a"]) else int(war["guild_a"])
+        defender=db.execute("""SELECT * FROM world_guild_members
+                               WHERE guild_id=? AND uid=?""",(enemy_gid,str(defender_uid))).fetchone()
+        if not defender:
+            db.close(); raise ValueError("Đối thủ không thuộc Guild đối phương")
+        if db.execute("""SELECT 1 FROM guild_war_battles
+                         WHERE war_id=? AND attacker_uid=? AND defender_uid=?""",
+                      (str(war_id),str(uid),str(defender_uid))).fetchone():
+            db.close(); raise ValueError("Bạn đã đánh đối thủ này trong Guild War")
+        out={"war":dict(war),"attacker":dict(attacker),"defender":dict(defender)}
+        db.close(); return out
+
+
+def record_guild_war_battle(war_id, attacker_uid, defender_uid, attacker_snapshot, defender_snapshot, report):
+    now=int(time.time())
+    with _lock:
+        db=_db(); db.execute("BEGIN IMMEDIATE")
+        war=db.execute("SELECT * FROM guild_wars WHERE id=?",(str(war_id),)).fetchone()
+        if not war:
+            db.rollback(); db.close(); raise ValueError("Không tìm thấy Guild War")
+        if war["status"]!="active":
+            db.rollback(); db.close(); raise ValueError("Guild War không còn hoạt động")
+        attacker=db.execute("""SELECT * FROM world_guild_members WHERE uid=? AND server_id=?""",
+                            (str(attacker_uid),war["server_id"])).fetchone()
+        defender=db.execute("""SELECT * FROM world_guild_members WHERE uid=? AND server_id=?""",
+                            (str(defender_uid),war["server_id"])).fetchone()
+        if not attacker or not defender or int(attacker["guild_id"])==int(defender["guild_id"]):
+            db.rollback(); db.close(); raise ValueError("Cặp Guild War không hợp lệ")
+        if int(attacker["guild_id"]) not in (int(war["guild_a"]),int(war["guild_b"])):
+            db.rollback(); db.close(); raise ValueError("Guild tấn công không thuộc Guild War")
+        is_win=int(report.get("isWin",0))==1
+        winner_uid=str(attacker_uid) if is_win else str(defender_uid)
+        cfg=GUILD_ONLINE_CONFIG.get("guild_war") or {}
+        score_cfg=cfg.get("score") or {}
+        rounds=max(1,int(report.get("total_round") or 1))
+        if is_win:
+            base=int(score_cfg.get("win_base",100))
+            cap=max(0,int(score_cfg.get("round_bonus_cap",50)))
+            score=max(1,base+max(0,cap-min(cap,rounds)))
+        else:
+            score=max(0,int(score_cfg.get("loss_base",25)))
+        target_gid=int(attacker["guild_id"]) if is_win else int(defender["guild_id"])
+        col="score_a" if target_gid==int(war["guild_a"]) else "score_b"
+        battle_id="GWB-"+uuid.uuid4().hex[:14].upper()
+        db.execute("""INSERT INTO guild_war_battles(
+                      id,war_id,attacker_uid,attacker_guild,defender_uid,defender_guild,winner_uid,score,report,created_at)
+                      VALUES(?,?,?,?,?,?,?,?,?,?)""",
+                   (battle_id,str(war_id),str(attacker_uid),int(attacker["guild_id"]),
+                    str(defender_uid),int(defender["guild_id"]),winner_uid,score,
+                    json.dumps({"attacker":attacker_snapshot,"defender":defender_snapshot,"battle":report},
+                               ensure_ascii=False),now))
+        db.execute(f"UPDATE guild_wars SET {col}={col}+? WHERE id=?",(score,str(war_id)))
+        contrib_cfg=(GUILD_ONLINE_CONFIG.get("guild") or {}).get("contribution") or {}
+        exp_gain=max(0,int(contrib_cfg.get("guild_exp_per_battle",200)))
+        att_contrib=int(contrib_cfg.get("war_win" if is_win else "war_loss",300 if is_win else 120))
+        def_contrib=int(contrib_cfg.get("war_loss" if is_win else "war_win",120 if is_win else 300))
+        for member,contrib in ((attacker,att_contrib),(defender,def_contrib)):
+            guild=db.execute("SELECT exp FROM world_guilds WHERE id=?",(int(member["guild_id"]),)).fetchone()
+            new_exp=int(guild["exp"])+exp_gain
+            db.execute("UPDATE world_guilds SET exp=?,level=? WHERE id=?",
+                       (new_exp,_guild_level_from_exp(new_exp),int(member["guild_id"])))
+            db.execute("""UPDATE world_guild_members SET contribution=contribution+?
+                          WHERE guild_id=? AND uid=?""",
+                       (contrib,int(member["guild_id"]),member["uid"]))
+        _audit(db,"guild.war.battle",str(war_id),
+               {"battle_id":battle_id,"attacker":attacker_uid,"defender":defender_uid,
+                "winner":winner_uid,"score":score},"SYSTEM")
+        updated=db.execute("SELECT * FROM guild_wars WHERE id=?",(str(war_id),)).fetchone()
+        db.commit(); out={"battle_id":battle_id,"winner_uid":winner_uid,"score":score,"war":dict(updated)}
+        db.close(); return out
