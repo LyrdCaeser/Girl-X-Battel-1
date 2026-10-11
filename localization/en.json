@@ -77,5 +77,18 @@
   "Join the queue to find another online player.": "Join the queue to find another online player.",
   "Find Match": "Find Match",
   "Recent Matches": "Recent Matches",
-  "Realtime peers": "Realtime peers"
+  "Realtime peers": "Realtime peers",
+  "Season": "Season",
+  "Wins": "Wins",
+  "Losses": "Losses",
+  "Matches": "Matches",
+  "Start Battle": "Start Battle",
+  "Server is simulating battle…": "Server is simulating battle…",
+  "The server loads both saved teams and simulates the result. The client cannot submit a winner.": "The server loads both saved teams and simulates the result. The client cannot submit a winner.",
+  "Season Ranking": "Season Ranking",
+  "Victory": "Victory",
+  "Defeat": "Defeat",
+  "Rating": "Rating",
+  "Rounds": "Rounds",
+  "Back to PvP": "Back to PvP"
 }
