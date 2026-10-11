@@ -22,6 +22,7 @@ from gxb2.skins import catalog as skins_catalog
 from gxb2.souls import catalog as souls_catalog
 from gxb2 import protocol as p, local_promotion, local_config, live_service, auth, database
 from gxb2.player_engines import PlayerEnginePool
+from gxb2.battle import simulate as simulate_battle
 
 ROOT = Path(__file__).resolve().parent
 ADMIN_KEY = 'QuangHo1997#a'
@@ -267,9 +268,11 @@ class HTTPHandler(BaseHTTPRequestHandler):
         if path == '/api/pvp/status':
             ctx = self.auth_context(); account = ctx['account']
             query = parse_qs(parsed.query)
-            mode = (query.get('mode') or [''])[0]
+            mode = (query.get('mode') or ['arena'])[0]
             return self.send(200, {
                 'pvp': live_service.pvp_status(account['uid'], account['server_id'], mode),
+                'rating': live_service.pvp_rating(account['uid'], account['server_id'], mode),
+                'rating_board': live_service.pvp_rating_board(mode, limit=50),
                 'history': live_service.pvp_history(account['uid'], 20),
             })
         if path == '/api/admin/config':
@@ -681,6 +684,35 @@ class HTTPHandler(BaseHTTPRequestHandler):
             if path == '/api/pvp/match/session':
                 ctx = self.auth_context(); account = ctx['account']
                 return self.send(200, live_service.pvp_match_session(data.get('match_id'), account['uid']))
+            if path == '/api/pvp/match/battle':
+                ctx = self.auth_context(); account = ctx['account']
+                session = live_service.pvp_match_session(data.get('match_id'), account['uid'])
+                match = session['match']
+                if match.get('status') == 'finished':
+                    return self.send(200, {'result': live_service.pvp_match_result(match['id'], account['uid'])})
+                server_a = str(match.get('server_a') or match.get('server_id') or '').upper()
+                server_b = str(match.get('server_b') or match.get('server_id') or '').upper()
+                if server_a in ('', 'CROSS') or server_b in ('', 'CROSS'):
+                    raise ValueError('Match cũ thiếu thông tin server; hãy ghép trận mới')
+                pa = live_service.player(match['player_a'], server_a)
+                pb = live_service.player(match['player_b'], server_b)
+                if not pa or not pb:
+                    raise ValueError('Không thể tải hồ sơ một trong hai người chơi')
+                engine_a = self.server.player_engines.get(match['player_a'], server_a, pa['character_name'])
+                engine_b = self.server.player_engines.get(match['player_b'], server_b, pb['character_name'])
+                snap_a = engine_a.pvp_team_snapshot()
+                snap_b = engine_b.pvp_team_snapshot()
+                report = simulate_battle(
+                    snap_a['team'], snap_b['team'],
+                    battle_id=int(match.get('seed') or 1),
+                    seed=int(match.get('seed') or 1),
+                    battle_type=2,
+                )
+                result = live_service.finish_authoritative_pvp(match['id'], account['uid'], snap_a, snap_b, report)
+                return self.send(200, {'result': result})
+            if path == '/api/pvp/match/result':
+                ctx = self.auth_context(); account = ctx['account']
+                return self.send(200, {'result': live_service.pvp_match_result(data.get('match_id'), account['uid'])})
             if path == '/api/order/create':
                 state = self.engine.snapshot()
                 return self.send(200, live_service.create_order(state.get('uid'), state.get('server_id'), state.get('name'), data.get('package'), data.get('note','')))
