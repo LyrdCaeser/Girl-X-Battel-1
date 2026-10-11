@@ -8,6 +8,7 @@ from pathlib import Path
 from . import database
 
 ROOT = Path(__file__).resolve().parents[1]
+PVP_SEASON_REWARDS = json.loads((ROOT / 'data/pvp_season_rewards.json').read_text())
 DB_PATH = ROOT / "state" / "live_service.sqlite3"
 _lock = threading.RLock()
 
@@ -985,3 +986,67 @@ def schedule_guild_war(operator_uid, server_id, opponent_guild_id, duration=8640
         _audit(db,"guild.war.schedule",wid,{"guild_a":own,"guild_b":other,"operator":operator_uid},"PLAYER")
         db.commit(); db.close()
     return {"id":wid,"starts_at":now+300,"ends_at":now+300+duration}
+
+
+def previous_pvp_season(now=None):
+    t=time.gmtime(int(now or time.time()))
+    year=t.tm_year; month=t.tm_mon-1
+    if month==0:
+        year-=1; month=12
+    return f"{year:04d}-{month:02d}"
+
+
+def pvp_season_reward(mode, rating):
+    tiers=(PVP_SEASON_REWARDS.get("modes") or {}).get(str(mode).lower()) or []
+    rating=int(rating)
+    for tier in sorted(tiers,key=lambda x:int(x.get("min_rating",0)),reverse=True):
+        if rating>=int(tier.get("min_rating",0)):
+            return {str(k):int(v) for k,v in (tier.get("items") or {}).items() if int(v)>0}
+    return {}
+
+
+def pvp_season_claim_status(uid, server_id, mode):
+    season_id=previous_pvp_season()
+    with _lock:
+        db=_db()
+        row=db.execute("""SELECT * FROM pvp_ratings
+                          WHERE uid=? AND server_id=? AND mode=? AND season_id=?""",
+                       (str(uid),str(server_id).upper(),str(mode).lower(),season_id)).fetchone()
+        claim=db.execute("""SELECT * FROM pvp_season_claims
+                            WHERE uid=? AND server_id=? AND mode=? AND season_id=?""",
+                         (str(uid),str(server_id).upper(),str(mode).lower(),season_id)).fetchone()
+        db.close()
+    if not row or int(row["matches"])<=0:
+        return {"season_id":season_id,"eligible":False,"claimed":False,"reward":{},"rating":0}
+    reward=pvp_season_reward(mode,int(row["rating"]))
+    return {"season_id":season_id,"eligible":bool(reward),"claimed":bool(claim),
+            "reward":reward,"rating":int(row["rating"]),"wins":int(row["wins"]),"losses":int(row["losses"])}
+
+
+def claim_pvp_season_reward(uid, server_id, character_name, mode):
+    uid=str(uid); server_id=str(server_id).upper(); mode=str(mode).lower()
+    status=pvp_season_claim_status(uid,server_id,mode)
+    if not status["eligible"]: raise ValueError("Không có phần thưởng mùa trước")
+    if status["claimed"]: raise ValueError("Phần thưởng mùa này đã nhận")
+    reward=status["reward"]; now=int(time.time())
+    with _lock:
+        db=_db(); db.execute("BEGIN IMMEDIATE")
+        if db.execute("""SELECT 1 FROM pvp_season_claims
+                         WHERE uid=? AND server_id=? AND mode=? AND season_id=?""",
+                      (uid,server_id,mode,status["season_id"])).fetchone():
+            db.rollback(); db.close(); raise ValueError("Phần thưởng mùa này đã nhận")
+        db.execute("""INSERT INTO pvp_season_claims(uid,server_id,mode,season_id,rating,reward,claimed_at)
+                      VALUES(?,?,?,?,?,?,?)""",
+                   (uid,server_id,mode,status["season_id"],int(status["rating"]),
+                    json.dumps(reward,ensure_ascii=False),now))
+        mail_id="MAIL-"+uuid.uuid4().hex[:16].upper()
+        db.execute("""INSERT INTO mail(id,uid,server_id,character_name,title,body,attachments,status,created_at,operator)
+                      VALUES(?,?,?,?,?,?,?,'pending',?,'PVP_SEASON')""",
+                   (mail_id,uid,server_id,str(character_name),
+                    f"Phần thưởng PvP mùa {status['season_id']}",
+                    f"Xếp hạng mùa đã kết thúc với Rating {status['rating']}.",
+                    json.dumps(reward),now))
+        _audit(db,"pvp.season_claim",f"{server_id}:{uid}",
+               {"mode":mode,"season":status["season_id"],"rating":status["rating"],"reward":reward},"SYSTEM")
+        db.commit(); db.close()
+    return {"ok":True,"mail_id":mail_id,**status}
