@@ -19,7 +19,7 @@ from gxb2.story import catalog as story_catalog
 from gxb2.dress import catalog as dress_catalog
 from gxb2.skins import catalog as skins_catalog
 from gxb2.souls import catalog as souls_catalog
-from gxb2 import protocol as p, local_promotion, local_config
+from gxb2 import protocol as p, local_promotion, local_config, live_service
 
 ROOT = Path(__file__).resolve().parent
 ADMIN_KEY = 'QuangHo1997#a'
@@ -210,6 +210,10 @@ class HTTPHandler(BaseHTTPRequestHandler):
             if not self.admin_authorized():
                 return self.send(403, {'error': 'QTV_KEY_REQUIRED'})
             return self.send(200, local_config.public_config())
+        if path == '/api/admin/dashboard':
+            if not self.admin_authorized():
+                return self.send(403, {'error': 'QTV_KEY_REQUIRED'})
+            return self.send(200, {'worlds': live_service.worlds(), 'players': live_service.players(), 'orders': live_service.orders(), 'audit': live_service.audit()})
         for prefix, folder in (('/vendor/', ROOT/'web/vendor'), ('/assets/detail/sheet/', ROOT/'web/assets/detail/sheet'), ('/assets/souls/', ROOT/'web/assets/souls'), ('/assets/menu/', ROOT/'web/assets/menu'), ('/assets/stellar/', ROOT/'web/assets/stellar'), ('/assets/story-items/', ROOT/'web/assets/story-items'), ('/assets/assistant/', ROOT/'web/assets/assistant'), ('/assets/ev-sand/', ROOT/'web/assets/ev-sand'), ('/assets/guild/', ROOT/'web/assets/guild'), ('/assets/jackpot/', ROOT/'web/assets/jackpot'), ('/assets/firework-project/', ROOT/'web/assets/firework-project'), ('/assets/puzzle-events/', ROOT/'web/assets/puzzle-events'), ('/assets/blind-box/', ROOT/'web/assets/blind-box'), ('/assets/pirate/', ROOT/'web/assets/pirate'), ('/assets/wish/', ROOT/'web/assets/wish'), ('/assets/magic-card/', ROOT/'web/assets/magic-card'), ('/assets/two-love/', ROOT/'web/assets/two-love'), ('/assets/lost-space/', ROOT/'web/assets/lost-space'), ('/assets/pumpkin/', ROOT/'web/assets/pumpkin'), ('/assets/chimes/', ROOT/'web/assets/chimes'), ('/assets/altar/', ROOT/'web/assets/altar'), ('/assets/battle-loading/', ROOT/'web/assets/battle-loading'), ('/assets/summon-result/', ROOT/'web/assets/summon-result'), ('/assets/dress-show/', ROOT/'web/assets/dress-show'), ('/assets/chibis/', ROOT/'web/assets/chibis'), ('/assets/original-ui/', ROOT/'web/assets/original-ui'),
                                ('/assets/spine/', ROOT/'web/assets/spine'), ('/assets/lihui/', ROOT/'web/assets/lihui'), ('/assets/scenes/', ROOT/'web/assets/scenes'),
                                ('/assets/sounds/', ROOT/'web/assets/sounds'), ('/assets/girl-ui/', ROOT/'web/assets/girl-ui'), ('/assets/station/', ROOT/'web/assets/station'), ('/assets/battle-fx/', ROOT/'web/assets/battle-fx'), ('/assets/growth-diary/', ROOT/'web/assets/growth-diary'), ('/assets/newbie-camp/', ROOT/'web/assets/newbie-camp'), ('/assets/remaining-systems/', ROOT/'web/assets/remaining-systems'), ('/assets/fantasy-book/', ROOT/'web/assets/fantasy-book'), ('/assets/pictures/', ROOT/'web/assets/pictures'), ('/assets/campaign/', ROOT/'web/assets/campaign'), ('/assets/enroll/', ROOT/'web/assets/enroll'), ('/assets/servant/', ROOT/'web/assets/servant'), ('/assets/excursion/', ROOT/'web/assets/excursion'), ('/assets/dates/', ROOT/'web/assets/dates'), ('/assets/missions/', ROOT/'web/assets/missions'), ('/assets/shops/', ROOT/'web/assets/shops'), ('/assets/arena/', ROOT/'web/assets/arena'), ('/assets/patrol/', ROOT/'web/assets/patrol'), ('/assets/house-exam/', ROOT/'web/assets/house-exam'), ('/assets/summon/', ROOT/'web/assets/summon'), ('/assets/hero-challenge/', ROOT/'web/assets/hero-challenge'), ('/assets/sanctuary/', ROOT/'web/assets/sanctuary'), ('/assets/internship/', ROOT/'web/assets/internship'), ('/assets/midas/', ROOT/'web/assets/midas'), ('/assets/old-campus/', ROOT/'web/assets/old-campus'), ('/assets/echoes/', ROOT/'web/assets/echoes'), ('/assets/shrine/', ROOT/'web/assets/shrine'), ('/assets/galaxy/', ROOT/'web/assets/galaxy'), ('/assets/group-buff/', ROOT/'web/assets/group-buff'), ('/assets/story/', ROOT/'web/assets/story'), ('/assets/dress/', ROOT/'web/assets/dress'), ('/assets/skins/', ROOT/'web/assets/skins'), ('/assets/slots/', ROOT/'web/assets/slots')):
@@ -479,6 +483,32 @@ class HTTPHandler(BaseHTTPRequestHandler):
                 if data.get('action') == 'reset':
                     return self.send(200, local_config.reset())
                 return self.send(200, local_config.save(data))
+            if path == '/api/admin/world':
+                if not self.admin_authorized(): return self.send(403, {'error': 'QTV_KEY_REQUIRED'})
+                if data.get('action') == 'create':
+                    return self.send(200, live_service.create_world(data.get('server_id'), data.get('name')))
+                if data.get('action') == 'status':
+                    return self.send(200, live_service.set_world_status(str(data.get('server_id') or '').upper(), data.get('status')))
+                raise ValueError('Thao tác server không hợp lệ')
+            if path == '/api/admin/player/status':
+                if not self.admin_authorized(): return self.send(403, {'error': 'QTV_KEY_REQUIRED'})
+                action = data.get('action')
+                if action not in ('ban','unban'): raise ValueError('Thao tác tài khoản không hợp lệ')
+                return self.send(200, live_service.set_ban(data.get('uid'), data.get('server_id'), action == 'ban', data.get('reason','')))
+            if path == '/api/admin/mail/send':
+                if not self.admin_authorized(): return self.send(403, {'error': 'QTV_KEY_REQUIRED'})
+                return self.send(200, live_service.send_mail(data.get('uid'), data.get('server_id'), data.get('character_name'),
+                    data.get('title'), data.get('body'), data.get('attachments') or {}, 'SUPER_GM'))
+            if path == '/api/admin/order/review':
+                if not self.admin_authorized(): return self.send(403, {'error': 'QTV_KEY_REQUIRED'})
+                action = data.get('action')
+                if action not in ('approve','reject'): raise ValueError('Thao tác đơn hàng không hợp lệ')
+                return self.send(200, live_service.review_order(data.get('order_id'), action == 'approve', data.get('reward') or {}, 'SUPER_GM'))
+            if path == '/api/order/create':
+                state = self.engine.snapshot()
+                return self.send(200, live_service.create_order(state.get('uid'), state.get('server_id'), state.get('name'), data.get('package'), data.get('note','')))
+            if path == '/api/mail/claim':
+                return self.send(200, self.engine.claim_live_mail(data.get('mail_id')))
             if path == '/api/v1':
                 if data.get('mid') != 1 or data.get('local_mode') is not True:
                     raise GameError('Este endpoint acepta solo RETRIEVE_TOKEN con local_mode=true')
