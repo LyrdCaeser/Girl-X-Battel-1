@@ -61,6 +61,39 @@ class GuildAndSeasonTests(unittest.TestCase):
         self.assertTrue(live_service.pvp_season_claim_status("P1","S1","arena")["claimed"])
         self.assertEqual(len(live_service.mailbox("P1","S1")), 1)
 
+    def test_guild_war_score_progression_and_rewards(self):
+        for uid,name,power in [("GA","GuildA",2200),("GB","GuildB",2100)]:
+            live_service.register_player(uid,"S1",name)
+            live_service.touch_presence(uid,"S1",name,80,power)
+        ga=live_service.create_world_guild("GA","S1","GuildA","Alpha","",2200)
+        gb=live_service.create_world_guild("GB","S1","GuildB","Beta","",2100)
+        war=live_service.schedule_guild_war("GA","S1",gb["id"],3600)
+
+        db=live_service._db()
+        db.execute("UPDATE guild_wars SET status='active',starts_at=0 WHERE id=?",(war["id"],))
+        db.commit(); db.close()
+
+        prep=live_service.prepare_guild_war_attack("GA","S1",war["id"],"GB")
+        self.assertEqual(prep["defender"]["guild_id"],gb["id"])
+        result=live_service.record_guild_war_battle(
+            war["id"],"GA","GB",
+            {"uid":"GA","server_id":"S1","power":2200,"team":[]},
+            {"uid":"GB","server_id":"S1","power":2100,"team":[]},
+            {"isWin":1,"frames":[],"total_round":5},
+        )
+        self.assertEqual(result["winner_uid"],"GA")
+        detail=live_service.guild_war_detail("GA","S1",war["id"])
+        self.assertGreater(detail["war"]["score_a"],0)
+        self.assertGreater(live_service.guild_for_player("GA","S1")["exp"],0)
+        member=next(x for x in live_service.guild_for_player("GA","S1")["members"] if x["uid"]=="GA")
+        self.assertGreater(member["contribution"],0)
+
+        settled=live_service.settle_guild_war(war["id"],force=True)
+        self.assertEqual(settled["status"],"finished")
+        self.assertEqual(settled["winner_guild"],ga["id"])
+        self.assertTrue(any(m["operator"]=="GUILD_WAR" for m in live_service.mailbox("GA","S1")))
+        self.assertTrue(any(m["operator"]=="GUILD_WAR" for m in live_service.mailbox("GB","S1")))
+
 
 if __name__ == "__main__":
     unittest.main()
