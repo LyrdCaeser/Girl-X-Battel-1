@@ -326,10 +326,10 @@ def guild_for_player(uid, server_id):
         if not row:
             db.close(); return None
         out=dict(row)
-        members=db.execute("""SELECT uid,server_id,character_name,role,power,joined_at,last_seen
+        members=db.execute("""SELECT uid,server_id,character_name,role,power,contribution,joined_at,last_seen
                               FROM world_guild_members WHERE guild_id=?
                               ORDER BY CASE role WHEN 'leader' THEN 0 WHEN 'deputy' THEN 1 ELSE 2 END,
-                                       power DESC,joined_at""",(int(out["id"]),)).fetchall()
+                                       contribution DESC,power DESC,joined_at""",(int(out["id"]),)).fetchall()
         out["members"]=[dict(r) for r in members]
         out["member_count"]=len(out["members"])
         db.close(); return out
@@ -958,6 +958,7 @@ def guild_ranking(server_id, limit=100):
 
 
 def guild_wars(server_id, limit=50):
+    refresh_guild_wars(server_id)
     with _lock:
         db=_db()
         rows=db.execute("""SELECT w.*,ga.name AS guild_a_name,gb.name AS guild_b_name
@@ -971,7 +972,10 @@ def guild_wars(server_id, limit=50):
 
 
 def schedule_guild_war(operator_uid, server_id, opponent_guild_id, duration=86400):
-    now=int(time.time()); duration=max(3600,min(172800,int(duration)))
+    now=int(time.time())
+    war_cfg=GUILD_ONLINE_CONFIG.get("guild_war") or {}
+    duration=max(3600,min(172800,int(duration or war_cfg.get("default_duration_seconds",86400))))
+    delay=max(0,min(3600,int(war_cfg.get("start_delay_seconds",60))))
     with _lock:
         db=_db(); db.execute("BEGIN IMMEDIATE")
         member=_require_guild_role(db,operator_uid,server_id,("leader","deputy"))
@@ -983,10 +987,10 @@ def schedule_guild_war(operator_uid, server_id, opponent_guild_id, duration=8640
         wid="GW-"+uuid.uuid4().hex[:14].upper()
         db.execute("""INSERT INTO guild_wars(id,server_id,guild_a,guild_b,score_a,score_b,status,starts_at,ends_at,winner_guild,created_at)
                       VALUES(?,?,?, ?,0,0,'scheduled',?,?,0,?)""",
-                   (wid,str(server_id).upper(),own,other,now+300,now+300+duration,now))
+                   (wid,str(server_id).upper(),own,other,now+delay,now+delay+duration,now))
         _audit(db,"guild.war.schedule",wid,{"guild_a":own,"guild_b":other,"operator":operator_uid},"PLAYER")
         db.commit(); db.close()
-    return {"id":wid,"starts_at":now+300,"ends_at":now+300+duration}
+    return {"id":wid,"starts_at":now+delay,"ends_at":now+delay+duration}
 
 
 def previous_pvp_season(now=None):
