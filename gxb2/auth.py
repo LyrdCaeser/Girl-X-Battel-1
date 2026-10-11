@@ -149,18 +149,23 @@ def register(username, password, character_name, server_id="S1", email="", user_
     with _lock:
         db = _db()
         try:
-            cur = db.execute("""INSERT INTO accounts(uid,username,email,password_hash,salt,status,created_at,last_login)
-                                VALUES(NULL,?,?,?,?,'active',?,?)""",
-                             (username, email, pwh, salt.hex(), now, now))
-            account_id = int(cur.lastrowid)
+            if db.backend == "postgres":
+                cur = db.execute("""INSERT INTO accounts(uid,username,email,password_hash,salt,status,created_at,last_login)
+                                    VALUES(NULL,?,?,?,?,'active',?,?) RETURNING id""",
+                                 (username, email, pwh, salt.hex(), now, now))
+                account_id = int(cur.fetchone()["id"])
+            else:
+                cur = db.execute("""INSERT INTO accounts(uid,username,email,password_hash,salt,status,created_at,last_login)
+                                    VALUES(NULL,?,?,?,?,'active',?,?)""",
+                                 (username, email, pwh, salt.hex(), now, now))
+                account_id = int(cur.lastrowid)
             uid = f"GXB3-{account_id:08d}"
             db.execute("UPDATE accounts SET uid=? WHERE id=?", (uid, account_id))
             recovery_code = _new_recovery_code()
-            db.execute("INSERT OR REPLACE INTO recovery_codes(account_id,code_hash,created_at,used_at) VALUES(?,?,?,0)",
-                       (account_id,_recovery_hash(recovery_code),now))
+            _save_recovery(db, account_id, _recovery_hash(recovery_code), now, 0)
             token, expires, session_id = _new_session(db, account_id, server_id, user_agent, remote_addr)
             db.commit()
-        except sqlite3.IntegrityError as exc:
+        except database.IntegrityError as exc:
             db.rollback(); db.close()
             msg = str(exc).lower()
             if "username" in msg: raise ValueError("Tên đăng nhập đã tồn tại")
@@ -324,8 +329,7 @@ def rotate_recovery_code(token):
     code=_new_recovery_code(); now=int(time.time())
     with _lock:
         db=_db()
-        db.execute("INSERT OR REPLACE INTO recovery_codes(account_id,code_hash,created_at,used_at) VALUES(?,?,?,0)",
-                   (account_id,_recovery_hash(code),now))
+        _save_recovery(db, account_id, _recovery_hash(code), now, 0)
         db.commit(); db.close()
     return {"recovery_code": code}
 
