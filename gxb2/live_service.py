@@ -306,3 +306,245 @@ def leaderboard(server_id, limit=100):
         for idx,r in enumerate(rows,1):
             d=dict(r); d["rank"]=idx; out.append(d)
         db.close(); return out
+
+
+def _guild_row(db, guild_id):
+    row=db.execute("SELECT * FROM world_guilds WHERE id=?",(int(guild_id),)).fetchone()
+    return dict(row) if row else None
+
+
+def guild_for_player(uid, server_id):
+    uid=str(uid or '').strip(); server_id=str(server_id or '').strip().upper()
+    with _lock:
+        db=_db()
+        row=db.execute("""SELECT g.*,m.role,m.power AS member_power,m.joined_at
+                          FROM world_guild_members m
+                          JOIN world_guilds g ON g.id=m.guild_id
+                          WHERE m.uid=? AND m.server_id=?""",(uid,server_id)).fetchone()
+        if not row:
+            db.close(); return None
+        out=dict(row)
+        members=db.execute("""SELECT uid,server_id,character_name,role,power,joined_at,last_seen
+                              FROM world_guild_members WHERE guild_id=?
+                              ORDER BY CASE role WHEN 'leader' THEN 0 WHEN 'deputy' THEN 1 ELSE 2 END,
+                                       power DESC,joined_at""",(int(out["id"]),)).fetchall()
+        out["members"]=[dict(r) for r in members]
+        out["member_count"]=len(out["members"])
+        db.close(); return out
+
+
+def world_guilds(server_id, limit=100):
+    server_id=str(server_id or '').strip().upper()
+    limit=max(1,min(200,int(limit)))
+    with _lock:
+        db=_db()
+        rows=db.execute("""SELECT g.*,
+                            (SELECT COUNT(*) FROM world_guild_members m WHERE m.guild_id=g.id) AS member_count
+                           FROM world_guilds g WHERE g.server_id=?
+                           ORDER BY g.level DESC,g.exp DESC,g.created_at ASC LIMIT ?""",
+                        (server_id,limit)).fetchall()
+        out=[dict(r) for r in rows]; db.close(); return out
+
+
+def create_world_guild(uid, server_id, character_name, name, notice="", power=0):
+    uid=str(uid or '').strip(); server_id=str(server_id or '').strip().upper()
+    character_name=str(character_name or '').strip(); name=str(name or '').strip()
+    notice=str(notice or '').strip()[:180]
+    if not 3 <= len(name) <= 24: raise ValueError("Tên Guild phải dài 3–24 ký tự")
+    if not character_name: raise ValueError("Tên Nhân Vật không hợp lệ")
+    now=int(time.time())
+    with _lock:
+        db=_db(); db.execute("BEGIN IMMEDIATE")
+        if db.execute("SELECT 1 FROM world_guild_members WHERE uid=? AND server_id=?",(uid,server_id)).fetchone():
+            db.rollback(); db.close(); raise ValueError("Bạn đã ở trong một Guild")
+        try:
+            if db.backend=="postgres":
+                cur=db.execute("""INSERT INTO world_guilds(server_id,name,notice,owner_uid,level,exp,created_at)
+                                  VALUES(?,?,?, ?,1,0,?) RETURNING id""",(server_id,name,notice,uid,now))
+                guild_id=int(cur.fetchone()["id"])
+            else:
+                cur=db.execute("""INSERT INTO world_guilds(server_id,name,notice,owner_uid,level,exp,created_at)
+                                  VALUES(?,?,?, ?,1,0,?)""",(server_id,name,notice,uid,now))
+                guild_id=int(cur.lastrowid)
+        except database.IntegrityError:
+            db.rollback(); db.close(); raise ValueError("Tên Guild đã tồn tại trong server này")
+        db.execute("""INSERT INTO world_guild_members(guild_id,uid,server_id,character_name,role,power,joined_at,last_seen)
+                      VALUES(?,?,?,?, 'leader',?,?,?)""",
+                   (guild_id,uid,server_id,character_name,max(0,int(power)),now,now))
+        _audit(db,"guild.create",f"{server_id}:{guild_id}",{"uid":uid,"name":name},"PLAYER")
+        db.commit(); db.close()
+    return guild_for_player(uid,server_id)
+
+
+def join_world_guild(uid, server_id, character_name, guild_id, power=0):
+    uid=str(uid or '').strip(); server_id=str(server_id or '').strip().upper()
+    character_name=str(character_name or '').strip(); guild_id=int(guild_id)
+    now=int(time.time())
+    with _lock:
+        db=_db(); db.execute("BEGIN IMMEDIATE")
+        if db.execute("SELECT 1 FROM world_guild_members WHERE uid=? AND server_id=?",(uid,server_id)).fetchone():
+            db.rollback(); db.close(); raise ValueError("Bạn đã ở trong một Guild")
+        guild=db.execute("SELECT * FROM world_guilds WHERE id=? AND server_id=?",(guild_id,server_id)).fetchone()
+        if not guild:
+            db.rollback(); db.close(); raise ValueError("Guild không tồn tại trong server này")
+        count=int(db.execute("SELECT COUNT(*) AS c FROM world_guild_members WHERE guild_id=?",(guild_id,)).fetchone()["c"])
+        capacity=20+max(0,int(guild["level"])-1)*2
+        if count>=capacity:
+            db.rollback(); db.close(); raise ValueError("Guild đã đầy")
+        db.execute("""INSERT INTO world_guild_members(guild_id,uid,server_id,character_name,role,power,joined_at,last_seen)
+                      VALUES(?,?,?,?, 'member',?,?,?)""",
+                   (guild_id,uid,server_id,character_name,max(0,int(power)),now,now))
+        _audit(db,"guild.join",f"{server_id}:{guild_id}",{"uid":uid},"PLAYER")
+        db.commit(); db.close()
+    return guild_for_player(uid,server_id)
+
+
+def leave_world_guild(uid, server_id):
+    uid=str(uid or '').strip(); server_id=str(server_id or '').strip().upper()
+    with _lock:
+        db=_db(); db.execute("BEGIN IMMEDIATE")
+        member=db.execute("""SELECT m.*,g.owner_uid FROM world_guild_members m
+                             JOIN world_guilds g ON g.id=m.guild_id
+                             WHERE m.uid=? AND m.server_id=?""",(uid,server_id)).fetchone()
+        if not member:
+            db.rollback(); db.close(); raise ValueError("Bạn chưa ở trong Guild")
+        if member["role"]=="leader" or member["owner_uid"]==uid:
+            count=int(db.execute("SELECT COUNT(*) AS c FROM world_guild_members WHERE guild_id=?",(int(member["guild_id"]),)).fetchone()["c"])
+            if count>1:
+                db.rollback(); db.close(); raise ValueError("Leader phải chuyển quyền hoặc chỉ còn một mình mới có thể giải tán")
+            db.execute("DELETE FROM world_guilds WHERE id=?",(int(member["guild_id"]),))
+            action="guild.disband"
+        else:
+            db.execute("DELETE FROM world_guild_members WHERE uid=? AND server_id=?",(uid,server_id))
+            action="guild.leave"
+        _audit(db,action,f"{server_id}:{member['guild_id']}",{"uid":uid},"PLAYER")
+        db.commit(); db.close()
+    return {"ok":True}
+
+
+def update_world_guild_member(uid, server_id, character_name, power=0):
+    now=int(time.time())
+    with _lock:
+        db=_db()
+        db.execute("""UPDATE world_guild_members SET character_name=?,power=?,last_seen=?
+                      WHERE uid=? AND server_id=?""",
+                   (str(character_name or '')[:40],max(0,int(power)),now,str(uid),str(server_id).upper()))
+        db.commit(); db.close()
+
+
+def enqueue_pvp(uid, server_id, character_name, mode, power=0):
+    uid=str(uid or '').strip(); server_id=str(server_id or '').strip().upper()
+    character_name=str(character_name or '').strip()
+    mode=str(mode or 'arena').strip().lower()
+    if mode not in ("arena","team","cross"): raise ValueError("Chế độ PvP không hợp lệ")
+    power=max(0,int(power)); now=int(time.time())
+    with _lock:
+        db=_db(); db.execute("BEGIN IMMEDIATE")
+        existing=db.execute("""SELECT * FROM pvp_matches
+                               WHERE status IN ('ready','active') AND (player_a=? OR player_b=?)
+                               ORDER BY created_at DESC LIMIT 1""",(uid,uid)).fetchone()
+        if existing:
+            out=dict(existing); db.commit(); db.close(); return {"status":"matched","match":out}
+        db.execute("""INSERT INTO pvp_queue(uid,server_id,character_name,mode,power,joined_at,status)
+                      VALUES(?,?,?,?,?,?,'waiting')
+                      ON CONFLICT(uid,server_id,mode) DO UPDATE SET
+                        character_name=excluded.character_name,power=excluded.power,
+                        joined_at=excluded.joined_at,status='waiting'""",
+                   (uid,server_id,character_name,mode,power,now))
+        if mode=="cross":
+            opponent=db.execute("""SELECT * FROM pvp_queue
+                                   WHERE mode=? AND status='waiting' AND uid<>?
+                                   ORDER BY ABS(power-?),joined_at LIMIT 1""",
+                                (mode,uid,power)).fetchone()
+        else:
+            opponent=db.execute("""SELECT * FROM pvp_queue
+                                   WHERE mode=? AND status='waiting' AND server_id=? AND uid<>?
+                                   ORDER BY ABS(power-?),joined_at LIMIT 1""",
+                                (mode,server_id,uid,power)).fetchone()
+        if opponent:
+            match_id="PVP-"+uuid.uuid4().hex[:16].upper()
+            seed=uuid.uuid4().int % 2147483647
+            match_server="CROSS" if mode=="cross" else server_id
+            db.execute("""INSERT INTO pvp_matches(id,mode,server_id,player_a,player_b,name_a,name_b,power_a,power_b,status,winner_uid,created_at,resolved_at,seed)
+                          VALUES(?,?,?,?,?,?,?,?,?,'ready','',?,0,?)""",
+                       (match_id,mode,match_server,str(opponent["uid"]),uid,str(opponent["character_name"]),character_name,
+                        int(opponent["power"]),power,now,seed))
+            db.execute("DELETE FROM pvp_queue WHERE (uid=? AND server_id=? AND mode=?) OR (uid=? AND server_id=? AND mode=?)",
+                       (uid,server_id,mode,str(opponent["uid"]),str(opponent["server_id"]),mode))
+            _audit(db,"pvp.match",match_id,{"mode":mode,"a":opponent["uid"],"b":uid},"SYSTEM")
+            row=db.execute("SELECT * FROM pvp_matches WHERE id=?",(match_id,)).fetchone()
+            out={"status":"matched","match":dict(row)}
+        else:
+            out={"status":"waiting","joined_at":now}
+        db.commit(); db.close(); return out
+
+
+def cancel_pvp(uid, server_id, mode):
+    with _lock:
+        db=_db()
+        db.execute("DELETE FROM pvp_queue WHERE uid=? AND server_id=? AND mode=?",
+                   (str(uid),str(server_id).upper(),str(mode).lower()))
+        db.commit(); db.close()
+    return {"ok":True}
+
+
+def pvp_status(uid, server_id, mode=""):
+    uid=str(uid or '').strip(); server_id=str(server_id or '').strip().upper(); mode=str(mode or '').lower()
+    with _lock:
+        db=_db()
+        match=db.execute("""SELECT * FROM pvp_matches
+                            WHERE (player_a=? OR player_b=?) AND status IN ('ready','active')
+                            ORDER BY created_at DESC LIMIT 1""",(uid,uid)).fetchone()
+        if match:
+            out={"status":"matched","match":dict(match)}
+        else:
+            if mode:
+                q=db.execute("SELECT * FROM pvp_queue WHERE uid=? AND server_id=? AND mode=?",(uid,server_id,mode)).fetchone()
+            else:
+                q=db.execute("SELECT * FROM pvp_queue WHERE uid=? AND server_id=? ORDER BY joined_at DESC LIMIT 1",(uid,server_id)).fetchone()
+            out={"status":"waiting","queue":dict(q)} if q else {"status":"idle"}
+        db.close(); return out
+
+
+def activate_pvp_match(match_id, uid):
+    with _lock:
+        db=_db(); db.execute("BEGIN IMMEDIATE")
+        row=db.execute("SELECT * FROM pvp_matches WHERE id=?",(str(match_id),)).fetchone()
+        if not row:
+            db.rollback(); db.close(); raise ValueError("Không tìm thấy trận PvP")
+        if uid not in (row["player_a"],row["player_b"]):
+            db.rollback(); db.close(); raise ValueError("Bạn không thuộc trận PvP này")
+        if row["status"]=="ready":
+            db.execute("UPDATE pvp_matches SET status='active' WHERE id=?",(str(match_id),))
+        row=db.execute("SELECT * FROM pvp_matches WHERE id=?",(str(match_id),)).fetchone()
+        db.commit(); out=dict(row); db.close(); return out
+
+
+def resolve_pvp_match(match_id, uid, winner_uid):
+    with _lock:
+        db=_db(); db.execute("BEGIN IMMEDIATE")
+        row=db.execute("SELECT * FROM pvp_matches WHERE id=?",(str(match_id),)).fetchone()
+        if not row:
+            db.rollback(); db.close(); raise ValueError("Không tìm thấy trận PvP")
+        if uid not in (row["player_a"],row["player_b"]):
+            db.rollback(); db.close(); raise ValueError("Bạn không thuộc trận PvP này")
+        if winner_uid not in (row["player_a"],row["player_b"]):
+            db.rollback(); db.close(); raise ValueError("Winner không hợp lệ")
+        if row["status"]=="finished":
+            out=dict(row); db.commit(); db.close(); return out
+        now=int(time.time())
+        db.execute("UPDATE pvp_matches SET status='finished',winner_uid=?,resolved_at=? WHERE id=?",
+                   (str(winner_uid),now,str(match_id)))
+        _audit(db,"pvp.finish",str(match_id),{"winner":winner_uid},"SYSTEM")
+        row=db.execute("SELECT * FROM pvp_matches WHERE id=?",(str(match_id),)).fetchone()
+        db.commit(); out=dict(row); db.close(); return out
+
+
+def pvp_history(uid, limit=50):
+    limit=max(1,min(200,int(limit)))
+    with _lock:
+        db=_db()
+        rows=db.execute("""SELECT * FROM pvp_matches
+                           WHERE player_a=? OR player_b=?
+                           ORDER BY created_at DESC LIMIT ?""",(str(uid),str(uid),limit)).fetchall()
+        out=[dict(r) for r in rows]; db.close(); return out
