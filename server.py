@@ -702,11 +702,14 @@ class HTTPHandler(BaseHTTPRequestHandler):
                 engine_b = self.server.player_engines.get(match['player_b'], server_b, pb['character_name'])
                 snap_a = engine_a.pvp_team_snapshot()
                 snap_b = engine_b.pvp_team_snapshot()
+                ready = live_service.heartbeat_pvp_match(match['id'], account['uid'], True)
+                if ready['match'].get('status') != 'active':
+                    return self.send(409, {'error': 'Đang chờ đối thủ sẵn sàng', 'session': ready})
                 report = simulate_battle(
                     snap_a['team'], snap_b['team'],
                     battle_id=int(match.get('seed') or 1),
                     seed=int(match.get('seed') or 1),
-                    battle_type=2,
+                    battle_type=1,
                 )
                 result = live_service.finish_authoritative_pvp(match['id'], account['uid'], snap_a, snap_b, report)
                 return self.send(200, {'result': result})
