@@ -60,8 +60,14 @@ window.GxbAuth=(()=>{
   }
   function installAccountControls(){
     const settings=document.getElementById('profile-settings-page');if(!settings||settings.querySelector('.auth-account-row'))return;
-    const row=el('div','profile-setting-row auth-account-row');const div=el('div');div.append(el('strong','','Đăng nhập'),el('small','',session?.account?`${session.account.username} · ${session.account.uid} · ${session.account.server_id}`:''));
+    const row=el('div','profile-setting-row auth-account-row');const div=el('div');div.append(el('strong','','Tài khoản'),el('small','',session?.account?`${session.account.username} · ${session.account.uid}`:''));
     const out=el('button','auth-small-btn','Đăng xuất');out.onclick=async()=>{try{await request('/api/auth/logout',{});}finally{location.reload();}};row.append(div,out);settings.append(row);
+
+    const serverRow=el('div','profile-setting-row auth-server-row');const host=el('div');host.append(el('strong','','Server / Nhân Vật'),el('small','',session?`${session.account.server_id} · ${session.character_name}`:''));
+    const select=worldSelect('auth-account-server');select.value=session?.account?.server_id||'S1';
+    const go=el('button','auth-small-btn','Chuyển');go.onclick=async()=>{try{await request('/api/auth/switch-server',{server_id:select.value});location.reload();}catch(e){alert(e.message);}};
+    const create=el('button','auth-small-btn','Tạo NV');create.onclick=async()=>{const name=prompt('Tên Nhân Vật ở '+select.value+':','');if(!name)return;try{await request('/api/auth/create-character',{server_id:select.value,character_name:name});location.reload();}catch(e){alert(e.message);}};
+    serverRow.append(host,select,go,create);settings.append(serverRow);
   }
   window.GxbAuthReady=init();
   return{request,session:()=>session,worlds:()=>worlds,logout:async()=>{await request('/api/auth/logout',{});location.reload();}};
