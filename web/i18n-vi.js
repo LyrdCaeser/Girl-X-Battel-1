@@ -74,6 +74,8 @@
     'Cancel':'Hủy',
     'Save':'Lưu',
     'Developer Mode':'Chế độ Quản Trị',
+    'Khóa QTV':'Khóa QTV',
+    'Nhập khóa hiển thị trong Terminal':'Nhập khóa hiển thị trong Terminal',
     'Back to my save':'Về bản lưu thường',
     'Enable Developer Mode':'Bật chế độ Quản Trị',
     'Add Girl':'Thêm Nữ Sinh',
