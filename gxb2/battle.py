@@ -47,14 +47,24 @@ def attributes(partners: list, guild_skills: list | None = None, chime_bonus: li
         raise RuntimeError('Cálculo de atributos falló: ' + result.stderr[-800:])
     return json.loads(result.stdout)
 
-def simulate(team_a: list, team_b: list, battle_id: int, seed: int, pet_a: dict | None = None, battle_type: int = 1, guild_skills_a: list | None = None, god_skills: list | None = None,
-             shrine_id: int | None = None, max_round: int | None = None, galaxy_info: dict | None = None, chime_bonus_a: list | None = None) -> dict:
+def simulate(team_a: list, team_b: list, battle_id: int, seed: int, pet_a: dict | None = None, battle_type: int = 1,
+             guild_skills_a: list | None = None, guild_skills_b: list | None = None, pet_b: dict | None = None,
+             god_skills: list | None = None, shrine_id: int | None = None, max_round: int | None = None,
+             galaxy_info: dict | None = None, chime_bonus_a: list | None = None, chime_bonus_b: list | None = None) -> dict:
     runtime = luajit_runtime()
     if not runtime.exists():
         raise RuntimeError('Falta el intérprete LuaJIT compatible. Consulta LEEME.md.')
-    request = dict(guildSkillsA=guild_skills_a or [], god_skills=[int(x) for x in (god_skills or [])], teamA=[combat_partner(p) for p in team_a], teamB=[combat_partner(p) for p in team_b], battle_id=battle_id, random_seed=seed, battle_type=battle_type)
+    request = dict(
+        guildSkillsA=guild_skills_a or [], guildSkillsB=guild_skills_b or [],
+        god_skills=[int(x) for x in (god_skills or [])],
+        teamA=[combat_partner(p) for p in team_a], teamB=[combat_partner(p) for p in team_b],
+        battle_id=battle_id, random_seed=seed, battle_type=battle_type,
+        chimeBonusA=chime_bonus_a or [], chimeBonusB=chime_bonus_b or [],
+    )
     if pet_a:
         request['petA'] = pet_a
+    if pet_b:
+        request['petB'] = pet_b
     if shrine_id:
         request['shrine_id'] = int(shrine_id)
     if max_round:
@@ -63,6 +73,8 @@ def simulate(team_a: list, team_b: list, battle_id: int, seed: int, pet_a: dict 
         request['galaxy_info'] = galaxy_info
     if chime_bonus_a:
         request['chimeBonusA'] = chime_bonus_a
+    if chime_bonus_b:
+        request['chimeBonusB'] = chime_bonus_b
     with tempfile.TemporaryDirectory(prefix='gxb2-battle-') as temp:
         path = Path(temp) / 'input.lua'
         path.write_text('return ' + lua_literal(request))
