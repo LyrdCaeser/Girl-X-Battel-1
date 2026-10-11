@@ -14,6 +14,7 @@ where to get each skin ("Method") is the Skin Shop when it is sold there, otherw
 from __future__ import annotations
 import copy, json
 from pathlib import Path
+from . import local_config
 
 DATA = json.loads((Path(__file__).resolve().parents[1] / 'data/skins.json').read_text())
 SKINS = {int(k): v for k, v in DATA['skins'].items()}
@@ -101,7 +102,7 @@ def action(state, request):
         skin = int(request.get('skin', 0)); row = SKINS.get(skin)
         if not row or not row.get('shop'):
             raise ValueError('Esta skin no se vende en la Skin Store')
-        ck, cn = str(row['shop']).split('#')[:2]; cn = int(cn)
+        ck, cn = str(row['shop']).split('#')[:2]; cn = local_config.shop_cost(int(cn))
         if int(items.get(ck, 0)) < cn:
             raise ValueError('Not enough Costume Tickets')
         items[ck] = int(items[ck]) - cn
