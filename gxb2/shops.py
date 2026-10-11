@@ -13,7 +13,7 @@ LOCAL decisions (server logic missing, see DESIGN_DECISIONS.md LOCAL-026):
 """
 from __future__ import annotations
 import json, time
-from . import clock, local_config
+from . import clock, world_live_config
 from pathlib import Path
 
 DATA = json.loads((Path(__file__).resolve().parents[1] / 'data/shops.json').read_text())
@@ -38,7 +38,7 @@ def limits(sid):
     return [int(x) for x in str(SHOPS[sid].get('slot_buy_time') or '').split('|') if x not in ('',)]
 
 
-def goods(sid):
+def goods(sid, server_id='S1'):
     shop = SHOPS[sid]
     rows = DATA['tables'][shop['excel_table']]
     lim = limits(sid)
@@ -47,10 +47,10 @@ def goods(sid):
         if sid == 7:
             box = BOX.get(int(r['dropbox_id']), [{}])[0]
             item, cost, cap = pair(box.get('item')), pair(box.get('cost')), 1
-            cost[1] = local_config.shop_cost(cost[1])
+            cost[1] = world_live_config.shop_cost(cost[1], server_id)
         else:
             item, cost = pair(r.get('item')), pair(r.get('cost'))
-            cost[1] = local_config.shop_cost(cost[1])
+            cost[1] = world_live_config.shop_cost(cost[1], server_id)
             cap = lim[i] if i < len(lim) else -1
         if item[0] <= 0 or cost[0] <= 0:
             continue
@@ -75,14 +75,16 @@ def level_ok(sid, level):
 
 def snapshot(state, level, now=None):
     now = int(time.time()) if now is None else now
+    server_id = str(state.get('server_id') or 'S1').upper()
     out = {}
     for sid, shop in SHOPS.items():
         if sid == 3:
             continue
         b = (state.get('shop_boards') or {}).get(str(sid)) or {}
         bought = b.get('bought', {}) if (sid not in DAILY or b.get('day') == day(now)) else {}
-        out[sid] = {'id': sid, 'open': level_ok(sid, level), 'limit_level': shop.get('limit_level'), 'available': sid != 2,
-                    'goods': [{**g, 'bought': int(bought.get(str(g['index']), 0))} for g in goods(sid)] if sid != 2 else [],
+        enabled = world_live_config.shop_enabled(server_id, sid)
+        out[sid] = {'id': sid, 'open': level_ok(sid, level) and enabled, 'limit_level': shop.get('limit_level'), 'available': sid != 2 and enabled,
+                    'goods': [{**g, 'bought': int(bought.get(str(g['index']), 0))} for g in goods(sid, server_id)] if sid != 2 and enabled else [],
                     'refresh_at': (int(time.mktime(time.strptime(day(now), '%Y-%m-%d'))) + 86400) if sid in DAILY else 0}
     return out
 
@@ -90,8 +92,11 @@ def snapshot(state, level, now=None):
 def action(state, request, level, now=None):
     now = int(time.time()) if now is None else now
     sid = int(request.get('shop', 0))
+    server_id = str(state.get('server_id') or 'S1').upper()
     if sid not in SHOPS or sid in (2, 3):
         raise ValueError('Tienda no disponible')
+    if not world_live_config.shop_enabled(server_id, sid):
+        raise ValueError('Shop đang tạm đóng trên server này')
     if not level_ok(sid, level):
         raise ValueError(f"Se desbloquea al nivel {SHOPS[sid]['limit_level']}")
     b = saved(state, sid, now)
@@ -99,7 +104,7 @@ def action(state, request, level, now=None):
     kind = request.get('action')
     if kind == 'buy':
         idx = int(request.get('index', 0)); num = max(1, int(request.get('num', 1)))
-        g = next((x for x in goods(sid) if x['index'] == idx), None)
+        g = next((x for x in goods(sid, server_id) if x['index'] == idx), None)
         if not g:
             raise ValueError('Artículo inexistente')
         have = int(b['bought'].get(str(idx), 0))
@@ -117,7 +122,7 @@ def action(state, request, level, now=None):
         shop = SHOPS[sid]
         if not int(shop.get('is_refresh') or 0) or not shop.get('refresh_cost'):
             raise ValueError('Esta tienda no se puede refrescar')
-        cid, cn = pair(shop['refresh_cost']); cn = local_config.shop_cost(cn)
+        cid, cn = pair(shop['refresh_cost']); cn = world_live_config.shop_cost(cn, server_id)
         if int(items.get(str(cid), 0)) < cn:
             raise ValueError('Faltan recursos')
         items[str(cid)] = int(items.get(str(cid), 0)) - cn
