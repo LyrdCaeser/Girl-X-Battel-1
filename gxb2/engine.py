@@ -652,6 +652,8 @@ class Engine:
             stars = int(row['max_star']) + int(partner.get('awake', 0))
             grade, max_grade = int(partner.get('grade', 0)), int(row.get('max_grade') or 0)
             awake = ASCENSION.get(f"{partner['table_id']}:{stars+1}") or local_promotion.recipe(partner) or self.awake_recipe(partner)
+            if awake and awake.get('cost'):
+                awake = {**awake, 'cost': {str(k): local_config.scale_cost(v) for k, v in awake['cost'].items()}}
             state['roster'].append({**partner, 'name': TABLES['names'].get(str(partner['table_id']), str(partner['table_id'])),
                                     'local_promotion': int(partner['table_id']) in local_promotion.BASE, 'stars': stars, 'level_cap': self.level_cap(partner), 'next_cost': cost,
                                     'group': int(row['group']), 'job': int(row['job']), 'max_grade': max_grade,
