@@ -9,7 +9,7 @@ from psycopg.rows import dict_row
 
 
 AUTH_TABLES = ["accounts", "sessions", "recovery_codes", "login_attempts"]
-LIVE_TABLES = ["worlds", "players", "mail", "orders", "audit"]
+LIVE_TABLES = ["worlds", "players", "mail", "orders", "audit", "presence", "leaderboard"]
 
 
 def rows(path, table):
@@ -136,6 +136,22 @@ def ensure_schema(pg):
             target TEXT NOT NULL,
             detail TEXT NOT NULL
         )""")
+        c.execute("""CREATE TABLE IF NOT EXISTS presence(
+            uid TEXT NOT NULL,
+            server_id TEXT NOT NULL,
+            character_name TEXT NOT NULL,
+            last_seen BIGINT NOT NULL,
+            PRIMARY KEY(uid, server_id)
+        )""")
+        c.execute("""CREATE TABLE IF NOT EXISTS leaderboard(
+            uid TEXT NOT NULL,
+            server_id TEXT NOT NULL,
+            character_name TEXT NOT NULL,
+            level INTEGER NOT NULL DEFAULT 1,
+            power BIGINT NOT NULL DEFAULT 0,
+            updated_at BIGINT NOT NULL,
+            PRIMARY KEY(uid, server_id)
+        )""")
 
 
 def main():
@@ -158,6 +174,8 @@ def main():
         "mail": rows(live_path, "mail"),
         "orders": rows(live_path, "orders"),
         "audit": rows(live_path, "audit"),
+        "presence": rows(live_path, "presence"),
+        "leaderboard": rows(live_path, "leaderboard"),
     }
 
     if args.dry_run:
@@ -177,6 +195,8 @@ def main():
         inserted["mail"] = insert_many(pg, "mail", source["mail"], ["id"])
         inserted["orders"] = insert_many(pg, "orders", source["orders"], ["id"])
         inserted["audit"] = insert_many(pg, "audit", source["audit"], ["id"])
+        inserted["presence"] = insert_many(pg, "presence", source["presence"], ["uid", "server_id"])
+        inserted["leaderboard"] = insert_many(pg, "leaderboard", source["leaderboard"], ["uid", "server_id"])
 
         with pg.cursor() as cur:
             cur.execute("SELECT COALESCE(MAX(id),0)+1 AS n FROM accounts")
