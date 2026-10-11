@@ -6,7 +6,7 @@ window.AdminPanel=(()=>{
   function ensure(){
     if(root)return root;
     root=el('section','admin-view');root.id='admin-view';root.hidden=true;
-    const head=el('header','admin-head');const back=el('button','','← Game');back.onclick=close;head.append(back,el('h1','','Bảng Quản Trị GxB2 Local'));root.append(head);
+    const head=el('header','admin-head');const back=el('button','','← Game');back.onclick=close;const exit=el('button','','Thoát QTV');exit.onclick=logout;head.append(back,el('h1','','Bảng Quản Trị GxB2 Local'),exit);root.append(head);
     const grid=el('div','admin-grid');
 
     const res=el('section','admin-card');res.append(el('h2','','Tài nguyên & nhân vật khởi đầu'));
@@ -74,5 +74,6 @@ window.AdminPanel=(()=>{
   }catch(e){status(e.message);}}
   async function open(){ensure();root.hidden=false;await load();}
   function close(){if(root)root.hidden=true;showView('home');}
-  return{open,close,load};
+  async function logout(){developerMode=false;adminKey='';sessionStorage.setItem('gxb2-developer','0');sessionStorage.removeItem('gxb2-admin-key');if(root)root.hidden=true;state=await api('/api/state');loadFormation();showView('home');render();}
+  return{open,close,load,logout};
 })();
