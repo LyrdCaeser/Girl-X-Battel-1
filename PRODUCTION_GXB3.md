@@ -69,6 +69,10 @@ Script migrate:
 - GM mail
 - orders
 - audit log
+- player gameplay profiles
+- player battle history
+- online presence
+- leaderboard
 
 Sau khi kiểm tra dữ liệu PostgreSQL đầy đủ mới đặt `GXB3_DATABASE_URL` cho server production.
 
@@ -116,10 +120,25 @@ HTTP server hiện tại vẫn dựa trên Python `ThreadingHTTPServer`. Nó ph�
 
 Trước public scale cần chuyển lớp transport sang production ASGI/WSGI service, thêm:
 - PostgreSQL cho account/live-service: **đã có adapter + connection pool + migration utility**.
-- Gameplay save per-world vẫn cần chuyển khỏi SQLite local disk để chạy nhiều instance stateless.
+- Gameplay save per-world đã có PostgreSQL shared storage theo UID + Server; transaction gameplay khóa row profile bằng `FOR UPDATE` để tránh hai instance ghi đè cùng lúc.
 - Redis/session/rate-limit khi chạy nhiều instance.
 - HTTPS/reverse proxy.
 - backup/restore.
 - metrics/logging có redaction.
 - CSRF strategy nếu bổ sung cross-site frontend.
 - centralized audit và payment reconciliation.
+
+
+## Online presence / Leaderboard foundation
+
+Khi player snapshot được cập nhật, server ghi:
+- online presence theo UID + Server
+- level
+- team power
+- timestamp
+
+API authenticated:
+- `GET /api/world/online?server_id=S1`
+- `GET /api/leaderboard?server_id=S1&limit=100`
+
+SUPER GM Dashboard hiển thị số người online hiện tại. Đây là nền dùng chung cho leaderboard, matchmaking, guild online state và PvP ở chặng sau.
