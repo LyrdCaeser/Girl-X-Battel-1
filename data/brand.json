@@ -1,0 +1,11 @@
+{
+  "game_name": "Nữ Thần Chiến Đấu - GXB 3",
+  "short_name": "GXB 3",
+  "default_language": "vi",
+  "supported_languages": ["vi", "en", "zh-CN"],
+  "payment": {
+    "method": "zalo_message",
+    "zalo_number": "0856848557",
+    "notice": "Thanh toán được xác nhận thủ công qua tin nhắn Zalo."
+  }
+}
