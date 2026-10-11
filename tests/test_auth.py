@@ -50,6 +50,18 @@ class AuthTests(unittest.TestCase):
         switched = auth.switch_server(registered["token"], "S1")
         self.assertEqual(switched["character_name"], "Main")
 
+    def test_global_ban_revokes_sessions(self):
+        registered = auth.register("Player_04", "AnotherPass123", "Main", "S1")
+        self.assertIsNotNone(auth.session(registered["token"]))
+        account = auth.set_account_status(registered["account"]["uid"], True, "abuse")
+        self.assertEqual(account["status"], "banned")
+        self.assertIsNone(auth.session(registered["token"]))
+        with self.assertRaises(ValueError):
+            auth.login("Player_04", "AnotherPass123", "S1", "127.0.0.1")
+        auth.set_account_status(registered["account"]["uid"], False)
+        logged = auth.login("Player_04", "AnotherPass123", "S1", "127.0.0.1")
+        self.assertTrue(logged["token"])
+
 
 if __name__ == "__main__":
     unittest.main()
