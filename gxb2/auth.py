@@ -48,6 +48,20 @@ def _db():
         last_seen INTEGER NOT NULL,
         FOREIGN KEY(account_id) REFERENCES accounts(id) ON DELETE CASCADE
     )""")
+    session_cols = {row[1] for row in db.execute("PRAGMA table_info(sessions)")}
+    if "session_id" not in session_cols:
+        db.execute("ALTER TABLE sessions ADD COLUMN session_id TEXT NOT NULL DEFAULT ''")
+    if "user_agent" not in session_cols:
+        db.execute("ALTER TABLE sessions ADD COLUMN user_agent TEXT NOT NULL DEFAULT ''")
+    if "remote_addr" not in session_cols:
+        db.execute("ALTER TABLE sessions ADD COLUMN remote_addr TEXT NOT NULL DEFAULT ''")
+    db.execute("""CREATE TABLE IF NOT EXISTS recovery_codes(
+        account_id INTEGER PRIMARY KEY,
+        code_hash TEXT NOT NULL,
+        created_at INTEGER NOT NULL,
+        used_at INTEGER NOT NULL DEFAULT 0,
+        FOREIGN KEY(account_id) REFERENCES accounts(id) ON DELETE CASCADE
+    )""")
     db.execute("""CREATE TABLE IF NOT EXISTS login_attempts(
         bucket TEXT PRIMARY KEY,
         count INTEGER NOT NULL,
@@ -64,6 +78,15 @@ def _hash_password(password: str, salt: bytes) -> str:
 
 def _token_hash(token: str) -> str:
     return hashlib.sha256(token.encode("ascii")).hexdigest()
+
+
+def _recovery_hash(code: str) -> str:
+    return hashlib.sha256(code.strip().upper().encode("utf-8")).hexdigest()
+
+
+def _new_recovery_code():
+    raw = secrets.token_hex(8).upper()
+    return "-".join(raw[i:i+4] for i in range(0, len(raw), 4))
 
 
 def _clean_username(value):
@@ -135,16 +158,19 @@ def _clear_attempts(bucket):
         db = _db(); db.execute("DELETE FROM login_attempts WHERE bucket=?", (bucket,)); db.commit(); db.close()
 
 
-def _new_session(db, account_id, server_id):
+def _new_session(db, account_id, server_id, user_agent="", remote_addr=""):
     now = int(time.time())
     token = secrets.token_urlsafe(32)
+    session_id = "SES-" + secrets.token_hex(8).upper()
     db.execute("DELETE FROM sessions WHERE expires_at<=?", (now,))
-    db.execute("INSERT INTO sessions(token_hash,account_id,server_id,created_at,expires_at,last_seen) VALUES(?,?,?,?,?,?)",
-               (_token_hash(token), int(account_id), server_id, now, now + SESSION_TTL, now))
-    return token, now + SESSION_TTL
+    db.execute("""INSERT INTO sessions(token_hash,account_id,server_id,created_at,expires_at,last_seen,session_id,user_agent,remote_addr)
+                  VALUES(?,?,?,?,?,?,?,?,?)""",
+               (_token_hash(token), int(account_id), server_id, now, now + SESSION_TTL, now,
+                session_id, str(user_agent or "")[:240], str(remote_addr or "")[:80]))
+    return token, now + SESSION_TTL, session_id
 
 
-def register(username, password, character_name, server_id="S1", email=""):
+def register(username, password, character_name, server_id="S1", email="", user_agent="", remote_addr=""):
     username = _clean_username(username)
     password = _clean_password(password)
     email = _clean_email(email)
@@ -155,7 +181,8 @@ def register(username, password, character_name, server_id="S1", email=""):
     worlds = {w["server_id"]: w for w in live_service.worlds()}
     world = worlds.get(server_id)
     if not world: raise ValueError("Server không tồn tại")
-    if world["status"] != "online": raise ValueError("Server hiện không mở đăng ký")
+    if world["status"] != "online" or not int(world.get("registration_open", 1)):
+        raise ValueError(world.get("message") or "Server hiện không mở đăng ký")
 
     salt = secrets.token_bytes(16)
     pwh = _hash_password(password, salt)
@@ -169,7 +196,10 @@ def register(username, password, character_name, server_id="S1", email=""):
             account_id = int(cur.lastrowid)
             uid = f"GXB3-{account_id:08d}"
             db.execute("UPDATE accounts SET uid=? WHERE id=?", (uid, account_id))
-            token, expires = _new_session(db, account_id, server_id)
+            recovery_code = _new_recovery_code()
+            db.execute("INSERT OR REPLACE INTO recovery_codes(account_id,code_hash,created_at,used_at) VALUES(?,?,?,0)",
+                       (account_id,_recovery_hash(recovery_code),now))
+            token, expires, session_id = _new_session(db, account_id, server_id, user_agent, remote_addr)
             db.commit()
         except sqlite3.IntegrityError as exc:
             db.rollback(); db.close()
@@ -180,10 +210,11 @@ def register(username, password, character_name, server_id="S1", email=""):
         row = db.execute("SELECT * FROM accounts WHERE id=?", (account_id,)).fetchone()
         db.close()
     live_service.register_player(uid, server_id, character_name)
-    return {"account": _public_account(row, server_id), "character_name": character_name, "token": token, "expires_at": expires}
+    return {"account": _public_account(row, server_id), "character_name": character_name, "token": token,
+            "expires_at": expires, "session_id": session_id, "recovery_code": recovery_code}
 
 
-def login(username, password, server_id="S1", remote=""):
+def login(username, password, server_id="S1", remote="", user_agent=""):
     username = str(username or "").strip()
     password = str(password or "")
     server_id = str(server_id or "S1").strip().upper()
@@ -211,11 +242,12 @@ def login(username, password, server_id="S1", remote=""):
             db.close(); raise ValueError("Tài khoản chưa có nhân vật ở server này")
         if player["status"] == "banned":
             db.close(); raise ValueError("Nhân vật ở server này đang bị khóa")
-        token, expires = _new_session(db, row["id"], server_id)
+        token, expires, session_id = _new_session(db, row["id"], server_id, user_agent, remote)
         db.execute("UPDATE accounts SET last_login=? WHERE id=?", (int(time.time()), row["id"]))
         db.commit(); db.close()
     _clear_attempts(bucket)
-    return {"account": _public_account(row, server_id), "character_name": player["character_name"], "token": token, "expires_at": expires}
+    return {"account": _public_account(row, server_id), "character_name": player["character_name"], "token": token,
+            "expires_at": expires, "session_id": session_id}
 
 
 def session(token):
@@ -271,8 +303,8 @@ def create_character(token, server_id, character_name):
     if live_service.player(uid, server_id):
         raise ValueError("Tài khoản đã có nhân vật ở server này")
     world = next((w for w in live_service.worlds() if w["server_id"] == server_id), None)
-    if not world or world["status"] != "online":
-        raise ValueError("Server hiện không mở tạo nhân vật")
+    if not world or world["status"] != "online" or not int(world.get("character_creation_open", 1)):
+        raise ValueError((world or {}).get("message") or "Server hiện không mở tạo nhân vật")
     live_service.register_player(uid, server_id, character_name)
     with _lock:
         db=_db()
@@ -304,3 +336,100 @@ def set_account_status(uid, banned, reason=""):
             db.execute("DELETE FROM sessions WHERE account_id=?", (int(row["id"]),))
         db.commit(); row=db.execute("SELECT * FROM accounts WHERE uid=?", (uid,)).fetchone(); db.close()
     return _public_account(row, None)
+
+
+def request_recovery(username):
+    username=str(username or "").strip()
+    with _lock:
+        db=_db()
+        row=db.execute("SELECT * FROM accounts WHERE username=? COLLATE NOCASE",(username,)).fetchone()
+        if not row:
+            db.close(); return {"ok": True}
+        code=_new_recovery_code()
+        now=int(time.time())
+        db.execute("INSERT OR REPLACE INTO recovery_codes(account_id,code_hash,created_at,used_at) VALUES(?,?,?,0)",
+                   (int(row["id"]),_recovery_hash(code),now))
+        db.commit(); db.close()
+    return {"ok": True, "recovery_code": code}
+
+
+def reset_password(username, recovery_code, new_password):
+    username=str(username or "").strip()
+    new_password=_clean_password(new_password)
+    with _lock:
+        db=_db()
+        row=db.execute("SELECT * FROM accounts WHERE username=? COLLATE NOCASE",(username,)).fetchone()
+        if not row:
+            db.close(); raise ValueError("Thông tin khôi phục không hợp lệ")
+        rec=db.execute("SELECT * FROM recovery_codes WHERE account_id=?",(int(row["id"]),)).fetchone()
+        if not rec or int(rec["used_at"]) or not hmac.compare_digest(rec["code_hash"],_recovery_hash(str(recovery_code or ""))):
+            db.close(); raise ValueError("Thông tin khôi phục không hợp lệ")
+        salt=secrets.token_bytes(16)
+        db.execute("UPDATE accounts SET password_hash=?,salt=? WHERE id=?",
+                   (_hash_password(new_password,salt),salt.hex(),int(row["id"])))
+        db.execute("UPDATE recovery_codes SET used_at=? WHERE account_id=?",(int(time.time()),int(row["id"])))
+        db.execute("DELETE FROM sessions WHERE account_id=?",(int(row["id"]),))
+        db.commit(); db.close()
+    return {"ok": True}
+
+
+def rotate_recovery_code(token):
+    current=session(token)
+    if not current: raise ValueError("Phiên đăng nhập đã hết hạn")
+    account_id=int(current["account"]["id"])
+    code=_new_recovery_code(); now=int(time.time())
+    with _lock:
+        db=_db()
+        db.execute("INSERT OR REPLACE INTO recovery_codes(account_id,code_hash,created_at,used_at) VALUES(?,?,?,0)",
+                   (account_id,_recovery_hash(code),now))
+        db.commit(); db.close()
+    return {"recovery_code": code}
+
+
+def sessions_for_token(token):
+    current=session(token)
+    if not current: raise ValueError("Phiên đăng nhập đã hết hạn")
+    account_id=int(current["account"]["id"]); active_hash=_token_hash(token)
+    with _lock:
+        db=_db()
+        rows=db.execute("""SELECT session_id,server_id,created_at,expires_at,last_seen,user_agent,remote_addr,token_hash
+                           FROM sessions WHERE account_id=? ORDER BY last_seen DESC""",(account_id,)).fetchall()
+        out=[]
+        for r in rows:
+            d={k:r[k] for k in ("session_id","server_id","created_at","expires_at","last_seen","user_agent","remote_addr")}
+            d["current"]=hmac.compare_digest(r["token_hash"],active_hash)
+            out.append(d)
+        db.close(); return out
+
+
+def revoke_session(token, session_id):
+    current=session(token)
+    if not current: raise ValueError("Phiên đăng nhập đã hết hạn")
+    account_id=int(current["account"]["id"])
+    with _lock:
+        db=_db()
+        cur=db.execute("DELETE FROM sessions WHERE account_id=? AND session_id=?",(account_id,str(session_id)))
+        db.commit(); db.close()
+    if not cur.rowcount: raise ValueError("Không tìm thấy phiên")
+    return {"ok": True}
+
+
+def account_sessions(uid):
+    with _lock:
+        db=_db()
+        row=db.execute("SELECT id FROM accounts WHERE uid=?",(str(uid),)).fetchone()
+        if not row: db.close(); raise ValueError("Không tìm thấy tài khoản")
+        rows=db.execute("""SELECT session_id,server_id,created_at,expires_at,last_seen,user_agent,remote_addr
+                           FROM sessions WHERE account_id=? ORDER BY last_seen DESC""",(int(row["id"]),)).fetchall()
+        out=[dict(r) for r in rows]; db.close(); return out
+
+
+def revoke_account_sessions(uid):
+    with _lock:
+        db=_db()
+        row=db.execute("SELECT id FROM accounts WHERE uid=?",(str(uid),)).fetchone()
+        if not row: db.close(); raise ValueError("Không tìm thấy tài khoản")
+        count=db.execute("SELECT COUNT(*) AS c FROM sessions WHERE account_id=?",(int(row["id"]),)).fetchone()["c"]
+        db.execute("DELETE FROM sessions WHERE account_id=?",(int(row["id"]),))
+        db.commit(); db.close()
+    return {"ok": True, "revoked": int(count)}
