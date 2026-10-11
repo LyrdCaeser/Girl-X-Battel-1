@@ -1260,8 +1260,8 @@ def record_guild_war_battle(war_id, attacker_uid, defender_uid, attacker_snapsho
         war=db.execute("SELECT * FROM guild_wars WHERE id=?",(str(war_id),)).fetchone()
         if not war:
             db.rollback(); db.close(); raise ValueError("Không tìm thấy Guild War")
-        if war["status"]!="active":
-            db.rollback(); db.close(); raise ValueError("Guild War không còn hoạt động")
+        if war["status"]!="active" or now < int(war["starts_at"]) or now >= int(war["ends_at"]):
+            db.rollback(); db.close(); raise ValueError("Guild War không còn trong thời gian chiến đấu")
         attacker=db.execute("""SELECT * FROM world_guild_members WHERE uid=? AND server_id=?""",
                             (str(attacker_uid),war["server_id"])).fetchone()
         defender=db.execute("""SELECT * FROM world_guild_members WHERE uid=? AND server_id=?""",
