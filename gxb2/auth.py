@@ -253,3 +253,25 @@ def switch_server(token, server_id):
                    (server_id,int(time.time()),_token_hash(token)))
         db.commit(); db.close()
     return session(token)
+
+
+def create_character(token, server_id, character_name):
+    current = session(token)
+    if not current: raise ValueError("Phiên đăng nhập đã hết hạn")
+    uid = current["account"]["uid"]
+    server_id = str(server_id or "").strip().upper()
+    character_name = str(character_name or "").strip()
+    if not 2 <= len(character_name) <= 20 or any(ord(c) < 32 for c in character_name):
+        raise ValueError("Tên Nhân Vật phải dài 2–20 ký tự")
+    if live_service.player(uid, server_id):
+        raise ValueError("Tài khoản đã có nhân vật ở server này")
+    world = next((w for w in live_service.worlds() if w["server_id"] == server_id), None)
+    if not world or world["status"] != "online":
+        raise ValueError("Server hiện không mở tạo nhân vật")
+    live_service.register_player(uid, server_id, character_name)
+    with _lock:
+        db=_db()
+        db.execute("UPDATE sessions SET server_id=?,last_seen=? WHERE token_hash=?",
+                   (server_id,int(time.time()),_token_hash(token)))
+        db.commit(); db.close()
+    return session(token)
