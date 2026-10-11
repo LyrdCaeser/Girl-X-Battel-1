@@ -142,3 +142,39 @@ API authenticated:
 - `GET /api/leaderboard?server_id=S1&limit=100`
 
 SUPER GM Dashboard hiển thị số người online hiện tại. Đây là nền dùng chung cho leaderboard, matchmaking, guild online state và PvP ở chặng sau.
+
+
+## Shared Guild / PvP foundation
+
+### Shared Guild theo Server
+
+Guild online mới dùng database chung, tách khỏi guild NPC/local cũ.
+
+- Một nhân vật chỉ thuộc một Guild trong một Server.
+- Guild có leader, member list, notice, level/exp và capacity.
+- UI Guild ở thanh điều hướng mở Shared Guild Hub.
+- Có tạo Guild, xem danh sách Guild, tham gia và rời/giải tán.
+- Member power/last_seen được lưu trên shared database.
+
+### Matchmaking PvP
+
+Các mode hiện có ở matchmaking layer:
+
+- `arena`: cùng Server.
+- `team`: cùng Server.
+- `cross`: cho phép ghép khác Server.
+
+Queue ưu tiên combat power gần nhất rồi thời gian chờ.
+
+Khi tìm được đối thủ, hệ thống tạo match ID dạng `PVP-...` và một seed chung. Mỗi client gửi heartbeat/ready state; khi cả hai peer còn online và ready, match session chuyển sang `active`.
+
+Các endpoint chính:
+
+- `GET /api/pvp/status?mode=arena`
+- `POST /api/pvp/queue`
+- `POST /api/pvp/match/heartbeat`
+- `POST /api/pvp/match/session`
+
+Online Hub polling heartbeat khoảng 2.5 giây khi màn PvP đang mở.
+
+**Chưa coi đây là battle-result authority cuối cùng.** Matchmaking/session/peer synchronization đã có; bước kế tiếp là server-authoritative combat snapshot/result validation để không tin kết quả do client tự gửi.
