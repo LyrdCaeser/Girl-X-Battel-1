@@ -386,3 +386,52 @@ def close_pool():
         if _pool is not None:
             _pool.close()
             _pool = None
+
+
+def ensure_player_schema():
+    if not POSTGRES:
+        return
+    key = ("postgres", DATABASE_URL, "player")
+    if key in _schema_ready:
+        return
+    with _pool_lock:
+        if key in _schema_ready:
+            return
+        pool = _pg_pool()
+        conn = pool.getconn()
+        try:
+            conn.execute("""CREATE TABLE IF NOT EXISTS player_profiles(
+                uid TEXT NOT NULL,
+                server_id TEXT NOT NULL,
+                data TEXT NOT NULL,
+                clock_floor BIGINT NOT NULL DEFAULT 0,
+                updated_at BIGINT NOT NULL,
+                PRIMARY KEY(uid, server_id)
+            )""")
+            conn.execute("""CREATE TABLE IF NOT EXISTS player_battles(
+                uid TEXT NOT NULL,
+                server_id TEXT NOT NULL,
+                id BIGINT NOT NULL,
+                stage BIGINT,
+                report TEXT NOT NULL,
+                PRIMARY KEY(uid, server_id, id)
+            )""")
+            conn.execute("CREATE INDEX IF NOT EXISTS idx_player_battles_scope ON player_battles(uid,server_id,id DESC)")
+            conn.commit()
+            _schema_ready.add(key)
+        except Exception:
+            conn.rollback()
+            raise
+        finally:
+            pool.putconn(conn)
+
+
+def acquire_postgres():
+    if not POSTGRES:
+        raise RuntimeError("PostgreSQL backend is not active")
+    return _pg_pool().getconn()
+
+
+def release_postgres(conn):
+    if conn is not None and _pool is not None:
+        _pool.putconn(conn)
