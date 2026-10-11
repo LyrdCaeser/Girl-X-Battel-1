@@ -1,79 +1,121 @@
 'use strict';
 window.AdminPanel=(()=>{
-  let root=null,cfg=null;
+  let root=null,cfg=null,dash=null,active='overview';
   const el=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n;};
-  const field=(parent,label,id,type='number',step='0.1')=>{const l=el('label','',label),i=document.createElement('input');i.id=id;i.type=type;if(step)i.step=step;l.append(i);parent.append(l);return i;};
+  const field=(parent,label,id,type='text',step=null)=>{const l=el('label','admin-field',label),i=document.createElement('input');i.id=id;i.type=type;if(step)i.step=step;l.append(i);parent.append(l);return i;};
+  const textarea=(parent,label,id,placeholder='')=>{const l=el('label','admin-field',label),i=document.createElement('textarea');i.id=id;i.placeholder=placeholder;l.append(i);parent.append(l);return i;};
+  const btn=(text,fn,cls='')=>{const b=el('button',cls,text);b.type='button';b.onclick=fn;return b;};
+  function status(t,ok=true){const n=document.getElementById('admin-status');if(n){n.textContent=t||'';n.dataset.ok=ok?'1':'0';}}
+  function card(title){const c=el('section','admin-card');c.append(el('h2','',title));return c;}
   function ensure(){
     if(root)return root;
     root=el('section','admin-view');root.id='admin-view';root.hidden=true;
-    const head=el('header','admin-head');const back=el('button','','← Game');back.onclick=close;const exit=el('button','','Thoát QTV');exit.onclick=logout;head.append(back,el('h1','','Bảng Quản Trị GxB2 Local'),exit);root.append(head);
-    const grid=el('div','admin-grid');
+    const head=el('header','admin-head');head.append(btn('← Game',close),el('div','admin-title-wrap'),btn('Thoát QTV',logout,'danger'));
+    head.querySelector('.admin-title-wrap').append(el('small','','SUPER GM'),el('h1','','Hệ Thống QTV · Nữ Thần Chiến Đấu - GXB 3'));
+    root.append(head);
 
-    const res=el('section','admin-card');res.append(el('h2','','Tài nguyên & nhân vật khởi đầu'));
-    const ta=document.createElement('textarea');ta.id='admin-resources';res.append(el('label','','starting_resources (JSON)'),ta);
-    const starters=field(res,'Starter Girls (ID, cách nhau bằng dấu phẩy)','admin-starters','text',null);
-    grid.append(res);
+    const nav=el('nav','admin-nav');
+    [['overview','Tổng quan'],['mail','Gửi thư'],['orders','Đơn nạp'],['players','Người chơi'],['worlds','Server'],['config','Cấu hình'],['tools','GM Tools'],['audit','Audit']].forEach(([id,label])=>{
+      const b=btn(label,()=>show(id),'admin-tab');b.dataset.tab=id;nav.append(b);
+    });
+    root.append(nav);
 
-    const summon=el('section','admin-card');summon.append(el('h2','','Tỷ lệ Triệu Hồi'));
-    for(const star of [1,2,3,4,5,6])field(summon,`${star}★ multiplier`,`admin-star-${star}`);
-    summon.append(el('p','admin-note','1.0 = tỷ lệ gốc; 2.0 = tăng gấp đôi trọng số; 0 = loại khỏi pool.'));
-    grid.append(summon);
-
-    const economy=el('section','admin-card');economy.append(el('h2','','Kinh tế Local'));
-    field(economy,'Giá Shop ×','admin-shop');
-    field(economy,'Phần thưởng ×','admin-reward');
-    field(economy,'Chi phí tiến triển ×','admin-progress');
-    economy.append(el('p','admin-note','Chi phí tiến triển áp dụng cho tăng cấp, tăng bậc và nguyên liệu tiền tệ của thức tỉnh. Phần thưởng áp dụng cho Campaign idle, Campaign clear, Tests và Daily Quiz.'));
-    grid.append(economy);
-
-    const tools=el('section','admin-card');tools.append(el('h2','','Công cụ QTV'));
-    const toolGrid=el('div','admin-tools');
-    const girl=el('div','admin-tool');const sel=document.createElement('select');sel.id='admin-girl';girl.append(sel);
-    const count=field(girl,'Số lượng','admin-count','number','1');count.min=1;count.max=20;count.value=1;
-    const level=field(girl,'Cấp','admin-level','number','1');level.min=1;level.max=330;level.value=80;
-    const add=el('button','primary','Thêm Nữ Sinh');add.onclick=()=>act('girl');girl.append(add);toolGrid.append(girl);
-    const misc=el('div','admin-tool');
-    [['all_girls','Thêm toàn bộ Nữ Sinh'],['max_stars','Đưa Nữ Sinh đã chọn lên 15★'],['levels','Áp cấp cho toàn bộ'],['campaign','Mở 30 ải đang hiển thị']].forEach(([a,t])=>{const b=el('button','',t);b.onclick=()=>act(a);misc.append(b);});
-    const floor=field(misc,'Tầng Tests','admin-floor','number','1');floor.min=1;floor.max=1500;floor.value=1;
-    const tower=el('button','','Đến tầng Tests');tower.onclick=()=>act('tower');misc.append(tower);toolGrid.append(misc);
-    tools.append(toolGrid);grid.append(tools);
-
-    root.append(grid);
-    const actions=el('div','admin-actions'),save=el('button','primary','Lưu cấu hình'),reload=el('button','','Tải lại'),reset=el('button','danger','Khôi phục mặc định');
-    save.onclick=saveConfig;reload.onclick=load;reset.onclick=resetConfig;actions.append(save,reload,reset);root.append(actions);
-    const status=el('p','admin-status');status.id='admin-status';root.append(status);
+    const body=el('div','admin-body');body.id='admin-body';root.append(body);
+    const footer=el('div','admin-footer');footer.append(el('p','admin-status',''));footer.firstChild.id='admin-status';root.append(footer);
     document.getElementById('game-root').append(root);
     return root;
   }
-  function status(t){const n=document.getElementById('admin-status');if(n)n.textContent=t||'';}
-  function populateGirls(){const sel=document.getElementById('admin-girl');if(!sel||sel.childElementCount)return;for(const girl of girlsCatalog){const o=el('option','',`${girl.name} · ${girl.stars}★ · ${girl.id}`);o.value=girl.id;sel.append(o);}}
-  function fill(){
-    document.getElementById('admin-resources').value=JSON.stringify(cfg.starting_resources,null,2);
-    document.getElementById('admin-starters').value=cfg.starter_girls.join(',');
-    for(const star of [1,2,3,4,5,6])document.getElementById(`admin-star-${star}`).value=cfg.summon_rate.star_multiplier[String(star)]??1;
-    document.getElementById('admin-shop').value=cfg.shop.price_multiplier;
-    document.getElementById('admin-reward').value=cfg.rewards.multiplier;
-    document.getElementById('admin-progress').value=cfg.progression.cost_multiplier;
+  async function refreshDashboard(){dash=await api('/api/admin/dashboard');}
+  function show(id){active=id;for(const b of root.querySelectorAll('.admin-tab'))b.classList.toggle('on',b.dataset.tab===id);render();}
+  function render(){const body=document.getElementById('admin-body');if(!body)return;body.replaceChildren();
+    const fn={overview:renderOverview,mail:renderMail,orders:renderOrders,players:renderPlayers,worlds:renderWorlds,config:renderConfig,tools:renderTools,audit:renderAudit}[active]||renderOverview;fn(body);
   }
-  async function load(){try{ensure();cfg=await api('/api/admin/config');fill();populateGirls();status('Đã tải cấu hình Local.');}catch(e){status(e.message);}}
-  async function saveConfig(){try{
-    const raw={
-      starting_resources:JSON.parse(document.getElementById('admin-resources').value),
-      starter_girls:document.getElementById('admin-starters').value.split(',').map(x=>Number(x.trim())).filter(Boolean),
-      summon_rate:{star_multiplier:Object.fromEntries([1,2,3,4,5,6].map(s=>[String(s),Number(document.getElementById(`admin-star-${s}`).value)]))},
-      shop:{price_multiplier:Number(document.getElementById('admin-shop').value)},
-      rewards:{multiplier:Number(document.getElementById('admin-reward').value)},
-      progression:{cost_multiplier:Number(document.getElementById('admin-progress').value)}
-    };
-    cfg=await api('/api/admin/config',raw);fill();status('Đã lưu. Cấu hình mới có hiệu lực ngay; tài nguyên/starter chỉ áp dụng khi tạo save mới.');
-  }catch(e){status(e.message);}}
-  async function resetConfig(){try{cfg=await api('/api/admin/config',{action:'reset'});fill();status('Đã khôi phục cấu hình mặc định.');}catch(e){status(e.message);}}
-  async function act(action){try{
-    const data=await api('/api/developer',{action,table_id:Number(document.getElementById('admin-girl').value),count:Number(document.getElementById('admin-count').value),level:Number(document.getElementById('admin-level').value),floor:Number(document.getElementById('admin-floor').value)});
-    state=data.state;loadFormation();render();status('Đã áp dụng vào save QTV.');
-  }catch(e){status(e.message);}}
+  function renderOverview(body){
+    const grid=el('div','admin-grid');
+    const stats=card('Trạng thái hệ thống');
+    const values=[['Server',dash?.worlds?.length||0],['Người chơi',dash?.players?.length||0],['Đơn chờ duyệt',(dash?.orders||[]).filter(x=>x.status==='pending').length],['Audit',dash?.audit?.length||0]];
+    const row=el('div','admin-stats');for(const [k,v] of values){const s=el('div','admin-stat');s.append(el('b','',String(v)),el('small','',k));row.append(s);}stats.append(row,el('p','admin-note','SUPER GM có quyền quản lý server, khóa/mở tài khoản, duyệt đơn nạp và gửi vật phẩm trực tiếp qua thư theo UID + Server + Tên Nhân Vật.'));
+    grid.append(stats);
+    const me=card('Player đang mở');me.append(el('p','',`UID: ${state?.uid||'-'}`),el('p','',`Server: ${state?.server_id||'-'}`),el('p','',`Tên Nhân Vật: ${state?.name||'-'}`),el('p','',`Trạng thái: ${state?.account_status||'active'}`));grid.append(me);
+    body.append(grid);
+  }
+  function renderMail(body){
+    const c=card('GM Mail · gửi bất kỳ vật phẩm qua UID + Server + Tên Nhân Vật');
+    field(c,'UID','gm-mail-uid');field(c,'Server','gm-mail-server').value='S1';field(c,'Tên Nhân Vật','gm-mail-name');
+    field(c,'Tiêu đề','gm-mail-title').value='Quà từ GM';
+    textarea(c,'Nội dung','gm-mail-body','Thông báo gửi người chơi...');
+    textarea(c,'Vật phẩm JSON','gm-mail-items','{"2":1000,"1":500000}');
+    c.append(btn('Gửi thư ngay',sendMail,'primary'));body.append(c);
+  }
+  async function sendMail(){try{
+    const payload={uid:val('gm-mail-uid'),server_id:val('gm-mail-server'),character_name:val('gm-mail-name'),title:val('gm-mail-title'),body:val('gm-mail-body'),attachments:JSON.parse(val('gm-mail-items')||'{}')};
+    const r=await api('/api/admin/mail/send',payload);status('Đã gửi '+r.id);await refreshDashboard();
+  }catch(e){status(e.message,false);}}
+  function renderOrders(body){
+    const c=card('Duyệt đơn nạp');
+    const list=el('div','admin-list');const orders=dash?.orders||[];
+    if(!orders.length)list.append(el('p','admin-note','Chưa có đơn nạp.'));
+    for(const o of orders){const row=el('article','admin-row');const info=el('div','admin-row-main');
+      info.append(el('b','',o.id),el('span','',`${o.server_id} · ${o.uid} · ${o.character_name}`),el('small','',`${o.package||'(chưa ghi gói)'} · ${o.status}`));
+      row.append(info);
+      if(o.status==='pending'){const reward=document.createElement('input');reward.placeholder='Reward JSON, vd {"2":1000}';reward.className='admin-inline-json';
+        row.append(reward,btn('Duyệt',()=>reviewOrder(o.id,'approve',reward.value),'primary'),btn('Từ chối',()=>reviewOrder(o.id,'reject',''),'danger'));
+      }else row.append(el('small','',o.reviewed_at?'Đã xử lý':''));
+      list.append(row);
+    }c.append(list);body.append(c);
+  }
+  async function reviewOrder(id,action,rewardText){try{
+    const reward=action==='approve'?JSON.parse(rewardText||'{}'):{};
+    await api('/api/admin/order/review',{order_id:id,action,reward});status(action==='approve'?'Đã duyệt đơn và gửi thưởng qua thư.':'Đã từ chối đơn.');await refreshDashboard();render();
+  }catch(e){status(e.message,false);}}
+  function renderPlayers(body){
+    const c=card('Quản lý tài khoản');
+    const search=field(c,'Tìm UID / Server / Tên Nhân Vật','gm-player-search');search.oninput=()=>drawPlayers(c,search.value);
+    const holder=el('div','admin-list');holder.id='gm-player-list';c.append(holder);body.append(c);drawPlayers(c,'');
+  }
+  function drawPlayers(c,q){
+    const holder=c.querySelector('#gm-player-list');if(!holder)return;holder.replaceChildren();
+    const needle=String(q||'').toLowerCase();
+    for(const p of (dash?.players||[]).filter(x=>!needle||[x.uid,x.server_id,x.character_name].some(v=>String(v).toLowerCase().includes(needle)))){
+      const row=el('article','admin-row');const info=el('div','admin-row-main');info.append(el('b','',p.character_name),el('span','',`${p.server_id} · ${p.uid}`),el('small','',p.status+(p.ban_reason?' · '+p.ban_reason:'')));row.append(info);
+      if(p.status==='banned')row.append(btn('Unban',()=>playerStatus(p,'unban'),'primary'));
+      else row.append(btn('Ban',()=>playerStatus(p,'ban'),'danger'));
+      holder.append(row);
+    }
+  }
+  async function playerStatus(p,action){try{
+    const reason=action==='ban'?(prompt('Lý do ban:','Vi phạm quy định')||'Vi phạm quy định'):'';
+    await api('/api/admin/player/status',{uid:p.uid,server_id:p.server_id,action,reason});status(action==='ban'?'Đã ban tài khoản.':'Đã unban tài khoản.');await refreshDashboard();render();
+  }catch(e){status(e.message,false);}}
+  function renderWorlds(body){
+    const c=card('World / Multi-server');
+    const create=el('div','admin-form-row');const sid=document.createElement('input');sid.id='gm-world-id';sid.placeholder='S2';const name=document.createElement('input');name.id='gm-world-name';name.placeholder='Server 2';create.append(sid,name,btn('Tạo server',createWorld,'primary'));c.append(create);
+    const list=el('div','admin-list');for(const w of dash?.worlds||[]){const row=el('article','admin-row');const info=el('div','admin-row-main');info.append(el('b','',w.name),el('span','',w.server_id),el('small','',w.status));row.append(info);
+      const select=document.createElement('select');for(const st of ['online','maintenance','closed']){const o=el('option','',st);o.value=st;o.selected=st===w.status;select.append(o);}select.onchange=()=>worldStatus(w.server_id,select.value);row.append(select);list.append(row);}c.append(list);body.append(c);
+  }
+  async function createWorld(){try{await api('/api/admin/world',{action:'create',server_id:val('gm-world-id'),name:val('gm-world-name')});status('Đã tạo server.');await refreshDashboard();render();}catch(e){status(e.message,false);}}
+  async function worldStatus(server_id,statusValue){try{await api('/api/admin/world',{action:'status',server_id,status:statusValue});status('Đã cập nhật '+server_id+'.');await refreshDashboard();render();}catch(e){status(e.message,false);}}
+  function renderConfig(body){
+    const grid=el('div','admin-grid');
+    const res=card('Tài nguyên & Nữ Thần khởi đầu');const ta=textarea(res,'starting_resources (JSON)','admin-resources');ta.value=JSON.stringify(cfg.starting_resources,null,2);field(res,'Starter Girls (ID)','admin-starters').value=cfg.starter_girls.join(',');grid.append(res);
+    const summon=card('Tỷ lệ Triệu Hồi');for(const star of [1,2,3,4,5,6]){const i=field(summon,`${star}★ multiplier`,`admin-star-${star}`,'number','0.1');i.value=cfg.summon_rate.star_multiplier[String(star)]??1;}grid.append(summon);
+    const economy=card('Kinh tế game');field(economy,'Giá Shop ×','admin-shop','number','0.1').value=cfg.shop.price_multiplier;field(economy,'Phần thưởng ×','admin-reward','number','0.1').value=cfg.rewards.multiplier;field(economy,'Chi phí progression ×','admin-progress','number','0.1').value=cfg.progression.cost_multiplier;grid.append(economy);
+    const actions=card('Áp dụng');actions.append(btn('Lưu cấu hình',saveConfig,'primary'),btn('Khôi phục mặc định',resetConfig,'danger'));grid.append(actions);body.append(grid);
+  }
+  async function saveConfig(){try{const raw={starting_resources:JSON.parse(val('admin-resources')),starter_girls:val('admin-starters').split(',').map(x=>Number(x.trim())).filter(Boolean),summon_rate:{star_multiplier:Object.fromEntries([1,2,3,4,5,6].map(s=>[String(s),Number(val(`admin-star-${s}`))]))},shop:{price_multiplier:Number(val('admin-shop'))},rewards:{multiplier:Number(val('admin-reward'))},progression:{cost_multiplier:Number(val('admin-progress'))}};cfg=await api('/api/admin/config',raw);status('Đã lưu cấu hình.');}catch(e){status(e.message,false);}}
+  async function resetConfig(){try{cfg=await api('/api/admin/config',{action:'reset'});status('Đã khôi phục mặc định.');render();}catch(e){status(e.message,false);}}
+  function renderTools(body){
+    const tools=card('SUPER GM Tools');const grid=el('div','admin-tools');
+    const girl=el('div','admin-tool');const sel=document.createElement('select');sel.id='admin-girl';for(const g of girlsCatalog){const o=el('option','',`${g.name} · ${g.stars}★ · ${g.id}`);o.value=g.id;sel.append(o);}girl.append(sel);const count=field(girl,'Số lượng','admin-count','number','1');count.value=1;const level=field(girl,'Cấp','admin-level','number','1');level.value=80;girl.append(btn('Thêm Nữ Thần',()=>act('girl'),'primary'));grid.append(girl);
+    const misc=el('div','admin-tool');[['all_girls','Thêm toàn bộ Nữ Thần'],['max_stars','Nữ Thần đã chọn → 15★'],['levels','Áp cấp cho toàn bộ'],['campaign','Mở 30 ải']].forEach(([a,t])=>misc.append(btn(t,()=>act(a))));const floor=field(misc,'Tầng Tests','admin-floor','number','1');floor.value=1;misc.append(btn('Đặt tầng Tests',()=>act('tower')));grid.append(misc);tools.append(grid);body.append(tools);
+  }
+  async function act(action){try{const data=await api('/api/developer',{action,table_id:Number(val('admin-girl')),count:Number(val('admin-count')),level:Number(val('admin-level')),floor:Number(val('admin-floor'))});state=data.state;loadFormation();renderGame();status('Đã áp dụng vào save QTV.');}catch(e){status(e.message,false);}}
+  function renderGame(){if(typeof window.render==='function')window.render();}
+  function renderAudit(body){const c=card('Audit Log');const list=el('div','admin-list');for(const a of dash?.audit||[]){const row=el('article','admin-row');const info=el('div','admin-row-main');info.append(el('b','',a.action),el('span','',a.target),el('small','',new Date(a.at*1000).toLocaleString()+' · '+a.operator));row.append(info);list.append(row);}c.append(list);body.append(c);}
+  const val=id=>document.getElementById(id)?.value?.trim()||'';
+  async function load(){try{ensure();[cfg,dash]=await Promise.all([api('/api/admin/config'),api('/api/admin/dashboard')]);show(active);status('Hệ Thống QTV đã sẵn sàng.');}catch(e){status(e.message,false);}}
   async function open(){ensure();root.hidden=false;await load();}
   function close(){if(root)root.hidden=true;showView('home');}
-  async function logout(){developerMode=false;adminKey='';sessionStorage.setItem('gxb2-developer','0');sessionStorage.removeItem('gxb2-admin-key');if(root)root.hidden=true;state=await api('/api/state');loadFormation();showView('home');render();}
+  async function logout(){developerMode=false;adminKey='';sessionStorage.setItem('gxb2-developer','0');sessionStorage.removeItem('gxb2-admin-key');if(root)root.hidden=true;state=await api('/api/state');loadFormation();showView('home');renderGame();}
   return{open,close,load,logout};
 })();
