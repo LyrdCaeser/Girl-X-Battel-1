@@ -547,7 +547,10 @@ def pvp_history(uid, limit=50):
     limit=max(1,min(200,int(limit)))
     with _lock:
         db=_db()
-        rows=db.execute("""SELECT * FROM pvp_matches
+        rows=db.execute("""SELECT id,mode,server_id,server_a,server_b,player_a,player_b,name_a,name_b,
+                                  power_a,power_b,status,winner_uid,created_at,resolved_at,
+                                  rating_delta_a,rating_delta_b
+                           FROM pvp_matches
                            WHERE player_a=? OR player_b=?
                            ORDER BY created_at DESC LIMIT ?""",(str(uid),str(uid),limit)).fetchall()
         out=[dict(r) for r in rows]; db.close(); return out
