@@ -55,6 +55,9 @@ def _db():
         db.execute("ALTER TABLE sessions ADD COLUMN user_agent TEXT NOT NULL DEFAULT ''")
     if "remote_addr" not in session_cols:
         db.execute("ALTER TABLE sessions ADD COLUMN remote_addr TEXT NOT NULL DEFAULT ''")
+    for old in db.execute("SELECT rowid FROM sessions WHERE session_id='' OR session_id IS NULL").fetchall():
+        db.execute("UPDATE sessions SET session_id=? WHERE rowid=?", ("SES-" + secrets.token_hex(8).upper(), old[0]))
+    db.execute("CREATE UNIQUE INDEX IF NOT EXISTS idx_sessions_session_id ON sessions(session_id)")
     db.execute("""CREATE TABLE IF NOT EXISTS recovery_codes(
         account_id INTEGER PRIMARY KEY,
         code_hash TEXT NOT NULL,
@@ -336,21 +339,6 @@ def set_account_status(uid, banned, reason=""):
             db.execute("DELETE FROM sessions WHERE account_id=?", (int(row["id"]),))
         db.commit(); row=db.execute("SELECT * FROM accounts WHERE uid=?", (uid,)).fetchone(); db.close()
     return _public_account(row, None)
-
-
-def request_recovery(username):
-    username=str(username or "").strip()
-    with _lock:
-        db=_db()
-        row=db.execute("SELECT * FROM accounts WHERE username=? COLLATE NOCASE",(username,)).fetchone()
-        if not row:
-            db.close(); return {"ok": True}
-        code=_new_recovery_code()
-        now=int(time.time())
-        db.execute("INSERT OR REPLACE INTO recovery_codes(account_id,code_hash,created_at,used_at) VALUES(?,?,?,0)",
-                   (int(row["id"]),_recovery_hash(code),now))
-        db.commit(); db.close()
-    return {"ok": True, "recovery_code": code}
 
 
 def reset_password(username, recovery_code, new_password):
