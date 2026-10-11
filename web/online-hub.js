@@ -61,6 +61,10 @@ window.GxbOnline=(()=>{
     const data=await get('/api/pvp/status?mode='+encodeURIComponent(pvpMode));body.replaceChildren();
     const modes=el('div','online-mode');
     [['arena','Arena'],['team','Team Arena'],['cross','Cross-server Arena']].forEach(([id,label])=>{const b=el('button',id===pvpMode?'on':'',T(label));b.onclick=()=>{pvpMode=id;renderPvp(body);};modes.append(b);});body.append(modes);
+    const rating=data.rating||{rating:1000,wins:0,losses:0,matches:0,season_id:'-'};
+    const ratingBox=el('section','online-rating');
+    ratingBox.append(el('div','',T('Season')+' '+rating.season_id),el('strong','',String(rating.rating)),el('small','',T('Wins')+' '+rating.wins+' · '+T('Losses')+' '+rating.losses+' · '+T('Matches')+' '+rating.matches));
+    body.append(ratingBox);
     const p=data.pvp||{status:'idle'};
     if(p.status==='matched'&&p.match){
       const m=p.match,opp=matchOpponent(m),card=el('section','online-match');
@@ -68,8 +72,16 @@ window.GxbOnline=(()=>{
       const peerCount=(session?.peers||[]).filter(x=>Date.now()/1000-Number(x.last_seen||0)<=15).length;
       card.append(el('small','',m.id+' · '+m.mode.toUpperCase()),el('h3','',T('Opponent Found')),el('b','online-opponent',opp.name),el('p','',opp.uid+' · '+T('Power')+' '+fmt(opp.power)),el('p','online-live',T((session?.match?.status||m.status)==='active'?'Battle session active':'Match ready')));
       card.append(el('div','online-peer-state',T('Realtime peers')+': '+peerCount+'/2'));
-      const activate=el('button','online-primary',T((session?.match?.status||m.status)==='active'?'Refresh Session':'Enter Match'));activate.onclick=async()=>{await post('/api/pvp/match/heartbeat',{match_id:m.id,ready:true});renderPvp(body);};card.append(activate);
-      card.append(el('small','online-note',T('Realtime session is synchronized. Battle-result synchronization is the next server layer.')));body.append(card);
+      const statusNow=session?.match?.status||m.status;
+      const activate=el('button','online-primary',T(statusNow==='active'?'Refresh Session':'Enter Match'));activate.onclick=async()=>{await post('/api/pvp/match/heartbeat',{match_id:m.id,ready:true});renderPvp(body);};card.append(activate);
+      if(statusNow==='active'){
+        const fight=el('button','online-fight',T('Start Battle'));
+        fight.onclick=async()=>{fight.disabled=true;fight.textContent=T('Server is simulating battle…');try{
+          const out=await post('/api/pvp/match/battle',{match_id:m.id});showBattleResult(body,out.result);
+        }catch(e){fight.disabled=false;fight.textContent=T('Start Battle');alert(e.message);}};
+        card.append(fight);
+      }
+      card.append(el('small','online-note',T('The server loads both saved teams and simulates the result. The client cannot submit a winner.')));body.append(card);
     }else if(p.status==='waiting'){
       const card=el('section','online-match waiting');card.append(el('h3','',T('Finding opponent…')),el('p','',T('The server is matching by mode and combat power.')));
       const cancel=el('button','online-danger',T('Cancel Matchmaking'));cancel.onclick=async()=>{await post('/api/pvp/queue',{action:'cancel',mode:pvpMode});renderPvp(body);};card.append(cancel);body.append(card);
@@ -77,9 +89,19 @@ window.GxbOnline=(()=>{
       const card=el('section','online-match');card.append(el('h3','',T('PvP Matchmaking')),el('p','',T('Join the queue to find another online player.')));
       const join=el('button','online-primary',T('Find Match'));join.onclick=async()=>{await post('/api/pvp/queue',{action:'join',mode:pvpMode});renderPvp(body);};card.append(join);body.append(card);
     }
+    const board=el('div','online-history');board.append(el('h3','',T('Season Ranking')));
+    for(const r of (data.rating_board||[]).slice(0,20)){const row=el('article','online-history-row');row.append(el('b','','#'+r.rank+' '+(r.character_name||r.uid)),el('span','',String(r.rating)),el('small','',r.server_id+' · '+T('Wins')+' '+r.wins));board.append(row);}body.append(board);
     const hist=el('div','online-history');hist.append(el('h3','',T('Recent Matches')));
-    for(const m of data.history||[]){const opp=matchOpponent(m),r=el('article','online-history-row');r.append(el('b','',opp.name),el('span','',m.mode+' · '+m.status),el('small','',new Date(m.created_at*1000).toLocaleString()));hist.append(r);}
+    for(const m of data.history||[]){const opp=matchOpponent(m),r=el('article','online-history-row');const won=m.status==='finished'&&m.winner_uid===state?.uid;const delta=m.player_a===state?.uid?Number(m.rating_delta_a||0):Number(m.rating_delta_b||0);
+      r.append(el('b','',opp.name),el('span','',m.status==='finished'?(won?T('Victory'):T('Defeat')):m.status),el('small','',m.mode+' · '+(m.status==='finished'?(delta>=0?'+':'')+delta+' '+T('Rating'):'')+' · '+new Date(m.created_at*1000).toLocaleString()));hist.append(r);}
     body.append(hist);
+  }
+  function showBattleResult(body,result){
+    if(timer)clearInterval(timer);timer=null;body.replaceChildren();
+    const mine=state?.uid,won=result?.winner_uid===mine,delta=result?.player_a===mine?Number(result?.rating_delta_a||0):Number(result?.rating_delta_b||0);
+    const card=el('section','online-result '+(won?'win':'lose'));card.append(el('small','',result?.id||''),el('h2','',T(won?'Victory':'Defeat')),el('strong','',T('Rating')+' '+(delta>=0?'+':'')+delta));
+    const report=result?.battle_report||{};if(report.total_round!==undefined)card.append(el('p','',T('Rounds')+': '+report.total_round));
+    const back=el('button','online-primary',T('Back to PvP'));back.onclick=()=>renderPvp(body);card.append(back);body.append(card);
   }
   function bind(){
     document.addEventListener('click',e=>{
