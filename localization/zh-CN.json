@@ -118,5 +118,19 @@
   "Previous Season Reward": "上赛季奖励",
   "No reward": "无奖励",
   "Claim Reward": "领取奖励",
-  "Not eligible": "不符合条件"
+  "Not eligible": "不符合条件",
+  "Guild Level": "公会等级",
+  "Contribution": "贡献",
+  "Scheduled": "已排期",
+  "Active": "进行中",
+  "Finished": "已结束",
+  "Details": "详情",
+  "Status": "状态",
+  "Guild War ID": "公会战编号",
+  "Attack": "攻击",
+  "Guild War Score": "公会战积分",
+  "No opponents available.": "暂无可挑战对手。",
+  "War Battles": "战斗记录",
+  "Score": "积分",
+  "Winner": "胜者"
 }
