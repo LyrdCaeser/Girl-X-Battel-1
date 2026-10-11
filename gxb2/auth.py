@@ -171,7 +171,7 @@ def login(username, password, server_id="S1", remote="", user_agent=""):
     _check_rate_limit(bucket)
     with _lock:
         db = _db()
-        row = db.execute("SELECT * FROM accounts WHERE username=? COLLATE NOCASE", (username,)).fetchone()
+        row = db.execute("SELECT * FROM accounts WHERE lower(username)=lower(?)", (username,)).fetchone()
         valid = False
         if row:
             calc = _hash_password(password, bytes.fromhex(row["salt"]))
@@ -292,7 +292,7 @@ def reset_password(username, recovery_code, new_password):
     new_password=_clean_password(new_password)
     with _lock:
         db=_db()
-        row=db.execute("SELECT * FROM accounts WHERE username=? COLLATE NOCASE",(username,)).fetchone()
+        row=db.execute("SELECT * FROM accounts WHERE lower(username)=lower(?)",(username,)).fetchone()
         if not row:
             db.close(); raise ValueError("Thông tin khôi phục không hợp lệ")
         rec=db.execute("SELECT * FROM recovery_codes WHERE account_id=?",(int(row["id"]),)).fetchone()
