@@ -257,7 +257,7 @@ class Engine:
             if changed:
                 self._save_profile(state)
                 self.db.commit()
-        return self.snapshot()
+        return None
 
     def close(self):
         if not self.developer and self._floor != self._floor_saved:
