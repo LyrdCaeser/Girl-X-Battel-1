@@ -219,4 +219,62 @@ Online Hub hiển thị rating hiện tại, W/L, lịch sử trận và top mù
 
 ### Giới hạn hiện tại
 
-Combat result đã là server-authoritative, nhưng battle adapter hiện dùng phần hero/formation của save và Lua battle engine chung. Một số bonus phía defender như pet/guild/chime hai chiều chưa được mở rộng đầy đủ trong battle host. Không nên coi PvP balance là final cho tới khi battle host hỗ trợ đối xứng toàn bộ bonus A/B.
+Combat result đã là server-authoritative. Battle adapter hiện truyền team, Pet, Guild Skills và Chime bonus cho cả A/B. Tuy nhiên vẫn cần runtime test bằng LuaJIT thực tế để xác nhận toàn bộ bonus phía B được original battle bytecode áp dụng đúng như phía A trước khi coi PvP balance là final.
+
+
+## Guild management / Guild War
+
+Shared Guild hiện hỗ trợ quyền:
+
+- `leader`
+- `deputy`
+- `member`
+
+Luồng vào Guild dùng **Application**; API direct join cũ đã được đổi thành tạo đơn để không bypass duyệt.
+
+Leader:
+- duyệt/từ chối đơn
+- bổ nhiệm/hạ Deputy
+- kick member/deputy
+- chuyển Leader
+- sửa notice
+- gửi Guild Mail
+- tạo Guild War
+
+Deputy:
+- duyệt/từ chối đơn
+- kick member thường
+- sửa notice
+- gửi Guild Mail
+- tạo Guild War
+
+Guild Chat:
+- member/Deputy/Leader gửi tin nhắn tối đa 280 ký tự
+- chat lưu shared DB theo guild_id
+- UI tải 100 tin gần nhất
+
+Guild Mail:
+- Leader/Deputy gửi thông báo đến toàn bộ thành viên
+- mỗi thành viên nhận một mail cá nhân trong mailbox
+- audit log ghi sender, guild và số recipient
+
+Guild Ranking:
+- xếp theo tổng Power thành viên, sau đó level/exp
+
+Guild War foundation:
+- Leader/Deputy thách đấu Guild cùng Server
+- tạo war ID `GW-...`
+- lưu thời gian bắt đầu/kết thúc, score A/B, status và winner
+- phần combat/scoring Guild War sẽ được nối tiếp sau.
+
+## PvP season rewards
+
+Reward tier nằm trong `data/pvp_season_rewards.json`.
+
+- Mỗi mode có bảng tier riêng.
+- Season hiện tại theo UTC `YYYY-MM`.
+- Người chơi chỉ claim **mùa trước**.
+- Phải có ít nhất 1 trận trong mùa.
+- Claim được ghi vào `pvp_season_claims`, chống nhận lặp.
+- Reward được gửi qua mailbox để player tự nhận.
+- Online Hub hiển thị eligibility, reward và trạng thái claimed.
