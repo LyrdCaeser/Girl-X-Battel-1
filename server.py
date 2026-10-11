@@ -705,6 +705,21 @@ class HTTPHandler(BaseHTTPRequestHandler):
                 action = data.get('action')
                 if action not in ('ban','unban'): raise ValueError('Thao tác tài khoản không hợp lệ')
                 return self.send(200, live_service.set_ban(data.get('uid'), data.get('server_id'), action == 'ban', data.get('reason','')))
+            if path == '/api/admin/live-service':
+                if not self.admin_authorized(): return self.send(403, {'error': 'QTV_KEY_REQUIRED'})
+                action=str(data.get('action') or '')
+                if action=='pvp_rating':
+                    return self.send(200,live_service.admin_set_pvp_rating(
+                        data.get('uid'),data.get('server_id'),data.get('mode','arena'),data.get('rating'),
+                        data.get('season_id') or None,'SUPER_GM'))
+                if action=='guild_progress':
+                    return self.send(200,live_service.admin_add_guild_progress(
+                        data.get('uid'),data.get('server_id'),data.get('exp_gain',0),data.get('contribution_gain',0),'SUPER_GM'))
+                if action=='force_settle_war':
+                    return self.send(200,live_service.admin_force_settle_guild_war(data.get('war_id'),'SUPER_GM'))
+                if action=='maintenance':
+                    return self.send(200,live_service.maintenance_tick())
+                raise ValueError('Thao tác SUPER GM live-service không hợp lệ')
             if path == '/api/admin/mail/send':
                 if not self.admin_authorized(): return self.send(403, {'error': 'QTV_KEY_REQUIRED'})
                 return self.send(200, live_service.send_mail(data.get('uid'), data.get('server_id'), data.get('character_name'),
