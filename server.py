@@ -1032,6 +1032,14 @@ def make_servers(engine, http_port=9080, tcp_port=9081, developer_engine=None, p
     http.engine = engine; http.tcp_port = tcp.server_address[1]
     return http, tcp
 
+def maintenance_loop(stop_event):
+    while not stop_event.wait(30):
+        try:
+            live_service.maintenance_tick()
+        except Exception as exc:
+            print(f'GXB3 maintenance: {type(exc).__name__}: {exc}', flush=True)
+
+
 def main():
     parser = argparse.ArgumentParser(description='Backend local GxB2: combate original, perfil ficticio y guardado local')
     parser.add_argument('--http-port', type=int, default=int(os.environ.get('PORT', '9080')))
@@ -1046,7 +1054,9 @@ def main():
     player_engines = PlayerEnginePool()
     http, tcp = make_servers(engine, args.http_port, args.tcp_port, developer, player_engines,
                              args.http_host, args.public_origin)
+    stop_event=threading.Event()
     threads = [threading.Thread(target=s.serve_forever, daemon=True) for s in (http, tcp)]
+    threads.append(threading.Thread(target=maintenance_loop,args=(stop_event,),daemon=True))
     for thread in threads: thread.start()
     browse_host = 'localhost' if args.http_host in ('0.0.0.0','::') else args.http_host
     url = f'http://{browse_host}:{http.server_port}'
@@ -1059,6 +1069,7 @@ def main():
         while True: time.sleep(1)
     except KeyboardInterrupt: pass
     finally:
+        stop_event.set()
         for s in (http, tcp): s.shutdown(); s.server_close()
         engine.close()
         developer.close()
