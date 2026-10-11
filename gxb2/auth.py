@@ -21,6 +21,16 @@ USERNAME_RE = re.compile(r"^[A-Za-z0-9_.-]{4,24}$")
 def _db():
     return database.connect(DB_PATH, "auth")
 
+def _save_recovery(db, account_id, code_hash, created_at, used_at=0):
+    db.execute("""INSERT INTO recovery_codes(account_id,code_hash,created_at,used_at)
+                  VALUES(?,?,?,?)
+                  ON CONFLICT(account_id) DO UPDATE SET
+                    code_hash=excluded.code_hash,
+                    created_at=excluded.created_at,
+                    used_at=excluded.used_at""",
+               (int(account_id), code_hash, int(created_at), int(used_at)))
+
+
 def _hash_password(password: str, salt: bytes) -> str:
     return hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), salt, PBKDF2_ROUNDS).hex()
 
