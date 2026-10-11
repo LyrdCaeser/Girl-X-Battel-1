@@ -430,6 +430,16 @@ def _ensure_live(db):
         PRIMARY KEY(uid,server_id,mode,season_id)
     )""")
     db.execute("CREATE INDEX IF NOT EXISTS idx_pvp_rating_board ON pvp_ratings(season_id,mode,rating DESC,wins DESC)")
+    db.execute("""CREATE TABLE IF NOT EXISTS pvp_season_claims(
+        uid TEXT NOT NULL,
+        server_id TEXT NOT NULL,
+        mode TEXT NOT NULL,
+        season_id TEXT NOT NULL,
+        rating INTEGER NOT NULL,
+        reward TEXT NOT NULL,
+        claimed_at INTEGER NOT NULL,
+        PRIMARY KEY(uid,server_id,mode,season_id)
+    )""")
     db.execute("""CREATE TABLE IF NOT EXISTS pvp_match_peers(
         match_id TEXT NOT NULL,
         uid TEXT NOT NULL,
@@ -561,6 +571,16 @@ def _ensure_live(db):
             PRIMARY KEY(uid,server_id,mode,season_id)
         )""")
         db.execute("CREATE INDEX IF NOT EXISTS idx_pvp_rating_board ON pvp_ratings(season_id,mode,rating DESC,wins DESC)")
+        db.execute("""CREATE TABLE IF NOT EXISTS pvp_season_claims(
+            uid TEXT NOT NULL,
+            server_id TEXT NOT NULL,
+            mode TEXT NOT NULL,
+            season_id TEXT NOT NULL,
+            rating INTEGER NOT NULL,
+            reward TEXT NOT NULL,
+            claimed_at BIGINT NOT NULL,
+            PRIMARY KEY(uid,server_id,mode,season_id)
+        )""")
         db.execute("""CREATE TABLE IF NOT EXISTS pvp_match_peers(
             match_id TEXT NOT NULL REFERENCES pvp_matches(id) ON DELETE CASCADE,
             uid TEXT NOT NULL,
