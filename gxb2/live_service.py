@@ -465,9 +465,12 @@ def enqueue_pvp(uid, server_id, character_name, mode, power=0):
             match_id="PVP-"+uuid.uuid4().hex[:16].upper()
             seed=uuid.uuid4().int % 2147483647
             match_server="CROSS" if mode=="cross" else server_id
-            db.execute("""INSERT INTO pvp_matches(id,mode,server_id,player_a,player_b,name_a,name_b,power_a,power_b,status,winner_uid,created_at,resolved_at,seed)
-                          VALUES(?,?,?,?,?,?,?,?,?,'ready','',?,0,?)""",
-                       (match_id,mode,match_server,str(opponent["uid"]),uid,str(opponent["character_name"]),character_name,
+            db.execute("""INSERT INTO pvp_matches(
+                          id,mode,server_id,server_a,server_b,player_a,player_b,name_a,name_b,power_a,power_b,
+                          status,winner_uid,created_at,resolved_at,seed,snapshot_a,snapshot_b,battle_report,rating_delta_a,rating_delta_b)
+                          VALUES(?,?,?,?,?,?,?,?,?,?,?,'ready','',?,0,?,'{}','{}','{}',0,0)""",
+                       (match_id,mode,match_server,str(opponent["server_id"]).upper(),server_id,
+                        str(opponent["uid"]),uid,str(opponent["character_name"]),character_name,
                         int(opponent["power"]),power,now,seed))
             db.execute("DELETE FROM pvp_queue WHERE (uid=? AND server_id=? AND mode=?) OR (uid=? AND server_id=? AND mode=?)",
                        (uid,server_id,mode,str(opponent["uid"]),str(opponent["server_id"]),mode))
@@ -586,4 +589,134 @@ def pvp_match_session(match_id, uid):
             db.close(); raise ValueError("Bạn không thuộc trận PvP này")
         peers=db.execute("SELECT uid,ready,last_seen FROM pvp_match_peers WHERE match_id=?",(match_id,)).fetchall()
         out={"match":dict(row),"peers":[dict(p) for p in peers],"server_time":now}
+        db.close(); return out
+
+
+def current_pvp_season(now=None):
+    t=time.gmtime(int(now or time.time()))
+    return f"{t.tm_year:04d}-{t.tm_mon:02d}"
+
+
+def pvp_rating(uid, server_id, mode, season_id=None):
+    season_id=season_id or current_pvp_season()
+    with _lock:
+        db=_db()
+        row=db.execute("""SELECT * FROM pvp_ratings
+                          WHERE uid=? AND server_id=? AND mode=? AND season_id=?""",
+                       (str(uid),str(server_id).upper(),str(mode).lower(),season_id)).fetchone()
+        if not row:
+            out={"uid":str(uid),"server_id":str(server_id).upper(),"mode":str(mode).lower(),
+                 "season_id":season_id,"rating":1000,"wins":0,"losses":0,"matches":0}
+        else:
+            out=dict(row)
+        db.close(); return out
+
+
+def pvp_rating_board(mode, season_id=None, limit=100):
+    mode=str(mode or "arena").lower()
+    season_id=season_id or current_pvp_season()
+    limit=max(1,min(500,int(limit)))
+    with _lock:
+        db=_db()
+        rows=db.execute("""SELECT r.*,p.character_name
+                           FROM pvp_ratings r
+                           LEFT JOIN players p ON p.uid=r.uid AND p.server_id=r.server_id
+                           WHERE r.mode=? AND r.season_id=?
+                           ORDER BY r.rating DESC,r.wins DESC,r.matches ASC,r.updated_at ASC LIMIT ?""",
+                        (mode,season_id,limit)).fetchall()
+        out=[]
+        for idx,row in enumerate(rows,1):
+            d=dict(row); d["rank"]=idx; out.append(d)
+        db.close(); return out
+
+
+def _ensure_rating(db, uid, server_id, mode, season_id, now):
+    db.execute("""INSERT INTO pvp_ratings(uid,server_id,mode,season_id,rating,wins,losses,matches,updated_at)
+                  VALUES(?,?,?,?,1000,0,0,0,?)
+                  ON CONFLICT(uid,server_id,mode,season_id) DO NOTHING""",
+               (uid,server_id,mode,season_id,now))
+
+
+def _elo_delta(rating_a, rating_b, a_won, k=32):
+    expected=1.0/(1.0+10**((float(rating_b)-float(rating_a))/400.0))
+    score=1.0 if a_won else 0.0
+    return int(round(k*(score-expected)))
+
+
+def finish_authoritative_pvp(match_id, requester_uid, snapshot_a, snapshot_b, report):
+    match_id=str(match_id or "").strip()
+    requester_uid=str(requester_uid or "").strip()
+    if not isinstance(snapshot_a,dict) or not isinstance(snapshot_b,dict) or not isinstance(report,dict):
+        raise ValueError("PvP result payload không hợp lệ")
+    with _lock:
+        db=_db(); db.execute("BEGIN IMMEDIATE")
+        row=db.execute("SELECT * FROM pvp_matches WHERE id=?",(match_id,)).fetchone()
+        if not row:
+            db.rollback(); db.close(); raise ValueError("Không tìm thấy trận PvP")
+        if requester_uid not in (row["player_a"],row["player_b"]):
+            db.rollback(); db.close(); raise ValueError("Bạn không thuộc trận PvP này")
+        if row["status"]=="finished":
+            out=dict(row)
+            try: out["battle_report"]=json.loads(out.get("battle_report") or "{}")
+            except Exception: pass
+            db.commit(); db.close(); return out
+        if row["status"] not in ("ready","active"):
+            db.rollback(); db.close(); raise ValueError("Trận PvP không ở trạng thái có thể xử lý")
+        if report.get("isWin") not in (0,1):
+            db.rollback(); db.close(); raise ValueError("Battle report không hợp lệ")
+        winner_uid=row["player_a"] if int(report["isWin"])==1 else row["player_b"]
+        season_id=current_pvp_season()
+        server_a=(row["server_a"] or row["server_id"] or snapshot_a.get("server_id") or "").upper()
+        server_b=(row["server_b"] or row["server_id"] or snapshot_b.get("server_id") or "").upper()
+        mode=str(row["mode"])
+        now=int(time.time())
+        _ensure_rating(db,row["player_a"],server_a,mode,season_id,now)
+        _ensure_rating(db,row["player_b"],server_b,mode,season_id,now)
+        ra=db.execute("""SELECT * FROM pvp_ratings WHERE uid=? AND server_id=? AND mode=? AND season_id=?""",
+                      (row["player_a"],server_a,mode,season_id)).fetchone()
+        rb=db.execute("""SELECT * FROM pvp_ratings WHERE uid=? AND server_id=? AND mode=? AND season_id=?""",
+                      (row["player_b"],server_b,mode,season_id)).fetchone()
+        a_won=winner_uid==row["player_a"]
+        delta_a=_elo_delta(int(ra["rating"]),int(rb["rating"]),a_won)
+        delta_b=-delta_a
+        db.execute("""UPDATE pvp_ratings
+                      SET rating=rating+?,wins=wins+?,losses=losses+?,matches=matches+1,updated_at=?
+                      WHERE uid=? AND server_id=? AND mode=? AND season_id=?""",
+                   (delta_a,1 if a_won else 0,0 if a_won else 1,now,row["player_a"],server_a,mode,season_id))
+        db.execute("""UPDATE pvp_ratings
+                      SET rating=rating+?,wins=wins+?,losses=losses+?,matches=matches+1,updated_at=?
+                      WHERE uid=? AND server_id=? AND mode=? AND season_id=?""",
+                   (delta_b,0 if a_won else 1,1 if a_won else 0,now,row["player_b"],server_b,mode,season_id))
+        db.execute("""UPDATE pvp_matches SET
+                      status='finished',winner_uid=?,resolved_at=?,
+                      snapshot_a=?,snapshot_b=?,battle_report=?,
+                      rating_delta_a=?,rating_delta_b=?
+                      WHERE id=?""",
+                   (winner_uid,now,json.dumps(snapshot_a,ensure_ascii=False),json.dumps(snapshot_b,ensure_ascii=False),
+                    json.dumps(report,ensure_ascii=False),delta_a,delta_b,match_id))
+        _audit(db,"pvp.authoritative_finish",match_id,{
+            "winner":winner_uid,"mode":mode,"season":season_id,
+            "rating_delta_a":delta_a,"rating_delta_b":delta_b,
+        },"SYSTEM")
+        row=db.execute("SELECT * FROM pvp_matches WHERE id=?",(match_id,)).fetchone()
+        db.commit()
+        out=dict(row)
+        out["battle_report"]=json.loads(out.get("battle_report") or "{}")
+        out["snapshot_a"]=json.loads(out.get("snapshot_a") or "{}")
+        out["snapshot_b"]=json.loads(out.get("snapshot_b") or "{}")
+        db.close(); return out
+
+
+def pvp_match_result(match_id, uid):
+    with _lock:
+        db=_db()
+        row=db.execute("SELECT * FROM pvp_matches WHERE id=?",(str(match_id),)).fetchone()
+        if not row:
+            db.close(); raise ValueError("Không tìm thấy trận PvP")
+        if str(uid) not in (row["player_a"],row["player_b"]):
+            db.close(); raise ValueError("Bạn không thuộc trận PvP này")
+        out=dict(row)
+        for key in ("snapshot_a","snapshot_b","battle_report"):
+            try: out[key]=json.loads(out.get(key) or "{}")
+            except Exception: out[key]={}
         db.close(); return out
