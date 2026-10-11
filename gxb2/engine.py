@@ -18,7 +18,8 @@ from . import fantasy_book, growth_diary, newbie_camp, friend_boss, pet_training
 from . import arena3v3
 from . import puzzle_events, firework_project, local_promotion
 from . import wish, magic_card, two_love, lost_space, vip, activity_kit, activity_draw, jackpot, blind_box, pirate, guild
-from . import home_systems, events, equipment, campaign, point_events, acquisition, clock, explore, relations, missions, shops, arena, patrol, house_exam, hero_challenge, sanctuary, internship, midas, old_campus, guild_lab, echoes, shrine, galaxy, story, dress, skins, house_dress, souls, soul_land, stellar_altar, quick_formation, ev_sand, dress_show, local_config, live_service
+from . import home_systems, events, equipment, campaign, point_events, acquisition, clock, explore, relations, missions, shops, arena, patrol, house_exam, hero_challenge, sanctuary, internship, midas, old_campus, guild_lab, echoes, shrine, galaxy, story, dress, skins, house_dress, souls, soul_land, stellar_altar, quick_formation, ev_sand, dress_show, local_config, live_service, database
+from .player_state_db import ScopedPostgresPlayerDB
 from .battle import attributes
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -126,16 +127,19 @@ DEV_GEAR = [str(r['id']) for r in _EQ.values() if r['pos'] in (1, 2, 3, 4) and r
            [str(r['id']) for r in sorted((r for r in _EQ.values() if r['pos'] == 6), key=lambda r: -int(r.get('item_lv') or 0))[:12]]
 
 class Engine:
-    def __init__(self, db_path: Path, developer=False, clock_source=None):
+    def __init__(self, db_path: Path, developer=False, clock_source=None, identity=None):
         self._raw_now = clock_source or time.time
         self.developer = developer
         self.now = self._monotonic_now
         self._floor = self._floor_saved = 0
         db_path = Path(db_path)
-        db_path.parent.mkdir(parents=True, exist_ok=True)
-        self.db = sqlite3.connect(db_path, check_same_thread=False)
         self.lock = threading.RLock()
-        self.db.execute('PRAGMA journal_mode=WAL')
+        if identity and database.is_postgres() and not developer:
+            self.db = ScopedPostgresPlayerDB(identity[0], identity[1])
+        else:
+            db_path.parent.mkdir(parents=True, exist_ok=True)
+            self.db = sqlite3.connect(db_path, check_same_thread=False)
+            self.db.execute('PRAGMA journal_mode=WAL')
         self.db.execute('CREATE TABLE IF NOT EXISTS profile(id INTEGER PRIMARY KEY CHECK(id=1), data TEXT NOT NULL)')
         self.db.execute('CREATE TABLE IF NOT EXISTS clock(id INTEGER PRIMARY KEY CHECK(id=1), floor INTEGER NOT NULL)')
         row = self.db.execute('SELECT floor FROM clock WHERE id=1').fetchone()
