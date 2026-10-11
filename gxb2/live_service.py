@@ -1,10 +1,11 @@
 from __future__ import annotations
 import json
-import sqlite3
 import threading
 import time
 import uuid
 from pathlib import Path
+
+from . import database
 
 ROOT = Path(__file__).resolve().parents[1]
 DB_PATH = ROOT / "state" / "live_service.sqlite3"
@@ -12,71 +13,7 @@ _lock = threading.RLock()
 
 
 def _db():
-    DB_PATH.parent.mkdir(parents=True, exist_ok=True)
-    db = sqlite3.connect(DB_PATH, timeout=15)
-    db.row_factory = sqlite3.Row
-    db.execute("""CREATE TABLE IF NOT EXISTS worlds(
-        server_id TEXT PRIMARY KEY,
-        name TEXT NOT NULL,
-        status TEXT NOT NULL DEFAULT 'online',
-        created_at INTEGER NOT NULL
-    )""")
-    world_cols = {row[1] for row in db.execute("PRAGMA table_info(worlds)")}
-    if "registration_open" not in world_cols:
-        db.execute("ALTER TABLE worlds ADD COLUMN registration_open INTEGER NOT NULL DEFAULT 1")
-    if "character_creation_open" not in world_cols:
-        db.execute("ALTER TABLE worlds ADD COLUMN character_creation_open INTEGER NOT NULL DEFAULT 1")
-    if "message" not in world_cols:
-        db.execute("ALTER TABLE worlds ADD COLUMN message TEXT NOT NULL DEFAULT ''")
-    db.execute("""CREATE TABLE IF NOT EXISTS players(
-        uid TEXT NOT NULL,
-        server_id TEXT NOT NULL,
-        character_name TEXT NOT NULL,
-        status TEXT NOT NULL DEFAULT 'active',
-        ban_reason TEXT NOT NULL DEFAULT '',
-        created_at INTEGER NOT NULL,
-        updated_at INTEGER NOT NULL,
-        PRIMARY KEY(uid, server_id)
-    )""")
-    db.execute("""CREATE TABLE IF NOT EXISTS mail(
-        id TEXT PRIMARY KEY,
-        uid TEXT NOT NULL,
-        server_id TEXT NOT NULL,
-        character_name TEXT NOT NULL,
-        title TEXT NOT NULL,
-        body TEXT NOT NULL,
-        attachments TEXT NOT NULL,
-        status TEXT NOT NULL DEFAULT 'pending',
-        created_at INTEGER NOT NULL,
-        claimed_at INTEGER NOT NULL DEFAULT 0,
-        operator TEXT NOT NULL DEFAULT 'GM'
-    )""")
-    db.execute("""CREATE TABLE IF NOT EXISTS orders(
-        id TEXT PRIMARY KEY,
-        uid TEXT NOT NULL,
-        server_id TEXT NOT NULL,
-        character_name TEXT NOT NULL,
-        package TEXT NOT NULL,
-        note TEXT NOT NULL,
-        status TEXT NOT NULL DEFAULT 'pending',
-        reward TEXT NOT NULL DEFAULT '{}',
-        created_at INTEGER NOT NULL,
-        reviewed_at INTEGER NOT NULL DEFAULT 0,
-        reviewer TEXT NOT NULL DEFAULT ''
-    )""")
-    db.execute("""CREATE TABLE IF NOT EXISTS audit(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        at INTEGER NOT NULL,
-        operator TEXT NOT NULL,
-        action TEXT NOT NULL,
-        target TEXT NOT NULL,
-        detail TEXT NOT NULL
-    )""")
-    now=int(time.time())
-    db.execute("INSERT OR IGNORE INTO worlds(server_id,name,status,created_at) VALUES('S1','Server 1','online',?)",(now,))
-    db.commit()
-    return db
-
+    return database.connect(DB_PATH, "live")
 
 def _audit(db, action, target, detail, operator="GM"):
     db.execute("INSERT INTO audit(at,operator,action,target,detail) VALUES(?,?,?,?,?)",
