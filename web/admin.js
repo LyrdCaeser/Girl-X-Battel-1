@@ -83,7 +83,7 @@ window.AdminPanel=(()=>{
       const account=(dash?.accounts||[]).find(a=>a.uid===p.uid);
       if(account?.status==='banned')row.append(btn('Unban Account',()=>accountStatus(p,'unban'),'primary'));
       else row.append(btn('Ban Account',()=>accountStatus(p,'ban'),'danger'));
-      row.append(btn('Thu hồi phiên',()=>revokeSessions(p.uid)));
+      row.append(btn('Phiên',()=>viewSessions(p.uid)),btn('Thu hồi phiên',()=>revokeSessions(p.uid)));
       holder.append(row);
     }
   }
@@ -97,6 +97,16 @@ window.AdminPanel=(()=>{
   }catch(e){status(e.message,false);}}
   async function revokeSessions(uid){try{
     const r=await api('/api/admin/account/revoke-sessions',{uid});status('Đã thu hồi '+(r.revoked||0)+' phiên đăng nhập của '+uid+'.');await refreshDashboard();
+  }catch(e){status(e.message,false);}}
+  async function viewSessions(uid){try{
+    const data=await api('/api/admin/account/sessions',{uid});
+    const modal=el('div','admin-modal'),box=el('section','admin-modal-box');box.append(el('h3','','Phiên đăng nhập · '+uid));
+    const list=el('div','admin-list');
+    for(const ss of data.sessions||[]){const row=el('article','admin-row');const info=el('div','admin-row-main');
+      info.append(el('b','',ss.session_id||'Session'),el('span','',ss.user_agent||'Không rõ thiết bị'),el('small','',ss.server_id+' · '+(ss.remote_addr||'-')+' · '+new Date(ss.last_seen*1000).toLocaleString()));row.append(info);list.append(row);}
+    if(!(data.sessions||[]).length)list.append(el('p','admin-note','Không có phiên hoạt động.'));
+    box.append(list,btn('Thu hồi tất cả',async()=>{await revokeSessions(uid);modal.remove();},'danger'),btn('Đóng',()=>modal.remove()));
+    modal.append(box);document.body.append(modal);
   }catch(e){status(e.message,false);}}
   function renderWorlds(body){
     const c=card('World / Multi-server');
