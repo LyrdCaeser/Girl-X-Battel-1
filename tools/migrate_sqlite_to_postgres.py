@@ -9,7 +9,7 @@ from psycopg.rows import dict_row
 
 
 AUTH_TABLES = ["accounts", "sessions", "recovery_codes", "login_attempts"]
-LIVE_TABLES = ["worlds", "players", "mail", "orders", "audit", "presence", "leaderboard", "world_guilds", "world_guild_members", "pvp_queue", "pvp_matches", "pvp_match_peers"]
+LIVE_TABLES = ["worlds", "players", "mail", "orders", "audit", "presence", "leaderboard", "world_guilds", "world_guild_members", "pvp_queue", "pvp_matches", "pvp_match_peers", "pvp_ratings"]
 
 
 def rows(path, table):
@@ -189,6 +189,8 @@ def ensure_schema(pg):
             id TEXT PRIMARY KEY,
             mode TEXT NOT NULL,
             server_id TEXT NOT NULL,
+            server_a TEXT NOT NULL DEFAULT '',
+            server_b TEXT NOT NULL DEFAULT '',
             player_a TEXT NOT NULL,
             player_b TEXT NOT NULL,
             name_a TEXT NOT NULL,
@@ -199,7 +201,24 @@ def ensure_schema(pg):
             winner_uid TEXT NOT NULL DEFAULT '',
             created_at BIGINT NOT NULL,
             resolved_at BIGINT NOT NULL DEFAULT 0,
-            seed BIGINT NOT NULL DEFAULT 0
+            seed BIGINT NOT NULL DEFAULT 0,
+            snapshot_a TEXT NOT NULL DEFAULT '{}',
+            snapshot_b TEXT NOT NULL DEFAULT '{}',
+            battle_report TEXT NOT NULL DEFAULT '{}',
+            rating_delta_a INTEGER NOT NULL DEFAULT 0,
+            rating_delta_b INTEGER NOT NULL DEFAULT 0
+        )""")
+        c.execute("""CREATE TABLE IF NOT EXISTS pvp_ratings(
+            uid TEXT NOT NULL,
+            server_id TEXT NOT NULL,
+            mode TEXT NOT NULL,
+            season_id TEXT NOT NULL,
+            rating INTEGER NOT NULL DEFAULT 1000,
+            wins INTEGER NOT NULL DEFAULT 0,
+            losses INTEGER NOT NULL DEFAULT 0,
+            matches INTEGER NOT NULL DEFAULT 0,
+            updated_at BIGINT NOT NULL,
+            PRIMARY KEY(uid,server_id,mode,season_id)
         )""")
         c.execute("""CREATE TABLE IF NOT EXISTS pvp_match_peers(
             match_id TEXT NOT NULL REFERENCES pvp_matches(id) ON DELETE CASCADE,
@@ -296,6 +315,7 @@ def main():
         "pvp_queue": rows(live_path, "pvp_queue"),
         "pvp_matches": rows(live_path, "pvp_matches"),
         "pvp_match_peers": rows(live_path, "pvp_match_peers"),
+        "pvp_ratings": rows(live_path, "pvp_ratings"),
         "player_profiles": player_profiles,
         "player_battles": player_battles,
     }
@@ -324,6 +344,7 @@ def main():
         inserted["pvp_queue"] = insert_many(pg, "pvp_queue", source["pvp_queue"], ["uid", "server_id", "mode"])
         inserted["pvp_matches"] = insert_many(pg, "pvp_matches", source["pvp_matches"], ["id"])
         inserted["pvp_match_peers"] = insert_many(pg, "pvp_match_peers", source["pvp_match_peers"], ["match_id", "uid"])
+        inserted["pvp_ratings"] = insert_many(pg, "pvp_ratings", source["pvp_ratings"], ["uid", "server_id", "mode", "season_id"])
         inserted["player_profiles"] = insert_many(pg, "player_profiles", source["player_profiles"], ["uid", "server_id"])
         inserted["player_battles"] = insert_many(pg, "player_battles", source["player_battles"], ["uid", "server_id", "id"])
 
