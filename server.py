@@ -261,10 +261,20 @@ class HTTPHandler(BaseHTTPRequestHandler):
             return self.send(200, {'server_id': server_id, 'ranking': live_service.leaderboard(server_id, limit)})
         if path == '/api/world-guild':
             ctx = self.auth_context(); account = ctx['account']
-            return self.send(200, {
-                'guild': live_service.guild_for_player(account['uid'], account['server_id']),
+            guild = live_service.guild_for_player(account['uid'], account['server_id'])
+            payload = {
+                'guild': guild,
                 'guilds': live_service.world_guilds(account['server_id']),
-            })
+                'ranking': live_service.guild_ranking(account['server_id'], 100),
+                'wars': live_service.guild_wars(account['server_id'], 50),
+            }
+            if guild:
+                try: payload['chat'] = live_service.guild_chat(account['uid'], account['server_id'], 100)
+                except Exception: payload['chat'] = []
+                if guild.get('role') in ('leader','deputy'):
+                    try: payload['applications'] = live_service.guild_applications(account['uid'], account['server_id'])
+                    except Exception: payload['applications'] = []
+            return self.send(200, payload)
         if path == '/api/pvp/status':
             ctx = self.auth_context(); account = ctx['account']
             query = parse_qs(parsed.query)
@@ -645,6 +655,38 @@ class HTTPHandler(BaseHTTPRequestHandler):
                 action = data.get('action')
                 if action not in ('approve','reject'): raise ValueError('Thao tác đơn hàng không hợp lệ')
                 return self.send(200, live_service.review_order(data.get('order_id'), action == 'approve', data.get('reward') or {}, 'SUPER_GM'))
+            if path == '/api/world-guild/manage':
+                ctx = self.auth_context(); account = ctx['account']; player = ctx['player']
+                current = self.engine.snapshot(); power = int(current.get('power',0))
+                action = str(data.get('action') or '')
+                if action == 'apply':
+                    result = live_service.apply_world_guild(account['uid'], account['server_id'], player['character_name'],
+                                                            data.get('guild_id'), power)
+                elif action == 'review':
+                    result = live_service.review_guild_application(account['uid'], account['server_id'],
+                                                                   data.get('target_uid'), bool(data.get('approve')))
+                elif action == 'role':
+                    result = live_service.set_guild_role(account['uid'], account['server_id'],
+                                                         data.get('target_uid'), data.get('role'))
+                elif action == 'kick':
+                    result = live_service.kick_guild_member(account['uid'], account['server_id'], data.get('target_uid'))
+                elif action == 'transfer':
+                    result = live_service.transfer_guild_leader(account['uid'], account['server_id'], data.get('target_uid'))
+                elif action == 'notice':
+                    result = live_service.update_world_guild(account['uid'], account['server_id'], data.get('notice'))
+                elif action == 'chat':
+                    result = live_service.send_guild_chat(account['uid'], account['server_id'], player['character_name'], data.get('message'))
+                elif action == 'mail':
+                    result = live_service.send_guild_mail(account['uid'], account['server_id'], data.get('title'), data.get('body'))
+                elif action == 'war':
+                    result = live_service.schedule_guild_war(account['uid'], account['server_id'], data.get('opponent_guild_id'), data.get('duration',86400))
+                else:
+                    raise ValueError('Thao tác quản trị Guild không hợp lệ')
+                return self.send(200, {'result': result,
+                                       'guild': live_service.guild_for_player(account['uid'], account['server_id']),
+                                       'guilds': live_service.world_guilds(account['server_id']),
+                                       'ranking': live_service.guild_ranking(account['server_id'], 100),
+                                       'wars': live_service.guild_wars(account['server_id'], 50)})
             if path == '/api/world-guild/action':
                 ctx = self.auth_context(); account = ctx['account']; player = ctx['player']
                 current = self.engine.snapshot()
