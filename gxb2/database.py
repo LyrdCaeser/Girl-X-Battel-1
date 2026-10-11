@@ -278,6 +278,24 @@ def _ensure_live(db):
             target TEXT NOT NULL,
             detail TEXT NOT NULL
         )""")
+        db.execute("""CREATE TABLE IF NOT EXISTS presence(
+            uid TEXT NOT NULL,
+            server_id TEXT NOT NULL,
+            character_name TEXT NOT NULL,
+            last_seen BIGINT NOT NULL,
+            PRIMARY KEY(uid, server_id)
+        )""")
+        db.execute("""CREATE TABLE IF NOT EXISTS leaderboard(
+            uid TEXT NOT NULL,
+            server_id TEXT NOT NULL,
+            character_name TEXT NOT NULL,
+            level INTEGER NOT NULL DEFAULT 1,
+            power BIGINT NOT NULL DEFAULT 0,
+            updated_at BIGINT NOT NULL,
+            PRIMARY KEY(uid, server_id)
+        )""")
+        db.execute("CREATE INDEX IF NOT EXISTS idx_presence_server_seen ON presence(server_id,last_seen DESC)")
+        db.execute("CREATE INDEX IF NOT EXISTS idx_leaderboard_server_power ON leaderboard(server_id,power DESC,level DESC)")
         db.execute("""INSERT INTO worlds(server_id,name,status,created_at,registration_open,character_creation_open,message)
                       VALUES('S1','Server 1','online',?,1,1,'')
                       ON CONFLICT(server_id) DO NOTHING""", (int(__import__("time").time()),))
@@ -340,6 +358,24 @@ def _ensure_live(db):
         target TEXT NOT NULL,
         detail TEXT NOT NULL
     )""")
+    db.execute("""CREATE TABLE IF NOT EXISTS presence(
+        uid TEXT NOT NULL,
+        server_id TEXT NOT NULL,
+        character_name TEXT NOT NULL,
+        last_seen INTEGER NOT NULL,
+        PRIMARY KEY(uid, server_id)
+    )""")
+    db.execute("""CREATE TABLE IF NOT EXISTS leaderboard(
+        uid TEXT NOT NULL,
+        server_id TEXT NOT NULL,
+        character_name TEXT NOT NULL,
+        level INTEGER NOT NULL DEFAULT 1,
+        power INTEGER NOT NULL DEFAULT 0,
+        updated_at INTEGER NOT NULL,
+        PRIMARY KEY(uid, server_id)
+    )""")
+    db.execute("CREATE INDEX IF NOT EXISTS idx_presence_server_seen ON presence(server_id,last_seen DESC)")
+    db.execute("CREATE INDEX IF NOT EXISTS idx_leaderboard_server_power ON leaderboard(server_id,power DESC,level DESC)")
     db.execute("INSERT OR IGNORE INTO worlds(server_id,name,status,created_at) VALUES('S1','Server 1','online',?)",
                (int(__import__("time").time()),))
 
