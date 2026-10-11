@@ -4,6 +4,7 @@ import argparse
 from email.parser import BytesParser
 from email.policy import default
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from http.cookies import SimpleCookie
 import json, re
 import hmac
 import os
@@ -19,7 +20,8 @@ from gxb2.story import catalog as story_catalog
 from gxb2.dress import catalog as dress_catalog
 from gxb2.skins import catalog as skins_catalog
 from gxb2.souls import catalog as souls_catalog
-from gxb2 import protocol as p, local_promotion, local_config, live_service
+from gxb2 import protocol as p, local_promotion, local_config, live_service, auth
+from gxb2.player_engines import PlayerEnginePool
 
 ROOT = Path(__file__).resolve().parent
 ADMIN_KEY = 'QuangHo1997#a'
@@ -169,17 +171,43 @@ class HTTPHandler(BaseHTTPRequestHandler):
             return True
         return False
 
+    def session_token(self):
+        cookie = SimpleCookie()
+        try: cookie.load(self.headers.get('Cookie', ''))
+        except Exception: return ''
+        morsel = cookie.get('gxb3_session')
+        return morsel.value if morsel else ''
+
+    def auth_context(self):
+        cached = getattr(self, '_auth_context', None)
+        if cached is not None:
+            return cached
+        ctx = auth.session(self.session_token())
+        self._auth_context = ctx
+        return ctx
+
+    def require_auth(self):
+        ctx = self.auth_context()
+        if not ctx:
+            self.send(401, {'error': 'AUTH_REQUIRED'})
+            return None
+        return ctx
+
     @property
     def engine(self):
         if self.headers.get('X-GXB2-Mode') == 'developer' and self.server.developer_engine and self.admin_authorized():
             return self.server.developer_engine
-        return self.server.engine
+        ctx = self.auth_context()
+        if not ctx:
+            return self.server.engine
+        account = ctx['account']
+        return self.server.player_engines.get(account['uid'], account['server_id'], ctx['character_name'])
 
     server_version = 'GxB2Local/0.1'
     def log_message(self, fmt, *args):
         # Request bodies and local session fields are not written to logs.
         pass
-    def send(self, status, content, content_type='application/json; charset=utf-8'):
+    def send(self, status, content, content_type='application/json; charset=utf-8', headers=None):
         if isinstance(content, (dict, list)): content = json.dumps(content, ensure_ascii=False).encode()
         elif isinstance(content, str): content = content.encode()
         extra = {}
@@ -195,6 +223,7 @@ class HTTPHandler(BaseHTTPRequestHandler):
                 extra['Content-Range'] = f'bytes {start}-{end}/{size}'
         self.send_response(status)
         for key, value in extra.items(): self.send_header(key, value)
+        for key, value in (headers or {}).items(): self.send_header(key, value)
         self.send_header('Content-Type', content_type)
         self.send_header('Content-Length', str(len(content)))
         self.send_header('Cache-Control', 'no-store')
@@ -206,6 +235,11 @@ class HTTPHandler(BaseHTTPRequestHandler):
         if self.reject_unauthorized_admin_mode():
             return
         path = urlparse(self.path).path
+        if path == '/api/auth/me':
+            ctx = self.auth_context()
+            return self.send(200, {'authenticated': bool(ctx), 'session': ctx, 'worlds': live_service.worlds()})
+        if path.startswith('/api/') and not self.require_auth():
+            return
         if path == '/api/admin/config':
             if not self.admin_authorized():
                 return self.send(403, {'error': 'QTV_KEY_REQUIRED'})
@@ -448,7 +482,9 @@ class HTTPHandler(BaseHTTPRequestHandler):
             return self.send(200, (ROOT/'web'/filename).read_bytes(), mime)
         return self.send(404, {'error': 'Ruta no implementada'})
     def bootstrap(self):
-        return {'uid': 'local-player-1', 'player_id': 1, 'token': LOCAL_TOKEN, 'server_id': 1,
+        ctx = self.auth_context()
+        account = ctx['account'] if ctx else {'uid': 'local-player-1', 'server_id': 'S1'}
+        return {'uid': account['uid'], 'player_id': 1, 'token': LOCAL_TOKEN, 'server_id': account['server_id'],
                 'gate_host': '127.0.0.1', 'gate_port': self.server.tcp_port, 'is_new': 0,
                 'server_time': int(time.time()), 'log_url': f'http://localhost:{self.server.server_port}/local-log'}
     def read_body(self):
@@ -472,11 +508,43 @@ class HTTPHandler(BaseHTTPRequestHandler):
         if self.reject_unauthorized_admin_mode():
             return
         origin = self.headers.get('Origin')
-        allowed = (f'http://127.0.0.1:{self.server.server_port}', f'http://localhost:{self.server.server_port}')
+        host = self.headers.get('Host', f'localhost:{self.server.server_port}')
+        allowed = {f'http://127.0.0.1:{self.server.server_port}', f'http://localhost:{self.server.server_port}',
+                   f'http://{host}', f'https://{host}'}
         if origin and origin not in allowed: return self.send(403, {'error': 'Origen no permitido'})
         try:
             data = self.read_body()
             path = urlparse(self.path).path
+            if path in ('/api/auth/register','/api/auth/login'):
+                if path.endswith('/register'):
+                    result = auth.register(data.get('username'), data.get('password'), data.get('character_name'),
+                                           data.get('server_id','S1'), data.get('email',''))
+                else:
+                    result = auth.login(data.get('username'), data.get('password'), data.get('server_id','S1'),
+                                        self.client_address[0] if self.client_address else '')
+                secure = self.headers.get('X-Forwarded-Proto','').lower() == 'https'
+                cookie = f"gxb3_session={result['token']}; Path=/; HttpOnly; SameSite=Lax; Max-Age={auth.SESSION_TTL}"
+                if secure: cookie += '; Secure'
+                return self.send(200, {'account': result['account'], 'character_name': result['character_name']},
+                                 headers={'Set-Cookie': cookie})
+            if path == '/api/auth/logout':
+                auth.logout(self.session_token())
+                self._auth_context = None
+                return self.send(200, {'ok': True}, headers={'Set-Cookie': 'gxb3_session=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0'})
+            if path == '/api/auth/switch-server':
+                ctx = self.require_auth()
+                if not ctx: return
+                updated = auth.switch_server(self.session_token(), data.get('server_id'))
+                self._auth_context = updated
+                return self.send(200, {'session': updated})
+            if path == '/api/auth/create-character':
+                ctx = self.require_auth()
+                if not ctx: return
+                updated = auth.create_character(self.session_token(), data.get('server_id'), data.get('character_name'))
+                self._auth_context = updated
+                return self.send(200, {'session': updated})
+            if not self.require_auth():
+                return
             if path == '/api/admin/check':
                 if not self.admin_authorized():
                     return self.send(403, {'error': 'QTV_KEY_INVALID'})
@@ -672,7 +740,7 @@ class HTTPHandler(BaseHTTPRequestHandler):
             print(f'Error local: {type(exc).__name__}: {exc}', flush=True)
             return self.send(500, {'error': 'Error del motor local. Consulta la terminal.'})
 
-def make_servers(engine, http_port=9080, tcp_port=9081, developer_engine=None):
+def make_servers(engine, http_port=9080, tcp_port=9081, developer_engine=None, player_engines=None):
     tcp = ThreadTCP(('127.0.0.1', tcp_port), TCPHandler)
     tcp.engine = engine
     try: http = LocalHTTPServer(('127.0.0.1', http_port), HTTPHandler)
@@ -680,6 +748,7 @@ def make_servers(engine, http_port=9080, tcp_port=9081, developer_engine=None):
         tcp.server_close()
         raise
     http.developer_engine = developer_engine
+    http.player_engines = player_engines or PlayerEnginePool()
     http.admin_key = ADMIN_KEY
     http.engine = engine; http.tcp_port = tcp.server_address[1]
     return http, tcp
@@ -693,7 +762,8 @@ def main():
     args = parser.parse_args()
     engine = Engine(args.db)
     developer = Engine(args.db.with_name(args.db.stem + ".developer.sqlite3"), developer=True)
-    http, tcp = make_servers(engine, args.http_port, args.tcp_port, developer)
+    player_engines = PlayerEnginePool()
+    http, tcp = make_servers(engine, args.http_port, args.tcp_port, developer, player_engines)
     threads = [threading.Thread(target=s.serve_forever, daemon=True) for s in (http, tcp)]
     for thread in threads: thread.start()
     url = f'http://localhost:{http.server_port}'
@@ -708,5 +778,6 @@ def main():
         for s in (http, tcp): s.shutdown(); s.server_close()
         engine.close()
         developer.close()
+        player_engines.close()
 
 if __name__ == '__main__': main()
