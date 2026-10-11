@@ -13,7 +13,7 @@ LOCAL decisions (server logic missing, see DESIGN_DECISIONS.md LOCAL-026):
 """
 from __future__ import annotations
 import json, time
-from . import clock
+from . import clock, local_config
 from pathlib import Path
 
 DATA = json.loads((Path(__file__).resolve().parents[1] / 'data/shops.json').read_text())
@@ -47,8 +47,10 @@ def goods(sid):
         if sid == 7:
             box = BOX.get(int(r['dropbox_id']), [{}])[0]
             item, cost, cap = pair(box.get('item')), pair(box.get('cost')), 1
+            cost[1] = local_config.shop_cost(cost[1])
         else:
             item, cost = pair(r.get('item')), pair(r.get('cost'))
+            cost[1] = local_config.shop_cost(cost[1])
             cap = lim[i] if i < len(lim) else -1
         if item[0] <= 0 or cost[0] <= 0:
             continue
@@ -115,7 +117,7 @@ def action(state, request, level, now=None):
         shop = SHOPS[sid]
         if not int(shop.get('is_refresh') or 0) or not shop.get('refresh_cost'):
             raise ValueError('Esta tienda no se puede refrescar')
-        cid, cn = pair(shop['refresh_cost'])
+        cid, cn = pair(shop['refresh_cost']); cn = local_config.shop_cost(cn)
         if int(items.get(str(cid), 0)) < cn:
             raise ValueError('Faltan recursos')
         items[str(cid)] = int(items.get(str(cid), 0)) - cn
