@@ -252,7 +252,8 @@ def _ensure_live_postgres(db):
             claimed_at BIGINT NOT NULL DEFAULT 0, operator TEXT NOT NULL DEFAULT 'GM')""",
         """CREATE TABLE IF NOT EXISTS orders(
             id TEXT PRIMARY KEY, uid TEXT NOT NULL, server_id TEXT NOT NULL, character_name TEXT NOT NULL,
-            package TEXT NOT NULL, note TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'pending',
+            package TEXT NOT NULL, package_name TEXT NOT NULL DEFAULT '', price_label TEXT NOT NULL DEFAULT '',
+            manual_reward INTEGER NOT NULL DEFAULT 1, note TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'pending',
             reward TEXT NOT NULL DEFAULT '{}', created_at BIGINT NOT NULL,
             reviewed_at BIGINT NOT NULL DEFAULT 0, reviewer TEXT NOT NULL DEFAULT '')""",
         """CREATE TABLE IF NOT EXISTS audit(
@@ -334,6 +335,9 @@ def _ensure_live_postgres(db):
     for stmt in stmts:
         db.execute(stmt)
     db.execute("ALTER TABLE world_guild_members ADD COLUMN IF NOT EXISTS contribution BIGINT NOT NULL DEFAULT 0")
+    db.execute("ALTER TABLE orders ADD COLUMN IF NOT EXISTS package_name TEXT NOT NULL DEFAULT ''")
+    db.execute("ALTER TABLE orders ADD COLUMN IF NOT EXISTS price_label TEXT NOT NULL DEFAULT ''")
+    db.execute("ALTER TABLE orders ADD COLUMN IF NOT EXISTS manual_reward INTEGER NOT NULL DEFAULT 1")
     for col, ddl in (
         ("server_a", "TEXT NOT NULL DEFAULT ''"), ("server_b", "TEXT NOT NULL DEFAULT ''"),
         ("snapshot_a", "TEXT NOT NULL DEFAULT '{}'"), ("snapshot_b", "TEXT NOT NULL DEFAULT '{}'"),
@@ -379,7 +383,8 @@ def _ensure_live_sqlite(db):
             claimed_at INTEGER NOT NULL DEFAULT 0, operator TEXT NOT NULL DEFAULT 'GM')""",
         """CREATE TABLE IF NOT EXISTS orders(
             id TEXT PRIMARY KEY, uid TEXT NOT NULL, server_id TEXT NOT NULL, character_name TEXT NOT NULL,
-            package TEXT NOT NULL, note TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'pending',
+            package TEXT NOT NULL, package_name TEXT NOT NULL DEFAULT '', price_label TEXT NOT NULL DEFAULT '',
+            manual_reward INTEGER NOT NULL DEFAULT 1, note TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'pending',
             reward TEXT NOT NULL DEFAULT '{}', created_at INTEGER NOT NULL,
             reviewed_at INTEGER NOT NULL DEFAULT 0, reviewer TEXT NOT NULL DEFAULT '')""",
         """CREATE TABLE IF NOT EXISTS audit(
@@ -471,6 +476,14 @@ def _ensure_live_sqlite(db):
     ):
         if col not in world_cols:
             db.execute(f"ALTER TABLE worlds ADD COLUMN {col} {ddl}")
+    order_cols = {row[1] for row in db.execute("PRAGMA table_info(orders)")}
+    for col, ddl in (
+        ("package_name", "TEXT NOT NULL DEFAULT ''"),
+        ("price_label", "TEXT NOT NULL DEFAULT ''"),
+        ("manual_reward", "INTEGER NOT NULL DEFAULT 1"),
+    ):
+        if col not in order_cols:
+            db.execute(f"ALTER TABLE orders ADD COLUMN {col} {ddl}")
     member_cols = {row[1] for row in db.execute("PRAGMA table_info(world_guild_members)")}
     if "contribution" not in member_cols:
         db.execute("ALTER TABLE world_guild_members ADD COLUMN contribution INTEGER NOT NULL DEFAULT 0")
