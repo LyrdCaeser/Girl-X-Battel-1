@@ -94,6 +94,20 @@ class GuildAndSeasonTests(unittest.TestCase):
         self.assertTrue(any(m["operator"]=="GUILD_WAR" for m in live_service.mailbox("GA","S1")))
         self.assertTrue(any(m["operator"]=="GUILD_WAR" for m in live_service.mailbox("GB","S1")))
 
+    def test_auto_settle_previous_pvp_season(self):
+        live_service.register_player("AUTO1","S1","AutoPlayer")
+        season=live_service.previous_pvp_season()
+        db=live_service._db()
+        db.execute("""INSERT INTO pvp_ratings(uid,server_id,mode,season_id,rating,wins,losses,matches,updated_at)
+                      VALUES(?,?,?,?,?,?,?,?,?)""",
+                   ("AUTO1","S1","cross",season,1250,8,3,11,1))
+        db.commit(); db.close()
+        result=live_service.settle_previous_pvp_season()
+        self.assertEqual(result["issued"],1)
+        status=live_service.pvp_season_claim_status("AUTO1","S1","cross")
+        self.assertTrue(status["claimed"])
+        self.assertTrue(any(m["operator"]=="PVP_SEASON" for m in live_service.mailbox("AUTO1","S1")))
+
 
 if __name__ == "__main__":
     unittest.main()
