@@ -2,17 +2,20 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from gxb2 import live_service
+from gxb2 import live_service, topup
 
 
 class LiveServiceTests(unittest.TestCase):
     def setUp(self):
         self.old = live_service.DB_PATH
+        self.old_topup_override = topup.OVERRIDE_PATH
         self.tmp = tempfile.TemporaryDirectory()
         live_service.DB_PATH = Path(self.tmp.name) / "live.sqlite3"
+        topup.OVERRIDE_PATH = Path(self.tmp.name) / "topup_packages.json"
 
     def tearDown(self):
         live_service.DB_PATH = self.old
+        topup.OVERRIDE_PATH = self.old_topup_override
         self.tmp.cleanup()
 
     def test_world_player_ban_mail_and_order_flow(self):
@@ -43,6 +46,33 @@ class LiveServiceTests(unittest.TestCase):
         board = live_service.leaderboard("S2")
         self.assertEqual(board[0]["rank"], 1)
         self.assertEqual(board[0]["power"], 123456)
+
+    def test_fixed_topup_package_uses_server_snapshot_reward(self):
+        topup.save({"packages": [
+            {"id": "VIP100", "name": "VIP 100", "price_label": "100K",
+             "reward": {"2": 1234, "1": 50000}, "manual_reward": False, "enabled": True},
+            {"id": "CUSTOM", "name": "Custom", "price_label": "Manual",
+             "reward": {}, "manual_reward": True, "enabled": True},
+        ]})
+        live_service.register_player("PAY1", "S1", "Payer")
+        order = live_service.create_order("PAY1", "S1", "Payer", "VIP100")
+        self.assertEqual(order["package"], "VIP100")
+        self.assertEqual(order["reward"], {"2": 1234, "1": 50000})
+        self.assertEqual(int(order["manual_reward"]), 0)
+
+        approved = live_service.review_order(order["id"], True, {"2": 999999})
+        self.assertEqual(approved["reward"], {"2": 1234, "1": 50000})
+        reward_mail = next(m for m in live_service.mailbox("PAY1", "S1") if m["operator"] == "GM")
+        self.assertEqual(reward_mail["attachments"], {"2": 1234, "1": 50000})
+
+    def test_manual_topup_package_requires_gm_reward(self):
+        live_service.register_player("PAY2", "S1", "ManualPayer")
+        order = live_service.create_order("PAY2", "S1", "ManualPayer", "CUSTOM")
+        self.assertEqual(int(order["manual_reward"]), 1)
+        with self.assertRaises(ValueError):
+            live_service.review_order(order["id"], True, {})
+        approved = live_service.review_order(order["id"], True, {"2": 77})
+        self.assertEqual(approved["reward"], {"2": 77})
 
     def test_name_must_match_for_gm_mail(self):
         live_service.register_player("U1", "S1", "Hero")
