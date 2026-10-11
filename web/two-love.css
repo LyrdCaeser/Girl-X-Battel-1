@@ -1,0 +1,32 @@
+/* Matching Pairs (capture fb/88): activity_2love_window.prefab on the 720 canvas, panel y 560…-600 (1160 tall). */
+.tl-root{container-type:inline-size;--u:calc(100cqw / 720)}
+.tl-stage{position:relative;height:calc(1160 * var(--u));overflow:hidden;border-radius:12px;background:#fde6ef}
+.tl-abs{position:absolute;margin:0}
+.tl-bg{object-fit:fill;pointer-events:none}
+.tl-logo{object-fit:contain;pointer-events:none}
+.tl-help,.tl-detail{border:0;padding:0;border-radius:50%;cursor:pointer;background:center/contain no-repeat}
+.tl-help{background-image:url('/assets/dress-show/help_2.png')}
+.tl-detail{background-image:url('/assets/two-love/check_white_btn.png')}
+.tl-time{display:grid;place-items:center;background:url('/assets/two-love/activity_2love_text_time_bar.png') center/100% 100% no-repeat;color:#fff;font:800 calc(22 * var(--u)) system-ui;text-shadow:0 1px 2px #c2528b}
+.tl-desc{display:grid;place-items:center;text-align:center;color:#8a4a6e;font:700 calc(21 * var(--u))/1.25 system-ui}
+.tl-card{border:0;padding:0;background:center/100% 100% no-repeat;display:grid;place-items:center;cursor:default;transition:transform .2s}
+.tl-card.back{cursor:pointer;animation:tl-wiggle 2.4s ease-in-out infinite}.tl-card.back:hover{transform:scale(1.05)}
+.tl-card.fake{opacity:.9}
+.tl-card.done{filter:saturate(1.15)}.tl-card.done:after{content:"♥";position:absolute;right:calc(6 * var(--u));top:calc(2 * var(--u));color:#ff5c9a;font:900 calc(26 * var(--u)) system-ui;text-shadow:0 0 3px #fff}
+.tl-card.fresh{animation:tl-flip .45s ease-out}
+.tl-item{position:relative;display:grid;place-items:center;width:calc(84 * var(--u));height:calc(84 * var(--u))}.tl-item img{width:100%;height:100%;object-fit:contain}.tl-item b{position:absolute;right:0;bottom:0;color:#fff;font:800 calc(20 * var(--u)) system-ui;text-shadow:0 0 3px #000,0 0 3px #000}
+.tl-res{border:0;padding:0 0 0 calc(40 * var(--u));background:url('/assets/two-love/activity_2love_item_bg.png') center/100% 100% no-repeat;display:flex;align-items:center;justify-content:center;color:#8a4a6e;font:800 calc(22 * var(--u)) system-ui;cursor:pointer}
+.tl-res-icon{position:absolute;left:calc(-10 * var(--u));width:calc(45 * var(--u))}
+.tl-plus{position:absolute;right:calc(-12 * var(--u));width:calc(28 * var(--u));height:calc(28 * var(--u));border-radius:50%;background:#4e9cf0;color:#fff;font:900 calc(22 * var(--u))/calc(28 * var(--u)) system-ui}
+.tl-sure{border:0;background:url('/assets/two-love/activity_2love_text_open_btn.png') center/100% 100% no-repeat;display:flex;align-items:center;justify-content:center;gap:calc(8 * var(--u));color:#fff;font:900 calc(26 * var(--u)) system-ui;text-shadow:0 2px 2px #b0467e;cursor:pointer}
+.tl-sure.off{background-image:url('/assets/two-love/activity_2love_text_open_disabled_btn.png');color:#6b6b6b;text-shadow:none}
+.tl-cost{position:relative;width:calc(56 * var(--u));height:calc(56 * var(--u))}.tl-cost img{width:100%}.tl-cost small{position:absolute;right:0;bottom:0;font:800 calc(16 * var(--u)) system-ui;color:#fff;text-shadow:0 0 3px #000}
+.tl-win .tl-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.tl-opt{display:grid;place-items:center;aspect-ratio:116/136;background:center/100% 100% no-repeat;--u:1px}.tl-opt.got{filter:grayscale(.7);opacity:.6}.tl-opt .tl-item{width:62px;height:62px}
+.tl-note{color:#8a4a6e;font-size:13px}
+.tl-mrow{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:10px;padding:8px 10px;margin-bottom:6px;border-radius:12px;background:#fff0f6}
+.tl-mrow b{display:block;font-size:14px;color:#6b3a58;margin-bottom:4px}
+.tl-bar{position:relative;height:14px;max-width:220px;border-radius:8px;background:#f3d3e2;overflow:hidden}.tl-bar i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#ff9ac6,#ff5c9a)}.tl-bar span{position:relative;display:block;text-align:center;font:800 10px/14px system-ui;color:#5b2b45}
+.tl-aw{position:relative;width:40px;height:40px}.tl-aw img{width:100%}.tl-aw b{position:absolute;right:0;bottom:0;color:#fff;font:800 12px system-ui;text-shadow:0 0 3px #000}
+@keyframes tl-wiggle{0%,90%,100%{transform:none}94%{transform:rotate(-3deg)}97%{transform:rotate(3deg)}}
+@keyframes tl-flip{from{transform:rotateY(90deg)}}

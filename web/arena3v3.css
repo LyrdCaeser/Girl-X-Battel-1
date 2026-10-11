@@ -1,0 +1,12 @@
+/* Arena 3v3: team editor rows (arena_3v3_t1-3 badges), candidate pool and the entrance button in Junior Varsity. Prefix a3-. */
+.a3-win{max-height:88%;overflow:auto}
+.a3-team{display:flex;align-items:center;gap:8px;padding:6px;margin:6px 0;border-radius:10px;background:#f3f6fb;box-shadow:inset 0 0 0 1px #d3dcea;cursor:pointer}.a3-team.on{box-shadow:inset 0 0 0 2px #4d8ad1;background:#eaf2fd}
+.a3-badge{width:34px;height:34px;flex:none}
+.a3-slots{flex:1;display:grid;grid-template-columns:repeat(6,1fr);gap:4px}
+.a3-slot{position:relative;aspect-ratio:1;border:1px dashed #b7c4d6;border-radius:8px;background:#fff;padding:0;cursor:pointer;overflow:hidden}.a3-slot.full{border-style:solid}.a3-slot img,.a3-slot canvas{width:100%;height:100%;object-fit:cover}.a3-slot small{position:absolute;left:0;right:0;bottom:0;font:700 9px system-ui;color:#fff;background:#0008;text-align:center}
+.a3-tools{display:flex;gap:8px;justify-content:flex-end;margin:4px 0}
+.a3-pool{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;max-height:34vh;overflow:auto;padding:4px;border-radius:8px;background:#eef2f8}
+.a3-cand{position:relative;aspect-ratio:1;border:0;padding:0;border-radius:8px;background:#fff;overflow:hidden;cursor:pointer}.a3-cand img{width:100%;height:100%;object-fit:cover}.a3-cand small{position:absolute;left:0;right:0;bottom:0;font:700 9px system-ui;color:#fff;background:#0008;text-align:center}.a3-cand.on::after{content:'✔';position:absolute;inset:0;display:grid;place-items:center;background:#0006;color:#fff;font-size:20px}
+.a3-acts{display:flex;justify-content:center;margin-top:10px}.a3-acts .ar-go{position:static;width:180px;height:52px}
+.ar-3v3-entry{position:absolute;border:0;padding:0;background:none;cursor:pointer}.ar-3v3-entry img{width:100%;height:100%;object-fit:contain}
+.a3-pool{grid-auto-rows:62px;align-content:start}.a3-cand{aspect-ratio:auto;height:62px;width:100%}.a3-cand>*:first-child{width:100%;height:100%;object-fit:cover;display:block}

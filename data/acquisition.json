@@ -1,0 +1,6160 @@
+{
+  "partner_replace": {
+    "41001": {
+      "cost": "19#20",
+      "name": -1,
+      "dropbox_id": 24101,
+      "id": 41001,
+      "dropbox_id_2": ""
+    },
+    "41002": {
+      "cost": "19#20",
+      "name": -1,
+      "dropbox_id": 24102,
+      "id": 41002,
+      "dropbox_id_2": ""
+    },
+    "41003": {
+      "cost": "19#20",
+      "name": -1,
+      "dropbox_id": 24103,
+      "id": 41003,
+      "dropbox_id_2": ""
+    },
+    "41004": {
+      "cost": "19#20",
+      "name": -1,
+      "dropbox_id": 24104,
+      "id": 41004,
+      "dropbox_id_2": ""
+    },
+    "41005": {
+      "cost": "19#20",
+      "name": -1,
+      "dropbox_id": 24105,
+      "id": 41005,
+      "dropbox_id_2": ""
+    },
+    "41006": {
+      "cost": "19#20",
+      "name": -1,
+      "dropbox_id": 24106,
+      "id": 41006,
+      "dropbox_id_2": ""
+    },
+    "41007": {
+      "cost": "19#20",
+      "name": -1,
+      "dropbox_id": 24107,
+      "id": 41007,
+      "dropbox_id_2": ""
+    },
+    "41008": {
+      "cost": "19#20",
+      "name": -1,
+      "dropbox_id": 24108,
+      "id": 41008,
+      "dropbox_id_2": ""
+    },
+    "42001": {
+      "cost": "19#20",
+      "name": -1,
+      "dropbox_id": 24201,
+      "id": 42001,
+      "dropbox_id_2": ""
+    },
+    "42002": {
+      "cost": "19#20",
+      "name": -1,
+      "dropbox_id": 24202,
+      "id": 42002,
+      "dropbox_id_2": ""
+    },
+    "42003": {
+      "cost": "19#20",
+      "name": -1,
+      "dropbox_id": 24203,
+      "id": 42003,
+      "dropbox_id_2": ""
+    },
+    "42004": {
+      "cost": "19#20",
+      "name": -1,
+      "dropbox_id": 24204,
+      "id": 42004,
+      "dropbox_id_2": ""
+    },
+    "42005": {
+      "cost": "19#20",
+      "name": -1,
+      "dropbox_id": 24205,
+      "id": 42005,
+      "dropbox_id_2": ""
+    },
+    "42006": {
+      "cost": "19#20",
+      "name": -1,
+      "dropbox_id": 24206,
+      "id": 42006,
+      "dropbox_id_2": ""
+    },
+    "42007": {
+      "cost": "19#20",
+      "name": -1,
+      "dropbox_id": 24207,
+      "id": 42007,
+      "dropbox_id_2": ""
+    },
+    "42008": {
+      "cost": "19#20",
+      "name": -1,
+      "dropbox_id": 24208,
+      "id": 42008,
+      "dropbox_id_2": ""
+    },
+    "43001": {
+      "cost": "19#20",
+      "name": -1,
+      "dropbox_id": 24301,
+      "id": 43001,
+      "dropbox_id_2": ""
+    },
+    "43002": {
+      "cost": "19#20",
+      "name": -1,
+      "dropbox_id": 24302,
+      "id": 43002,
+      "dropbox_id_2": ""
+    },
+    "43003": {
+      "cost": "19#20",
+      "name": -1,
+      "dropbox_id": 24303,
+      "id": 43003,
+      "dropbox_id_2": ""
+    },
+    "43004": {
+      "cost": "19#20",
+      "name": -1,
+      "dropbox_id": 24304,
+      "id": 43004,
+      "dropbox_id_2": ""
+    },
+    "43005": {
+      "cost": "19#20",
+      "name": -1,
+      "dropbox_id": 24305,
+      "id": 43005,
+      "dropbox_id_2": ""
+    },
+    "43006": {
+      "cost": "19#20",
+      "name": -1,
+      "dropbox_id": 24306,
+      "id": 43006,
+      "dropbox_id_2": ""
+    },
+    "43007": {
+      "cost": "19#20",
+      "name": -1,
+      "dropbox_id": 24307,
+      "id": 43007,
+      "dropbox_id_2": ""
+    },
+    "43008": {
+      "cost": "19#20",
+      "name": -1,
+      "dropbox_id": 24308,
+      "id": 43008,
+      "dropbox_id_2": ""
+    },
+    "44001": {
+      "cost": "19#20",
+      "name": -1,
+      "dropbox_id": 24401,
+      "id": 44001,
+      "dropbox_id_2": ""
+    },
+    "44002": {
+      "cost": "19#20",
+      "name": -1,
+      "dropbox_id": 24402,
+      "id": 44002,
+      "dropbox_id_2": ""
+    },
+    "44003": {
+      "cost": "19#20",
+      "name": -1,
+      "dropbox_id": 24403,
+      "id": 44003,
+      "dropbox_id_2": ""
+    },
+    "44004": {
+      "cost": "19#20",
+      "name": -1,
+      "dropbox_id": 24404,
+      "id": 44004,
+      "dropbox_id_2": ""
+    },
+    "44005": {
+      "cost": "19#20",
+      "name": -1,
+      "dropbox_id": 24405,
+      "id": 44005,
+      "dropbox_id_2": ""
+    },
+    "44006": {
+      "cost": "19#20",
+      "name": -1,
+      "dropbox_id": 24406,
+      "id": 44006,
+      "dropbox_id_2": ""
+    },
+    "44007": {
+      "cost": "19#20",
+      "name": -1,
+      "dropbox_id": 24407,
+      "id": 44007,
+      "dropbox_id_2": ""
+    },
+    "44008": {
+      "cost": "19#20",
+      "name": -1,
+      "dropbox_id": 24408,
+      "id": 44008,
+      "dropbox_id_2": ""
+    },
+    "51001": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26001,
+      "id": 51001,
+      "dropbox_id_2": 26011
+    },
+    "51002": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26001,
+      "id": 51002,
+      "dropbox_id_2": 26011
+    },
+    "51003": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26001,
+      "id": 51003,
+      "dropbox_id_2": 26011
+    },
+    "51004": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26001,
+      "id": 51004,
+      "dropbox_id_2": 26011
+    },
+    "51005": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26001,
+      "id": 51005,
+      "dropbox_id_2": 26011
+    },
+    "51006": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26001,
+      "id": 51006,
+      "dropbox_id_2": 26011
+    },
+    "51007": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26001,
+      "id": 51007,
+      "dropbox_id_2": 26011
+    },
+    "51008": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26001,
+      "id": 51008,
+      "dropbox_id_2": 26011
+    },
+    "51009": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26001,
+      "id": 51009,
+      "dropbox_id_2": 26011
+    },
+    "51010": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26001,
+      "id": 51010,
+      "dropbox_id_2": 26011
+    },
+    "541001": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26001,
+      "id": 541001,
+      "dropbox_id_2": 26011
+    },
+    "541002": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26001,
+      "id": 541002,
+      "dropbox_id_2": 26011
+    },
+    "541003": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26001,
+      "id": 541003,
+      "dropbox_id_2": 26011
+    },
+    "541004": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26001,
+      "id": 541004,
+      "dropbox_id_2": 26011
+    },
+    "541005": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26001,
+      "id": 541005,
+      "dropbox_id_2": 26011
+    },
+    "541006": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26001,
+      "id": 541006,
+      "dropbox_id_2": 26011
+    },
+    "541007": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26001,
+      "id": 541007,
+      "dropbox_id_2": 26011
+    },
+    "541008": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26001,
+      "id": 541008,
+      "dropbox_id_2": 26011
+    },
+    "51011": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26001,
+      "id": 51011,
+      "dropbox_id_2": 26021
+    },
+    "51012": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26001,
+      "id": 51012,
+      "dropbox_id_2": 26021
+    },
+    "51013": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26001,
+      "id": 51013,
+      "dropbox_id_2": 26021
+    },
+    "51014": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26001,
+      "id": 51014,
+      "dropbox_id_2": 26021
+    },
+    "51015": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26001,
+      "id": 51015,
+      "dropbox_id_2": 26021
+    },
+    "51016": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26001,
+      "id": 51016,
+      "dropbox_id_2": 26021
+    },
+    "51017": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26001,
+      "id": 51017,
+      "dropbox_id_2": 26021
+    },
+    "51018": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26001,
+      "id": 51018,
+      "dropbox_id_2": 26021
+    },
+    "51019": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26001,
+      "id": 51019,
+      "dropbox_id_2": 26021
+    },
+    "52001": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26002,
+      "id": 52001,
+      "dropbox_id_2": 26012
+    },
+    "52002": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26002,
+      "id": 52002,
+      "dropbox_id_2": 26012
+    },
+    "52003": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26002,
+      "id": 52003,
+      "dropbox_id_2": 26012
+    },
+    "52004": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26002,
+      "id": 52004,
+      "dropbox_id_2": 26012
+    },
+    "52005": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26002,
+      "id": 52005,
+      "dropbox_id_2": 26012
+    },
+    "52006": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26002,
+      "id": 52006,
+      "dropbox_id_2": 26012
+    },
+    "52007": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26002,
+      "id": 52007,
+      "dropbox_id_2": 26022
+    },
+    "52008": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26002,
+      "id": 52008,
+      "dropbox_id_2": 26012
+    },
+    "52009": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26002,
+      "id": 52009,
+      "dropbox_id_2": 26012
+    },
+    "52010": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26002,
+      "id": 52010,
+      "dropbox_id_2": 26012
+    },
+    "52011": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26002,
+      "id": 52011,
+      "dropbox_id_2": 26022
+    },
+    "52012": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26002,
+      "id": 52012,
+      "dropbox_id_2": 26022
+    },
+    "52013": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26002,
+      "id": 52013,
+      "dropbox_id_2": 26022
+    },
+    "52014": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26002,
+      "id": 52014,
+      "dropbox_id_2": 26022
+    },
+    "52015": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26002,
+      "id": 52015,
+      "dropbox_id_2": 26022
+    },
+    "52016": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26002,
+      "id": 52016,
+      "dropbox_id_2": 26022
+    },
+    "52017": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26002,
+      "id": 52017,
+      "dropbox_id_2": 26022
+    },
+    "52018": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26002,
+      "id": 52018,
+      "dropbox_id_2": 26022
+    },
+    "52019": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26002,
+      "id": 52019,
+      "dropbox_id_2": 26022
+    },
+    "52020": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26002,
+      "id": 52020,
+      "dropbox_id_2": 26022
+    },
+    "542001": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26002,
+      "id": 542001,
+      "dropbox_id_2": 26012
+    },
+    "542002": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26002,
+      "id": 542002,
+      "dropbox_id_2": 26012
+    },
+    "542003": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26002,
+      "id": 542003,
+      "dropbox_id_2": 26012
+    },
+    "542004": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26002,
+      "id": 542004,
+      "dropbox_id_2": 26012
+    },
+    "542005": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26002,
+      "id": 542005,
+      "dropbox_id_2": 26012
+    },
+    "542006": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26002,
+      "id": 542006,
+      "dropbox_id_2": 26012
+    },
+    "542007": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26002,
+      "id": 542007,
+      "dropbox_id_2": 26012
+    },
+    "542008": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26002,
+      "id": 542008,
+      "dropbox_id_2": 26012
+    },
+    "53001": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26003,
+      "id": 53001,
+      "dropbox_id_2": 26023
+    },
+    "53002": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26003,
+      "id": 53002,
+      "dropbox_id_2": 26013
+    },
+    "53003": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26003,
+      "id": 53003,
+      "dropbox_id_2": 26013
+    },
+    "53004": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26003,
+      "id": 53004,
+      "dropbox_id_2": 26013
+    },
+    "53005": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26003,
+      "id": 53005,
+      "dropbox_id_2": 26013
+    },
+    "53006": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26003,
+      "id": 53006,
+      "dropbox_id_2": 26013
+    },
+    "53007": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26003,
+      "id": 53007,
+      "dropbox_id_2": 26023
+    },
+    "53008": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26003,
+      "id": 53008,
+      "dropbox_id_2": 26013
+    },
+    "53009": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26003,
+      "id": 53009,
+      "dropbox_id_2": 26013
+    },
+    "53010": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26003,
+      "id": 53010,
+      "dropbox_id_2": 26013
+    },
+    "53011": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26003,
+      "id": 53011,
+      "dropbox_id_2": 26023
+    },
+    "543001": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26003,
+      "id": 543001,
+      "dropbox_id_2": 26013
+    },
+    "543002": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26003,
+      "id": 543002,
+      "dropbox_id_2": 26013
+    },
+    "543003": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26003,
+      "id": 543003,
+      "dropbox_id_2": 26013
+    },
+    "543004": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26003,
+      "id": 543004,
+      "dropbox_id_2": 26013
+    },
+    "543005": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26003,
+      "id": 543005,
+      "dropbox_id_2": 26013
+    },
+    "543006": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26003,
+      "id": 543006,
+      "dropbox_id_2": 26013
+    },
+    "543007": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26003,
+      "id": 543007,
+      "dropbox_id_2": 26013
+    },
+    "543008": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26003,
+      "id": 543008,
+      "dropbox_id_2": 26013
+    },
+    "53012": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26003,
+      "id": 53012,
+      "dropbox_id_2": 26023
+    },
+    "53013": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26003,
+      "id": 53013,
+      "dropbox_id_2": 26023
+    },
+    "53014": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26003,
+      "id": 53014,
+      "dropbox_id_2": 26023
+    },
+    "53015": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26003,
+      "id": 53015,
+      "dropbox_id_2": 26023
+    },
+    "53016": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26003,
+      "id": 53016,
+      "dropbox_id_2": 26023
+    },
+    "53017": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26003,
+      "id": 53017,
+      "dropbox_id_2": 26023
+    },
+    "53018": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26003,
+      "id": 53018,
+      "dropbox_id_2": 26023
+    },
+    "53019": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26003,
+      "id": 53019,
+      "dropbox_id_2": 26023
+    },
+    "54001": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26004,
+      "id": 54001,
+      "dropbox_id_2": 26014
+    },
+    "54002": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26004,
+      "id": 54002,
+      "dropbox_id_2": 26014
+    },
+    "54003": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26004,
+      "id": 54003,
+      "dropbox_id_2": 26014
+    },
+    "54004": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26004,
+      "id": 54004,
+      "dropbox_id_2": 26014
+    },
+    "54005": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26004,
+      "id": 54005,
+      "dropbox_id_2": 26014
+    },
+    "54006": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26004,
+      "id": 54006,
+      "dropbox_id_2": 26014
+    },
+    "54007": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26004,
+      "id": 54007,
+      "dropbox_id_2": 26014
+    },
+    "54008": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26004,
+      "id": 54008,
+      "dropbox_id_2": 26024
+    },
+    "54009": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26004,
+      "id": 54009,
+      "dropbox_id_2": 26014
+    },
+    "54010": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26004,
+      "id": 54010,
+      "dropbox_id_2": 26024
+    },
+    "544001": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26004,
+      "id": 544001,
+      "dropbox_id_2": 26014
+    },
+    "544002": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26004,
+      "id": 544002,
+      "dropbox_id_2": 26014
+    },
+    "544003": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26004,
+      "id": 544003,
+      "dropbox_id_2": 26014
+    },
+    "544004": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26004,
+      "id": 544004,
+      "dropbox_id_2": 26014
+    },
+    "544005": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26004,
+      "id": 544005,
+      "dropbox_id_2": 26014
+    },
+    "544006": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26004,
+      "id": 544006,
+      "dropbox_id_2": 26014
+    },
+    "544007": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26004,
+      "id": 544007,
+      "dropbox_id_2": 26014
+    },
+    "544008": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26004,
+      "id": 544008,
+      "dropbox_id_2": 26014
+    },
+    "54011": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26004,
+      "id": 54011,
+      "dropbox_id_2": 26024
+    },
+    "54012": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26004,
+      "id": 54012,
+      "dropbox_id_2": 26024
+    },
+    "54013": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26004,
+      "id": 54013,
+      "dropbox_id_2": 26024
+    },
+    "54014": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26004,
+      "id": 54014,
+      "dropbox_id_2": 26024
+    },
+    "54015": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26004,
+      "id": 54015,
+      "dropbox_id_2": 26024
+    },
+    "54016": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26004,
+      "id": 54016,
+      "dropbox_id_2": 26024
+    },
+    "54017": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26004,
+      "id": 54017,
+      "dropbox_id_2": 26024
+    },
+    "54018": {
+      "cost": "19#100",
+      "name": -1,
+      "dropbox_id": 26004,
+      "id": 54018,
+      "dropbox_id_2": 26024
+    }
+  },
+  "gamble_config": {
+    "1": {
+      "cost": "35#1|35#8|35#8|35#16|35#40",
+      "need_vip": "0|2|0|2|2",
+      "award": "6#10|6#100|6#100|6#200|6#500",
+      "gamble_table": "gamble",
+      "refresh_cost": "2#50",
+      "need_level": "0|0|80|80|80",
+      "times": "1|10|10|20|50",
+      "system_refresh_time": 86400,
+      "free_refresh_time": 10800,
+      "id": 1,
+      "gamble_type": 1
+    },
+    "2": {
+      "cost": "29#1|29#10",
+      "need_vip": "3|3",
+      "award": "0#0|0#0",
+      "gamble_table": "gamble_up",
+      "refresh_cost": "2#100",
+      "need_level": "80|80",
+      "times": "1|10",
+      "system_refresh_time": 86400,
+      "free_refresh_time": 10800,
+      "id": 2,
+      "gamble_type": 2
+    }
+  },
+  "gamble": {
+    "1": {
+      "lv3": "",
+      "dropbox_id1": 200101,
+      "dropbox_id2": 200102,
+      "id": 1,
+      "dropbox_id5": "",
+      "lv5": "",
+      "limit_buy": 1,
+      "weight": 10,
+      "dropbox_id3": "",
+      "cool": 1,
+      "lv2": "31|999",
+      "dropbox_id4": "",
+      "lv1": "1|30",
+      "part_num": 2,
+      "lv4": ""
+    },
+    "2": {
+      "lv3": "",
+      "dropbox_id1": 200201,
+      "dropbox_id2": 200202,
+      "id": 2,
+      "dropbox_id5": "",
+      "lv5": "",
+      "limit_buy": 1,
+      "weight": 200,
+      "dropbox_id3": "",
+      "cool": 1,
+      "lv2": "101|999",
+      "dropbox_id4": "",
+      "lv1": "1|100",
+      "part_num": 2,
+      "lv4": ""
+    },
+    "3": {
+      "lv3": "81|110",
+      "dropbox_id1": 200301,
+      "dropbox_id2": 200302,
+      "id": 3,
+      "dropbox_id5": 200305,
+      "lv5": "141|999",
+      "limit_buy": "",
+      "weight": 3400,
+      "dropbox_id3": 200303,
+      "cool": "",
+      "lv2": "41|80",
+      "dropbox_id4": 200304,
+      "lv1": "1|40",
+      "part_num": 5,
+      "lv4": "111|140"
+    },
+    "4": {
+      "lv3": "61|90",
+      "dropbox_id1": 200401,
+      "dropbox_id2": 200402,
+      "id": 4,
+      "dropbox_id5": 200405,
+      "lv5": "121|999",
+      "limit_buy": "",
+      "weight": 1300,
+      "dropbox_id3": 200403,
+      "cool": "",
+      "lv2": "31|60",
+      "dropbox_id4": 200404,
+      "lv1": "1|30",
+      "part_num": 5,
+      "lv4": "91|120"
+    },
+    "5": {
+      "lv3": "91|120",
+      "dropbox_id1": 200501,
+      "dropbox_id2": 200502,
+      "id": 5,
+      "dropbox_id5": 200505,
+      "lv5": "151|999",
+      "limit_buy": 1,
+      "weight": 150,
+      "dropbox_id3": 200503,
+      "cool": 1,
+      "lv2": "61|90",
+      "dropbox_id4": 200504,
+      "lv1": "1|60",
+      "part_num": 5,
+      "lv4": "121|150"
+    },
+    "6": {
+      "lv3": "81|110",
+      "dropbox_id1": 200601,
+      "dropbox_id2": 200602,
+      "id": 6,
+      "dropbox_id5": 200605,
+      "lv5": "141|999",
+      "limit_buy": 1,
+      "weight": 650,
+      "dropbox_id3": 200603,
+      "cool": 1,
+      "lv2": "51|80",
+      "dropbox_id4": 200604,
+      "lv1": "1|50",
+      "part_num": 5,
+      "lv4": "111|140"
+    },
+    "7": {
+      "lv3": "71|100",
+      "dropbox_id1": 200701,
+      "dropbox_id2": 200702,
+      "id": 7,
+      "dropbox_id5": "",
+      "lv5": "",
+      "limit_buy": "",
+      "weight": 2600,
+      "dropbox_id3": 200703,
+      "cool": "",
+      "lv2": "41|70",
+      "dropbox_id4": 200704,
+      "lv1": "1|40",
+      "part_num": 4,
+      "lv4": "101|999"
+    },
+    "8": {
+      "lv3": "131|999",
+      "dropbox_id1": 200801,
+      "dropbox_id2": 200802,
+      "id": 8,
+      "dropbox_id5": "",
+      "lv5": "",
+      "limit_buy": "",
+      "weight": 1690,
+      "dropbox_id3": 200803,
+      "cool": "",
+      "lv2": "101|130",
+      "dropbox_id4": "",
+      "lv1": "1|100",
+      "part_num": 3,
+      "lv4": ""
+    }
+  },
+  "gamble_up": {
+    "1": {
+      "lv1": "1|999",
+      "id": 1,
+      "cool": 1,
+      "limit_buy": 1,
+      "dropbox_id1": 210101,
+      "part_num": 1,
+      "weight": 55
+    },
+    "2": {
+      "lv1": "1|999",
+      "id": 2,
+      "cool": "",
+      "limit_buy": "",
+      "dropbox_id1": 210201,
+      "part_num": 1,
+      "weight": 670
+    },
+    "3": {
+      "lv1": "1|999",
+      "id": 3,
+      "cool": 1,
+      "limit_buy": 1,
+      "dropbox_id1": 210301,
+      "part_num": 1,
+      "weight": 115
+    },
+    "4": {
+      "lv1": "1|999",
+      "id": 4,
+      "cool": 1,
+      "limit_buy": 1,
+      "dropbox_id1": 210401,
+      "part_num": 1,
+      "weight": 420
+    },
+    "5": {
+      "lv1": "1|999",
+      "id": 5,
+      "cool": "",
+      "limit_buy": "",
+      "dropbox_id1": 210501,
+      "part_num": 1,
+      "weight": 4000
+    },
+    "6": {
+      "lv1": "1|999",
+      "id": 6,
+      "cool": "",
+      "limit_buy": "",
+      "dropbox_id1": 210601,
+      "part_num": 1,
+      "weight": 2240
+    },
+    "7": {
+      "lv1": "1|999",
+      "id": 7,
+      "cool": "",
+      "limit_buy": "",
+      "dropbox_id1": 210701,
+      "part_num": 1,
+      "weight": 850
+    },
+    "8": {
+      "lv1": "1|999",
+      "id": 8,
+      "cool": "",
+      "limit_buy": "",
+      "dropbox_id1": 210801,
+      "part_num": 1,
+      "weight": 1650
+    }
+  },
+  "shop_luck": {
+    "1": {
+      "cost": "6#8000",
+      "item": "930109#50",
+      "id": 1,
+      "limit_num": 1,
+      "weight": 228,
+      "desc": -1
+    },
+    "2": {
+      "cost": "6#8000",
+      "item": "930081#50",
+      "id": 2,
+      "limit_num": 1,
+      "weight": 228,
+      "desc": -1
+    },
+    "3": {
+      "cost": "6#8000",
+      "item": "930095#50",
+      "id": 3,
+      "limit_num": 1,
+      "weight": 228,
+      "desc": -1
+    },
+    "4": {
+      "cost": "6#8000",
+      "item": "930105#50",
+      "id": 4,
+      "limit_num": 1,
+      "weight": 228,
+      "desc": -1
+    },
+    "5": {
+      "cost": "6#10000",
+      "item": "930078#50",
+      "id": 5,
+      "limit_num": 1,
+      "weight": 92,
+      "desc": -1
+    },
+    "6": {
+      "cost": "6#10000",
+      "item": "930097#50",
+      "id": 6,
+      "limit_num": 1,
+      "weight": 92,
+      "desc": -1
+    },
+    "7": {
+      "cost": "6#10000",
+      "item": "930103#50",
+      "id": 7,
+      "limit_num": 1,
+      "weight": 92,
+      "desc": -1
+    },
+    "8": {
+      "cost": "6#10000",
+      "item": "930114#50",
+      "id": 8,
+      "limit_num": 1,
+      "weight": 92,
+      "desc": -1
+    },
+    "9": {
+      "cost": "6#2250",
+      "item": "6071#1",
+      "id": 9,
+      "limit_num": "",
+      "weight": 1145,
+      "desc": -1
+    },
+    "10": {
+      "cost": "6#2250",
+      "item": "6366#1",
+      "id": 10,
+      "limit_num": "",
+      "weight": 1145,
+      "desc": -1
+    },
+    "11": {
+      "cost": "6#5000",
+      "item": "6096#1",
+      "id": 11,
+      "limit_num": "",
+      "weight": 687,
+      "desc": -1
+    },
+    "12": {
+      "cost": "6#5000",
+      "item": "6097#1",
+      "id": 12,
+      "limit_num": "",
+      "weight": 687,
+      "desc": -1
+    },
+    "13": {
+      "cost": "6#5000",
+      "item": "6098#1",
+      "id": 13,
+      "limit_num": "",
+      "weight": 687,
+      "desc": -1
+    },
+    "14": {
+      "cost": "6#5000",
+      "item": "6099#1",
+      "id": 14,
+      "limit_num": "",
+      "weight": 687,
+      "desc": -1
+    },
+    "15": {
+      "cost": "6#5000",
+      "item": "6100#1",
+      "id": 15,
+      "limit_num": "",
+      "weight": 687,
+      "desc": -1
+    },
+    "16": {
+      "cost": "6#6600",
+      "item": "6101#1",
+      "id": 16,
+      "limit_num": "",
+      "weight": 343,
+      "desc": -1
+    },
+    "17": {
+      "cost": "6#6600",
+      "item": "6102#1",
+      "id": 17,
+      "limit_num": "",
+      "weight": 343,
+      "desc": -1
+    },
+    "18": {
+      "cost": "6#6600",
+      "item": "6103#1",
+      "id": 18,
+      "limit_num": "",
+      "weight": 343,
+      "desc": -1
+    },
+    "19": {
+      "cost": "6#6600",
+      "item": "6371#1",
+      "id": 19,
+      "limit_num": "",
+      "weight": 343,
+      "desc": -1
+    },
+    "20": {
+      "cost": "6#6600",
+      "item": "6377#1",
+      "id": 20,
+      "limit_num": "",
+      "weight": 343,
+      "desc": -1
+    },
+    "21": {
+      "cost": "6#6000",
+      "item": "955001#50",
+      "id": 21,
+      "limit_num": "",
+      "weight": 869,
+      "desc": -1
+    },
+    "22": {
+      "cost": "6#10000",
+      "item": "955099#50",
+      "id": 22,
+      "limit_num": "",
+      "weight": 411,
+      "desc": -1
+    }
+  },
+  "shop_config": {
+    "3": {
+      "function_id": 11,
+      "name": -1,
+      "limit_level": 14,
+      "type": 2,
+      "refresh_cost": "6#50",
+      "red_mark_id": -1,
+      "girls_model": 31,
+      "is_large_slot": "",
+      "version_update": 1,
+      "shop_bg": "market_scene3_",
+      "shop_banner": "shop_bg_type01_png",
+      "girls_type": 2,
+      "slot_buy_time": "1|1|1|1|1|1|1|1",
+      "icon": "icon_6_small_png",
+      "is_refresh_save": 0,
+      "excel_table": "shop_luck",
+      "economy_show": 6,
+      "red_mark_key": "",
+      "refresh_type": 2,
+      "is_refresh": 1,
+      "shop_table": "",
+      "refresh_free_time": 86400,
+      "slot_num": 8,
+      "offset": "0|-605",
+      "girls_img": "",
+      "version_type": 1,
+      "rank": 2,
+      "id": 3,
+      "scale": 1.3
+    }
+  },
+  "dropbox": {
+    "200101001": {
+      "cost": "0#0",
+      "dropbox_id": 200101,
+      "id": 200101001,
+      "item": "930075#30",
+      "name": -1,
+      "weight": 500
+    },
+    "200101002": {
+      "cost": "0#0",
+      "dropbox_id": 200101,
+      "id": 200101002,
+      "item": "930077#30",
+      "name": -1,
+      "weight": 500
+    },
+    "200102001": {
+      "cost": "0#0",
+      "dropbox_id": 200102,
+      "id": 200102001,
+      "item": "930109#50",
+      "name": -1,
+      "weight": 250
+    },
+    "200102002": {
+      "cost": "0#0",
+      "dropbox_id": 200102,
+      "id": 200102002,
+      "item": "930081#50",
+      "name": -1,
+      "weight": 250
+    },
+    "200102003": {
+      "cost": "0#0",
+      "dropbox_id": 200102,
+      "id": 200102003,
+      "item": "930095#50",
+      "name": -1,
+      "weight": 250
+    },
+    "200102004": {
+      "cost": "0#0",
+      "dropbox_id": 200102,
+      "id": 200102004,
+      "item": "930105#50",
+      "name": -1,
+      "weight": 250
+    },
+    "200201001": {
+      "cost": "0#0",
+      "dropbox_id": 200201,
+      "id": 200201001,
+      "item": "930070#30",
+      "name": -1,
+      "weight": 225
+    },
+    "200201002": {
+      "cost": "0#0",
+      "dropbox_id": 200201,
+      "id": 200201002,
+      "item": "930055#30",
+      "name": -1,
+      "weight": 225
+    },
+    "200201003": {
+      "cost": "0#0",
+      "dropbox_id": 200201,
+      "id": 200201003,
+      "item": "930056#30",
+      "name": -1,
+      "weight": 225
+    },
+    "200201004": {
+      "cost": "0#0",
+      "dropbox_id": 200201,
+      "id": 200201004,
+      "item": "930063#30",
+      "name": -1,
+      "weight": 225
+    },
+    "200201005": {
+      "cost": "0#0",
+      "dropbox_id": 200201,
+      "id": 200201005,
+      "item": "930074#30",
+      "name": -1,
+      "weight": 50
+    },
+    "200201006": {
+      "cost": "0#0",
+      "dropbox_id": 200201,
+      "id": 200201006,
+      "item": "930076#30",
+      "name": -1,
+      "weight": 50
+    },
+    "200202001": {
+      "cost": "0#0",
+      "dropbox_id": 200202,
+      "id": 200202001,
+      "item": "940021#30",
+      "name": -1,
+      "weight": 225
+    },
+    "200202002": {
+      "cost": "0#0",
+      "dropbox_id": 200202,
+      "id": 200202002,
+      "item": "940022#30",
+      "name": -1,
+      "weight": 225
+    },
+    "200202003": {
+      "cost": "0#0",
+      "dropbox_id": 200202,
+      "id": 200202003,
+      "item": "940023#30",
+      "name": -1,
+      "weight": 225
+    },
+    "200202004": {
+      "cost": "0#0",
+      "dropbox_id": 200202,
+      "id": 200202004,
+      "item": "940024#30",
+      "name": -1,
+      "weight": 225
+    },
+    "200202005": {
+      "cost": "0#0",
+      "dropbox_id": 200202,
+      "id": 200202005,
+      "item": "940025#30",
+      "name": -1,
+      "weight": 50
+    },
+    "200202006": {
+      "cost": "0#0",
+      "dropbox_id": 200202,
+      "id": 200202006,
+      "item": "940026#30",
+      "name": -1,
+      "weight": 50
+    },
+    "200301001": {
+      "cost": "0#0",
+      "dropbox_id": 200301,
+      "id": 200301001,
+      "item": "1#10000",
+      "name": -1,
+      "weight": 550
+    },
+    "200301002": {
+      "cost": "0#0",
+      "dropbox_id": 200301,
+      "id": 200301002,
+      "item": "1#20000",
+      "name": -1,
+      "weight": 400
+    },
+    "200301003": {
+      "cost": "0#0",
+      "dropbox_id": 200301,
+      "id": 200301003,
+      "item": "1#30000",
+      "name": -1,
+      "weight": 50
+    },
+    "200302001": {
+      "cost": "0#0",
+      "dropbox_id": 200302,
+      "id": 200302001,
+      "item": "1#30000",
+      "name": -1,
+      "weight": 550
+    },
+    "200302002": {
+      "cost": "0#0",
+      "dropbox_id": 200302,
+      "id": 200302002,
+      "item": "1#60000",
+      "name": -1,
+      "weight": 400
+    },
+    "200302003": {
+      "cost": "0#0",
+      "dropbox_id": 200302,
+      "id": 200302003,
+      "item": "1#90000",
+      "name": -1,
+      "weight": 50
+    },
+    "200303001": {
+      "cost": "0#0",
+      "dropbox_id": 200303,
+      "id": 200303001,
+      "item": "1#80000",
+      "name": -1,
+      "weight": 550
+    },
+    "200303002": {
+      "cost": "0#0",
+      "dropbox_id": 200303,
+      "id": 200303002,
+      "item": "1#160000",
+      "name": -1,
+      "weight": 400
+    },
+    "200303003": {
+      "cost": "0#0",
+      "dropbox_id": 200303,
+      "id": 200303003,
+      "item": "1#240000",
+      "name": -1,
+      "weight": 50
+    },
+    "200304001": {
+      "cost": "0#0",
+      "dropbox_id": 200304,
+      "id": 200304001,
+      "item": "1#100000",
+      "name": -1,
+      "weight": 550
+    },
+    "200304002": {
+      "cost": "0#0",
+      "dropbox_id": 200304,
+      "id": 200304002,
+      "item": "1#200000",
+      "name": -1,
+      "weight": 400
+    },
+    "200304003": {
+      "cost": "0#0",
+      "dropbox_id": 200304,
+      "id": 200304003,
+      "item": "1#300000",
+      "name": -1,
+      "weight": 50
+    },
+    "200305001": {
+      "cost": "0#0",
+      "dropbox_id": 200305,
+      "id": 200305001,
+      "item": "1#125000",
+      "name": -1,
+      "weight": 550
+    },
+    "200305002": {
+      "cost": "0#0",
+      "dropbox_id": 200305,
+      "id": 200305002,
+      "item": "1#250000",
+      "name": -1,
+      "weight": 400
+    },
+    "200305003": {
+      "cost": "0#0",
+      "dropbox_id": 200305,
+      "id": 200305003,
+      "item": "1#375000",
+      "name": -1,
+      "weight": 50
+    },
+    "200401001": {
+      "cost": "0#0",
+      "dropbox_id": 200401,
+      "id": 200401001,
+      "item": "10#10",
+      "name": -1,
+      "weight": 300
+    },
+    "200401002": {
+      "cost": "0#0",
+      "dropbox_id": 200401,
+      "id": 200401002,
+      "item": "10#15",
+      "name": -1,
+      "weight": 500
+    },
+    "200401003": {
+      "cost": "0#0",
+      "dropbox_id": 200401,
+      "id": 200401003,
+      "item": "10#20",
+      "name": -1,
+      "weight": 200
+    },
+    "200402001": {
+      "cost": "0#0",
+      "dropbox_id": 200402,
+      "id": 200402001,
+      "item": "10#20",
+      "name": -1,
+      "weight": 300
+    },
+    "200402002": {
+      "cost": "0#0",
+      "dropbox_id": 200402,
+      "id": 200402002,
+      "item": "10#30",
+      "name": -1,
+      "weight": 500
+    },
+    "200402003": {
+      "cost": "0#0",
+      "dropbox_id": 200402,
+      "id": 200402003,
+      "item": "10#40",
+      "name": -1,
+      "weight": 200
+    },
+    "200403001": {
+      "cost": "0#0",
+      "dropbox_id": 200403,
+      "id": 200403001,
+      "item": "6001#1",
+      "name": -1,
+      "weight": 200
+    },
+    "200403002": {
+      "cost": "0#0",
+      "dropbox_id": 200403,
+      "id": 200403002,
+      "item": "6002#1",
+      "name": -1,
+      "weight": 200
+    },
+    "200403003": {
+      "cost": "0#0",
+      "dropbox_id": 200403,
+      "id": 200403003,
+      "item": "6003#1",
+      "name": -1,
+      "weight": 200
+    },
+    "200403004": {
+      "cost": "0#0",
+      "dropbox_id": 200403,
+      "id": 200403004,
+      "item": "6004#1",
+      "name": -1,
+      "weight": 200
+    },
+    "200403005": {
+      "cost": "0#0",
+      "dropbox_id": 200403,
+      "id": 200403005,
+      "item": "6005#1",
+      "name": -1,
+      "weight": 200
+    },
+    "200404001": {
+      "cost": "0#0",
+      "dropbox_id": 200404,
+      "id": 200404001,
+      "item": "6021#1",
+      "name": -1,
+      "weight": 200
+    },
+    "200404002": {
+      "cost": "0#0",
+      "dropbox_id": 200404,
+      "id": 200404002,
+      "item": "6022#1",
+      "name": -1,
+      "weight": 200
+    },
+    "200404003": {
+      "cost": "0#0",
+      "dropbox_id": 200404,
+      "id": 200404003,
+      "item": "6023#1",
+      "name": -1,
+      "weight": 200
+    },
+    "200404004": {
+      "cost": "0#0",
+      "dropbox_id": 200404,
+      "id": 200404004,
+      "item": "6024#1",
+      "name": -1,
+      "weight": 200
+    },
+    "200404005": {
+      "cost": "0#0",
+      "dropbox_id": 200404,
+      "id": 200404005,
+      "item": "6025#1",
+      "name": -1,
+      "weight": 200
+    },
+    "200405001": {
+      "cost": "0#0",
+      "dropbox_id": 200405,
+      "id": 200405001,
+      "item": "6041#1",
+      "name": -1,
+      "weight": 200
+    },
+    "200405002": {
+      "cost": "0#0",
+      "dropbox_id": 200405,
+      "id": 200405002,
+      "item": "6042#1",
+      "name": -1,
+      "weight": 200
+    },
+    "200405003": {
+      "cost": "0#0",
+      "dropbox_id": 200405,
+      "id": 200405003,
+      "item": "6043#1",
+      "name": -1,
+      "weight": 200
+    },
+    "200405004": {
+      "cost": "0#0",
+      "dropbox_id": 200405,
+      "id": 200405004,
+      "item": "6044#1",
+      "name": -1,
+      "weight": 200
+    },
+    "200405005": {
+      "cost": "0#0",
+      "dropbox_id": 200405,
+      "id": 200405005,
+      "item": "6045#1",
+      "name": -1,
+      "weight": 200
+    },
+    "200501001": {
+      "cost": "0#0",
+      "dropbox_id": 200501,
+      "id": 200501001,
+      "item": "1051#1",
+      "name": -1,
+      "weight": 250
+    },
+    "200501002": {
+      "cost": "0#0",
+      "dropbox_id": 200501,
+      "id": 200501002,
+      "item": "2051#1",
+      "name": -1,
+      "weight": 250
+    },
+    "200501003": {
+      "cost": "0#0",
+      "dropbox_id": 200501,
+      "id": 200501003,
+      "item": "3051#1",
+      "name": -1,
+      "weight": 250
+    },
+    "200501004": {
+      "cost": "0#0",
+      "dropbox_id": 200501,
+      "id": 200501004,
+      "item": "4051#1",
+      "name": -1,
+      "weight": 250
+    },
+    "200502001": {
+      "cost": "0#0",
+      "dropbox_id": 200502,
+      "id": 200502001,
+      "item": "1052#1",
+      "name": -1,
+      "weight": 250
+    },
+    "200502002": {
+      "cost": "0#0",
+      "dropbox_id": 200502,
+      "id": 200502002,
+      "item": "2052#1",
+      "name": -1,
+      "weight": 250
+    },
+    "200502003": {
+      "cost": "0#0",
+      "dropbox_id": 200502,
+      "id": 200502003,
+      "item": "3052#1",
+      "name": -1,
+      "weight": 250
+    },
+    "200502004": {
+      "cost": "0#0",
+      "dropbox_id": 200502,
+      "id": 200502004,
+      "item": "4052#1",
+      "name": -1,
+      "weight": 250
+    },
+    "200503001": {
+      "cost": "0#0",
+      "dropbox_id": 200503,
+      "id": 200503001,
+      "item": "1053#1",
+      "name": -1,
+      "weight": 250
+    },
+    "200503002": {
+      "cost": "0#0",
+      "dropbox_id": 200503,
+      "id": 200503002,
+      "item": "2053#1",
+      "name": -1,
+      "weight": 250
+    },
+    "200503003": {
+      "cost": "0#0",
+      "dropbox_id": 200503,
+      "id": 200503003,
+      "item": "3053#1",
+      "name": -1,
+      "weight": 250
+    },
+    "200503004": {
+      "cost": "0#0",
+      "dropbox_id": 200503,
+      "id": 200503004,
+      "item": "4053#1",
+      "name": -1,
+      "weight": 250
+    },
+    "200504001": {
+      "cost": "0#0",
+      "dropbox_id": 200504,
+      "id": 200504001,
+      "item": "1054#1",
+      "name": -1,
+      "weight": 250
+    },
+    "200504002": {
+      "cost": "0#0",
+      "dropbox_id": 200504,
+      "id": 200504002,
+      "item": "2054#1",
+      "name": -1,
+      "weight": 250
+    },
+    "200504003": {
+      "cost": "0#0",
+      "dropbox_id": 200504,
+      "id": 200504003,
+      "item": "3054#1",
+      "name": -1,
+      "weight": 250
+    },
+    "200504004": {
+      "cost": "0#0",
+      "dropbox_id": 200504,
+      "id": 200504004,
+      "item": "4054#1",
+      "name": -1,
+      "weight": 250
+    },
+    "200505001": {
+      "cost": "0#0",
+      "dropbox_id": 200505,
+      "id": 200505001,
+      "item": "1061#1",
+      "name": -1,
+      "weight": 125
+    },
+    "200505002": {
+      "cost": "0#0",
+      "dropbox_id": 200505,
+      "id": 200505002,
+      "item": "2061#1",
+      "name": -1,
+      "weight": 125
+    },
+    "200505003": {
+      "cost": "0#0",
+      "dropbox_id": 200505,
+      "id": 200505003,
+      "item": "3061#1",
+      "name": -1,
+      "weight": 125
+    },
+    "200505004": {
+      "cost": "0#0",
+      "dropbox_id": 200505,
+      "id": 200505004,
+      "item": "4061#1",
+      "name": -1,
+      "weight": 125
+    },
+    "200601001": {
+      "cost": "0#0",
+      "dropbox_id": 200601,
+      "id": 200601001,
+      "item": "1042#1",
+      "name": -1,
+      "weight": 250
+    },
+    "200601002": {
+      "cost": "0#0",
+      "dropbox_id": 200601,
+      "id": 200601002,
+      "item": "2042#1",
+      "name": -1,
+      "weight": 250
+    },
+    "200601003": {
+      "cost": "0#0",
+      "dropbox_id": 200601,
+      "id": 200601003,
+      "item": "3042#1",
+      "name": -1,
+      "weight": 250
+    },
+    "200601004": {
+      "cost": "0#0",
+      "dropbox_id": 200601,
+      "id": 200601004,
+      "item": "4042#1",
+      "name": -1,
+      "weight": 250
+    },
+    "200602001": {
+      "cost": "0#0",
+      "dropbox_id": 200602,
+      "id": 200602001,
+      "item": "1043#1",
+      "name": -1,
+      "weight": 250
+    },
+    "200602002": {
+      "cost": "0#0",
+      "dropbox_id": 200602,
+      "id": 200602002,
+      "item": "2043#1",
+      "name": -1,
+      "weight": 250
+    },
+    "200602003": {
+      "cost": "0#0",
+      "dropbox_id": 200602,
+      "id": 200602003,
+      "item": "3043#1",
+      "name": -1,
+      "weight": 250
+    },
+    "200602004": {
+      "cost": "0#0",
+      "dropbox_id": 200602,
+      "id": 200602004,
+      "item": "4043#1",
+      "name": -1,
+      "weight": 250
+    },
+    "200603001": {
+      "cost": "0#0",
+      "dropbox_id": 200603,
+      "id": 200603001,
+      "item": "1051#1",
+      "name": -1,
+      "weight": 250
+    },
+    "200603002": {
+      "cost": "0#0",
+      "dropbox_id": 200603,
+      "id": 200603002,
+      "item": "2051#1",
+      "name": -1,
+      "weight": 250
+    },
+    "200603003": {
+      "cost": "0#0",
+      "dropbox_id": 200603,
+      "id": 200603003,
+      "item": "3051#1",
+      "name": -1,
+      "weight": 250
+    },
+    "200603004": {
+      "cost": "0#0",
+      "dropbox_id": 200603,
+      "id": 200603004,
+      "item": "4051#1",
+      "name": -1,
+      "weight": 250
+    },
+    "200604001": {
+      "cost": "0#0",
+      "dropbox_id": 200604,
+      "id": 200604001,
+      "item": "1052#1",
+      "name": -1,
+      "weight": 250
+    },
+    "200604002": {
+      "cost": "0#0",
+      "dropbox_id": 200604,
+      "id": 200604002,
+      "item": "2052#1",
+      "name": -1,
+      "weight": 250
+    },
+    "200604003": {
+      "cost": "0#0",
+      "dropbox_id": 200604,
+      "id": 200604003,
+      "item": "3052#1",
+      "name": -1,
+      "weight": 250
+    },
+    "200604004": {
+      "cost": "0#0",
+      "dropbox_id": 200604,
+      "id": 200604004,
+      "item": "4052#1",
+      "name": -1,
+      "weight": 250
+    },
+    "200605001": {
+      "cost": "0#0",
+      "dropbox_id": 200605,
+      "id": 200605001,
+      "item": "1053#1",
+      "name": -1,
+      "weight": 250
+    },
+    "200605002": {
+      "cost": "0#0",
+      "dropbox_id": 200605,
+      "id": 200605002,
+      "item": "2053#1",
+      "name": -1,
+      "weight": 250
+    },
+    "200605003": {
+      "cost": "0#0",
+      "dropbox_id": 200605,
+      "id": 200605003,
+      "item": "3053#1",
+      "name": -1,
+      "weight": 250
+    },
+    "200605004": {
+      "cost": "0#0",
+      "dropbox_id": 200605,
+      "id": 200605004,
+      "item": "4053#1",
+      "name": -1,
+      "weight": 250
+    },
+    "200701001": {
+      "cost": "0#0",
+      "dropbox_id": 200701,
+      "id": 200701001,
+      "item": "9#4000",
+      "name": -1,
+      "weight": 550
+    },
+    "200701002": {
+      "cost": "0#0",
+      "dropbox_id": 200701,
+      "id": 200701002,
+      "item": "9#8000",
+      "name": -1,
+      "weight": 400
+    },
+    "200701003": {
+      "cost": "0#0",
+      "dropbox_id": 200701,
+      "id": 200701003,
+      "item": "9#12000",
+      "name": -1,
+      "weight": 50
+    },
+    "200702001": {
+      "cost": "0#0",
+      "dropbox_id": 200702,
+      "id": 200702001,
+      "item": "9#10000",
+      "name": -1,
+      "weight": 550
+    },
+    "200702002": {
+      "cost": "0#0",
+      "dropbox_id": 200702,
+      "id": 200702002,
+      "item": "9#20000",
+      "name": -1,
+      "weight": 400
+    },
+    "200702003": {
+      "cost": "0#0",
+      "dropbox_id": 200702,
+      "id": 200702003,
+      "item": "9#30000",
+      "name": -1,
+      "weight": 50
+    },
+    "200703001": {
+      "cost": "0#0",
+      "dropbox_id": 200703,
+      "id": 200703001,
+      "item": "9#30000",
+      "name": -1,
+      "weight": 550
+    },
+    "200703002": {
+      "cost": "0#0",
+      "dropbox_id": 200703,
+      "id": 200703002,
+      "item": "9#60000",
+      "name": -1,
+      "weight": 400
+    },
+    "200703003": {
+      "cost": "0#0",
+      "dropbox_id": 200703,
+      "id": 200703003,
+      "item": "9#90000",
+      "name": -1,
+      "weight": 50
+    },
+    "200704001": {
+      "cost": "0#0",
+      "dropbox_id": 200704,
+      "id": 200704001,
+      "item": "9#50000",
+      "name": -1,
+      "weight": 550
+    },
+    "200704002": {
+      "cost": "0#0",
+      "dropbox_id": 200704,
+      "id": 200704002,
+      "item": "9#100000",
+      "name": -1,
+      "weight": 400
+    },
+    "200704003": {
+      "cost": "0#0",
+      "dropbox_id": 200704,
+      "id": 200704003,
+      "item": "9#150000",
+      "name": -1,
+      "weight": 50
+    },
+    "200801001": {
+      "cost": "0#0",
+      "dropbox_id": 200801,
+      "id": 200801001,
+      "item": "14#20",
+      "name": -1,
+      "weight": 550
+    },
+    "200801002": {
+      "cost": "0#0",
+      "dropbox_id": 200801,
+      "id": 200801002,
+      "item": "14#30",
+      "name": -1,
+      "weight": 400
+    },
+    "200801003": {
+      "cost": "0#0",
+      "dropbox_id": 200801,
+      "id": 200801003,
+      "item": "14#40",
+      "name": -1,
+      "weight": 50
+    },
+    "200802001": {
+      "cost": "0#0",
+      "dropbox_id": 200802,
+      "id": 200802001,
+      "item": "14#30",
+      "name": -1,
+      "weight": 550
+    },
+    "200802002": {
+      "cost": "0#0",
+      "dropbox_id": 200802,
+      "id": 200802002,
+      "item": "14#45",
+      "name": -1,
+      "weight": 400
+    },
+    "200802003": {
+      "cost": "0#0",
+      "dropbox_id": 200802,
+      "id": 200802003,
+      "item": "14#60",
+      "name": -1,
+      "weight": 50
+    },
+    "200803001": {
+      "cost": "0#0",
+      "dropbox_id": 200803,
+      "id": 200803001,
+      "item": "14#40",
+      "name": -1,
+      "weight": 550
+    },
+    "200803002": {
+      "cost": "0#0",
+      "dropbox_id": 200803,
+      "id": 200803002,
+      "item": "14#60",
+      "name": -1,
+      "weight": 400
+    },
+    "200803003": {
+      "cost": "0#0",
+      "dropbox_id": 200803,
+      "id": 200803003,
+      "item": "14#80",
+      "name": -1,
+      "weight": 50
+    },
+    "210101001": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101001,
+      "item": "930079#50",
+      "name": -1,
+      "weight": 30
+    },
+    "210101002": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101002,
+      "item": "930086#50",
+      "name": -1,
+      "weight": 30
+    },
+    "210101003": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101003,
+      "item": "930087#50",
+      "name": -1,
+      "weight": 30
+    },
+    "210101004": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101004,
+      "item": "930088#50",
+      "name": -1,
+      "weight": 30
+    },
+    "210101005": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101005,
+      "item": "930089#50",
+      "name": -1,
+      "weight": 30
+    },
+    "210101006": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101006,
+      "item": "930091#50",
+      "name": -1,
+      "weight": 30
+    },
+    "210101007": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101007,
+      "item": "930092#50",
+      "name": -1,
+      "weight": 30
+    },
+    "210101008": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101008,
+      "item": "930096#50",
+      "name": -1,
+      "weight": 30
+    },
+    "210101009": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101009,
+      "item": "930099#50",
+      "name": -1,
+      "weight": 30
+    },
+    "210101010": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101010,
+      "item": "930100#50",
+      "name": -1,
+      "weight": 30
+    },
+    "210101011": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101011,
+      "item": "930101#50",
+      "name": -1,
+      "weight": 30
+    },
+    "210101012": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101012,
+      "item": "930102#50",
+      "name": -1,
+      "weight": 30
+    },
+    "210101013": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101013,
+      "item": "930107#50",
+      "name": -1,
+      "weight": 30
+    },
+    "210101014": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101014,
+      "item": "930108#50",
+      "name": -1,
+      "weight": 30
+    },
+    "210101015": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101015,
+      "item": "930111#50",
+      "name": -1,
+      "weight": 30
+    },
+    "210101016": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101016,
+      "item": "930113#50",
+      "name": -1,
+      "weight": 30
+    },
+    "210101017": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101017,
+      "item": "930114#50",
+      "name": -1,
+      "weight": 30
+    },
+    "210101018": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101018,
+      "item": "930116#50",
+      "name": -1,
+      "weight": 30
+    },
+    "210101019": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101019,
+      "item": "930094#50",
+      "name": -1,
+      "weight": 30
+    },
+    "210101020": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101020,
+      "item": "930098#50",
+      "name": -1,
+      "weight": 30
+    },
+    "210101021": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101021,
+      "item": "930115#50",
+      "name": -1,
+      "weight": 30
+    },
+    "210101022": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101022,
+      "item": "930083#50",
+      "name": -1,
+      "weight": 30
+    },
+    "210101023": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101023,
+      "item": "930085#50",
+      "name": -1,
+      "weight": 30
+    },
+    "210101024": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101024,
+      "item": "930175#50",
+      "name": -1,
+      "weight": 30
+    },
+    "210101025": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101025,
+      "item": "930117#50",
+      "name": -1,
+      "weight": 30
+    },
+    "210101026": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101026,
+      "item": "930178#50",
+      "name": -1,
+      "weight": 30
+    },
+    "210101027": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101027,
+      "item": "930177#50",
+      "name": -1,
+      "weight": 30
+    },
+    "210101028": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101028,
+      "item": "930179#50",
+      "name": -1,
+      "weight": 30
+    },
+    "210101029": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101029,
+      "item": "930182#50",
+      "name": -1,
+      "weight": 30
+    },
+    "210101030": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101030,
+      "item": "930183#50",
+      "name": -1,
+      "weight": 30
+    },
+    "210101031": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101031,
+      "item": "930184#50",
+      "name": -1,
+      "weight": 30
+    },
+    "210101032": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101032,
+      "item": "930185#50",
+      "name": -1,
+      "weight": 30
+    },
+    "210101033": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101033,
+      "item": "930186#50",
+      "name": -1,
+      "weight": 30
+    },
+    "210101034": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101034,
+      "item": "930189#50",
+      "name": -1,
+      "weight": 20
+    },
+    "210101035": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101035,
+      "item": "930190#50",
+      "name": -1,
+      "weight": 20
+    },
+    "210101036": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101036,
+      "item": "930191#50",
+      "name": -1,
+      "weight": 20
+    },
+    "210101037": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101037,
+      "item": "930192#50",
+      "name": -1,
+      "weight": 20
+    },
+    "210101038": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101038,
+      "item": "930196#50",
+      "name": -1,
+      "weight": 20
+    },
+    "210101039": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101039,
+      "item": "930193#50",
+      "name": -1,
+      "weight": 20
+    },
+    "210101040": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101040,
+      "item": "930199#50",
+      "name": -1,
+      "weight": 20
+    },
+    "210101041": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101041,
+      "item": "930200#50",
+      "name": -1,
+      "weight": 20
+    },
+    "210101042": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101042,
+      "item": "930201#50",
+      "name": -1,
+      "weight": 20
+    },
+    "210101043": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101043,
+      "item": "930202#50",
+      "name": -1,
+      "weight": 20
+    },
+    "210101044": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101044,
+      "item": "930198#50",
+      "name": -1,
+      "weight": 20
+    },
+    "210101045": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101045,
+      "item": "930203#50",
+      "name": -1,
+      "weight": 20
+    },
+    "210101046": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101046,
+      "item": "930204#50",
+      "name": -1,
+      "weight": 20
+    },
+    "210101047": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101047,
+      "item": "930207#50",
+      "name": -1,
+      "weight": 20
+    },
+    "210101048": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101048,
+      "item": "930209#50",
+      "name": -1,
+      "weight": 20
+    },
+    "210101049": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101049,
+      "item": "930208#50",
+      "name": -1,
+      "weight": 20
+    },
+    "210101050": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101050,
+      "item": "930210#50",
+      "name": -1,
+      "weight": 20
+    },
+    "210101051": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101051,
+      "item": "930211#50",
+      "name": -1,
+      "weight": 20
+    },
+    "210101052": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101052,
+      "item": "930212#50",
+      "name": -1,
+      "weight": 20
+    },
+    "210101053": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101053,
+      "item": "930215#50",
+      "name": -1,
+      "weight": 20
+    },
+    "210101054": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101054,
+      "item": "930216#50",
+      "name": -1,
+      "weight": 20
+    },
+    "210101055": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101055,
+      "item": "930217#50",
+      "name": -1,
+      "weight": 20
+    },
+    "210101056": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101056,
+      "item": "930218#50",
+      "name": -1,
+      "weight": 20
+    },
+    "210101057": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101057,
+      "item": "930219#50",
+      "name": -1,
+      "weight": 20
+    },
+    "210101058": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101058,
+      "item": "930222#50",
+      "name": -1,
+      "weight": 20
+    },
+    "210101059": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101059,
+      "item": "930225#50",
+      "name": -1,
+      "weight": 20
+    },
+    "210101060": {
+      "cost": "0#0",
+      "dropbox_id": 210101,
+      "id": 210101060,
+      "item": "930228#50",
+      "name": -1,
+      "weight": 20
+    },
+    "210201001": {
+      "cost": "0#0",
+      "dropbox_id": 210201,
+      "id": 210201001,
+      "item": "940026#30",
+      "name": -1,
+      "weight": 500
+    },
+    "210201002": {
+      "cost": "0#0",
+      "dropbox_id": 210201,
+      "id": 210201002,
+      "item": "940025#30",
+      "name": -1,
+      "weight": 500
+    },
+    "210301001": {
+      "cost": "0#0",
+      "dropbox_id": 210301,
+      "id": 210301001,
+      "item": "956001#10",
+      "name": -1,
+      "weight": 1000
+    },
+    "210401001": {
+      "cost": "0#0",
+      "dropbox_id": 210401,
+      "id": 210401001,
+      "item": "955099#10",
+      "name": -1,
+      "weight": 1000
+    },
+    "210501001": {
+      "cost": "0#0",
+      "dropbox_id": 210501,
+      "id": 210501001,
+      "item": "1#1200000",
+      "name": -1,
+      "weight": 400
+    },
+    "210501002": {
+      "cost": "0#0",
+      "dropbox_id": 210501,
+      "id": 210501002,
+      "item": "1#1500000",
+      "name": -1,
+      "weight": 300
+    },
+    "210501003": {
+      "cost": "0#0",
+      "dropbox_id": 210501,
+      "id": 210501003,
+      "item": "1#1800000",
+      "name": -1,
+      "weight": 200
+    },
+    "210501004": {
+      "cost": "0#0",
+      "dropbox_id": 210501,
+      "id": 210501004,
+      "item": "1#2100000",
+      "name": -1,
+      "weight": 100
+    },
+    "210601001": {
+      "cost": "0#0",
+      "dropbox_id": 210601,
+      "id": 210601001,
+      "item": "26#300",
+      "name": -1,
+      "weight": 400
+    },
+    "210601002": {
+      "cost": "0#0",
+      "dropbox_id": 210601,
+      "id": 210601002,
+      "item": "26#400",
+      "name": -1,
+      "weight": 300
+    },
+    "210601003": {
+      "cost": "0#0",
+      "dropbox_id": 210601,
+      "id": 210601003,
+      "item": "26#500",
+      "name": -1,
+      "weight": 200
+    },
+    "210601004": {
+      "cost": "0#0",
+      "dropbox_id": 210601,
+      "id": 210601004,
+      "item": "26#600",
+      "name": -1,
+      "weight": 100
+    },
+    "210601005": {
+      "cost": "0#0",
+      "dropbox_id": 210601,
+      "id": 210601005,
+      "item": "14#450",
+      "name": -1,
+      "weight": 400
+    },
+    "210601006": {
+      "cost": "0#0",
+      "dropbox_id": 210601,
+      "id": 210601006,
+      "item": "14#600",
+      "name": -1,
+      "weight": 300
+    },
+    "210601007": {
+      "cost": "0#0",
+      "dropbox_id": 210601,
+      "id": 210601007,
+      "item": "14#750",
+      "name": -1,
+      "weight": 200
+    },
+    "210601008": {
+      "cost": "0#0",
+      "dropbox_id": 210601,
+      "id": 210601008,
+      "item": "14#900",
+      "name": -1,
+      "weight": 100
+    },
+    "210701001": {
+      "cost": "0#0",
+      "dropbox_id": 210701,
+      "id": 210701001,
+      "item": "20#1",
+      "name": -1,
+      "weight": 1000
+    },
+    "210801001": {
+      "cost": "0#0",
+      "dropbox_id": 210801,
+      "id": 210801001,
+      "item": "36#1",
+      "name": -1,
+      "weight": 1000
+    },
+    "24101001": {
+      "cost": "0#0",
+      "dropbox_id": 24101,
+      "id": 24101001,
+      "item": "41001#1",
+      "name": -1,
+      "weight": 0
+    },
+    "24101002": {
+      "cost": "0#0",
+      "dropbox_id": 24101,
+      "id": 24101002,
+      "item": "41002#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24101003": {
+      "cost": "0#0",
+      "dropbox_id": 24101,
+      "id": 24101003,
+      "item": "41003#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24101004": {
+      "cost": "0#0",
+      "dropbox_id": 24101,
+      "id": 24101004,
+      "item": "41004#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24101005": {
+      "cost": "0#0",
+      "dropbox_id": 24101,
+      "id": 24101005,
+      "item": "41005#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24101006": {
+      "cost": "0#0",
+      "dropbox_id": 24101,
+      "id": 24101006,
+      "item": "41006#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24101007": {
+      "cost": "0#0",
+      "dropbox_id": 24101,
+      "id": 24101007,
+      "item": "41007#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24101008": {
+      "cost": "0#0",
+      "dropbox_id": 24101,
+      "id": 24101008,
+      "item": "41008#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24102001": {
+      "cost": "0#0",
+      "dropbox_id": 24102,
+      "id": 24102001,
+      "item": "41001#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24102002": {
+      "cost": "0#0",
+      "dropbox_id": 24102,
+      "id": 24102002,
+      "item": "41002#1",
+      "name": -1,
+      "weight": 0
+    },
+    "24102003": {
+      "cost": "0#0",
+      "dropbox_id": 24102,
+      "id": 24102003,
+      "item": "41003#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24102004": {
+      "cost": "0#0",
+      "dropbox_id": 24102,
+      "id": 24102004,
+      "item": "41004#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24102005": {
+      "cost": "0#0",
+      "dropbox_id": 24102,
+      "id": 24102005,
+      "item": "41005#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24102006": {
+      "cost": "0#0",
+      "dropbox_id": 24102,
+      "id": 24102006,
+      "item": "41006#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24102007": {
+      "cost": "0#0",
+      "dropbox_id": 24102,
+      "id": 24102007,
+      "item": "41007#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24102008": {
+      "cost": "0#0",
+      "dropbox_id": 24102,
+      "id": 24102008,
+      "item": "41008#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24103001": {
+      "cost": "0#0",
+      "dropbox_id": 24103,
+      "id": 24103001,
+      "item": "41001#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24103002": {
+      "cost": "0#0",
+      "dropbox_id": 24103,
+      "id": 24103002,
+      "item": "41002#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24103003": {
+      "cost": "0#0",
+      "dropbox_id": 24103,
+      "id": 24103003,
+      "item": "41003#1",
+      "name": -1,
+      "weight": 0
+    },
+    "24103004": {
+      "cost": "0#0",
+      "dropbox_id": 24103,
+      "id": 24103004,
+      "item": "41004#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24103005": {
+      "cost": "0#0",
+      "dropbox_id": 24103,
+      "id": 24103005,
+      "item": "41005#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24103006": {
+      "cost": "0#0",
+      "dropbox_id": 24103,
+      "id": 24103006,
+      "item": "41006#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24103007": {
+      "cost": "0#0",
+      "dropbox_id": 24103,
+      "id": 24103007,
+      "item": "41007#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24103008": {
+      "cost": "0#0",
+      "dropbox_id": 24103,
+      "id": 24103008,
+      "item": "41008#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24104001": {
+      "cost": "0#0",
+      "dropbox_id": 24104,
+      "id": 24104001,
+      "item": "41001#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24104002": {
+      "cost": "0#0",
+      "dropbox_id": 24104,
+      "id": 24104002,
+      "item": "41002#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24104003": {
+      "cost": "0#0",
+      "dropbox_id": 24104,
+      "id": 24104003,
+      "item": "41003#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24104004": {
+      "cost": "0#0",
+      "dropbox_id": 24104,
+      "id": 24104004,
+      "item": "41004#1",
+      "name": -1,
+      "weight": 0
+    },
+    "24104005": {
+      "cost": "0#0",
+      "dropbox_id": 24104,
+      "id": 24104005,
+      "item": "41005#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24104006": {
+      "cost": "0#0",
+      "dropbox_id": 24104,
+      "id": 24104006,
+      "item": "41006#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24104007": {
+      "cost": "0#0",
+      "dropbox_id": 24104,
+      "id": 24104007,
+      "item": "41007#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24104008": {
+      "cost": "0#0",
+      "dropbox_id": 24104,
+      "id": 24104008,
+      "item": "41008#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24105001": {
+      "cost": "0#0",
+      "dropbox_id": 24105,
+      "id": 24105001,
+      "item": "41001#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24105002": {
+      "cost": "0#0",
+      "dropbox_id": 24105,
+      "id": 24105002,
+      "item": "41002#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24105003": {
+      "cost": "0#0",
+      "dropbox_id": 24105,
+      "id": 24105003,
+      "item": "41003#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24105004": {
+      "cost": "0#0",
+      "dropbox_id": 24105,
+      "id": 24105004,
+      "item": "41004#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24105005": {
+      "cost": "0#0",
+      "dropbox_id": 24105,
+      "id": 24105005,
+      "item": "41005#1",
+      "name": -1,
+      "weight": 0
+    },
+    "24105006": {
+      "cost": "0#0",
+      "dropbox_id": 24105,
+      "id": 24105006,
+      "item": "41006#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24105007": {
+      "cost": "0#0",
+      "dropbox_id": 24105,
+      "id": 24105007,
+      "item": "41007#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24105008": {
+      "cost": "0#0",
+      "dropbox_id": 24105,
+      "id": 24105008,
+      "item": "41008#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24106001": {
+      "cost": "0#0",
+      "dropbox_id": 24106,
+      "id": 24106001,
+      "item": "41001#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24106002": {
+      "cost": "0#0",
+      "dropbox_id": 24106,
+      "id": 24106002,
+      "item": "41002#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24106003": {
+      "cost": "0#0",
+      "dropbox_id": 24106,
+      "id": 24106003,
+      "item": "41003#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24106004": {
+      "cost": "0#0",
+      "dropbox_id": 24106,
+      "id": 24106004,
+      "item": "41004#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24106005": {
+      "cost": "0#0",
+      "dropbox_id": 24106,
+      "id": 24106005,
+      "item": "41005#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24106006": {
+      "cost": "0#0",
+      "dropbox_id": 24106,
+      "id": 24106006,
+      "item": "41006#1",
+      "name": -1,
+      "weight": 0
+    },
+    "24106007": {
+      "cost": "0#0",
+      "dropbox_id": 24106,
+      "id": 24106007,
+      "item": "41007#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24106008": {
+      "cost": "0#0",
+      "dropbox_id": 24106,
+      "id": 24106008,
+      "item": "41008#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24107001": {
+      "cost": "0#0",
+      "dropbox_id": 24107,
+      "id": 24107001,
+      "item": "41001#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24107002": {
+      "cost": "0#0",
+      "dropbox_id": 24107,
+      "id": 24107002,
+      "item": "41002#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24107003": {
+      "cost": "0#0",
+      "dropbox_id": 24107,
+      "id": 24107003,
+      "item": "41003#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24107004": {
+      "cost": "0#0",
+      "dropbox_id": 24107,
+      "id": 24107004,
+      "item": "41004#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24107005": {
+      "cost": "0#0",
+      "dropbox_id": 24107,
+      "id": 24107005,
+      "item": "41005#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24107006": {
+      "cost": "0#0",
+      "dropbox_id": 24107,
+      "id": 24107006,
+      "item": "41006#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24107007": {
+      "cost": "0#0",
+      "dropbox_id": 24107,
+      "id": 24107007,
+      "item": "41007#1",
+      "name": -1,
+      "weight": 0
+    },
+    "24107008": {
+      "cost": "0#0",
+      "dropbox_id": 24107,
+      "id": 24107008,
+      "item": "41008#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24108001": {
+      "cost": "0#0",
+      "dropbox_id": 24108,
+      "id": 24108001,
+      "item": "41001#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24108002": {
+      "cost": "0#0",
+      "dropbox_id": 24108,
+      "id": 24108002,
+      "item": "41002#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24108003": {
+      "cost": "0#0",
+      "dropbox_id": 24108,
+      "id": 24108003,
+      "item": "41003#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24108004": {
+      "cost": "0#0",
+      "dropbox_id": 24108,
+      "id": 24108004,
+      "item": "41004#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24108005": {
+      "cost": "0#0",
+      "dropbox_id": 24108,
+      "id": 24108005,
+      "item": "41005#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24108006": {
+      "cost": "0#0",
+      "dropbox_id": 24108,
+      "id": 24108006,
+      "item": "41006#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24108007": {
+      "cost": "0#0",
+      "dropbox_id": 24108,
+      "id": 24108007,
+      "item": "41007#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24108008": {
+      "cost": "0#0",
+      "dropbox_id": 24108,
+      "id": 24108008,
+      "item": "41008#1",
+      "name": -1,
+      "weight": 0
+    },
+    "24201001": {
+      "cost": "0#0",
+      "dropbox_id": 24201,
+      "id": 24201001,
+      "item": "42001#1",
+      "name": -1,
+      "weight": 0
+    },
+    "24201002": {
+      "cost": "0#0",
+      "dropbox_id": 24201,
+      "id": 24201002,
+      "item": "42002#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24201003": {
+      "cost": "0#0",
+      "dropbox_id": 24201,
+      "id": 24201003,
+      "item": "42003#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24201004": {
+      "cost": "0#0",
+      "dropbox_id": 24201,
+      "id": 24201004,
+      "item": "42004#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24201005": {
+      "cost": "0#0",
+      "dropbox_id": 24201,
+      "id": 24201005,
+      "item": "42005#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24201006": {
+      "cost": "0#0",
+      "dropbox_id": 24201,
+      "id": 24201006,
+      "item": "42006#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24201007": {
+      "cost": "0#0",
+      "dropbox_id": 24201,
+      "id": 24201007,
+      "item": "42007#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24201008": {
+      "cost": "0#0",
+      "dropbox_id": 24201,
+      "id": 24201008,
+      "item": "42008#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24202001": {
+      "cost": "0#0",
+      "dropbox_id": 24202,
+      "id": 24202001,
+      "item": "42001#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24202002": {
+      "cost": "0#0",
+      "dropbox_id": 24202,
+      "id": 24202002,
+      "item": "42002#1",
+      "name": -1,
+      "weight": 0
+    },
+    "24202003": {
+      "cost": "0#0",
+      "dropbox_id": 24202,
+      "id": 24202003,
+      "item": "42003#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24202004": {
+      "cost": "0#0",
+      "dropbox_id": 24202,
+      "id": 24202004,
+      "item": "42004#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24202005": {
+      "cost": "0#0",
+      "dropbox_id": 24202,
+      "id": 24202005,
+      "item": "42005#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24202006": {
+      "cost": "0#0",
+      "dropbox_id": 24202,
+      "id": 24202006,
+      "item": "42006#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24202007": {
+      "cost": "0#0",
+      "dropbox_id": 24202,
+      "id": 24202007,
+      "item": "42007#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24202008": {
+      "cost": "0#0",
+      "dropbox_id": 24202,
+      "id": 24202008,
+      "item": "42008#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24203001": {
+      "cost": "0#0",
+      "dropbox_id": 24203,
+      "id": 24203001,
+      "item": "42001#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24203002": {
+      "cost": "0#0",
+      "dropbox_id": 24203,
+      "id": 24203002,
+      "item": "42002#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24203003": {
+      "cost": "0#0",
+      "dropbox_id": 24203,
+      "id": 24203003,
+      "item": "42003#1",
+      "name": -1,
+      "weight": 0
+    },
+    "24203004": {
+      "cost": "0#0",
+      "dropbox_id": 24203,
+      "id": 24203004,
+      "item": "42004#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24203005": {
+      "cost": "0#0",
+      "dropbox_id": 24203,
+      "id": 24203005,
+      "item": "42005#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24203006": {
+      "cost": "0#0",
+      "dropbox_id": 24203,
+      "id": 24203006,
+      "item": "42006#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24203007": {
+      "cost": "0#0",
+      "dropbox_id": 24203,
+      "id": 24203007,
+      "item": "42007#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24203008": {
+      "cost": "0#0",
+      "dropbox_id": 24203,
+      "id": 24203008,
+      "item": "42008#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24204001": {
+      "cost": "0#0",
+      "dropbox_id": 24204,
+      "id": 24204001,
+      "item": "42001#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24204002": {
+      "cost": "0#0",
+      "dropbox_id": 24204,
+      "id": 24204002,
+      "item": "42002#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24204003": {
+      "cost": "0#0",
+      "dropbox_id": 24204,
+      "id": 24204003,
+      "item": "42003#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24204004": {
+      "cost": "0#0",
+      "dropbox_id": 24204,
+      "id": 24204004,
+      "item": "42004#1",
+      "name": -1,
+      "weight": 0
+    },
+    "24204005": {
+      "cost": "0#0",
+      "dropbox_id": 24204,
+      "id": 24204005,
+      "item": "42005#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24204006": {
+      "cost": "0#0",
+      "dropbox_id": 24204,
+      "id": 24204006,
+      "item": "42006#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24204007": {
+      "cost": "0#0",
+      "dropbox_id": 24204,
+      "id": 24204007,
+      "item": "42007#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24204008": {
+      "cost": "0#0",
+      "dropbox_id": 24204,
+      "id": 24204008,
+      "item": "42008#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24205001": {
+      "cost": "0#0",
+      "dropbox_id": 24205,
+      "id": 24205001,
+      "item": "42001#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24205002": {
+      "cost": "0#0",
+      "dropbox_id": 24205,
+      "id": 24205002,
+      "item": "42002#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24205003": {
+      "cost": "0#0",
+      "dropbox_id": 24205,
+      "id": 24205003,
+      "item": "42003#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24205004": {
+      "cost": "0#0",
+      "dropbox_id": 24205,
+      "id": 24205004,
+      "item": "42004#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24205005": {
+      "cost": "0#0",
+      "dropbox_id": 24205,
+      "id": 24205005,
+      "item": "42005#1",
+      "name": -1,
+      "weight": 0
+    },
+    "24205006": {
+      "cost": "0#0",
+      "dropbox_id": 24205,
+      "id": 24205006,
+      "item": "42006#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24205007": {
+      "cost": "0#0",
+      "dropbox_id": 24205,
+      "id": 24205007,
+      "item": "42007#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24205008": {
+      "cost": "0#0",
+      "dropbox_id": 24205,
+      "id": 24205008,
+      "item": "42008#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24206001": {
+      "cost": "0#0",
+      "dropbox_id": 24206,
+      "id": 24206001,
+      "item": "42001#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24206002": {
+      "cost": "0#0",
+      "dropbox_id": 24206,
+      "id": 24206002,
+      "item": "42002#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24206003": {
+      "cost": "0#0",
+      "dropbox_id": 24206,
+      "id": 24206003,
+      "item": "42003#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24206004": {
+      "cost": "0#0",
+      "dropbox_id": 24206,
+      "id": 24206004,
+      "item": "42004#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24206005": {
+      "cost": "0#0",
+      "dropbox_id": 24206,
+      "id": 24206005,
+      "item": "42005#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24206006": {
+      "cost": "0#0",
+      "dropbox_id": 24206,
+      "id": 24206006,
+      "item": "42006#1",
+      "name": -1,
+      "weight": 0
+    },
+    "24206007": {
+      "cost": "0#0",
+      "dropbox_id": 24206,
+      "id": 24206007,
+      "item": "42007#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24206008": {
+      "cost": "0#0",
+      "dropbox_id": 24206,
+      "id": 24206008,
+      "item": "42008#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24207001": {
+      "cost": "0#0",
+      "dropbox_id": 24207,
+      "id": 24207001,
+      "item": "42001#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24207002": {
+      "cost": "0#0",
+      "dropbox_id": 24207,
+      "id": 24207002,
+      "item": "42002#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24207003": {
+      "cost": "0#0",
+      "dropbox_id": 24207,
+      "id": 24207003,
+      "item": "42003#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24207004": {
+      "cost": "0#0",
+      "dropbox_id": 24207,
+      "id": 24207004,
+      "item": "42004#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24207005": {
+      "cost": "0#0",
+      "dropbox_id": 24207,
+      "id": 24207005,
+      "item": "42005#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24207006": {
+      "cost": "0#0",
+      "dropbox_id": 24207,
+      "id": 24207006,
+      "item": "42006#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24207007": {
+      "cost": "0#0",
+      "dropbox_id": 24207,
+      "id": 24207007,
+      "item": "42007#1",
+      "name": -1,
+      "weight": 0
+    },
+    "24207008": {
+      "cost": "0#0",
+      "dropbox_id": 24207,
+      "id": 24207008,
+      "item": "42008#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24208001": {
+      "cost": "0#0",
+      "dropbox_id": 24208,
+      "id": 24208001,
+      "item": "42001#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24208002": {
+      "cost": "0#0",
+      "dropbox_id": 24208,
+      "id": 24208002,
+      "item": "42002#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24208003": {
+      "cost": "0#0",
+      "dropbox_id": 24208,
+      "id": 24208003,
+      "item": "42003#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24208004": {
+      "cost": "0#0",
+      "dropbox_id": 24208,
+      "id": 24208004,
+      "item": "42004#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24208005": {
+      "cost": "0#0",
+      "dropbox_id": 24208,
+      "id": 24208005,
+      "item": "42005#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24208006": {
+      "cost": "0#0",
+      "dropbox_id": 24208,
+      "id": 24208006,
+      "item": "42006#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24208007": {
+      "cost": "0#0",
+      "dropbox_id": 24208,
+      "id": 24208007,
+      "item": "42007#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24208008": {
+      "cost": "0#0",
+      "dropbox_id": 24208,
+      "id": 24208008,
+      "item": "42008#1",
+      "name": -1,
+      "weight": 0
+    },
+    "24301001": {
+      "cost": "0#0",
+      "dropbox_id": 24301,
+      "id": 24301001,
+      "item": "43001#1",
+      "name": -1,
+      "weight": 0
+    },
+    "24301002": {
+      "cost": "0#0",
+      "dropbox_id": 24301,
+      "id": 24301002,
+      "item": "43002#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24301003": {
+      "cost": "0#0",
+      "dropbox_id": 24301,
+      "id": 24301003,
+      "item": "43003#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24301004": {
+      "cost": "0#0",
+      "dropbox_id": 24301,
+      "id": 24301004,
+      "item": "43004#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24301005": {
+      "cost": "0#0",
+      "dropbox_id": 24301,
+      "id": 24301005,
+      "item": "43005#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24301006": {
+      "cost": "0#0",
+      "dropbox_id": 24301,
+      "id": 24301006,
+      "item": "43006#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24301007": {
+      "cost": "0#0",
+      "dropbox_id": 24301,
+      "id": 24301007,
+      "item": "43007#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24301008": {
+      "cost": "0#0",
+      "dropbox_id": 24301,
+      "id": 24301008,
+      "item": "43008#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24302001": {
+      "cost": "0#0",
+      "dropbox_id": 24302,
+      "id": 24302001,
+      "item": "43001#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24302002": {
+      "cost": "0#0",
+      "dropbox_id": 24302,
+      "id": 24302002,
+      "item": "43002#1",
+      "name": -1,
+      "weight": 0
+    },
+    "24302003": {
+      "cost": "0#0",
+      "dropbox_id": 24302,
+      "id": 24302003,
+      "item": "43003#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24302004": {
+      "cost": "0#0",
+      "dropbox_id": 24302,
+      "id": 24302004,
+      "item": "43004#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24302005": {
+      "cost": "0#0",
+      "dropbox_id": 24302,
+      "id": 24302005,
+      "item": "43005#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24302006": {
+      "cost": "0#0",
+      "dropbox_id": 24302,
+      "id": 24302006,
+      "item": "43006#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24302007": {
+      "cost": "0#0",
+      "dropbox_id": 24302,
+      "id": 24302007,
+      "item": "43007#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24302008": {
+      "cost": "0#0",
+      "dropbox_id": 24302,
+      "id": 24302008,
+      "item": "43008#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24303001": {
+      "cost": "0#0",
+      "dropbox_id": 24303,
+      "id": 24303001,
+      "item": "43001#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24303002": {
+      "cost": "0#0",
+      "dropbox_id": 24303,
+      "id": 24303002,
+      "item": "43002#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24303003": {
+      "cost": "0#0",
+      "dropbox_id": 24303,
+      "id": 24303003,
+      "item": "43003#1",
+      "name": -1,
+      "weight": 0
+    },
+    "24303004": {
+      "cost": "0#0",
+      "dropbox_id": 24303,
+      "id": 24303004,
+      "item": "43004#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24303005": {
+      "cost": "0#0",
+      "dropbox_id": 24303,
+      "id": 24303005,
+      "item": "43005#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24303006": {
+      "cost": "0#0",
+      "dropbox_id": 24303,
+      "id": 24303006,
+      "item": "43006#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24303007": {
+      "cost": "0#0",
+      "dropbox_id": 24303,
+      "id": 24303007,
+      "item": "43007#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24303008": {
+      "cost": "0#0",
+      "dropbox_id": 24303,
+      "id": 24303008,
+      "item": "43008#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24304001": {
+      "cost": "0#0",
+      "dropbox_id": 24304,
+      "id": 24304001,
+      "item": "43001#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24304002": {
+      "cost": "0#0",
+      "dropbox_id": 24304,
+      "id": 24304002,
+      "item": "43002#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24304003": {
+      "cost": "0#0",
+      "dropbox_id": 24304,
+      "id": 24304003,
+      "item": "43003#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24304004": {
+      "cost": "0#0",
+      "dropbox_id": 24304,
+      "id": 24304004,
+      "item": "43004#1",
+      "name": -1,
+      "weight": 0
+    },
+    "24304005": {
+      "cost": "0#0",
+      "dropbox_id": 24304,
+      "id": 24304005,
+      "item": "43005#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24304006": {
+      "cost": "0#0",
+      "dropbox_id": 24304,
+      "id": 24304006,
+      "item": "43006#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24304007": {
+      "cost": "0#0",
+      "dropbox_id": 24304,
+      "id": 24304007,
+      "item": "43007#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24304008": {
+      "cost": "0#0",
+      "dropbox_id": 24304,
+      "id": 24304008,
+      "item": "43008#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24305001": {
+      "cost": "0#0",
+      "dropbox_id": 24305,
+      "id": 24305001,
+      "item": "43001#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24305002": {
+      "cost": "0#0",
+      "dropbox_id": 24305,
+      "id": 24305002,
+      "item": "43002#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24305003": {
+      "cost": "0#0",
+      "dropbox_id": 24305,
+      "id": 24305003,
+      "item": "43003#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24305004": {
+      "cost": "0#0",
+      "dropbox_id": 24305,
+      "id": 24305004,
+      "item": "43004#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24305005": {
+      "cost": "0#0",
+      "dropbox_id": 24305,
+      "id": 24305005,
+      "item": "43005#1",
+      "name": -1,
+      "weight": 0
+    },
+    "24305006": {
+      "cost": "0#0",
+      "dropbox_id": 24305,
+      "id": 24305006,
+      "item": "43006#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24305007": {
+      "cost": "0#0",
+      "dropbox_id": 24305,
+      "id": 24305007,
+      "item": "43007#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24305008": {
+      "cost": "0#0",
+      "dropbox_id": 24305,
+      "id": 24305008,
+      "item": "43008#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24306001": {
+      "cost": "0#0",
+      "dropbox_id": 24306,
+      "id": 24306001,
+      "item": "43001#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24306002": {
+      "cost": "0#0",
+      "dropbox_id": 24306,
+      "id": 24306002,
+      "item": "43002#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24306003": {
+      "cost": "0#0",
+      "dropbox_id": 24306,
+      "id": 24306003,
+      "item": "43003#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24306004": {
+      "cost": "0#0",
+      "dropbox_id": 24306,
+      "id": 24306004,
+      "item": "43004#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24306005": {
+      "cost": "0#0",
+      "dropbox_id": 24306,
+      "id": 24306005,
+      "item": "43005#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24306006": {
+      "cost": "0#0",
+      "dropbox_id": 24306,
+      "id": 24306006,
+      "item": "43006#1",
+      "name": -1,
+      "weight": 0
+    },
+    "24306007": {
+      "cost": "0#0",
+      "dropbox_id": 24306,
+      "id": 24306007,
+      "item": "43007#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24306008": {
+      "cost": "0#0",
+      "dropbox_id": 24306,
+      "id": 24306008,
+      "item": "43008#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24307001": {
+      "cost": "0#0",
+      "dropbox_id": 24307,
+      "id": 24307001,
+      "item": "43001#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24307002": {
+      "cost": "0#0",
+      "dropbox_id": 24307,
+      "id": 24307002,
+      "item": "43002#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24307003": {
+      "cost": "0#0",
+      "dropbox_id": 24307,
+      "id": 24307003,
+      "item": "43003#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24307004": {
+      "cost": "0#0",
+      "dropbox_id": 24307,
+      "id": 24307004,
+      "item": "43004#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24307005": {
+      "cost": "0#0",
+      "dropbox_id": 24307,
+      "id": 24307005,
+      "item": "43005#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24307006": {
+      "cost": "0#0",
+      "dropbox_id": 24307,
+      "id": 24307006,
+      "item": "43006#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24307007": {
+      "cost": "0#0",
+      "dropbox_id": 24307,
+      "id": 24307007,
+      "item": "43007#1",
+      "name": -1,
+      "weight": 0
+    },
+    "24307008": {
+      "cost": "0#0",
+      "dropbox_id": 24307,
+      "id": 24307008,
+      "item": "43008#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24308001": {
+      "cost": "0#0",
+      "dropbox_id": 24308,
+      "id": 24308001,
+      "item": "43001#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24308002": {
+      "cost": "0#0",
+      "dropbox_id": 24308,
+      "id": 24308002,
+      "item": "43002#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24308003": {
+      "cost": "0#0",
+      "dropbox_id": 24308,
+      "id": 24308003,
+      "item": "43003#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24308004": {
+      "cost": "0#0",
+      "dropbox_id": 24308,
+      "id": 24308004,
+      "item": "43004#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24308005": {
+      "cost": "0#0",
+      "dropbox_id": 24308,
+      "id": 24308005,
+      "item": "43005#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24308006": {
+      "cost": "0#0",
+      "dropbox_id": 24308,
+      "id": 24308006,
+      "item": "43006#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24308007": {
+      "cost": "0#0",
+      "dropbox_id": 24308,
+      "id": 24308007,
+      "item": "43007#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24308008": {
+      "cost": "0#0",
+      "dropbox_id": 24308,
+      "id": 24308008,
+      "item": "43008#1",
+      "name": -1,
+      "weight": 0
+    },
+    "24401001": {
+      "cost": "0#0",
+      "dropbox_id": 24401,
+      "id": 24401001,
+      "item": "44001#1",
+      "name": -1,
+      "weight": 0
+    },
+    "24401002": {
+      "cost": "0#0",
+      "dropbox_id": 24401,
+      "id": 24401002,
+      "item": "44002#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24401003": {
+      "cost": "0#0",
+      "dropbox_id": 24401,
+      "id": 24401003,
+      "item": "44003#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24401004": {
+      "cost": "0#0",
+      "dropbox_id": 24401,
+      "id": 24401004,
+      "item": "44004#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24401005": {
+      "cost": "0#0",
+      "dropbox_id": 24401,
+      "id": 24401005,
+      "item": "44005#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24401006": {
+      "cost": "0#0",
+      "dropbox_id": 24401,
+      "id": 24401006,
+      "item": "44006#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24401007": {
+      "cost": "0#0",
+      "dropbox_id": 24401,
+      "id": 24401007,
+      "item": "44007#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24401008": {
+      "cost": "0#0",
+      "dropbox_id": 24401,
+      "id": 24401008,
+      "item": "44008#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24402001": {
+      "cost": "0#0",
+      "dropbox_id": 24402,
+      "id": 24402001,
+      "item": "44001#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24402002": {
+      "cost": "0#0",
+      "dropbox_id": 24402,
+      "id": 24402002,
+      "item": "44002#1",
+      "name": -1,
+      "weight": 0
+    },
+    "24402003": {
+      "cost": "0#0",
+      "dropbox_id": 24402,
+      "id": 24402003,
+      "item": "44003#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24402004": {
+      "cost": "0#0",
+      "dropbox_id": 24402,
+      "id": 24402004,
+      "item": "44004#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24402005": {
+      "cost": "0#0",
+      "dropbox_id": 24402,
+      "id": 24402005,
+      "item": "44005#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24402006": {
+      "cost": "0#0",
+      "dropbox_id": 24402,
+      "id": 24402006,
+      "item": "44006#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24402007": {
+      "cost": "0#0",
+      "dropbox_id": 24402,
+      "id": 24402007,
+      "item": "44007#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24402008": {
+      "cost": "0#0",
+      "dropbox_id": 24402,
+      "id": 24402008,
+      "item": "44008#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24403001": {
+      "cost": "0#0",
+      "dropbox_id": 24403,
+      "id": 24403001,
+      "item": "44001#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24403002": {
+      "cost": "0#0",
+      "dropbox_id": 24403,
+      "id": 24403002,
+      "item": "44002#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24403003": {
+      "cost": "0#0",
+      "dropbox_id": 24403,
+      "id": 24403003,
+      "item": "44003#1",
+      "name": -1,
+      "weight": 0
+    },
+    "24403004": {
+      "cost": "0#0",
+      "dropbox_id": 24403,
+      "id": 24403004,
+      "item": "44004#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24403005": {
+      "cost": "0#0",
+      "dropbox_id": 24403,
+      "id": 24403005,
+      "item": "44005#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24403006": {
+      "cost": "0#0",
+      "dropbox_id": 24403,
+      "id": 24403006,
+      "item": "44006#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24403007": {
+      "cost": "0#0",
+      "dropbox_id": 24403,
+      "id": 24403007,
+      "item": "44007#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24403008": {
+      "cost": "0#0",
+      "dropbox_id": 24403,
+      "id": 24403008,
+      "item": "44008#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24404001": {
+      "cost": "0#0",
+      "dropbox_id": 24404,
+      "id": 24404001,
+      "item": "44001#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24404002": {
+      "cost": "0#0",
+      "dropbox_id": 24404,
+      "id": 24404002,
+      "item": "44002#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24404003": {
+      "cost": "0#0",
+      "dropbox_id": 24404,
+      "id": 24404003,
+      "item": "44003#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24404004": {
+      "cost": "0#0",
+      "dropbox_id": 24404,
+      "id": 24404004,
+      "item": "44004#1",
+      "name": -1,
+      "weight": 0
+    },
+    "24404005": {
+      "cost": "0#0",
+      "dropbox_id": 24404,
+      "id": 24404005,
+      "item": "44005#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24404006": {
+      "cost": "0#0",
+      "dropbox_id": 24404,
+      "id": 24404006,
+      "item": "44006#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24404007": {
+      "cost": "0#0",
+      "dropbox_id": 24404,
+      "id": 24404007,
+      "item": "44007#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24404008": {
+      "cost": "0#0",
+      "dropbox_id": 24404,
+      "id": 24404008,
+      "item": "44008#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24405001": {
+      "cost": "0#0",
+      "dropbox_id": 24405,
+      "id": 24405001,
+      "item": "44001#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24405002": {
+      "cost": "0#0",
+      "dropbox_id": 24405,
+      "id": 24405002,
+      "item": "44002#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24405003": {
+      "cost": "0#0",
+      "dropbox_id": 24405,
+      "id": 24405003,
+      "item": "44003#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24405004": {
+      "cost": "0#0",
+      "dropbox_id": 24405,
+      "id": 24405004,
+      "item": "44004#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24405005": {
+      "cost": "0#0",
+      "dropbox_id": 24405,
+      "id": 24405005,
+      "item": "44005#1",
+      "name": -1,
+      "weight": 0
+    },
+    "24405006": {
+      "cost": "0#0",
+      "dropbox_id": 24405,
+      "id": 24405006,
+      "item": "44006#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24405007": {
+      "cost": "0#0",
+      "dropbox_id": 24405,
+      "id": 24405007,
+      "item": "44007#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24405008": {
+      "cost": "0#0",
+      "dropbox_id": 24405,
+      "id": 24405008,
+      "item": "44008#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24406001": {
+      "cost": "0#0",
+      "dropbox_id": 24406,
+      "id": 24406001,
+      "item": "44001#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24406002": {
+      "cost": "0#0",
+      "dropbox_id": 24406,
+      "id": 24406002,
+      "item": "44002#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24406003": {
+      "cost": "0#0",
+      "dropbox_id": 24406,
+      "id": 24406003,
+      "item": "44003#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24406004": {
+      "cost": "0#0",
+      "dropbox_id": 24406,
+      "id": 24406004,
+      "item": "44004#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24406005": {
+      "cost": "0#0",
+      "dropbox_id": 24406,
+      "id": 24406005,
+      "item": "44005#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24406006": {
+      "cost": "0#0",
+      "dropbox_id": 24406,
+      "id": 24406006,
+      "item": "44006#1",
+      "name": -1,
+      "weight": 0
+    },
+    "24406007": {
+      "cost": "0#0",
+      "dropbox_id": 24406,
+      "id": 24406007,
+      "item": "44007#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24406008": {
+      "cost": "0#0",
+      "dropbox_id": 24406,
+      "id": 24406008,
+      "item": "44008#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24407001": {
+      "cost": "0#0",
+      "dropbox_id": 24407,
+      "id": 24407001,
+      "item": "44001#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24407002": {
+      "cost": "0#0",
+      "dropbox_id": 24407,
+      "id": 24407002,
+      "item": "44002#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24407003": {
+      "cost": "0#0",
+      "dropbox_id": 24407,
+      "id": 24407003,
+      "item": "44003#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24407004": {
+      "cost": "0#0",
+      "dropbox_id": 24407,
+      "id": 24407004,
+      "item": "44004#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24407005": {
+      "cost": "0#0",
+      "dropbox_id": 24407,
+      "id": 24407005,
+      "item": "44005#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24407006": {
+      "cost": "0#0",
+      "dropbox_id": 24407,
+      "id": 24407006,
+      "item": "44006#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24407007": {
+      "cost": "0#0",
+      "dropbox_id": 24407,
+      "id": 24407007,
+      "item": "44007#1",
+      "name": -1,
+      "weight": 0
+    },
+    "24407008": {
+      "cost": "0#0",
+      "dropbox_id": 24407,
+      "id": 24407008,
+      "item": "44008#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24408001": {
+      "cost": "0#0",
+      "dropbox_id": 24408,
+      "id": 24408001,
+      "item": "44001#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24408002": {
+      "cost": "0#0",
+      "dropbox_id": 24408,
+      "id": 24408002,
+      "item": "44002#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24408003": {
+      "cost": "0#0",
+      "dropbox_id": 24408,
+      "id": 24408003,
+      "item": "44003#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24408004": {
+      "cost": "0#0",
+      "dropbox_id": 24408,
+      "id": 24408004,
+      "item": "44004#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24408005": {
+      "cost": "0#0",
+      "dropbox_id": 24408,
+      "id": 24408005,
+      "item": "44005#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24408006": {
+      "cost": "0#0",
+      "dropbox_id": 24408,
+      "id": 24408006,
+      "item": "44006#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24408007": {
+      "cost": "0#0",
+      "dropbox_id": 24408,
+      "id": 24408007,
+      "item": "44007#1",
+      "name": -1,
+      "weight": 1250
+    },
+    "24408008": {
+      "cost": "0#0",
+      "dropbox_id": 24408,
+      "id": 24408008,
+      "item": "44008#1",
+      "name": -1,
+      "weight": 0
+    },
+    "26001001": {
+      "cost": "0#0",
+      "dropbox_id": 26001,
+      "id": 26001001,
+      "item": "541001#1",
+      "name": -1,
+      "weight": 6750
+    },
+    "26001002": {
+      "cost": "0#0",
+      "dropbox_id": 26001,
+      "id": 26001002,
+      "item": "541002#1",
+      "name": -1,
+      "weight": 6750
+    },
+    "26001003": {
+      "cost": "0#0",
+      "dropbox_id": 26001,
+      "id": 26001003,
+      "item": "541003#1",
+      "name": -1,
+      "weight": 6750
+    },
+    "26001004": {
+      "cost": "0#0",
+      "dropbox_id": 26001,
+      "id": 26001004,
+      "item": "541004#1",
+      "name": -1,
+      "weight": 6750
+    },
+    "26001005": {
+      "cost": "0#0",
+      "dropbox_id": 26001,
+      "id": 26001005,
+      "item": "541005#1",
+      "name": -1,
+      "weight": 6750
+    },
+    "26001006": {
+      "cost": "0#0",
+      "dropbox_id": 26001,
+      "id": 26001006,
+      "item": "541006#1",
+      "name": -1,
+      "weight": 6750
+    },
+    "26001007": {
+      "cost": "0#0",
+      "dropbox_id": 26001,
+      "id": 26001007,
+      "item": "541007#1",
+      "name": -1,
+      "weight": 6750
+    },
+    "26001008": {
+      "cost": "0#0",
+      "dropbox_id": 26001,
+      "id": 26001008,
+      "item": "541008#1",
+      "name": -1,
+      "weight": 6750
+    },
+    "26001009": {
+      "cost": "0#0",
+      "dropbox_id": 26001,
+      "id": 26001009,
+      "item": "51001#1",
+      "name": -1,
+      "weight": 5714
+    },
+    "26001010": {
+      "cost": "0#0",
+      "dropbox_id": 26001,
+      "id": 26001010,
+      "item": "51003#1",
+      "name": -1,
+      "weight": 5714
+    },
+    "26001011": {
+      "cost": "0#0",
+      "dropbox_id": 26001,
+      "id": 26001011,
+      "item": "51004#1",
+      "name": -1,
+      "weight": 5714
+    },
+    "26001012": {
+      "cost": "0#0",
+      "dropbox_id": 26001,
+      "id": 26001012,
+      "item": "51005#1",
+      "name": -1,
+      "weight": 5714
+    },
+    "26001013": {
+      "cost": "0#0",
+      "dropbox_id": 26001,
+      "id": 26001013,
+      "item": "51007#1",
+      "name": -1,
+      "weight": 5714
+    },
+    "26001014": {
+      "cost": "0#0",
+      "dropbox_id": 26001,
+      "id": 26001014,
+      "item": "51009#1",
+      "name": -1,
+      "weight": 5714
+    },
+    "26001015": {
+      "cost": "0#0",
+      "dropbox_id": 26001,
+      "id": 26001015,
+      "item": "51010#1",
+      "name": -1,
+      "weight": 5714
+    },
+    "26001016": {
+      "cost": "0#0",
+      "dropbox_id": 26001,
+      "id": 26001016,
+      "item": "51002#1",
+      "name": -1,
+      "weight": 500
+    },
+    "26001017": {
+      "cost": "0#0",
+      "dropbox_id": 26001,
+      "id": 26001017,
+      "item": "51006#1",
+      "name": -1,
+      "weight": 500
+    },
+    "26001018": {
+      "cost": "0#0",
+      "dropbox_id": 26001,
+      "id": 26001018,
+      "item": "51008#1",
+      "name": -1,
+      "weight": 500
+    },
+    "26001019": {
+      "cost": "0#0",
+      "dropbox_id": 26001,
+      "id": 26001019,
+      "item": "51011#1",
+      "name": -1,
+      "weight": 500
+    },
+    "26001020": {
+      "cost": "0#0",
+      "dropbox_id": 26001,
+      "id": 26001020,
+      "item": "51012#1",
+      "name": -1,
+      "weight": 500
+    },
+    "26001021": {
+      "cost": "0#0",
+      "dropbox_id": 26001,
+      "id": 26001021,
+      "item": "51013#1",
+      "name": -1,
+      "weight": 500
+    },
+    "26001022": {
+      "cost": "0#0",
+      "dropbox_id": 26001,
+      "id": 26001022,
+      "item": "51014#1",
+      "name": -1,
+      "weight": 500
+    },
+    "26001023": {
+      "cost": "0#0",
+      "dropbox_id": 26001,
+      "id": 26001023,
+      "item": "51015#1",
+      "name": -1,
+      "weight": 500
+    },
+    "26001024": {
+      "cost": "0#0",
+      "dropbox_id": 26001,
+      "id": 26001024,
+      "item": "51016#1",
+      "name": -1,
+      "weight": 500
+    },
+    "26001025": {
+      "cost": "0#0",
+      "dropbox_id": 26001,
+      "id": 26001025,
+      "item": "51017#1",
+      "name": -1,
+      "weight": 500
+    },
+    "26001026": {
+      "cost": "0#0",
+      "dropbox_id": 26001,
+      "id": 26001026,
+      "item": "51018#1",
+      "name": -1,
+      "weight": 500
+    },
+    "26001027": {
+      "cost": "0#0",
+      "dropbox_id": 26001,
+      "id": 26001027,
+      "item": "51019#1",
+      "name": -1,
+      "weight": 500
+    },
+    "26002001": {
+      "cost": "0#0",
+      "dropbox_id": 26002,
+      "id": 26002001,
+      "item": "542001#1",
+      "name": -1,
+      "weight": 6750
+    },
+    "26002002": {
+      "cost": "0#0",
+      "dropbox_id": 26002,
+      "id": 26002002,
+      "item": "542002#1",
+      "name": -1,
+      "weight": 6750
+    },
+    "26002003": {
+      "cost": "0#0",
+      "dropbox_id": 26002,
+      "id": 26002003,
+      "item": "542003#1",
+      "name": -1,
+      "weight": 6750
+    },
+    "26002004": {
+      "cost": "0#0",
+      "dropbox_id": 26002,
+      "id": 26002004,
+      "item": "542004#1",
+      "name": -1,
+      "weight": 6750
+    },
+    "26002005": {
+      "cost": "0#0",
+      "dropbox_id": 26002,
+      "id": 26002005,
+      "item": "542005#1",
+      "name": -1,
+      "weight": 6750
+    },
+    "26002006": {
+      "cost": "0#0",
+      "dropbox_id": 26002,
+      "id": 26002006,
+      "item": "542006#1",
+      "name": -1,
+      "weight": 6750
+    },
+    "26002007": {
+      "cost": "0#0",
+      "dropbox_id": 26002,
+      "id": 26002007,
+      "item": "542007#1",
+      "name": -1,
+      "weight": 6750
+    },
+    "26002008": {
+      "cost": "0#0",
+      "dropbox_id": 26002,
+      "id": 26002008,
+      "item": "542008#1",
+      "name": -1,
+      "weight": 6750
+    },
+    "26002009": {
+      "cost": "0#0",
+      "dropbox_id": 26002,
+      "id": 26002009,
+      "item": "52002#1",
+      "name": -1,
+      "weight": 5715
+    },
+    "26002010": {
+      "cost": "0#0",
+      "dropbox_id": 26002,
+      "id": 26002010,
+      "item": "52003#1",
+      "name": -1,
+      "weight": 5715
+    },
+    "26002011": {
+      "cost": "0#0",
+      "dropbox_id": 26002,
+      "id": 26002011,
+      "item": "52005#1",
+      "name": -1,
+      "weight": 5715
+    },
+    "26002012": {
+      "cost": "0#0",
+      "dropbox_id": 26002,
+      "id": 26002012,
+      "item": "52006#1",
+      "name": -1,
+      "weight": 5715
+    },
+    "26002013": {
+      "cost": "0#0",
+      "dropbox_id": 26002,
+      "id": 26002013,
+      "item": "52008#1",
+      "name": -1,
+      "weight": 5715
+    },
+    "26002014": {
+      "cost": "0#0",
+      "dropbox_id": 26002,
+      "id": 26002014,
+      "item": "52009#1",
+      "name": -1,
+      "weight": 5715
+    },
+    "26002015": {
+      "cost": "0#0",
+      "dropbox_id": 26002,
+      "id": 26002015,
+      "item": "52010#1",
+      "name": -1,
+      "weight": 5715
+    },
+    "26002016": {
+      "cost": "0#0",
+      "dropbox_id": 26002,
+      "id": 26002016,
+      "item": "52001#1",
+      "name": -1,
+      "weight": 462
+    },
+    "26002017": {
+      "cost": "0#0",
+      "dropbox_id": 26002,
+      "id": 26002017,
+      "item": "52004#1",
+      "name": -1,
+      "weight": 462
+    },
+    "26002018": {
+      "cost": "0#0",
+      "dropbox_id": 26002,
+      "id": 26002018,
+      "item": "52007#1",
+      "name": -1,
+      "weight": 462
+    },
+    "26002019": {
+      "cost": "0#0",
+      "dropbox_id": 26002,
+      "id": 26002019,
+      "item": "52011#1",
+      "name": -1,
+      "weight": 462
+    },
+    "26002020": {
+      "cost": "0#0",
+      "dropbox_id": 26002,
+      "id": 26002020,
+      "item": "52012#1",
+      "name": -1,
+      "weight": 462
+    },
+    "26002021": {
+      "cost": "0#0",
+      "dropbox_id": 26002,
+      "id": 26002021,
+      "item": "52013#1",
+      "name": -1,
+      "weight": 462
+    },
+    "26002022": {
+      "cost": "0#0",
+      "dropbox_id": 26002,
+      "id": 26002022,
+      "item": "52014#1",
+      "name": -1,
+      "weight": 462
+    },
+    "26002023": {
+      "cost": "0#0",
+      "dropbox_id": 26002,
+      "id": 26002023,
+      "item": "52015#1",
+      "name": -1,
+      "weight": 461
+    },
+    "26002024": {
+      "cost": "0#0",
+      "dropbox_id": 26002,
+      "id": 26002024,
+      "item": "52016#1",
+      "name": -1,
+      "weight": 461
+    },
+    "26002025": {
+      "cost": "0#0",
+      "dropbox_id": 26002,
+      "id": 26002025,
+      "item": "52017#1",
+      "name": -1,
+      "weight": 461
+    },
+    "26002026": {
+      "cost": "0#0",
+      "dropbox_id": 26002,
+      "id": 26002026,
+      "item": "52018#1",
+      "name": -1,
+      "weight": 461
+    },
+    "26002027": {
+      "cost": "0#0",
+      "dropbox_id": 26002,
+      "id": 26002027,
+      "item": "52019#1",
+      "name": -1,
+      "weight": 461
+    },
+    "26002028": {
+      "cost": "0#0",
+      "dropbox_id": 26002,
+      "id": 26002028,
+      "item": "52020#1",
+      "name": -1,
+      "weight": 461
+    },
+    "26003001": {
+      "cost": "0#0",
+      "dropbox_id": 26003,
+      "id": 26003001,
+      "item": "543001#1",
+      "name": -1,
+      "weight": 6750
+    },
+    "26003002": {
+      "cost": "0#0",
+      "dropbox_id": 26003,
+      "id": 26003002,
+      "item": "543002#1",
+      "name": -1,
+      "weight": 6750
+    },
+    "26003003": {
+      "cost": "0#0",
+      "dropbox_id": 26003,
+      "id": 26003003,
+      "item": "543003#1",
+      "name": -1,
+      "weight": 6750
+    },
+    "26003004": {
+      "cost": "0#0",
+      "dropbox_id": 26003,
+      "id": 26003004,
+      "item": "543004#1",
+      "name": -1,
+      "weight": 6750
+    },
+    "26003005": {
+      "cost": "0#0",
+      "dropbox_id": 26003,
+      "id": 26003005,
+      "item": "543005#1",
+      "name": -1,
+      "weight": 6750
+    },
+    "26003006": {
+      "cost": "0#0",
+      "dropbox_id": 26003,
+      "id": 26003006,
+      "item": "543006#1",
+      "name": -1,
+      "weight": 6750
+    },
+    "26003007": {
+      "cost": "0#0",
+      "dropbox_id": 26003,
+      "id": 26003007,
+      "item": "543007#1",
+      "name": -1,
+      "weight": 6750
+    },
+    "26003008": {
+      "cost": "0#0",
+      "dropbox_id": 26003,
+      "id": 26003008,
+      "item": "543008#1",
+      "name": -1,
+      "weight": 6750
+    },
+    "26003009": {
+      "cost": "0#0",
+      "dropbox_id": 26003,
+      "id": 26003009,
+      "item": "53002#1",
+      "name": -1,
+      "weight": 5714
+    },
+    "26003010": {
+      "cost": "0#0",
+      "dropbox_id": 26003,
+      "id": 26003010,
+      "item": "53003#1",
+      "name": -1,
+      "weight": 5714
+    },
+    "26003011": {
+      "cost": "0#0",
+      "dropbox_id": 26003,
+      "id": 26003011,
+      "item": "53005#1",
+      "name": -1,
+      "weight": 5714
+    },
+    "26003012": {
+      "cost": "0#0",
+      "dropbox_id": 26003,
+      "id": 26003012,
+      "item": "53006#1",
+      "name": -1,
+      "weight": 5714
+    },
+    "26003013": {
+      "cost": "0#0",
+      "dropbox_id": 26003,
+      "id": 26003013,
+      "item": "53008#1",
+      "name": -1,
+      "weight": 5714
+    },
+    "26003014": {
+      "cost": "0#0",
+      "dropbox_id": 26003,
+      "id": 26003014,
+      "item": "53009#1",
+      "name": -1,
+      "weight": 5714
+    },
+    "26003015": {
+      "cost": "0#0",
+      "dropbox_id": 26003,
+      "id": 26003015,
+      "item": "53010#1",
+      "name": -1,
+      "weight": 5714
+    },
+    "26003016": {
+      "cost": "0#0",
+      "dropbox_id": 26003,
+      "id": 26003016,
+      "item": "53004#1",
+      "name": -1,
+      "weight": 500
+    },
+    "26003017": {
+      "cost": "0#0",
+      "dropbox_id": 26003,
+      "id": 26003017,
+      "item": "53001#1",
+      "name": -1,
+      "weight": 500
+    },
+    "26003018": {
+      "cost": "0#0",
+      "dropbox_id": 26003,
+      "id": 26003018,
+      "item": "53011#1",
+      "name": -1,
+      "weight": 500
+    },
+    "26003019": {
+      "cost": "0#0",
+      "dropbox_id": 26003,
+      "id": 26003019,
+      "item": "53007#1",
+      "name": -1,
+      "weight": 500
+    },
+    "26003020": {
+      "cost": "0#0",
+      "dropbox_id": 26003,
+      "id": 26003020,
+      "item": "53012#1",
+      "name": -1,
+      "weight": 500
+    },
+    "26003021": {
+      "cost": "0#0",
+      "dropbox_id": 26003,
+      "id": 26003021,
+      "item": "53013#1",
+      "name": -1,
+      "weight": 500
+    },
+    "26003022": {
+      "cost": "0#0",
+      "dropbox_id": 26003,
+      "id": 26003022,
+      "item": "53014#1",
+      "name": -1,
+      "weight": 500
+    },
+    "26003023": {
+      "cost": "0#0",
+      "dropbox_id": 26003,
+      "id": 26003023,
+      "item": "53015#1",
+      "name": -1,
+      "weight": 500
+    },
+    "26003024": {
+      "cost": "0#0",
+      "dropbox_id": 26003,
+      "id": 26003024,
+      "item": "53016#1",
+      "name": -1,
+      "weight": 500
+    },
+    "26003025": {
+      "cost": "0#0",
+      "dropbox_id": 26003,
+      "id": 26003025,
+      "item": "53017#1",
+      "name": -1,
+      "weight": 500
+    },
+    "26003026": {
+      "cost": "0#0",
+      "dropbox_id": 26003,
+      "id": 26003026,
+      "item": "53018#1",
+      "name": -1,
+      "weight": 500
+    },
+    "26003027": {
+      "cost": "0#0",
+      "dropbox_id": 26003,
+      "id": 26003027,
+      "item": "53019#1",
+      "name": -1,
+      "weight": 500
+    },
+    "26004001": {
+      "cost": "0#0",
+      "dropbox_id": 26004,
+      "id": 26004001,
+      "item": "544001#1",
+      "name": -1,
+      "weight": 6750
+    },
+    "26004002": {
+      "cost": "0#0",
+      "dropbox_id": 26004,
+      "id": 26004002,
+      "item": "544002#1",
+      "name": -1,
+      "weight": 6750
+    },
+    "26004003": {
+      "cost": "0#0",
+      "dropbox_id": 26004,
+      "id": 26004003,
+      "item": "544003#1",
+      "name": -1,
+      "weight": 6750
+    },
+    "26004004": {
+      "cost": "0#0",
+      "dropbox_id": 26004,
+      "id": 26004004,
+      "item": "544004#1",
+      "name": -1,
+      "weight": 6750
+    },
+    "26004005": {
+      "cost": "0#0",
+      "dropbox_id": 26004,
+      "id": 26004005,
+      "item": "544005#1",
+      "name": -1,
+      "weight": 6750
+    },
+    "26004006": {
+      "cost": "0#0",
+      "dropbox_id": 26004,
+      "id": 26004006,
+      "item": "544006#1",
+      "name": -1,
+      "weight": 6750
+    },
+    "26004007": {
+      "cost": "0#0",
+      "dropbox_id": 26004,
+      "id": 26004007,
+      "item": "544007#1",
+      "name": -1,
+      "weight": 6750
+    },
+    "26004008": {
+      "cost": "0#0",
+      "dropbox_id": 26004,
+      "id": 26004008,
+      "item": "544008#1",
+      "name": -1,
+      "weight": 6750
+    },
+    "26004009": {
+      "cost": "0#0",
+      "dropbox_id": 26004,
+      "id": 26004009,
+      "item": "54001#1",
+      "name": -1,
+      "weight": 5715
+    },
+    "26004010": {
+      "cost": "0#0",
+      "dropbox_id": 26004,
+      "id": 26004010,
+      "item": "54002#1",
+      "name": -1,
+      "weight": 5715
+    },
+    "26004011": {
+      "cost": "0#0",
+      "dropbox_id": 26004,
+      "id": 26004011,
+      "item": "54003#1",
+      "name": -1,
+      "weight": 5715
+    },
+    "26004012": {
+      "cost": "0#0",
+      "dropbox_id": 26004,
+      "id": 26004012,
+      "item": "54004#1",
+      "name": -1,
+      "weight": 5715
+    },
+    "26004013": {
+      "cost": "0#0",
+      "dropbox_id": 26004,
+      "id": 26004013,
+      "item": "54005#1",
+      "name": -1,
+      "weight": 5715
+    },
+    "26004014": {
+      "cost": "0#0",
+      "dropbox_id": 26004,
+      "id": 26004014,
+      "item": "54006#1",
+      "name": -1,
+      "weight": 5715
+    },
+    "26004015": {
+      "cost": "0#0",
+      "dropbox_id": 26004,
+      "id": 26004015,
+      "item": "54009#1",
+      "name": -1,
+      "weight": 5715
+    },
+    "26004016": {
+      "cost": "0#0",
+      "dropbox_id": 26004,
+      "id": 26004016,
+      "item": "54007#1",
+      "name": -1,
+      "weight": 546
+    },
+    "26004017": {
+      "cost": "0#0",
+      "dropbox_id": 26004,
+      "id": 26004017,
+      "item": "54008#1",
+      "name": -1,
+      "weight": 546
+    },
+    "26004018": {
+      "cost": "0#0",
+      "dropbox_id": 26004,
+      "id": 26004018,
+      "item": "54010#1",
+      "name": -1,
+      "weight": 546
+    },
+    "26004019": {
+      "cost": "0#0",
+      "dropbox_id": 26004,
+      "id": 26004019,
+      "item": "54011#1",
+      "name": -1,
+      "weight": 546
+    },
+    "26004020": {
+      "cost": "0#0",
+      "dropbox_id": 26004,
+      "id": 26004020,
+      "item": "54012#1",
+      "name": -1,
+      "weight": 546
+    },
+    "26004021": {
+      "cost": "0#0",
+      "dropbox_id": 26004,
+      "id": 26004021,
+      "item": "54013#1",
+      "name": -1,
+      "weight": 545
+    },
+    "26004022": {
+      "cost": "0#0",
+      "dropbox_id": 26004,
+      "id": 26004022,
+      "item": "54014#1",
+      "name": -1,
+      "weight": 545
+    },
+    "26004023": {
+      "cost": "0#0",
+      "dropbox_id": 26004,
+      "id": 26004023,
+      "item": "54015#1",
+      "name": -1,
+      "weight": 545
+    },
+    "26004024": {
+      "cost": "0#0",
+      "dropbox_id": 26004,
+      "id": 26004024,
+      "item": "54016#1",
+      "name": -1,
+      "weight": 545
+    },
+    "26004025": {
+      "cost": "0#0",
+      "dropbox_id": 26004,
+      "id": 26004025,
+      "item": "54017#1",
+      "name": -1,
+      "weight": 545
+    },
+    "26004026": {
+      "cost": "0#0",
+      "dropbox_id": 26004,
+      "id": 26004026,
+      "item": "54018#1",
+      "name": -1,
+      "weight": 545
+    }
+  },
+  "item_icons": {
+    "930075": "partner_avatar_45002",
+    "930077": "partner_avatar_46002",
+    "930109": "partner_avatar_54002",
+    "930081": "partner_avatar_51004",
+    "930095": "partner_avatar_52008",
+    "930105": "partner_avatar_53008",
+    "930070": "partner_avatar_44003",
+    "930055": "partner_avatar_41006",
+    "930056": "partner_avatar_42001",
+    "930063": "partner_avatar_43002",
+    "930074": "partner_avatar_45001",
+    "930076": "partner_avatar_46001",
+    "6001": "artfact_2",
+    "6002": "artfact_3",
+    "6003": "artfact_4",
+    "6004": "artfact_5",
+    "6005": "artfact_6",
+    "6021": "artfact_7",
+    "6022": "artfact_8",
+    "6023": "artfact_9",
+    "6024": "artfact_10",
+    "6025": "artfact_11",
+    "6041": "artfact_12",
+    "6042": "artfact_13",
+    "6043": "artfact_14",
+    "6044": "artfact_15",
+    "6045": "artfact_16",
+    "930079": "partner_avatar_51002",
+    "930086": "partner_avatar_51009",
+    "930087": "partner_avatar_51010",
+    "930088": "partner_avatar_52001",
+    "930089": "partner_avatar_52002",
+    "930091": "partner_avatar_52004",
+    "930092": "partner_avatar_52005",
+    "930096": "partner_avatar_52009",
+    "930099": "partner_avatar_53002",
+    "930100": "partner_avatar_53003",
+    "930101": "partner_avatar_53004",
+    "930102": "partner_avatar_53005",
+    "930107": "partner_avatar_53010",
+    "930108": "partner_avatar_54001",
+    "930111": "partner_avatar_54004",
+    "930113": "partner_avatar_54006",
+    "930114": "partner_avatar_54007",
+    "930116": "partner_avatar_54009",
+    "930094": "partner_avatar_52007",
+    "930098": "partner_avatar_53001",
+    "930115": "partner_avatar_54008",
+    "930083": "partner_avatar_51006",
+    "930085": "partner_avatar_51008",
+    "930175": "partner_avatar_53011",
+    "930117": "partner_avatar_54010",
+    "930178": "partner_avatar_51011",
+    "930177": "partner_avatar_52011",
+    "930179": "partner_avatar_53007",
+    "930182": "partner_avatar_54011",
+    "930183": "partner_avatar_52012",
+    "930184": "partner_avatar_53012",
+    "930185": "partner_avatar_51012",
+    "930186": "partner_avatar_52013",
+    "930189": "partner_avatar_54012",
+    "930190": "partner_avatar_53013",
+    "930191": "partner_avatar_52014",
+    "930192": "partner_avatar_51013",
+    "930196": "partner_avatar_54014",
+    "930193": "partner_avatar_54013",
+    "930199": "partner_avatar_52015",
+    "930200": "partner_avatar_51014",
+    "930201": "partner_avatar_53015",
+    "930202": "partner_avatar_51015",
+    "930198": "partner_avatar_53014",
+    "930203": "partner_avatar_54015",
+    "930204": "partner_avatar_52016",
+    "930207": "partner_avatar_54016",
+    "930209": "partner_avatar_51016",
+    "930208": "partner_avatar_52017",
+    "930210": "partner_avatar_53016",
+    "930211": "partner_avatar_54017",
+    "930212": "partner_avatar_53017",
+    "930215": "partner_avatar_52018",
+    "930216": "partner_avatar_51017",
+    "930217": "partner_avatar_53018",
+    "930218": "partner_avatar_51018",
+    "930219": "partner_avatar_54018",
+    "930222": "partner_avatar_52019",
+    "930225": "partner_avatar_53019",
+    "930228": "partner_avatar_51019",
+    "930078": "partner_avatar_51001",
+    "930097": "partner_avatar_52010",
+    "930103": "partner_avatar_53006",
+    "6071": "artfact_22",
+    "6366": "artfact_68",
+    "6096": "artfact_23",
+    "6097": "artfact_24",
+    "6098": "artfact_25",
+    "6099": "artfact_26",
+    "6100": "artfact_27",
+    "6101": "artfact_28",
+    "6102": "artfact_29",
+    "6103": "artfact_30",
+    "6371": "artfact_69",
+    "6377": "artfact_70"
+  },
+  "sources": {
+    "/Users/schroyle/Downloads/Decomp files/lua/data/tables/partner_replace.lua": "640ab40dcf3369e1ed7643f69f73a0c286e043af3280eb63690a6ea858c517a1",
+    "/Users/schroyle/Downloads/Decomp files/lua/data/tables/gamble_config.lua": "2318f1214e1a0947b510d10de3e9b18fbd47dd3298371b641c2b5fba37e59f1e",
+    "/Users/schroyle/Downloads/Decomp files/lua/data/tables/gamble.lua": "792e7fa8d25fb03c11a78abc6188ee46d40f93c3411584d3b14d4b6ee7acc995",
+    "/Users/schroyle/Downloads/Decomp files/lua/data/tables/gamble_up.lua": "75d351b3ca10e4dc0b7092229ecd245f1cd7c45a6fea7004097f29bf5d8b0ff9",
+    "/Users/schroyle/Downloads/Decomp files/lua/data/tables/shop_luck.lua": "6d042ec454cd7f266fe0e025ba854ca3af84d8c65ef3583f40481b1d5e418ca6",
+    "/Users/schroyle/Downloads/Decomp files/lua/data/tables/shop_config.lua": "c3e17f42f7dcfb5a38638ccb34bef94dbd0d7125b7f8665a93d2ccea678c81c9",
+    "/Users/schroyle/Downloads/Decomp files/lua/app/windows/ProphetWindow.lua": "5be5bfcc31b703e1388107b7ec9331d1daa6a84f63ef9ca8e8d8c04cbf918052",
+    "/Users/schroyle/Downloads/Decomp files/lua/app/windows/ProphetChoosePartnerWindow.lua": "3c27189bbe62427003f336e891ebb53219c385c1854b68664d8d705deb83a894",
+    "/Users/schroyle/Downloads/Decomp files/lua/app/models/Slot.lua": "c1fa8efe7b370e99b997ad0482924a0f0bfaf779a8261e4523de3efb7198aa46",
+    "/Users/schroyle/Downloads/Decomp files/lua/app/windows/GambleWindow.lua": "9bc035260489f4e5d893d8c6a67a370028adde96a505990db13409ae84a9296f",
+    "/Users/schroyle/Downloads/Decomp files/lua/app/models/Gamble.lua": "31ddb5622c9bc281a4938769c25d04821c43b5afbbb9a2515d243fe80d824dcf",
+    "/Users/schroyle/Downloads/Decomp files/lua/app/models/Shop.lua": "4a80878af5b3aeeda953c95f6a546e003bacf6aefc573e72f3a71565616e48c2",
+    "/Users/schroyle/Downloads/Decomp files/lua/app/windows/ShopWindow.lua": "70cdb986713989e4f9157255c6f77ab94e0652ae1eb964b37f36365f897f69ae",
+    "/Users/schroyle/Downloads/Decomp files/lua/app/common/tables/ShopConfigTable.lua": "253f77f582964899e580de336870949f83c3734530de3098913c40fc5403af78",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/artfact_10.png": "acd5a88f6160c23b0de9a7aeb5356add8d58b114a0482ced457140fa4b377f31",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/artfact_11.png": "6068c15a3c1b6acb9e9253a602a8651d26c509c8afa7449f8aaa628c8c53fb82",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/artfact_12.png": "a7641e0c1ee2dbae766fc590836c048bc480dc351bf6fa2a6514e9fdb8f89daf",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/artfact_13.png": "93e2bfd3c9d9836f293e084c5a90622b65402a5510523a99e8b214b3d9602884",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/artfact_14.png": "e130345950ac04ad4e9afb5a82fc8b5c998c1011a68e72bbf80364b0a71a2d00",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/artfact_15.png": "52d4826688a8807b40a79bc9037b8133cb3737cd80eec1d8ee9463a4e58db08a",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/artfact_16.png": "c1b91aaa6eb2366068d94b89b55cb9c376c6c93fb8b28ab35fac9be711e3c22c",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/artfact_2.png": "4a2e69c5a4ebe821b4ca41bac470d8beffe1bfc193bd59d040b3c3895ddecbd6",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/artfact_22.png": "2f97c0bf3b261a5a6fc0439bb803716df4a9c0a1c632fa833c90da27af1cefa9",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/artfact_23.png": "55e292e958ce75defc07d06a308c6d561a04d6a98b50d586f8667362cde656f7",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/artfact_24.png": "d711069c34cf9e2f0aca93ad135b73c428e4e9443c675d31da457e1ad1d5542d",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/artfact_25.png": "9adce5b6d03c788a0d54a1062363c6fab8cbbae0a45dffa662a406ad771f9e46",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/artfact_26.png": "6e668fb4568fb853746c89cd410e9c86d10a6b9ebb5f6defdf7d888fadbb8aed",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/artfact_27.png": "3aa5ff902e297dbab8fc919772cc3f3318afe1e0fe3ee79c749761521ca84371",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/artfact_28.png": "c9435283deca5fed38287b1a9813504b2c2d794a72dc5105e91b6d960a111928",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/artfact_29.png": "bbf30707c419406e2f600fad9d8770386e690c5003f573ece4972aee53c333a3",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/artfact_3.png": "db23198f0b2ae55aef2cc49fb0a331a33078a3171d9171307c6a5b996079ff5b",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/artfact_30.png": "363393eefe51eb6b5eb6fb2f226655d3205d6e11c773f1881b9f25b2170b267a",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/artfact_4.png": "d363a9e7cfbcbde2b4f4d8ad94fcb92c04e6d0af606903359614b4fdabbce0d1",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/artfact_5.png": "a7a475eb81a71e2665e1c0f4f5b5908a7f0b1b3aa3ffec2c6bd67f40bc500cdc",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/artfact_6.png": "a89d49a625b653fe367216428e50e1e20839683d55c42f7db1300d65cae3fb34",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/artfact_68.png": "f16d3db2b6a4c7596b1c267b25f606176a77431b8eae2a9f8ae4e4be85aa370f",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/artfact_69.png": "bcd7631cf678befb86a3008097cd0198f5a6475535a8436f4b10c76aaf2da611",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/artfact_7.png": "978fff96c6fa18a65c0f11ee85a2f9cd88e075ecd1d067d715a5ebb3a2892042",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/artfact_70.png": "77a98e32571de0fa20967f0a7041f4838d10118e5bfc5110e8aea31bddf9ee06",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/artfact_8.png": "2777751f4f55640b930271a667b604ef10a0aaae8bea765b2147df37292b03ee",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/artfact_9.png": "faed6040fb9b0a7ac2c5608def36353bab08142d4cd70f8939dfbcf98af97597",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/gb_btn_use_2_bg.png": "17d157d7e0c789244d8ac0db1090439e99f4349dbb1da4a7480bd02ca20b0c60",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/gb_btn_use_bg.png": "b9a4aeb25f43029745af6e8e0df5e1e429d0dd118ab83e6cc39621314fb268df",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/gb_dialog_bg.png": "55749a61e6560b7dd10a66acf092687505a8c85d335e9724e7586e492e2f1fa0",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/gb_flower_1.png": "5e99942069a815fe945d433a8687e57d6598a0c4db3979dc2f4bd43703b1f0c5",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/gb_flower_2.png": "0b91b98f6c6fdf82668e73b9d6b1dccdbb25aa6901b578021606df7ed91b47ad",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/gb_flower_3.png": "5d498e729b0672b25a4d25ff2057f562b3902069fa0f27e0a9b95e815e79a83c",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/gb_gain_de_de.png": "a6712a8e2d1bcadfb3ef2865fea042a207bd340d9c933583491d895c1530c420",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/gb_gain_en_en.png": "0c2096718a1494deb232da0462ed711bad29649088f77b37d97f9ccce2407c15",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/gb_gain_ja_jp.png": "5acb8a03e1cf7fcd30e2e114f34fb2788ee66ebfc6db6008df9a037a6ca2b84f",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/gb_gain_ko_kr.png": "c4d45c4a12f9f215d1b2dcec933848ca1d408861a90dd7a9f9fbd07c16d06db2",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/gb_gain_pic_1.png": "5645be3433528a1f67d0103da9baf08bed5a37e9eb02b6f8ed404b345d77e2f9",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/gb_gain_pic_2.png": "3f90dc4e68d9feb7c3779a32d5ca7149d0b993622e479064b6fdc18f35d45cc8",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/gb_gain_zh_tw.png": "a26e79cf5798658e93cf738eebbdc2486b9cb9cf2496741dd29112c7db12ae11",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/gb_icon_bg.png": "2d60578e5fc25cbc694b68344df756e994b3df9a2d7d2cbf5e72fea56759c40c",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/gb_icon_select_bg.png": "4c87848daf9e8ed43508bfeffdc204afa51911f1f14f857e9b510d91b351c735",
+    "/Users/schroyle/Downloads/Decomp files/unity/Assets/hotres/textures/scenes_web/gb_normal_bg.png": "77904cfeaa2d08e6498e4a31faea16a745def89fae44b26cca3d18480deda3f4",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/gb_normal_bg_2.png": "185405e20675bc963ebc3912d0cd28e46a65fb600c563e166b995961d283ae6f",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/gb_normal_door1_zh_tw.png": "9144e2f77e1c1ab288529fb1a6bbd648155ffeaa871ba2ae875d7d4b47266114",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/gb_normal_door2_zh_tw.png": "4a4d83d42bd70298e790914a18c866a89c3c585b8a4b5356564c5e0106efb04f",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/gb_normal_door_en_en (2).png": "1875e8472faa8dc69af420882f90256de9f16e2039af768e0fd141e9ce492450",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/gb_normal_door_en_en.png": "ba3ee19c6627be3d53034e4d67033d708d24c929b3caa4eaa5800cb538a0c48a",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/gb_normal_door_zh_cn.png": "36773d9b4e8d0a8b98ba76f0ed1c09d783d0b462dbfccb7d33ed31280c37464d",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/gb_normal_door_zh_tw.png": "b62583788ae17caa05e6e84125d0a1fcb35483aa7f6ebbe867f3f7ac824c9c79",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/gb_normal_icon_1.png": "2dfd55c4c088d564d0963d4f5631835b4a8142e6646d073f839cc57fdf721108",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/gb_normal_icon_3.png": "0d34634ebd4ee8c988ccac629cef0ff4e65efc7234fa2fa49c209a2af4c10331",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/gb_normal_mid_bg.png": "0a7ca56cff164a8c7d43680a1b0371e4e6d894e8eacb673859fe17d298db0ffc",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/gb_normal_records.png": "4915dec679c8c47b49dc9970e32b9db295ea65dcbee69f8af8689e3bf27c30a2",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/gb_records.png": "d543b532e8f40e11eee5133c2424c929ad026ee0f4c477e550fbf2cb350de4be",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/gb_reward_title_bg.png": "1d8cb8fa95d2e4a697526352732032ca2d04d4756fb66e1b4120ce4379d9cd8b",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/gb_select_bg.png": "bffd5562478b13674465baaa2c2ab4d466d7f77892a4e41e93df3a25d5c37fbb",
+    "/Users/schroyle/Downloads/Decomp files/unity/Assets/hotres/textures/scenes_web/gb_senior_bg.png": "1a409024f2df61d88b946479380c4187ead22d834dd68a5cd6f3b30139aeb377",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/gb_senior_bg_2.png": "948133fbd1bd62d957e113b1eb17bfcaefff242cc9db696c0750874820cde041",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/gb_senior_door1_zh_tw.png": "a72940d3dab20a1706673eb8cd652ec90ee48d942704ff3580a7a10bd7171211",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/gb_senior_door2_zh_tw.png": "8effe3dda0faf77fd701a29a504ba68f4d024a03a7cf32db3b0582ac9692fb7f",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/gb_senior_door_en_en (2).png": "dbeb9941de0d0d1dd67fe5c8fa8d14cb638ee29403b39d66c50bc16e332924de",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/gb_senior_door_en_en.png": "95272f81b08c9b7d46157a51a96e308e0925e4b42b7cae9f3feb59ed9712a35f",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/gb_senior_door_zh_cn.png": "88ceb91274eb633e2ef478c27170c2edb765a0bb1d6031f7b2367bd51846235c",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/gb_senior_door_zh_tw.png": "a4eccda474b602274d9bbf3ce5708e4513649b64d9fc7da00f80336042955096",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/gb_senior_icon_1.png": "a912f30e0567a3dc455a87cf6a3d04a45cff01e7b1d3e3e5bd4585af37522945",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/gb_senior_icon_3.png": "64a79180b8948a0c02d69633f509e5625bed9fbb449a748c758f3c8298b5ca25",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/gb_senior_mid_bg.png": "3b984905788a29351dd985db45499403f162d622c4a0178e292dc6dcc6f2ff85",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/gb_senior_records.png": "42c2d45e76c05be0cd416dbf10e7ff763cd88995fdc2863155bfc145c966e1ec",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/gb_side_btn.png": "9d92a20f3fc584ec092f606ac46df77b540f7541bcb0e53246be560a60279cf7",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_41006.png": "afae63a6e0fbf2a3351f1ad2ac314f4450718bf782d00209b4d67363f90fc7cd",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_42001.png": "c04040c6f6b298f96d6414b2800a4ae9b4c5a03fac4e5a17db0ab03e388f6057",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_43002.png": "074456aad31ce7aebc235b048d9053c5ca11ef4e26376a7be07db4bee1ea96c2",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_44003.png": "76ab39e906019848867be85351ce8490a03cff4babb28c52b00b6ed13a363710",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_45001.png": "b320bf4792c64cd69465f4b814662e7a4bbbdc076cce63abf3e97c481aa24b45",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_45002.png": "f8b3ab6e17f0e520aec43449233f5d30760d17893e4946f5310a02832bef2285",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_46001.png": "5f29ba68292a4e6db25232f75b49e866a9016daf385ec1aa6d15b7ba791b906b",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_46002.png": "fb9a718e8a21946debbc25bc6224b1951db2df23455751b1936cc6460f58901a",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_51001.png": "52cd6d3c86f91288cf09fce3f7f1816f43960f818f03862683a5e11e9a077c9c",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_51002.png": "5c047b7d47154b838532a43f98736f910906249b32517e4894fef63c01b95487",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_51004.png": "8e1e5d1a1bcab0c9c45a5f60e0ef14a8bece0e6e5784584a2d9c472a5823e887",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_51006.png": "0d5d2c45d7dcc6e233fb18e9a90863968e2be24ae3c548a1d2eb4fa360f8cd06",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_51008.png": "e8b14d16cd5bb570e050fb299421f19466acc6e6b30dc24ef38c92a32d950660",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_51009.png": "3255169e5b368b2dcde6c17daf7a750cb88c2f3a4010166c768630ca9cdc225f",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_51010.png": "2399a3a94f4ba6322e500fd60e024c67c717e15c2dff31141a5601a250c239e0",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_51011.png": "aa78a67561d4740355af57eb3ffe6244a561fb802df930953f9a26e11c9e2cba",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_51012.png": "8775bcb30554b088aadedff0538ffa12cc93f2f72983b282616583f4e30ad93d",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_51013.png": "53a6909fa7e68ee72501f6d256a2d1e681522c69836375276135befd8b43317b",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_51014.png": "d924df8b4143fd78a22d8d9411ed60d1f58d0092c5a2bdb4f3d13a1b66186af9",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_51015.png": "ad96489578fedff079e2951636c74545448bf01480fcc919e128898c017a8a0b",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_51016.png": "86f7ed8f3f016f5536ecc5262d85e5846a69c383acad3c3471749398b7ef0edb",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_51017.png": "d13c6562e8b516718f74266ae047fbe273cffe979c207118319074d6b8cb10b0",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_51018.png": "225332832bbc9019e9550ee2074bbf897060d005c8dea6ccf4173f79dcae7064",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_51019.png": "e2c06a948e5ba8d511038a5b13897f288910b8c39a2b2da542c99fbc7f9d8cfe",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_52001.png": "068579acc7ab57d3d27a312411ec7875f1b7dc00785f16678e8756061e8007b6",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_52002.png": "c38309b44418175c4f074f91f4b7abb5805202ef0978a5bb8c1c9ee7bba0ffbd",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_52004.png": "794808a7ddd816996bd38075aa67211aa8689736fef5505c64c1f380082d8f57",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_52005.png": "be249feced1fe0f9acd5e799321f9637fd88f581bfd844f5b4445917161c88c6",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_52007.png": "34e510d8435c4b4af5e885a82ecae1707eb412a2ed68e1d1c16ccf66492740b7",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_52008.png": "9efc6e2e5d8ca5e9480ee3845f33ea090dcf8cd07d691f7014ac1ec9a80855bd",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_52009.png": "878d52c1ff4972d5b6d78d462d73920f3f09db8d2dcf62c11c9c3da0d7dbbae8",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_52010.png": "3c9d37d03f9ce6acf90e2941eb07ce364c080f6fedb56db8b2c0cc1696efa10b",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_52011.png": "b385a2d1edac029e037e626cb913aad5ad9038b6070643ff121cf733b696d661",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_52012.png": "c397513cb9394a83d7cc75e125578678a52c15206e1b441e380ab198ec7a981a",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_52013.png": "443c7cf3bce3809df7b90419d2c0bcd36eebb47f7fa83307b97427e04d3c93b0",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_52014.png": "f3053c827ae633dd24d694cf3532e11fc8decbc93dd37d8ab358c242f248bd9f",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_52015.png": "1099294749941b71bb0ccab0b3ecd5f66b4520748140712bf949ab1050646692",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_52016.png": "214a6448a85bbd1f929bd42d66374dd9d6ae3e1a970ba19f76662f1bb49405cc",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_52017.png": "ac6ef0112fc10708e411618526dd6bfa82c58ec5f85c3332a422ee06a15549d2",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_52018.png": "84186ce16c8090d524ec078e0fd960bd529bb379eac5fdffb19d5e84fce945e5",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_52019.png": "16f539cadec18045e91d92341213960550ebdf6c6bde3d4a62eab22ee25cc63b",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_53001.png": "535a54e00abd1aff70821ac3f410b10b118c64be55e73008cc07180bd2479918",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_53002.png": "4cd1042d9d54a868a0e5335c06c70e9cf3f39d1ca2fccd329955152526dceaf6",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_53003.png": "727b46b12a242af647631ccd83e1b0a79ef1ce9c76dad41d1a9cf9087364b081",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_53004.png": "2cdd0668337f835832561c284bdcaeb6c1827db7059277a59f888a9692839b4e",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_53005.png": "2a5811dfb991d44bc6788fe96eebf0e1a9e459d8e308ace43e1f95f3fd6c79c8",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_53006.png": "8ead4cc62c8db7f4f1d9c2dfc7202efa16e7fc0ee55f54bfbe550ac4e0b7e622",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_53007.png": "cd8423cc14f75fa60f086c05017ebb7558f4c777ee3720cb55efd401ed6885ec",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_53008.png": "7cd8278b66b3707859428b6992112d2b632bf7e8409cb57bf6ffb22f9d6fa47a",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_53010.png": "e2a2351c3e756f7fb2eae5b59b3ba401217a8cb0614d2bc965ece086955bc512",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_53011.png": "df91693e9c233a5cf0a63f3730e7c1d910ada1ae9be1fe40a71944fc64f2937c",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_53012.png": "7ac37f5a2add8ecd619bf34b4adff00360a998b4471db6bbd0dec01d089674c5",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_53013.png": "b55e201fc3bc65f656cc8f3bb831c37b9dffe7722debd65116cc2131bd237ec4",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_53014.png": "0631483974315b9696d69385a470d2bdb860439f5ce279dcfc0dca7028869eb1",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_53015.png": "cd819ff6556714a06b2170438431d3adb9629de4e01aea73e09cbb27d7ae7cf2",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_53016.png": "3c3fa7e3e20ff2c7a958151e64a96a09b5f2024592d0a39fcd44211031b2745f",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_53017.png": "e9ad6c5e478debaa35cc5d049fab3e9d7f9f9f4970423315d51d7c21f39ee3c9",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_53018.png": "9257c5b220566d931867a777248267f3f231ea6409d6b999236ec9e937f74ca6",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_53019.png": "82404e284c5686c56ff08a2aa0f08c78e405fb984ca45dd6be63e265debbc2de",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_54001.png": "ce83e8253973ce64a51ff4d1e172376288dad5c46743f27552bb3cba8557be88",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_54002.png": "56fd5c2bf0056f3017421a40d629dd83b10e319de612dfdc48bf473de7c36f13",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_54004.png": "8874ead1efe8e4e8b4516bcd24fe5f19064f69c17111a40ce6005af22db8b1b7",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_54006.png": "d5ca385a926c4887829ad955850f0d4c45f50fcc5e7c3c3f0e5001244aa20c66",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_54007.png": "060c48301a6fdf8672f4905ca92bb50464fffe57b5ab9b75a7bd045110413667",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_54008.png": "33290d79dd2bf0586bcb6633de1aed01a71b52b2b18b5d4609ab03f1ac29fa95",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_54009.png": "45d5f0926db4c37cf11910545cd116890688ce475f226f36c7464f576ca7ef77",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_54010.png": "7c250968b3b5949d109b892f00d823648ae342ad748f30a24ec5f2c124e43744",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_54011.png": "29e9e055520530a1a528dae31af34818e11c8488dafe21f0b7b9331341c8d36f",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_54012.png": "2907d217852f6ad80e1d77774e5ac22da3e4a63db6888884ee72349e1a5a4bdf",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_54013.png": "eed19a80077fe483ea3217cde3726534253a06021c438b89c3b63d4ca0001943",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_54014.png": "00d75b86c8898dd18783fd3cac76211279aae0f6ee95291b43adc9c397a47646",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_54015.png": "d5455e222a2659b66997d9d7aed785e214db0c18a854e1605688f88c8eb03dbb",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_54016.png": "26a105f1c0a987d1e73445f1661c23187e602a9a5193daea72eb51e6251830ec",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_54017.png": "c51174c9e3daa77ef487025e4de1643befdbfc4bc8c5ee47ef323bd6e41de3a7",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_54018.png": "137b24d571ef95d5712de22cd862cefbf94f9c355a9a192ba16ef723d1edcb05",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/shop.png": "ecb5d0065fb3c334d71cfe7bf49ac578f3ed280b563a7d72f1a960290b11540d",
+    "/Users/schroyle/Documents/Codex/2026-09-26/referenced-chatgpt-conversation-this-is-an/outputs/gxb2_local/data/dropbox.json": "942b92478954052713368872b826f57f4539b0c67bfa74dffb83ea442bd519bf"
+  }
+}

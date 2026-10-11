@@ -1,0 +1,22 @@
+/* Summon result window (summon_result_window.prefab): 720-wide canvas, band at y=46 (352 tall), buttons at y=-179. */
+.sr-overlay{position:absolute;inset:0;z-index:51;container-type:size;--u:calc(100cqw / 720);background:rgba(10,8,20,.74);display:grid;align-content:center;justify-items:center;gap:calc(52 * var(--u));animation:sr-in .25s ease-out}
+.sr-band{width:100%;height:calc(352 * var(--u));background:url('/assets/summon-result/summon_res.png') center/100% 100% no-repeat,linear-gradient(transparent,rgba(255,250,235,.96) 12%,rgba(255,250,235,.96) 88%,transparent);display:grid;place-items:center;box-shadow:0 0 calc(60 * var(--u)) rgba(255,214,90,.75)}
+.sr-grid{display:grid;grid-template-columns:repeat(5,calc(108 * var(--u)));column-gap:calc(24 * var(--u));row-gap:calc(22 * var(--u))}
+.sr-hero{position:relative;width:calc(108 * var(--u));height:calc(108 * var(--u));animation:sr-pop .35s both cubic-bezier(.3,1.6,.5,1)}
+.sr-hero.five{filter:drop-shadow(0 0 calc(10 * var(--u)) #ff9a3c)}
+.sr-av{position:absolute;left:calc(9 * var(--u));top:calc(9 * var(--u));width:calc(90 * var(--u));height:calc(90 * var(--u));object-fit:cover;border-radius:calc(6 * var(--u))}
+.sr-frame{position:absolute;top:0;width:calc(54 * var(--u));height:calc(108 * var(--u))}.sr-frame.l{left:0}.sr-frame.r{right:0;transform:scaleX(-1)}
+.sr-group{position:absolute;left:calc(-4 * var(--u));top:calc(-4 * var(--u));width:calc(36 * var(--u));height:calc(36 * var(--u));display:grid;place-items:center}.sr-group img{width:100%}
+.sr-stars{position:absolute;left:0;right:0;bottom:calc(4 * var(--u));display:flex;justify-content:center}.sr-stars img{width:calc(22 * var(--u));height:calc(22 * var(--u));margin:0 calc(-1 * var(--u))}
+.sr-buttons{display:flex;gap:calc(48 * var(--u))}
+.sr-btn{position:relative;width:calc(172 * var(--u));height:calc(66 * var(--u));border:calc(14 * var(--u)) solid transparent;border-image:url('/assets/summon-result/white_btn70_70.png') 30 fill / calc(14 * var(--u)) stretch;background:none;color:#4a4a4a;font:700 calc(26 * var(--u)) system-ui;white-space:nowrap;padding:0;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:calc(6 * var(--u))}
+.sr-btn:disabled{filter:grayscale(1) brightness(.85);cursor:default}
+.sr-cost{position:relative;display:inline-block;width:calc(44 * var(--u));height:calc(44 * var(--u))}.sr-cost img{width:100%;height:100%;object-fit:contain}.sr-cost small{position:absolute;left:50%;bottom:calc(-8 * var(--u));transform:translateX(-50%);color:#fff;font:800 calc(15 * var(--u)) system-ui;text-shadow:0 0 calc(3 * var(--u)) #000,0 0 calc(3 * var(--u)) #000}
+@keyframes sr-in{from{opacity:0}}
+@keyframes sr-pop{from{opacity:0;transform:scale(.4)}}
+.sr-grid.one{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:calc(108 * var(--u))}
+
+/* Shard recruitment uses the same square HeroIcon as capsule results. */
+.shard-new-girls{--u:0.7px;display:flex;flex-wrap:wrap;gap:18px;padding:12px}
+
+.sr-stars.red{color:#ff5e86;font-size:calc(22 * var(--u));font-weight:900;text-shadow:0 1px 2px #5e1530}

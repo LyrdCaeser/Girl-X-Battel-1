@@ -1,0 +1,76 @@
+/* Campaign fight flow: BattleLoadingWindow, `switch` sweep, BattleFormationWindow, CampaignHangFormationWindow,
+   CampaignStageDetailWindow. Loading layout from battle_loading_window.prefab on the 720x1280 canvas. Prefix cf-. */
+.cf-loading,.cf-sweep{position:absolute;inset:0;z-index:70;container-type:size;--u:calc(100cqw / 720);overflow:hidden}
+.cf-loading{background:#000;transition:opacity .25s}.cf-loading.out{opacity:0}
+.cf-load-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.cf-load-top{position:absolute;left:0;right:0;top:12%;margin:0;text-align:center;color:#fff;font:800 calc(24 * var(--u)) system-ui;text-shadow:0 0 calc(4 * var(--u)) #000}
+.cf-load-g1{position:absolute;left:calc(12 * var(--u));bottom:calc(290 * var(--u));width:calc(330 * var(--u))}
+.cf-load-g1 .cf-load-title{width:calc(258 * var(--u));margin-left:calc(18 * var(--u))}
+.cf-load-desc{margin:calc(-6 * var(--u)) 0 0;padding:calc(12 * var(--u)) calc(16 * var(--u));border-radius:calc(10 * var(--u));background:var(--c,#6b3f2ab2);color:#fff;font:600 calc(20 * var(--u))/1.4 system-ui}
+.cf-load-g2{position:absolute;width:calc(360 * var(--u))}
+.cf-load-g2.p2{left:calc(0 * var(--u));bottom:calc(330 * var(--u))}.cf-load-g2.p4{right:calc(0 * var(--u));bottom:calc(310 * var(--u))}
+.cf-load-g2.p5,.cf-load-g2.p6,.cf-load-g2.p10{left:0;top:calc(40 * var(--u))}
+.cf-load-g2 .cf-load-title{width:calc(342 * var(--u))}
+.cf-load-cv{display:inline-block;margin-left:calc(20 * var(--u));padding:calc(2 * var(--u)) calc(14 * var(--u));border-radius:calc(8 * var(--u));background:var(--c,#0008);color:#fff;font:700 calc(18 * var(--u)) system-ui}
+.cf-load-quote{margin:calc(8 * var(--u)) 0 0 calc(20 * var(--u));color:#fff;font:700 calc(20 * var(--u))/1.35 system-ui;text-shadow:0 0 calc(4 * var(--u)) #000,0 0 calc(4 * var(--u)) #000}
+.cf-load-bot{position:absolute;left:0;right:0;bottom:0;height:calc(185 * var(--u));display:grid;justify-items:center;align-content:end;gap:calc(10 * var(--u));padding-bottom:calc(44 * var(--u))}
+.cf-load-fade{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}
+.cf-load-label{position:relative;color:#444;font:700 calc(26 * var(--u)) system-ui;text-shadow:0 0 calc(3 * var(--u)) #fff}
+.cf-load-bar{position:relative;width:calc(662 * var(--u));height:calc(23 * var(--u));background:url('/assets/battle-loading/battle_loading_bar_bg.png') center/100% 100% no-repeat}
+.cf-load-bar i{position:absolute;left:0;top:calc(1.5 * var(--u));height:calc(20 * var(--u));width:0;background:url('/assets/battle-loading/battle_loading_bar.png') left/calc(662 * var(--u)) 100% no-repeat;border-radius:calc(10 * var(--u))}
+.cf-sweep{z-index:72;pointer-events:none}.cf-sweep canvas,.cf-sweep .cf-sweep-canvas{position:absolute;inset:0;width:100%!important;height:100%!important}
+/* formation windows */
+.cf-form .cf-form-top{display:grid;gap:8px;padding:10px;border-radius:12px;background:#f6f3ee}
+.cf-power{display:flex;align-items:center;gap:8px;padding-bottom:8px;border-bottom:1px solid #e3ddd3}.cf-power-icon{width:34px}.cf-power b{color:#e08a1e;font:900 24px system-ui}
+.cf-servant{margin-left:auto;min-width:0!important;padding:4px 14px!important}
+.cf-row{display:flex;align-items:center;gap:8px;min-height:84px}.cf-row-label{width:56px;color:#6b6b6b;font:700 17px system-ui}
+.cf-slot{width:76px;height:76px;padding:0;border:2px dashed #d7cfc2;border-radius:10px;background:#fff;cursor:pointer}.cf-slot .cf-hero{width:100%;height:100%}
+.cf-note{margin:0;color:#7a6f63;font-size:12px}
+.cf-start{justify-self:center;min-width:180px}
+.cf-form-filter{display:flex;justify-content:center;gap:8px;margin:10px 0}
+.cf-fbtn{width:42px;height:42px;padding:3px;border:2px solid #dcd6ec;border-radius:50%;background:#fff;cursor:pointer}.cf-fbtn img{width:100%}.cf-fbtn.on{border-color:#3e8ef0;box-shadow:0 0 0 2px #3e8ef055}
+.cf-form-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;max-height:38vh;overflow-y:auto;padding:4px}
+.cf-hero{position:relative;aspect-ratio:1;width:100%}
+.cf-hero.pick{cursor:pointer}.cf-hero.pick.on:after{content:"✔";position:absolute;inset:0;display:grid;place-items:center;border-radius:8px;background:#0006;color:#ffd24a;font:900 34px system-ui}
+.cf-av{position:absolute;left:8%;top:8%;width:84%;height:84%;object-fit:cover;border-radius:6%}
+.cf-frame{position:absolute;top:0;width:50%;height:100%}.cf-frame.l{left:0}.cf-frame.r{right:0;transform:scaleX(-1)}
+.cf-group{position:absolute;left:-4%;top:-4%;width:32%}.cf-group img{width:100%}
+.cf-lv{position:absolute;right:8%;top:6%;color:#fff;font:800 13px system-ui;text-shadow:0 0 2px #000,0 0 2px #000}
+.cf-stars{position:absolute;left:0;right:0;bottom:4%;display:flex;justify-content:center}.cf-stars img{width:17%;margin:0 -1%}
+/* stage detail */
+.cf-stage .cf-sub{display:flex;align-items:center;gap:10px;margin:8px 0;color:#5b6b86;font:700 18px system-ui}
+.cf-stage .cf-sub:before,.cf-stage .cf-sub:after{content:"";flex:1;border-top:1px solid #c9d3e6}
+.cf-output{display:grid;grid-template-columns:repeat(3,1fr);text-align:center}
+.cf-out{display:grid;justify-items:center;gap:6px;color:#5b6b86;font:700 16px system-ui}.cf-out-icon{height:52px}
+.cf-exp{font:900 30px/52px system-ui;color:#8ed63c;-webkit-text-stroke:1.5px #3d7a16}
+.cf-loot{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;padding:8px;border-radius:10px;background:#f4f6fb;max-height:42vh;overflow-y:auto}
+.cf-item{aspect-ratio:1;display:grid;place-items:center;background:center/100% 100% no-repeat;border-radius:8px}.cf-item img{width:78%;height:78%;object-fit:contain}
+
+.cf-servant{display:inline-flex;align-items:center;gap:6px}.cf-sv-mini{width:30px;height:30px;border-radius:50%;background:#fff}
+.cf-sv-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.cf-sv-card{display:grid;justify-items:center;gap:2px;padding:8px 4px;border:3px solid transparent;border-radius:12px;background:#f3f6fc;cursor:pointer}.cf-sv-card img{width:72px;height:72px;object-fit:contain}
+.cf-sv-card b{font:800 14px system-ui;color:#34466a}.cf-sv-card small{color:#6b7a95}.cf-sv-card.on{border-color:#3e8ef0;background:#e9f2ff}.cf-sv-card.locked{filter:grayscale(1);opacity:.55}
+.cf-form .cf-servant{font-size:16px!important;height:40px!important;min-height:0!important;padding:0 14px!important}
+/* BattleWindow: the battle takes the whole screen (user capture 2026-09-30: Round, Servant bar, ×2, skip) — no page header,
+   narration line or bottom navigation while it plays; CampaignUI.result closes it with "Continuar". */
+#app-frame #arena:not([hidden]){position:absolute;inset:0;z-index:45;margin:0;padding:0;border:0;border-radius:0;background:#000;display:flex;flex-direction:column}
+#app-frame #arena:not([hidden])>.section-head,#app-frame #arena:not([hidden]) .battle-line,#app-frame #arena:not([hidden]) .rewards{display:none}
+#app-frame #arena:not([hidden]) .battlefield{flex:1;min-height:0;margin:0;border:0;border-radius:0}
+
+.cf-stage .gs-win-body{max-height:74vh;overflow:auto}.cf-stage .cf-loot{grid-template-columns:repeat(6,1fr);max-height:24vh;gap:5px}.cf-stage-actions{position:sticky;bottom:0;padding:10px 0;background:#fffaf0;z-index:2}.cf-stage .cf-note{text-align:center;margin:8px 0}
+
+/* Formation picker fits the portrait game at every display size. */
+.cf-form .cf-row{gap:calc(8 * var(--u));min-height:calc(92 * var(--u))}
+.cf-form .cf-row-label{width:calc(56 * var(--u));flex-shrink:0;font-size:calc(20 * var(--u))}
+.cf-form .cf-slot{width:calc(80 * var(--u));height:calc(80 * var(--u));flex-shrink:0}
+.cf-form .cf-form-grid{min-height:0;grid-template-columns:repeat(5,minmax(0,1fr))}
+
+/* Loading bar is a capsule: retain native ends instead of scaling its bitmap across the width. */
+.cf-load-bar{background:none;border:calc(8 * var(--u)) solid transparent;border-image:url('/assets/battle-loading/battle_loading_bar_bg.png') 8 12 fill stretch;box-sizing:border-box;overflow:visible}
+.cf-load-bar i{left:calc(-6.5 * var(--u));top:calc(-6.5 * var(--u));max-width:calc(100% + 13 * var(--u));background:none;border:calc(10 * var(--u)) solid transparent;border-image:url('/assets/battle-loading/battle_loading_bar.png') 6 12 fill stretch;box-sizing:border-box;min-width:calc(20 * var(--u));border-radius:0}
+/* Every mode uses the same full portrait BattleWindow as Campaign. */
+#app-frame #event-battle-view:not([hidden]){position:absolute;inset:0;height:100%;padding:0;overflow:hidden;z-index:45;background:#000}
+#app-frame #event-battle-view .event-battle-toolbar{display:none}
+#app-frame #event-arena{position:absolute;inset:0;height:100%;width:100%;max-width:none;margin:0;padding:0;border:0;border-radius:0;background:#000;display:flex;flex-direction:column}
+#app-frame #event-arena>.section-head,#app-frame #event-arena>.battle-line,#app-frame #event-arena>.rewards,#app-frame #event-arena>.event-battle-continue{display:none}
+#app-frame #event-arena .battlefield{width:100%;max-width:none;height:100%;flex:1;min-height:0;margin:0;border:0;border-radius:0}

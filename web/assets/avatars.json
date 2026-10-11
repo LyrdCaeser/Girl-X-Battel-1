@@ -1,0 +1,3551 @@
+{
+  "11001": {
+    "x": 614,
+    "y": 512,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_11001.png",
+    "stars": 1,
+    "group": 1
+  },
+  "11002": {
+    "x": 512,
+    "y": 920,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_11002.png",
+    "stars": 1,
+    "group": 1
+  },
+  "11003": {
+    "x": 512,
+    "y": 818,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_11003.png",
+    "stars": 1,
+    "group": 1
+  },
+  "12001": {
+    "x": 512,
+    "y": 716,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_12001.png",
+    "stars": 1,
+    "group": 2
+  },
+  "12002": {
+    "x": 512,
+    "y": 614,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_12002.png",
+    "stars": 1,
+    "group": 2
+  },
+  "12003": {
+    "x": 512,
+    "y": 512,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_12003.png",
+    "stars": 1,
+    "group": 2
+  },
+  "13001": {
+    "x": 920,
+    "y": 410,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_13001.png",
+    "stars": 1,
+    "group": 3
+  },
+  "13002": {
+    "x": 818,
+    "y": 410,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_13002.png",
+    "stars": 1,
+    "group": 3
+  },
+  "13003": {
+    "x": 716,
+    "y": 410,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_13003.png",
+    "stars": 1,
+    "group": 3
+  },
+  "14001": {
+    "x": 614,
+    "y": 410,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_14001.png",
+    "stars": 1,
+    "group": 4
+  },
+  "14002": {
+    "x": 512,
+    "y": 410,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_14002.png",
+    "stars": 1,
+    "group": 4
+  },
+  "14003": {
+    "x": 410,
+    "y": 920,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_14003.png",
+    "stars": 1,
+    "group": 4
+  },
+  "21001": {
+    "x": 410,
+    "y": 818,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_21001.png",
+    "stars": 2,
+    "group": 1
+  },
+  "21002": {
+    "x": 410,
+    "y": 716,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_21002.png",
+    "stars": 2,
+    "group": 1
+  },
+  "21003": {
+    "x": 410,
+    "y": 614,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_21003.png",
+    "stars": 2,
+    "group": 1
+  },
+  "21004": {
+    "x": 410,
+    "y": 512,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_21004.png",
+    "stars": 2,
+    "group": 1
+  },
+  "22001": {
+    "x": 410,
+    "y": 410,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_22001.png",
+    "stars": 2,
+    "group": 2
+  },
+  "22002": {
+    "x": 920,
+    "y": 308,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_22002.png",
+    "stars": 2,
+    "group": 2
+  },
+  "22003": {
+    "x": 818,
+    "y": 308,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_22003.png",
+    "stars": 2,
+    "group": 2
+  },
+  "22004": {
+    "x": 716,
+    "y": 308,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_22004.png",
+    "stars": 2,
+    "group": 2
+  },
+  "23001": {
+    "x": 614,
+    "y": 308,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_23001.png",
+    "stars": 2,
+    "group": 3
+  },
+  "23002": {
+    "x": 512,
+    "y": 308,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_23002.png",
+    "stars": 2,
+    "group": 3
+  },
+  "23003": {
+    "x": 410,
+    "y": 308,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_23003.png",
+    "stars": 2,
+    "group": 3
+  },
+  "23004": {
+    "x": 308,
+    "y": 920,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_23004.png",
+    "stars": 2,
+    "group": 3
+  },
+  "24001": {
+    "x": 308,
+    "y": 818,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_24001.png",
+    "stars": 2,
+    "group": 4
+  },
+  "24002": {
+    "x": 308,
+    "y": 716,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_24002.png",
+    "stars": 2,
+    "group": 4
+  },
+  "24003": {
+    "x": 308,
+    "y": 614,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_24003.png",
+    "stars": 2,
+    "group": 4
+  },
+  "24004": {
+    "x": 308,
+    "y": 512,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_24004.png",
+    "stars": 2,
+    "group": 4
+  },
+  "31001": {
+    "x": 308,
+    "y": 410,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_31001.png",
+    "stars": 3,
+    "group": 1
+  },
+  "31002": {
+    "x": 308,
+    "y": 308,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_31002.png",
+    "stars": 3,
+    "group": 1
+  },
+  "31003": {
+    "x": 920,
+    "y": 206,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_31003.png",
+    "stars": 3,
+    "group": 1
+  },
+  "31004": {
+    "x": 818,
+    "y": 206,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_31004.png",
+    "stars": 3,
+    "group": 1
+  },
+  "31005": {
+    "x": 716,
+    "y": 206,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_31005.png",
+    "stars": 3,
+    "group": 1
+  },
+  "32001": {
+    "x": 614,
+    "y": 206,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_32001.png",
+    "stars": 3,
+    "group": 2
+  },
+  "32002": {
+    "x": 512,
+    "y": 206,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_32002.png",
+    "stars": 3,
+    "group": 2
+  },
+  "32003": {
+    "x": 410,
+    "y": 206,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_32003.png",
+    "stars": 3,
+    "group": 2
+  },
+  "32004": {
+    "x": 308,
+    "y": 206,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_32004.png",
+    "stars": 3,
+    "group": 2
+  },
+  "32005": {
+    "x": 206,
+    "y": 920,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_32005.png",
+    "stars": 3,
+    "group": 2
+  },
+  "33001": {
+    "x": 206,
+    "y": 818,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_33001.png",
+    "stars": 3,
+    "group": 3
+  },
+  "33002": {
+    "x": 206,
+    "y": 716,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_33002.png",
+    "stars": 3,
+    "group": 3
+  },
+  "33003": {
+    "x": 206,
+    "y": 614,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_33003.png",
+    "stars": 3,
+    "group": 3
+  },
+  "33004": {
+    "x": 206,
+    "y": 512,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_33004.png",
+    "stars": 3,
+    "group": 3
+  },
+  "33005": {
+    "x": 206,
+    "y": 410,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_33005.png",
+    "stars": 3,
+    "group": 3
+  },
+  "34001": {
+    "x": 206,
+    "y": 308,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_34001.png",
+    "stars": 3,
+    "group": 4
+  },
+  "34002": {
+    "x": 206,
+    "y": 206,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_34002.png",
+    "stars": 3,
+    "group": 4
+  },
+  "34003": {
+    "x": 920,
+    "y": 104,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_34003.png",
+    "stars": 3,
+    "group": 4
+  },
+  "34004": {
+    "x": 818,
+    "y": 104,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_34004.png",
+    "stars": 3,
+    "group": 4
+  },
+  "34005": {
+    "x": 716,
+    "y": 104,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_34005.png",
+    "stars": 3,
+    "group": 4
+  },
+  "35001": {
+    "x": 614,
+    "y": 104,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_35001.png",
+    "stars": 3,
+    "group": 5
+  },
+  "36001": {
+    "x": 512,
+    "y": 104,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_36001.png",
+    "stars": 3,
+    "group": 6
+  },
+  "41001": {
+    "x": 410,
+    "y": 104,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_41001.png",
+    "stars": 4,
+    "group": 1
+  },
+  "41002": {
+    "x": 308,
+    "y": 104,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_41002.png",
+    "stars": 4,
+    "group": 1
+  },
+  "41003": {
+    "x": 206,
+    "y": 104,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_41003.png",
+    "stars": 4,
+    "group": 1
+  },
+  "41004": {
+    "x": 104,
+    "y": 920,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_41004.png",
+    "stars": 4,
+    "group": 1
+  },
+  "41005": {
+    "x": 104,
+    "y": 818,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_41005.png",
+    "stars": 4,
+    "group": 1
+  },
+  "41006": {
+    "x": 104,
+    "y": 716,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_41006.png",
+    "stars": 4,
+    "group": 1
+  },
+  "41007": {
+    "x": 104,
+    "y": 614,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_41007.png",
+    "stars": 4,
+    "group": 1
+  },
+  "41008": {
+    "x": 104,
+    "y": 512,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_41008.png",
+    "stars": 4,
+    "group": 1
+  },
+  "42001": {
+    "x": 104,
+    "y": 410,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_42001.png",
+    "stars": 4,
+    "group": 2
+  },
+  "42002": {
+    "x": 104,
+    "y": 308,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_42002.png",
+    "stars": 4,
+    "group": 2
+  },
+  "42003": {
+    "x": 104,
+    "y": 206,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_42003.png",
+    "stars": 4,
+    "group": 2
+  },
+  "42004": {
+    "x": 104,
+    "y": 104,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_42004.png",
+    "stars": 4,
+    "group": 2
+  },
+  "42005": {
+    "x": 920,
+    "y": 2,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_42005.png",
+    "stars": 4,
+    "group": 2
+  },
+  "42006": {
+    "x": 818,
+    "y": 2,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_42006.png",
+    "stars": 4,
+    "group": 2
+  },
+  "42007": {
+    "x": 716,
+    "y": 2,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_42007.png",
+    "stars": 4,
+    "group": 2
+  },
+  "42008": {
+    "x": 614,
+    "y": 2,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_42008.png",
+    "stars": 4,
+    "group": 2
+  },
+  "43001": {
+    "x": 512,
+    "y": 2,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_43001.png",
+    "stars": 4,
+    "group": 3
+  },
+  "43002": {
+    "x": 410,
+    "y": 2,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_43002.png",
+    "stars": 4,
+    "group": 3
+  },
+  "43003": {
+    "x": 308,
+    "y": 2,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_43003.png",
+    "stars": 4,
+    "group": 3
+  },
+  "43004": {
+    "x": 206,
+    "y": 2,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_43004.png",
+    "stars": 4,
+    "group": 3
+  },
+  "43005": {
+    "x": 104,
+    "y": 2,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_43005.png",
+    "stars": 4,
+    "group": 3
+  },
+  "43006": {
+    "x": 2,
+    "y": 920,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_43006.png",
+    "stars": 4,
+    "group": 3
+  },
+  "43007": {
+    "x": 2,
+    "y": 818,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_43007.png",
+    "stars": 4,
+    "group": 3
+  },
+  "43008": {
+    "x": 2,
+    "y": 716,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_43008.png",
+    "stars": 4,
+    "group": 3
+  },
+  "44001": {
+    "x": 2,
+    "y": 614,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_44001.png",
+    "stars": 4,
+    "group": 4
+  },
+  "44002": {
+    "x": 2,
+    "y": 512,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_44002.png",
+    "stars": 4,
+    "group": 4
+  },
+  "44003": {
+    "x": 2,
+    "y": 410,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_44003.png",
+    "stars": 4,
+    "group": 4
+  },
+  "44004": {
+    "x": 2,
+    "y": 308,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_44004.png",
+    "stars": 4,
+    "group": 4
+  },
+  "44005": {
+    "x": 2,
+    "y": 206,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_44005.png",
+    "stars": 4,
+    "group": 4
+  },
+  "44006": {
+    "x": 2,
+    "y": 104,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_44006.png",
+    "stars": 4,
+    "group": 4
+  },
+  "44007": {
+    "x": 2,
+    "y": 2,
+    "width": 100,
+    "height": 100,
+    "src": "/assets/original-ui/portraits/partner_avatar_44007.png",
+    "stars": 4,
+    "group": 4
+  },
+  "1000007": {
+    "src": "/assets/original-ui/portraits/partner_avatar_11001.png",
+    "stars": 6,
+    "group": 1
+  },
+  "1000008": {
+    "src": "/assets/original-ui/portraits/partner_avatar_11002.png",
+    "stars": 6,
+    "group": 1
+  },
+  "1000009": {
+    "src": "/assets/original-ui/portraits/partner_avatar_12001.png",
+    "stars": 6,
+    "group": 2
+  },
+  "1000010": {
+    "src": "/assets/original-ui/portraits/partner_avatar_12002.png",
+    "stars": 6,
+    "group": 2
+  },
+  "1000011": {
+    "src": "/assets/original-ui/portraits/partner_avatar_13001.png",
+    "stars": 6,
+    "group": 3
+  },
+  "1000012": {
+    "src": "/assets/original-ui/portraits/partner_avatar_23001.png",
+    "stars": 6,
+    "group": 3
+  },
+  "1000013": {
+    "src": "/assets/original-ui/portraits/partner_avatar_14001.png",
+    "stars": 6,
+    "group": 4
+  },
+  "1000014": {
+    "src": "/assets/original-ui/portraits/partner_avatar_14002.png",
+    "stars": 6,
+    "group": 4
+  },
+  "1000015": {
+    "src": "/assets/original-ui/portraits/partner_avatar_1000016.png",
+    "stars": 10,
+    "group": 0
+  },
+  "1000016": {
+    "src": "/assets/original-ui/portraits/partner_avatar_1000015.png",
+    "stars": 10,
+    "group": 0
+  },
+  "1000017": {
+    "src": "/assets/original-ui/portraits/partner_avatar_1000015.png",
+    "stars": 10,
+    "group": 0
+  },
+  "1000018": {
+    "src": "/assets/original-ui/portraits/partner_avatar_5100404.png",
+    "stars": 10,
+    "group": 1
+  },
+  "1000019": {
+    "src": "/assets/original-ui/portraits/partner_avatar_5200404.png",
+    "stars": 10,
+    "group": 2
+  },
+  "1000020": {
+    "src": "/assets/original-ui/portraits/partner_avatar_5300502.png",
+    "stars": 10,
+    "group": 3
+  },
+  "1000021": {
+    "src": "/assets/original-ui/portraits/partner_avatar_5400804.png",
+    "stars": 10,
+    "group": 4
+  },
+  "1000022": {
+    "src": "/assets/original-ui/portraits/partner_avatar_5500504.png",
+    "stars": 10,
+    "group": 5
+  },
+  "1000023": {
+    "src": "/assets/original-ui/portraits/partner_avatar_5600304.png",
+    "stars": 10,
+    "group": 6
+  },
+  "1000024": {
+    "src": "/assets/original-ui/portraits/partner_avatar_56002.png",
+    "stars": 5,
+    "group": 6
+  },
+  "1000025": {
+    "src": "/assets/original-ui/portraits/partner_avatar_1000017.png",
+    "stars": 10,
+    "group": 0
+  },
+  "1000027": {
+    "src": "/assets/original-ui/portraits/partner_avatar_754005.png",
+    "stars": 10,
+    "group": 4
+  },
+  "1000028": {
+    "src": "/assets/original-ui/portraits/partner_avatar_752007.png",
+    "stars": 10,
+    "group": 2
+  },
+  "1000029": {
+    "src": "/assets/original-ui/portraits/partner_avatar_5101102.png",
+    "stars": 10,
+    "group": 1
+  },
+  "1000030": {
+    "src": "/assets/original-ui/portraits/partner_avatar_5101202.png",
+    "stars": 10,
+    "group": 1
+  },
+  "1000031": {
+    "src": "/assets/original-ui/portraits/partner_avatar_5200902.png",
+    "stars": 10,
+    "group": 2
+  },
+  "1000032": {
+    "src": "/assets/original-ui/portraits/partner_avatar_5201202.png",
+    "stars": 10,
+    "group": 2
+  },
+  "1000033": {
+    "src": "/assets/original-ui/portraits/partner_avatar_753012.png",
+    "stars": 10,
+    "group": 3
+  },
+  "1000034": {
+    "src": "/assets/original-ui/portraits/partner_avatar_5300702.png",
+    "stars": 10,
+    "group": 3
+  },
+  "1000035": {
+    "src": "/assets/original-ui/portraits/partner_avatar_5401002.png",
+    "stars": 10,
+    "group": 4
+  },
+  "1000036": {
+    "src": "/assets/original-ui/portraits/partner_avatar_5400103.png",
+    "stars": 10,
+    "group": 4
+  },
+  "1000037": {
+    "src": "/assets/original-ui/portraits/partner_avatar_755006.png",
+    "stars": 10,
+    "group": 5
+  },
+  "1000038": {
+    "src": "/assets/original-ui/portraits/partner_avatar_5500603.png",
+    "stars": 10,
+    "group": 5
+  },
+  "1000039": {
+    "src": "/assets/original-ui/portraits/partner_avatar_5600403.png",
+    "stars": 10,
+    "group": 6
+  },
+  "1000040": {
+    "src": "/assets/original-ui/portraits/partner_avatar_756006.png",
+    "stars": 10,
+    "group": 6
+  },
+  "1000041": {
+    "src": "/assets/original-ui/portraits/partner_avatar_656012.png",
+    "stars": 5,
+    "group": 6
+  },
+  "1000042": {
+    "src": "/assets/original-ui/portraits/partner_avatar_46002.png",
+    "stars": 5,
+    "group": 6
+  },
+  "1000043": {
+    "src": "/assets/original-ui/portraits/partner_avatar_655012.png",
+    "stars": 5,
+    "group": 5
+  },
+  "1000044": {
+    "src": "/assets/original-ui/portraits/partner_avatar_45002.png",
+    "stars": 5,
+    "group": 5
+  },
+  "1000045": {
+    "src": "/assets/original-ui/portraits/partner_avatar_751004.png",
+    "stars": 10,
+    "group": 1
+  },
+  "1000046": {
+    "src": "/assets/original-ui/portraits/partner_avatar_753006.png",
+    "stars": 10,
+    "group": 3
+  },
+  "1000047": {
+    "src": "/assets/original-ui/portraits/partner_avatar_755003.png",
+    "stars": 10,
+    "group": 5
+  },
+  "1000048": {
+    "src": "/assets/original-ui/portraits/partner_avatar_756003.png",
+    "stars": 10,
+    "group": 6
+  },
+  "1000049": {
+    "src": "/assets/original-ui/portraits/partner_avatar_756007.png",
+    "stars": 10,
+    "group": 6
+  },
+  "1000050": {
+    "src": "/assets/original-ui/portraits/partner_avatar_756008.png",
+    "stars": 10,
+    "group": 6
+  },
+  "1000051": {
+    "src": "/assets/original-ui/portraits/partner_avatar_755008.png",
+    "stars": 10,
+    "group": 5
+  },
+  "1000052": {
+    "src": "/assets/original-ui/portraits/partner_avatar_755009.png",
+    "stars": 10,
+    "group": 5
+  },
+  "1000053": {
+    "src": "/assets/original-ui/portraits/partner_avatar_754015.png",
+    "stars": 10,
+    "group": 4
+  },
+  "1000054": {
+    "src": "/assets/original-ui/portraits/partner_avatar_754016.png",
+    "stars": 10,
+    "group": 4
+  },
+  "1000055": {
+    "src": "/assets/original-ui/portraits/partner_avatar_753014.png",
+    "stars": 10,
+    "group": 3
+  },
+  "1000056": {
+    "src": "/assets/original-ui/portraits/partner_avatar_753015.png",
+    "stars": 10,
+    "group": 3
+  },
+  "1000057": {
+    "src": "/assets/original-ui/portraits/partner_avatar_752015.png",
+    "stars": 10,
+    "group": 2
+  },
+  "1000058": {
+    "src": "/assets/original-ui/portraits/partner_avatar_752016.png",
+    "stars": 10,
+    "group": 2
+  },
+  "1000059": {
+    "src": "/assets/original-ui/portraits/partner_avatar_751015.png",
+    "stars": 10,
+    "group": 1
+  },
+  "1000060": {
+    "src": "/assets/original-ui/portraits/partner_avatar_751016.png",
+    "stars": 10,
+    "group": 1
+  },
+  "110001": {
+    "src": "/assets/original-ui/portraits/partner_avatar_51001.png",
+    "stars": 5,
+    "group": 1
+  },
+  "1100011": {
+    "src": "/assets/original-ui/portraits/partner_avatar_11001.png",
+    "stars": 1,
+    "group": 1
+  },
+  "1100012": {
+    "src": "/assets/original-ui/portraits/partner_avatar_11002.png",
+    "stars": 1,
+    "group": 1
+  },
+  "1100013": {
+    "src": "/assets/original-ui/portraits/partner_avatar_11003.png",
+    "stars": 1,
+    "group": 1
+  },
+  "110002": {
+    "src": "/assets/original-ui/portraits/partner_avatar_51002.png",
+    "stars": 5,
+    "group": 1
+  },
+  "1100021": {
+    "src": "/assets/original-ui/portraits/partner_avatar_12001.png",
+    "stars": 1,
+    "group": 2
+  },
+  "1100022": {
+    "src": "/assets/original-ui/portraits/partner_avatar_12002.png",
+    "stars": 1,
+    "group": 2
+  },
+  "1100023": {
+    "src": "/assets/original-ui/portraits/partner_avatar_12003.png",
+    "stars": 1,
+    "group": 2
+  },
+  "110003": {
+    "src": "/assets/original-ui/portraits/partner_avatar_52001.png",
+    "stars": 5,
+    "group": 2
+  },
+  "1100031": {
+    "src": "/assets/original-ui/portraits/partner_avatar_13001.png",
+    "stars": 1,
+    "group": 3
+  },
+  "1100032": {
+    "src": "/assets/original-ui/portraits/partner_avatar_13002.png",
+    "stars": 1,
+    "group": 3
+  },
+  "1100033": {
+    "src": "/assets/original-ui/portraits/partner_avatar_13003.png",
+    "stars": 1,
+    "group": 3
+  },
+  "110004": {
+    "src": "/assets/original-ui/portraits/partner_avatar_52002.png",
+    "stars": 5,
+    "group": 2
+  },
+  "1100041": {
+    "src": "/assets/original-ui/portraits/partner_avatar_14001.png",
+    "stars": 1,
+    "group": 4
+  },
+  "1100042": {
+    "src": "/assets/original-ui/portraits/partner_avatar_14002.png",
+    "stars": 1,
+    "group": 4
+  },
+  "1100043": {
+    "src": "/assets/original-ui/portraits/partner_avatar_14003.png",
+    "stars": 1,
+    "group": 4
+  },
+  "110005": {
+    "src": "/assets/original-ui/portraits/partner_avatar_53001.png",
+    "stars": 5,
+    "group": 3
+  },
+  "1100051": {
+    "src": "/assets/original-ui/portraits/partner_avatar_21001.png",
+    "stars": 1,
+    "group": 5
+  },
+  "1100052": {
+    "src": "/assets/original-ui/portraits/partner_avatar_21002.png",
+    "stars": 1,
+    "group": 5
+  },
+  "1100053": {
+    "src": "/assets/original-ui/portraits/partner_avatar_21003.png",
+    "stars": 1,
+    "group": 5
+  },
+  "110006": {
+    "src": "/assets/original-ui/portraits/partner_avatar_53002.png",
+    "stars": 5,
+    "group": 3
+  },
+  "110007": {
+    "src": "/assets/original-ui/portraits/partner_avatar_54001.png",
+    "stars": 5,
+    "group": 4
+  },
+  "110008": {
+    "src": "/assets/original-ui/portraits/partner_avatar_54002.png",
+    "stars": 5,
+    "group": 4
+  },
+  "110009": {
+    "src": "/assets/original-ui/portraits/partner_avatar_55002.png",
+    "stars": 5,
+    "group": 5
+  },
+  "110010": {
+    "src": "/assets/original-ui/portraits/partner_avatar_56001.png",
+    "stars": 5,
+    "group": 6
+  },
+  "110011": {
+    "src": "/assets/original-ui/portraits/partner_avatar_651003.png",
+    "stars": 6,
+    "group": 1
+  },
+  "110012": {
+    "src": "/assets/original-ui/portraits/partner_avatar_651004.png",
+    "stars": 6,
+    "group": 1
+  },
+  "110013": {
+    "src": "/assets/original-ui/portraits/partner_avatar_652003.png",
+    "stars": 6,
+    "group": 3
+  },
+  "110014": {
+    "src": "/assets/original-ui/portraits/partner_avatar_652004.png",
+    "stars": 6,
+    "group": 3
+  },
+  "110015": {
+    "src": "/assets/original-ui/portraits/partner_avatar_653003.png",
+    "stars": 6,
+    "group": 4
+  },
+  "110016": {
+    "src": "/assets/original-ui/portraits/partner_avatar_653004.png",
+    "stars": 6,
+    "group": 4
+  },
+  "110017": {
+    "src": "/assets/original-ui/portraits/partner_avatar_654013.png",
+    "stars": 6,
+    "group": 4
+  },
+  "110018": {
+    "src": "/assets/original-ui/portraits/partner_avatar_654014.png",
+    "stars": 6,
+    "group": 4
+  },
+  "110019": {
+    "src": "/assets/original-ui/portraits/partner_avatar_655011.png",
+    "stars": 6,
+    "group": 5
+  },
+  "110020": {
+    "src": "/assets/original-ui/portraits/partner_avatar_656012.png",
+    "stars": 6,
+    "group": 6
+  },
+  "110021": {
+    "src": "/assets/original-ui/portraits/partner_avatar_751005.png",
+    "stars": 10,
+    "group": 1
+  },
+  "110022": {
+    "src": "/assets/original-ui/portraits/partner_avatar_751006.png",
+    "stars": 10,
+    "group": 1
+  },
+  "110023": {
+    "src": "/assets/original-ui/portraits/partner_avatar_752005.png",
+    "stars": 10,
+    "group": 2
+  },
+  "110024": {
+    "src": "/assets/original-ui/portraits/partner_avatar_752006.png",
+    "stars": 10,
+    "group": 2
+  },
+  "110025": {
+    "src": "/assets/original-ui/portraits/partner_avatar_753005.png",
+    "stars": 10,
+    "group": 3
+  },
+  "110026": {
+    "src": "/assets/original-ui/portraits/partner_avatar_753006.png",
+    "stars": 10,
+    "group": 3
+  },
+  "110027": {
+    "src": "/assets/original-ui/portraits/partner_avatar_754005.png",
+    "stars": 10,
+    "group": 4
+  },
+  "110028": {
+    "src": "/assets/original-ui/portraits/partner_avatar_754006.png",
+    "stars": 10,
+    "group": 4
+  },
+  "110029": {
+    "src": "/assets/original-ui/portraits/partner_avatar_755002.png",
+    "stars": 10,
+    "group": 5
+  },
+  "110030": {
+    "src": "/assets/original-ui/portraits/partner_avatar_756002.png",
+    "stars": 10,
+    "group": 6
+  },
+  "110031": {
+    "src": "/assets/original-ui/portraits/partner_avatar_751007.png",
+    "stars": 10,
+    "group": 1
+  },
+  "110032": {
+    "src": "/assets/original-ui/portraits/partner_avatar_751008.png",
+    "stars": 10,
+    "group": 1
+  },
+  "110033": {
+    "src": "/assets/original-ui/portraits/partner_avatar_752007.png",
+    "stars": 10,
+    "group": 2
+  },
+  "110034": {
+    "src": "/assets/original-ui/portraits/partner_avatar_752008.png",
+    "stars": 10,
+    "group": 2
+  },
+  "110035": {
+    "src": "/assets/original-ui/portraits/partner_avatar_753007.png",
+    "stars": 10,
+    "group": 3
+  },
+  "110036": {
+    "src": "/assets/original-ui/portraits/partner_avatar_753008.png",
+    "stars": 10,
+    "group": 3
+  },
+  "110037": {
+    "src": "/assets/original-ui/portraits/partner_avatar_754007.png",
+    "stars": 10,
+    "group": 4
+  },
+  "110038": {
+    "src": "/assets/original-ui/portraits/partner_avatar_754008.png",
+    "stars": 10,
+    "group": 4
+  },
+  "110039": {
+    "src": "/assets/original-ui/portraits/partner_avatar_755003.png",
+    "stars": 10,
+    "group": 5
+  },
+  "110040": {
+    "src": "/assets/original-ui/portraits/partner_avatar_756003.png",
+    "stars": 10,
+    "group": 6
+  },
+  "110041": {
+    "src": "/assets/original-ui/portraits/partner_avatar_751009.png",
+    "stars": 10,
+    "group": 1
+  },
+  "110042": {
+    "src": "/assets/original-ui/portraits/partner_avatar_751010.png",
+    "stars": 10,
+    "group": 1
+  },
+  "110043": {
+    "src": "/assets/original-ui/portraits/partner_avatar_752009.png",
+    "stars": 10,
+    "group": 2
+  },
+  "110044": {
+    "src": "/assets/original-ui/portraits/partner_avatar_752010.png",
+    "stars": 10,
+    "group": 2
+  },
+  "110045": {
+    "src": "/assets/original-ui/portraits/partner_avatar_753009.png",
+    "stars": 10,
+    "group": 3
+  },
+  "110046": {
+    "src": "/assets/original-ui/portraits/partner_avatar_753010.png",
+    "stars": 10,
+    "group": 3
+  },
+  "110047": {
+    "src": "/assets/original-ui/portraits/partner_avatar_754009.png",
+    "stars": 10,
+    "group": 4
+  },
+  "110048": {
+    "src": "/assets/original-ui/portraits/partner_avatar_754010.png",
+    "stars": 10,
+    "group": 4
+  },
+  "110049": {
+    "src": "/assets/original-ui/portraits/partner_avatar_755005.png",
+    "stars": 10,
+    "group": 5
+  },
+  "110050": {
+    "src": "/assets/original-ui/portraits/partner_avatar_756006.png",
+    "stars": 10,
+    "group": 6
+  },
+  "110051": {
+    "src": "/assets/original-ui/portraits/partner_avatar_754016.png",
+    "stars": 10,
+    "group": 4
+  },
+  "110052": {
+    "src": "/assets/original-ui/portraits/partner_avatar_755009.png",
+    "stars": 10,
+    "group": 5
+  },
+  "110053": {
+    "src": "/assets/original-ui/portraits/partner_avatar_756008.png",
+    "stars": 10,
+    "group": 6
+  },
+  "111001": {
+    "src": "/assets/original-ui/portraits/partner_avatar_11001.png",
+    "stars": 6,
+    "group": 1
+  },
+  "112001": {
+    "src": "/assets/original-ui/portraits/partner_avatar_12001.png",
+    "stars": 6,
+    "group": 2
+  },
+  "112002": {
+    "src": "/assets/original-ui/portraits/partner_avatar_12002.png",
+    "stars": 6,
+    "group": 2
+  },
+  "113001": {
+    "src": "/assets/original-ui/portraits/partner_avatar_13001.png",
+    "stars": 6,
+    "group": 3
+  },
+  "121002": {
+    "src": "/assets/original-ui/portraits/partner_avatar_21002.png",
+    "stars": 6,
+    "group": 1
+  },
+  "123001": {
+    "src": "/assets/original-ui/portraits/partner_avatar_23001.png",
+    "stars": 6,
+    "group": 3
+  },
+  "123002": {
+    "src": "/assets/original-ui/portraits/partner_avatar_23002.png",
+    "stars": 6,
+    "group": 3
+  },
+  "123003": {
+    "src": "/assets/original-ui/portraits/partner_avatar_23003.png",
+    "stars": 6,
+    "group": 3
+  },
+  "135001": {
+    "src": "/assets/original-ui/portraits/partner_avatar_35001.png",
+    "stars": 6,
+    "group": 5
+  },
+  "136001": {
+    "src": "/assets/original-ui/portraits/partner_avatar_36001.png",
+    "stars": 6,
+    "group": 6
+  },
+  "145001": {
+    "src": "/assets/original-ui/portraits/partner_avatar_45001.png",
+    "stars": 6,
+    "group": 5
+  },
+  "146001": {
+    "src": "/assets/original-ui/portraits/partner_avatar_46001.png",
+    "stars": 6,
+    "group": 6
+  },
+  "2000003": {
+    "src": "/assets/original-ui/portraits/partner_avatar_2000003.png",
+    "stars": 10,
+    "group": 0
+  },
+  "2000004": {
+    "src": "/assets/original-ui/portraits/partner_avatar_1000017.png",
+    "stars": 10,
+    "group": 0
+  },
+  "2000005": {
+    "src": "/assets/original-ui/portraits/partner_avatar_2000003.png",
+    "stars": 10,
+    "group": 0
+  },
+  "2000006": {
+    "src": "/assets/original-ui/portraits/partner_avatar_2000006.png",
+    "stars": 10,
+    "group": 0
+  },
+  "2000007": {
+    "src": "/assets/original-ui/portraits/partner_avatar_33003.png",
+    "stars": 10,
+    "group": 0
+  },
+  "2000008": {
+    "src": "/assets/original-ui/portraits/partner_avatar_753016.png",
+    "stars": 10,
+    "group": 3
+  },
+  "2000009": {
+    "src": "/assets/original-ui/portraits/partner_avatar_751014.png",
+    "stars": 10,
+    "group": 1
+  },
+  "2000010": {
+    "src": "/assets/original-ui/portraits/partner_avatar_753017.png",
+    "stars": 10,
+    "group": 3
+  },
+  "2000011": {
+    "src": "/assets/original-ui/portraits/partner_avatar_2000011.png",
+    "stars": 10,
+    "group": 0
+  },
+  "2000012": {
+    "src": "/assets/original-ui/portraits/partner_avatar_756008.png",
+    "stars": 5,
+    "group": 6
+  },
+  "2000013": {
+    "src": "/assets/original-ui/portraits/partner_avatar_756008.png",
+    "stars": 6,
+    "group": 6
+  },
+  "2000014": {
+    "src": "/assets/original-ui/portraits/partner_avatar_756008.png",
+    "stars": 6,
+    "group": 6
+  },
+  "2000015": {
+    "src": "/assets/original-ui/portraits/partner_avatar_756008.png",
+    "stars": 6,
+    "group": 6
+  },
+  "2000016": {
+    "src": "/assets/original-ui/portraits/partner_avatar_756008.png",
+    "stars": 6,
+    "group": 6
+  },
+  "2000017": {
+    "src": "/assets/original-ui/portraits/partner_avatar_756008.png",
+    "stars": 10,
+    "group": 6
+  },
+  "2000018": {
+    "src": "/assets/original-ui/portraits/partner_avatar_756008.png",
+    "stars": 10,
+    "group": 6
+  },
+  "2000019": {
+    "src": "/assets/original-ui/portraits/partner_avatar_756008.png",
+    "stars": 10,
+    "group": 6
+  },
+  "2000020": {
+    "src": "/assets/original-ui/portraits/partner_avatar_756008.png",
+    "stars": 10,
+    "group": 6
+  },
+  "2000021": {
+    "src": "/assets/original-ui/portraits/partner_avatar_756008.png",
+    "stars": 10,
+    "group": 6
+  },
+  "2000022": {
+    "src": "/assets/original-ui/portraits/partner_avatar_756008.png",
+    "stars": 10,
+    "group": 6
+  },
+  "2000023": {
+    "src": "/assets/original-ui/portraits/partner_avatar_755010.png",
+    "stars": 10,
+    "group": 5
+  },
+  "2000024": {
+    "src": "/assets/original-ui/portraits/partner_avatar_751013.png",
+    "stars": 10,
+    "group": 1
+  },
+  "2000025": {
+    "src": "/assets/original-ui/portraits/partner_avatar_751013.png",
+    "stars": 10,
+    "group": 1
+  },
+  "2000026": {
+    "src": "/assets/original-ui/portraits/partner_avatar_755008.png",
+    "stars": 10,
+    "group": 5
+  },
+  "2000027": {
+    "src": "/assets/original-ui/portraits/partner_avatar_756003.png",
+    "stars": 10,
+    "group": 6
+  },
+  "2000028": {
+    "src": "/assets/original-ui/portraits/partner_avatar_751015.png",
+    "stars": 10,
+    "group": 1
+  },
+  "2000029": {
+    "src": "/assets/original-ui/portraits/partner_avatar_756006.png",
+    "stars": 10,
+    "group": 6
+  },
+  "2000030": {
+    "src": "/assets/original-ui/portraits/partner_avatar_2000030.png",
+    "stars": 10,
+    "group": 0
+  },
+  "2000031": {
+    "src": "/assets/original-ui/portraits/partner_avatar_757001.png",
+    "stars": 10,
+    "group": 7
+  },
+  "2000032": {
+    "src": "/assets/original-ui/portraits/partner_avatar_752019.png",
+    "stars": 10,
+    "group": 2
+  },
+  "2000033": {
+    "src": "/assets/original-ui/portraits/partner_avatar_751018.png",
+    "stars": 10,
+    "group": 1
+  },
+  "2000034": {
+    "src": "/assets/original-ui/portraits/partner_avatar_756010.png",
+    "stars": 10,
+    "group": 6
+  },
+  "2000035": {
+    "src": "/assets/original-ui/portraits/partner_avatar_753011.png",
+    "stars": 10,
+    "group": 3
+  },
+  "2000036": {
+    "src": "/assets/original-ui/portraits/partner_avatar_751019.png",
+    "stars": 10,
+    "group": 1
+  },
+  "2000037": {
+    "src": "/assets/original-ui/portraits/partner_avatar_2000037.png",
+    "stars": 10,
+    "group": 0
+  },
+  "2000038": {
+    "src": "/assets/original-ui/portraits/partner_avatar_2000038.png",
+    "stars": 10,
+    "group": 0
+  },
+  "2000039": {
+    "src": "/assets/original-ui/portraits/partner_avatar_2000039.png",
+    "stars": 10,
+    "group": 0
+  },
+  "2000040": {
+    "src": "/assets/original-ui/portraits/partner_avatar_11001.png",
+    "stars": 1,
+    "group": 1
+  },
+  "2000041": {
+    "src": "/assets/original-ui/portraits/partner_avatar_11001.png",
+    "stars": 1,
+    "group": 1
+  },
+  "2000042": {
+    "src": "/assets/original-ui/portraits/partner_avatar_11001.png",
+    "stars": 1,
+    "group": 1
+  },
+  "44008": {
+    "src": "/assets/original-ui/portraits/partner_avatar_44008.png",
+    "stars": 4,
+    "group": 4
+  },
+  "45001": {
+    "src": "/assets/original-ui/portraits/partner_avatar_45001.png",
+    "stars": 4,
+    "group": 5
+  },
+  "45002": {
+    "src": "/assets/original-ui/portraits/partner_avatar_45002.png",
+    "stars": 4,
+    "group": 5
+  },
+  "45003": {
+    "src": "/assets/original-ui/portraits/partner_avatar_45003.png",
+    "stars": 4,
+    "group": 5
+  },
+  "46001": {
+    "src": "/assets/original-ui/portraits/partner_avatar_46001.png",
+    "stars": 4,
+    "group": 6
+  },
+  "46002": {
+    "src": "/assets/original-ui/portraits/partner_avatar_46002.png",
+    "stars": 4,
+    "group": 6
+  },
+  "46003": {
+    "src": "/assets/original-ui/portraits/partner_avatar_46003.png",
+    "stars": 4,
+    "group": 6
+  },
+  "51001": {
+    "src": "/assets/original-ui/portraits/partner_avatar_51001.png",
+    "stars": 5,
+    "group": 1
+  },
+  "51002": {
+    "src": "/assets/original-ui/portraits/partner_avatar_51002.png",
+    "stars": 5,
+    "group": 1
+  },
+  "51003": {
+    "src": "/assets/original-ui/portraits/partner_avatar_51003.png",
+    "stars": 5,
+    "group": 1
+  },
+  "51004": {
+    "src": "/assets/original-ui/portraits/partner_avatar_51004.png",
+    "stars": 5,
+    "group": 1
+  },
+  "51005": {
+    "src": "/assets/original-ui/portraits/partner_avatar_51005.png",
+    "stars": 5,
+    "group": 1
+  },
+  "51006": {
+    "src": "/assets/original-ui/portraits/partner_avatar_51006.png",
+    "stars": 5,
+    "group": 1
+  },
+  "51007": {
+    "src": "/assets/original-ui/portraits/partner_avatar_51007.png",
+    "stars": 5,
+    "group": 1
+  },
+  "51008": {
+    "src": "/assets/original-ui/portraits/partner_avatar_51008.png",
+    "stars": 5,
+    "group": 1
+  },
+  "51009": {
+    "src": "/assets/original-ui/portraits/partner_avatar_51009.png",
+    "stars": 5,
+    "group": 1
+  },
+  "51010": {
+    "src": "/assets/original-ui/portraits/partner_avatar_51010.png",
+    "stars": 5,
+    "group": 1
+  },
+  "51011": {
+    "src": "/assets/original-ui/portraits/partner_avatar_51011.png",
+    "stars": 5,
+    "group": 1
+  },
+  "51012": {
+    "src": "/assets/original-ui/portraits/partner_avatar_51012.png",
+    "stars": 5,
+    "group": 1
+  },
+  "51013": {
+    "src": "/assets/original-ui/portraits/partner_avatar_51013.png",
+    "stars": 5,
+    "group": 1
+  },
+  "51014": {
+    "src": "/assets/original-ui/portraits/partner_avatar_51014.png",
+    "stars": 5,
+    "group": 1
+  },
+  "51015": {
+    "src": "/assets/original-ui/portraits/partner_avatar_51015.png",
+    "stars": 5,
+    "group": 1
+  },
+  "51016": {
+    "src": "/assets/original-ui/portraits/partner_avatar_51016.png",
+    "stars": 5,
+    "group": 1
+  },
+  "51017": {
+    "src": "/assets/original-ui/portraits/partner_avatar_51017.png",
+    "stars": 5,
+    "group": 1
+  },
+  "51018": {
+    "src": "/assets/original-ui/portraits/partner_avatar_51018.png",
+    "stars": 5,
+    "group": 1
+  },
+  "51019": {
+    "src": "/assets/original-ui/portraits/partner_avatar_51019.png",
+    "stars": 5,
+    "group": 1
+  },
+  "52001": {
+    "src": "/assets/original-ui/portraits/partner_avatar_52001.png",
+    "stars": 5,
+    "group": 2
+  },
+  "52002": {
+    "src": "/assets/original-ui/portraits/partner_avatar_52002.png",
+    "stars": 5,
+    "group": 2
+  },
+  "52003": {
+    "src": "/assets/original-ui/portraits/partner_avatar_52003.png",
+    "stars": 5,
+    "group": 2
+  },
+  "52004": {
+    "src": "/assets/original-ui/portraits/partner_avatar_52004.png",
+    "stars": 5,
+    "group": 2
+  },
+  "52005": {
+    "src": "/assets/original-ui/portraits/partner_avatar_52005.png",
+    "stars": 5,
+    "group": 2
+  },
+  "52006": {
+    "src": "/assets/original-ui/portraits/partner_avatar_52006.png",
+    "stars": 5,
+    "group": 2
+  },
+  "52007": {
+    "src": "/assets/original-ui/portraits/partner_avatar_52007.png",
+    "stars": 5,
+    "group": 2
+  },
+  "52008": {
+    "src": "/assets/original-ui/portraits/partner_avatar_52008.png",
+    "stars": 5,
+    "group": 2
+  },
+  "52009": {
+    "src": "/assets/original-ui/portraits/partner_avatar_52009.png",
+    "stars": 5,
+    "group": 2
+  },
+  "52010": {
+    "src": "/assets/original-ui/portraits/partner_avatar_52010.png",
+    "stars": 5,
+    "group": 2
+  },
+  "52011": {
+    "src": "/assets/original-ui/portraits/partner_avatar_52011.png",
+    "stars": 5,
+    "group": 2
+  },
+  "52012": {
+    "src": "/assets/original-ui/portraits/partner_avatar_52012.png",
+    "stars": 5,
+    "group": 2
+  },
+  "52013": {
+    "src": "/assets/original-ui/portraits/partner_avatar_52013.png",
+    "stars": 5,
+    "group": 2
+  },
+  "52014": {
+    "src": "/assets/original-ui/portraits/partner_avatar_52014.png",
+    "stars": 5,
+    "group": 2
+  },
+  "52015": {
+    "src": "/assets/original-ui/portraits/partner_avatar_52015.png",
+    "stars": 5,
+    "group": 2
+  },
+  "52016": {
+    "src": "/assets/original-ui/portraits/partner_avatar_52016.png",
+    "stars": 5,
+    "group": 2
+  },
+  "52017": {
+    "src": "/assets/original-ui/portraits/partner_avatar_52017.png",
+    "stars": 5,
+    "group": 2
+  },
+  "52018": {
+    "src": "/assets/original-ui/portraits/partner_avatar_52018.png",
+    "stars": 5,
+    "group": 2
+  },
+  "52019": {
+    "src": "/assets/original-ui/portraits/partner_avatar_52019.png",
+    "stars": 5,
+    "group": 2
+  },
+  "52020": {
+    "src": "/assets/original-ui/portraits/partner_avatar_52020.png",
+    "stars": 5,
+    "group": 2
+  },
+  "53001": {
+    "src": "/assets/original-ui/portraits/partner_avatar_53001.png",
+    "stars": 5,
+    "group": 3
+  },
+  "53002": {
+    "src": "/assets/original-ui/portraits/partner_avatar_53002.png",
+    "stars": 5,
+    "group": 3
+  },
+  "53003": {
+    "src": "/assets/original-ui/portraits/partner_avatar_53003.png",
+    "stars": 5,
+    "group": 3
+  },
+  "53004": {
+    "src": "/assets/original-ui/portraits/partner_avatar_53004.png",
+    "stars": 5,
+    "group": 3
+  },
+  "53005": {
+    "src": "/assets/original-ui/portraits/partner_avatar_53005.png",
+    "stars": 5,
+    "group": 3
+  },
+  "53006": {
+    "src": "/assets/original-ui/portraits/partner_avatar_53006.png",
+    "stars": 5,
+    "group": 3
+  },
+  "53007": {
+    "src": "/assets/original-ui/portraits/partner_avatar_53007.png",
+    "stars": 5,
+    "group": 3
+  },
+  "53008": {
+    "src": "/assets/original-ui/portraits/partner_avatar_53008.png",
+    "stars": 5,
+    "group": 3
+  },
+  "53009": {
+    "src": "/assets/original-ui/portraits/partner_avatar_53009.png",
+    "stars": 5,
+    "group": 3
+  },
+  "53010": {
+    "src": "/assets/original-ui/portraits/partner_avatar_53010.png",
+    "stars": 5,
+    "group": 3
+  },
+  "53011": {
+    "src": "/assets/original-ui/portraits/partner_avatar_53011.png",
+    "stars": 5,
+    "group": 3
+  },
+  "53012": {
+    "src": "/assets/original-ui/portraits/partner_avatar_53012.png",
+    "stars": 5,
+    "group": 3
+  },
+  "53013": {
+    "src": "/assets/original-ui/portraits/partner_avatar_53013.png",
+    "stars": 5,
+    "group": 3
+  },
+  "53014": {
+    "src": "/assets/original-ui/portraits/partner_avatar_53014.png",
+    "stars": 5,
+    "group": 3
+  },
+  "53015": {
+    "src": "/assets/original-ui/portraits/partner_avatar_53015.png",
+    "stars": 5,
+    "group": 3
+  },
+  "53016": {
+    "src": "/assets/original-ui/portraits/partner_avatar_53016.png",
+    "stars": 5,
+    "group": 3
+  },
+  "53017": {
+    "src": "/assets/original-ui/portraits/partner_avatar_53017.png",
+    "stars": 5,
+    "group": 3
+  },
+  "53018": {
+    "src": "/assets/original-ui/portraits/partner_avatar_53018.png",
+    "stars": 5,
+    "group": 3
+  },
+  "53019": {
+    "src": "/assets/original-ui/portraits/partner_avatar_53019.png",
+    "stars": 5,
+    "group": 3
+  },
+  "54001": {
+    "src": "/assets/original-ui/portraits/partner_avatar_54001.png",
+    "stars": 5,
+    "group": 4
+  },
+  "54002": {
+    "src": "/assets/original-ui/portraits/partner_avatar_54002.png",
+    "stars": 5,
+    "group": 4
+  },
+  "54003": {
+    "src": "/assets/original-ui/portraits/partner_avatar_54003.png",
+    "stars": 5,
+    "group": 4
+  },
+  "54004": {
+    "src": "/assets/original-ui/portraits/partner_avatar_54004.png",
+    "stars": 5,
+    "group": 4
+  },
+  "54005": {
+    "src": "/assets/original-ui/portraits/partner_avatar_54005.png",
+    "stars": 5,
+    "group": 4
+  },
+  "54006": {
+    "src": "/assets/original-ui/portraits/partner_avatar_54006.png",
+    "stars": 5,
+    "group": 4
+  },
+  "54007": {
+    "src": "/assets/original-ui/portraits/partner_avatar_54007.png",
+    "stars": 5,
+    "group": 4
+  },
+  "54008": {
+    "src": "/assets/original-ui/portraits/partner_avatar_54008.png",
+    "stars": 5,
+    "group": 4
+  },
+  "54009": {
+    "src": "/assets/original-ui/portraits/partner_avatar_54009.png",
+    "stars": 5,
+    "group": 4
+  },
+  "54010": {
+    "src": "/assets/original-ui/portraits/partner_avatar_54010.png",
+    "stars": 5,
+    "group": 4
+  },
+  "54011": {
+    "src": "/assets/original-ui/portraits/partner_avatar_54011.png",
+    "stars": 5,
+    "group": 4
+  },
+  "54012": {
+    "src": "/assets/original-ui/portraits/partner_avatar_54012.png",
+    "stars": 5,
+    "group": 4
+  },
+  "54013": {
+    "src": "/assets/original-ui/portraits/partner_avatar_54013.png",
+    "stars": 5,
+    "group": 4
+  },
+  "54014": {
+    "src": "/assets/original-ui/portraits/partner_avatar_54014.png",
+    "stars": 5,
+    "group": 4
+  },
+  "54015": {
+    "src": "/assets/original-ui/portraits/partner_avatar_54015.png",
+    "stars": 5,
+    "group": 4
+  },
+  "54016": {
+    "src": "/assets/original-ui/portraits/partner_avatar_54016.png",
+    "stars": 5,
+    "group": 4
+  },
+  "54017": {
+    "src": "/assets/original-ui/portraits/partner_avatar_54017.png",
+    "stars": 5,
+    "group": 4
+  },
+  "54018": {
+    "src": "/assets/original-ui/portraits/partner_avatar_54018.png",
+    "stars": 5,
+    "group": 4
+  },
+  "541001": {
+    "src": "/assets/original-ui/portraits/partner_avatar_41001.png",
+    "stars": 5,
+    "group": 1
+  },
+  "541002": {
+    "src": "/assets/original-ui/portraits/partner_avatar_41002.png",
+    "stars": 5,
+    "group": 1
+  },
+  "541003": {
+    "src": "/assets/original-ui/portraits/partner_avatar_41003.png",
+    "stars": 5,
+    "group": 1
+  },
+  "541004": {
+    "src": "/assets/original-ui/portraits/partner_avatar_41004.png",
+    "stars": 5,
+    "group": 1
+  },
+  "541005": {
+    "src": "/assets/original-ui/portraits/partner_avatar_41005.png",
+    "stars": 5,
+    "group": 1
+  },
+  "541006": {
+    "src": "/assets/original-ui/portraits/partner_avatar_41006.png",
+    "stars": 5,
+    "group": 1
+  },
+  "541007": {
+    "src": "/assets/original-ui/portraits/partner_avatar_41007.png",
+    "stars": 5,
+    "group": 1
+  },
+  "541008": {
+    "src": "/assets/original-ui/portraits/partner_avatar_41008.png",
+    "stars": 5,
+    "group": 1
+  },
+  "542001": {
+    "src": "/assets/original-ui/portraits/partner_avatar_42001.png",
+    "stars": 5,
+    "group": 2
+  },
+  "542002": {
+    "src": "/assets/original-ui/portraits/partner_avatar_42002.png",
+    "stars": 5,
+    "group": 2
+  },
+  "542003": {
+    "src": "/assets/original-ui/portraits/partner_avatar_42003.png",
+    "stars": 5,
+    "group": 2
+  },
+  "542004": {
+    "src": "/assets/original-ui/portraits/partner_avatar_42004.png",
+    "stars": 5,
+    "group": 2
+  },
+  "542005": {
+    "src": "/assets/original-ui/portraits/partner_avatar_42005.png",
+    "stars": 5,
+    "group": 2
+  },
+  "542006": {
+    "src": "/assets/original-ui/portraits/partner_avatar_42006.png",
+    "stars": 5,
+    "group": 2
+  },
+  "542007": {
+    "src": "/assets/original-ui/portraits/partner_avatar_42007.png",
+    "stars": 5,
+    "group": 2
+  },
+  "542008": {
+    "src": "/assets/original-ui/portraits/partner_avatar_42008.png",
+    "stars": 5,
+    "group": 2
+  },
+  "543001": {
+    "src": "/assets/original-ui/portraits/partner_avatar_43001.png",
+    "stars": 5,
+    "group": 3
+  },
+  "543002": {
+    "src": "/assets/original-ui/portraits/partner_avatar_43002.png",
+    "stars": 5,
+    "group": 3
+  },
+  "543003": {
+    "src": "/assets/original-ui/portraits/partner_avatar_43003.png",
+    "stars": 5,
+    "group": 3
+  },
+  "543004": {
+    "src": "/assets/original-ui/portraits/partner_avatar_43004.png",
+    "stars": 5,
+    "group": 3
+  },
+  "543005": {
+    "src": "/assets/original-ui/portraits/partner_avatar_43005.png",
+    "stars": 5,
+    "group": 3
+  },
+  "543006": {
+    "src": "/assets/original-ui/portraits/partner_avatar_43006.png",
+    "stars": 5,
+    "group": 3
+  },
+  "543007": {
+    "src": "/assets/original-ui/portraits/partner_avatar_43007.png",
+    "stars": 5,
+    "group": 3
+  },
+  "543008": {
+    "src": "/assets/original-ui/portraits/partner_avatar_43008.png",
+    "stars": 5,
+    "group": 3
+  },
+  "544001": {
+    "src": "/assets/original-ui/portraits/partner_avatar_44001.png",
+    "stars": 5,
+    "group": 4
+  },
+  "544002": {
+    "src": "/assets/original-ui/portraits/partner_avatar_44002.png",
+    "stars": 5,
+    "group": 4
+  },
+  "544003": {
+    "src": "/assets/original-ui/portraits/partner_avatar_44003.png",
+    "stars": 5,
+    "group": 4
+  },
+  "544004": {
+    "src": "/assets/original-ui/portraits/partner_avatar_44004.png",
+    "stars": 5,
+    "group": 4
+  },
+  "544005": {
+    "src": "/assets/original-ui/portraits/partner_avatar_44005.png",
+    "stars": 5,
+    "group": 4
+  },
+  "544006": {
+    "src": "/assets/original-ui/portraits/partner_avatar_44006.png",
+    "stars": 5,
+    "group": 4
+  },
+  "544007": {
+    "src": "/assets/original-ui/portraits/partner_avatar_44007.png",
+    "stars": 5,
+    "group": 4
+  },
+  "544008": {
+    "src": "/assets/original-ui/portraits/partner_avatar_44008.png",
+    "stars": 5,
+    "group": 4
+  },
+  "545001": {
+    "src": "/assets/original-ui/portraits/partner_avatar_45001.png",
+    "stars": 5,
+    "group": 5
+  },
+  "545002": {
+    "src": "/assets/original-ui/portraits/partner_avatar_45002.png",
+    "stars": 5,
+    "group": 5
+  },
+  "545003": {
+    "src": "/assets/original-ui/portraits/partner_avatar_45003.png",
+    "stars": 5,
+    "group": 5
+  },
+  "546001": {
+    "src": "/assets/original-ui/portraits/partner_avatar_46001.png",
+    "stars": 5,
+    "group": 6
+  },
+  "546002": {
+    "src": "/assets/original-ui/portraits/partner_avatar_46002.png",
+    "stars": 5,
+    "group": 6
+  },
+  "546003": {
+    "src": "/assets/original-ui/portraits/partner_avatar_46003.png",
+    "stars": 5,
+    "group": 6
+  },
+  "55002": {
+    "src": "/assets/original-ui/portraits/partner_avatar_55002.png",
+    "stars": 5,
+    "group": 5
+  },
+  "55003": {
+    "src": "/assets/original-ui/portraits/partner_avatar_55003.png",
+    "stars": 5,
+    "group": 5
+  },
+  "55004": {
+    "src": "/assets/original-ui/portraits/partner_avatar_55004.png",
+    "stars": 5,
+    "group": 5
+  },
+  "55005": {
+    "src": "/assets/original-ui/portraits/partner_avatar_55005.png",
+    "stars": 5,
+    "group": 5
+  },
+  "55006": {
+    "src": "/assets/original-ui/portraits/partner_avatar_55006.png",
+    "stars": 5,
+    "group": 5
+  },
+  "55007": {
+    "src": "/assets/original-ui/portraits/partner_avatar_55007.png",
+    "stars": 5,
+    "group": 5
+  },
+  "55008": {
+    "src": "/assets/original-ui/portraits/partner_avatar_55008.png",
+    "stars": 5,
+    "group": 5
+  },
+  "55009": {
+    "src": "/assets/original-ui/portraits/partner_avatar_55009.png",
+    "stars": 5,
+    "group": 5
+  },
+  "55010": {
+    "src": "/assets/original-ui/portraits/partner_avatar_55010.png",
+    "stars": 5,
+    "group": 5
+  },
+  "55011": {
+    "src": "/assets/original-ui/portraits/partner_avatar_55011.png",
+    "stars": 5,
+    "group": 5
+  },
+  "55012": {
+    "src": "/assets/original-ui/portraits/partner_avatar_55012.png",
+    "stars": 5,
+    "group": 5
+  },
+  "55013": {
+    "src": "/assets/original-ui/portraits/partner_avatar_55013.png",
+    "stars": 5,
+    "group": 5
+  },
+  "55014": {
+    "src": "/assets/original-ui/portraits/partner_avatar_55014.png",
+    "stars": 5,
+    "group": 5
+  },
+  "56001": {
+    "src": "/assets/original-ui/portraits/partner_avatar_56001.png",
+    "stars": 5,
+    "group": 6
+  },
+  "56002": {
+    "src": "/assets/original-ui/portraits/partner_avatar_56002.png",
+    "stars": 5,
+    "group": 6
+  },
+  "56003": {
+    "src": "/assets/original-ui/portraits/partner_avatar_56003.png",
+    "stars": 5,
+    "group": 6
+  },
+  "56004": {
+    "src": "/assets/original-ui/portraits/partner_avatar_56004.png",
+    "stars": 5,
+    "group": 6
+  },
+  "56005": {
+    "src": "/assets/original-ui/portraits/partner_avatar_56005.png",
+    "stars": 5,
+    "group": 6
+  },
+  "56006": {
+    "src": "/assets/original-ui/portraits/partner_avatar_56006.png",
+    "stars": 5,
+    "group": 6
+  },
+  "56007": {
+    "src": "/assets/original-ui/portraits/partner_avatar_56007.png",
+    "stars": 5,
+    "group": 6
+  },
+  "56008": {
+    "src": "/assets/original-ui/portraits/partner_avatar_56008.png",
+    "stars": 5,
+    "group": 6
+  },
+  "56009": {
+    "src": "/assets/original-ui/portraits/partner_avatar_56009.png",
+    "stars": 5,
+    "group": 6
+  },
+  "56010": {
+    "src": "/assets/original-ui/portraits/partner_avatar_56010.png",
+    "stars": 5,
+    "group": 6
+  },
+  "56011": {
+    "src": "/assets/original-ui/portraits/partner_avatar_56011.png",
+    "stars": 5,
+    "group": 6
+  },
+  "56012": {
+    "src": "/assets/original-ui/portraits/partner_avatar_56012.png",
+    "stars": 5,
+    "group": 6
+  },
+  "561001": {
+    "src": "/assets/original-ui/portraits/partner_avatar_661001.png",
+    "stars": 5,
+    "group": 1
+  },
+  "562001": {
+    "src": "/assets/original-ui/portraits/partner_avatar_662001.png",
+    "stars": 5,
+    "group": 2
+  },
+  "563001": {
+    "src": "/assets/original-ui/portraits/partner_avatar_663001.png",
+    "stars": 5,
+    "group": 3
+  },
+  "564001": {
+    "src": "/assets/original-ui/portraits/partner_avatar_664001.png",
+    "stars": 5,
+    "group": 4
+  },
+  "565001": {
+    "src": "/assets/original-ui/portraits/partner_avatar_665001.png",
+    "stars": 5,
+    "group": 5
+  },
+  "566001": {
+    "src": "/assets/original-ui/portraits/partner_avatar_666001.png",
+    "stars": 5,
+    "group": 6
+  },
+  "651001": {
+    "src": "/assets/original-ui/portraits/partner_avatar_651001.png",
+    "stars": 6,
+    "group": 1
+  },
+  "651002": {
+    "src": "/assets/original-ui/portraits/partner_avatar_651002.png",
+    "stars": 6,
+    "group": 1
+  },
+  "651003": {
+    "src": "/assets/original-ui/portraits/partner_avatar_651003.png",
+    "stars": 6,
+    "group": 1
+  },
+  "651004": {
+    "src": "/assets/original-ui/portraits/partner_avatar_651004.png",
+    "stars": 6,
+    "group": 1
+  },
+  "651005": {
+    "src": "/assets/original-ui/portraits/partner_avatar_651005.png",
+    "stars": 6,
+    "group": 1
+  },
+  "651006": {
+    "src": "/assets/original-ui/portraits/partner_avatar_651006.png",
+    "stars": 6,
+    "group": 1
+  },
+  "651007": {
+    "src": "/assets/original-ui/portraits/partner_avatar_651007.png",
+    "stars": 6,
+    "group": 2
+  },
+  "651008": {
+    "src": "/assets/original-ui/portraits/partner_avatar_651008.png",
+    "stars": 6,
+    "group": 2
+  },
+  "651009": {
+    "src": "/assets/original-ui/portraits/partner_avatar_651009.png",
+    "stars": 6,
+    "group": 2
+  },
+  "651010": {
+    "src": "/assets/original-ui/portraits/partner_avatar_651010.png",
+    "stars": 6,
+    "group": 2
+  },
+  "651011": {
+    "src": "/assets/original-ui/portraits/partner_avatar_651011.png",
+    "stars": 6,
+    "group": 1
+  },
+  "651012": {
+    "src": "/assets/original-ui/portraits/partner_avatar_651012.png",
+    "stars": 6,
+    "group": 1
+  },
+  "651013": {
+    "src": "/assets/original-ui/portraits/partner_avatar_651013.png",
+    "stars": 6,
+    "group": 1
+  },
+  "651014": {
+    "src": "/assets/original-ui/portraits/partner_avatar_651014.png",
+    "stars": 6,
+    "group": 1
+  },
+  "651015": {
+    "src": "/assets/original-ui/portraits/partner_avatar_651015.png",
+    "stars": 6,
+    "group": 1
+  },
+  "651016": {
+    "src": "/assets/original-ui/portraits/partner_avatar_651016.png",
+    "stars": 6,
+    "group": 1
+  },
+  "651017": {
+    "src": "/assets/original-ui/portraits/partner_avatar_651017.png",
+    "stars": 6,
+    "group": 1
+  },
+  "651018": {
+    "src": "/assets/original-ui/portraits/partner_avatar_651018.png",
+    "stars": 6,
+    "group": 1
+  },
+  "651019": {
+    "src": "/assets/original-ui/portraits/partner_avatar_651019.png",
+    "stars": 6,
+    "group": 1
+  },
+  "651020": {
+    "src": "/assets/original-ui/portraits/partner_avatar_651020.png",
+    "stars": 6,
+    "group": 1
+  },
+  "651021": {
+    "src": "/assets/original-ui/portraits/partner_avatar_651021.png",
+    "stars": 6,
+    "group": 1
+  },
+  "651022": {
+    "src": "/assets/original-ui/portraits/partner_avatar_651022.png",
+    "stars": 6,
+    "group": 1
+  },
+  "651023": {
+    "src": "/assets/original-ui/portraits/partner_avatar_651023.png",
+    "stars": 6,
+    "group": 1
+  },
+  "651024": {
+    "src": "/assets/original-ui/portraits/partner_avatar_651024.png",
+    "stars": 6,
+    "group": 1
+  },
+  "651025": {
+    "src": "/assets/original-ui/portraits/partner_avatar_651025.png",
+    "stars": 6,
+    "group": 1
+  },
+  "651026": {
+    "src": "/assets/original-ui/portraits/partner_avatar_651026.png",
+    "stars": 6,
+    "group": 1
+  },
+  "652001": {
+    "src": "/assets/original-ui/portraits/partner_avatar_652001.png",
+    "stars": 6,
+    "group": 2
+  },
+  "652002": {
+    "src": "/assets/original-ui/portraits/partner_avatar_652002.png",
+    "stars": 6,
+    "group": 2
+  },
+  "652003": {
+    "src": "/assets/original-ui/portraits/partner_avatar_652003.png",
+    "stars": 6,
+    "group": 3
+  },
+  "652004": {
+    "src": "/assets/original-ui/portraits/partner_avatar_652004.png",
+    "stars": 6,
+    "group": 3
+  },
+  "652005": {
+    "src": "/assets/original-ui/portraits/partner_avatar_652005.png",
+    "stars": 6,
+    "group": 3
+  },
+  "652006": {
+    "src": "/assets/original-ui/portraits/partner_avatar_652006.png",
+    "stars": 6,
+    "group": 3
+  },
+  "652007": {
+    "src": "/assets/original-ui/portraits/partner_avatar_652007.png",
+    "stars": 6,
+    "group": 3
+  },
+  "652008": {
+    "src": "/assets/original-ui/portraits/partner_avatar_652008.png",
+    "stars": 6,
+    "group": 3
+  },
+  "652009": {
+    "src": "/assets/original-ui/portraits/partner_avatar_652009.png",
+    "stars": 6,
+    "group": 4
+  },
+  "652010": {
+    "src": "/assets/original-ui/portraits/partner_avatar_652010.png",
+    "stars": 6,
+    "group": 4
+  },
+  "652011": {
+    "src": "/assets/original-ui/portraits/partner_avatar_652011.png",
+    "stars": 6,
+    "group": 2
+  },
+  "652012": {
+    "src": "/assets/original-ui/portraits/partner_avatar_652012.png",
+    "stars": 6,
+    "group": 2
+  },
+  "652013": {
+    "src": "/assets/original-ui/portraits/partner_avatar_652013.png",
+    "stars": 6,
+    "group": 2
+  },
+  "652014": {
+    "src": "/assets/original-ui/portraits/partner_avatar_652014.png",
+    "stars": 6,
+    "group": 2
+  },
+  "652015": {
+    "src": "/assets/original-ui/portraits/partner_avatar_652015.png",
+    "stars": 6,
+    "group": 2
+  },
+  "652016": {
+    "src": "/assets/original-ui/portraits/partner_avatar_652016.png",
+    "stars": 6,
+    "group": 2
+  },
+  "652017": {
+    "src": "/assets/original-ui/portraits/partner_avatar_652017.png",
+    "stars": 6,
+    "group": 2
+  },
+  "652018": {
+    "src": "/assets/original-ui/portraits/partner_avatar_652018.png",
+    "stars": 6,
+    "group": 2
+  },
+  "652019": {
+    "src": "/assets/original-ui/portraits/partner_avatar_652019.png",
+    "stars": 6,
+    "group": 2
+  },
+  "652020": {
+    "src": "/assets/original-ui/portraits/partner_avatar_652020.png",
+    "stars": 6,
+    "group": 2
+  },
+  "652021": {
+    "src": "/assets/original-ui/portraits/partner_avatar_652021.png",
+    "stars": 6,
+    "group": 2
+  },
+  "652022": {
+    "src": "/assets/original-ui/portraits/partner_avatar_652022.png",
+    "stars": 6,
+    "group": 2
+  },
+  "652023": {
+    "src": "/assets/original-ui/portraits/partner_avatar_652023.png",
+    "stars": 6,
+    "group": 2
+  },
+  "652024": {
+    "src": "/assets/original-ui/portraits/partner_avatar_652024.png",
+    "stars": 6,
+    "group": 2
+  },
+  "652025": {
+    "src": "/assets/original-ui/portraits/partner_avatar_652025.png",
+    "stars": 6,
+    "group": 2
+  },
+  "652026": {
+    "src": "/assets/original-ui/portraits/partner_avatar_652026.png",
+    "stars": 6,
+    "group": 2
+  },
+  "652027": {
+    "src": "/assets/original-ui/portraits/partner_avatar_652027.png",
+    "stars": 6,
+    "group": 2
+  },
+  "653001": {
+    "src": "/assets/original-ui/portraits/partner_avatar_653001.png",
+    "stars": 6,
+    "group": 4
+  },
+  "653002": {
+    "src": "/assets/original-ui/portraits/partner_avatar_653002.png",
+    "stars": 6,
+    "group": 4
+  },
+  "653003": {
+    "src": "/assets/original-ui/portraits/partner_avatar_653003.png",
+    "stars": 6,
+    "group": 4
+  },
+  "653004": {
+    "src": "/assets/original-ui/portraits/partner_avatar_653004.png",
+    "stars": 6,
+    "group": 4
+  },
+  "653005": {
+    "src": "/assets/original-ui/portraits/partner_avatar_653005.png",
+    "stars": 6,
+    "group": 5
+  },
+  "653006": {
+    "src": "/assets/original-ui/portraits/partner_avatar_653006.png",
+    "stars": 6,
+    "group": 6
+  },
+  "653011": {
+    "src": "/assets/original-ui/portraits/partner_avatar_653011.png",
+    "stars": 6,
+    "group": 3
+  },
+  "653012": {
+    "src": "/assets/original-ui/portraits/partner_avatar_653012.png",
+    "stars": 6,
+    "group": 3
+  },
+  "653013": {
+    "src": "/assets/original-ui/portraits/partner_avatar_653013.png",
+    "stars": 6,
+    "group": 3
+  },
+  "653014": {
+    "src": "/assets/original-ui/portraits/partner_avatar_653014.png",
+    "stars": 6,
+    "group": 3
+  },
+  "653015": {
+    "src": "/assets/original-ui/portraits/partner_avatar_653015.png",
+    "stars": 6,
+    "group": 3
+  },
+  "653016": {
+    "src": "/assets/original-ui/portraits/partner_avatar_653016.png",
+    "stars": 6,
+    "group": 3
+  },
+  "653017": {
+    "src": "/assets/original-ui/portraits/partner_avatar_653017.png",
+    "stars": 6,
+    "group": 3
+  },
+  "653018": {
+    "src": "/assets/original-ui/portraits/partner_avatar_653018.png",
+    "stars": 6,
+    "group": 3
+  },
+  "653019": {
+    "src": "/assets/original-ui/portraits/partner_avatar_653019.png",
+    "stars": 6,
+    "group": 3
+  },
+  "653020": {
+    "src": "/assets/original-ui/portraits/partner_avatar_653020.png",
+    "stars": 6,
+    "group": 3
+  },
+  "653021": {
+    "src": "/assets/original-ui/portraits/partner_avatar_653021.png",
+    "stars": 6,
+    "group": 3
+  },
+  "653022": {
+    "src": "/assets/original-ui/portraits/partner_avatar_653022.png",
+    "stars": 6,
+    "group": 3
+  },
+  "653023": {
+    "src": "/assets/original-ui/portraits/partner_avatar_653023.png",
+    "stars": 6,
+    "group": 3
+  },
+  "653024": {
+    "src": "/assets/original-ui/portraits/partner_avatar_653024.png",
+    "stars": 6,
+    "group": 3
+  },
+  "653025": {
+    "src": "/assets/original-ui/portraits/partner_avatar_653025.png",
+    "stars": 6,
+    "group": 3
+  },
+  "653026": {
+    "src": "/assets/original-ui/portraits/partner_avatar_653026.png",
+    "stars": 6,
+    "group": 3
+  },
+  "654011": {
+    "src": "/assets/original-ui/portraits/partner_avatar_654011.png",
+    "stars": 6,
+    "group": 4
+  },
+  "654012": {
+    "src": "/assets/original-ui/portraits/partner_avatar_654012.png",
+    "stars": 6,
+    "group": 4
+  },
+  "654013": {
+    "src": "/assets/original-ui/portraits/partner_avatar_654013.png",
+    "stars": 6,
+    "group": 4
+  },
+  "654014": {
+    "src": "/assets/original-ui/portraits/partner_avatar_654014.png",
+    "stars": 6,
+    "group": 4
+  },
+  "654015": {
+    "src": "/assets/original-ui/portraits/partner_avatar_654015.png",
+    "stars": 6,
+    "group": 4
+  },
+  "654016": {
+    "src": "/assets/original-ui/portraits/partner_avatar_654016.png",
+    "stars": 6,
+    "group": 4
+  },
+  "654017": {
+    "src": "/assets/original-ui/portraits/partner_avatar_654017.png",
+    "stars": 6,
+    "group": 4
+  },
+  "654018": {
+    "src": "/assets/original-ui/portraits/partner_avatar_654018.png",
+    "stars": 6,
+    "group": 4
+  },
+  "654019": {
+    "src": "/assets/original-ui/portraits/partner_avatar_654019.png",
+    "stars": 6,
+    "group": 4
+  },
+  "654020": {
+    "src": "/assets/original-ui/portraits/partner_avatar_654020.png",
+    "stars": 6,
+    "group": 4
+  },
+  "654021": {
+    "src": "/assets/original-ui/portraits/partner_avatar_654021.png",
+    "stars": 6,
+    "group": 4
+  },
+  "654022": {
+    "src": "/assets/original-ui/portraits/partner_avatar_654022.png",
+    "stars": 6,
+    "group": 4
+  },
+  "654023": {
+    "src": "/assets/original-ui/portraits/partner_avatar_654023.png",
+    "stars": 6,
+    "group": 4
+  },
+  "654024": {
+    "src": "/assets/original-ui/portraits/partner_avatar_654024.png",
+    "stars": 6,
+    "group": 4
+  },
+  "654025": {
+    "src": "/assets/original-ui/portraits/partner_avatar_654025.png",
+    "stars": 6,
+    "group": 4
+  },
+  "655011": {
+    "src": "/assets/original-ui/portraits/partner_avatar_655011.png",
+    "stars": 6,
+    "group": 5
+  },
+  "655012": {
+    "src": "/assets/original-ui/portraits/partner_avatar_655012.png",
+    "stars": 6,
+    "group": 5
+  },
+  "655013": {
+    "src": "/assets/original-ui/portraits/partner_avatar_655013.png",
+    "stars": 6,
+    "group": 5
+  },
+  "655014": {
+    "src": "/assets/original-ui/portraits/partner_avatar_655014.png",
+    "stars": 6,
+    "group": 5
+  },
+  "655015": {
+    "src": "/assets/original-ui/portraits/partner_avatar_655015.png",
+    "stars": 6,
+    "group": 5
+  },
+  "655016": {
+    "src": "/assets/original-ui/portraits/partner_avatar_655016.png",
+    "stars": 6,
+    "group": 5
+  },
+  "655017": {
+    "src": "/assets/original-ui/portraits/partner_avatar_655017.png",
+    "stars": 6,
+    "group": 5
+  },
+  "655018": {
+    "src": "/assets/original-ui/portraits/partner_avatar_655018.png",
+    "stars": 6,
+    "group": 5
+  },
+  "655019": {
+    "src": "/assets/original-ui/portraits/partner_avatar_655019.png",
+    "stars": 6,
+    "group": 5
+  },
+  "655020": {
+    "src": "/assets/original-ui/portraits/partner_avatar_655020.png",
+    "stars": 6,
+    "group": 5
+  },
+  "655021": {
+    "src": "/assets/original-ui/portraits/partner_avatar_655021.png",
+    "stars": 6,
+    "group": 5
+  },
+  "655022": {
+    "src": "/assets/original-ui/portraits/partner_avatar_655022.png",
+    "stars": 6,
+    "group": 5
+  },
+  "655023": {
+    "src": "/assets/original-ui/portraits/partner_avatar_655023.png",
+    "stars": 6,
+    "group": 5
+  },
+  "656011": {
+    "src": "/assets/original-ui/portraits/partner_avatar_656011.png",
+    "stars": 6,
+    "group": 6
+  },
+  "656012": {
+    "src": "/assets/original-ui/portraits/partner_avatar_656012.png",
+    "stars": 6,
+    "group": 6
+  },
+  "656013": {
+    "src": "/assets/original-ui/portraits/partner_avatar_656013.png",
+    "stars": 6,
+    "group": 6
+  },
+  "656014": {
+    "src": "/assets/original-ui/portraits/partner_avatar_656014.png",
+    "stars": 6,
+    "group": 6
+  },
+  "656015": {
+    "src": "/assets/original-ui/portraits/partner_avatar_656015.png",
+    "stars": 6,
+    "group": 6
+  },
+  "656016": {
+    "src": "/assets/original-ui/portraits/partner_avatar_656016.png",
+    "stars": 6,
+    "group": 6
+  },
+  "656017": {
+    "src": "/assets/original-ui/portraits/partner_avatar_656017.png",
+    "stars": 6,
+    "group": 6
+  },
+  "656018": {
+    "src": "/assets/original-ui/portraits/partner_avatar_656018.png",
+    "stars": 6,
+    "group": 6
+  },
+  "656019": {
+    "src": "/assets/original-ui/portraits/partner_avatar_656019.png",
+    "stars": 6,
+    "group": 6
+  },
+  "656020": {
+    "src": "/assets/original-ui/portraits/partner_avatar_656020.png",
+    "stars": 6,
+    "group": 6
+  },
+  "656021": {
+    "src": "/assets/original-ui/portraits/partner_avatar_656021.png",
+    "stars": 6,
+    "group": 6
+  },
+  "656022": {
+    "src": "/assets/original-ui/portraits/partner_avatar_656022.png",
+    "stars": 6,
+    "group": 6
+  },
+  "661001": {
+    "src": "/assets/original-ui/portraits/partner_avatar_661001.png",
+    "stars": 6,
+    "group": 1
+  },
+  "662001": {
+    "src": "/assets/original-ui/portraits/partner_avatar_662001.png",
+    "stars": 6,
+    "group": 2
+  },
+  "663001": {
+    "src": "/assets/original-ui/portraits/partner_avatar_663001.png",
+    "stars": 6,
+    "group": 3
+  },
+  "664001": {
+    "src": "/assets/original-ui/portraits/partner_avatar_664001.png",
+    "stars": 6,
+    "group": 4
+  },
+  "665001": {
+    "src": "/assets/original-ui/portraits/partner_avatar_665001.png",
+    "stars": 6,
+    "group": 5
+  },
+  "666001": {
+    "src": "/assets/original-ui/portraits/partner_avatar_666001.png",
+    "stars": 6,
+    "group": 6
+  },
+  "751001": {
+    "src": "/assets/original-ui/portraits/partner_avatar_751001.png",
+    "stars": 10,
+    "group": 1
+  },
+  "751002": {
+    "src": "/assets/original-ui/portraits/partner_avatar_751002.png",
+    "stars": 10,
+    "group": 1
+  },
+  "751003": {
+    "src": "/assets/original-ui/portraits/partner_avatar_751003.png",
+    "stars": 10,
+    "group": 1
+  },
+  "751004": {
+    "src": "/assets/original-ui/portraits/partner_avatar_751004.png",
+    "stars": 10,
+    "group": 1
+  },
+  "751005": {
+    "src": "/assets/original-ui/portraits/partner_avatar_751005.png",
+    "stars": 10,
+    "group": 1
+  },
+  "751006": {
+    "src": "/assets/original-ui/portraits/partner_avatar_751006.png",
+    "stars": 10,
+    "group": 1
+  },
+  "751007": {
+    "src": "/assets/original-ui/portraits/partner_avatar_751007.png",
+    "stars": 10,
+    "group": 1
+  },
+  "751008": {
+    "src": "/assets/original-ui/portraits/partner_avatar_751008.png",
+    "stars": 10,
+    "group": 1
+  },
+  "751009": {
+    "src": "/assets/original-ui/portraits/partner_avatar_751009.png",
+    "stars": 10,
+    "group": 1
+  },
+  "751010": {
+    "src": "/assets/original-ui/portraits/partner_avatar_751010.png",
+    "stars": 10,
+    "group": 1
+  },
+  "751011": {
+    "src": "/assets/original-ui/portraits/partner_avatar_751011.png",
+    "stars": 10,
+    "group": 1
+  },
+  "751012": {
+    "src": "/assets/original-ui/portraits/partner_avatar_751012.png",
+    "stars": 10,
+    "group": 1
+  },
+  "751013": {
+    "src": "/assets/original-ui/portraits/partner_avatar_751013.png",
+    "stars": 10,
+    "group": 1
+  },
+  "751014": {
+    "src": "/assets/original-ui/portraits/partner_avatar_751014.png",
+    "stars": 10,
+    "group": 1
+  },
+  "751015": {
+    "src": "/assets/original-ui/portraits/partner_avatar_751015.png",
+    "stars": 10,
+    "group": 1
+  },
+  "751016": {
+    "src": "/assets/original-ui/portraits/partner_avatar_751016.png",
+    "stars": 10,
+    "group": 1
+  },
+  "751017": {
+    "src": "/assets/original-ui/portraits/partner_avatar_751017.png",
+    "stars": 10,
+    "group": 1
+  },
+  "751018": {
+    "src": "/assets/original-ui/portraits/partner_avatar_751018.png",
+    "stars": 10,
+    "group": 1
+  },
+  "751019": {
+    "src": "/assets/original-ui/portraits/partner_avatar_751019.png",
+    "stars": 10,
+    "group": 1
+  },
+  "752001": {
+    "src": "/assets/original-ui/portraits/partner_avatar_752001.png",
+    "stars": 10,
+    "group": 2
+  },
+  "752002": {
+    "src": "/assets/original-ui/portraits/partner_avatar_752002.png",
+    "stars": 10,
+    "group": 2
+  },
+  "752003": {
+    "src": "/assets/original-ui/portraits/partner_avatar_752003.png",
+    "stars": 10,
+    "group": 2
+  },
+  "752004": {
+    "src": "/assets/original-ui/portraits/partner_avatar_752004.png",
+    "stars": 10,
+    "group": 2
+  },
+  "752005": {
+    "src": "/assets/original-ui/portraits/partner_avatar_752005.png",
+    "stars": 10,
+    "group": 2
+  },
+  "752006": {
+    "src": "/assets/original-ui/portraits/partner_avatar_752006.png",
+    "stars": 10,
+    "group": 2
+  },
+  "752007": {
+    "src": "/assets/original-ui/portraits/partner_avatar_752007.png",
+    "stars": 10,
+    "group": 2
+  },
+  "752008": {
+    "src": "/assets/original-ui/portraits/partner_avatar_752008.png",
+    "stars": 10,
+    "group": 2
+  },
+  "752009": {
+    "src": "/assets/original-ui/portraits/partner_avatar_752009.png",
+    "stars": 10,
+    "group": 2
+  },
+  "752010": {
+    "src": "/assets/original-ui/portraits/partner_avatar_752010.png",
+    "stars": 10,
+    "group": 2
+  },
+  "752011": {
+    "src": "/assets/original-ui/portraits/partner_avatar_752011.png",
+    "stars": 10,
+    "group": 2
+  },
+  "752012": {
+    "src": "/assets/original-ui/portraits/partner_avatar_752012.png",
+    "stars": 10,
+    "group": 2
+  },
+  "752013": {
+    "src": "/assets/original-ui/portraits/partner_avatar_752013.png",
+    "stars": 10,
+    "group": 2
+  },
+  "752014": {
+    "src": "/assets/original-ui/portraits/partner_avatar_752014.png",
+    "stars": 10,
+    "group": 2
+  },
+  "752015": {
+    "src": "/assets/original-ui/portraits/partner_avatar_752015.png",
+    "stars": 10,
+    "group": 2
+  },
+  "752016": {
+    "src": "/assets/original-ui/portraits/partner_avatar_752016.png",
+    "stars": 10,
+    "group": 2
+  },
+  "752017": {
+    "src": "/assets/original-ui/portraits/partner_avatar_752017.png",
+    "stars": 10,
+    "group": 2
+  },
+  "752018": {
+    "src": "/assets/original-ui/portraits/partner_avatar_752018.png",
+    "stars": 10,
+    "group": 2
+  },
+  "752019": {
+    "src": "/assets/original-ui/portraits/partner_avatar_752019.png",
+    "stars": 10,
+    "group": 2
+  },
+  "752020": {
+    "src": "/assets/original-ui/portraits/partner_avatar_752020.png",
+    "stars": 10,
+    "group": 2
+  },
+  "753001": {
+    "src": "/assets/original-ui/portraits/partner_avatar_753001.png",
+    "stars": 10,
+    "group": 3
+  },
+  "753002": {
+    "src": "/assets/original-ui/portraits/partner_avatar_753002.png",
+    "stars": 10,
+    "group": 3
+  },
+  "753003": {
+    "src": "/assets/original-ui/portraits/partner_avatar_753003.png",
+    "stars": 10,
+    "group": 3
+  },
+  "753004": {
+    "src": "/assets/original-ui/portraits/partner_avatar_753004.png",
+    "stars": 10,
+    "group": 3
+  },
+  "753005": {
+    "src": "/assets/original-ui/portraits/partner_avatar_753005.png",
+    "stars": 10,
+    "group": 3
+  },
+  "753006": {
+    "src": "/assets/original-ui/portraits/partner_avatar_753006.png",
+    "stars": 10,
+    "group": 3
+  },
+  "753007": {
+    "src": "/assets/original-ui/portraits/partner_avatar_753007.png",
+    "stars": 10,
+    "group": 3
+  },
+  "753008": {
+    "src": "/assets/original-ui/portraits/partner_avatar_753008.png",
+    "stars": 10,
+    "group": 3
+  },
+  "753009": {
+    "src": "/assets/original-ui/portraits/partner_avatar_753009.png",
+    "stars": 10,
+    "group": 3
+  },
+  "753010": {
+    "src": "/assets/original-ui/portraits/partner_avatar_753010.png",
+    "stars": 10,
+    "group": 3
+  },
+  "753011": {
+    "src": "/assets/original-ui/portraits/partner_avatar_753011.png",
+    "stars": 10,
+    "group": 3
+  },
+  "753012": {
+    "src": "/assets/original-ui/portraits/partner_avatar_753012.png",
+    "stars": 10,
+    "group": 3
+  },
+  "753013": {
+    "src": "/assets/original-ui/portraits/partner_avatar_753013.png",
+    "stars": 10,
+    "group": 3
+  },
+  "753014": {
+    "src": "/assets/original-ui/portraits/partner_avatar_753014.png",
+    "stars": 10,
+    "group": 3
+  },
+  "753015": {
+    "src": "/assets/original-ui/portraits/partner_avatar_753015.png",
+    "stars": 10,
+    "group": 3
+  },
+  "753016": {
+    "src": "/assets/original-ui/portraits/partner_avatar_753016.png",
+    "stars": 10,
+    "group": 3
+  },
+  "753017": {
+    "src": "/assets/original-ui/portraits/partner_avatar_753017.png",
+    "stars": 10,
+    "group": 3
+  },
+  "753018": {
+    "src": "/assets/original-ui/portraits/partner_avatar_753018.png",
+    "stars": 10,
+    "group": 3
+  },
+  "753019": {
+    "src": "/assets/original-ui/portraits/partner_avatar_753019.png",
+    "stars": 10,
+    "group": 3
+  },
+  "754001": {
+    "src": "/assets/original-ui/portraits/partner_avatar_754001.png",
+    "stars": 10,
+    "group": 4
+  },
+  "754002": {
+    "src": "/assets/original-ui/portraits/partner_avatar_754002.png",
+    "stars": 10,
+    "group": 4
+  },
+  "754003": {
+    "src": "/assets/original-ui/portraits/partner_avatar_754003.png",
+    "stars": 10,
+    "group": 4
+  },
+  "754004": {
+    "src": "/assets/original-ui/portraits/partner_avatar_754004.png",
+    "stars": 10,
+    "group": 4
+  },
+  "754005": {
+    "src": "/assets/original-ui/portraits/partner_avatar_754005.png",
+    "stars": 10,
+    "group": 4
+  },
+  "754006": {
+    "src": "/assets/original-ui/portraits/partner_avatar_754006.png",
+    "stars": 10,
+    "group": 4
+  },
+  "754007": {
+    "src": "/assets/original-ui/portraits/partner_avatar_754007.png",
+    "stars": 10,
+    "group": 4
+  },
+  "754008": {
+    "src": "/assets/original-ui/portraits/partner_avatar_754008.png",
+    "stars": 10,
+    "group": 4
+  },
+  "754009": {
+    "src": "/assets/original-ui/portraits/partner_avatar_754009.png",
+    "stars": 10,
+    "group": 4
+  },
+  "754010": {
+    "src": "/assets/original-ui/portraits/partner_avatar_754010.png",
+    "stars": 10,
+    "group": 4
+  },
+  "754011": {
+    "src": "/assets/original-ui/portraits/partner_avatar_754011.png",
+    "stars": 10,
+    "group": 4
+  },
+  "754012": {
+    "src": "/assets/original-ui/portraits/partner_avatar_754012.png",
+    "stars": 10,
+    "group": 4
+  },
+  "754013": {
+    "src": "/assets/original-ui/portraits/partner_avatar_754013.png",
+    "stars": 10,
+    "group": 4
+  },
+  "754014": {
+    "src": "/assets/original-ui/portraits/partner_avatar_754014.png",
+    "stars": 10,
+    "group": 4
+  },
+  "754015": {
+    "src": "/assets/original-ui/portraits/partner_avatar_754015.png",
+    "stars": 10,
+    "group": 4
+  },
+  "754016": {
+    "src": "/assets/original-ui/portraits/partner_avatar_754016.png",
+    "stars": 10,
+    "group": 4
+  },
+  "754017": {
+    "src": "/assets/original-ui/portraits/partner_avatar_754017.png",
+    "stars": 10,
+    "group": 4
+  },
+  "754018": {
+    "src": "/assets/original-ui/portraits/partner_avatar_754018.png",
+    "stars": 10,
+    "group": 4
+  },
+  "755001": {
+    "src": "/assets/original-ui/portraits/partner_avatar_755001.png",
+    "stars": 10,
+    "group": 5
+  },
+  "755002": {
+    "src": "/assets/original-ui/portraits/partner_avatar_755002.png",
+    "stars": 10,
+    "group": 5
+  },
+  "755003": {
+    "src": "/assets/original-ui/portraits/partner_avatar_755003.png",
+    "stars": 10,
+    "group": 5
+  },
+  "755004": {
+    "src": "/assets/original-ui/portraits/partner_avatar_755004.png",
+    "stars": 10,
+    "group": 5
+  },
+  "755005": {
+    "src": "/assets/original-ui/portraits/partner_avatar_755005.png",
+    "stars": 10,
+    "group": 5
+  },
+  "755006": {
+    "src": "/assets/original-ui/portraits/partner_avatar_755006.png",
+    "stars": 10,
+    "group": 5
+  },
+  "755007": {
+    "src": "/assets/original-ui/portraits/partner_avatar_755007.png",
+    "stars": 10,
+    "group": 5
+  },
+  "755008": {
+    "src": "/assets/original-ui/portraits/partner_avatar_755008.png",
+    "stars": 10,
+    "group": 5
+  },
+  "755009": {
+    "src": "/assets/original-ui/portraits/partner_avatar_755009.png",
+    "stars": 10,
+    "group": 5
+  },
+  "755010": {
+    "src": "/assets/original-ui/portraits/partner_avatar_755010.png",
+    "stars": 10,
+    "group": 5
+  },
+  "755011": {
+    "src": "/assets/original-ui/portraits/partner_avatar_755011.png",
+    "stars": 10,
+    "group": 5
+  },
+  "755012": {
+    "src": "/assets/original-ui/portraits/partner_avatar_755012.png",
+    "stars": 10,
+    "group": 5
+  },
+  "755013": {
+    "src": "/assets/original-ui/portraits/partner_avatar_755013.png",
+    "stars": 10,
+    "group": 5
+  },
+  "756001": {
+    "src": "/assets/original-ui/portraits/partner_avatar_756001.png",
+    "stars": 10,
+    "group": 6
+  },
+  "756002": {
+    "src": "/assets/original-ui/portraits/partner_avatar_756002.png",
+    "stars": 10,
+    "group": 6
+  },
+  "756003": {
+    "src": "/assets/original-ui/portraits/partner_avatar_756003.png",
+    "stars": 10,
+    "group": 6
+  },
+  "756004": {
+    "src": "/assets/original-ui/portraits/partner_avatar_756004.png",
+    "stars": 10,
+    "group": 6
+  },
+  "756005": {
+    "src": "/assets/original-ui/portraits/partner_avatar_756005.png",
+    "stars": 10,
+    "group": 6
+  },
+  "756006": {
+    "src": "/assets/original-ui/portraits/partner_avatar_756006.png",
+    "stars": 10,
+    "group": 6
+  },
+  "756007": {
+    "src": "/assets/original-ui/portraits/partner_avatar_756007.png",
+    "stars": 10,
+    "group": 6
+  },
+  "756008": {
+    "src": "/assets/original-ui/portraits/partner_avatar_756008.png",
+    "stars": 10,
+    "group": 6
+  },
+  "756009": {
+    "src": "/assets/original-ui/portraits/partner_avatar_756009.png",
+    "stars": 10,
+    "group": 6
+  },
+  "756010": {
+    "src": "/assets/original-ui/portraits/partner_avatar_756010.png",
+    "stars": 10,
+    "group": 6
+  },
+  "756011": {
+    "src": "/assets/original-ui/portraits/partner_avatar_756011.png",
+    "stars": 10,
+    "group": 6
+  },
+  "756012": {
+    "src": "/assets/original-ui/portraits/partner_avatar_756012.png",
+    "stars": 10,
+    "group": 6
+  },
+  "757001": {
+    "src": "/assets/original-ui/portraits/partner_avatar_757001.png",
+    "stars": 10,
+    "group": 7
+  },
+  "757002": {
+    "src": "/assets/original-ui/portraits/partner_avatar_757002.png",
+    "stars": 10,
+    "group": 7
+  },
+  "757003": {
+    "src": "/assets/original-ui/portraits/partner_avatar_757003.png",
+    "stars": 10,
+    "group": 7
+  },
+  "761001": {
+    "src": "/assets/original-ui/portraits/partner_avatar_661001.png",
+    "stars": 10,
+    "group": 1
+  },
+  "762001": {
+    "src": "/assets/original-ui/portraits/partner_avatar_662001.png",
+    "stars": 10,
+    "group": 2
+  },
+  "763001": {
+    "src": "/assets/original-ui/portraits/partner_avatar_663001.png",
+    "stars": 10,
+    "group": 3
+  },
+  "764001": {
+    "src": "/assets/original-ui/portraits/partner_avatar_664001.png",
+    "stars": 10,
+    "group": 4
+  },
+  "765001": {
+    "src": "/assets/original-ui/portraits/partner_avatar_665001.png",
+    "stars": 10,
+    "group": 5
+  },
+  "766001": {
+    "src": "/assets/original-ui/portraits/partner_avatar_666001.png",
+    "stars": 10,
+    "group": 6
+  },
+  "1000001": {
+    "stars": 10,
+    "group": 1
+  },
+  "1000002": {
+    "stars": 10,
+    "group": 4
+  },
+  "1000003": {
+    "stars": 10,
+    "group": 5
+  },
+  "1000004": {
+    "stars": 10,
+    "group": 6
+  },
+  "1000005": {
+    "stars": 10,
+    "group": 3
+  },
+  "1000006": {
+    "stars": 10,
+    "group": 2
+  },
+  "1000026": {
+    "stars": 5,
+    "group": 4
+  },
+  "2000001": {
+    "stars": 3,
+    "group": 0
+  },
+  "2000002": {
+    "stars": 3,
+    "group": 0
+  },
+  "55001": {
+    "stars": 5,
+    "group": 5
+  }
+}

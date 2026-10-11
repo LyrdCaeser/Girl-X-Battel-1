@@ -1,0 +1,196 @@
+{
+  "activity_bomb_make": {
+    "1": {
+      "awards": "225#20",
+      "id": 1,
+      "weight": 15
+    },
+    "2": {
+      "awards": "226#50",
+      "id": 2,
+      "weight": 50
+    },
+    "3": {
+      "awards": "226#55",
+      "id": 3,
+      "weight": 20
+    },
+    "4": {
+      "awards": "226#60",
+      "id": 4,
+      "weight": 15
+    }
+  },
+  "activity_bomb_award": {
+    "1": {
+      "cost": "226#5",
+      "awards": "1#60000",
+      "id": 1,
+      "num": 0,
+      "limit": 9999
+    },
+    "2": {
+      "cost": "226#5",
+      "awards": "9#60000",
+      "id": 2,
+      "num": 0,
+      "limit": 9999
+    },
+    "3": {
+      "cost": "226#1500",
+      "awards": "4102007#1",
+      "id": 3,
+      "num": 0,
+      "limit": 5
+    },
+    "4": {
+      "cost": "226#3000",
+      "awards": "4101008#1",
+      "id": 4,
+      "num": 0,
+      "limit": 5
+    },
+    "5": {
+      "cost": "226#400",
+      "awards": "36#10",
+      "id": 5,
+      "num": 500,
+      "limit": 5
+    },
+    "6": {
+      "cost": "226#150",
+      "awards": "35#15",
+      "id": 6,
+      "num": 500,
+      "limit": 20
+    },
+    "7": {
+      "cost": "226#200",
+      "awards": "170#6",
+      "id": 7,
+      "num": 1000,
+      "limit": 50
+    },
+    "8": {
+      "cost": "226#600",
+      "awards": "4201042#10",
+      "id": 8,
+      "num": 1000,
+      "limit": 20
+    },
+    "9": {
+      "cost": "226#750",
+      "awards": "20#5",
+      "id": 9,
+      "num": 1500,
+      "limit": 10
+    },
+    "10": {
+      "cost": "226#1000",
+      "awards": "419#150",
+      "id": 10,
+      "num": 1500,
+      "limit": 10
+    },
+    "11": {
+      "cost": "226#1500",
+      "awards": "418#25",
+      "id": 11,
+      "num": 2000,
+      "limit": 10
+    },
+    "12": {
+      "cost": "226#4000",
+      "awards": "4101010#1",
+      "id": 12,
+      "num": 3000,
+      "limit": 1
+    },
+    "13": {
+      "cost": "226#4000",
+      "awards": "4501002#1",
+      "id": 13,
+      "num": 4000,
+      "limit": 1
+    },
+    "14": {
+      "cost": "226#8000",
+      "awards": "940059#40",
+      "id": 14,
+      "num": 4000,
+      "limit": 1
+    },
+    "15": {
+      "cost": "226#4500",
+      "awards": "4101010#1",
+      "id": 15,
+      "num": 4500,
+      "limit": 2
+    },
+    "16": {
+      "cost": "226#7500",
+      "awards": "4104023#1",
+      "id": 16,
+      "num": 5000,
+      "limit": 1
+    },
+    "17": {
+      "cost": "226#12000",
+      "awards": "4402015#1",
+      "id": 17,
+      "num": 7000,
+      "limit": 1
+    },
+    "18": {
+      "cost": "226#18000",
+      "awards": "6791#1",
+      "id": 18,
+      "num": 8000,
+      "limit": 1
+    },
+    "19": {
+      "cost": "226#6000",
+      "awards": "4901001#1",
+      "id": 19,
+      "num": 8000,
+      "limit": 1
+    },
+    "20": {
+      "cost": "226#9000",
+      "awards": "5100020#1",
+      "id": 20,
+      "num": 9000,
+      "limit": 2
+    },
+    "21": {
+      "cost": "226#10000",
+      "awards": "940059#100",
+      "id": 21,
+      "num": 10000,
+      "limit": 2
+    }
+  },
+  "cost": "225#25",
+  "level_step": 100,
+  "sources": {
+    "/Users/schroyle/Downloads/Decomp files/lua/data/tables/activity_bomb_make.lua": "8286be817b8f05d18933b896e9d921fdb13a163796e25ccb6415968576e7d148",
+    "/Users/schroyle/Downloads/Decomp files/lua/data/tables/activity_bomb_award.lua": "c44bfd4c332b60db356afa9ddc90a6906dabf938488652b26071ace436022771",
+    "/Users/schroyle/Downloads/Decomp files/lua/data/tables/misc.lua": "c6aa1be7b5284fe01ee5313c74d2dfceeed9042f2986c131fa061a314384add3",
+    "/Users/schroyle/Downloads/Decomp files/lua/app/windows/ActivityBombGachaWindow.lua": "a45cd257a3d1dea4493ef245772d5803721098d17f105464670224cb098f50e7",
+    "/Users/schroyle/Downloads/Decomp files/lua/app/windows/activity/ActivityBomb.lua": "e729412de421a8303077145b31a045e854c47894e15aad2ff49d5b106d2e763d",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/activity_bomb_bg_banner_1.png": "29e2affbb0d90662488cd3c23b15d1da8325c8067efcc6f0528f5a41b27bce79",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/activity_bomb_bg_jdt2.png": "0bc4f173064d6a00b20ae4fda26a68cf62cb487d6207fb6cef7ef732032942ca",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/activity_bomb_btn_zzhy.png": "eb58bd1ae59249a4870ca3bd47bf60d8be758da191d47fbd6a3e2e9dc0e5d592",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/activity_bomb_bg_xinxi.png": "6f21586526973ad8b1052d137cba3823763b621bfeee3c3bcfb63bf8857df325",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/activity_bomb_logo_zh_tw.png": "3ba3d2436903534331bcc6f4fb7ab1dd65baabd0ad71a0ece4599f0778aade40",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/activity_bomb_logo_en_en.png": "bdd451bed5e421d35ed4f50b6bc8d1bf73ec8b04e805948c5c783263eb7ebfff",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/activity_bomb_logo_fr_fr.png": "de9bda7ed5ac204cdc6a2a53bd04dae1800d52bda3f5ffb19b140f87c848fde8",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/activity_bomb_logo_de_de.png": "1946350ae805bb44c5f612f0313f031c155456788e3b4f8f422dbf4e72ebe2c5",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/activity_bomb_logo_ko_kr.png": "00e0d9982dc3ea6be0d655d838425f8d65eb7c316187a70a02c7efcf6d3291a4",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/activity_bomb_bg_banner.png": "9f9d13b37444023e98021e7f5ddcd045223c3794ccd9b31556647b47f9208c3c",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/activity_bomb_logo_ja_jp.png": "ad7d3ac899575e42fd1738e76165baad5779ccd76cfe8c72a06b2ec21b687a1c",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/activity_bomb_bg_biaoti.png": "9da77b82b13cae7301b06e2cb9aa609a61f275a44108be2b43c45d84ff78d642",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/activity_bomb_bg_jdt.png": "adf3942c0b711873d25d8f64279628312bf15094ee5470626811ea754505bcc1",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/activity_bomb.png": "bbf1de297f21fc96552f8d7585fb0f68d7dbe47ce13d591a874fe09f2ab87151"
+  }
+}

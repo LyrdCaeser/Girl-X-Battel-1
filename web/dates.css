@@ -1,0 +1,114 @@
+/* Dates (dates_window.prefab): art + right panel dates_bg02 (258×971), tabs, bottom buttons. --u = prefab px. */
+.dates-view{container-type:inline-size;--u:calc(100cqw / 720);background:#f3e9f1;color:#5a3f5c}
+.dates-view[hidden]{display:none}
+.dt-top{display:flex;align-items:center;gap:8px;padding:6px 8px;background:linear-gradient(#fbeff6,#e9c6dc)}
+.dt-cur{flex:1;display:flex;align-items:center;gap:6px;background:#fff;border-radius:16px;padding:1px 10px 1px 2px;font-weight:bold}.dt-cur img{width:28px;height:28px}
+.dt-back{border:0;background:none;padding:0;cursor:pointer}.dt-back img{width:40px;height:40px}
+.dt-title{text-align:center;margin:8px 0;color:#b8436a}
+.dt-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:8px}
+.dt-card{position:relative;display:grid;justify-items:center;gap:2px;padding:6px 2px;border:2px solid #efc3db;border-radius:10px;background:#fff;cursor:pointer;font-size:11px;color:#6a4a6a}
+.dt-card img:first-child,.dt-card canvas{width:64px;height:64px;border-radius:8px}.dt-card-love{position:absolute;right:2px;top:2px;width:30px}
+.dt-scene{position:relative;height:calc(1010 * var(--u));background:center/cover no-repeat;overflow:hidden}
+.dt-art{position:absolute;left:-10%;bottom:0;height:100%;max-width:none;object-fit:contain;object-position:40% 100%;width:85%}
+.dt-name{position:absolute;left:12px;top:10px;padding:4px 14px;border-radius:14px;background:#fffc;font-size:18px;color:#8a3d62}
+.dt-bubble{position:absolute;left:5%;top:calc(120 * var(--u));width:calc(430 * var(--u));min-height:calc(76 * var(--u));background:center/100% 100% no-repeat;padding:calc(14 * var(--u)) calc(20 * var(--u));box-sizing:border-box;font-size:13px;color:#445;font-weight:bold;z-index:3}
+.dt-tabs{position:absolute;right:calc(8 * var(--u));top:calc(20 * var(--u));display:flex;gap:4px;z-index:3}
+.dt-tab{width:calc(122 * var(--u));height:calc(61 * var(--u));min-height:36px;min-width:70px;border:0;background:center/100% 100% no-repeat;display:flex;align-items:center;justify-content:center;gap:2px;font-weight:bold;font-size:12px;color:#8a3d62;cursor:pointer}
+.dt-tab img{width:26px}.dt-tab.on{color:#fff;text-shadow:0 1px 2px #8a3d62}
+.dt-panel{position:absolute;right:calc(8 * var(--u));top:calc(100 * var(--u));width:calc(258 * var(--u));min-width:150px;bottom:calc(10 * var(--u));background:center/100% 100% no-repeat;display:flex;flex-direction:column;align-items:center;padding:10px 6px;box-sizing:border-box;gap:6px;z-index:2}
+.dt-love{position:relative;width:74px}.dt-love-icon{width:74px}.dt-love b{position:absolute;left:0;right:0;bottom:12px;text-align:center;color:#fff;text-shadow:0 0 3px #a0325a;font-size:13px}
+.dt-hearts{display:flex;gap:1px}.dt-heart{position:relative;width:24px;height:24px}.dt-heart img{position:absolute;inset:0;width:100%}
+.dt-bar{position:relative;width:92%;height:14px;border-radius:7px;background:#e7cfe0;overflow:hidden}.dt-bar i{display:block;height:100%;background:linear-gradient(90deg,#ff8fb6,#ff4f8d)}.dt-bar span{position:absolute;inset:0;font-size:10px;text-align:center;line-height:14px;color:#5a2a44;font-weight:bold}
+.dt-gifts,.dt-voices{flex:1;width:100%;overflow-y:auto;display:grid;grid-template-columns:1fr 1fr;gap:6px;align-content:start}
+.dt-gift{position:relative;aspect-ratio:1;border:2px solid #f0c9dc;border-radius:8px;background:#fff;padding:3px;cursor:pointer}.dt-gift img:first-child{width:100%;height:100%;object-fit:contain}
+.dt-gift b{position:absolute;right:3px;bottom:0;color:#fff;text-shadow:0 0 2px #000;font-size:11px}.dt-fav{position:absolute;right:2px;top:2px;width:18px!important;height:auto!important}
+.dt-empty{grid-column:1/-1;font-size:11px;color:#8a6a80;margin:6px}
+.dt-gift-actions{display:flex;align-items:center;gap:6px}.dt-many{display:flex;align-items:center;gap:3px;font-size:12px;font-weight:bold}
+.dt-small{display:flex;align-items:center;gap:3px;border:1px solid #cf7ba4;border-radius:8px;background:linear-gradient(#ffe2f0,#f5a9cc);font-size:11px;font-weight:bold;padding:3px 6px;cursor:pointer}.dt-small img{width:20px}.dt-small:disabled{opacity:.5}
+.dt-voice{grid-column:1/-1;text-align:left;border:1px solid #efc3db;border-radius:8px;background:#fff;padding:6px 8px;font-size:11px;color:#6a4a6a;cursor:pointer}.dt-voice::before{content:'▶ '}.dt-voice.lock{opacity:.45}.dt-voice.lock::before{content:'🔒 '}
+.dt-btns{display:flex;justify-content:space-around;padding:8px}
+.dt-btn{position:relative;width:calc(200 * var(--u));min-width:110px;height:calc(80 * var(--u));min-height:44px;border:0;background:center/100% 100% no-repeat;display:flex;align-items:center;justify-content:center;gap:4px;font-weight:bold;color:#fff;text-shadow:0 1px 2px #8a3d62;cursor:pointer}.dt-btn img{width:36px}
+.dt-red{position:absolute;right:0;top:0;width:20px!important}
+.dt-note{text-align:center;font-weight:bold;color:#b8436a;margin:4px}
+.dt-attr{background:#fff;color:#445;border-radius:10px;padding:10px;text-align:left}.dt-small-note{font-size:11px;color:#778}
+.gu-love{position:absolute;left:14px;top:120px;width:52px;height:52px;border:0;background:none;padding:0;cursor:pointer;z-index:5}.gu-love img{width:100%}
+/* WAVE-052: DatesWindow at dates_window.prefab coordinates (720×1280 canvas). */
+.dt-stage{--u:calc(100cqw / 720);position:relative;width:100%;aspect-ratio:720/1280;background:center/cover no-repeat;overflow:hidden}
+.dates-view{container-type:inline-size}
+.dt-stage>*{position:absolute;box-sizing:border-box}
+.dt-art{inset:0;cursor:pointer}.dt-art .wp-home{height:100%}.dt-art-fallback{position:absolute;left:0;bottom:0;width:70%;object-fit:contain}
+.dt-name2{display:flex;align-items:center;gap:calc(10 * var(--u));padding:0 calc(16 * var(--u));background:linear-gradient(90deg,#fffffff0,#ffffff00);border-radius:calc(40 * var(--u))}.dt-name2 b{font:800 calc(34 * var(--u)) system-ui;color:#fff;-webkit-text-stroke:calc(6 * var(--u)) #6a4a7a;paint-order:stroke fill}.dt-name-group{width:calc(56 * var(--u));height:calc(56 * var(--u))}
+.dt-help{border:0;background:none;padding:0}.dt-help img{width:100%;height:100%}
+.dt-tab2{border:0;background:center/100% 100% no-repeat;padding:0;display:flex;align-items:center;justify-content:center;gap:calc(4 * var(--u));cursor:pointer}.dt-tab-ic{width:calc(44 * var(--u));height:calc(44 * var(--u))}.dt-tab2.on .dt-tab-ic{width:calc(60 * var(--u));height:calc(60 * var(--u));margin-top:calc(-14 * var(--u))}.dt-tab2 span{font:800 calc(22 * var(--u)) system-ui;color:#8a5f7a}.dt-tab2.on span{color:#fff;-webkit-text-stroke:calc(4 * var(--u)) #c0527d;paint-order:stroke fill}
+.dt-side{background:center/100% 100% no-repeat;pointer-events:none}
+.dt-love2{border:0;background:none;padding:0;cursor:pointer}.dt-love2 img{width:100%;height:100%}.dt-love2 b{position:absolute;left:0;right:0;bottom:calc(14 * var(--u));text-align:center;font:800 calc(24 * var(--u)) system-ui;color:#fff;-webkit-text-stroke:calc(4 * var(--u)) #b0476f;paint-order:stroke fill}
+.dt-heart2 img{position:absolute;inset:0;width:100%;height:100%}
+.dt-tip{margin:0;text-align:center;font:700 calc(18 * var(--u)) system-ui;color:#9a6a86}
+.dt-giftbox{padding:calc(8 * var(--u));overflow:auto}.dt-giftbox .dt-gifts{display:grid;grid-template-columns:1fr 1fr;gap:calc(10 * var(--u))}
+.dt-giftbox .dt-gift{position:relative;width:calc(86 * var(--u));height:calc(86 * var(--u));justify-self:center;border:0;padding:0;border-radius:calc(12 * var(--u));background:#fff;box-shadow:0 0 0 calc(2 * var(--u)) #e9c5d6;cursor:pointer}.dt-giftbox .dt-gift img:first-child{width:100%;height:100%;object-fit:contain}.dt-giftbox .dt-gift b{position:absolute;right:calc(4 * var(--u));bottom:0;font:800 calc(18 * var(--u)) system-ui;color:#fff;-webkit-text-stroke:calc(4 * var(--u)) #333;paint-order:stroke fill}.dt-giftbox .dt-fav{position:absolute;right:calc(-4 * var(--u));top:calc(-6 * var(--u));width:calc(22 * var(--u));height:calc(26 * var(--u))}
+.dt-giftbox .dt-empty{font:600 calc(18 * var(--u)) system-ui;color:#9a6a86;text-align:center}
+.dt-bluebtn{border:solid transparent;border-width:calc(18 * var(--u)) calc(22 * var(--u));border-image:url('/assets/dates/blue_btn_60_60.png') 24 fill stretch;background:none;padding:0;display:flex;align-items:center;justify-content:center;gap:calc(6 * var(--u));font:800 calc(22 * var(--u)) system-ui;color:#fff;-webkit-text-stroke:calc(4 * var(--u)) #3f73b8;paint-order:stroke fill;cursor:pointer}
+.dt-bluebtn img{width:calc(44 * var(--u));height:calc(44 * var(--u));margin-left:calc(-30 * var(--u))}.dt-bluebtn small{position:absolute;left:calc(10 * var(--u));bottom:calc(-12 * var(--u));font:800 calc(16 * var(--u)) system-ui}
+.dt-bluebtn.static{position:static;display:flex;width:200px;height:48px;margin:12px auto 0;border-width:14px 18px;font-size:17px;-webkit-text-stroke:3px #3f73b8}.dt-bluebtn:disabled{filter:grayscale(.8);opacity:.7}
+.dt-many2{display:flex;align-items:center;justify-content:center;gap:calc(8 * var(--u));font:800 calc(20 * var(--u)) system-ui;color:#9a6a86}
+.dt-voicebox{overflow:auto;display:flex;flex-direction:column;gap:calc(8 * var(--u));padding:calc(6 * var(--u))}.dt-voicebox .dt-voices{display:flex;flex-direction:column;gap:calc(8 * var(--u))}.dt-voicebox .dt-voice{height:calc(58 * var(--u));border:0;border-radius:calc(10 * var(--u));background:linear-gradient(#fff,#f3e3ec);box-shadow:0 0 0 calc(2 * var(--u)) #e9c5d6;font:700 calc(20 * var(--u)) system-ui;color:#8a5f7a;cursor:pointer}.dt-voice.lock{opacity:.5}
+.dt-bubble2{padding:calc(16 * var(--u)) calc(24 * var(--u));background:#fffffff2;border-radius:calc(38 * var(--u));box-shadow:0 2px 8px #0003;font:600 calc(20 * var(--u))/1.35 system-ui;color:#5a4a5a;text-align:center;pointer-events:none}.dt-bubble-arrow{position:absolute;left:calc(40 * var(--u));top:100%;width:calc(30 * var(--u));height:calc(34 * var(--u));margin-top:calc(-6 * var(--u))}
+.dt-btn2{border:0;background:center/100% 100% no-repeat;padding:0;display:flex;align-items:center;justify-content:flex-end;padding-right:calc(18 * var(--u));cursor:pointer}.dt-btn-ic{position:absolute;left:calc(-10 * var(--u));width:calc(80 * var(--u));height:calc(80 * var(--u))}.dt-btn2 span{font:800 calc(24 * var(--u)) system-ui;color:#8a5f7a}
+.dt-note2{margin:0;padding:calc(8 * var(--u));border-radius:calc(12 * var(--u));background:#fffffff0;text-align:center;font:700 calc(18 * var(--u)) system-ui;color:#8a5f7a}
+/* Make Gift (DatesGiftsWindow) */
+.dt-make-tabs{display:flex;border-radius:8px;overflow:hidden;box-shadow:0 0 0 1px #d8b9c8;margin-bottom:8px}.dt-make-tabs button{flex:1;height:36px;border:0;background:linear-gradient(#fff,#f5e6ee);font:800 14px system-ui;color:#8a5f7a;cursor:pointer}.dt-make-tabs button.on{background:linear-gradient(#f39ac0,#d9658f);color:#fff}
+.dt-make-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}.dt-make-grid .dt-gift{position:relative;aspect-ratio:1;border:0;border-radius:10px;background:#fff;box-shadow:0 0 0 2px #ecd3df;padding:0;cursor:pointer}.dt-make-grid .dt-gift.on{box-shadow:0 0 0 3px #d9658f}.dt-make-grid .dt-gift img{width:100%;height:100%;object-fit:contain}.dt-make-grid .dt-gift b{position:absolute;right:3px;bottom:0;font:800 12px system-ui;color:#fff;-webkit-text-stroke:2px #333;paint-order:stroke fill}
+.dt-make-row{display:flex;align-items:center;gap:6px;margin-top:10px;flex-wrap:wrap}.dt-make-name{flex-basis:100%;color:#8a5f7a}.dt-num{min-width:34px;height:30px;border:1px solid #d8b9c8;border-radius:8px;background:#fff;font:800 14px system-ui;color:#8a5f7a;cursor:pointer}.dt-make-n{min-width:40px;text-align:center}.dt-make-cost{margin-left:auto;display:flex;align-items:center;gap:4px}.dt-make-cost img{width:26px;height:26px}
+.dt-btn2{justify-content:flex-end;padding-right:calc(14 * var(--u))}.dt-btn2 span{min-width:calc(70 * var(--u));text-align:center}.dt-btn-ic{left:calc(-18 * var(--u))}
+.dt-make-grid{grid-template-columns:repeat(5,minmax(0,1fr))}.dt-make-grid .dt-gift{min-width:0}
+/* WAVE-052b: smaller icons — gifts fit two columns inside the 216-unit box, bottom / blue buttons keep their labels clear. */
+.dt-giftbox{padding:calc(10 * var(--u)) calc(8 * var(--u))}
+.dt-giftbox .dt-gifts{grid-template-columns:repeat(2,minmax(0,1fr));gap:calc(10 * var(--u));justify-items:center}
+.dt-giftbox .dt-gift{width:calc(78 * var(--u));height:calc(78 * var(--u));min-width:0;max-width:100%}
+.dt-giftbox .dt-gift img:first-child{position:absolute;inset:10%;width:80%;height:80%}
+.dt-giftbox .dt-gift b{font-size:calc(15 * var(--u))}
+.dt-btn-ic{left:calc(-4 * var(--u));width:calc(60 * var(--u));height:calc(60 * var(--u))}.dt-btn2 span{font-size:calc(22 * var(--u))}
+.dt-bluebtn img{width:calc(34 * var(--u));height:calc(34 * var(--u));margin-left:calc(-16 * var(--u))}.dt-bluebtn{font-size:calc(20 * var(--u))}.dt-bluebtn small{left:calc(-2 * var(--u));bottom:calc(-14 * var(--u));font-size:calc(14 * var(--u))}
+.dt-tab-ic{width:calc(38 * var(--u));height:calc(38 * var(--u))}.dt-tab2.on .dt-tab-ic{width:calc(50 * var(--u));height:calc(50 * var(--u));margin-top:calc(-10 * var(--u))}
+.dt-btn2{justify-content:center;padding:0 calc(8 * var(--u)) 0 calc(50 * var(--u))}.dt-btn-ic{left:calc(-6 * var(--u));width:calc(54 * var(--u));height:calc(54 * var(--u))}.dt-btn2 span{min-width:0;font-size:calc(21 * var(--u))}
+/* WAVE-053: sliced sprites (dates_bg02 54×972 and dates_btn 94×80 stretch only in the middle), name tag, CV, item frames,
+   bottom navigation, File / Date / Oath windows. */
+.dt-side{background:none!important;border:solid transparent;border-width:0 calc(26 * var(--u));border-image:url('/assets/dates/dates_bg02.png') 0 26 fill stretch}
+.dt-btn2{background:none!important;border:solid transparent;border-width:0 calc(40 * var(--u));border-image:url('/assets/dates/dates_btn.png') 0 44 fill stretch;padding:0;justify-content:center}.dt-btn2 span{margin-left:calc(20 * var(--u))}.dt-btn-ic{left:calc(-34 * var(--u));width:calc(64 * var(--u));height:calc(64 * var(--u))}
+.dt-nametag{position:absolute}.dt-nt-bg{position:absolute;inset:0;width:100%;height:100%}.dt-nt-group{position:absolute;left:calc(28 * var(--u));top:calc(15 * var(--u));width:calc(50 * var(--u));height:calc(50 * var(--u))}
+.dt-nt-stars{position:absolute;left:calc(90 * var(--u));top:calc(10 * var(--u));display:flex;gap:calc(2 * var(--u));align-items:center}.dt-nt-stars img{width:calc(26 * var(--u));height:calc(26 * var(--u))}.dt-nt-stars .dt-nt-pot{width:calc(90 * var(--u));height:calc(34 * var(--u))}.dt-nt-stars b{margin-left:calc(-60 * var(--u));font:800 calc(20 * var(--u)) system-ui;color:#fff;-webkit-text-stroke:calc(3 * var(--u)) #a8551f;paint-order:stroke fill}
+.dt-nt-name{position:absolute;left:calc(90 * var(--u));top:calc(40 * var(--u));font:800 calc(28 * var(--u)) system-ui;color:#fff;-webkit-text-stroke:calc(5 * var(--u)) #3e4f6e;paint-order:stroke fill;white-space:nowrap}
+.dt-cv2{display:flex;align-items:center;justify-content:center;border-radius:calc(17 * var(--u));background:#ffffffe0;box-shadow:inset 0 0 0 1px #c9d6e8}.dt-cv2 span{font:700 calc(18 * var(--u)) system-ui;color:#4a5b78;white-space:nowrap}
+.dt-giftbox .dt-gift{background:center/100% 100% no-repeat;box-shadow:none;border-radius:calc(8 * var(--u))}
+.dt-nav{position:sticky!important;bottom:0;z-index:30}
+.dt-empty2{text-align:center;color:#8a5f7a}
+.dt-file-win .gs-win-body,.dt-story-win .gs-win-body{max-height:70vh;overflow:auto}
+.dt-file{margin:0 0 10px;padding:10px 12px;border-radius:10px;background:#fff7fb;box-shadow:inset 0 0 0 1px #efd0e0}.dt-file h4{margin:0 0 6px;color:#c0527d;font-size:15px}.dt-file p{margin:0;line-height:1.5;color:#5a4a5a;font-size:13px}.dt-file.lock{opacity:.7}.dt-file-bonus{background:#f4f8ff;box-shadow:inset 0 0 0 1px #cfdcf0}.dt-file-bonus h4{color:#4b6592}
+.dt-story{display:flex;align-items:center;gap:10px;margin:0 0 8px;padding:8px;border-radius:10px;background:#fff;box-shadow:inset 0 0 0 1px #efd0e0}.dt-story.lock{opacity:.6}.dt-story.cur{box-shadow:inset 0 0 0 2px #e98fb4}
+.dt-story-pic{width:70px;height:46px;flex:none;border-radius:6px;background:#f3e3ec center/100% 100% no-repeat}.dt-story-txt{flex:1;display:flex;flex-direction:column;gap:2px}.dt-story-txt b{color:#c0527d;font-size:13px}.dt-story-txt span{color:#5a4a5a;font-size:13px}.dt-story-txt small{color:#8a8aa0}
+.dt-story-btn{min-width:84px;height:36px;border:solid transparent;border-width:12px 16px;border-image:url('/assets/dates/blue_btn_60_60.png') 24 fill stretch;background:none;padding:0;font:800 13px system-ui;color:#fff;-webkit-text-stroke:2px #3f73b8;paint-order:stroke fill;cursor:pointer;box-sizing:border-box}.dt-story-btn:disabled{filter:grayscale(.9);opacity:.7;cursor:default}
+.dt-oath{position:relative;padding:14px;border-radius:12px;background:#fff center/100% 100% no-repeat}
+.dt-oath-top{display:flex;gap:10px}.dt-oath-pic{width:40%;aspect-ratio:3/4;border-radius:10px;overflow:hidden;background:#fbe9f2}.dt-oath-pic img{width:100%;height:100%;object-fit:cover;object-position:top}
+.dt-oath-info{flex:1;display:flex;flex-direction:column;gap:8px}.dt-oath-info .dt-nametag{position:relative;width:220px;height:62px;--u:calc(220px / 282)}
+.dt-oath-row{display:flex;justify-content:space-between;margin:0;padding:6px 8px;border-radius:8px;background:#fff6fa;font-size:13px;color:#8a5f7a}.dt-oath-row b{color:#c0527d}
+.dt-oath-text{margin:12px 0 8px;padding:16px;border:solid transparent;border-width:0 20px;border-image:url('/assets/dates/dates_bg11.png') 0 20 fill stretch;background:none!important}.dt-oath-text p{margin:0;white-space:pre-line;text-align:center;font:italic 600 15px/1.6 Georgia,serif;color:#8a4a6a}
+.dt-vow{display:flex;flex-direction:column;align-items:center;margin:0 auto;border:0;background:none;padding:0;cursor:pointer}.dt-vow img{width:96px;height:96px}.dt-vow span{margin-top:-18px;font:800 18px system-ui;color:#fff;-webkit-text-stroke:3px #c0527d;paint-order:stroke fill}
+.dt-oath-ring{display:flex;align-items:center;justify-content:center;gap:6px;margin:6px 0 0;color:#8a5f7a}.dt-oath-ring img{width:26px;height:26px}.dt-oath-done{text-align:center;color:#c0527d;font-weight:800}
+.dt-stage{aspect-ratio:720/1170}.dt-nav{position:relative!important;bottom:auto}
+.dt-art .wp-home{left:0;top:0;height:auto;width:100%;transform:none;container-type:size}
+/* Marriage Certificate (DatesPledgeWindow). --c = certificate units (660 wide). */
+.dt-cert-ov{position:absolute;inset:0;z-index:80;background:#0007;display:flex;align-items:center;justify-content:center}
+.dt-cert{--c:calc(min(96cqw, 520px) / 660);position:relative;width:calc(660 * var(--c));height:calc(1042 * var(--c))}.dt-cert>*{position:absolute;box-sizing:border-box}
+.dt-c-bg{pointer-events:none}.dt-c-bg.flip{transform:scaleX(-1)}
+.dt-c-pic{overflow:hidden;pointer-events:none;-webkit-mask-image:linear-gradient(#000 85%,transparent)}.dt-c-pic img{width:100%;height:100%;object-fit:cover;object-position:50% 12%}
+.dt-c-title,.dt-c-lab{object-fit:contain;pointer-events:none}
+.dt-c-val{font:600 calc(26 * var(--c)) Georgia,serif;color:#5a3a3a;white-space:nowrap}
+.dt-c-rule{background:#d9807f}
+.dt-c-chip{border:solid transparent;border-width:0 calc(16 * var(--c));border-image:url('/assets/dates/dates_bg15.png') 0 16 fill stretch;display:flex;align-items:center;justify-content:center;font:italic 800 calc(19 * var(--c)) Georgia,serif;color:#c0527d}
+.dt-c-num{font:700 calc(22 * var(--c)) system-ui;color:#4a3a3a;text-align:center;white-space:nowrap}.dt-c-num.left{text-align:left}.dt-c-bonus{font:800 calc(22 * var(--c)) system-ui;color:#c0527d}
+.dt-c-text{border:solid transparent;border-width:0 calc(20 * var(--c));border-image:url('/assets/dates/dates_bg11.png') 0 20 fill stretch;display:flex;align-items:center;justify-content:center}.dt-c-text p{margin:0;white-space:pre-line;text-align:center;font:500 calc(26 * var(--c))/1.55 Georgia,serif;color:#4a3a3a}
+.dt-c-date{font:800 calc(22 * var(--c)) system-ui;color:#a03a4a;text-align:right}
+.dt-c-need{font:700 calc(20 * var(--c)) system-ui;color:#a03a4a;text-align:right}
+.dt-c-seal{cursor:pointer}
+.dt-c-vow{border:0;background:none;padding:0;cursor:pointer}.dt-c-vow img{width:100%;height:100%}.dt-c-vow span{position:absolute;left:0;right:0;bottom:calc(-6 * var(--c));text-align:center;font:800 calc(24 * var(--c)) system-ui;color:#fff;-webkit-text-stroke:calc(4 * var(--c)) #b0304a;paint-order:stroke fill}
+.dt-c-frame{position:absolute}.dt-c-frame .wp-home{left:0;top:0;width:100%;height:100%;transform:none}.dt-c-pic img{object-fit:initial}

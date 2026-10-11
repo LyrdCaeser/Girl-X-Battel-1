@@ -1,0 +1,74 @@
+/* Enroll (prophet_summon prefab look): prophet_bg03 scene, teacher Spine, faction tabs on the right, stamp. */
+.enroll-view{width:min(490px,100%);margin:8px auto;border:3px solid #9dbad4;border-radius:12px;overflow:hidden;background:#e8eef8;container-type:inline-size;--u:calc(100cqw / 720)}
+.enroll-view[hidden]{display:none}
+.en-top{display:flex;align-items:center;gap:10px;padding:8px 10px;background:linear-gradient(#f7f5fc,#bfd9f2)}
+.en-cur{flex:1;display:flex;align-items:center;gap:6px;background:#fff;border-radius:20px;padding:2px 12px 2px 2px;font-weight:bold;color:#3d5572}.en-cur img{width:28px;height:28px}
+.en-back{border:0;background:none;padding:0;cursor:pointer}.en-back img{width:42px;height:42px}
+.en-tabs{display:flex;margin:6px 8px}.en-tabs button{flex:1;padding:9px 4px;border:1px solid #9fb6cf;background:linear-gradient(#fff,#dde9f5);font-weight:bold;color:#5d6f8c;cursor:pointer}
+.en-tabs button:first-child{border-radius:10px 0 0 10px}.en-tabs button:last-child{border-radius:0 10px 10px 0}.en-tabs button.on{background:linear-gradient(#7aafea,#4664c9);color:#fff}
+.en-scene{position:relative;height:calc(1160 * var(--u));margin:0 8px 10px;border-radius:10px;overflow:hidden;background:center/cover no-repeat}
+.en-model{position:absolute;left:calc(-30 * var(--u));top:calc(150 * var(--u));width:calc(560 * var(--u));height:calc(900 * var(--u))}
+.en-teacher{width:100%;height:100%}
+.en-bubble{position:absolute;left:calc(270 * var(--u));top:calc(70 * var(--u));width:calc(310 * var(--u));min-height:calc(110 * var(--u));background:center/100% 100% no-repeat;display:flex;align-items:center;justify-content:center;text-align:center;padding:calc(10 * var(--u)) calc(24 * var(--u)) calc(28 * var(--u));box-sizing:border-box;font-weight:bold;font-size:calc(24 * var(--u));color:#334}
+.en-idea{position:absolute;left:calc(110 * var(--u));top:calc(20 * var(--u));width:calc(90 * var(--u));cursor:pointer}
+.en-help{position:absolute;left:calc(14 * var(--u));top:calc(14 * var(--u));width:calc(62 * var(--u));height:calc(62 * var(--u));border-radius:50%;border:3px solid #fff;background:#5a9be0;color:#fff;font-weight:900;font-size:calc(32 * var(--u));cursor:pointer}
+.en-groups{position:absolute;right:0;top:calc(260 * var(--u));display:grid;gap:calc(10 * var(--u));justify-items:end}
+.en-group{display:flex;align-items:center;gap:calc(14 * var(--u));height:calc(96 * var(--u));min-width:calc(130 * var(--u));padding:0 calc(20 * var(--u));border:0;border-radius:calc(48 * var(--u)) 0 0 calc(48 * var(--u));background:linear-gradient(#f3eadd,#cdbfa6);box-shadow:0 2px 4px #0005;cursor:pointer}
+.en-group.on{min-width:calc(290 * var(--u));background:linear-gradient(#fff9ef,#e6dcc8)}
+.en-group-icon{display:flex;width:calc(76 * var(--u));height:calc(76 * var(--u));border-radius:50%;background:#fff;align-items:center;justify-content:center;box-shadow:inset 0 0 0 3px #d4c7b0}
+.en-group-icon img{width:88%;height:88%}.en-group-icon.dual img{width:50%;height:88%;object-fit:cover}
+.en-group-name{font-weight:bold;font-size:calc(34 * var(--u));color:#555}
+.en-desk{position:absolute;right:calc(-40 * var(--u));bottom:0;width:calc(640 * var(--u))}
+.en-file{position:absolute;right:calc(70 * var(--u));bottom:calc(60 * var(--u));width:calc(260 * var(--u));transform:rotate(-8deg)}
+.en-fx{position:absolute;right:calc(40 * var(--u));bottom:calc(20 * var(--u));width:calc(360 * var(--u));height:calc(360 * var(--u));pointer-events:none}.en-fx canvas{width:100%;height:100%}
+.en-stamp{position:absolute;left:calc(40 * var(--u));bottom:calc(120 * var(--u));width:calc(190 * var(--u));border:0;background:none;padding:0;cursor:pointer;transition:transform .1s}.en-stamp:active{transform:scale(.94)}
+.en-stamp img{width:100%}.en-stamp:disabled{filter:grayscale(.7);cursor:default}
+.en-stamp-label{position:absolute;left:0;right:0;bottom:calc(18 * var(--u));font-weight:bold;font-size:calc(30 * var(--u));color:#fff;text-shadow:0 0 3px #6a2d10,0 2px 2px #6a2d10}
+.en-cost{position:absolute;left:calc(70 * var(--u));bottom:calc(72 * var(--u));display:flex;align-items:center;gap:4px;padding:0 calc(14 * var(--u));border-radius:calc(20 * var(--u));background:#2d3342cc;color:#fff;font-weight:bold;font-size:calc(26 * var(--u))}.en-cost img{width:calc(40 * var(--u))}
+.en-ten{position:absolute;left:calc(40 * var(--u));bottom:calc(18 * var(--u));display:flex;align-items:center;gap:8px;font-weight:bold;font-size:calc(28 * var(--u));color:#fff;text-shadow:0 1px 3px #000;cursor:pointer}.en-ten input{width:calc(40 * var(--u));height:calc(40 * var(--u))}
+
+/* Exchange: two cards and bottom cancel/save follow components/prophet_replace. */
+.ex-scene{background:center/cover;min-height:560px;padding:16px;color:#29394d}.ex-scene h2{text-align:center}.ex-cards{display:grid;grid-template-columns:1fr 32px 1fr;align-items:center;gap:8px;margin:24px 0}.ex-card{display:flex;flex-direction:column;align-items:center;background:#eef3f5e8;border:3px solid #c8b79d;border-radius:14px;min-height:230px;padding:10px;text-align:center}.ex-card h3{font-size:14px;margin:3px 0 12px}.ex-card span{font-size:13px;margin-top:8px}.ex-portrait{width:100%;height:150px;object-fit:contain}.ex-arrow{width:32px}.ex-actions{display:flex;gap:16px;justify-content:center}.ex-actions button{background:#4c80bd;color:white;border:2px solid #d9e9fb;border-radius:10px;padding:12px 20px;font-weight:bold}.ex-actions button:disabled{opacity:.55}.ex-note{font-size:13px;background:#ffffffe0;padding:10px;border-radius:8px;line-height:1.5}.ex-choose{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.ex-choice{display:flex;flex-direction:column;align-items:center;background:#ffffffe8;padding:6px;border:2px solid #aaafba;border-radius:8px;font-size:11px}.ex-choice.on{border:3px solid #cd9c2d;background:#fff4d0}.ex-choice img{height:80px;width:100%;object-fit:contain}
+
+/* User reference 09.png: proposed girl above the owned girl, original chibis beside cards. */
+.ex-scene{padding:14px 10px;min-height:780px;background-position:center}.ex-heading{font-size:17px;margin:8px}.ex-cards{display:flex;flex-direction:column;gap:8px;margin:14px 0 24px}.ex-card{position:relative;display:grid;grid-template-columns:minmax(100px,40%) 1fr;align-items:center;width:100%;box-sizing:border-box;min-height:240px;padding:12px 14px 28px;border:3px solid #bdc8dc;background:linear-gradient(120deg,#ffffffed,#e8f2f5d9);box-shadow:inset 0 0 0 2px #fff;border-radius:12px}.ex-card.empty{display:flex;justify-content:center;min-height:170px}.ex-face{position:relative;border:3px solid #d8bd71;border-radius:7px;background:#fff3d7;overflow:hidden;width:100%;max-width:170px}.ex-portrait{display:block;width:100%;height:160px;object-fit:cover}.ex-name{display:block;background:#e8f2fae8;font-size:14px;padding:5px 2px}.ex-stars{display:block!important;color:#ffd538!important;font-size:19px!important;letter-spacing:1px;text-shadow:0 1px 2px #5a3d08;margin:0!important}.ex-chibi{height:210px;min-width:0;display:flex;align-items:center;justify-content:center;font-size:11px;color:#51627c}.ex-chibi-canvas{width:100%;height:100%;object-fit:contain}.ex-card-label{position:absolute;bottom:5px;left:0;right:0;text-align:center;font-size:11px;color:#5c6d84}.ex-arrow{width:42px;height:42px;object-fit:contain}.ex-actions{margin:18px 0}.ex-actions button{flex:1;max-width:205px;background:linear-gradient(#82c5f2,#4276d7);font-size:15px;border:3px solid #b7c7dd;box-shadow:inset 0 0 0 2px #d6ecff;padding:12px}.ex-choose{margin-top:14px}@media(max-width:380px){.ex-card{padding:8px 8px 25px;min-height:210px}.ex-portrait{height:140px}.ex-chibi{height:180px}.ex-stars{font-size:16px!important}}
+
+.ex-scene{position:relative}
+/* Exchange (prophet_replace.prefab 708×908), prefab units via --u */
+.ex2-stage{position:relative;width:100%;height:calc(908 * var(--u));overflow:hidden}.ex2-stage>*{position:absolute;box-sizing:border-box}
+.ex2-bg{object-fit:cover;opacity:.55}.ex2-frame{border:calc(14 * var(--u)) solid transparent;border-image:url('/assets/enroll/9gongge42.png') 20 / calc(14 * var(--u)) stretch;pointer-events:none}
+.ex2-help{border:0;background:none;padding:0;cursor:pointer;z-index:3}.ex2-help img{width:100%}
+.ex2-panel{pointer-events:none}.ex2-arrow{pointer-events:none}
+.ex2-card{position:absolute;z-index:2}.ex2-card>*{position:absolute}
+.ex2-cbg{left:2.6%;top:1%;width:94.8%;height:96.6%}
+.ex2-shadow{left:1.5%;top:2.7%;width:97%;height:95.2%}
+.ex2-art{left:1.5%;top:2.7%;width:97%;height:95.2%;overflow:hidden;border-radius:calc(8 * var(--u))}.ex2-art img,.ex2-art .portrait{width:100%!important;height:100%!important;object-fit:cover;object-position:50% 12%;display:block}
+.ex2-art.reveal{animation:ex2reveal 1.333s linear both}@keyframes ex2reveal{from{clip-path:inset(100% 0 0 0)}to{clip-path:inset(0 0 0 0)}}
+.ex2-scan{left:-16%;width:132%;height:40%;top:0;pointer-events:none;z-index:4;animation:ex2scan 1.333s linear both}@keyframes ex2scan{from{top:80%;opacity:1}90%{opacity:1}to{top:-20%;opacity:0}}
+.ex2-scan canvas,.ex2-ring canvas,.ex2-model canvas{width:100%;height:100%;display:block}
+.ex2-border-l,.ex2-border-r{top:0;height:100%;width:50.1%}.ex2-border-l{left:0;object-fit:fill;object-position:left}.ex2-border-r{right:0;transform:scaleX(-1)}
+.ex2-border-r{clip-path:inset(13% 0 0 0)}
+.ex2-q,.ex2-group{left:1%;top:1%;width:18.5%;height:auto}
+.ex2-lv{right:7%;top:3%;font-size:calc(30 * var(--u));color:#fff;text-shadow:0 0 3px #26355e,0 0 3px #26355e,0 1px 2px #000}
+.ex2-name{left:1.5%;right:1.5%;bottom:24%;height:calc(36 * var(--u));background:#ffffffb8;display:flex;align-items:center;justify-content:center}.ex2-name b{font-size:calc(24 * var(--u));color:#5a6591}
+.ex2-name.late{animation:ex2late 1.4s steps(1) both}@keyframes ex2late{from{opacity:0}to{opacity:1}}
+.ex2-stars{left:0;right:0;bottom:4.5%;display:flex;justify-content:center;gap:0}.ex2-stars img{width:calc(34 * var(--u))}
+.ex2-spot{pointer-events:none;z-index:2}.ex2-ring,.ex2-model{position:absolute;inset:0}.ex2-model{z-index:1}
+.ex2-tip{margin:0;z-index:3;text-align:center;font-size:calc(24 * var(--u));color:#4b5472;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.ex2-rname{z-index:3;text-align:center;font-size:calc(24 * var(--u));color:#5a6591;display:flex;align-items:center;justify-content:center;text-shadow:0 0 3px #fff,0 0 3px #fff}
+.ex2-detail{border:0;background:none;padding:0;cursor:pointer;z-index:4}.ex2-detail img{width:100%}
+.ex2-touch{border:0;background:none;cursor:pointer;z-index:5}
+.ex2-btn{border:calc(20 * var(--u)) solid transparent;background:none;cursor:pointer;z-index:6;display:flex;align-items:center;justify-content:center;gap:calc(10 * var(--u));font-weight:bold;font-size:calc(26 * var(--u));padding:0}
+.ex2-btn.blue{border-image:url('/assets/enroll/blue_btn70_70.png') 24 fill / calc(20 * var(--u)) stretch;color:#fff;text-shadow:0 1px 2px #1f4c8a}
+.ex2-btn.white{border-image:url('/assets/enroll/white_btn70_70.png') 24 fill / calc(20 * var(--u)) stretch;color:#4c6aa5}
+.ex2-btn:disabled{filter:grayscale(1);opacity:.7;cursor:default}
+.ex2-cost{position:relative;display:inline-grid;place-items:center;width:calc(45 * var(--u));height:calc(45 * var(--u));font-style:normal}.ex2-cost img{width:100%}.ex2-cost small{position:absolute;bottom:calc(-6 * var(--u));font-size:calc(15 * var(--u));color:#fff;text-shadow:0 0 2px #000,0 0 2px #000}
+.ex2-sheet{left:calc(14 * var(--u));right:calc(14 * var(--u));bottom:calc(8 * var(--u));height:calc(470 * var(--u));z-index:8;background:#fff;border:calc(3 * var(--u)) solid #b9c3de;border-radius:calc(12 * var(--u));box-shadow:0 calc(-4 * var(--u)) calc(18 * var(--u)) #0004;display:flex;flex-direction:column;animation:ex2up .22s ease-out}@keyframes ex2up{from{translate:0 100%}}
+.ex2-filters{flex:none;display:flex;justify-content:center;gap:calc(22 * var(--u));padding:calc(10 * var(--u)) 0}.ex2-filter{border:0;background:none;padding:0;cursor:pointer;opacity:.9}.ex2-filter img{width:calc(60 * var(--u));display:block}.ex2-filter.on{filter:drop-shadow(0 0 calc(5 * var(--u)) #ffb400)}
+.ex2-sheet-x{position:absolute;right:calc(10 * var(--u));top:calc(10 * var(--u));border:0;background:none;font-size:calc(28 * var(--u));color:#8a93b8;cursor:pointer}
+.ex2-grid{flex:1;overflow-y:auto;display:grid;grid-template-columns:repeat(5,1fr);gap:calc(16 * var(--u)) calc(10 * var(--u));padding:calc(12 * var(--u));margin:0 calc(10 * var(--u)) calc(10 * var(--u));border-radius:calc(8 * var(--u));background:#f1f3f9;align-content:start}
+.ex2-pick{position:relative;border:0;background:none;padding:0;cursor:pointer;display:grid;place-items:center;aspect-ratio:1}.ex2-pick .portrait{width:100%!important;height:100%!important;border-radius:calc(10 * var(--u));box-shadow:0 0 0 calc(3 * var(--u)) #e9c66a}
+.ex2-pgroup{position:absolute;left:0;top:0;width:28%}.ex2-plv{position:absolute;right:6%;top:2%;font-size:calc(19 * var(--u));color:#fff;text-shadow:0 0 2px #000,0 0 2px #000}
+.ex2-pstars{position:absolute;left:0;right:0;bottom:2%;display:flex;justify-content:center}.ex2-pstars img{width:16%}
+.ex2-empty{grid-column:1/-1;text-align:center;color:#7a86a6;font-size:calc(20 * var(--u))}
+.ex2-border{inset:0;border-style:solid;border-color:transparent;border-width:0 calc(8 * var(--u)) 0 calc(46 * var(--u));border-image:url('/assets/enroll/partner_large_card.png') 0 8 0 46 fill / 0 calc(8 * var(--u)) 0 calc(46 * var(--u)) stretch;pointer-events:none}

@@ -1,0 +1,16 @@
+/* Deep Sea Treasures / Palace Vaults */
+.pi-root{position:relative;padding:8px 10px 14px;color:#2f4a6b;background:linear-gradient(#bfe6fb,#7fc7ee 55%,#4aa5d4);border-radius:10px;min-height:520px}.pi-root.vault{background:linear-gradient(#f4ead2,#e9d7ae)}
+.pi-logo{display:block;margin:0 auto;height:66px;width:auto}.pi-top{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:6px 0}
+.pi-chip{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:10px;background:#fffc;border:1px solid #9ec2d8;font-size:12px}.pi-chip img{width:22px;height:22px;object-fit:contain}.pi-chip em{font-style:normal;font-size:10px}.pi-chip small{color:#a35a1b;font-weight:800}
+.pi-mini{padding:3px 9px;border:2px solid #fff;border-radius:8px;background:#7f93a8;color:#fff;font-weight:900}.pi-mini.go{background:linear-gradient(#ffb15a,#e0701e)}
+.pi-map{position:relative;height:430px;margin:6px 0}.pi-land{position:absolute;width:42%;text-align:center}.pi-land-img{width:100%;height:auto;max-height:120px;object-fit:contain}.pi-land b{display:block;font-size:11px;text-shadow:0 1px #fff}
+.pi-raid,.pi-go{padding:5px 14px;border:2px solid #fff;border-radius:9px;background:linear-gradient(#63b8ff,#2a74d6);color:#fff;font-weight:900;box-shadow:0 2px 2px #35608d}.pi-go.ok{background:linear-gradient(#ffd75a,#e09a1e);color:#5a3500}.pi-go:disabled,.pi-raid:disabled{filter:grayscale(.7);opacity:.65}.pi-go.big{padding:9px 30px;font-size:16px}
+.pi-col{padding:8px;border-radius:10px;background:#fff9;border:2px solid #f0d9a4}.pi-chests{display:flex;gap:8px;justify-content:space-around;margin:6px 0}.pi-chest{display:flex;flex-direction:column;align-items:center;font-size:11px;opacity:.6}.pi-chest.got{opacity:1}.pi-chest-img{width:44px;height:44px;object-fit:contain}
+.pi-note,.pi-foot{display:block;text-align:center;font-size:11px;margin-top:6px;color:#25405e}
+.pi-overlay{position:absolute;inset:0;z-index:5;background:#0008;display:flex;align-items:flex-start;justify-content:center;overflow:auto;border-radius:10px}.pi-win{width:94%;margin:10px 0;padding:10px;border:3px solid #6ea0d0;border-radius:12px;background:#f4f9ff;text-align:center}
+.pi-win-h{display:flex;justify-content:space-between;align-items:center;font-size:16px;color:#2f4a6b}.pi-x{border:0;background:none;font-size:18px;color:#557}.pi-win h4{margin:8px 0 2px;color:#456b93}.pi-list{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin:4px 0 8px}
+.pi-qty{display:flex;gap:6px;justify-content:center;align-items:center;margin:4px 0}.pi-num{min-width:60px;padding:4px;border-radius:8px;background:#cbd6e2}.pi-guar{display:block;margin-top:6px;color:#a35a1b;font-weight:800}
+.pi-tabs{display:flex;gap:6px;margin-bottom:8px}.pi-tab{flex:1;padding:8px;border:2px solid #b89a63;border-radius:8px;background:#e7d5a8;color:#7a5a24;font-weight:900}.pi-tab.on{background:#9a6f2c;color:#fff}
+.pi-crow{display:flex;align-items:center;gap:8px;padding:8px;margin-bottom:6px;border-radius:9px;background:#fffdf5;border:2px solid #d7c08a}.pi-crow.done{opacity:.55}.pi-bar{flex:1;padding:2px 8px;border-radius:8px;background:#f2d24b;color:#5a4300;font-weight:800;font-size:12px}.pi-rw{display:flex;gap:4px}
+.pi-shop .ak-root{background:#fffdf5;border-radius:10px}
+.pi-land{width:40%}.pi-land-img{max-height:100px}

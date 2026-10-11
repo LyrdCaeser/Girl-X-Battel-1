@@ -1,0 +1,24 @@
+/* Generic event kit panel (LOCAL-059) */
+.ak-root{padding:10px 12px 16px;color:#3f5878}
+.ak-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.ak-head h2{margin:0;font-size:18px;color:#345b8c}
+.ak-item,.ak-cur{display:inline-flex;align-items:center;gap:3px;padding:2px 6px;border-radius:9px;background:#eef4fb;border:1px solid #b6c9de;font-size:12px}
+.ak-item img,.ak-cur img{width:22px;height:22px;object-fit:contain}
+.ak-item em{font-style:normal;font-size:10px}
+.ak-item.lack b{color:#c0463d}
+.ak-tabs{display:flex;gap:6px;margin:8px 0}
+.ak-tab{flex:1;padding:6px;border:2px solid #91a7c2;border-radius:8px;background:linear-gradient(#fff,#dce7f0);color:#445c7a;font-weight:850}
+.ak-tab.on{background:linear-gradient(#75bef1,#3988d7);color:#fff;text-shadow:0 1px #336299}
+.ak-supply{display:flex;align-items:center;gap:8px;margin-bottom:8px;padding:6px 8px;border:2px dashed #e0b25d;border-radius:9px;background:#fff8e6;font-size:12px;font-weight:800}
+.ak-list{display:flex;flex-direction:column;gap:6px}
+.ak-row{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:8px;padding:8px;border:2px solid #b3c3d4;border-radius:10px;background:#fffdf9ee}
+.ak-row.done{opacity:.55}
+.ak-text b{display:block;font-size:13px}.ak-text small,.ak-limit{color:#7b8ea6;font-size:11px}
+.ak-rewards,.ak-cost{display:flex;flex-wrap:wrap;gap:4px}
+.ak-btn{min-width:74px;padding:7px 10px;border:2px solid #fff;border-radius:8px;background:#c7d3df;color:#fff;font-weight:900;box-shadow:0 2px 2px #6b90af}
+.ak-btn.go{background:linear-gradient(#81d0ff,#3e8bd7);text-shadow:0 1px #3772aa}
+.ak-btn:disabled{filter:grayscale(.6);opacity:.7}
+.ak-note{margin-top:10px;font-size:10px;color:#8a9bb0}
+.ak-row.s{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
+.ak-row.s .ak-rewards{flex:1 1 40%}.ak-row.s .ak-cost{flex:0 0 auto}.ak-row.s .ak-limit{flex:1 1 auto}.ak-row.s .ak-btn{margin-left:auto;padding:6px 12px}
+.ak-game{display:flex;align-items:center;gap:8px;padding:6px 8px;font-size:12px}.ak-toks{display:flex;gap:4px;flex-wrap:wrap}

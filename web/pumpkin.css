@@ -1,0 +1,27 @@
+/* Halloween Pumpkin Patch (capture fb/78): pumpkin field of halloween_pumpkin_field.prefab, 696x875. Prefix pk-. */
+.pk-root{container-type:inline-size;--u:calc(100cqw / 696)}
+.pk-stage{position:relative;height:calc(875 * var(--u));border-radius:12px;overflow:hidden;background:#3b2b6b center/cover no-repeat}
+.pk-abs{position:absolute;margin:0}
+.pk-logo{object-fit:contain;pointer-events:none}
+.pk-help{border:0;padding:0;background:url('/assets/dress-show/help_2.png') center/contain no-repeat;cursor:pointer}
+.pk-hint{display:grid;place-items:center;color:#fff;font:700 calc(20 * var(--u)) system-ui;text-shadow:0 0 calc(4 * var(--u)) #2a1450}
+.pk-pumpkin{border:0;padding:0;background:none;cursor:pointer;transition:transform .15s}.pk-pumpkin:hover{transform:scale(1.04)}
+.pk-pumpkin>img{width:100%;height:100%;object-fit:contain}.pk-pumpkin.flip>img{transform:scaleX(-1)}
+.pk-pumpkin.fresh{animation:pk-chop .5s ease-out}
+.pk-item{position:relative;display:grid;place-items:center;width:calc(84 * var(--u));height:calc(84 * var(--u));background:center/100% 100% no-repeat;border-radius:calc(8 * var(--u))}
+.pk-item img{width:80%;height:80%;object-fit:contain}.pk-item b{position:absolute;right:calc(4 * var(--u));bottom:0;color:#fff;font:800 calc(17 * var(--u)) system-ui;text-shadow:0 0 3px #000,0 0 3px #000}
+.pk-pumpkin .pk-item{position:absolute;left:50%;top:14%;transform:translateX(-50%)}
+.pk-item.on:after{content:"✔";position:absolute;inset:0;display:grid;place-items:center;border-radius:inherit;background:#0005;color:#ffd84a;font:900 calc(46 * var(--u)) system-ui}
+.pk-res{display:flex;align-items:center;justify-content:center;gap:calc(8 * var(--u));background:url('/assets/pumpkin/halloween_res_bg.png') center/100% 100% no-repeat;color:#fff;font:900 calc(24 * var(--u)) system-ui}
+.pk-res-icon{width:calc(44 * var(--u))}.pk-add{width:calc(34 * var(--u));height:calc(34 * var(--u));border:0;padding:0;background:url('/assets/pumpkin/halloween_add2_btn.png') center/contain no-repeat;cursor:pointer}
+.pk-cut,.pk-claim{border:0;background:url('/assets/pumpkin/halloween_get_btn.png') center/100% 100% no-repeat;display:flex;align-items:center;justify-content:center;gap:calc(10 * var(--u));color:#7a3a10;font:900 calc(30 * var(--u)) system-ui;cursor:pointer}
+.pk-claim{background-image:url('/assets/pumpkin/blue_btn_65_65.png');color:#fff;text-shadow:0 2px 2px #1d4f9a;animation:pk-pulse 1.2s ease-in-out infinite}
+.pk-cost{position:relative;width:calc(44 * var(--u))}.pk-cost img{width:100%}.pk-cost small{position:absolute;right:calc(-6 * var(--u));bottom:calc(-6 * var(--u));color:#fff;font:800 calc(16 * var(--u)) system-ui;text-shadow:0 0 3px #000}
+.pk-final{display:grid;justify-items:center;align-content:center;gap:calc(6 * var(--u));background:url('/assets/pumpkin/halloween_final_bg.png') center/100% 100% no-repeat;color:#fff;font:800 calc(18 * var(--u)) system-ui}
+.pk-item.big{width:calc(96 * var(--u));height:calc(96 * var(--u))}
+.pk-look{position:absolute;right:calc(-6 * var(--u));top:calc(-6 * var(--u));width:calc(44 * var(--u));height:calc(44 * var(--u));border:0;border-radius:50%;background:#fff;cursor:pointer;font-size:calc(22 * var(--u))}
+.pk-win .pk-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;max-height:60vh;overflow-y:auto}
+.pk-odd{display:grid;justify-items:center;gap:2px;padding:4px;border-radius:8px;background:#f3eefc;--u:.9px}.pk-odd small{font:700 12px system-ui;color:#5b4e73}.pk-odd.done{opacity:.5}.pk-odd.now{box-shadow:0 0 0 2px #e05fb0}
+.pk-note{color:#5b4e73;font-size:13px}
+@keyframes pk-chop{0%{transform:scale(1.25) rotate(-6deg);filter:brightness(1.8)}100%{transform:none}}
+@keyframes pk-pulse{50%{transform:scale(1.05)}}

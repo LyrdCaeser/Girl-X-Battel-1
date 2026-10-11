@@ -1,0 +1,638 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+import argparse
+from email.parser import BytesParser
+from email.policy import default
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+import json, re
+from pathlib import Path
+import socketserver
+import struct
+import threading
+import time
+from urllib.parse import parse_qs, urlparse
+from gxb2.engine import Engine, GameError, LOCAL_TOKEN
+from gxb2.story import catalog as story_catalog
+from gxb2.dress import catalog as dress_catalog
+from gxb2.skins import catalog as skins_catalog
+from gxb2.souls import catalog as souls_catalog
+from gxb2 import protocol as p, local_promotion
+
+ROOT = Path(__file__).resolve().parent
+CHARACTER_ART = set(json.loads((ROOT/'web/assets/characters.json').read_text()))
+BATTLE_MAPS = set(json.loads((ROOT/'web/assets/battle-maps.json').read_text()))
+CARD_ART = set(json.loads((ROOT/'web/assets/cards.json').read_text()))
+def _card_aliases():
+    # Re-issued girls (e.g. Selene 546003 → 46003, 656012 → 546003) have no card of their own: serve their host's card.
+    rows = {int(g['id']): g for g in json.loads((ROOT/'web/assets/girls-catalog.json').read_text())}
+    out = {}
+    for gid in rows:
+        cur, hops = gid, 0
+        while cur not in CARD_ART and rows.get(cur, {}).get('host') and hops < 5:
+            cur, hops = int(rows[cur]['host']), hops + 1
+        if gid not in CARD_ART and cur in CARD_ART: out[gid] = cur
+    return out
+CARD_ALIAS = _card_aliases()
+_MISC = {}
+def misc_spine(name):
+    """On demand: any UI animation of the original client ("Animation (Misc)", 982 Spine 3.6 skeletons, read only) becomes
+    web/assets/spine/<name>/ (model.json + model.atlas + pages) the first time it is requested."""
+    import re, shutil, sys
+    out = ROOT / 'web/assets/spine' / name
+    if (out / 'model.json').exists() or not re.fullmatch(r'[A-Za-z0-9_\-]+', name): return
+    if not _MISC:
+        src = Path.home() / 'Downloads/Decompiled/Animation (Misc)'
+        _MISC['_'] = None
+        if src.is_dir():
+            for sk in src.rglob('*.skel'): _MISC.setdefault(sk.stem, sk)
+    sk = _MISC.get(name)
+    if not sk: return
+    try:
+        sys.path.insert(0, str(ROOT / 'tools'))
+        from spine36 import decode
+        atlas = sk.with_suffix('.atlas').read_text()
+        out.mkdir(parents=True, exist_ok=True)
+        for page in re.findall(r'^([^\r\n]+\.png)\r?$', atlas, re.M): shutil.copyfile(sk.parent / page, out / page)
+        (out / 'model.atlas').write_text(atlas)
+        (out / 'model.json').write_text(json.dumps(decode(sk.read_bytes()), separators=(',', ':')))
+    except Exception:
+        shutil.rmtree(out, ignore_errors=True)
+
+
+ITEM_ICONS = set(json.loads((ROOT/'web/assets/item-icons.json').read_text()))
+CAMPUS_ICONS = {p.stem for p in (ROOT/'web/assets/campus').glob('*.png')}
+LIFE_ICONS = {p.stem for p in (ROOT/'web/assets/life').glob('*.png')}
+VOICE_SOURCES = json.loads((ROOT/'data/relations.json').read_text()).get('sounds', {}) if (ROOT/'data/relations.json').exists() else {}
+VOICE_ROOT = Path.home()/'Downloads/Decomp files/unity/Assets/hotres/sounds'
+def voice_file(sound_id):
+    """Girl voice lines: converted from the read-only Ogg sources to a local MP3 cache on first use."""
+    res = VOICE_SOURCES.get(sound_id)
+    if not res or not sound_id.isdigit(): return None
+    out = ROOT/'web/assets/voices'/f'{sound_id}.mp3'
+    if not out.exists():
+        src = VOICE_ROOT/f'{res}.ogg'
+        if not src.exists(): return None
+        out.parent.mkdir(parents=True, exist_ok=True)
+        import subprocess
+        subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-i', str(src), '-b:a', '96k', str(out)], check=False, timeout=30)
+    return out if out.exists() else None
+EQUIP_ASSETS = {p.stem for p in (ROOT/'web/assets/equipment').glob('*.png')}
+EVENT_ASSETS = {p.stem for p in (ROOT/'web/assets/events').glob('*.png')}
+LEAGUE_ICONS = {p.stem for p in (ROOT/'web/assets/league').glob('*.png')}
+HOME_SYSTEM_ICONS = {p.stem for p in (ROOT/'web/assets/home-systems').glob('*.png')}
+MENU_ICONS = {p.stem for p in (ROOT/'web/assets/menus').glob('*.png')}
+NAV_ICONS = {p.stem for p in (ROOT/'web/assets/nav').glob('*.png')}
+CURRENCY_ICONS = {p.stem for p in (ROOT/'web/assets/currency').glob('*.png')}
+PROFILE_ICONS = {p.stem for p in (ROOT/'web/assets/profile').glob('*.png')}
+DAILY_QUIZ_ICONS = {p.stem for p in (ROOT/'web/assets/daily-quiz').glob('*.png')}
+TOWER_ICONS = {p.stem for p in (ROOT/'web/assets/tower').glob('*.png')}
+UI_ICONS = {'win_back_btn', 'switch_btn', 'chat_return_icon', 'btn_partner_station', 'partner_station_change', 'partner_data_btn', 'item_bg', 'equip_star',
+            'partner_card', 'partner_card_2', 'quality_0', 'quality_1', 'quality_2',
+            'quality_3', 'quality_4', 'quality_5', 'quality_6', 'quality_7',
+            'quality_select', 'new_formation_team_nav_icon1', 'new_formation_team_nav_icon2'}
+DETAIL_ICONS = {'partner_battle_point_icon', 'attr_hp_icon', 'attr_atk_icon', 'attr_def_icon', 'attr_spd_icon',
+                'partner_star_red', 'partner_detail_arrow', 'partner_detail_bubble_bg', 'partner_cv_bg',
+                'partner_like01', 'partner_like02', 'skill_icon_bg', 'grade_crown', 'partner_weapon',
+                'partner_cloth', 'partner_shoes', 'partner_treasure', 'partner_new_bg_cloud'}
+SKILL_ICONS = {p.stem for p in (ROOT/'web/assets/skills').glob('skill_icon_*.png')}
+
+class LocalHTTPServer(ThreadingHTTPServer):
+    """The default listen backlog (5) refused connections when a screen loads dozens of images at once (Closet,
+    Gallery, maps): the stylesheet or /api/state could be among the rejected requests."""
+    request_queue_size = 128
+    daemon_threads = True
+
+
+class ThreadTCP(socketserver.ThreadingTCPServer):
+    allow_reuse_address = True
+    daemon_threads = True
+
+class TCPHandler(socketserver.BaseRequestHandler):
+    def read_exact(self, count):
+        parts = bytearray()
+        while len(parts) < count:
+            chunk = self.request.recv(count-len(parts))
+            if not chunk: raise EOFError
+            parts.extend(chunk)
+        return bytes(parts)
+
+    def handle(self):
+        self.request.settimeout(60)
+        authenticated = False
+        sequence = 1
+        while True:
+            try:
+                size, mid = p.HEADER.unpack(self.read_exact(p.HEADER.size))
+                if size > p.MAX_PAYLOAD: return
+                payload = self.read_exact(size)
+            except (EOFError, OSError): return
+            try:
+                name = p.NAMES.get(mid)
+                if name is None: raise GameError(f'ID desconocido: {mid}')
+                if not authenticated and name not in ('CHECK_LOGIN', 'RECONNECT'):
+                    raise GameError('Primero inicia una sesión local de prueba')
+                typ = p.message_type(mid, 'req')
+                if typ not in p.CLASSES:
+                    raise GameError(f'{name}: esquema de petición no disponible')
+                data = p.decode(typ, payload)
+                if name == 'RECONNECT':
+                    candidate = data.get('next_seq', sequence)
+                    if not 1 <= candidate < 0xFFFFFFFF: raise GameError('Secuencia inválida')
+                    sequence = candidate
+                packets = self.server.engine.handle(name, data)
+                if name in ('CHECK_LOGIN', 'RECONNECT'):
+                    authenticated = data.get('token') == LOCAL_TOKEN and data.get('player_id') == 1
+            except (ValueError, KeyError) as exc:
+                packets = [(p.MIDS['ERROR_MESSAGE'], 'error_message', {'error_code': -1, 'error_msg': str(exc), 'error_mid': mid})]
+            except Exception as exc:
+                print(f'Error de procesamiento en ID {mid}: {type(exc).__name__}', flush=True)
+                packets = [(p.MIDS['ERROR_MESSAGE'], 'error_message', {'error_code': -1, 'error_msg': 'Error interno del prototipo local', 'error_mid': mid})]
+            try:
+                for out_mid, out_type, body in packets:
+                    self.request.sendall(p.frame(out_mid, p.encode(out_type, body), sequence))
+                    sequence = (sequence+1) & 0xFFFFFFFF
+            except OSError: return
+
+class HTTPHandler(BaseHTTPRequestHandler):
+    @property
+    def engine(self):
+        if self.headers.get('X-GXB2-Mode') == 'developer' and self.server.developer_engine:
+            return self.server.developer_engine
+        return self.server.engine
+
+    server_version = 'GxB2Local/0.1'
+    def log_message(self, fmt, *args):
+        # Request bodies and local session fields are not written to logs.
+        pass
+    def send(self, status, content, content_type='application/json; charset=utf-8'):
+        if isinstance(content, (dict, list)): content = json.dumps(content, ensure_ascii=False).encode()
+        elif isinstance(content, str): content = content.encode()
+        extra = {}
+        if content_type == 'audio/mpeg':
+            # Safari only plays media served with byte ranges.
+            extra['Accept-Ranges'] = 'bytes'
+            match = re.match(r'bytes=(\d*)-(\d*)$', self.headers.get('Range', ''))
+            if match and status == 200 and (match.group(1) or match.group(2)):
+                size = len(content)
+                start = int(match.group(1)) if match.group(1) else max(0, size - int(match.group(2)))
+                end = min(int(match.group(2)), size - 1) if match.group(1) and match.group(2) else size - 1
+                content, status = content[start:end + 1], 206
+                extra['Content-Range'] = f'bytes {start}-{end}/{size}'
+        self.send_response(status)
+        for key, value in extra.items(): self.send_header(key, value)
+        self.send_header('Content-Type', content_type)
+        self.send_header('Content-Length', str(len(content)))
+        self.send_header('Cache-Control', 'no-store')
+        self.send_header('X-Content-Type-Options', 'nosniff')
+        self.send_header('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'")
+        self.end_headers()
+        self.wfile.write(content)
+    def do_GET(self):
+        path = urlparse(self.path).path
+        for prefix, folder in (('/vendor/', ROOT/'web/vendor'), ('/assets/detail/sheet/', ROOT/'web/assets/detail/sheet'), ('/assets/souls/', ROOT/'web/assets/souls'), ('/assets/menu/', ROOT/'web/assets/menu'), ('/assets/stellar/', ROOT/'web/assets/stellar'), ('/assets/story-items/', ROOT/'web/assets/story-items'), ('/assets/assistant/', ROOT/'web/assets/assistant'), ('/assets/ev-sand/', ROOT/'web/assets/ev-sand'), ('/assets/guild/', ROOT/'web/assets/guild'), ('/assets/jackpot/', ROOT/'web/assets/jackpot'), ('/assets/firework-project/', ROOT/'web/assets/firework-project'), ('/assets/puzzle-events/', ROOT/'web/assets/puzzle-events'), ('/assets/blind-box/', ROOT/'web/assets/blind-box'), ('/assets/pirate/', ROOT/'web/assets/pirate'), ('/assets/wish/', ROOT/'web/assets/wish'), ('/assets/magic-card/', ROOT/'web/assets/magic-card'), ('/assets/two-love/', ROOT/'web/assets/two-love'), ('/assets/lost-space/', ROOT/'web/assets/lost-space'), ('/assets/pumpkin/', ROOT/'web/assets/pumpkin'), ('/assets/chimes/', ROOT/'web/assets/chimes'), ('/assets/altar/', ROOT/'web/assets/altar'), ('/assets/battle-loading/', ROOT/'web/assets/battle-loading'), ('/assets/summon-result/', ROOT/'web/assets/summon-result'), ('/assets/dress-show/', ROOT/'web/assets/dress-show'), ('/assets/chibis/', ROOT/'web/assets/chibis'), ('/assets/original-ui/', ROOT/'web/assets/original-ui'),
+                               ('/assets/spine/', ROOT/'web/assets/spine'), ('/assets/lihui/', ROOT/'web/assets/lihui'), ('/assets/scenes/', ROOT/'web/assets/scenes'),
+                               ('/assets/sounds/', ROOT/'web/assets/sounds'), ('/assets/girl-ui/', ROOT/'web/assets/girl-ui'), ('/assets/station/', ROOT/'web/assets/station'), ('/assets/battle-fx/', ROOT/'web/assets/battle-fx'), ('/assets/growth-diary/', ROOT/'web/assets/growth-diary'), ('/assets/newbie-camp/', ROOT/'web/assets/newbie-camp'), ('/assets/remaining-systems/', ROOT/'web/assets/remaining-systems'), ('/assets/fantasy-book/', ROOT/'web/assets/fantasy-book'), ('/assets/pictures/', ROOT/'web/assets/pictures'), ('/assets/campaign/', ROOT/'web/assets/campaign'), ('/assets/enroll/', ROOT/'web/assets/enroll'), ('/assets/servant/', ROOT/'web/assets/servant'), ('/assets/excursion/', ROOT/'web/assets/excursion'), ('/assets/dates/', ROOT/'web/assets/dates'), ('/assets/missions/', ROOT/'web/assets/missions'), ('/assets/shops/', ROOT/'web/assets/shops'), ('/assets/arena/', ROOT/'web/assets/arena'), ('/assets/patrol/', ROOT/'web/assets/patrol'), ('/assets/house-exam/', ROOT/'web/assets/house-exam'), ('/assets/summon/', ROOT/'web/assets/summon'), ('/assets/hero-challenge/', ROOT/'web/assets/hero-challenge'), ('/assets/sanctuary/', ROOT/'web/assets/sanctuary'), ('/assets/internship/', ROOT/'web/assets/internship'), ('/assets/midas/', ROOT/'web/assets/midas'), ('/assets/old-campus/', ROOT/'web/assets/old-campus'), ('/assets/echoes/', ROOT/'web/assets/echoes'), ('/assets/shrine/', ROOT/'web/assets/shrine'), ('/assets/galaxy/', ROOT/'web/assets/galaxy'), ('/assets/group-buff/', ROOT/'web/assets/group-buff'), ('/assets/story/', ROOT/'web/assets/story'), ('/assets/dress/', ROOT/'web/assets/dress'), ('/assets/skins/', ROOT/'web/assets/skins'), ('/assets/slots/', ROOT/'web/assets/slots')):
+            if path.startswith(prefix):
+                candidate = (folder / path[len(prefix):]).resolve()
+                if prefix == '/assets/spine/' and candidate.is_relative_to(folder.resolve()) and not candidate.is_file(): misc_spine(candidate.parent.name)
+                if candidate.is_relative_to(folder.resolve()) and candidate.is_file():
+                    mime = {'.js':'application/javascript', '.png':'image/png', '.json':'application/json', '.atlas':'text/plain', '.mp3':'audio/mpeg', '.webp':'image/webp', '.ogg':'audio/ogg'}.get(candidate.suffix)
+                    if mime: return self.send(200, candidate.read_bytes(), mime)
+                return self.send(404, {'error':'Recurso inexistente'})
+        # On demand from the read-only originals, cached in web/assets/: any cut sprite (/assets/sprite/<name>.png) and any scene
+        # background (/assets/bg/<name>.webp, from Images (backgrounds)/scenes · scenes_big · battle_map).
+        if path.startswith('/assets/sprite/') and path.endswith('.png'):
+            stem = path[len('/assets/sprite/'):-4]
+            if re.fullmatch(r'[A-Za-z0-9_\-]+', stem):
+                dst = ROOT / 'web/assets/sprite' / f'{stem}.png'
+                if not dst.is_file():
+                    src = Path.home() / 'Downloads/Decompiled/Sprites (atlases, cut)' / f'{stem}.png'
+                    if src.is_file():
+                        dst.parent.mkdir(parents=True, exist_ok=True); dst.write_bytes(src.read_bytes())
+                if dst.is_file(): return self.send(200, dst.read_bytes(), 'image/png')
+            return self.send(404, {'error':'Recurso inexistente'})
+        if path.startswith('/assets/bg/') and path.endswith('.webp'):
+            stem = path[len('/assets/bg/'):-5]
+            if re.fullmatch(r'[A-Za-z0-9_\-]+', stem):
+                dst = ROOT / 'web/assets/bg' / f'{stem}.webp'
+                if not dst.is_file():
+                    for sub in ('scenes', 'scenes_big', 'battle_map'):
+                        base = Path.home() / 'Downloads/Decompiled/Images (backgrounds)' / sub
+                        src = next((q for q in (base / f'{stem}.png', base / f'{stem}.jpg') if q.is_file()), None)
+                        if src:
+                            try:
+                                from PIL import Image
+                                dst.parent.mkdir(parents=True, exist_ok=True); Image.open(src).save(dst, 'WEBP', quality=86)
+                            except Exception: pass
+                            break
+                if dst.is_file(): return self.send(200, dst.read_bytes(), 'image/webp')
+            return self.send(404, {'error':'Recurso inexistente'})
+        if path == '/health': return self.send(200, {'ok': True, 'scope': 'local-preservation', 'schema_messages': len(p.SCHEMA)})
+        if path == '/api/state': return self.send(200, self.engine.snapshot())
+        if path == '/api/bootstrap': return self.send(200, {'payload': self.bootstrap()})
+        if path == '/assets/characters.json': return self.send(200, sorted(CHARACTER_ART))
+        if path == '/assets/battle-maps.json': return self.send(200, sorted(BATTLE_MAPS))
+        if path == '/assets/girls-catalog.json': return self.send(200, (ROOT/'web/assets/girls-catalog.json').read_bytes(), 'application/json; charset=utf-8')
+        if path == '/assets/cards.json': return self.send(200, sorted(CARD_ART | set(CARD_ALIAS)))
+        if path == '/assets/items-catalog.json': return self.send(200, (ROOT/'web/assets/items-catalog.json').read_bytes(), 'application/json; charset=utf-8')
+        if path == '/assets/item-icons.json': return self.send(200, sorted(ITEM_ICONS))
+        if path == '/assets/profile/catalog.json': return self.send(200, (ROOT/'web/assets/profile/catalog.json').read_bytes(), 'application/json; charset=utf-8')
+        if path == '/assets/girl-details.json': return self.send(200, (ROOT/'web/assets/girl-details.json').read_bytes(), 'application/json; charset=utf-8')
+        if path == '/assets/local-promotion.json': return self.send(200, json.dumps(local_promotion.RECIPES).encode(), 'application/json; charset=utf-8')
+        if path == '/assets/graduate.json': return self.send(200, (ROOT/'data/graduate.json').read_bytes(), 'application/json; charset=utf-8')
+        if path == '/assets/ascension.json': return self.send(200, (ROOT/'data/ascension.json').read_bytes(), 'application/json; charset=utf-8')
+        if path.startswith('/assets/campus/') and path.endswith('.png'):
+            stem = path[len('/assets/campus/'):-4]
+            if stem in CAMPUS_ICONS:
+                return self.send(200, (ROOT/'web/assets/campus'/f'{stem}.png').read_bytes(), 'image/png')
+        for folder, icons in (('life', LIFE_ICONS), ('league', LEAGUE_ICONS), ('menus', MENU_ICONS)):
+            prefix = f'/assets/{folder}/'
+            if path.startswith(prefix) and path.endswith('.png'):
+                stem = path[len(prefix):-4]
+                if stem in icons:
+                    return self.send(200, (ROOT/'web/assets'/folder/f'{stem}.png').read_bytes(), 'image/png')
+        if path.startswith('/assets/nav-reference/bottom-') and path.endswith('.png'):
+            stem = path.rsplit('/', 1)[-1]
+            if stem in {f'bottom-{i}.png' for i in range(1, 7)}:
+                return self.send(200, (ROOT/'web/assets/nav-reference'/stem).read_bytes(), 'image/png')
+        if path.startswith('/assets/nav/') and path.endswith('.png'):
+            stem = path[len('/assets/nav/'):-4]
+            if stem in NAV_ICONS:
+                return self.send(200, (ROOT/'web/assets/nav'/f'{stem}.png').read_bytes(), 'image/png')
+        if path.startswith('/assets/currency/') and path.endswith('.png'):
+            stem = path[len('/assets/currency/'):-4]
+            if stem in CURRENCY_ICONS:
+                return self.send(200, (ROOT/'web/assets/currency'/f'{stem}.png').read_bytes(), 'image/png')
+        if path.startswith('/assets/profile/') and path.endswith('.png'):
+            stem = path[len('/assets/profile/'):-4]
+            if stem in PROFILE_ICONS:
+                return self.send(200, (ROOT/'web/assets/profile'/f'{stem}.png').read_bytes(), 'image/png')
+        if path.startswith('/assets/daily-quiz/') and path.endswith('.png'):
+            stem = path[len('/assets/daily-quiz/'):-4]
+            if stem in DAILY_QUIZ_ICONS:
+                return self.send(200, (ROOT/'web/assets/daily-quiz'/f'{stem}.png').read_bytes(), 'image/png')
+        if path.startswith('/assets/tower/') and path.endswith('.png'):
+            stem = path[len('/assets/tower/'):-4]
+            if stem in TOWER_ICONS:
+                return self.send(200, (ROOT/'web/assets/tower'/f'{stem}.png').read_bytes(), 'image/png')
+        if path == '/assets/home-systems/catalog.json':
+            return self.send(200, (ROOT/'web/assets/home-systems/catalog.json').read_bytes(), 'application/json')
+        if path.startswith('/assets/home-systems/') and path.endswith('.png'):
+            stem=path[len('/assets/home-systems/'):-4]
+            if stem in HOME_SYSTEM_ICONS:
+                return self.send(200, (ROOT/'web/assets/home-systems'/f'{stem}.png').read_bytes(), 'image/png')
+        if path.startswith('/assets/detail/') and path.endswith('.png'):
+            stem = path[len('/assets/detail/'):-4]
+            if stem in DETAIL_ICONS:
+                return self.send(200, (ROOT/'web/assets/detail'/f'{stem}.png').read_bytes(), 'image/png')
+        if path.startswith('/assets/skills/') and path.endswith('.png'):
+            stem = path[len('/assets/skills/'):-4]
+            if stem in SKILL_ICONS:
+                return self.send(200, (ROOT/'web/assets/skills'/f'{stem}.png').read_bytes(), 'image/png')
+        if path.startswith('/assets/cards/partner_card_') and path.endswith('.png'):
+            stem = path[len('/assets/cards/partner_card_'):-4]
+            if stem.isdecimal() and stem == str(int(stem)) and (int(stem) in CARD_ART or int(stem) in CARD_ALIAS):
+                real = CARD_ALIAS.get(int(stem), int(stem))
+                return self.send(200, (ROOT/'web/assets/cards'/f'partner_card_{real}.png').read_bytes(), 'image/png')
+        if path.startswith('/assets/item-icons/') and path.endswith('.png'):
+            stem = path[len('/assets/item-icons/'):-4]
+            if stem in ITEM_ICONS:
+                return self.send(200, (ROOT/'web/assets/item-icons'/f'{stem}.png').read_bytes(), 'image/png')
+        if path.startswith('/assets/ui/') and path.endswith('.png'):
+            stem = path[len('/assets/ui/'):-4]
+            if stem in UI_ICONS:
+                return self.send(200, (ROOT/'web/assets/ui'/f'{stem}.png').read_bytes(), 'image/png')
+        if path.startswith('/assets/factions/') and path.endswith('.png'):
+            stem = path.rsplit('/', 1)[-1][:-4]
+            if stem.isdecimal() and 1 <= int(stem) <= 7:
+                return self.send(200, (ROOT/'web/assets/factions'/f'group{int(stem)}.png').read_bytes(), 'image/png')
+        if path.startswith('/assets/capsule/') and path.endswith('.png'):
+            stem = path.rsplit('/', 1)[-1]
+            capsule_assets = {'summon-scene.png', 'regular-panel.png', 'advanced-panel.png', 'bff-panel.png',
+                              'regular-title.png', 'advanced-title.png', 'bff-title.png', 'button-blue.png',
+                              'button-gold.png', 'pity-bar.png', 'pity-fill.png', 'summon_record_friendship_icon.png', 'summon_record_ticket_icon.png', 'summon_res.png'}
+            if stem in capsule_assets:
+                return self.send(200, (ROOT/'web/assets/capsule'/stem).read_bytes(), 'image/png')
+        if path.startswith('/assets/battle-maps/') and path.endswith('.png'):
+            stem = path[len('/assets/battle-maps/'):-4]
+            if stem in BATTLE_MAPS:
+                return self.send(200, (ROOT/'web/assets/battle-maps'/f'{stem}.png').read_bytes(), 'image/png')
+        if path.startswith('/assets/characters/') and path.endswith('.png'):
+            stem = path[len('/assets/characters/'):-4]
+            if stem.isdecimal() and int(stem) in CHARACTER_ART and stem == str(int(stem)):
+                return self.send(200, (ROOT/'web/assets/characters'/f'{stem}.png').read_bytes(), 'image/png')
+        if path == '/assets/partner-pictures.json':
+            return self.send(200, (ROOT/'data/partner_pictures.json').read_bytes(), 'application/json')
+        if path.startswith('/assets/voice/') and path.endswith('.mp3'):
+            f = voice_file(path[len('/assets/voice/'):-4])
+            return self.send(200, f.read_bytes(), 'audio/mpeg') if f else self.send(404, {'error': 'Voz no disponible'})
+        if path == '/assets/dress-show.json':
+            return self.send(200, (ROOT/'data/dress_show.json').read_bytes(), 'application/json; charset=utf-8')
+        if path == '/assets/chimes.json':
+            return self.send(200, (ROOT/'data/chimes.json').read_bytes(), 'application/json; charset=utf-8')
+        if path == '/assets/pumpkin.json':
+            return self.send(200, (ROOT/'data/pumpkin.json').read_bytes(), 'application/json; charset=utf-8')
+        if path == '/assets/lost-space.json':
+            return self.send(200, (ROOT/'data/lost_space.json').read_bytes(), 'application/json; charset=utf-8')
+        if path == '/assets/pirate.json':
+            return self.send(200, (ROOT/'data/pirate.json').read_bytes(), 'application/json; charset=utf-8')
+        if path == '/assets/firework-project.json':
+            return self.send(200, (ROOT/'data/firework_project.json').read_bytes(), 'application/json; charset=utf-8')
+        if path == '/assets/puzzle-events.json':
+            return self.send(200, (ROOT/'data/puzzle_events.json').read_bytes(), 'application/json; charset=utf-8')
+        if path == '/assets/blind-box.json':
+            return self.send(200, (ROOT/'data/blind_box.json').read_bytes(), 'application/json; charset=utf-8')
+        if path == '/assets/jackpot.json':
+            return self.send(200, (ROOT/'data/jackpot.json').read_bytes(), 'application/json; charset=utf-8')
+        if path == '/assets/activity-draw.json':
+            return self.send(200, (ROOT/'data/activity_draw.json').read_bytes(), 'application/json; charset=utf-8')
+        if path == '/assets/guild.json':
+            import json as _j
+            d = _j.loads((ROOT/'data/guild.json').read_text()); d['bosses'] = __import__('gxb2.guild', fromlist=['x']).bosses(); d.pop('boss', None)
+            return self.send(200, _j.dumps(d, ensure_ascii=False).encode(), 'application/json; charset=utf-8')
+        if path == '/assets/activity-kit.json':
+            return self.send(200, (ROOT/'data/activity_kit.json').read_bytes(), 'application/json; charset=utf-8')
+        if path == '/assets/two-love.json':
+            return self.send(200, (ROOT/'data/two_love.json').read_bytes(), 'application/json; charset=utf-8')
+        if path == '/assets/magic-card.json':
+            return self.send(200, (ROOT/'data/magic_card.json').read_bytes(), 'application/json; charset=utf-8')
+        if path == '/assets/wish.json':
+            return self.send(200, (ROOT/'data/wish.json').read_bytes(), 'application/json; charset=utf-8')
+        if path == '/assets/ev-sand.json':
+            return self.send(200, (ROOT/'data/ev_sand.json').read_bytes(), 'application/json; charset=utf-8')
+        if path == '/assets/dropbox-80001.json':
+            rows = [r for r in json.loads((ROOT/'data/dropbox.json').read_text()).values() if int(r['dropbox_id']) == 80001 and int(r['weight']) > 0]
+            return self.send(200, rows)
+        if path == '/assets/astral.json':
+            return self.send(200, (ROOT/'data/astral.json').read_bytes(), 'application/json; charset=utf-8')
+        if path == '/assets/partner-return.json':
+            return self.send(200, (ROOT/'data/partner_return.json').read_bytes(), 'application/json; charset=utf-8')
+        if path == '/assets/resonate.json':
+            return self.send(200, (ROOT/'data/resonate.json').read_bytes(), 'application/json; charset=utf-8')
+        if path == '/assets/potentials.json':
+            return self.send(200, (ROOT/'data/potentials.json').read_bytes(), 'application/json; charset=utf-8')
+        if path == '/assets/house-exam.json':
+            return self.send(200, (ROOT/'data/house_exam.json').read_bytes(), 'application/json; charset=utf-8')
+        if path == '/assets/shops.json':
+            return self.send(200, (ROOT/'data/shops.json').read_bytes(), 'application/json; charset=utf-8')
+        if path == '/assets/relations.json':
+            return self.send(200, (ROOT/'data/relations.json').read_bytes(), 'application/json; charset=utf-8')
+        if path == '/assets/servants.json':
+            return self.send(200, (ROOT/'data/servants.json').read_bytes(), 'application/json; charset=utf-8')
+        if path == '/assets/campaign.json':
+            return self.send(200, (ROOT/'data/campaign.json').read_bytes(), 'application/json; charset=utf-8')
+        if path == '/assets/pictures.json':
+            f = ROOT/'data/pictures.json'
+            return self.send(200, f.read_bytes() if f.exists() else b'[]', 'application/json')
+        if path == '/assets/lihui.json':
+            return self.send(200, (ROOT/'data/lihui.json').read_bytes(), 'application/json')
+        if path == '/assets/equipment/catalog.json':
+            return self.send(200, (ROOT/'data/equipment.json').read_bytes(), 'application/json; charset=utf-8')
+        if path.startswith('/assets/equipment/') and path.endswith('.png'):
+            stem = path[len('/assets/equipment/'):-4]
+            if stem in EQUIP_ASSETS:
+                return self.send(200, (ROOT/'web/assets/equipment'/f'{stem}.png').read_bytes(), 'image/png')
+        if path == '/api/partners/power':
+            return self.send(200, self.engine.partners_power())
+        if path.startswith('/api/partner/') and path.endswith('/attrs'):
+            try: return self.send(200, self.engine.partner_attributes(int(path.split('/')[3])))
+            except (ValueError, GameError) as exc: return self.send(404, {'error': str(exc)})
+        if path == '/assets/events/catalog.json':
+            return self.send(200, (ROOT/'data/events.json').read_bytes(), 'application/json; charset=utf-8')
+        if path.startswith('/assets/events/') and path.endswith('.png'):
+            stem = path[len('/assets/events/'):-4]
+            if stem in EVENT_ASSETS:
+                return self.send(200, (ROOT/'web/assets/events'/f'{stem}.png').read_bytes(), 'image/png')
+        if path.startswith('/api/battle/'):
+            try: return self.send(200, self.engine.get_battle(int(path.rsplit('/', 1)[-1])))
+            except (ValueError, GameError): return self.send(404, {'error': 'Batalla inexistente'})
+        if path.startswith('/assets/img-guides/'):
+            filename = path.rsplit('/', 1)[-1]
+            folder = ROOT/'web/assets/img-guides'
+            if path == '/assets/img-guides/'+filename and filename in {p.name for p in folder.iterdir() if p.suffix in ('.png', '.json')}:
+                return self.send(200, (folder/filename).read_bytes(), 'application/json; charset=utf-8' if filename.endswith('.json') else 'image/png')
+        files = {'/hero-glow.js':('hero-glow.js','application/javascript; charset=utf-8'),'/hero-glow.css':('hero-glow.css','text/css; charset=utf-8'),'/img-guides.js':('img-guides.js','application/javascript; charset=utf-8'),'/img-guides.css':('img-guides.css','text/css; charset=utf-8'),'/graduate.css':('graduate.css','text/css'), '/firework-project.js':('firework-project.js','application/javascript'), '/firework-project.css':('firework-project.css','text/css'), '/arena3v3.js':('arena3v3.js','application/javascript'), '/arena3v3.css':('arena3v3.css','text/css'), '/settings-menu.js':('settings-menu.js','application/javascript'), '/settings-menu.css':('settings-menu.css','text/css'), '/house-dress.js':('house-dress.js','application/javascript'), '/house-dress.css':('house-dress.css','text/css'), '/guild-lab.js':('guild-lab.js','application/javascript'), '/guild-lab.css':('guild-lab.css','text/css'), '/slots.js': ('slots.js','application/javascript'), '/slots.css': ('slots.css','text/css'), '/home-menus.js': ('home-menus.js', 'application/javascript'), '/home-menus.css': ('home-menus.css', 'text/css'), '/assets/avatars.png': ('assets/avatars.png', 'image/png'), '/assets/avatars.json': ('assets/avatars.json', 'application/json'), '/assets/home-bg.png': ('assets/home-bg.png', 'image/png'), '/assets/home-icons.png': ('assets/home-icons.png', 'image/png'), '/assets/home-icons-alpha.png': ('assets/home-icons-alpha.png', 'image/png'), '/assets/home-icons.json': ('assets/home-icons.json', 'application/json'), '/': ('index.html', 'text/html; charset=utf-8'), '/battle-animation.js': ('battle-animation.js', 'application/javascript'), '/developer.js': ('developer.js', 'application/javascript'), '/campaign-ui.js': ('campaign-ui.js', 'application/javascript; charset=utf-8'), '/campaign-ui.css': ('campaign-ui.css', 'text/css; charset=utf-8'), '/arena.js': ('arena.js', 'application/javascript; charset=utf-8'), '/patrol.js': ('patrol.js', 'application/javascript; charset=utf-8'), '/house-exam.js': ('house-exam.js', 'application/javascript; charset=utf-8'), '/summon-anim.js': ('summon-anim.js', 'application/javascript; charset=utf-8'), '/hero-challenge.js': ('hero-challenge.js', 'application/javascript; charset=utf-8'), '/sanctuary.js': ('sanctuary.js', 'application/javascript; charset=utf-8'), '/internship.js': ('internship.js', 'application/javascript; charset=utf-8'), '/midas.js': ('midas.js', 'application/javascript; charset=utf-8'), '/old-campus.js': ('old-campus.js', 'application/javascript; charset=utf-8'), '/old-campus.css': ('old-campus.css', 'text/css; charset=utf-8'), '/echoes.js': ('echoes.js', 'application/javascript; charset=utf-8'), '/echoes.css': ('echoes.css', 'text/css; charset=utf-8'), '/shrine.js': ('shrine.js', 'application/javascript; charset=utf-8'), '/shrine.css': ('shrine.css', 'text/css; charset=utf-8'), '/galaxy.js': ('galaxy.js', 'application/javascript; charset=utf-8'), '/galaxy.css': ('galaxy.css', 'text/css; charset=utf-8'), '/story.js': ('story.js', 'application/javascript; charset=utf-8'), '/story.css': ('story.css', 'text/css; charset=utf-8'), '/dress.js': ('dress.js', 'application/javascript; charset=utf-8'), '/dress.css': ('dress.css', 'text/css; charset=utf-8'), '/skins.js': ('skins.js', 'application/javascript; charset=utf-8'), '/souls.js': ('souls.js', 'application/javascript; charset=utf-8'), '/souls.css': ('souls.css', 'text/css; charset=utf-8'), '/soul-land.js': ('soul-land.js', 'application/javascript; charset=utf-8'), '/soul-land.css': ('soul-land.css', 'text/css; charset=utf-8'), '/stellar-altar.js': ('stellar-altar.js', 'application/javascript; charset=utf-8'), '/stellar-altar.css': ('stellar-altar.css', 'text/css; charset=utf-8'), '/quick-formation.js': ('quick-formation.js', 'application/javascript; charset=utf-8'), '/quick-formation.css': ('quick-formation.css', 'text/css; charset=utf-8'), '/skin-collection.js': ('skin-collection.js', 'application/javascript; charset=utf-8'), '/skin-collection.css': ('skin-collection.css', 'text/css; charset=utf-8'), '/profile-senpai.js': ('profile-senpai.js', 'application/javascript; charset=utf-8'), '/story-items.js': ('story-items.js', 'application/javascript; charset=utf-8'), '/game-assistant.js': ('game-assistant.js', 'application/javascript; charset=utf-8'), '/ev-sand.js': ('ev-sand.js', 'application/javascript; charset=utf-8'), '/ev-sand.css': ('ev-sand.css', 'text/css; charset=utf-8'), '/wallpaper.js': ('wallpaper.js', 'application/javascript; charset=utf-8'), '/summon-result.js': ('summon-result.js', 'application/javascript; charset=utf-8'), '/summon-result.css': ('summon-result.css', 'text/css; charset=utf-8'), '/campaign-flow.js': ('campaign-flow.js', 'application/javascript; charset=utf-8'), '/campaign-flow.css': ('campaign-flow.css', 'text/css; charset=utf-8'), '/altar.js': ('altar.js', 'application/javascript; charset=utf-8'), '/altar.css': ('altar.css', 'text/css; charset=utf-8'), '/chimes.js': ('chimes.js', 'application/javascript; charset=utf-8'), '/chimes.css': ('chimes.css', 'text/css; charset=utf-8'), '/pumpkin.js': ('pumpkin.js', 'application/javascript; charset=utf-8'), '/pumpkin.css': ('pumpkin.css', 'text/css; charset=utf-8'), '/lost-space.js': ('lost-space.js', 'application/javascript; charset=utf-8'), '/lost-space.css': ('lost-space.css', 'text/css; charset=utf-8'), '/pirate.js': ('pirate.js', 'application/javascript; charset=utf-8'), '/pirate.css': ('pirate.css', 'text/css; charset=utf-8'), '/puzzle-events.js': ('puzzle-events.js', 'application/javascript; charset=utf-8'), '/puzzle-events.css': ('puzzle-events.css', 'text/css; charset=utf-8'), '/blind-box.js': ('blind-box.js', 'application/javascript; charset=utf-8'), '/blind-box.css': ('blind-box.css', 'text/css; charset=utf-8'), '/jackpot.js': ('jackpot.js', 'application/javascript; charset=utf-8'), '/jackpot.css': ('jackpot.css', 'text/css; charset=utf-8'), '/guild.js': ('guild.js', 'application/javascript; charset=utf-8'), '/guild.css': ('guild.css', 'text/css; charset=utf-8'), '/act-kit.js': ('act-kit.js', 'application/javascript; charset=utf-8'), '/act-kit.css': ('act-kit.css', 'text/css; charset=utf-8'), '/two-love.js': ('two-love.js', 'application/javascript; charset=utf-8'), '/two-love.css': ('two-love.css', 'text/css; charset=utf-8'), '/magic-card.js': ('magic-card.js', 'application/javascript; charset=utf-8'), '/magic-card.css': ('magic-card.css', 'text/css; charset=utf-8'), '/wish.js': ('wish.js', 'application/javascript; charset=utf-8'), '/wish.css': ('wish.css', 'text/css; charset=utf-8'), '/dress-show.js': ('dress-show.js', 'application/javascript; charset=utf-8'), '/dress-show.css': ('dress-show.css', 'text/css; charset=utf-8'), '/skins.css': ('skins.css', 'text/css; charset=utf-8'), '/internship.css': ('internship.css', 'text/css; charset=utf-8'), '/sanctuary.css': ('sanctuary.css', 'text/css; charset=utf-8'), '/hero-challenge.css': ('hero-challenge.css', 'text/css; charset=utf-8'), '/summon-anim.css': ('summon-anim.css', 'text/css; charset=utf-8'), '/house-exam.css': ('house-exam.css', 'text/css; charset=utf-8'), '/patrol.css': ('patrol.css', 'text/css; charset=utf-8'), '/arena.css': ('arena.css', 'text/css; charset=utf-8'), '/shops.js': ('shops.js', 'application/javascript; charset=utf-8'), '/shops.css': ('shops.css', 'text/css; charset=utf-8'), '/missions.js': ('missions.js', 'application/javascript; charset=utf-8'), '/missions.css': ('missions.css', 'text/css; charset=utf-8'), '/dates.js': ('dates.js', 'application/javascript; charset=utf-8'), '/station.js': ('station.js', 'application/javascript; charset=utf-8'), '/bots.js': ('bots.js', 'application/javascript; charset=utf-8'), '/bots.css': ('bots.css', 'text/css; charset=utf-8'), '/remaining-systems.js': ('remaining-systems.js','application/javascript; charset=utf-8'), '/newbie-camp.js': ('newbie-camp.js', 'application/javascript; charset=utf-8'), '/growth-diary.js': ('growth-diary.js', 'application/javascript; charset=utf-8'), '/growth-diary.css': ('growth-diary.css', 'text/css; charset=utf-8'), '/fantasy-book.js': ('fantasy-book.js', 'application/javascript; charset=utf-8'), '/fantasy-book.css': ('fantasy-book.css', 'text/css; charset=utf-8'), '/station.css': ('station.css', 'text/css; charset=utf-8'), '/dates.css': ('dates.css', 'text/css; charset=utf-8'), '/excursion.js': ('excursion.js', 'application/javascript; charset=utf-8'), '/excursion.css': ('excursion.css', 'text/css; charset=utf-8'), '/servant.js': ('servant.js', 'application/javascript; charset=utf-8'), '/servant.css': ('servant.css', 'text/css; charset=utf-8'), '/frame.js': ('frame.js', 'application/javascript; charset=utf-8'), '/frame.css': ('frame.css', 'text/css; charset=utf-8'), '/enroll.js': ('enroll.js', 'application/javascript; charset=utf-8'), '/enroll.css': ('enroll.css', 'text/css; charset=utf-8'), '/campaign-map.js': ('campaign-map.js', 'application/javascript; charset=utf-8'), '/campaign-map.css': ('campaign-map.css', 'text/css; charset=utf-8'), '/girl-ui.js': ('girl-ui.js', 'application/javascript; charset=utf-8'), '/girl-ui.css': ('girl-ui.css', 'text/css; charset=utf-8'), '/equipment.js': ('equipment.js', 'application/javascript; charset=utf-8'), '/equipment.css': ('equipment.css', 'text/css; charset=utf-8'), '/events.js': ('events.js', 'application/javascript; charset=utf-8'), '/events.css': ('events.css', 'text/css; charset=utf-8'), '/app.js': ('app.js', 'application/javascript; charset=utf-8'), '/style.css': ('style.css', 'text/css; charset=utf-8'),'/assets/stage-lock.png': ('assets/stage-lock.png', 'image/png'), '/assets/stage-check.png': ('assets/stage-check.png', 'image/png')}
+        for character in (41001, 42001, 43001):
+            files[f'/assets/hero-{character}.png'] = (f'assets/hero-{character}.png', 'image/png')
+        if path in files:
+            filename, mime = files[path]
+            return self.send(200, (ROOT/'web'/filename).read_bytes(), mime)
+        return self.send(404, {'error': 'Ruta no implementada'})
+    def bootstrap(self):
+        return {'uid': 'local-player-1', 'player_id': 1, 'token': LOCAL_TOKEN, 'server_id': 1,
+                'gate_host': '127.0.0.1', 'gate_port': self.server.tcp_port, 'is_new': 0,
+                'server_time': int(time.time()), 'log_url': f'http://localhost:{self.server.server_port}/local-log'}
+    def read_body(self):
+        length = int(self.headers.get('Content-Length', '0'))
+        if not 0 <= length <= 1024*1024: raise GameError('Petición demasiado grande')
+        raw = self.rfile.read(length)
+        content_type = self.headers.get('Content-Type', '')
+        if content_type.startswith('application/json'):
+            data = json.loads(raw)
+        elif content_type.startswith('application/x-www-form-urlencoded'):
+            values = parse_qs(raw.decode())
+            data = json.loads(values.get('payload', ['{}'])[0])
+        elif content_type.startswith('multipart/form-data'):
+            message = BytesParser(policy=default).parsebytes(('Content-Type: '+content_type+'\r\nMIME-Version: 1.0\r\n\r\n').encode()+raw)
+            payload = next((part.get_payload(decode=True) for part in message.iter_parts() if part.get_param('name', header='content-disposition') == 'payload'), b'{}')
+            data = json.loads(payload)
+        else: raise GameError('Tipo de contenido no compatible')
+        if not isinstance(data, dict): raise GameError('La petición debe ser un objeto')
+        return data
+    def do_POST(self):
+        origin = self.headers.get('Origin')
+        allowed = (f'http://127.0.0.1:{self.server.server_port}', f'http://localhost:{self.server.server_port}')
+        if origin and origin not in allowed: return self.send(403, {'error': 'Origen no permitido'})
+        try:
+            data = self.read_body()
+            path = urlparse(self.path).path
+            if path == '/api/v1':
+                if data.get('mid') != 1 or data.get('local_mode') is not True:
+                    raise GameError('Este endpoint acepta solo RETRIEVE_TOKEN con local_mode=true')
+                return self.send(200, {'payload': self.bootstrap()})
+            if path == '/api/action':
+                name = data.get('message')
+                allowed_actions = {'GUILD_GET_SKILLS','GUILD_UPGRADE_SKILL','GUILD_RESET_SKILL','MAP_FIGHT', 'PARTNER_LEVUP', 'SET_HANG_TEAM', 'STAGE_HANG', 'SUMMON', 'COMPOSE_PARTNER', 'AWAKE_PARTNER', 'PARTNER_GRADEUP', 'UPGRADE_PARTNER_EX_SKILL', 'CHOOSE_PARTNER_POTENTIAL', 'REPLACE_10_STAR', 'ROLLBACK_PARTNER', 'DECOMPOSE_PARTNERS', 'UPGRADE_STAR_ORIGIN', 'RESET_STAR_ORIGIN', 'PROPHET_REPLACE', 'PROPHET_REPLACE_SAVE', 'GAMBLE_GET_INFO', 'GAMBLE_GET_AWARD', 'GAMBLE_REFRESH', 'LOCK_PARTNER', 'GET_SHOP_INFO', 'REFRESH_SHOP', 'BUY_SHOP_ITEM'}
+                if name not in allowed_actions: raise GameError('Acción no disponible')
+                request = data.get('data', {})
+                if not isinstance(request, dict): raise GameError('Datos inválidos')
+                packets = self.engine.handle(name, request)
+                return self.send(200, {'state': self.engine.snapshot(), 'messages': [{'id': mid, 'type': typ, 'data': body} for mid, typ, body in packets]})
+            if path == '/api/developer':
+                return self.send(200, {'state': self.engine.developer_action(data)})
+            if path == '/api/home/action':
+                return self.send(200, self.engine.home_action(data))
+            if path == '/api/dress-show/action':
+                return self.send(200, self.engine.dress_show_action(data))
+            if path == '/api/campaign/hang-team':
+                return self.send(200, self.engine.set_campaign_hang(data))
+            if path == '/api/altar/preview':
+                return self.send(200, self.engine.altar_preview(data))
+            if path == '/api/chimes/action':
+                return self.send(200, self.engine.chimes_action(data))
+            if path == '/api/pumpkin/action':
+                return self.send(200, self.engine.pumpkin_action(data))
+            if path == '/api/relations/plot':
+                from gxb2 import relations as _rel
+                return self.send(200, {'lines': _rel.plot_scene(int(data.get('plot', 0) or 0)), 'title': _rel.PLOT['titles'].get(str(data.get('plot', 0)), '')})
+            if path == '/api/arena3v3/action':
+                return self.send(200, self.engine.arena3v3_action(data))
+            if path in ('/api/friend-boss/action','/api/pet-training/action','/api/practical-work/action'):
+                return self.send(200, self.engine.remaining_system_action(path.split('/')[2],data))
+            if path == '/api/newbie-camp/action':
+                return self.send(200, self.engine.newbie_camp_action(data))
+            if path == '/api/growth-diary/action':
+                return self.send(200, self.engine.growth_diary_action(data))
+            if path == '/api/hearts/action':
+                return self.send(200, self.engine.hearts_action(data))
+            if path == '/api/fantasy-book/action':
+                return self.send(200, self.engine.fantasy_book_action(data))
+            if path == '/api/collection/action':
+                return self.send(200, self.engine.collection_action(data))
+            if path == '/api/lost-space/action':
+                return self.send(200, self.engine.lost_space_action(data))
+            if path == '/api/pirate/action':
+                return self.send(200, self.engine.pirate_action(data))
+            if path == '/api/firework-project/action':
+                return self.send(200, self.engine.firework_project_action(data))
+            if path == '/api/puzzle-events/action':
+                return self.send(200, self.engine.puzzle_events_action(data))
+            if path == '/api/blind-box/action':
+                return self.send(200, self.engine.blind_box_action(data))
+            if path == '/api/jackpot/action':
+                return self.send(200, self.engine.jackpot_action(data))
+            if path == '/api/act-draw/action':
+                return self.send(200, self.engine.act_draw_action(data))
+            if path == '/api/guild/action':
+                return self.send(200, self.engine.guild_action(data))
+            if path == '/api/act-kit/action':
+                return self.send(200, self.engine.act_kit_action(data))
+            if path == '/api/two-love/action':
+                return self.send(200, self.engine.two_love_action(data))
+            if path == '/api/magic-card/action':
+                return self.send(200, self.engine.magic_card_action(data))
+            if path == '/api/wish/action':
+                return self.send(200, self.engine.wish_action(data))
+            if path == '/api/events/sand':
+                return self.send(200, self.engine.ev_sand_action(data))
+            if path == '/api/assistant/run':
+                return self.send(200, self.engine.assistant_run(data))
+            if path == '/api/quick-formation/action':
+                return self.send(200, self.engine.quick_formation_action(data))
+            if path == '/api/stellar-altar/action':
+                return self.send(200, self.engine.stellar_altar_action(data))
+            if path == '/api/soul-land/action':
+                return self.send(200, self.engine.soul_land_action(data))
+            if path == '/api/souls/action':
+                return self.send(200, self.engine.souls_action(data))
+            if path == '/api/souls/catalog':
+                return self.send(200, souls_catalog())
+            if path == '/api/skins/action':
+                return self.send(200, self.engine.skins_action(data))
+            if path == '/api/graduate/preview':
+                return self.send(200, self.engine.graduate_preview(int(data.get('partner_id', 0)), int(data.get('target_id', 0))))
+            if path == '/api/skins/catalog':
+                return self.send(200, skins_catalog())
+            if path == '/api/dress/action':
+                return self.send(200, self.engine.dress_action(data))
+            if path == '/api/dress/catalog':
+                return self.send(200, dress_catalog())
+            if path == '/api/story/action':
+                return self.send(200, self.engine.story_action(data))
+            if path == '/api/story/scene':
+                return self.send(200, self.engine.story_scene(data.get('plot', 0)))
+            if path == '/api/story/stage':
+                return self.send(200, self.engine.story_stage(data.get('stage', 0)))
+            if path == '/api/story/catalog':
+                return self.send(200, story_catalog())
+            if path == '/api/galaxy/action':
+                return self.send(200, self.engine.galaxy_action(data))
+            if path == '/api/shrine/action':
+                return self.send(200, self.engine.shrine_action(data))
+            if path == '/api/shrine/story':
+                return self.send(200, self.engine.shrine_story(data.get('text_id', 1)))
+            if path == '/api/echoes/action':
+                return self.send(200, self.engine.echoes_action(data))
+            if path == '/api/old-campus/action':
+                return self.send(200, self.engine.old_campus_action(data))
+            if path == '/api/midas/action':
+                return self.send(200, self.engine.midas_action(data))
+            if path == '/api/house-dress/action':
+                return self.send(200, self.engine.house_dress_action(data))
+            if path == '/api/internship/action':
+                return self.send(200, self.engine.internship_action(data))
+            if path == '/api/sanctuary/action':
+                return self.send(200, self.engine.sanctuary_action(data))
+            if path == '/api/hero-challenge/action':
+                return self.send(200, self.engine.hero_challenge_action(data))
+            if path == '/api/house-exam/action':
+                return self.send(200, self.engine.house_exam_action(data))
+            if path == '/api/patrol/action':
+                return self.send(200, self.engine.patrol_action(data))
+            if path == '/api/arena/action':
+                return self.send(200, self.engine.arena_action(data))
+            if path == '/api/shops/action':
+                return self.send(200, self.engine.shops_action(data))
+            if path == '/api/missions/action':
+                return self.send(200, self.engine.missions_action(data))
+            if path == '/api/relations/action':
+                return self.send(200, self.engine.relations_action(data))
+            if path == '/api/explore/action':
+                return self.send(200, self.engine.explore_action(data))
+            if path == '/api/campaign/action':
+                return self.send(200, self.engine.campaign_action(data))
+            if path == '/api/equipment/action':
+                return self.send(200, self.engine.equipment_action(data))
+            if path == '/api/events/action':
+                return self.send(200, self.engine.events_action(data))
+            if path == '/api/profile':
+                return self.send(200, {'state': self.engine.update_profile(data)})
+            if path == '/api/daily-quiz/fight':
+                return self.send(200, self.engine.run_daily_quiz(data))
+            if path == '/api/daily-quiz/sweep':
+                return self.send(200, self.engine.run_daily_quiz(data, sweep=True))
+            if path == '/api/tower/fight':
+                return self.send(200, self.engine.run_tower(data))
+            return self.send(404, {'error': 'Ruta no implementada'})
+        except (ValueError, KeyError) as exc: return self.send(400, {'error': str(exc)})
+        except Exception as exc:
+            print(f'Error local: {type(exc).__name__}: {exc}', flush=True)
+            return self.send(500, {'error': 'Error del motor local. Consulta la terminal.'})
+
+def make_servers(engine, http_port=9080, tcp_port=9081, developer_engine=None):
+    tcp = ThreadTCP(('127.0.0.1', tcp_port), TCPHandler)
+    tcp.engine = engine
+    try: http = LocalHTTPServer(('127.0.0.1', http_port), HTTPHandler)
+    except Exception:
+        tcp.server_close()
+        raise
+    http.developer_engine = developer_engine
+    http.engine = engine; http.tcp_port = tcp.server_address[1]
+    return http, tcp
+
+def main():
+    parser = argparse.ArgumentParser(description='Backend local GxB2: combate original, perfil ficticio y guardado local')
+    parser.add_argument('--http-port', type=int, default=9080)
+    parser.add_argument('--tcp-port', type=int, default=9081)
+    parser.add_argument('--db', type=Path, default=ROOT/'state/profile.sqlite3')
+    parser.add_argument('--open', action='store_true', help='Abrir la interfaz local de prueba')
+    args = parser.parse_args()
+    engine = Engine(args.db)
+    developer = Engine(args.db.with_name(args.db.stem + ".developer.sqlite3"), developer=True)
+    http, tcp = make_servers(engine, args.http_port, args.tcp_port, developer)
+    threads = [threading.Thread(target=s.serve_forever, daemon=True) for s in (http, tcp)]
+    for thread in threads: thread.start()
+    url = f'http://localhost:{http.server_port}'
+    print(f'GxB2 local listo: {url}\nSocket de pruebas: 127.0.0.1:{tcp.server_address[1]}\nCtrl+C para detenerlo.', flush=True)
+    if args.open:
+        import webbrowser
+        webbrowser.open(url)
+    try:
+        while True: time.sleep(1)
+    except KeyboardInterrupt: pass
+    finally:
+        for s in (http, tcp): s.shutdown(); s.server_close()
+        engine.close()
+        developer.close()
+
+if __name__ == '__main__': main()

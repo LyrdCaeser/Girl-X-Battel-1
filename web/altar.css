@@ -1,0 +1,28 @@
+/* Transfer / Altar (AltarWindow): fort_bg_1 backdrop, tabs Altar / Reverse, 12 slots, roster with filter. Prefix al-. */
+.altar-view{position:relative;min-height:100%;padding-bottom:16px;background:linear-gradient(#e9f1fb,#cfe0f3);display:grid;gap:8px;align-content:start}
+.altar-view[hidden]{display:none}
+.al-top{display:flex;align-items:center;gap:10px;padding:10px 12px;background:linear-gradient(#f4f8ff,#dfe9f7)}
+.al-res{display:inline-flex;align-items:center;gap:6px;padding:2px 12px 2px 4px;border-radius:18px;background:#fff;font:800 15px system-ui;color:#34466a}.al-res img{width:26px}
+.al-back{margin-left:auto;border:0;background:none;padding:0;width:62px;cursor:pointer}.al-back img{width:100%}
+.al-nav{display:grid;grid-template-columns:1fr 1fr;margin:0 14px}
+.al-tab{height:40px;border:0;background:center/100% 100% no-repeat;color:#6b7a95;font:800 17px system-ui;cursor:pointer}.al-tab.on{color:#fff;text-shadow:0 1px 2px #1d4f9a}
+.al-panel{position:relative;margin:0 12px;padding:12px;border-radius:14px;background:#fffffff0;box-shadow:0 2px 6px #0002}
+.al-help,.al-preview{position:absolute;top:8px;width:34px;height:34px;border:0;border-radius:50%;cursor:pointer}
+.al-help{left:8px;background:#6b9be0;color:#fff;font:900 18px system-ui}.al-preview{right:8px;background:#fff url('/assets/altar/btn_preview.png') center/80% no-repeat;box-shadow:0 1px 3px #0003}
+.al-slots{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:34px}
+.al-slot{position:relative;aspect-ratio:1;border:0;padding:0;border-radius:10px;background:#eef3fa;cursor:pointer}.al-slot.big{width:110px;margin:10px auto}
+.al-none{position:absolute;inset:0;width:100%;height:100%}.al-add{position:absolute;left:34%;top:34%;width:32%}
+.al-slot .cf-hero,.al-pick .cf-hero{width:100%}
+.al-note{margin:30px 0 0;color:#4b5b7a;font-size:13px;text-align:center}.al-go{display:block;margin:0 auto}
+.al-filter{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.al-f{width:38px;height:38px;padding:3px;border:2px solid #dcd6ec;border-radius:50%;background:#fff;cursor:pointer}.al-f img{width:100%}.al-f.on{border-color:#3e8ef0;box-shadow:0 0 0 2px #3e8ef055}
+.al-star{margin-left:auto;padding:6px;border-radius:8px;border:1px solid #c9d3e6;font-weight:700}
+.al-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;max-height:38vh;overflow-y:auto;padding:2px}
+.al-pick{position:relative;border:0;padding:0;background:none;cursor:pointer}.al-pick.on:after{content:"✔";position:absolute;inset:0;display:grid;place-items:center;border-radius:8px;background:#0006;color:#ffd24a;font:900 30px system-ui}
+.al-pick.lock{filter:grayscale(.7);opacity:.7}.al-lockicon{position:absolute;right:2px;bottom:2px;font-size:15px}
+.al-foot{display:flex;align-items:center;gap:8px;margin-top:10px}.al-count{margin-right:auto;color:#4b5b7a;font-weight:700}
+.al-retire{min-width:130px}
+.al-win .al-items{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}.al-item{position:relative;display:grid;place-items:center;aspect-ratio:1;border-radius:10px;background:#eef3fa}.al-item img{width:70%;height:70%;object-fit:contain}.al-item b{position:absolute;right:4px;bottom:2px;font:800 12px system-ui;color:#fff;text-shadow:0 0 3px #000}
+.al-btn{min-width:110px;height:46px;padding:0 16px;border:14px solid transparent;border-image:url('/assets/altar/blue_btn70_70.png') 30 fill / 14px stretch;background:none;color:#fff;font:800 16px system-ui;text-shadow:0 1px 2px #1d4f9a;cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
+.al-btn.white{border-image-source:url('/assets/altar/white_btn70_70.png');color:#4a4a4a;text-shadow:none}
+.al-btn:disabled{filter:grayscale(1);opacity:.6;cursor:default}

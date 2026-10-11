@@ -1,0 +1,11 @@
+/* Simulated players: ranking rows and chat bubbles */
+.bt-win .gs-win-body{max-height:70vh;overflow-y:auto}
+.bt-list{display:grid;gap:5px}.bt-head{text-align:right;font-size:11px;color:#7a86a6;padding-right:8px}
+.bt-row{display:grid;grid-template-columns:44px 40px 1fr auto;gap:8px;align-items:center;padding:4px 8px;border-radius:8px;background:#fff;box-shadow:0 1px 0 #c3cfe2}.bt-row.me{background:#fff3cf;box-shadow:0 0 0 2px #f0b43c}
+.bt-rk{text-align:center;color:#5a4e6e;font-size:16px}.bt-rk img{width:40px;display:block;margin:auto}
+.bt-av{width:40px;height:40px;border-radius:8px;overflow:hidden;background:#e7ecf6;display:block}.bt-av img,.bt-av .portrait{width:100%!important;height:100%!important;object-fit:cover}
+.bt-name{display:grid}.bt-name b{color:#3f5878;font-size:13px}.bt-name small{color:#8a9bb0;font-size:10px}.bt-score{color:#2f8fd8;font-size:15px}
+.bt-chat{display:flex;flex-direction:column;gap:8px;max-height:46vh;overflow-y:auto;padding:6px;border-radius:8px;background:#eef2f8;margin-bottom:8px}
+.bt-msg{display:grid;grid-template-columns:40px 1fr;gap:8px;align-items:start}.bt-bubble{background:#fff;border-radius:10px;padding:6px 10px;box-shadow:0 1px 0 #c3cfe2}
+.bt-bubble b{font-size:11px;color:#5d6db0}.bt-bubble p{margin:2px 0;font-size:13px;color:#3f4d6a}.bt-bubble small{font-size:9px;color:#9aa1c0}
+.bt-empty{text-align:center;color:#8a93b0}

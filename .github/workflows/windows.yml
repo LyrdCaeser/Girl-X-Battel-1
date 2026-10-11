@@ -1,0 +1,58 @@
+name: Windows startup
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  startup:
+    runs-on: windows-2022
+    timeout-minutes: 15
+    env:
+      PYTHONUTF8: "1"
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-python@v7.0.0
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Verify Windows runtime and complete voice bundle
+        run: |
+          .\runtime\luajit-windows-x64.exe -e "print(jit.version); assert(not require('ffi').abi('gc64'))"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python tools/bundle_voices.py --check
+      - name: Verify battle and Windows launcher
+        shell: python
+        run: |
+          import json, re, subprocess, urllib.request, sys
+          from pathlib import Path
+          sys.path.insert(0, str(Path.cwd()))
+          from gxb2.battle import simulate, attributes
+          team = [{'table_id':41001,'partner_id':1,'lv':1,'pos':1}]
+          enemy = [{'table_id':1,'isMonster':True,'pos':1}]
+          report = simulate(team, enemy, 100001, 12345)
+          assert report['isWin'] == 1 and len(report['frames']) > 2
+          assert report == simulate(team, enemy, 100001, 12345)
+          attributes(team)
+          print('Native Windows battle and attributes OK', flush=True)
+          process = subprocess.Popen(['cmd', '/c', 'Iniciar-Windows.cmd', '--http-port', '0', '--tcp-port', '0'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, encoding='utf-8', errors='replace')
+          try:
+              url = None
+              for line in process.stdout:
+                  print(line.rstrip(), flush=True)
+                  match = re.search(r'http://localhost:\d+', line)
+                  if match:
+                      url = match.group(0)
+                      break
+              assert url, 'Windows launcher failed to start'
+              for route in ['/health', '/', '/api/state', '/api/bootstrap', '/assets/voice/1001.mp3']:
+                  if '1001.mp3' in route:
+                      from pathlib import Path
+                      sid = next(iter(json.loads(Path('data/relations.json').read_text(encoding='utf-8'))['sounds']))
+                      route = '/assets/voice/' + sid + '.mp3'
+                  with urllib.request.urlopen(url + route, timeout=30) as response:
+                      assert response.status == 200
+                      response.read()
+              print('Windows launcher, HTTP, fresh save and voice OK', flush=True)
+          finally:
+              subprocess.run(['taskkill', '/PID', str(process.pid), '/T', '/F'], capture_output=True)

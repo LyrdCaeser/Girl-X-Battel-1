@@ -1,0 +1,37 @@
+/* Girl detail · Skins tab (capture 2026-09-29-k/05): PartnerCard skin cards (prefab partner_card, 160×240 → --s scale),
+   selected card enlarged between the skin_bg02 / skin_bg01 ornaments, red Take off / blue Put on, eye + chibi buttons. */
+#detail-skin-list.detail-skin-list{display:block;grid-template-columns:none}
+.sk-box{background:#f3f5fa;border:2px solid #d8dfeb;border-radius:8px;padding:4px 0}
+.sk-carousel{--s:.8;display:flex;align-items:center;gap:calc(10 * var(--u));overflow-x:auto;padding:calc(22 * var(--u)) calc(14 * var(--u)) calc(22 * var(--u));scroll-snap-type:x mandatory;scrollbar-width:none}
+.sk-carousel::-webkit-scrollbar{display:none}
+.sk-card{--k:var(--s);position:relative;flex:none;width:calc(160 * var(--k) * var(--u));height:calc(240 * var(--k) * var(--u));border:0;padding:0;background:none;cursor:pointer;scroll-snap-align:center;transition:width .15s,height .15s}
+.sk-card.on{--k:calc(var(--s)*1.1);margin:0 4px}
+.sk-card.on::before,.sk-card.on::after{content:'';position:absolute;left:-2%;right:-2%;height:calc(30 * var(--k) * var(--u));background:url('/assets/skins/ui/skin_bg02.png') center/100% 100% no-repeat;top:calc(-24 * var(--k) * var(--u))}
+.sk-card.on::after{background-image:url('/assets/skins/ui/skin_bg01.png');top:auto;bottom:calc(-20 * var(--k) * var(--u));height:calc(16 * var(--k) * var(--u))}
+.sk-pic{position:absolute;left:calc(5 * var(--k) * var(--u));top:calc(5 * var(--k) * var(--u));width:calc(150 * var(--k) * var(--u));height:calc(230 * var(--k) * var(--u));border-radius:calc(12 * var(--k) * var(--u));background:#dfe6f2 center top/cover no-repeat}
+.sk-frame{position:absolute;inset:0;border-style:solid;border-color:transparent;border-width:calc(42 * var(--k) * var(--u)) calc(18 * var(--k) * var(--u)) calc(57 * var(--k) * var(--u)) calc(37 * var(--k) * var(--u));border-image:url('/assets/skins/ui/partner_card03.png') 42 18 57 37 fill stretch;pointer-events:none}
+.sk-group{position:absolute;left:calc(-4 * var(--k) * var(--u));top:calc(-4 * var(--k) * var(--u));width:calc(45 * var(--k) * var(--u));height:calc(45 * var(--k) * var(--u))}
+.sk-worn{position:absolute;left:calc(127 * var(--k) * var(--u));top:calc(-2 * var(--k) * var(--u));width:calc(35 * var(--k) * var(--u));height:calc(35 * var(--k) * var(--u))}
+.sk-amount{position:absolute;left:0;right:0;top:calc(150 * var(--k) * var(--u));text-align:center;color:#fff;font:800 calc(17 * var(--k) * var(--u))/calc(26 * var(--k) * var(--u)) system-ui;text-shadow:0 0 2px #3a3a50,0 0 2px #3a3a50}
+.sk-rarity{position:absolute;left:calc(20 * var(--k) * var(--u));top:calc(178 * var(--k) * var(--u));width:calc(120 * var(--k) * var(--u));height:calc(22 * var(--k) * var(--u));background:center/100% 100% no-repeat;color:#fff;font:800 calc(16 * var(--k) * var(--u))/calc(22 * var(--k) * var(--u)) system-ui;text-align:center;text-shadow:0 1px 1px #0005}
+.sk-name{position:absolute;left:calc(10 * var(--k) * var(--u));right:calc(10 * var(--k) * var(--u));top:calc(206 * var(--k) * var(--u));height:calc(22 * var(--k) * var(--u));color:#4b5776;font:700 calc(15 * var(--k) * var(--u))/calc(22 * var(--k) * var(--u)) system-ui;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center}
+.sk-bar{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;margin-top:6px}
+.sk-mid{display:flex;flex-direction:column;align-items:center;gap:3px}
+.sk-side{display:flex;gap:8px;justify-content:flex-end;padding-right:6px}
+.sk-attrs{margin:0;color:#2f7fdc;font-size:calc(18 * var(--u));font-weight:700}
+.sk-method{font-weight:800;color:#6a7390;font-size:13px}
+.sk-btn{min-width:calc(220 * var(--u));height:calc(64 * var(--u));border:0;background:none;border-image:url('/assets/skins/ui/blue_btn_65_65.png') 30 fill/22px stretch;color:#fff;font:800 calc(28 * var(--u)) system-ui;text-shadow:0 1px 2px #1c3f7a;cursor:pointer}
+.sk-btn.red{border-image-source:url('/assets/skins/ui/red_btn_65_65.png');text-shadow:0 1px 2px #8a1f1f}
+.sk-round{width:calc(62 * var(--u));height:calc(66 * var(--u));border:0;padding:0;background:center/contain no-repeat;cursor:pointer}
+.sk-col{display:none}.sk-err{color:#b3261e;text-align:center;margin:4px 0 0}
+.sk-overlay{position:fixed;inset:0;background:rgba(10,15,40,.6);z-index:9000;display:flex;align-items:center;justify-content:center;cursor:pointer}.sk-chibi canvas{width:min(80vw,420px);height:auto}
+#detail-skins>h3{display:none}
+/* Skin Store (SkinDetailBuyWindow). */
+.sk-store-win .gs-win-body{max-height:74vh;overflow:auto}
+.sk-store-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}.sk-store-tickets{display:flex;align-items:center;gap:6px;padding:2px 12px 2px 2px;border-radius:16px;background:#fff;box-shadow:inset 0 0 0 1px #c3cfe0}.sk-store-tickets img{width:30px;height:30px}.sk-store-tickets b{color:#4b5a74}
+.sk-store-filter{display:flex;gap:4px;margin-left:auto}.sk-store-f{width:30px;height:30px;border-radius:50%;border:2px solid #c8d3e2;background:#fff;padding:0;font:800 10px system-ui;color:#4b5a74;cursor:pointer}.sk-store-f img{width:100%;height:100%}.sk-store-f.on{border-color:#4d8ad1;box-shadow:0 0 0 2px #9cc9ff}
+.sk-store-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.sk-store-card{display:flex;flex-direction:column;align-items:center;gap:3px;padding:5px;border-radius:10px;background:#f5f8fd;box-shadow:inset 0 0 0 1px #d6dde8}
+.sk-store-pic{position:relative;width:100%;aspect-ratio:160/240;background:#e3e9f2 center/cover no-repeat;border-radius:8px;overflow:hidden}.sk-store-pic .sk-rarity{position:absolute;left:0;top:6px}.sk-store-own{position:absolute;right:4px;bottom:4px;padding:1px 6px;border-radius:8px;background:#0009;color:#fff;font:800 11px system-ui}
+.sk-store-name{font:800 12px system-ui;color:#34466a;text-align:center;line-height:1.1}.sk-store-girl{font:600 11px system-ui;color:#7a849c}
+.sk-store-buy{width:100%;height:32px;display:flex;align-items:center;justify-content:center;gap:4px;border:solid transparent;border-width:10px 14px;border-image:url('/assets/menu/blue_btn_65_65.png') 24 fill stretch;background:none;padding:0;box-sizing:border-box;font:800 13px system-ui;color:#fff;-webkit-text-stroke:2px #3f73b8;paint-order:stroke fill;cursor:pointer}.sk-store-buy img{width:20px;height:20px}.sk-store-buy:disabled{filter:grayscale(.9);opacity:.7;cursor:default}

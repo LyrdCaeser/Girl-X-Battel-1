@@ -1,0 +1,265 @@
+/* Graduate: flow layout keeps the recipe below the portrait at every size. */
+#graduate-view .graduate-body{grid-template-columns:minmax(0,1fr) 94px;min-height:0;align-items:start}
+#graduate-view .graduate-main{min-height:0;padding:10px 8px 16px;display:flex;flex-direction:column;gap:6px;background-position:center top;box-sizing:border-box}
+#graduate-view .graduate-identity{position:relative;top:auto;left:auto;align-self:flex-start;max-width:100%;box-sizing:border-box;border:1px solid #c4d9e8;border-radius:12px;background:linear-gradient(#fff,#f5faffed);box-shadow:inset 0 0 0 2px #fff,0 2px 3px #58759530}
+#graduate-view .graduate-identity h2{font-size:18px;overflow-wrap:anywhere}
+#graduate-view .graduate-art,#graduate-view .graduate-art:not(.full-art){position:relative;inset:auto;display:block;width:100%;height:180px;object-fit:contain;object-position:center bottom;border-radius:0;mix-blend-mode:normal}
+#graduate-view .graduate-art[hidden]{display:none}
+#graduate-view .graduate-quote{position:relative;inset:auto;font-size:12px;line-height:1.4;margin:0;padding:8px;box-sizing:border-box}
+#graduate-view .graduate-recipe{position:relative;inset:auto;padding:10px 8px;border:2px solid #a8bbd2;background:linear-gradient(#ffffffed,#f2f6fdf5);box-shadow:inset 0 0 0 2px white,0 3px 4px #4c6b8e38}
+#graduate-view .graduate-recipe>label{display:none}
+#graduate-view .graduate-materials{grid-template-columns:repeat(auto-fit,minmax(64px,90px));gap:7px;justify-content:center}
+#graduate-view .graduate-material{min-width:0;border:2px solid #a4b5cc;background:linear-gradient(#f7faff,#e0e9f3);box-shadow:inset 0 0 0 2px white;border-radius:10px;padding:7px 3px;box-sizing:border-box}
+#graduate-view .graduate-material.complete{background:linear-gradient(#fcfff4,#e4f5df);border-color:#91b999}
+#graduate-view .graduate-material strong{font-size:10px;overflow-wrap:anywhere}
+#graduate-view .graduate-material .graduate-star-badge{font-size:12px;white-space:normal;overflow-wrap:anywhere}
+#graduate-view .graduate-cost-row{flex-wrap:wrap;padding:7px;margin:10px 0;font-size:13px}
+#graduate-view .graduate-recipe p{font-size:12px;line-height:1.5;min-height:0}
+#graduate-view #graduate-button{width:100%;min-height:50px;padding:8px!important;border:2px solid #fff!important;border-image:none!important;border-radius:9px!important;background:linear-gradient(#99e9ff,#4d9aea 48%,#4272c7)!important;box-shadow:0 0 0 1px #99aac6,0 2px 3px #45638a66;font-size:19px!important}
+#graduate-view .graduate-side{box-sizing:border-box;height:100%;padding:8px 5px}
+#graduate-view .graduate-star-filters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-bottom:12px}
+#graduate-view .graduate-star-round{width:34px;height:34px;margin:0 auto!important;border-width:2px!important;transform:none!important}
+#graduate-view .graduate-star-round span{padding:0;border:0;background:none;font-size:14px}
+#graduate-view .graduate-candidates{max-height:610px;padding:3px;gap:8px}
+#graduate-view .graduate-candidate{border:2px solid #d1b077;border-radius:7px;padding:3px;background:linear-gradient(#fff9e6,#e6d5ab);box-shadow:inset 0 0 0 1px #fff}
+#graduate-view .graduate-candidate.active{outline:2px solid #4ebbed;outline-offset:1px;box-shadow:inset 0 0 0 1px white}
+#graduate-view .graduate-candidate img{aspect-ratio:1;object-fit:cover;border-radius:3px}
+#graduate-view .graduate-candidate span{font-size:9px}
+#graduate-view .graduate-picker{padding:8px;border:1px solid #b3c4d9;border-radius:8px;font-size:12px;background:#f5f9ff}
+#graduate-view .graduate-picker summary{cursor:pointer;font-weight:bold}
+#graduate-view .graduate-picker label{display:grid;gap:3px;margin:9px 0}
+#graduate-view .graduate-picker select{width:100%;min-width:0;box-sizing:border-box;font-size:12px;padding:7px;border:1px solid #a9bdd7;border-radius:6px;color:#3d5779;background:white}
+#graduate-view .graduate-picker button{width:100%;padding:7px;color:#42689b;background:#e8f2ff;border:1px solid #b6cee8;border-radius:6px}
+@media(max-width:390px){#graduate-view .graduate-body{grid-template-columns:minmax(0,1fr) 82px}#graduate-view .graduate-art,#graduate-view .graduate-art:not(.full-art){height:170px}#graduate-view .graduate-main{padding:8px 5px}#graduate-view .graduate-materials{grid-template-columns:repeat(auto-fit,minmax(64px,1fr))}}
+
+#graduate-view .graduate-main:before{pointer-events:none}
+#graduate-view .graduate-material img{width:48px;height:48px;object-fit:cover;border-radius:6px}
+#graduate-view .graduate-material b{font-size:11px}
+
+#graduate-view{padding-bottom:90px}
+#graduate-view .graduate-materials{margin:6px 0}
+#graduate-view .graduate-material{min-height:86px}
+
+#graduate-view .graduate-star-round.active{outline:2px solid #4d9fdf;outline-offset:1px;background:linear-gradient(#bfefff,#60b7eb);color:#234d78}
+
+/* Reference layout: help and capsule stay beside the portrait, not above the roster. */
+#graduate-view .graduate-stage{position:relative;height:365px;flex:none;overflow:hidden}
+#graduate-view .graduate-tools{position:absolute;z-index:4;right:5px;top:5px;display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+#graduate-view #graduate-help{width:38px;height:38px;padding:0;border:0;background:none;transform:none}
+#graduate-view #graduate-help img{width:100%;height:100%;object-fit:contain}
+#graduate-view .graduate-star-filters{display:block;margin:0}
+#graduate-view .graduate-star-capsule{width:93px;padding:5px 8px;border:2px solid #b0c5db;border-radius:24px;background:linear-gradient(#fff,#e8f2fc);box-shadow:inset 0 0 0 2px white,0 2px 3px #46668b40;color:#46678c;font-size:12px;font-weight:bold;cursor:pointer}
+#graduate-view .graduate-identity{position:absolute;z-index:3;top:4px;left:2px;padding:3px 6px;border:0;background:#ffffffb8;box-shadow:none;border-radius:6px;max-width:calc(100% - 104px)}
+#graduate-view .graduate-identity h2{font-size:16px}
+#graduate-view .graduate-art,#graduate-view .graduate-art:not(.full-art){position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center bottom}
+#graduate-view .graduate-art.full-art{object-fit:cover;object-position:center 20%}
+#graduate-view .graduate-quote{position:absolute;z-index:2;bottom:15px;left:6%;right:6%;max-height:100px;overflow:auto;background:#fffefde8;font-size:11px;text-align:left}
+#graduate-view .graduate-main{padding:6px;gap:6px}
+#graduate-view .graduate-recipe{padding:6px;border-radius:10px}
+#graduate-view .graduate-materials{grid-template-columns:repeat(auto-fit,minmax(48px,67px));gap:5px;margin:2px 0}
+#graduate-view .graduate-material{min-height:0;padding:3px 1px;border-radius:5px;gap:1px}
+#graduate-view .graduate-material strong{display:none}
+#graduate-view .graduate-material img{width:44px;height:44px;border-radius:3px}
+#graduate-view .graduate-material .graduate-star-badge{font-size:9px;line-height:11px}
+#graduate-view .graduate-cost-row{padding:3px;margin:5px 0;font-size:12px}
+#graduate-view .graduate-picker{padding:5px;font-size:10px}
+#graduate-view .graduate-recipe p{font-size:10px;line-height:1.3;margin:4px 0}
+#graduate-view #graduate-button{width:60%;min-height:43px;font-size:17px!important;margin:7px auto 2px}
+#graduate-view .graduate-side{padding:6px 4px;align-self:stretch}
+#graduate-view .graduate-candidates{max-height:680px}
+@media(max-width:390px){#graduate-view .graduate-stage{height:330px}#graduate-view .graduate-star-capsule{width:83px;font-size:11px}#graduate-view .graduate-materials{grid-template-columns:repeat(auto-fit,minmax(46px,62px))}}
+
+#graduate-view .graduate-missing{filter:grayscale(1);opacity:.55}
+#graduate-view .graduate-wildcard{background:linear-gradient(#646c81,#979cad);border-radius:4px;padding:3px}
+#graduate-view .graduate-wildcard img{width:38px;height:38px;filter:grayscale(1);opacity:.7}
+#graduate-view .graduate-base{border-color:#bda66c}
+
+#graduate-view .graduate-art.full-art{transform:scale(1.5);transform-origin:center 18%}
+
+/* Gacha avatars: square portraits with faction and rarity over the image. */
+#graduate-view .graduate-candidate{aspect-ratio:1;padding:2px;flex:none;overflow:hidden}
+#graduate-view .graduate-candidate>.portrait{display:block;width:100%!important;height:auto!important;aspect-ratio:1;border-radius:3px;overflow:hidden;margin:0}
+#graduate-view .graduate-candidate .portrait-image{width:100%;height:100%;object-fit:cover}
+#graduate-view .graduate-candidate img.graduate-candidate-faction{position:absolute;top:2px;left:2px;width:19px;height:19px;z-index:2}
+#graduate-view .graduate-candidate>.graduate-star-badge{position:absolute;bottom:2px;left:2px;right:2px;font-size:12px;line-height:16px;text-align:center;background:linear-gradient(transparent,#1a294d78);overflow:visible}
+#graduate-view .graduate-star-capsule{position:relative;width:93px;padding:0;box-sizing:border-box}
+#graduate-view .graduate-star-capsule>summary{list-style:none;display:flex;align-items:center;justify-content:center;gap:4px;min-height:27px;padding:0 5px;cursor:pointer}
+#graduate-view .graduate-star-capsule>summary::-webkit-details-marker{display:none}
+#graduate-view .graduate-star-capsule .graduate-star-badge{font-size:14px;letter-spacing:-2px;transform:scaleY(.8);overflow:visible}
+#graduate-view .graduate-star-capsule small{font-size:11px;color:#587594}
+#graduate-view .graduate-star-options{position:absolute;top:calc(100% + 5px);right:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;width:166px;padding:6px;border:2px solid #b6c9dd;border-radius:15px;background:#f5f9fff5;box-shadow:0 3px 8px #334d6c50;z-index:8}
+#graduate-view .graduate-star-option{width:100%;height:25px;min-height:0;padding:0;border:1px solid #b8c9dc;border-radius:20px;background:linear-gradient(#fff,#e5edf7);transform:none}
+#graduate-view .graduate-star-option.active{background:linear-gradient(#d9f5ff,#a7d9fa);border-color:#599dd6}
+
+#graduate-view .graduate-star-option{display:flex;align-items:center;justify-content:center;gap:5px;height:30px}
+#graduate-view .graduate-star-option .graduate-ready-count{font-size:9px;letter-spacing:0;color:#748194}
+#graduate-view .graduate-star-option.ready{border-color:#79b598;background:linear-gradient(#fafff6,#deefdc)}
+#graduate-view .graduate-star-option.ready .graduate-ready-count{color:#2d7e4b;font-weight:900}
+#graduate-view .graduate-star-option.unavailable .graduate-star-badge{opacity:.6}
+#graduate-view .graduate-candidate.needs-materials>.portrait{opacity:.55;filter:saturate(.45)}
+#graduate-view .graduate-candidate.can-graduate{border-color:#73b389}
+#graduate-view .graduate-ready-tick{position:absolute;right:2px;top:1px;color:#ffe487;font-size:25px;font-weight:900;text-shadow:0 1px 3px #274b38;z-index:3}
+
+#graduate-view .graduate-star-options{grid-template-columns:1fr;width:130px;gap:3px}
+#graduate-view .graduate-star-option{height:24px;justify-content:space-between;padding:0 8px;box-sizing:border-box}
+#graduate-view .graduate-star-option .graduate-ready-count{white-space:nowrap;flex:none;line-height:1}
+#graduate-view .graduate-candidate>.graduate-ready-tick{font-size:24px;line-height:26px;overflow:visible;background:none}
+
+/* Discreet independent star toggles, all off by default. */
+#graduate-view .graduate-star-filters{display:grid;grid-template-columns:repeat(3,22px);gap:3px;justify-content:end}
+#graduate-view .graduate-star-toggle{display:flex;align-items:center;justify-content:center;width:22px;height:19px;min-height:0;padding:0;border:1px solid #bcc9dd80;border-radius:12px;background:#ffffff80;box-shadow:none;transform:none}
+#graduate-view .graduate-star-toggle .graduate-star-badge{font-size:11px;letter-spacing:-7px;line-height:14px;transform:scaleY(.8);padding-right:7px;background:none;border:0;overflow:visible}
+#graduate-view .graduate-star-toggle.active{border-color:#438bd0;background:#c9eaff;box-shadow:0 0 0 1px white}
+#graduate-view .graduate-star-toggle:not(.active){opacity:.6}
+#graduate-view .graduate-identity{background:none;border:0;box-shadow:none;border-radius:0;padding:0;gap:4px;max-width:calc(100% - 75px)}
+#graduate-view .graduate-identity div,#graduate-view .graduate-identity span,#graduate-view .graduate-identity h2{border:0;background:none;box-shadow:none;outline:none}
+#graduate-view .graduate-identity h2{color:#202330;text-shadow:0 1px 2px white,1px 0 2px white,-1px 0 2px white;font-size:17px}
+#graduate-view #graduate-materials-toggle{position:absolute;z-index:4;right:5px;bottom:3px;width:29px;height:29px;min-height:0;padding:0;border:2px solid #bacce0;border-radius:50%;background:linear-gradient(#fff,#e6f1fd);box-shadow:inset 0 0 0 1px white;color:#649ddd;font-size:23px;line-height:23px;transform:none}
+#graduate-view .graduate-quote{bottom:38px}
+#graduate-view .graduate-ready-dot,#graduate-view #graduate-materials-toggle.has-ready:after{position:absolute;z-index:5;top:0;right:0;width:10px;height:10px;border:1px solid white;border-radius:50%;background:linear-gradient(#ff91b1,#e94470);box-shadow:0 0 0 1px #8f669d;pointer-events:none}
+#graduate-view #graduate-materials-toggle.has-ready:after{content:'';top:-3px;right:-3px}
+
+#graduate-view .graduate-stage{overflow:clip}
+
+/* Destination filters read vertically; 10★ uses the original orange emblem. */
+#graduate-view .graduate-star-filters{grid-template-columns:22px}
+#graduate-view .graduate-star-badge img.graduate-ten-star{display:inline-block;width:19px;height:19px;aspect-ratio:1;object-fit:contain;border:0;border-radius:0;vertical-align:middle;background:none}
+#graduate-view .graduate-star-toggle .graduate-star-badge{padding-right:0;letter-spacing:0}
+#graduate-view .graduate-star-toggle .yellow-stars,#graduate-view .graduate-star-toggle .red-stars{padding-right:7px;letter-spacing:-7px}
+#graduate-view .graduate-star-toggle img.graduate-ten-star{width:14px;height:14px}
+#graduate-view .graduate-candidate>.gold-stars{line-height:20px;background:none}
+
+/* Shared finishing pass. Keep native art and positioning owned by each screen. */
+#app-frame :is(.girls-top,.bag-top,.campaign-top,.capsule-top){
+ background:linear-gradient(#dce9f7,#c5d7e9);
+ box-shadow:inset 0 1px #fff9,0 1px 2px #48678c35;
+}
+#app-frame :is(.girls-currencies,.capsule-currencies,.campaign-money)>span{
+ border:1px solid #97aec6;
+ box-shadow:inset 0 0 0 1px #fff,0 1px 1px #6982a43b;
+ background:linear-gradient(#fff,#eff4fc);
+ font-variant-numeric:tabular-nums;
+}
+#app-frame :is(.girls-tabs,.campus-tabs){
+ gap:1px;border:1px solid #91abc5;box-shadow:inset 0 0 0 1px white,0 1px 2px #6d799c38;
+}
+#app-frame :is(.girls-tabs,.campus-tabs)>button{
+ border:0;border-radius:0;box-shadow:inset 0 1px 0 #fff,inset 0 -2px 0 #bbc9d9;
+}
+#app-frame :is(.girls-tabs,.campus-tabs)>button.active{
+ background:linear-gradient(#79c4ff,#3d87dc 80%,#3073c8);
+ box-shadow:inset 0 1px #e1f7ff,inset 0 0 0 1px #6caaec;
+}
+#app-frame :is(.girls-bottom-nav,.campaign-bottom-nav,.capsule-bottom-nav){
+ border:1px solid #9aaec5;border-bottom:0;border-radius:0;
+ background:linear-gradient(#eef4fb,#cbdceb);box-shadow:0 -1px 0 #fff,0 -2px 4px #49648922;
+}
+#app-frame :is(.girls-bottom-nav,.campaign-bottom-nav,.capsule-bottom-nav)>button{
+ padding:0;border:0;border-right:1px solid #b1c2d5;border-radius:0;background:transparent;
+ box-shadow:none;translate:none;
+}
+#app-frame :is(.girls-bottom-nav,.campaign-bottom-nav,.capsule-bottom-nav)>button:last-child{border-right:0}
+#app-frame :is(.girls-bottom-nav,.campaign-bottom-nav,.capsule-bottom-nav)>button.current{
+ box-shadow:inset 0 1px #aee4ff,inset 0 0 0 1px #438aca;
+}
+#app-frame :is(.girls-bottom-nav,.campaign-bottom-nav,.capsule-bottom-nav)>button.current small{
+ color:#fff;text-shadow:0 1px 2px #265787;
+}
+#app-frame .campus-body{padding-top:8px}
+#app-frame .campus-tabs{margin-bottom:10px}
+#app-frame .campus-card{translate:none}
+#app-frame .campus-card:focus-visible{outline:2px solid white;outline-offset:2px}
+#graduate-view .graduate-body{border:1px solid #b8c4d6;border-radius:8px;overflow:hidden}
+#graduate-view .graduate-main{background-size:cover;background-repeat:no-repeat}
+#graduate-view .graduate-side{border-left:2px solid #9babca;background:linear-gradient(#bfdef5,#aac5ec);box-shadow:inset 1px 0 white}
+#graduate-view .graduate-candidates{scrollbar-width:thin;scrollbar-color:#9aaecd #e8eff8}
+#graduate-view .graduate-candidate{border-radius:5px;box-shadow:inset 0 0 0 1px #fff7,0 1px 2px #55729a40}
+#graduate-view .graduate-candidate.needs-materials>.portrait{opacity:1;filter:none}
+#graduate-view .graduate-candidate.active{outline:1px solid #f8d454;outline-offset:0}
+#graduate-view .graduate-quote{padding:10px 12px;font-size:12px;line-height:1.35;text-align:center;border:1px solid #d0c6c7;background:#fffefdeb;box-shadow:0 2px 2px #48577729}
+#graduate-view .graduate-recipe{border-radius:9px;border:1px solid #a4b1c9;box-shadow:inset 0 0 0 2px #fff,0 2px 3px #5d71934a}
+#graduate-view .graduate-material{background:linear-gradient(#fbfcff,#e4ebf5);border-radius:5px;border:1px solid #a3b0c4;box-shadow:inset 0 0 0 1px white}
+#graduate-view .graduate-material.complete b{color:#67a629}
+#graduate-view #graduate-button{
+ border:solid transparent!important;border-width:10px 12px!important;
+ border-image:url('/assets/menu/blue_btn_65_65.png') 24 fill stretch!important;
+ background:none!important;border-radius:0!important;box-shadow:none;padding:0!important;
+ min-height:48px;text-shadow:0 1px 2px #2a518b;
+}
+#graduate-view #graduate-button:disabled{opacity:.7;filter:grayscale(.85)}
+#graduate-view .graduate-star-toggle{translate:none}
+#app-frame :is(button,[role=button],select,summary):focus-visible{outline:2px solid #3799df;outline-offset:2px}
+@media(prefers-reduced-motion:reduce){#app-frame *{scroll-behavior:auto}}
+
+#graduate-view .graduate-star-badge{display:inline-flex;align-items:center;justify-content:center;gap:0;vertical-align:middle}
+#graduate-view .graduate-star-badge img.graduate-small-star{width:12px;height:12px;aspect-ratio:1;object-fit:contain;border-radius:0;padding:0;filter:none;background:none}
+#graduate-view .graduate-star-toggle .graduate-star-badge{padding:0;letter-spacing:0;transform:none}
+#graduate-view .graduate-star-toggle .graduate-star-badge img.graduate-small-star{width:12px;height:10px}
+#graduate-view .graduate-star-toggle .graduate-small-star+.graduate-small-star{margin-left:-7px}
+#graduate-view .graduate-identity .graduate-small-star{width:14px!important;height:14px!important}
+
+/* Gallery: show real skin art when recovered, and make pending art explicit. */
+#app-frame .girls-grid .skin-picture-pending .girl-art>img{filter:saturate(.55);opacity:.72}
+#app-frame .girls-grid .skin-art-missing{position:absolute;z-index:5;left:3px;right:3px;top:29px;bottom:auto;padding:3px 2px;border-radius:4px;background:#edf4ffeb;color:#4f6480;font-size:8px;line-height:1.2;text-align:center;white-space:normal}
+#app-frame .girls-grid .skin-card .girl-skin-count{display:none}
+
+/* Guild panels use the same inset frame and compact blue title strip. */
+#app-frame .gd-win{border:1px solid #8f9eb4;border-radius:9px;background:linear-gradient(#fbfcff,#f1f2f7);box-shadow:inset 0 0 0 2px white,0 3px 12px #29446850}
+#app-frame .gd-head{margin:-8px -10px 10px;padding:4px 8px;border:1px solid #aec5ed;border-radius:7px 7px 0 0;background:linear-gradient(#82c5ff,#4188db 85%,#3375c9);box-shadow:inset 0 1px #d4f3ff;min-height:29px}
+#app-frame .gd-head h2{color:white;font-size:18px;line-height:1.2;text-shadow:0 1px 2px #355586}
+#app-frame .gd-close{width:29px;height:29px;border:0;background:none;color:white;padding:0;font-size:27px;text-shadow:0 1px 2px #42628b;translate:none}
+#app-frame .gd-res{flex-wrap:wrap;justify-content:center}
+#app-frame .gd-chip{border:1px solid #b7c6d8;background:linear-gradient(#fff,#edf3fb);box-shadow:inset 0 1px white;border-radius:16px;font-variant-numeric:tabular-nums}
+#app-frame .gd-card{border:1px solid #b7bed0;border-radius:7px;box-shadow:inset 0 0 0 1px white}
+#app-frame .gd-win{max-height:810px;box-sizing:border-box;scrollbar-width:thin}
+#app-frame .gd-head{position:sticky;top:-10px;z-index:3}
+/* Menu: reserve a real slot for Back, even with the developer's large balances. */
+#app-frame .sm-top{height:56px;min-height:0;padding:0 60px 0 10px;gap:8px;margin:0;border:0;border-bottom:1px solid #aabed4;box-sizing:border-box;box-shadow:inset 0 1px white}
+#app-frame .sm-top .sm-res{flex:1;min-width:0;max-width:none;box-sizing:border-box;padding:3px 6px;font-size:14px;gap:4px}
+#app-frame .sm-top .sm-res img{width:25px;height:25px;flex:none}
+#app-frame .sm-top .sm-res b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#app-frame .sm-top .sm-back{width:48px;right:8px;translate:none}
+
+/* Menu uses a 720-unit design inside the fixed 480px game canvas. */
+#app-frame .sm-view{--u:calc(480px / 720)}
+#app-frame .sm-view .sm-stage{height:732px;min-height:0;padding:0;box-sizing:border-box}
+#app-frame .sm-view .sm-nav{height:65px;min-height:65px}
+
+/* Reference-style destination filters: one emblem and a readable star number. */
+#graduate-view .graduate-tools{right:4px;top:5px;gap:4px}
+#graduate-view .graduate-star-filters{grid-template-columns:30px;gap:3px;padding:4px 2px;background:#f7f3edbd;border:1px solid #bcc9dd;border-radius:7px}
+#graduate-view .graduate-star-toggle{position:relative;width:30px;height:30px;border-radius:50%;background:linear-gradient(white,#e5edf8);box-shadow:inset 0 0 0 1px white;opacity:1!important}
+#graduate-view .graduate-star-toggle>img{width:24px;height:24px;object-fit:contain}
+#graduate-view .graduate-star-toggle>b{position:absolute;inset:0;display:grid;place-items:center;font:bold 12px system-ui;color:white;text-shadow:0 1px 1px #5b392b;-webkit-text-stroke:2px #704b40;paint-order:stroke fill}
+#graduate-view .graduate-star-toggle.active{outline:2px solid #4b9ede;outline-offset:0;background:#b9dcfc}
+#graduate-view .graduate-recipe>label{display:flex;gap:6px;align-items:center;width:fit-content;padding:5px 8px;border:1px solid #bcc9dd;border-radius:7px;background:#ffffffe8;font:bold 12px system-ui;color:#465b99}
+#graduate-view #graduate-auto{width:18px;height:18px;margin:0;accent-color:#549ee5}
+#graduate-view .graduate-attributes{position:fixed;inset:0;z-index:80;background:#15233f88;display:flex;align-items:center;justify-content:center;padding:15px;box-sizing:border-box}
+#graduate-view .graduate-attributes-panel{width:100%;max-height:760px;overflow:auto;border:2px solid #b3c6dc;border-radius:12px;background:#f7f5f1;box-shadow:inset 0 0 0 2px white,0 8px 24px #17273f77}
+#graduate-view .graduate-attributes-panel header{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:linear-gradient(#76c7f8,#3875d3);color:white}
+#graduate-view .graduate-attributes-panel h3{margin:0;font-size:19px}
+#graduate-view .graduate-attributes-panel header button{border:0;background:none;color:white;font-size:24px;padding:0 5px}
+#graduate-view .graduate-attributes-body{padding:12px;color:#435977;font-size:13px}
+#graduate-view .graduate-attributes-body table{width:100%;border-collapse:collapse;background:white}
+#graduate-view .graduate-attributes-body :is(th,td){padding:8px 4px;text-align:right;border-bottom:1px solid #d0dbea}
+#graduate-view .graduate-attributes-body th:first-child{text-align:left}
+#graduate-view .graduate-attributes-body td:last-child{color:#36834a;font-weight:bold}
+
+#graduate-view .graduate-star-filters{gap:1px}
+#graduate-view .graduate-star-toggle{height:27px;width:30px}
+
+#graduate-view .graduate-material{cursor:pointer;color:#435977;font:inherit;translate:none}
+#graduate-view .graduate-material:hover{transform:none;translate:none;box-shadow:inset 0 0 0 1px white,0 0 0 1px #6ba8db}
+#graduate-view .graduate-help-dialog .graduate-attributes-panel{max-height:790px;background:#f4ead0}
+#graduate-view .graduate-help-dialog .graduate-attributes-body{padding:5px}
+#graduate-view .graduate-help-guide{display:block;width:100%;height:auto;border-radius:6px}
+#graduate-view .graduate-help-notes{padding:4px 10px;line-height:1.45;color:#41577a}
+#graduate-view .graduate-picker select{max-width:100%;width:100%;font-size:11px}
+
+#graduate-view .graduate-attributes-panel header{position:sticky;top:0;z-index:2}
+
+/* ALL and destination stars are mutually exclusive, as in the original. */
+#graduate-view .graduate-star-toggle{height:25px}
+#graduate-view .graduate-filter-all{font:bold 10px system-ui;color:#5489d4}
+
+#graduate-view .graduate-picker[hidden],#graduate-view .graduate-picker>summary{display:none}

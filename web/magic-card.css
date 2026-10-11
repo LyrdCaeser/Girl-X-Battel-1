@@ -1,0 +1,43 @@
+/* Magic Card (captures fb/53, 112): ice_secret_content.prefab on a 693x997 canvas; --u = 1/693 of the panel width. */
+.mc-root{container-type:inline-size;--u:calc(100cqw / 693);display:grid;gap:8px}
+.mc-tabs{display:flex;gap:6px}
+.mc-tab{display:grid;justify-items:center;width:84px;padding:4px 2px;border:2px solid #d5c7ef;border-radius:10px;background:#f4effc;color:#5b4e73;cursor:pointer}.mc-tab img{height:40px}.mc-tab small{font:700 11px/1.1 system-ui}.mc-tab.on{background:linear-gradient(#b99af0,#8e6ed9);color:#fff;border-color:#fff}
+.mc-stage{position:relative;isolation:isolate;height:calc(997 * var(--u));background:center top/cover no-repeat;border-radius:10px;overflow:hidden}
+.mc-stage.shake{animation:mc-shake .45s}
+.mc-abs{position:absolute;margin:0;z-index:1}
+.mc-girl{position:absolute;z-index:0;left:calc(-75 * var(--u));top:calc(40 * var(--u));width:calc(540 * var(--u));height:calc(960 * var(--u));pointer-events:none}
+.mc-girl canvas,.mc-girl .mc-girl-canvas{width:100%!important;height:100%!important}
+.mc-girl-card{position:absolute;left:25%;top:20%;width:40%;border-radius:10px}
+.mc-logo{height:auto;object-fit:contain;z-index:1}
+.mc-help,.mc-detail{border:0;padding:0;border-radius:50%;cursor:pointer;background:center/contain no-repeat;z-index:2}
+.mc-help{background-image:url('/assets/dress-show/help_2.png')}
+.mc-detail{background-image:url('/assets/magic-card/check_white_btn.png')}
+.mc-choose,.mc-change{border:0;padding:0;background:none;cursor:pointer;z-index:2}.mc-choose img,.mc-change img{width:100%;height:100%}
+.mc-ribbon{display:grid;place-items:center;background:url('/assets/magic-card/ice_secret_tfbg_bg.png') center/100% 100% no-repeat;color:#b0467e;font:800 calc(20 * var(--u)) system-ui;z-index:2}
+.mc-item{position:relative;display:grid;place-items:center}.mc-item img{width:78%;height:78%;object-fit:contain}.mc-item b{position:absolute;right:8%;bottom:4%;color:#fff;font:800 calc(20 * var(--u)) system-ui;text-shadow:0 0 3px #000,0 0 3px #000}
+.mc-final{z-index:1}.mc-final.got{filter:grayscale(.2) brightness(1.1)}.mc-final.got:after{content:"✔";position:absolute;inset:0;display:grid;place-items:center;color:#35d05a;font:900 calc(60 * var(--u)) system-ui;text-shadow:0 0 4px #fff}
+.mc-cost{display:flex;align-items:center;justify-content:center;background:url('/assets/magic-card/ice_secret_wuzi_bg.png') center/100% 100% no-repeat;color:#6b4c9a;font:800 calc(22 * var(--u)) system-ui;z-index:1}
+.mc-cost .mc-wand{position:absolute;left:calc(-4 * var(--u));width:calc(40 * var(--u))}
+.mc-cost.static{position:relative;width:max-content;padding:4px 16px 4px 46px;border-radius:18px;background:#6b55a8;color:#fff;font-size:16px}.mc-cost.static .mc-wand{left:4px;width:36px}
+.mc-round{display:grid;place-items:center;color:#fff;font:900 calc(26 * var(--u)) system-ui;text-shadow:0 2px 3px #4b2d7a}
+.mc-cell{border:0;padding:0;background:url('/assets/magic-card/ice_secret_bk_qpk.png') center/100% 100% no-repeat;cursor:pointer;transition:transform .26s}
+.mc-cell.preview,.mc-cell.open{cursor:default}.mc-cell.open{opacity:.55}
+.mc-cell .mc-back,.mc-cell .mc-plus{width:100%;height:100%}.mc-cell .mc-item{width:100%;height:100%}
+.mc-cell.flipping{transform:rotateY(90deg)}
+.mc-cell.next{animation:mc-pulse 1.1s ease-in-out infinite}
+.mc-reveal{animation:mc-pop .5s ease-out}.mc-cell.open:has(.mc-reveal){opacity:1}
+.mc-start{border:0;background:url('/assets/magic-card/btn_start.png') center/100% 100% no-repeat;color:#fff;font:900 calc(30 * var(--u)) system-ui;text-shadow:0 2px 2px #7a4b16;cursor:pointer}
+.mc-win .mc-choose-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-height:60vh;overflow-y:auto}
+.mc-opt{display:grid;justify-items:center;gap:2px;padding:6px 4px;border:3px solid transparent;border-radius:10px;background:#f3eefc;cursor:pointer;--u:1px}.mc-opt .mc-item{width:64px;height:64px}.mc-opt small{font:700 11px system-ui;color:#6b5a85;text-align:center}
+.mc-opt.on{border-color:#e05fb0}.mc-opt.off{filter:grayscale(1);opacity:.6}
+.mc-note{color:#6b5a85;font-size:13px}
+.mc-mission{display:grid;gap:8px;padding:10px;border-radius:12px;background:linear-gradient(#efe5ff,#fbf6ff)}
+.mc-mhead{display:flex;align-items:center;gap:10px;color:#6b43b8;font:900 20px system-ui}.mc-micon{height:52px}
+.mc-sub{margin:6px 0 0;color:#8a5bc9}
+.mc-mrow{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:10px;padding:8px 10px;border-radius:12px;background:#fff;box-shadow:0 1px 3px #0002}.mc-mrow.done{opacity:.6}
+.mc-minfo b{display:block;font-size:14px;color:#4b3d66;margin-bottom:4px}
+.mc-bar{position:relative;height:14px;max-width:220px;border-radius:8px;background:#ddd3ee;overflow:hidden}.mc-bar i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#c790f0,#f08ad0)}.mc-bar span{position:relative;display:block;text-align:center;font:800 10px/14px system-ui;color:#3d2f55}
+.mc-item.small{width:46px;height:46px;border-radius:8px;background:#efe9fa;--u:1.4px}
+@keyframes mc-shake{20%{transform:translate(8px,2px)}40%{transform:translate(-8px,-2px)}60%{transform:translate(5px,3px)}80%{transform:translate(-4px,0)}}
+@keyframes mc-pulse{50%{transform:scale(1.06)}}
+@keyframes mc-pop{from{transform:scale(.3);opacity:0}}

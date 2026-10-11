@@ -1,0 +1,19 @@
+/* Blind Box Frenzy */
+.bb-root{position:relative;padding:10px 12px 16px;color:#fff;background-size:cover;background-position:center;border-radius:10px;min-height:520px}
+.bb-head{display:flex;align-items:center;justify-content:space-between}.bb-logo{height:56px;width:auto}.bb-round{padding:2px 10px;border-radius:9px;background:#0007}
+.bb-tickets{display:flex;align-items:center;gap:6px;margin:6px 0;font-size:13px}.bb-mini{padding:3px 9px;border:2px solid #fff;border-radius:8px;background:#5b6b92;color:#fff;font-weight:900}.bb-mini.go{background:linear-gradient(#ff7ac8,#c1338f)}
+.bb-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:8px;border:3px solid #8b7bd6;border-radius:12px;background:#1a1240cc}
+.bb-cell{position:relative;aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;background-size:100% 100%;background-repeat:no-repeat;font-size:11px}
+.bb-cell.empty{filter:grayscale(1) brightness(.6)}.bb-cell.blank{cursor:pointer}.bb-add{font-size:30px;font-weight:900;color:#fff9}
+.bb-item{display:inline-flex;align-items:center;gap:2px;padding:1px 4px;border-radius:8px;background:#0006}.bb-item img{width:34px;height:34px;object-fit:contain}.bb-item em{font-style:normal;font-size:9px}
+.bb-left{font-weight:800}.bb-chance{position:absolute;right:6px;bottom:4px;font-size:10px;color:#ffe27a}.bb-grand{position:absolute;left:0;right:0;top:4px;text-align:center;font-style:normal;font-weight:900;color:#ffd75a;text-shadow:0 1px 2px #000}
+.bb-swap{position:absolute;right:4px;top:4px;width:22px;height:22px;padding:0;border:0;border-radius:50%;background:#fffb;color:#333;font-weight:900}
+.bb-acts{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:10px 0 4px}
+.bb-open{min-width:90px;padding:9px 16px;border:2px solid #fff;border-radius:10px;background:linear-gradient(#ff7ac8,#c1338f);color:#fff;font:900 16px/1 inherit;box-shadow:0 3px 0 #71195a}.bb-open.pick{background:linear-gradient(#63c8ff,#2b7fd6)}.bb-open.next{background:linear-gradient(#ffd75a,#e09a1e);color:#5a3500}.bb-open.cancel{background:#7f8aa6;box-shadow:none}.bb-open:disabled{filter:grayscale(.7);opacity:.6}
+.bb-info,.bb-note{display:block;text-align:center;font-size:11px;color:#e9e4ff}.bb-last{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;align-items:center;margin-top:6px}
+.bb-overlay{position:absolute;inset:0;z-index:5;background:#0009;display:flex;align-items:flex-start;justify-content:center;overflow:auto;border-radius:10px}
+.bb-win{width:94%;margin:8px 0;padding:10px;border:3px solid #8b7bd6;border-radius:12px;background:#231a55;text-align:center}.bb-win h3{margin:0 0 6px}
+.bb-tier{margin-bottom:8px;text-align:left;font-size:12px}.bb-pool{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.bb-choice{position:relative;padding:4px;border:2px solid #6b5cb8;border-radius:8px;background:#ffffff14;color:#fff}.bb-choice.on{border-color:#ffd75a;background:#ffd75a33}.bb-choice small{display:block;font-size:10px}
+.bb-missions .ak-root{margin-top:10px;border-radius:10px;background:#f4f8fc}
+.bb-info{margin:8px 0 4px}.bb-last{margin-top:12px}

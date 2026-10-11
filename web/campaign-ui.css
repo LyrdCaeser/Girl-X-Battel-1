@@ -1,0 +1,42 @@
+/* Battle result window, reward popup, idle timer and music toggle. */
+.gxb-mute{position:fixed;right:12px;bottom:12px;z-index:60;width:40px;height:40px;border-radius:50%;border:2px solid #9dbad4;background:#fffe;font-size:18px;cursor:pointer;box-shadow:0 2px 6px #0003}
+.cr-overlay{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:#0b1830cc;padding:16px;animation:cr-fade .25s}
+@keyframes cr-fade{from{opacity:0}}
+.cr-box{position:relative;width:min(460px,100%);max-height:92vh;overflow:auto;border-radius:16px;padding:0 16px 18px;text-align:center;color:#fff;background:linear-gradient(#20345ecc,#101c36ee);border:2px solid #7fa7df;box-shadow:0 10px 40px #0008}
+.cr-overlay.lose .cr-box{background:linear-gradient(#3b2f3ccc,#1c1620ee);border-color:#9b8aa6}
+.cr-box.small{padding-top:16px}
+.cr-anim{height:clamp(200px,58vw,300px);margin:0 -16px;display:flex;justify-content:center;align-items:center}
+.cr-canvas{width:100%;height:100%;object-fit:contain}
+.cr-anim.fallback{font:900 44px/1 system-ui;letter-spacing:4px;color:#ffe066;text-shadow:0 3px 0 #b2601a,0 0 18px #ffb800}
+.lose .cr-title{color:#d9d2e6!important}.lose .cr-anim.fallback{color:#c8c8d8;text-shadow:0 3px 0 #555}
+.cr-title{margin:4px 0 2px;font-size:26px;color:#ffe27a!important;text-shadow:0 2px 0 #0006}.cr-sub{margin:0 0 10px;color:#c9d8f2;font-size:13px}
+.cr-note{font-size:13px;color:#d2def3}
+.cr-rewards{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:10px 0}
+.cr-reward{position:relative;width:64px;height:64px;background-size:100% 100%;animation:cr-pop .35s both}
+.cr-reward:nth-child(2){animation-delay:.08s}.cr-reward:nth-child(3){animation-delay:.16s}.cr-reward:nth-child(4){animation-delay:.24s}.cr-reward:nth-child(n+5){animation-delay:.3s}
+@keyframes cr-pop{from{transform:scale(.3);opacity:0}}
+.cr-reward img{position:absolute;inset:8%;width:84%;height:84%;object-fit:contain}
+.cr-reward b{position:absolute;right:3px;bottom:1px;font-size:12px;text-shadow:0 0 2px #000,0 0 2px #000}
+.cr-tips{text-align:left;margin:8px auto;max-width:320px;font-size:13px;color:#e4dff0;line-height:1.6}
+.cr-actions{display:flex;justify-content:center;gap:12px;margin-top:12px}
+.cr-btn{min-width:150px;height:52px;border:0;background:url('/assets/equipment/blue_btn_65_65.png') center/100% 100% no-repeat;color:#fff;font-weight:bold;font-size:16px;text-shadow:0 1px 2px #1c3f7a;cursor:pointer}
+.cr-btn.alt{background-image:url('/assets/equipment/white_btn_65_65.png');color:#4a5d78;text-shadow:none}
+.idle-timer{text-align:center;font-size:12px;color:#40597a;margin:4px 0 0;font-weight:bold}
+.cr-detail{position:absolute;right:14px;top:14px;width:44px;height:44px;border:0;background:none;cursor:pointer;z-index:2}.cr-detail img{width:100%}
+.cr-stats{position:absolute;z-index:3;left:50%;top:50%;transform:translate(-50%,-50%);box-sizing:border-box;width:min(440px,94vw);max-height:88vh;overflow:auto;background:#fff;border-radius:12px;padding:12px;color:#445;box-shadow:0 10px 40px #0009}
+.cr-stats-head{display:grid;grid-template-columns:1fr auto 1fr auto;align-items:center;font-size:18px;text-align:center;border-bottom:2px solid #e3e8f0;padding-bottom:6px}.cr-stats-head img{width:46px}
+.cr-stats-x{width:34px;height:34px;border-radius:50%;border:2px solid #fff;background:#e94b4b;color:#fff;font-size:20px;font-weight:bold;cursor:pointer;box-shadow:0 1px 3px #0005}
+.cr-stats-tabs{display:flex;gap:8px;margin:10px 0}.cr-stats-tabs button{flex:1;padding:8px 4px;border:2px solid #b7c6db;border-radius:8px;background:linear-gradient(#fff,#e4ebf5);font-weight:bold;color:#445;cursor:pointer}
+.cr-stats-tabs button.on{background:linear-gradient(#7aafea,#4664c9);border-color:#3e62b8;color:#fff}
+.cr-stats-grid{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid #eee}
+.cr-stat{display:flex;align-items:center;gap:6px;min-height:62px;padding:3px 6px;background:#f7f2ea;border-bottom:1px solid #ece4d6}.cr-stat.enemy{border-left:2px solid #e3dccf;justify-content:flex-end}
+.cr-stat-facebox{position:relative;flex:0 0 auto}.cr-stat-face{width:52px;height:52px;border-radius:6px}.cr-stat-lv{position:absolute;right:0;top:0;background:#0009;color:#fff;font-size:10px;padding:0 3px;border-radius:0 6px 0 6px}
+.cr-stat-info{flex:1;display:grid;gap:4px;text-align:center}.cr-stat-info b{font-size:14px;color:#5a6d8c}
+.cr-stat-bar{height:12px;border-radius:6px;background:#727c8e;overflow:hidden}.cr-stat-bar i{display:block;height:100%;background:linear-gradient(#ffe56b,#f4b400);border-radius:6px}
+/* 9-slice the 65×65 button sprite (was stretched 100% × 100%, deforming its rounded corners). */
+.cr-btn{box-sizing:border-box;padding:0 6px;background:none;border:solid transparent;border-width:22px 26px;border-image:url('/assets/equipment/blue_btn_65_65.png') 30 fill stretch;display:inline-flex;align-items:center;justify-content:center;line-height:1;-webkit-text-stroke:3px #3f73b8;paint-order:stroke fill;text-shadow:none;font-size:18px}
+.cr-btn.alt{background:none;border-image-source:url('/assets/equipment/white_btn_65_65.png');-webkit-text-stroke:0;color:#4a5d78}
+.gxb-burst{position:absolute;inset:0;z-index:90;pointer-events:none;display:flex;align-items:center;justify-content:center}.gxb-burst-canvas{width:100%;height:auto;max-height:100%}
+/* English BattleWinWindow / BattleFailWindow labels recovered from ui_slot_text. */
+.cr-result-banner{display:block;width:min(360px,90%);height:auto;margin:0 auto 10px;object-fit:contain;animation:cr-pop .35s ease-out both}
+@media(prefers-reduced-motion:reduce){.cr-result-banner{animation:none}}

@@ -1,0 +1,32 @@
+/* Beach Treasure Hunt (activity 309, capture fb/61) inside the Events hub. --u from #events-view. */
+.bs-root{display:grid;gap:calc(10 * var(--u))}
+.bs-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:calc(6 * var(--u))}
+.bs-tab{display:grid;justify-items:center;padding:calc(6 * var(--u)) 0;border:calc(3 * var(--u)) solid #b8c7de;border-radius:calc(12 * var(--u));background:linear-gradient(#fff,#dfe8f5);cursor:pointer}
+.bs-tab.on{border-color:#3f8ee8;background:linear-gradient(#bfe0ff,#6fb3ff)}.bs-tab img{height:calc(62 * var(--u))}.bs-tab small{font:800 calc(18 * var(--u))/1.1 system-ui;color:#3d4a66}
+.bs-hunt,.bs-task{position:relative;padding:calc(12 * var(--u));border-radius:calc(14 * var(--u));background:#f4e6c4 center top/cover}
+.bs-logo{display:block;margin:0 auto calc(6 * var(--u));width:calc(460 * var(--u))}
+.bs-head{display:grid;grid-template-columns:auto 1fr auto;gap:calc(14 * var(--u));align-items:center}
+.bs-round{position:relative;width:calc(90 * var(--u))}.bs-round img{width:100%}.bs-round b{position:absolute;left:0;right:0;bottom:calc(4 * var(--u));text-align:center;color:#8a4a10;font:900 calc(34 * var(--u)) system-ui}
+.bs-bar{position:relative;height:calc(18 * var(--u));margin:calc(70 * var(--u)) calc(30 * var(--u)) calc(30 * var(--u)) 0;border-radius:calc(9 * var(--u));background:#fff8;border:calc(2 * var(--u)) solid #fff}
+.bs-bar i{position:absolute;left:0;top:0;bottom:0;border-radius:calc(9 * var(--u));background:linear-gradient(#9ae07a,#4fb33a)}
+.bs-pts{position:absolute;left:calc(-4 * var(--u));top:calc(-34 * var(--u));padding:0 calc(10 * var(--u));border-radius:calc(12 * var(--u));background:#fff;font:800 calc(20 * var(--u)) system-ui;color:#3d4a66}
+.bs-mark{position:absolute;top:calc(-66 * var(--u));transform:translateX(-50%);display:grid;justify-items:center}.bs-mark small{margin-top:calc(34 * var(--u));font:800 calc(18 * var(--u)) system-ui;color:#3d4a66}.bs-mark.done{opacity:.55}
+.bs-counters{display:grid;gap:calc(6 * var(--u))}.bs-count{display:flex;align-items:center;gap:calc(6 * var(--u));padding:calc(2 * var(--u)) calc(12 * var(--u)) calc(2 * var(--u)) calc(2 * var(--u));border-radius:calc(20 * var(--u));background:#fff;font:800 calc(22 * var(--u)) system-ui}.bs-count img{width:calc(38 * var(--u))}
+.bs-chips{display:inline-flex;gap:calc(4 * var(--u))}.bs-chip{position:relative;display:inline-grid;place-items:center;width:calc(54 * var(--u));height:calc(54 * var(--u));border-radius:calc(8 * var(--u));background:#fff;border:calc(2 * var(--u)) solid #d9c7a0}
+.bs-chip img{width:85%;height:85%;object-fit:contain}.bs-chip b{position:absolute;right:calc(2 * var(--u));bottom:0;font:800 calc(15 * var(--u)) system-ui;color:#fff;text-shadow:0 0 calc(2 * var(--u)) #000,0 0 calc(2 * var(--u)) #000}
+.bs-auto{position:absolute;left:calc(14 * var(--u));top:calc(96 * var(--u));padding:calc(4 * var(--u)) calc(16 * var(--u));border:calc(2 * var(--u)) solid #fff;border-radius:calc(16 * var(--u));background:#f1a93a;color:#fff;font:800 calc(20 * var(--u)) system-ui;cursor:pointer}.bs-auto:disabled{filter:grayscale(1);opacity:.6}
+.bs-grid{display:grid;gap:calc(4 * var(--u));justify-content:center;margin-top:calc(6 * var(--u))}
+.bs-row{display:flex;justify-content:center;gap:calc(4 * var(--u))}
+.bs-cell{width:calc(84 * var(--u));height:calc(76 * var(--u));padding:0;border:0;background:none;cursor:pointer}.bs-cell img{width:100%;height:100%;object-fit:contain}
+.bs-cell.open{cursor:default}.bs-cell.open img{width:70%;height:70%}.bs-cell.fresh{animation:bs-pop .6s}
+@keyframes bs-pop{0%{transform:scale(.4);opacity:0}100%{transform:scale(1);opacity:1}}
+.bs-help{position:absolute;right:calc(12 * var(--u));top:calc(12 * var(--u));width:calc(48 * var(--u));height:calc(48 * var(--u));border-radius:50%;border:calc(3 * var(--u)) solid #fff;background:radial-gradient(#fff,#c9d7ef);color:#4f78c8;font:900 calc(24 * var(--u)) system-ui;cursor:pointer}
+.bs-sub{margin:calc(12 * var(--u)) 0 calc(6 * var(--u));padding:calc(4 * var(--u)) calc(12 * var(--u));border-radius:calc(8 * var(--u));background:#ffffffc0;color:#2f7fdc;font-size:calc(24 * var(--u))}
+.bs-mission{display:grid;grid-template-columns:1fr auto auto auto;gap:calc(10 * var(--u));align-items:center;padding:calc(8 * var(--u)) calc(10 * var(--u));margin-bottom:calc(6 * var(--u));border-radius:calc(10 * var(--u));background:#fffffff0;font-size:calc(20 * var(--u))}
+.bs-mission .gs-btn{min-width:calc(120 * var(--u));height:calc(56 * var(--u));font-size:calc(22 * var(--u))}
+.bs-shop{display:grid;gap:calc(10 * var(--u));padding:calc(12 * var(--u));border-radius:calc(14 * var(--u));background:#e6f4fb}.bs-shop .bs-counters{grid-auto-flow:column;justify-content:end}
+.bs-sgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:calc(10 * var(--u))}
+.bs-item{display:grid;justify-items:center;gap:calc(6 * var(--u));padding:calc(10 * var(--u));border-radius:calc(10 * var(--u));background:#fff;font-size:calc(18 * var(--u))}
+.bs-item .bs-chip{width:calc(96 * var(--u));height:calc(96 * var(--u))}.bs-buy{min-width:calc(140 * var(--u));height:calc(54 * var(--u));font-size:calc(22 * var(--u));gap:calc(6 * var(--u))}.bs-buy img{width:calc(30 * var(--u))}
+.bs-cell{position:relative}.bs-cell .bs-hole{position:absolute;left:5%;bottom:0;width:90%;height:45%}.bs-cell .bs-found{position:absolute;left:15%;top:10%;width:70%;height:70%}
+.bs-round{display:grid;justify-items:center;width:auto}.bs-round img{width:calc(92 * var(--u))}.bs-round b{position:static;color:#8a4a10;font:900 calc(40 * var(--u))/1 system-ui}

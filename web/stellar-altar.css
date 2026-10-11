@@ -1,0 +1,39 @@
+/* Stellar Altar (StarryAltarWindow, captures fb/13, 115). --u = 1/720 of the view width. */
+.stellar-altar-view{container-type:inline-size;--u:calc(100cqw / 720);position:relative;min-height:100%;background:#0d1030;color:#fff}
+.stellar-altar-view[hidden]{display:none}
+.sa-top{position:absolute;left:0;right:0;top:0;z-index:3;display:flex;align-items:center;gap:calc(20 * var(--u));padding:calc(12 * var(--u)) calc(16 * var(--u));background:linear-gradient(#f4f8ffdd,#dfe9f7cc)}
+.sa-res{display:flex;align-items:center;gap:calc(8 * var(--u));min-width:calc(190 * var(--u));margin:0 auto;padding:calc(4 * var(--u)) calc(16 * var(--u)) calc(4 * var(--u)) calc(6 * var(--u));border-radius:calc(30 * var(--u));background:#fff;border:calc(2 * var(--u)) solid #b8c7de;color:#3d4a66}
+.sa-res img{width:calc(46 * var(--u))}.sa-res b{font-size:calc(26 * var(--u))}
+.sa-back{border:0;background:none;padding:0;width:calc(96 * var(--u));cursor:pointer}.sa-back img{width:100%}
+.sa-stage{position:relative;height:calc(1280 * var(--u));background:url('/assets/stellar/starry_altar_bg.webp') center top/cover no-repeat}
+.sa-logo{position:absolute;left:50%;top:calc(130 * var(--u));width:calc(440 * var(--u));transform:translateX(-50%)}
+.sa-round{position:absolute;width:calc(58 * var(--u));height:calc(58 * var(--u));border-radius:50%;border:calc(3 * var(--u)) solid #fff;background:radial-gradient(#fff,#c9d7ef);color:#4f78c8;font:900 calc(28 * var(--u))/1 system-ui;cursor:pointer}
+.sa-round.help{right:calc(22 * var(--u));top:calc(110 * var(--u))}.sa-round.rates{left:calc(22 * var(--u));top:calc(180 * var(--u))}.sa-round.rec{left:calc(575 * var(--u));top:calc(385 * var(--u))}
+.sa-chibi{position:absolute;left:50%;top:calc(330 * var(--u));width:calc(420 * var(--u));height:calc(420 * var(--u));transform:translateX(-50%)}
+.sa-chibi canvas{width:100%;height:100%}
+.sa-card{position:absolute;right:calc(28 * var(--u));top:calc(290 * var(--u));width:calc(90 * var(--u));height:calc(90 * var(--u));padding:0;border:calc(4 * var(--u)) solid #e05030;border-radius:calc(6 * var(--u));overflow:hidden;background:#dfe7f6;cursor:pointer}
+.sa-card img{width:100%;height:100%;object-fit:cover;object-position:top}.sa-swap{position:absolute;right:calc(-2 * var(--u));top:calc(-2 * var(--u));width:calc(34 * var(--u));height:calc(34 * var(--u));border-radius:50%;background:#fff;color:#4f78c8;font:900 calc(20 * var(--u))/calc(34 * var(--u)) system-ui;font-style:normal}
+.sa-galaxy{position:absolute;left:calc(22 * var(--u));top:calc(250 * var(--u));border:0;border-radius:calc(20 * var(--u));padding:calc(8 * var(--u)) calc(16 * var(--u));background:#0008;color:#ffe9a6;font:800 calc(22 * var(--u)) system-ui;cursor:pointer}
+.sa-mode{position:absolute;left:calc(115 * var(--u));right:calc(115 * var(--u));top:calc(800 * var(--u));padding:calc(14 * var(--u)) calc(20 * var(--u));border:calc(3 * var(--u)) solid #8fb2ee;border-radius:calc(10 * var(--u));background:linear-gradient(#34508fe6,#243a70e6);text-align:center;display:grid;gap:calc(6 * var(--u))}
+.sa-mode b{font:800 calc(28 * var(--u))/1.2 system-ui}.sa-mode span{font:600 calc(22 * var(--u))/1.3 system-ui;color:#ffe9a6}
+.sa-mode-swap{position:absolute;right:calc(-20 * var(--u));top:calc(-20 * var(--u));width:calc(44 * var(--u));height:calc(44 * var(--u));border-radius:50%;border:0;background:#fff;color:#4f78c8;font:900 calc(22 * var(--u)) system-ui;cursor:pointer}
+.sa-draws{position:absolute;left:calc(110 * var(--u));right:calc(110 * var(--u));top:calc(945 * var(--u));display:flex;justify-content:space-between}
+.sa-draw{display:grid;justify-items:center;gap:calc(4 * var(--u));padding:calc(6 * var(--u)) calc(10 * var(--u)) calc(8 * var(--u));border-radius:calc(10 * var(--u));background:#c8a24ad0}
+.sa-draw .gs-btn{min-width:calc(170 * var(--u))}.sa-cost{display:flex;align-items:center;gap:calc(8 * var(--u));font-size:calc(26 * var(--u))}.sa-cost img{width:calc(38 * var(--u))}
+.sa-shards{position:absolute;left:calc(22 * var(--u));right:calc(22 * var(--u));top:calc(1090 * var(--u));display:grid;grid-template-columns:auto 1fr auto;gap:calc(14 * var(--u));align-items:center;padding:calc(14 * var(--u));border:calc(2 * var(--u)) solid #6d7bb8;border-radius:calc(12 * var(--u));background:#1b2553d9;font-size:calc(22 * var(--u))}
+.sa-shards img{width:calc(64 * var(--u))}.sa-shards .gs-btn{min-width:calc(150 * var(--u))}
+.sa-locked{position:absolute;left:calc(60 * var(--u));right:calc(60 * var(--u));top:calc(600 * var(--u));padding:calc(20 * var(--u));border-radius:calc(14 * var(--u));background:#000a;text-align:center;font-size:calc(26 * var(--u))}
+.sa-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:calc(10 * var(--u))}
+.sa-item{position:relative;display:grid;justify-items:center;padding:calc(6 * var(--u));border-radius:calc(8 * var(--u));background:#fff;border:calc(2 * var(--u)) solid #d6dde9;color:#3d4a66}
+.sa-item img{width:calc(80 * var(--u));height:calc(80 * var(--u));object-fit:contain}.sa-item b{font-size:calc(20 * var(--u))}.sa-item small{font-size:calc(16 * var(--u));color:#6a7390}
+.sa-item.small{display:inline-grid;padding:calc(2 * var(--u))}.sa-item.small img{width:calc(48 * var(--u));height:calc(48 * var(--u))}
+.sa-grand{display:flex;align-items:center;gap:calc(14 * var(--u));margin-top:calc(14 * var(--u));padding:calc(12 * var(--u));border-radius:calc(10 * var(--u));background:#fff4cc;color:#8a5a00;font-size:calc(26 * var(--u))}.sa-grand img{width:calc(100 * var(--u));border-radius:calc(8 * var(--u))}
+.sa-girls{display:flex;justify-content:space-around;gap:calc(14 * var(--u))}
+.sa-girl{display:grid;justify-items:center;gap:calc(6 * var(--u));padding:calc(6 * var(--u));border:calc(3 * var(--u)) solid transparent;border-radius:calc(10 * var(--u));background:#fff;cursor:pointer;font-size:calc(22 * var(--u))}.sa-girl.on{border-color:#3f8ee8}
+.sa-girl img{width:calc(150 * var(--u));border-radius:calc(8 * var(--u))}
+.sa-rec{display:grid;gap:calc(8 * var(--u));max-height:calc(700 * var(--u));overflow-y:auto}
+.sa-rec-row{display:flex;flex-wrap:wrap;gap:calc(8 * var(--u));align-items:center;padding:calc(6 * var(--u));border-radius:calc(8 * var(--u));background:#f1f4fa}.sa-rec-row.extra{background:#eef7ff}.sa-rec-row.grand{background:#fff4cc}
+.sa-tag{color:#b27500;font-size:calc(22 * var(--u))}
+.sa-rates b{display:block;margin-top:calc(10 * var(--u));color:#2f5fa8;font-size:calc(26 * var(--u))}.sa-rates p{margin:calc(4 * var(--u)) 0;font-size:calc(22 * var(--u))}
+#app-frame .stellar-altar-view:not([hidden]){height:100%;overflow:hidden}
+.stellar-altar-view .sa-stage{height:max(100%,calc(1280 * var(--u)))}

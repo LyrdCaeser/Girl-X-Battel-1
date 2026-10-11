@@ -1,0 +1,9 @@
+# Unión de fondos y ayudas contextuales — 076
+
+Corrige075: escena de batalla627 unidades (antes547); suelo comienza en583, coincidiendo con recursos/Collect. El fondo del suelo desplaza su parte superior80 unidades; filas de niveles y botones inferiores conservan su posición. Monedas ancladas598 y recortadas582 para apoyar encima de recursos sin cubrir los botones. Contadores20 e iconos36, frente22/38 anteriores.
+
+Retirados Menú→Guías ilustradas, acceso desde Help, biblioteca y Todas las guías del visor. Retirado el botón genérico adicional en las cabeceras. Se conectan controles existentes: Internship .in-help, Enrollment .en-help, Slots botón Ayuda, League botón help_2, Dates .dt-help, Graduate graduate-help y HeroChallenge hc-help (Puzzle conserva explicación original). Exchange abre directamente página2 de Prophet. Se restituye ? de Tests arriba a la derecha, según tower_window/btnGroup/helpBtn (330,533,52×52). FriendBoss cambia el acceso textual por ? en Co-op, siguiendo friend_assistant2/helpBtn; Crystal usa ? en su ventana. Guías de sistemas aún pendientes conservadas como assets, sin añadir accesos al menú. DailyMission no recibe botón inventado: su prefab recuperado no contiene ?.
+
+Fuentes revisadas: BaseWindow:onHelpBtnOpen_, ProphetWindow summonHelpBtn/btn_help, DatesWindow btnHelp, HeroChallengeDetailWindow, prefabs tower_window/daily_mission_window/friend_assistant2 y CampaignWindow/map_group. Las láminas se asignan a su sistema a petición del usuario, aunque algunos ? antiguos abrían reglas textuales en el cliente original.
+
+Verificación: ocho JS sintácticamente correctos y diff limpio; QA navegador: menú sin entrada extra, Enrollment e Internship abren láminas desde ? existente sin duplicados. Revisión visual de unión de fondos y monedas encima de Collect. Cambios únicamente web; no se modifica la partida habitual ni economía/backend. QA propia59074 sigue disponible.

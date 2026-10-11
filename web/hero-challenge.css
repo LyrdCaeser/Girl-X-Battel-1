@@ -1,0 +1,50 @@
+/* Character Challenge. --u = one pixel of the 720×1280 design. */
+.hero-challenge-view{container-type:inline-size;--u:calc(100cqw / 720);position:relative;background:linear-gradient(#2d3558,#46507c);overflow:hidden;color:#fff}
+.hero-challenge-view[hidden]{display:none}
+.hc-stage{position:relative;height:calc(1280 * var(--u));display:flex;flex-direction:column;overflow:hidden}
+.hc-top{display:flex;align-items:center;gap:calc(16 * var(--u));padding:calc(12 * var(--u)) calc(16 * var(--u));background:#0005}
+.hc-res{display:flex;align-items:center;gap:calc(8 * var(--u));background:#fff;color:#3d4a66;border-radius:calc(30 * var(--u));padding:calc(4 * var(--u)) calc(16 * var(--u)) calc(4 * var(--u)) calc(6 * var(--u));font-size:calc(26 * var(--u))}
+.hc-res img{width:calc(46 * var(--u));height:calc(46 * var(--u));object-fit:contain}.hc-res small{color:#2f9a45;font-size:calc(20 * var(--u))}
+.hc-help{margin-left:auto;border:0;border-radius:50%;width:calc(52 * var(--u));height:calc(52 * var(--u));background:#fff;color:#7a9bd0;font-weight:bold;font-size:calc(30 * var(--u));cursor:pointer}
+.hc-back{border:0;background:none;padding:0;width:calc(96 * var(--u));cursor:pointer}.hc-back img{width:100%}
+.hc-list,.hc-detail{flex:1;overflow:auto;padding:calc(16 * var(--u));display:grid;gap:calc(14 * var(--u));align-content:start}
+.hc-logo{justify-self:center;width:calc(420 * var(--u))}
+.hc-fort{position:relative;border:0;padding:0;background:none;cursor:pointer;height:calc(160 * var(--u));border-radius:calc(16 * var(--u));overflow:hidden;box-shadow:0 calc(3 * var(--u)) calc(8 * var(--u)) #0006}
+.hc-fort-bg,.hc-head-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.hc-fort-text{position:absolute;left:calc(20 * var(--u));bottom:calc(14 * var(--u));display:grid;text-align:left;text-shadow:0 0 4px #000,0 0 4px #000}.hc-fort-text b{font-size:calc(32 * var(--u))}.hc-fort-text span{font-size:calc(22 * var(--u))}
+.hc-fort.done::after{content:'✓';position:absolute;right:calc(20 * var(--u));top:calc(10 * var(--u));font-size:calc(50 * var(--u));color:#7dff8a;text-shadow:0 0 4px #000}
+.hc-head{position:relative;height:calc(170 * var(--u));border-radius:calc(16 * var(--u));overflow:hidden}.hc-head-name{position:absolute;left:calc(20 * var(--u));bottom:calc(12 * var(--u));font-size:calc(34 * var(--u));text-shadow:0 0 4px #000,0 0 4px #000}
+.hc-run{background:#0004;border-radius:calc(16 * var(--u));padding:calc(12 * var(--u));display:grid;gap:calc(10 * var(--u))}
+.hc-girls{display:flex;flex-wrap:wrap;gap:calc(8 * var(--u))}.hc-girl{display:grid;justify-items:center;font-size:calc(16 * var(--u))}.hc-girl.dead{filter:grayscale(1) brightness(.5)}
+.hc-extras{display:flex;align-items:center;gap:calc(10 * var(--u))}.hc-extras .hc-small{margin-left:auto}
+.hc-buff img,.hc-pet img{width:calc(56 * var(--u));height:calc(56 * var(--u));object-fit:contain;border-radius:calc(10 * var(--u));background:#fff2}
+.hc-rows{display:grid;gap:calc(10 * var(--u))}
+.hc-row{display:grid;grid-template-columns:calc(50 * var(--u)) 1fr auto calc(130 * var(--u));align-items:center;gap:calc(10 * var(--u));background:#fff;color:#3d4a66;border-radius:calc(14 * var(--u));padding:calc(10 * var(--u)) calc(14 * var(--u))}
+.hc-row.locked{opacity:.55}.hc-row.current{box-shadow:0 0 0 calc(4 * var(--u)) #ffd54a}
+.hc-num{font-size:calc(34 * var(--u));text-align:center;color:#6c7fb8}.hc-txt{display:grid;gap:calc(2 * var(--u))}.hc-txt b{font-size:calc(24 * var(--u))}.hc-txt small{font-size:calc(16 * var(--u));max-height:calc(40 * var(--u));overflow:hidden}
+.hc-rw{display:flex;flex-direction:column;align-items:flex-end;gap:calc(4 * var(--u))}.hc-pick{font-size:calc(16 * var(--u));color:#c46a1a}
+.hc-chip{display:inline-flex;align-items:center;gap:calc(4 * var(--u));background:#0001;border-radius:calc(10 * var(--u));padding:calc(2 * var(--u)) calc(8 * var(--u));font-size:calc(18 * var(--u))}.hc-chip img{width:calc(34 * var(--u));height:calc(34 * var(--u));object-fit:contain}
+.hc-go,.hc-fight,.hc-small{border:0;border-radius:calc(14 * var(--u));background:linear-gradient(#6fb6ff,#2f7fe0);box-shadow:0 calc(4 * var(--u)) 0 #1f5ea8;color:#fff;font-weight:bold;font-size:calc(24 * var(--u));padding:calc(12 * var(--u)) calc(10 * var(--u));cursor:pointer}
+.hc-small.alt{background:linear-gradient(#ffb36f,#e0702f);box-shadow:0 calc(4 * var(--u)) 0 #a8501f;font-size:calc(20 * var(--u));padding:calc(8 * var(--u)) calc(18 * var(--u))}
+.hero-challenge-view button:disabled{opacity:.5;cursor:not-allowed}
+.hc-note{margin:calc(8 * var(--u)) calc(16 * var(--u));text-align:center;font-size:calc(21 * var(--u))}.hc-box{background:#0008;border-radius:calc(18 * var(--u));padding:calc(24 * var(--u));margin-top:calc(300 * var(--u))}
+.hc-err{position:absolute;left:0;right:0;bottom:calc(20 * var(--u));background:#000c;color:#ffe28a;border-radius:calc(16 * var(--u));padding:calc(12 * var(--u))}
+.hc-overlay{position:absolute;inset:0;z-index:5;background:#000a;display:grid;place-items:center}
+.hc-win{box-sizing:border-box;position:relative;width:calc(680 * var(--u));max-height:calc(1150 * var(--u));overflow:auto;background:#f5f8fd;color:#3d4a66;border-radius:calc(22 * var(--u));padding:calc(22 * var(--u));display:grid;gap:calc(12 * var(--u))}
+.hc-win h2{margin:0;text-align:center;font-size:calc(30 * var(--u));background:linear-gradient(#5aa6f0,#2f6fc9);color:#fff;border-radius:calc(14 * var(--u));padding:calc(8 * var(--u))}
+.hc-close{position:absolute;right:calc(32 * var(--u));top:calc(26 * var(--u));border:0;background:none;color:#fff;font-size:calc(32 * var(--u));cursor:pointer}
+.hc-options{display:grid;grid-template-columns:repeat(3,1fr);gap:calc(12 * var(--u))}
+.hc-option{display:grid;justify-items:center;align-content:start;gap:calc(6 * var(--u));border:calc(3 * var(--u)) solid #c9d3e4;border-radius:calc(16 * var(--u));background:#fff;padding:calc(12 * var(--u));cursor:pointer;color:#3d4a66}
+.hc-option:hover{border-color:#2f7fe0}.hc-option img{width:calc(96 * var(--u));height:calc(96 * var(--u));object-fit:contain}.hc-option b{font-size:calc(22 * var(--u))}.hc-option small{font-size:calc(16 * var(--u))}
+.hc-skip{justify-self:end;display:flex;align-items:center;gap:calc(8 * var(--u));border:calc(2 * var(--u)) solid #b8c7de;border-radius:calc(12 * var(--u));background:#fff;padding:calc(6 * var(--u)) calc(16 * var(--u));font-size:calc(22 * var(--u));cursor:pointer}
+.hc-skip i{display:grid;place-items:center;width:calc(28 * var(--u));height:calc(28 * var(--u));border:calc(2 * var(--u)) solid #8aa;border-radius:calc(6 * var(--u));font-style:normal;color:#2f7fe0}
+.hc-formation{display:grid;gap:calc(12 * var(--u));background:#fff;border-radius:calc(14 * var(--u));padding:calc(12 * var(--u))}
+.hc-line{display:flex;align-items:center;gap:calc(12 * var(--u))}.hc-line-name{width:calc(90 * var(--u));font-size:calc(24 * var(--u))}.hc-line-name.front{color:#e07a3a}.hc-line-name.back{color:#6cbf4a}
+.hc-slot{width:calc(96 * var(--u));height:calc(96 * var(--u));border:calc(2 * var(--u)) dashed #b8c7de;border-radius:calc(12 * var(--u));background:#eef3fa;padding:0;overflow:hidden;cursor:pointer}.hc-slot .portrait{width:100%!important;height:100%!important}
+.hc-pool{display:grid;grid-template-columns:repeat(6,1fr);gap:calc(8 * var(--u))}
+.hc-cand{display:grid;justify-items:center;border:calc(3 * var(--u)) solid transparent;border-radius:calc(12 * var(--u));background:#fff;padding:calc(4 * var(--u));font-size:calc(14 * var(--u));cursor:pointer;color:#3d4a66}.hc-cand.on{border-color:#2f7fe0;opacity:.55}
+.hc-pets{display:flex;align-items:center;gap:calc(10 * var(--u));font-size:calc(22 * var(--u))}
+.hc-petbtn{width:calc(70 * var(--u));height:calc(70 * var(--u));border:calc(3 * var(--u)) solid #c9d3e4;border-radius:calc(12 * var(--u));background:#fff;padding:0;cursor:pointer;font-size:calc(26 * var(--u))}.hc-petbtn.on{border-color:#2f7fe0}.hc-petbtn img{width:100%;height:100%;object-fit:contain}
+.hc-bless{margin:0;font-size:calc(20 * var(--u))}
+.hc-fight{justify-self:center;font-size:calc(32 * var(--u));padding:calc(12 * var(--u)) calc(70 * var(--u))}
+.hc-win{overflow-x:hidden}.hc-cand,.hc-option{min-width:0;overflow:hidden}.hc-cand .portrait{max-width:100%}

@@ -1,0 +1,112 @@
+/* Campaign window (campaign_window.prefab, 720-unit layout; --u = one prefab pixel). */
+.panel.campaign.cmp-on>*:not(.campaign-topbar):not(.cmp){display:none!important}
+.panel.campaign.cmp-on{padding:0!important;overflow:hidden}
+.cmp{container-type:inline-size;--u:calc(100cqw / 720);position:relative;user-select:none}
+.cmp-scene{position:relative;height:calc(547 * var(--u));background:#7a8aa0 center/cover no-repeat;overflow:hidden}
+.cmp-canvas,.cmp-fx{position:absolute;inset:0}.cmp-pixi{width:100%;height:100%}
+.cmp-title{position:absolute;left:0;right:0;top:calc(14 * var(--u));z-index:2;text-align:center;font-weight:bold;font-size:calc(30 * var(--u));color:#fff;text-shadow:0 0 3px #28405f,0 0 3px #28405f,0 2px 3px #28405f}
+.cmp-coin{position:absolute;width:calc(48 * var(--u));animation:cmp-coin 1.6s ease-out forwards;pointer-events:none}
+@keyframes cmp-coin{0%{transform:translateY(0) scale(.4);opacity:0}20%{opacity:1;transform:translateY(calc(-30 * var(--u))) scale(1)}100%{transform:translateY(calc(-180 * var(--u))) scale(.8);opacity:0}}
+.cmp-map{position:relative;height:calc(695 * var(--u));margin-top:calc(-44 * var(--u));background:#4a3526 center top/calc(1000 * var(--u)) calc(695 * var(--u)) no-repeat;z-index:1}
+.cmp{padding-bottom:64px}
+.cmp-top{position:absolute;left:0;right:0;top:calc(80 * var(--u));height:calc(65 * var(--u))}
+.cmp-round{position:absolute;top:0;width:calc(62 * var(--u));height:calc(65 * var(--u));border:0;padding:0;background:none;cursor:pointer}.cmp-round:first-child{left:calc(5 * var(--u))}.cmp-round:nth-child(2){left:calc(78 * var(--u))}
+.cmp-round img{width:100%;height:100%}
+.cmp-res{position:absolute;left:calc(155 * var(--u));top:calc(8 * var(--u));width:calc(410 * var(--u));height:calc(49 * var(--u));background:center/100% 100% no-repeat;display:flex;justify-content:space-around;align-items:center}
+.cmp-res-item{display:flex;align-items:center;gap:calc(6 * var(--u));color:#fff;font-weight:bold;font-size:calc(22 * var(--u));text-shadow:0 1px 2px #000}
+.cmp-res-item img{width:calc(38 * var(--u));height:calc(38 * var(--u))}
+.cmp-collect{position:absolute;right:calc(6 * var(--u));top:0;width:calc(130 * var(--u));height:calc(65 * var(--u));border:0;background:center/100% 100% no-repeat;color:#fff;font-weight:bold;font-size:calc(24 * var(--u));text-shadow:0 1px 2px #1c3f7a;cursor:pointer}
+.cmp-collect:disabled{filter:grayscale(.7);opacity:.75;cursor:default}
+.cmp-collect.glow{animation:cmp-glow 1.2s ease-in-out infinite}@keyframes cmp-glow{50%{filter:drop-shadow(0 0 calc(12 * var(--u)) #9fd8ff) brightness(1.15)}}
+.cmp-strip{position:absolute;left:0;right:0;top:calc(143 * var(--u));height:calc(260 * var(--u));display:flex;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;padding:0 calc(20 * var(--u))}
+.cmp-strip::-webkit-scrollbar{display:none}
+.cmp-stage{position:relative;flex:0 0 calc(153 * var(--u));height:100%;border:0;padding:0;background:none;cursor:pointer}
+.cmp-stage:disabled{cursor:default}
+.cmp-hex{position:absolute;left:50%;top:50%;width:calc(116 * var(--u));height:calc(124 * var(--u));transform:translate(-50%,-50%)}
+.cmp-stage.down .cmp-hex{margin-top:calc(27 * var(--u))}.cmp-stage.up .cmp-hex{margin-top:calc(-42 * var(--u))}
+.cmp-hex-img{position:absolute;left:calc(10 * var(--u));top:calc(10 * var(--u));width:calc(96 * var(--u));height:calc(104 * var(--u));clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%)}
+.cmp-hex-frame{position:absolute;inset:0;width:100%;height:100%}
+.cmp-stage:not(.current):not(.next) .cmp-hex-frame{inset:calc(3 * var(--u));width:calc(110 * var(--u));height:calc(118 * var(--u))}
+.cmp-hex-lock{position:absolute;left:calc(10 * var(--u));top:calc(10 * var(--u));width:calc(96 * var(--u));height:calc(104 * var(--u))}
+.cmp-stage.next .cmp-hex{animation:cmp-pulse 1.4s ease-in-out infinite}@keyframes cmp-pulse{50%{filter:drop-shadow(0 0 calc(10 * var(--u)) #ffe066)}}
+.cmp-stage-label{position:absolute;left:0;right:0;font-weight:bold;font-size:calc(28 * var(--u));color:#dfe9ff;text-shadow:0 0 3px #16284a,0 2px 2px #16284a}
+.cmp-stage.down .cmp-stage-label{top:calc(50% + 100 * var(--u))}.cmp-stage.up .cmp-stage-label{top:calc(50% + 31 * var(--u))}
+.cmp-stage.current .cmp-stage-label,.cmp-stage.next .cmp-stage-label{color:#fff}
+.cmp-route{position:absolute;width:calc(84 * var(--u));height:calc(38 * var(--u));left:calc(50% + 34 * var(--u));z-index:-1}
+.cmp-stage.down .cmp-route{top:calc(50% - 22 * var(--u))}.cmp-stage.up .cmp-route{top:calc(50% - 22 * var(--u));transform:scaleY(-1)}
+.cmp-bottom{position:absolute;left:0;right:0;top:calc(403 * var(--u));height:calc(170 * var(--u))}
+.cmp-side{position:absolute;top:calc(34 * var(--u));width:calc(148 * var(--u));height:calc(124 * var(--u));border:0;padding:0;background:none;cursor:pointer}
+.cmp-side:first-child{left:calc(9 * var(--u))}.cmp-side:last-child{right:calc(9 * var(--u))}.cmp-side img{width:100%;height:100%}
+.cmp-alert{position:absolute;right:calc(16 * var(--u));top:0;width:calc(28 * var(--u))!important;height:calc(30 * var(--u))!important}
+.cmp-fight{position:absolute;left:calc(156 * var(--u));top:calc(11 * var(--u));width:calc(408 * var(--u));height:calc(148 * var(--u));border:0;background:center/100% 100% no-repeat;cursor:pointer;transition:transform .1s}
+.cmp-fight:active{transform:scale(.97)}.cmp-fight:disabled{cursor:default}
+.cmp-fight-label{position:absolute;left:0;right:0;bottom:calc(10 * var(--u));font-weight:bold;font-size:calc(34 * var(--u));color:#6a3d12;text-shadow:0 1px 0 #fff6}
+.cmp-fight-stage{position:absolute;right:calc(18 * var(--u));top:calc(8 * var(--u));font-size:calc(20 * var(--u));font-weight:bold;color:#fff;background:#0006;padding:0 calc(8 * var(--u));border-radius:calc(10 * var(--u))}
+.cmp-chapters{display:grid;gap:8px;max-height:55vh;overflow:auto;margin:8px 0}
+.cmp-chapter{display:grid;grid-template-columns:1fr auto;text-align:left;gap:2px 10px;padding:10px 12px;border-radius:10px;border:2px solid #7fa7df;background:#ffffff14;color:#fff;cursor:pointer}
+.cmp-chapter span{grid-column:1;font-size:12px;color:#c9d8f2}.cmp-chapter small{grid-row:1/3;grid-column:2;align-self:center;font-weight:bold}
+.cmp-chapter.on{background:#4c7fd055;border-color:#ffe066}.cmp-chapter:disabled{opacity:.45;cursor:default}
+.cmp-fight{background:none!important}
+.cmp-fight-bg1{position:absolute;left:calc(-12 * var(--u));top:calc(-11 * var(--u));width:calc(432 * var(--u));height:calc(170 * var(--u))}
+.cmp-fight-bg,.cmp-fight-art{position:absolute;inset:0;width:100%;height:100%}
+.cmp-fight-label{z-index:1}.cmp-fight-stage{z-index:1}
+.cmp-fight:disabled .cmp-fight-art{filter:grayscale(.6)}
+/* CampaignFortWindow: difficulty tabs + chapter banners (captures fb/94-95) */
+.cmp-fort-box{width:min(94%,460px)!important;max-height:86%;display:flex;flex-direction:column}
+.cmp-fort-tabs{display:grid;grid-template-columns:repeat(5,1fr);margin:0 0 8px}
+.cmp-fort-tabs button{height:34px;border:solid transparent;border-width:6px 6px 8px;border-image:url('/assets/detail/sheet/nav_btn_white_mid.png') 10 10 25 fill/6px 6px 8px stretch;background:none;color:#48506a;font:800 14px/1 system-ui;cursor:pointer;padding:0}
+.cmp-fort-tabs button:first-child{border-image-source:url('/assets/detail/sheet/nav_btn_white_left.png')}.cmp-fort-tabs button:last-child{border-image-source:url('/assets/detail/sheet/nav_btn_white_right.png')}
+.cmp-fort-tabs button.on{border-image-source:url('/assets/detail/sheet/nav_btn_blue_mid.png');color:#fff}.cmp-fort-tabs button.on:first-child{border-image-source:url('/assets/detail/sheet/nav_btn_blue_left.png')}.cmp-fort-tabs button.on:last-child{border-image-source:url('/assets/detail/sheet/nav_btn_blue_right.png')}
+.cmp-fort-tabs button.off{color:#9aa3b8}
+.cmp-forts{display:grid;gap:8px;overflow-y:auto;padding:2px;scrollbar-width:none}
+.cmp-fort{position:relative;display:grid;grid-template-columns:44% 1fr;grid-template-rows:auto auto;align-content:center;column-gap:10px;height:76px;padding:0 10px 0 0;border:3px solid #c9d3e6;border-radius:8px;background:linear-gradient(90deg,#fff0 40%,#fff 55%),#fff;text-align:left;cursor:pointer;overflow:hidden;box-shadow:inset 0 0 0 2px #fff}
+.cmp-fort-art{grid-row:1/3;height:100%;background:center/cover no-repeat;-webkit-mask-image:linear-gradient(90deg,#000 70%,#0000);mask-image:linear-gradient(90deg,#000 70%,#0000)}
+.cmp-fort b{align-self:end;color:#1f78d1;font:800 17px/1.2 system-ui;border-bottom:2px dotted #c8d3e4;padding-bottom:3px}
+.cmp-fort span:not(.cmp-fort-art){align-self:start;color:#4a5270;font:600 13px/1.4 system-ui;padding-top:3px}
+.cmp-fort.on{border-color:#6fb3ff}
+.cmp-fort.locked{background:#aab1c2;border-color:#9aa3b8}.cmp-fort.locked .cmp-fort-art{filter:grayscale(1) brightness(.75);opacity:.6}
+.cmp-fort.locked b{grid-row:1/3;align-self:center;border:0;color:#2a64b8}
+.cmp-fort-lock{position:absolute;left:4px;top:4px;width:30px}
+.cmp-fort-sword{position:absolute;right:8px;top:6px;width:44px}
+
+/* Reference states: centered larger chibis, real idle loot, top entrances. */
+.cmp-entrance{position:absolute;top:calc(40 * var(--u));width:calc(125 * var(--u));z-index:3;border:0;padding:0;background:none;cursor:pointer;color:#ffe59a;font:bold calc(21 * var(--u))/1.05 Arial,sans-serif;text-shadow:0 1px 3px #543111}
+.cmp-entrance>img:not(.cmp-alert){display:block;width:calc(86 * var(--u));height:calc(86 * var(--u));object-fit:contain;margin:auto}.cmp-dog{left:calc(7 * var(--u))}.cmp-award{right:calc(7 * var(--u));width:calc(145 * var(--u))}.cmp-award .cmp-alert{right:0;top:0}.cmp-entrance span{display:block}.cmp-award-preview{position:absolute;right:calc(48 * var(--u));top:calc(-28 * var(--u));padding:calc(4 * var(--u));border-radius:50%;border:2px solid #87b0d4;background:#fff;gap:0;pointer-events:none}.cmp-award-preview img{width:calc(26 * var(--u));height:calc(26 * var(--u))}.cmp-award-preview>span{min-width:0}.cmp-award-preview b,.cmp-award-preview small{display:none}
+#app-frame .campaign-topbar{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) 14%;gap:3%;padding:1.2% 1% 1.2% 20%;height:auto;min-height:58px;align-items:center}
+#app-frame .campaign-money{padding:0 6px;height:34px;gap:4px;justify-content:space-between;box-shadow:inset 0 1px #fff;min-width:0}
+#app-frame .campaign-money>span{display:flex;align-items:center;gap:6px;flex:1;min-width:0;border:0;box-shadow:none;background:none;padding:0;overflow:visible}
+#app-frame .campaign-money b{font:700 clamp(14px,2.7vw,22px)/1 Arial,sans-serif;margin:0;white-space:nowrap}
+#app-frame .campaign-money .currency-icon{width:25px;height:25px;object-fit:contain;flex:none;vertical-align:middle}
+#app-frame .campaign-back{width:100%;height:auto;padding:0;display:block}#app-frame .campaign-back img{display:block;width:100%;height:auto}
+#app-frame .campaign-topbar .currency-plus{margin:0;width:25px;height:25px;display:grid;place-items:center;font:700 22px/1 Arial,sans-serif;padding:0}
+
+.cmp-award-preview>span>span{display:none}
+
+#app-frame .cmp-award-preview img{width:calc(26 * var(--u));height:calc(26 * var(--u))}#app-frame .cmp-award-preview>span{min-width:0}
+
+/* Coins end directly above Collect; actors keep their original scene coordinates. */
+.cmp-scene{overflow:visible}.cmp-canvas{height:calc(627 * var(--u));z-index:2;pointer-events:none;clip-path:inset(0 0 calc(45 * var(--u)) 0)}.cmp-top{z-index:3}.cmp-entrance,.cmp-title{z-index:4}
+
+.cmp-canvas canvas{pointer-events:none}
+
+.cmp-fx{pointer-events:none}
+
+/* Battle reaches the resource row; the stage ground starts there, not behind the coins. */
+.cmp-scene{height:calc(627 * var(--u))}
+.cmp-map{height:calc(615 * var(--u));background-position:center calc(-80 * var(--u))}
+.cmp-top{top:0}.cmp-strip{top:calc(63 * var(--u))}.cmp-bottom{top:calc(323 * var(--u))}
+.cmp-res-item{font-size:calc(20 * var(--u))}.cmp-res-item img{width:calc(36 * var(--u));height:calc(36 * var(--u))}
+
+/* 077: foreground foliage retains original alpha; resources and buttons preserve their corners. */
+#app-frame #game-root.campaign-mode{scrollbar-width:none;overflow-y:hidden}
+#app-frame #game-root.campaign-mode::-webkit-scrollbar{display:none}
+#app-frame .campaign-topbar{min-height:50px}
+.cmp-map{height:calc(525 * var(--u));background:none!important;z-index:3}
+.cmp-ground{position:absolute;top:calc(-55 * var(--u));left:50%;transform:translateX(-50%);width:calc(1000 * var(--u));height:calc(694 * var(--u));max-width:none;pointer-events:none;z-index:0}
+.cmp-top{z-index:3}.cmp-strip{z-index:1}.cmp-bottom{top:calc(356 * var(--u));z-index:2}
+.cmp-stage{z-index:1}.cmp-road{position:absolute;left:calc(20 * var(--u));top:0;height:calc(260 * var(--u));overflow:visible;z-index:0;pointer-events:none}.cmp-road path{fill:none;stroke:#aeb6ba;stroke-width:6;stroke-linecap:round;stroke-linejoin:round}
+.cmp-res{background:none!important;border:solid transparent;border-width:calc(18 * var(--u));border-image:url('/assets/campaign/campaign_resource.png') 18 fill stretch;border-radius:0;box-sizing:border-box}
+.cmp-res-item{position:relative;flex:1;justify-content:center;gap:calc(4 * var(--u));white-space:nowrap}
+.cmp-collect{background:none!important;border:calc(19 * var(--u)) solid transparent;border-image:url('/assets/campaign/blue_btn_65_65.png') 19 fill stretch;padding:0;line-height:1;white-space:nowrap;box-sizing:border-box}
+/* The capsule has a nonzero centre strip (source height36); splitting at18 erased its fill. */
+.cmp-res{border-width:calc(16.33 * var(--u)) calc(24.5 * var(--u));border-image-slice:12 18 12 18 fill}

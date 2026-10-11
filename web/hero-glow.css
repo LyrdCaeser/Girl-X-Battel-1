@@ -1,0 +1,11 @@
+.hg-frame{position:absolute!important;top:0!important;width:50%!important;height:100%!important;object-fit:fill!important;pointer-events:none;z-index:2}.hg-frame.l{left:0!important}.hg-frame.r{left:auto!important;right:0;transform:scaleX(-1)}
+.hg-glow{position:absolute;inset:-14%;width:128%;height:128%;pointer-events:none;z-index:3}
+.shard-card-stars,.shard-card-faction,.shard-card-puzzle{z-index:4}
+.portrait>.hg-glow{border-radius:0}.portrait>.hg-frame{border-radius:0}
+
+.hg-profile{z-index:1}.profile-preview-avatar{position:relative}#home-profile #home-level{z-index:4}
+.hg-profile{inset:-6%;width:112%;height:112%}.hg-profile-animated>.home-profile-frame,.hg-profile-animated>.profile-frame-image,.hg-profile-animated>#profile-preview-frame{opacity:0}
+
+/* Original touch magic sits above windows without intercepting clicks or focus. */
+.game-click-magic{position:fixed!important;inset:auto;margin:0;padding:0;border:0;background:transparent;overflow:visible;transform:translate(-50%,-50%);pointer-events:none!important;z-index:2147483647;display:none}
+.game-click-magic canvas{display:block;width:100%;height:100%;pointer-events:none}

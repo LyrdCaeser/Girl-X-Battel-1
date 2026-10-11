@@ -1,0 +1,12 @@
+/* Summon animation overlay (SummonResWindow / SummonEffectResWindow): 720×1280 design frame. */
+.sa-overlay{position:absolute;inset:0;z-index:50;background:#000;container-type:inline-size;--u:calc(100cqw / 720);overflow:hidden}
+.sa-stage{position:absolute;left:0;top:50%;width:100%;height:calc(1280 * var(--u));transform:translateY(-50%)}
+.sa-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.sa-layer{position:absolute;inset:0;pointer-events:none}
+.sa-canvas{width:100%!important;height:100%!important;display:block}
+.sa-touch{position:absolute;inset:0;z-index:2;cursor:pointer;touch-action:none}
+.sa-hint{position:absolute;left:50%;bottom:calc(220 * var(--u));transform:translateX(-50%);z-index:3;border:0;border-radius:calc(30 * var(--u));background:#fffd;color:#3d4a66;font-weight:bold;font-size:calc(28 * var(--u));padding:calc(12 * var(--u)) calc(30 * var(--u));cursor:pointer;animation:sa-bob 1.2s ease-in-out infinite}
+@keyframes sa-bob{50%{transform:translate(-50%,calc(14 * var(--u)))}}
+.sa-caption{position:absolute;left:0;right:0;bottom:calc(140 * var(--u));z-index:3;display:grid;justify-items:center;gap:calc(6 * var(--u));color:#fff;text-shadow:0 0 6px #000,0 0 6px #000;pointer-events:none}
+.sa-caption b{font-size:calc(40 * var(--u))}.sa-stars{color:#ffd54a;font-size:calc(34 * var(--u));letter-spacing:calc(2 * var(--u))}
+.sa-skip{position:absolute;right:calc(24 * var(--u));top:calc(24 * var(--u));z-index:4;border:calc(2 * var(--u)) solid #fff8;border-radius:calc(24 * var(--u));background:#0006;color:#fff;font-size:calc(26 * var(--u));padding:calc(8 * var(--u)) calc(26 * var(--u));cursor:pointer}

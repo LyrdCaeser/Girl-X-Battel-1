@@ -1,0 +1,868 @@
+{
+  "activity_jigsaw_pic": {
+    "1": {
+      "avatar_png": "partner_avatar_5401403",
+      "name": -1,
+      "awards": "6000#200|1#1000000",
+      "id": 1,
+      "picture": "5|1|8|3|2|9|6|4|7",
+      "picture_png": "jigsaw_weila_swim"
+    },
+    "2": {
+      "avatar_png": "partner_avatar_5600605",
+      "name": -1,
+      "awards": "6000#200|9#1000000",
+      "id": 2,
+      "picture": "4|3|6|2|8|9|5|7|1",
+      "picture_png": "jigsaw_luxifeier_swim"
+    },
+    "3": {
+      "avatar_png": "partner_avatar_5301303",
+      "name": -1,
+      "awards": "6000#200|10#1500",
+      "id": 3,
+      "picture": "5|3|2|9|7|1|4|6|8",
+      "picture_png": "jigsaw_wangyi_swim"
+    },
+    "4": {
+      "avatar_png": "partner_avatar_5201503",
+      "name": -1,
+      "awards": "6000#200|14#1500",
+      "id": 4,
+      "picture": "8|3|4|1|9|2|6|7|5",
+      "picture_png": "jigsaw_yunmu_swim"
+    },
+    "5": {
+      "avatar_png": "partner_avatar_5101503",
+      "name": -1,
+      "awards": "258#3|1#1000000",
+      "id": 5,
+      "picture": "8|5|9|3|6|4|2|1|7",
+      "picture_png": "jigsaw_anyue_swim"
+    },
+    "6": {
+      "avatar_png": "partner_avatar_5500904",
+      "name": -1,
+      "awards": "258#3|9#1000000",
+      "id": 6,
+      "picture": "2|8|1|6|9|4|3|5|7",
+      "picture_png": "jigsaw_apate_swim"
+    },
+    "7": {
+      "avatar_png": "partner_avatar_5600802",
+      "name": -1,
+      "awards": "258#3|10#1500",
+      "id": 7,
+      "picture": "8|4|6|5|3|2|1|9|7",
+      "picture_png": "jigsaw_houyi_swim"
+    },
+    "8": {
+      "avatar_png": "partner_avatar_5501002",
+      "name": -1,
+      "awards": "258#3|14#1500",
+      "id": 8,
+      "picture": "6|4|8|1|3|9|5|2|7",
+      "picture_png": "jigsaw_feisina_swim"
+    },
+    "9": {
+      "avatar_png": "partner_avatar_5301503",
+      "name": -1,
+      "awards": "260#150|1#1000000",
+      "id": 9,
+      "picture": "8|3|1|6|2|9|5|4|7",
+      "picture_png": "jigsaw_pipiluo_swim"
+    },
+    "10": {
+      "avatar_png": "partner_avatar_5200903",
+      "name": -1,
+      "awards": "260#150|9#1000000",
+      "id": 10,
+      "picture": "8|5|2|6|3|9|4|7|1",
+      "picture_png": "jigsaw_guanyu_swim"
+    },
+    "11": {
+      "avatar_png": "partner_avatar_5300902",
+      "name": -1,
+      "awards": "260#150|10#1500",
+      "id": 11,
+      "picture": "2|4|9|8|1|5|6|3|7",
+      "picture_png": "jigsaw_yidazhengzong_swim"
+    },
+    "12": {
+      "avatar_png": "partner_avatar_5500605",
+      "name": -1,
+      "awards": "260#150|14#1500",
+      "id": 12,
+      "picture": "3|5|6|2|8|4|1|9|7",
+      "picture_png": "jigsaw_shuangzi_swim"
+    },
+    "13": {
+      "avatar_png": "partner_avatar_5500703",
+      "name": -1,
+      "awards": "6000#200|1#1000000",
+      "id": 13,
+      "picture": "2|1|9|6|7|8|3|4|5",
+      "picture_png": "jigsaw_lvbu_swim"
+    },
+    "14": {
+      "avatar_png": "partner_avatar_5101104",
+      "name": -1,
+      "awards": "6000#200|9#1000000",
+      "id": 14,
+      "picture": "3|5|2|7|8|9|1|6|4",
+      "picture_png": "jigsaw_banila_swim"
+    },
+    "15": {
+      "avatar_png": "partner_avatar_5201204",
+      "name": -1,
+      "awards": "6000#200|10#1500",
+      "id": 15,
+      "picture": "5|4|6|9|7|2|8|1|3",
+      "picture_png": "jigsaw_yinyue_swim"
+    },
+    "16": {
+      "avatar_png": "partner_avatar_5201103",
+      "name": -1,
+      "awards": "6000#200|14#1500",
+      "id": 16,
+      "picture": "9|5|7|8|3|1|2|6|4",
+      "picture_png": "jigsaw_luxun_swim"
+    },
+    "17": {
+      "avatar_png": "partner_avatar_5300704",
+      "name": -1,
+      "awards": "261#20|1#1000000",
+      "id": 17,
+      "picture": "2|4|1|5|8|7|3|9|6",
+      "picture_png": "jigsaw_tuling_swim"
+    },
+    "18": {
+      "avatar_png": "partner_avatar_5500506",
+      "name": -1,
+      "awards": "261#20|9#1000000",
+      "id": 18,
+      "picture": "9|1|5|8|2|7|6|3|4",
+      "picture_png": "jigsaw_luxifa_swim"
+    },
+    "19": {
+      "avatar_png": "partner_avatar_5600404",
+      "name": -1,
+      "awards": "261#20|10#1500",
+      "id": 19,
+      "picture": "9|5|8|2|4|1|3|6|7",
+      "picture_png": "jigsaw_pangtong_swim"
+    },
+    "20": {
+      "avatar_png": "partner_avatar_5600305",
+      "name": -1,
+      "awards": "261#20|14#1500",
+      "id": 20,
+      "picture": "9|4|7|1|8|3|6|2|5",
+      "picture_png": "jigsaw_mijiale_swim"
+    },
+    "21": {
+      "avatar_png": "partner_avatar_5100205",
+      "name": -1,
+      "awards": "259#2|1#1000000",
+      "id": 21,
+      "picture": "6|9|2|8|4|7|1|5|3",
+      "picture_png": "jigsaw_zhanghe_swim"
+    },
+    "22": {
+      "avatar_png": "partner_avatar_5200302",
+      "name": -1,
+      "awards": "259#2|9#1000000",
+      "id": 22,
+      "picture": "2|4|9|8|3|5|6|1|7",
+      "picture_png": "jigsaw_xiahoudun_swim"
+    },
+    "23": {
+      "avatar_png": "partner_avatar_5100603",
+      "name": -1,
+      "awards": "259#2|10#1500",
+      "id": 23,
+      "picture": "6|7|9|2|3|8|4|1|5",
+      "picture_png": "jigsaw_dengai_swim"
+    },
+    "24": {
+      "avatar_png": "jigsaw_avatar_fangtian_swim",
+      "name": -1,
+      "awards": "259#2|14#1500",
+      "id": 24,
+      "picture": "4|1|7|3|9|2|6|5|8",
+      "picture_png": "jigsaw_fangtian_swim"
+    }
+  },
+  "activity_jigsaw_buy": {
+    "1": {
+      "id": 1,
+      "cost": "2#10",
+      "item": "40#1"
+    },
+    "2": {
+      "id": 2,
+      "cost": "2#20",
+      "item": "40#1"
+    },
+    "3": {
+      "id": 3,
+      "cost": "2#20",
+      "item": "40#1"
+    },
+    "4": {
+      "id": 4,
+      "cost": "2#30",
+      "item": "40#1"
+    },
+    "5": {
+      "id": 5,
+      "cost": "2#30",
+      "item": "40#1"
+    },
+    "6": {
+      "id": 6,
+      "cost": "2#30",
+      "item": "40#1"
+    },
+    "7": {
+      "id": 7,
+      "cost": "2#40",
+      "item": "40#1"
+    },
+    "8": {
+      "id": 8,
+      "cost": "2#40",
+      "item": "40#1"
+    },
+    "9": {
+      "id": 9,
+      "cost": "2#40",
+      "item": "40#1"
+    },
+    "10": {
+      "id": 10,
+      "cost": "2#40",
+      "item": "40#1"
+    },
+    "11": {
+      "id": 11,
+      "cost": "2#50",
+      "item": "40#1"
+    },
+    "12": {
+      "id": 12,
+      "cost": "2#50",
+      "item": "40#1"
+    },
+    "13": {
+      "id": 13,
+      "cost": "2#50",
+      "item": "40#1"
+    },
+    "14": {
+      "id": 14,
+      "cost": "2#50",
+      "item": "40#1"
+    },
+    "15": {
+      "id": 15,
+      "cost": "2#50",
+      "item": "40#1"
+    },
+    "16": {
+      "id": 16,
+      "cost": "2#75",
+      "item": "40#1"
+    },
+    "17": {
+      "id": 17,
+      "cost": "2#75",
+      "item": "40#1"
+    },
+    "18": {
+      "id": 18,
+      "cost": "2#75",
+      "item": "40#1"
+    },
+    "19": {
+      "id": 19,
+      "cost": "2#75",
+      "item": "40#1"
+    },
+    "20": {
+      "id": 20,
+      "cost": "2#75",
+      "item": "40#1"
+    },
+    "21": {
+      "id": 21,
+      "cost": "2#100",
+      "item": "40#1"
+    },
+    "22": {
+      "id": 22,
+      "cost": "2#100",
+      "item": "40#1"
+    },
+    "23": {
+      "id": 23,
+      "cost": "2#100",
+      "item": "40#1"
+    },
+    "24": {
+      "id": 24,
+      "cost": "2#100",
+      "item": "40#1"
+    },
+    "25": {
+      "id": 25,
+      "cost": "2#100",
+      "item": "40#1"
+    },
+    "26": {
+      "id": 26,
+      "cost": "2#100",
+      "item": "40#1"
+    },
+    "27": {
+      "id": 27,
+      "cost": "2#100",
+      "item": "40#1"
+    },
+    "28": {
+      "id": 28,
+      "cost": "2#100",
+      "item": "40#1"
+    },
+    "29": {
+      "id": 29,
+      "cost": "2#100",
+      "item": "40#1"
+    },
+    "30": {
+      "id": 30,
+      "cost": "2#100",
+      "item": "40#1"
+    },
+    "31": {
+      "id": 31,
+      "cost": "2#100",
+      "item": "40#1"
+    },
+    "32": {
+      "id": 32,
+      "cost": "2#100",
+      "item": "40#1"
+    },
+    "33": {
+      "id": 33,
+      "cost": "2#100",
+      "item": "40#1"
+    },
+    "34": {
+      "id": 34,
+      "cost": "2#100",
+      "item": "40#1"
+    },
+    "35": {
+      "id": 35,
+      "cost": "2#100",
+      "item": "40#1"
+    },
+    "36": {
+      "id": 36,
+      "cost": "2#100",
+      "item": "40#1"
+    },
+    "37": {
+      "id": 37,
+      "cost": "2#100",
+      "item": "40#1"
+    },
+    "38": {
+      "id": 38,
+      "cost": "2#100",
+      "item": "40#1"
+    },
+    "39": {
+      "id": 39,
+      "cost": "2#100",
+      "item": "40#1"
+    },
+    "40": {
+      "id": 40,
+      "cost": "2#100",
+      "item": "40#1"
+    },
+    "41": {
+      "id": 41,
+      "cost": "2#100",
+      "item": "40#1"
+    },
+    "42": {
+      "id": 42,
+      "cost": "2#100",
+      "item": "40#1"
+    },
+    "43": {
+      "id": 43,
+      "cost": "2#100",
+      "item": "40#1"
+    },
+    "44": {
+      "id": 44,
+      "cost": "2#100",
+      "item": "40#1"
+    },
+    "45": {
+      "id": 45,
+      "cost": "2#100",
+      "item": "40#1"
+    },
+    "46": {
+      "id": 46,
+      "cost": "2#100",
+      "item": "40#1"
+    },
+    "47": {
+      "id": 47,
+      "cost": "2#100",
+      "item": "40#1"
+    },
+    "48": {
+      "id": 48,
+      "cost": "2#100",
+      "item": "40#1"
+    },
+    "49": {
+      "id": 49,
+      "cost": "2#100",
+      "item": "40#1"
+    },
+    "50": {
+      "id": 50,
+      "cost": "2#100",
+      "item": "40#1"
+    }
+  },
+  "activity_jigsaw_award": {
+    "1": {
+      "id": 1,
+      "awards": "6000#800",
+      "complete": 3
+    },
+    "2": {
+      "id": 2,
+      "awards": "73#15|170#15",
+      "complete": 7
+    },
+    "3": {
+      "id": 3,
+      "awards": "73#15|170#15|358#4",
+      "complete": 10
+    },
+    "4": {
+      "id": 4,
+      "awards": "73#20|170#20|358#6",
+      "complete": 15
+    },
+    "5": {
+      "id": 5,
+      "awards": "35#30|36#12|20#4",
+      "complete": 19
+    },
+    "6": {
+      "id": 6,
+      "awards": "35#90|36#36|20#12",
+      "complete": 24
+    }
+  },
+  "activity_puppet_award": {
+    "1": {
+      "id": 1,
+      "awards": "2#800|940002#50",
+      "point": 10,
+      "is_new": ""
+    },
+    "2": {
+      "id": 2,
+      "awards": "20#10|29#10",
+      "point": 20,
+      "is_new": ""
+    },
+    "3": {
+      "id": 3,
+      "awards": "93#1|4201042#10",
+      "point": 40,
+      "is_new": ""
+    },
+    "4": {
+      "id": 4,
+      "awards": "4102007#1|73#40",
+      "point": 60,
+      "is_new": ""
+    },
+    "5": {
+      "id": 5,
+      "awards": "170#50|4201042#20",
+      "point": 80,
+      "is_new": ""
+    },
+    "6": {
+      "id": 6,
+      "awards": "453#1|424#10",
+      "point": 120,
+      "is_new": ""
+    },
+    "7": {
+      "id": 7,
+      "awards": "4101008#1|259#20",
+      "point": 160,
+      "is_new": ""
+    },
+    "8": {
+      "id": 8,
+      "awards": "4501002#1|435#20",
+      "point": 200,
+      "is_new": ""
+    },
+    "9": {
+      "id": 9,
+      "awards": "334#50|4201042#30",
+      "point": 240,
+      "is_new": ""
+    },
+    "10": {
+      "id": 10,
+      "awards": "4101010#1|4901001#1",
+      "point": 280,
+      "is_new": ""
+    },
+    "11": {
+      "id": 11,
+      "awards": "4402015#1|6000#3000",
+      "point": 320,
+      "is_new": ""
+    },
+    "12": {
+      "id": 12,
+      "awards": "358#60|4901001#1",
+      "point": 360,
+      "is_new": ""
+    },
+    "13": {
+      "id": 13,
+      "awards": "5100020#1|417#3000",
+      "point": 400,
+      "is_new": ""
+    },
+    "14": {
+      "id": 14,
+      "awards": "6779#1|6000#6000",
+      "point": 480,
+      "is_new": ""
+    },
+    "15": {
+      "id": 15,
+      "awards": "5100021#1|417#3000",
+      "point": 560,
+      "is_new": ""
+    },
+    "16": {
+      "id": 16,
+      "awards": "4901001#3|940059#100",
+      "point": 640,
+      "is_new": ""
+    },
+    "17": {
+      "id": 17,
+      "awards": "6791#1|6000#18000",
+      "point": 800,
+      "is_new": ""
+    }
+  },
+  "misc": {
+    "activity_jigsaw_buy_limit": "50",
+    "activity_jigsaw_energy_init": "40#1",
+    "activity_jigsaw_use_cost": "40#1",
+    "activity_puppet_item": "217"
+  },
+  "missing_art": [],
+  "sources": {
+    "/Users/schroyle/Downloads/Decomp files/lua/data/tables/activity_jigsaw_pic.lua": "a227f705137d6572637f458e0877685f72d4a351c4bba72b02c21ea7bce1ad71",
+    "/Users/schroyle/Downloads/Decomp files/lua/data/tables/activity_jigsaw_buy.lua": "cecde28182d39ba770b46b4cf023134b6345683e54813dad8c77a74661a164a4",
+    "/Users/schroyle/Downloads/Decomp files/lua/data/tables/activity_jigsaw_award.lua": "d6aa1e3df20b92952e51fd0e55db8f5f7ee4c72d55ebeae433fa800e817d0491",
+    "/Users/schroyle/Downloads/Decomp files/lua/data/tables/activity_puppet_award.lua": "828228f4e62371004a0015fee756e658c228b38c1d1284760578f0c168936904",
+    "/Users/schroyle/Downloads/Decomp files/lua/data/tables/misc.lua": "c6aa1be7b5284fe01ee5313c74d2dfceeed9042f2986c131fa061a314384add3",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_5401403.png": "a215c2efbb52c78f81cc22c89830b452b3c6c4ac91850f446c989d78b61686fa",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_weila_swim_1.png": "c244b3ae7c11e17dbe81e268c2239fb5bebf1a118758fc55fc01c9edbdc5fb7a",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_weila_swim_2.png": "b2d8a8208078750e1427208912571b73c8d20f10d56cd4edf5aa9245a9c0c1ea",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_weila_swim_3.png": "bed0d27aedca9267f6b8758cdf263a441bb6b041ad421b2fb2ab19f6a6c14c1f",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_weila_swim_4.png": "8f39ffd8b234279eb4d41054cefca41b23c8ff3cf6bdc7cd4c5ef3a7a68fc5ac",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_weila_swim_5.png": "1730a74018782312f985d4678a2f11bcff9737d48151a77207de10828735bda1",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_weila_swim_6.png": "99945f98059a88fcfe6898dadb5bbda7a60c00413f0cb61aa12077b9112cf514",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_weila_swim_7.png": "a06755dcf929841406abeb1d7f40c4d1a0645f7889ab810a87f8bd1fdfb2082e",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_weila_swim_8.png": "7230364f6ba57774153cae96b73adbcc07257e6798bfb3ad32b7020821d97785",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_weila_swim_9.png": "38926d8b51ab15bb175d11904f3ceb459b64f3ea7059d5fe8350f2705103898b",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_5600605.png": "c147c03bbf19f64228ff83ae634020299b1853585fcc928ef45b1a12e8670d40",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_luxifeier_swim_1.png": "ee7f343dc0f76aa624745b1ef7553a881cdcb3013eb1ff1126da0c8908e0fd25",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_luxifeier_swim_2.png": "75fa0eb18a8e5a2e1f954a129ec021e788b75868b91ff3617cffd321013032cc",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_luxifeier_swim_3.png": "63fa2e96666cc624bdde868564904ec9afce9fbe905da85d6a09010e49941812",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_luxifeier_swim_4.png": "398af4ee56c995e731d5829826b2dbe86475a4ef62e783cc8c0e7e26721c095f",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_luxifeier_swim_5.png": "08117efe34a4fe3e9d1e2b2f762fe7b0371dbfa276cf6bd6912e43f825d07b87",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_luxifeier_swim_6.png": "d69fb96a11409cc294a3e0fe3738a19e5cabd3e98341fd3697ceca68b8b333af",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_luxifeier_swim_7.png": "d05a4ef8d6838185de6983998a2d6407aed19378827ebc9a5ba53736593d06cf",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_luxifeier_swim_8.png": "138c89f768c66c09f0094273bfb4ebc99f7e4b6dd253256c86eca0b93ef84657",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_luxifeier_swim_9.png": "a2e2c30ced6f428f805cbdc3e8aab5fc0071e1d7c9cd17864ae9db10eed15599",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_5301303.png": "1ef30d3030eeee7b6091161bd3811ad8a419aed3994f4b49b26fb979aa2e7337",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_wangyi_swim_1.png": "1a54c177d89fb5e12e3b858b04dd99a3324a60b372e13c340160a22b0bf6b632",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_wangyi_swim_2.png": "5b1c2ab8861c35e47733d1de7ea68f12228e4199802a3137c23234dba88fd857",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_wangyi_swim_3.png": "baf4811c8669eb1bdaad3f72ceb7b86b205a6e538d798e40e015f4157195480d",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_wangyi_swim_4.png": "7a980c62074d07d03b4b16a618fa29bef78014104cbed6c77b02306bfc3132fa",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_wangyi_swim_5.png": "f6978b7988c8cb916cca2d8863fcfdde7469d106a28baa68111b66eaf014c48f",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_wangyi_swim_6.png": "3b92ae3aa056079ab968b2a933e935228bc42aba45baa26f65dcc4e777047179",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_wangyi_swim_7.png": "8b6422f8d35c2b49349ee39e1691edc8fd8d9b9b54d9c163867caf483d7a7216",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_wangyi_swim_8.png": "a09bf4df43a62673237eb57638de59c592a3b3f14952db1117f1b7a87e9428f6",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_wangyi_swim_9.png": "e402eb8b0bfc27cfd7310edd1388c844df33bcccd443e02e87a4088c26e5421d",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_5201503.png": "5151461e7b554a5a18b9c5d351fdfed27c778f71ea28cf17781e6e3bc46a335b",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_yunmu_swim_1.png": "657fda050579426092dd1f1c733ceac872f89263f83cc67af72806112ca70db5",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_yunmu_swim_2.png": "860b8d78c77ceb8250ea3f9a5edff6f1d33ca1e665f7432d54cce875d293c2fd",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_yunmu_swim_3.png": "21e7605c14534045fbedb072b070dc250598194cdc363d918c1cc2f73dd3ed30",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_yunmu_swim_4.png": "ad4a2e342f5ba64e760a62160455664f4534a43ff5b41fed173df48ac5f70786",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_yunmu_swim_5.png": "870e30a16d5cb1bc11469f1613e274a191fa7c2076e51a94688160eefb837ab4",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_yunmu_swim_6.png": "b197009a9a59549bdb3d224cdd2fe892a177e417e7d04e8a8eb3979d5dd3c0d0",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_yunmu_swim_7.png": "e9f935b54c0678d12f79cedd53fe67a908301d62db6cf405aafacdc23a6e58d5",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_yunmu_swim_8.png": "74079c3e740ac149a92d7f39bb2e9037c772e6c9e79c74198edaa44db668161e",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_yunmu_swim_9.png": "a9e6f4bfa208fc32edce4f840b8aecedaa8cc7e2ddc2a9fde4cbd85a04e006a7",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_5101503.png": "7e9750326da2a1bccd64959a7b1d0c5f14ffeefc6874261da0925635c18fd2a3",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_anyue_swim_1.png": "442a084471a54c529eaa048c0d26170807b9ebe9da6e246d6f2ea52d5ca4a21c",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_anyue_swim_2.png": "ee9e437df6cfac140efd728f1b622795dd31dc2a3225a5405f4f3b1be0d99606",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_anyue_swim_3.png": "91286fc577d289b1ab4751303b0a9ca62342e16a57eed6111212cc2ba19e1251",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_anyue_swim_4.png": "1e7c7dcdaf72e0fefbcce6cfdee11ed2578cd6c7669d435d0e3846cdd25299c9",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_anyue_swim_5.png": "756733c73fe15f3075e12b2231f92a0b182d838c4f6b0cec1a20a55dab4d6f43",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_anyue_swim_6.png": "ace5cb08c845a53eac5c84764f411b8681cde0d7d312ae12198970ecdb936a3f",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_anyue_swim_7.png": "f56a73627ceaf9bffcf44ce9aa22ab49e9e27aec852b87f5dee08c5cbca8d282",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_anyue_swim_8.png": "8a6c54415752a15de2b06e947c769216dee5549cfe1a69f793f5d4ef5ae26d86",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_anyue_swim_9.png": "065dc4dba1c6c6971b9da2043f86bed64cf852a9d749fc3b402340240ebbb1c5",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_5500904.png": "6bf1572c027de94396f713286b08213b43e4eb9b9dfc557f9984391365d59f3e",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_apate_swim_1.png": "661eb50abc22d74641254beac6dc2a6472f070527d533f57698f54c150fc335b",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_apate_swim_2.png": "dbf1bf31226380af52e20c38fc81800b9380bd6410f52f6b7f0c2631f4df8f3a",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_apate_swim_3.png": "7e000e0fa9ffac551acc5bc180a0095c50cdee753636185e5cdf8557c952e182",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_apate_swim_4.png": "1d554b121a9fb209668e0b48b04d419e2a72c859b2ddf7c3e01fc8a6fdb0f49f",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_apate_swim_5.png": "904e7bc129b17613812d18e7af1a12ca1aa7f99f09555a5d7b27f74fc500707a",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_apate_swim_6.png": "10ed7b328c524150cee5f05ab580cff998ac020d65672189a7d9c74a631b7b60",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_apate_swim_7.png": "e97b4e56a4bb9b79294f144b274decfe734c1320934b96351b4b94d5406a88fe",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_apate_swim_8.png": "1086607f5b09b364f04f86d610d467d54ba67066ecac037eb72a8432a9a8fc1b",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_apate_swim_9.png": "093a9bee65175389c8d66eed0090828fd1aeaf1057574c58ea6e461a425d0a42",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_5600802.png": "aabff70da09292817b6f793a62c00063424d96426f8a5be7278478fe62f803d1",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_houyi_swim_1.png": "dbbc09017deb6fb2255515f7c86069c32fb99c315d1cce966380741829ebc837",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_houyi_swim_2.png": "26c2fe5da66b953ebe9c120d8ac5b74ae50f2bd5cfd6a3b9ac287f999e90e0cc",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_houyi_swim_3.png": "b0b60b18cfcbf9ed5668f35fe49e2f2f87d5d7211d1b05a00dbf5666ad921e05",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_houyi_swim_4.png": "b6aac858368bbc09f34c4e2eda3919edce39089901249f353271f1d761d91b76",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_houyi_swim_5.png": "efab8796c67dbd1b6e7ca8cd2ef296a4840ea9c83711d37ae25f1f73f2d44fa6",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_houyi_swim_6.png": "1b1c602aab9780c275ddfeb7ce5513cd4eb33dfa98d00fdecc7990c688706eb5",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_houyi_swim_7.png": "6f75fd2826922d63d595873704af8d333e54eed93c2f4f695fb975fb033c29ed",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_houyi_swim_8.png": "62f77bf9500f093ee00464293680c9e0431d7b7f24337cf80748a357cc96fd10",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_houyi_swim_9.png": "c5abf3d260e243a0ab64722a30f42799690d53af228ec5c879b3b3d2cbd741ec",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_5501002.png": "7a6f780dce4f7ea91180ec2240bce14357090e43a20f79eb39efef7ec2a5e55b",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_feisina_swim_1.png": "3f23d6ccb2a2cb84e1aac86aa17a672102d03fbd3f566539299c2311cc5d3610",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_feisina_swim_2.png": "89f447b25e67b9f6e0ee48dabc994a8990b4cc476d3a2fea1c31f829c27b2294",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_feisina_swim_3.png": "e8f9159ebb46ff7bef96031f6ef3da47aca1f9a234a8afe3c9213f5beb7935fb",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_feisina_swim_4.png": "aa8447db810e4f214c37d8eed8932876a8d9848cf1f26e7e5f8b3129b241b0a0",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_feisina_swim_5.png": "be35e86009fa9d46b377799dc7ecf8e9e504067f8dffdf29bfbdc366458743a2",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_feisina_swim_6.png": "7884571449c2f55f49b24f6acf5bc973b01a13d556a4095c18f092fb76c1eb4f",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_feisina_swim_7.png": "a4d8de0bec91a688fccdb1897be89a15d51334fd941193594eba569141ce527c",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_feisina_swim_8.png": "30743cfde54a6fa1ff573f52362d639f52534cec27415d80ac98a7aa6611c9f7",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_feisina_swim_9.png": "7ee6dc3087a316c604555f2a45a34d6da9913eebd5c24f22907b65862e454a8f",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_5301503.png": "4515703bfaaf8cbe87961355ad4ef804846b237c4cbf295932ce57e4dc26283b",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_pipiluo_swim_1.png": "baf6c03d3529762fac3b73b19537478229f461052fd297b1c2a484dbe6d7d2ce",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_pipiluo_swim_2.png": "552d7f8542f6e126ca5d40ed9edb45bc792e4d367e31dac64b406b7f1651f316",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_pipiluo_swim_3.png": "4f0a49a7dd85a8e65b0f29ba43f346efbe085e1fab17df5eec17382bcd7ca094",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_pipiluo_swim_4.png": "ffff258a5692c246dcdf8c7d89981d9ec9de49451279aa0f2cbe539d04c54a06",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_pipiluo_swim_5.png": "6327de10b147c4ce3fcf2db08e3e542e8d18ebfd11965459406a41cf42d2bb2c",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_pipiluo_swim_6.png": "a135f514badb0f10d2b353ee2441b5129c9c4a02913824e0895b3007b75f22b5",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_pipiluo_swim_7.png": "390feb6c895359789fd19aae3bab09e61f808155b0d832cb76a0a8355633369b",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_pipiluo_swim_8.png": "91ba8a1c5b190254afab68861333e56ed71b77d36b1a0425df2f9d24cd8a6668",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_pipiluo_swim_9.png": "5d0b2b080416ddae56b94cf91946ebafbb44c2dc5d4e4198a0925ef2c6b30259",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_5200903.png": "a1a5e0285bb45d1e2a4be9b50b7834286f336aded3ee33ef86a20da33ec86ba3",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_guanyu_swim_1.png": "782ff58cf0f3dab614687e3c2fca6ee34e77d6ed730c6b35c02b73c4b5963108",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_guanyu_swim_2.png": "7b9f6af3fc8d196e32abca6551667a8b2706b146047a756e55a167a6d39235db",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_guanyu_swim_3.png": "0d8df646ecb8c87361e94d10558862bae03d334c64889519a20b099e4889752a",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_guanyu_swim_4.png": "1cf553edadcafe6ae3c6ee7c8c9f936fa0ad56fde0ccc877891cd468bea14698",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_guanyu_swim_5.png": "851e0399f9319976a5dfe5b03e078b8700f14c6f7f4bea3db2e1c2456eb86ee6",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_guanyu_swim_6.png": "ef2dfb284cbfea8285a7b9eb06d589f01a01e25b96071e59abbda8e8b73d5c8f",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_guanyu_swim_7.png": "b62384aeaa74b45ed6f8f7cc0d942ed0f4a695c2324a92846d8101fae9e9ddf0",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_guanyu_swim_8.png": "3552fdcb7820f2a178e9c19bbe980d23ba1b7d81fa41efc60bf0a01dc1bf9119",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_guanyu_swim_9.png": "b75f57427a5a578d34a2e21619053e5ec651b8a1b327863f916533cd4490cb2a",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_5300902.png": "78a6d42d7fa4d7000c4234ed0a70b183e026ee1ec59ce21fa4a0c1290bad24c8",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_yidazhengzong_swim_1.png": "54b7b8f75db8317b81651947f00bb75a83f7f5cb56238ae49d0d0c39489cc25b",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_yidazhengzong_swim_2.png": "6b34fe298eacd3f8ceb55d0793dbb0f4613379cd545059cf491a4a75ae1a1bda",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_yidazhengzong_swim_3.png": "ba654721e7b72a76bbe5831f2a55954e6a438205497f739e076ffe43a34be250",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_yidazhengzong_swim_4.png": "dfdb363e66ec5482e767dc9e6604cf09e712cddd601f51441e2a6f0d601365e4",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_yidazhengzong_swim_5.png": "0e9bed19e70f5075b71759b4b14459a392ee3b0d1b9ff749150c056697eac238",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_yidazhengzong_swim_6.png": "81c8f3de773f2af278d0d910c5f6a8f259056ce1b5e91c3d4fc20b1a874288d0",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_yidazhengzong_swim_7.png": "744f25747f07aac94b44370a2a107713e337e08071a74f20e106a114f1228ee9",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_yidazhengzong_swim_8.png": "43b764ccb5537fadc634fb9a013ad2104ceeb57466b03ea22250840aadb597da",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_yidazhengzong_swim_9.png": "1f30d8e8c0988d255330bef66e5d3f3a01063c143f5f3e6dcb3961bb385f6667",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_5500605.png": "41288c87dc9b4affd543fccca4045a6bedf36bc9c7c8bc8e0ff7cf15a9d84ce5",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_shuangzi_swim_1.png": "5f7f0b87d35a509e5bf6efb616d090915ecf641e548526d221476103de3d1445",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_shuangzi_swim_2.png": "3bf931163218a744d7aa5b23c894dafcb8142e14bea549a93a2cc6fdb8dbdada",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_shuangzi_swim_3.png": "1f6f8e26d9509e55d0740dfa52cf7ba9f2d8f05d3eefe8770aaa41d3abca6d69",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_shuangzi_swim_4.png": "3359771c7853b5425f16ef7c1909246dd74ee56d20b58c968a990a99df66ea06",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_shuangzi_swim_5.png": "6f7b82a9e4bfeda6c4ce52a2b82c876a1798f1aea2a37d847163ca30acebf3bb",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_shuangzi_swim_6.png": "005ee64b68aba8bc5cc19b63278186d6fefdb566df6c4996d6d0826de56ba72e",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_shuangzi_swim_7.png": "e4478892191d7c66c19794d197666ca92155fadebd085bc3f1de69dc163549a4",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_shuangzi_swim_8.png": "56152da6703828240750b22beea30a5ce19e476b7ab92f6d9ff83ada5add71bf",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_shuangzi_swim_9.png": "a77bb6edb42c6ad4a3e45fe046998520266592ffbec867301dba28395c6f87c0",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_5500703.png": "684ffdf6add8689a5ec407d4cf0a9d9aa9f24d8d374a91961d55be96ed2ec08b",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_lvbu_swim_1.png": "b3b3b4c6dd3602386a5c363671191d3ccb0609ea8840ebaeeed3e6dec80af77a",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_lvbu_swim_2.png": "ee94b2943f007e6a1b174a6702040e30f036e8d684e5b0c2fa16055b6efd86e2",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_lvbu_swim_3.png": "5c9a1234f86e28c38c8fd433841f2912924b213dca0bbc9058dd41686e9abbc7",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_lvbu_swim_4.png": "bb35913624a158ceb414ad1539175c50f15a0ef77cc9bc9f94cd763298a81b73",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_lvbu_swim_5.png": "a39d286064f72c68fee3f0f049e9dbfc194fa4aa9ce63eee524a0757aa7cf5c7",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_lvbu_swim_6.png": "3e3193af8a741271048600f3a8f71ad7a7cec1e5dd096d0bd757e711c9ed6500",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_lvbu_swim_7.png": "a09fb7df2fc636b9d133bd9f97254011af44173b96a295b9bd8463d4d5950296",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_lvbu_swim_8.png": "b9b249962a1bba62177e70439e1c818b9e476f39fe9224cf10b3fa3e1776f46d",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_lvbu_swim_9.png": "ff9816423efaa9e77fd7b478abb82b1923a80d6130ef62f47c5ec9a285c92041",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_5101104.png": "c6bde689cb8c8678ecc2b77f68a0f7eb0024433a8895e743683f3abab9451f71",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_banila_swim_1.png": "fe129a25762fd901f1883be24e238bbcea1cadc63b0d1edf16c3d335a06ed7c8",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_banila_swim_2.png": "dce74e29a1540f25b42cec6049901a4f09fda2c4e3beda1c31f10ab44fad8ce7",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_banila_swim_3.png": "afbd9c285ba8d603fac6e0636853aa0398822243e510db599a2207422940de58",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_banila_swim_4.png": "193bdbe2832dc6b07e3e34e6ee7bd5992e9b86cc7781f244c4a87be05ca70487",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_banila_swim_5.png": "50eef2c3933c21b97beac7b3fd927014ed53355e400d7a3a2ec7a728680ea375",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_banila_swim_6.png": "1010e5d780d74023f50aeca22285ec0986e444f3f37f486c681efd9a8132c94b",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_banila_swim_7.png": "00df7be8f84de91a88d71f4b36902f68369942e64aa44bfc543b806c48418d36",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_banila_swim_8.png": "75860f10ccf16ed78f5a3983597df1b2f32bdb751a76c5df58dc9245b4bdb528",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_banila_swim_9.png": "c3484149b816a0ef2e0c8ff620ba9abcba0262f3f17eca9a844bde113bb32d02",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_5201204.png": "c08589313082e6118a5c5cc5ffb8eac8c132963169a2d67ea27df9fc8a4182b5",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_yinyue_swim_1.png": "6dd33eba8cfbf20814e6454d8981b47380762b18e18adf3545973589a8a9f967",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_yinyue_swim_2.png": "033a5102fc7eaf90a9944391463336bb26b130732ae39641fba1c3df751e14e3",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_yinyue_swim_3.png": "c02df3c438f95711b62f802e1a24d793b2c63aada401e19cdfe93d20001848f1",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_yinyue_swim_4.png": "dda523a14423daf1ec9a0ac0282379efdee7f3a15404e60d0699a670cce981f0",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_yinyue_swim_5.png": "3d82f914580196b1bc14afb516486ca2e248ac7d17e8a4eb4804812a1aa92334",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_yinyue_swim_6.png": "cada6f33a2f13f709ada20774b5ff6c59b016440970b0951a7a60802f214b92e",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_yinyue_swim_7.png": "73f16ebfa550a9ebf8bfc4f6562b6829831013b96998be0283fd5689211ffee5",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_yinyue_swim_8.png": "a175d6a74f6e6c4d91f2a117eeb1b463f30fcb4f78a2c1432a447d7723445f76",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_yinyue_swim_9.png": "5187186daf8c8ad30a0d3e7dbc445dbf63e87148cc54644946dbe7cd78a9bf9e",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_5201103.png": "f02b64d3b8a2a1d215c8c32dfa9fdf14b96421e9251e016c06ff397749e6cb50",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_luxun_swim_1.png": "d22611cfe85b202c776fc1e73b40b3eb0cdc7d48e489bee366475030b4d48c45",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_luxun_swim_2.png": "b7020a9285efbbe83a9a37bdda7f311ee7cf38a765f84fb9322b44ca91b22f05",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_luxun_swim_3.png": "d75ccb53bbd6973ff2ccd8476059736189ecfb4ebecb9ef2d0afaf8052206ba1",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_luxun_swim_4.png": "b8dea589e73f82c4e6b22a30413759bfdfffa5466cbb07c8ac5b8dbaf81fe4c1",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_luxun_swim_5.png": "ad12885668437b729bc465c356d8e6f071f22949f5dfe4faa046dc25fb3b6d7a",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_luxun_swim_6.png": "38eec60db3d743f890d1615746e001e6d6dabbb42924d034fa40c29567be3bdb",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_luxun_swim_7.png": "5984350d379d92407eac3c101f33df34a7e2fbd947e8742985d6264d7d93c3af",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_luxun_swim_8.png": "81d8050de0f8a3528e01b9139554f1c841b13b89617d05620641221799bf8110",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_luxun_swim_9.png": "6006c738c5f3b214950cb12b8809568c2ab5cfc668c418a2436fb973af88d933",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_5300704.png": "e4287383c2dffaf97758a280dc215a72dc67bd66b1278b9e33f4d75c3706a869",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_tuling_swim_1.png": "2171b55f2015cbdbe30155e05f3d17a2536f206cbb46385b4ac9518fd99d90ac",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_tuling_swim_2.png": "4eb689a6a8443c5a84e1f43ab0e0a3cfe8ed5b22f1961a1bdc02ac5e63312f84",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_tuling_swim_3.png": "585cfd132380969b62a94f8e210c489b74cf9682e2fd679e85a91c4719bddb74",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_tuling_swim_4.png": "735d7adab95244faf298341aac3159528b97bbdd9db3d5ee0b78bcb1d8d37ea7",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_tuling_swim_5.png": "c6e06cf9e292167eab2d4afcebb6a444f9433da304ba52820963661381c21de4",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_tuling_swim_6.png": "f6920224c65a09d81b7e0640caad61e1b2ab149f7a3d1c19ea990d9bf6b1de0a",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_tuling_swim_7.png": "1a3bfee2893f0c851cb46ae368aaa705a191d21cc45416d6de2d2d5531e33177",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_tuling_swim_8.png": "a375c67cd6b5515aaf0a87b26b024e9299547e4ce2326eea2f0a5d8231cdd59e",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_tuling_swim_9.png": "e106c02ba3515cf540d953cf94a3585b1f851384cf024dc4c19e1f096bfb1bf7",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_5500506.png": "169589adfde3d54d529049225b13cf8350020640f670b1c0cf73550a62daad70",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_luxifa_swim_1.png": "e463c18ef8793760797c7a5bd549da157af00060add6be4ebdb01ea1d8ee9937",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_luxifa_swim_2.png": "22ec29f0d05d0ded11a70ade64a33ef7d9bcd7d5f797f5723bf401dd7fda9b7f",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_luxifa_swim_3.png": "a59cf97817262e1ab0e0d33cd41b900c68ac026259a0243f0464666b64e2436d",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_luxifa_swim_4.png": "acfcb75f00ea297536b1836f685e1fd2a6ee26e4c1119cd0b3b0a0af7ae5e00c",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_luxifa_swim_5.png": "85845f7acece58feb7a8072b5193379370341dc5a3de03d112bf3fbe5588d5a5",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_luxifa_swim_6.png": "727208c949ae2387cd93f42d10006f576451fdc8e41aa77ff21e10a1d3573071",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_luxifa_swim_7.png": "e289b414eeda493172132c7cf141446afa57287798126af709497cdd57abdf89",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_luxifa_swim_8.png": "e49a2cd5573ecf5bee526e5d153b003bc0e1de5f4697ed72fa170a46dde54324",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_luxifa_swim_9.png": "06103beac7c3830eebdfe6659c8d9d209407cbb6a2f803d045ba01861b392de3",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_5600404.png": "5245dd8836be176871cc569bab332291e909b2dea83d0cb239d9f9acf64dcab3",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_pangtong_swim_1.png": "d3d19e60ebe29148e106589ab524800f5a1381c3bcf03399b6d6e98c4deaddbd",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_pangtong_swim_2.png": "7809cd16690cf32245427d1e0e7ca647f5302afbbfdecf1268006940e595b90e",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_pangtong_swim_3.png": "ecf784b93da10030d3e7e9543995e1b032684c4e5cf08059d62d3213a395b74e",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_pangtong_swim_4.png": "cc2ffcba9e903ff504a6f6738f19549db88248a7f7e0f89f1f71c396e92de26c",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_pangtong_swim_5.png": "63c5288f9527416c6cd0e9b26a293483ee8818076d50b58f36817c7bfd33cdc8",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_pangtong_swim_6.png": "3ff074a365bd533cdb55b81e510710c87d495ed821c0ea8ac8374087df4437bf",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_pangtong_swim_7.png": "32b74b7b8e0854c978949cb3c5c251d6c02ce2d02ba9ba6a7c9ff7a805106b0f",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_pangtong_swim_8.png": "6e61eb1068a0c4c251c360de2f0eb124646dcc9fc17292213ff65b278270a3b2",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_pangtong_swim_9.png": "7c861df8f655cb55baccc9f631a2264969e2e187705382492a839a2656182505",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_5600305.png": "acebb0f36b243b1c06c878368bf627309dcd5564ba06d7e6bb830e9071b5cf7c",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_mijiale_swim_1.png": "c4a90ff362180367a30ce09d621a9f67f5cb6819464defcd9716190b8f226601",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_mijiale_swim_2.png": "4788a218e931d744445db984bdc4010f5f7920a16d6285b2ee026f1f876ce987",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_mijiale_swim_3.png": "b0b41aa31a3723296bfea4f5af735a92d0a07f881a96d653b210bb242f7be0f2",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_mijiale_swim_4.png": "42f400640629753acbe44064cd52f8200508bc2a1fc4dea5d69962c1d74626b4",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_mijiale_swim_5.png": "f57679293c5cacf9596062959d32b5b52413d8700153b086de6c71ce43441830",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_mijiale_swim_6.png": "a7f3a944ce22cfc4665f543000287a0fe29b6a934e1b933472f3fb150955a671",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_mijiale_swim_7.png": "36c9a2788088761e1613d15229bce805e616be8afc7d7f517cc8bb256fbf5a4a",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_mijiale_swim_8.png": "bf5e3b6c2164dd85907f08f4e182bf5cc622005db435171caf5ad854a10c3581",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_mijiale_swim_9.png": "434d830482411b174c62d526be4c2bcf80e6dd66e126c8f778ffe9310bf7deac",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_5100205.png": "7f7b14f3334d2b105b58de7239186ebe91d394ecc3ab66a0be89807af436e328",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_zhanghe_swim_1.png": "c09ea2d4439cce4d543121958cee54ab6f9407beaaca2d8968d36dae2e8fb1b8",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_zhanghe_swim_2.png": "f178f7a6d1015477090d0957152dd8e510fb71608f3ac6efa3f20d63b4727683",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_zhanghe_swim_3.png": "b282362f40e4ae9876b2b18a9c9c2890dd754040da9263c3f26eaa570c1556db",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_zhanghe_swim_4.png": "8a0ee58ebd99652fc671bc605b1b5ffc68cdcc99c30e467435f3d4ad32d884bc",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_zhanghe_swim_5.png": "50459f1dc191be4b6e9d9d4b6f1f301d2fb1bbafed05e46f15d314fbb7cf3539",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_zhanghe_swim_6.png": "4a48bcfed450a9f4b03b7bfc5918cf670ea4c9db7f33a4f994adf432d656b4d5",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_zhanghe_swim_7.png": "a0de38edc5cf63ce1f2af9b76c831228e5a80d2e0960cfdb11f652992702af73",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_zhanghe_swim_8.png": "9b5695b05fe6d7edf37117409247313c8719904f69b4cb92bad655916382dc7b",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_zhanghe_swim_9.png": "1ae42707f033a62f41bbf9875ad69ef9d40d86efb2c4c25ee1bcad38d2a44fac",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_5200302.png": "b323b7218837af375430a2be6012c1c9b9a5268d9d11e4534e01c3e36cfbf0d8",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_xiahoudun_swim_1.png": "edbced239e01e4920ed88550a7a35d1463ec5fc044f6c3064a10e211f2c09c7b",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_xiahoudun_swim_2.png": "f3dabe349c385d6a8801fc6ced2aabaf042c77d7422c3e2f05c9194cdf00ecfb",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_xiahoudun_swim_3.png": "c0ba6ad2506483cbb0cd57c874318529d5e9984d3a82d616a48cb3fdea2c58e2",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_xiahoudun_swim_4.png": "175d23e1c93371327c62b92a44ec7625e6e93b868f5293e1a50fa2c47d2e9844",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_xiahoudun_swim_5.png": "d7bbe5db84893bb2ce90292a135c680533c5be1290b03eb7ff8031398cf4ff9c",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_xiahoudun_swim_6.png": "a126b03b53bc24e01d2888e5c67d7b9fbab77a741ceb38cbe3a5eba904511e93",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_xiahoudun_swim_7.png": "06b5cae52f15833d315c0b6644f6895f778a09e599ea53577bc1d94619303ee9",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_xiahoudun_swim_8.png": "20e51babaf681e69820c2b0a5c295f0a14df575eb93080c3238a9a8032498896",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_xiahoudun_swim_9.png": "f8d0b5a304c136af027718d9907622eb6aea8704f08bde10132098132f445c26",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/partner_avatar_5100603.png": "d4c982705138c6235b2a76205057527434a4296176932f3c9a7cbd7e64596079",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_dengai_swim_1.png": "cd089a87503c9279cb36c6b7b8fb4de5fb390d7a750a9af1631cb2ea9ebfcc3a",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_dengai_swim_2.png": "d40d1a6cd93b930d6d664133b663ad2af7d510689df2346d41dbb1a13e4a0ba6",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_dengai_swim_3.png": "cc9fdce64de7240744cf3d65080bc79df71aa3f437874da754a2a085f18b2c07",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_dengai_swim_4.png": "cbbfd8ff19d7dfffd6593b06abcf1f3a9f48d589b2fd6c312bf0c8240b58c708",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_dengai_swim_5.png": "362c5b727a5ca7633d5c1e589220690015831232367ffb8a68e2166b4f691ee4",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_dengai_swim_6.png": "68773fdb9f9088dd13a1b77cd48414578b255bf01e6af27118a1ee4119b8017e",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_dengai_swim_7.png": "7b8cfdff7b23bb76cc8f2aca92e0f9a983b34bde96cdf02bfceaf77b68531053",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_dengai_swim_8.png": "bc5feaa626656e02c65cb86d7bde4c1429df8a7ce9846f81f98fc3478550277e",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_dengai_swim_9.png": "cf68056b0836af49bdcf4d588f2cf512b5770b854314f2311bf59b1dad48bd9d",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_avatar_fangtian_swim.png": "2e797c334fb307876f7097208425d23225585968624bb4641b9f68aec0f91264",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_fangtian_swim_1.png": "78654ac6798f48c39a1a52e0fe10c596652c77a17d289971cc483cefb7d19361",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_fangtian_swim_2.png": "21e54517eace6f6f301329d792d8f7830c332ef8b2ab6755bae3c8fd139b1428",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_fangtian_swim_3.png": "f9860dc2fdb6748f6783658d2358f9474132adf79fe386d16ce51b4e3a5806d5",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_fangtian_swim_4.png": "8236b71cb6ad0af4885c36e923edd39134330ebe568cae0ef4aa480d295bf0af",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_fangtian_swim_5.png": "75b2c1a84081edd0a0f1d1fb85745f8c5abb9cb8144092283bd4173c3ab8319d",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_fangtian_swim_6.png": "536a062f552e5f06b8c0af83d4b1806f6eb63f67c45a8c67ec59413c2ee235fd",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_fangtian_swim_7.png": "0665c304116cbf2c0594db0368bd5ab9e5cddf03226002254813af35cfa89217",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_fangtian_swim_8.png": "6a82ea502608e009631b2e7f98f902f65218784a03d961b052155d79cf4c4e40",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/jigsaw_fangtian_swim_9.png": "5a4e77dffda5078e62d43e57185ef38ff6b31c6bd195f94844e6c96da5d2d50e",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/activity_jigsaw_progress_bg.png": "62aa4a15276d6ec7599f48b62e3e0b04bb41a8237d522885dd0891128cb0cb09",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/activity_jigsaw_open_icon.png": "bb0df9cd598f9900da2ffe474b3f5e50b6571d070329409631e5f58829919368",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/activity_jigsaw_icon02_1.png": "79beb048eb35c8ab15f4d34adf06a3a007248413d417092c732219f72873649d",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/activity_jigsaw_icon02_0.png": "43089a92822d2cd4ad8d3cb2cd775ad5a2e8af5e093ecc65ff0f6de1ac84a94b",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/activity_jigsaw.png": "0b583bcb741a1dc81a98618e6e18fbd2a6c16b84142c91df9c6177b5d89ac6a9",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/activity_jigsaw_avator_bg.png": "0f8cb6315a7f5270f8e444f633282d674094869c502bba3185cf402ba58a24f9",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/activity_jigsaw_bg02_swimsuit.png": "9726043eecee6eb56e73ae68641e5e710c5b611510495bdacc7dd883de4ddde7",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/activity_jigsaw_bg02.png": "4c09eeaa41389a90989c9ec8841a79e747d0372bc172fac6f633038c465e7385",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/activity_jigsaw_avator_bg_swimsuit.png": "398d85a2aabe2565828ed2af0b625599dcc7b37e1ac6595da8271a3a295a3b89",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/activity_jigsaw_icon01_0.png": "3326985e195710cbbb644cf717562a8bdc55e85b0aa5096cd7c20f3abc9459a7",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/activity_jigsaw_icon01_1.png": "c277a0206546459e0c480bf8d7f477a4ff2f368e561694ed8872d3aca4772509",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/activity_jigsaw_frame.png": "19d6ab317eccfd836a5ecd55f26af71262bdcd7d643bb6f0e4cbb3517dab06b8",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/activity_jigsaw_frame_swimsuit.png": "b853bd4a18a28334755c4e01af17ba127d64d3a336e11870e13f4215154787dc",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/activity_jigsaw_icon_bg02.png": "d16821463852d02b50f7601a02366bf8fcbd80637f5de5415d073d58c6d4b1ec",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/activity_jigsaw_icon_bg01.png": "5f684428e00c953e52136946a9ec80b00b0b3b216e55089ef58bc984e04eb2a4",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/activity_jigsaw_progress.png": "ac815e1a77c8850c640a90e316bff275569e95a0226c03a7eafe935bf5642718",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/activity_puppet_logo_de_de.png": "e42cd2463c3a51d0d189b84a378568ba155dd9ab2e1b92bb5730a50a2a0f71a8",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/activity_puppet_logo_ko_kr.png": "904432c2ff3a3744ea44125e515b14bb48b68a69f99ccc5f004f590b8ae22048",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/activity_puppet_logo_fr_fr.png": "d20b4b692b03c1f128e2e099ec29e13f6f2f468a8989fc8b40cfc8b76643e79e",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/activity_puppet_logo_en_en.png": "dee92dd6df1ddf2da9dbe1d78d3efbff5009bd2c0395953d63858589e6dbf487",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/activity_puppet_bg_banner.png": "e5e5903980cf77a5dd990c12790c0fcd5497915cada9d827aca4cfb69355f847",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/activity_puppet_logo_ja_jp.png": "10af08b12a0c232db20b639a417e42dd53a3c97bc4b5deb268e4c629ffe82568",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/activity_puppet_bg_tk2.png": "33c4332190bf46863e8e2bb5785c96e00975ead828679267e5b5c799610a56e7",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/activity_puppet_bg_zy.png": "1cae781ae4a26e04a64c23dad266b92788a956a3b909beb1d136badfbec88dce",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/activity_puppet_logo_zh_tw.png": "71852cd576dfeb71d8faa8ad09a16983e80bd66945e1d91cc43af1f35e5b7237",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/activity_puppet.png": "0838315cf273f313ea920ff83b1168df2d71ee6be5e2596fa2994359099fd736",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/activity_puppet_bg_jdt_2.png": "2360ea5a5390d8f8d13c3134e9938188ccb0f1dcb93f43de9480cd0a7aa181fd",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/activity_puppet_bg_jdt_1.png": "28ea0ec2bcb1b6c20cc056577f3d369230c39de19faadeea3d5533fc61bdfb6f",
+    "/Users/schroyle/Downloads/Decompiled/Sprites (atlases, cut)/activity_puppet_bg_tk_xx.png": "06e01462e80bfe28e9eeec31f1f51713ee5ad997092fa0f3c4c5369429c1dd82",
+    "/Users/schroyle/Downloads/Decomp files/unity/Assets/hotres/textures/scenes_web/activity_puppet_bg.png": "a999d3dddb6cdc0121e094caf9292f0b07ff6a298db223378fc17d72849bfb88"
+  }
+}
