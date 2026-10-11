@@ -709,6 +709,11 @@ class HTTPHandler(BaseHTTPRequestHandler):
                     snap_a['team'], snap_b['team'],
                     battle_id=int(match.get('seed') or 1),
                     seed=int(match.get('seed') or 1),
+                    pet_a=snap_a.get('pet'), pet_b=snap_b.get('pet'),
+                    guild_skills_a=snap_a.get('guild_skills') or [],
+                    guild_skills_b=snap_b.get('guild_skills') or [],
+                    chime_bonus_a=snap_a.get('chime_bonus') or [],
+                    chime_bonus_b=snap_b.get('chime_bonus') or [],
                     battle_type=1,
                 )
                 result = live_service.finish_authoritative_pvp(match['id'], account['uid'], snap_a, snap_b, report)
