@@ -6,6 +6,7 @@ from email.policy import default
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from http.cookies import SimpleCookie
 import json, re
+import hashlib
 import hmac
 import os
 import secrets
@@ -204,7 +205,8 @@ class HTTPHandler(BaseHTTPRequestHandler):
         account = ctx['account']
         return self.server.player_engines.get(account['uid'], account['server_id'], ctx['character_name'])
 
-    server_version = 'GxB2Local/0.1'
+    server_version = 'GXB3/0.3'
+    protocol_version = 'HTTP/1.1'
     def log_message(self, fmt, *args):
         # Request bodies and local session fields are not written to logs.
         pass
@@ -234,6 +236,54 @@ class HTTPHandler(BaseHTTPRequestHandler):
         self.send_header('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'")
         self.end_headers()
         self.wfile.write(content)
+    def send_sse(self, ctx, mode='arena'):
+        account=ctx['account']
+        self.send_response(200)
+        self.send_header('Content-Type','text/event-stream; charset=utf-8')
+        self.send_header('Cache-Control','no-cache, no-store')
+        self.send_header('Connection','keep-alive')
+        self.send_header('X-Accel-Buffering','no')
+        self.send_header('X-Content-Type-Options','nosniff')
+        self.end_headers()
+        last_payload=None
+        for _ in range(20):
+            try:
+                pvp=live_service.pvp_status(account['uid'],account['server_id'],mode)
+                if pvp.get('status')=='matched' and pvp.get('match'):
+                    try:
+                        live_service.heartbeat_pvp_match(pvp['match']['id'],account['uid'],True)
+                        pvp=live_service.pvp_status(account['uid'],account['server_id'],mode)
+                    except Exception:
+                        pass
+                guild=live_service.guild_for_player(account['uid'],account['server_id'])
+                payload={
+                    'server_time':int(time.time()),
+                    'server_id':account['server_id'],
+                    'online_count':len(live_service.online_players(account['server_id'])),
+                    'pvp':pvp,
+                    'guild':{'id':guild.get('id'),'level':guild.get('level'),'exp':guild.get('exp'),
+                             'member_count':guild.get('member_count')} if guild else None,
+                    'wars':live_service.guild_wars(account['server_id'],20),
+                }
+                raw=json.dumps(payload,ensure_ascii=False,separators=(',',':'))
+                if raw!=last_payload:
+                    self.wfile.write(f"event: snapshot\ndata: {raw}\n\n".encode())
+                    self.wfile.flush()
+                    last_payload=raw
+                else:
+                    self.wfile.write(b": keepalive\n\n"); self.wfile.flush()
+                time.sleep(2)
+            except (BrokenPipeError,ConnectionResetError):
+                break
+            except Exception as exc:
+                try:
+                    err=json.dumps({'error':str(exc)},ensure_ascii=False)
+                    self.wfile.write(f"event: error\ndata: {err}\n\n".encode()); self.wfile.flush()
+                except Exception:
+                    break
+                time.sleep(2)
+        self.close_connection=True
+
     def do_GET(self):
         if self.reject_unauthorized_admin_mode():
             return
@@ -248,6 +298,10 @@ class HTTPHandler(BaseHTTPRequestHandler):
             return self.send(200, {'sessions': auth.sessions_for_token(self.session_token())})
         if path.startswith('/api/') and not self.require_auth():
             return
+        if path == '/api/events/stream':
+            ctx=self.auth_context()
+            mode=(parse_qs(parsed.query).get('mode') or ['arena'])[0]
+            return self.send_sse(ctx,mode)
         if path == '/api/world/online':
             ctx = self.auth_context()
             server_id = (parse_qs(parsed.query).get('server_id') or [ctx['account']['server_id']])[0]
@@ -275,6 +329,10 @@ class HTTPHandler(BaseHTTPRequestHandler):
                     try: payload['applications'] = live_service.guild_applications(account['uid'], account['server_id'])
                     except Exception: payload['applications'] = []
             return self.send(200, payload)
+        if path == '/api/guild-war':
+            ctx=self.auth_context(); account=ctx['account']
+            war_id=(parse_qs(parsed.query).get('war_id') or [''])[0]
+            return self.send(200,live_service.guild_war_detail(account['uid'],account['server_id'],war_id))
         if path == '/api/pvp/status':
             ctx = self.auth_context(); account = ctx['account']
             query = parse_qs(parsed.query)
@@ -656,6 +714,33 @@ class HTTPHandler(BaseHTTPRequestHandler):
                 action = data.get('action')
                 if action not in ('approve','reject'): raise ValueError('Thao tác đơn hàng không hợp lệ')
                 return self.send(200, live_service.review_order(data.get('order_id'), action == 'approve', data.get('reward') or {}, 'SUPER_GM'))
+            if path == '/api/guild-war/battle':
+                ctx=self.auth_context(); account=ctx['account']
+                war_id=str(data.get('war_id') or '')
+                defender_uid=str(data.get('defender_uid') or '')
+                prep=live_service.prepare_guild_war_attack(account['uid'],account['server_id'],war_id,defender_uid)
+                attacker=prep['attacker']; defender=prep['defender']
+                engine_a=self.server.player_engines.get(account['uid'],account['server_id'],attacker['character_name'])
+                engine_b=self.server.player_engines.get(defender_uid,account['server_id'],defender['character_name'])
+                snap_a=engine_a.pvp_team_snapshot(); snap_b=engine_b.pvp_team_snapshot()
+                seed=int.from_bytes(hashlib.sha256(f"{war_id}:{account['uid']}:{defender_uid}".encode()).digest()[:4],'big') or 1
+                report=simulate_battle(
+                    snap_a['team'],snap_b['team'],battle_id=seed,seed=seed,
+                    pet_a=snap_a.get('pet'),pet_b=snap_b.get('pet'),
+                    guild_skills_a=snap_a.get('guild_skills') or [],
+                    guild_skills_b=snap_b.get('guild_skills') or [],
+                    chime_bonus_a=snap_a.get('chime_bonus') or [],
+                    chime_bonus_b=snap_b.get('chime_bonus') or [],
+                    battle_type=1,
+                )
+                result=live_service.record_guild_war_battle(war_id,account['uid'],defender_uid,snap_a,snap_b,report)
+                return self.send(200,{'result':result,'detail':live_service.guild_war_detail(account['uid'],account['server_id'],war_id)})
+            if path == '/api/guild-war/settle':
+                ctx=self.auth_context(); account=ctx['account']
+                detail=live_service.guild_war_detail(account['uid'],account['server_id'],data.get('war_id'))
+                if detail['war']['status']!='finished':
+                    raise ValueError('Guild War chưa kết thúc')
+                return self.send(200,{'war':live_service.settle_guild_war(data.get('war_id'))})
             if path == '/api/world-guild/manage':
                 ctx = self.auth_context(); account = ctx['account']; player = ctx['player']
                 current = self.engine.snapshot(); power = int(current.get('power',0))
