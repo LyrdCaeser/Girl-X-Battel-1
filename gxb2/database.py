@@ -38,10 +38,11 @@ class CursorProxy:
 
 
 class DBConnection:
-    def __init__(self, conn, backend, pool=None):
+    def __init__(self, conn, backend, pool=None, identity=""):
         self._conn = conn
         self.backend = backend
         self._pool = pool
+        self.identity = identity or backend
         self._closed = False
 
     def execute(self, sql, params=()):
@@ -101,20 +102,20 @@ def connect(sqlite_path: Path, schema: str):
     if POSTGRES:
         pool = _pg_pool()
         conn = pool.getconn()
-        db = DBConnection(conn, "postgres", pool)
+        db = DBConnection(conn, "postgres", pool, DATABASE_URL)
     else:
         sqlite_path.parent.mkdir(parents=True, exist_ok=True)
         conn = sqlite3.connect(sqlite_path, timeout=15)
         conn.row_factory = sqlite3.Row
         conn.execute("PRAGMA foreign_keys=ON")
         conn.execute("PRAGMA journal_mode=WAL")
-        db = DBConnection(conn, "sqlite")
+        db = DBConnection(conn, "sqlite", identity=str(sqlite_path.resolve()))
     ensure_schema(db, schema)
     return db
 
 
 def ensure_schema(db: DBConnection, schema: str):
-    key = (db.backend, schema)
+    key = (db.backend, db.identity, schema)
     if key in _schema_ready:
         return
     with _pool_lock:
