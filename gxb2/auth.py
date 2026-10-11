@@ -36,6 +36,9 @@ def _db():
     )""")
     db.execute("""CREATE UNIQUE INDEX IF NOT EXISTS idx_accounts_email
                   ON accounts(email COLLATE NOCASE) WHERE email <> ''""")
+    cols = {row[1] for row in db.execute("PRAGMA table_info(accounts)")}
+    if "ban_reason" not in cols:
+        db.execute("ALTER TABLE accounts ADD COLUMN ban_reason TEXT NOT NULL DEFAULT ''")
     db.execute("""CREATE TABLE IF NOT EXISTS sessions(
         token_hash TEXT PRIMARY KEY,
         account_id INTEGER NOT NULL,
@@ -93,6 +96,7 @@ def _public_account(row, server_id=None):
         "username": row["username"],
         "email": row["email"],
         "status": row["status"],
+        "ban_reason": row["ban_reason"] if "ban_reason" in row.keys() else "",
         "server_id": server_id,
     }
 
@@ -195,7 +199,8 @@ def login(username, password, server_id="S1", remote=""):
         if not valid:
             db.close(); _failed_login(bucket); raise ValueError("Tên đăng nhập hoặc mật khẩu không đúng")
         if row["status"] != "active":
-            db.close(); raise ValueError("Tài khoản đăng nhập đang bị khóa")
+            reason = row["ban_reason"] if "ban_reason" in row.keys() else ""
+            db.close(); raise ValueError("Tài khoản đăng nhập đang bị khóa" + (": " + reason if reason else ""))
         world = next((w for w in live_service.worlds() if w["server_id"] == server_id), None)
         if not world:
             db.close(); raise ValueError("Server không tồn tại")
@@ -275,3 +280,27 @@ def create_character(token, server_id, character_name):
                    (server_id,int(time.time()),_token_hash(token)))
         db.commit(); db.close()
     return session(token)
+
+
+def accounts():
+    with _lock:
+        db=_db()
+        rows=db.execute("SELECT * FROM accounts ORDER BY id DESC LIMIT 500").fetchall()
+        out=[_public_account(r, None) | {"created_at": int(r["created_at"]), "last_login": int(r["last_login"])} for r in rows]
+        db.close(); return out
+
+
+def set_account_status(uid, banned, reason=""):
+    uid=str(uid or "").strip()
+    now_reason=str(reason or "")[:300] if banned else ""
+    with _lock:
+        db=_db()
+        cur=db.execute("UPDATE accounts SET status=?,ban_reason=? WHERE uid=?",
+                       ("banned" if banned else "active", now_reason, uid))
+        if not cur.rowcount:
+            db.close(); raise ValueError("Không tìm thấy tài khoản")
+        if banned:
+            row=db.execute("SELECT id FROM accounts WHERE uid=?", (uid,)).fetchone()
+            db.execute("DELETE FROM sessions WHERE account_id=?", (int(row["id"]),))
+        db.commit(); row=db.execute("SELECT * FROM accounts WHERE uid=?", (uid,)).fetchone(); db.close()
+    return _public_account(row, None)
