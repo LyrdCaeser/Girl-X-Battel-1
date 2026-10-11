@@ -64,8 +64,11 @@ window.GxbOnline=(()=>{
     const p=data.pvp||{status:'idle'};
     if(p.status==='matched'&&p.match){
       const m=p.match,opp=matchOpponent(m),card=el('section','online-match');
-      card.append(el('small','',m.id+' · '+m.mode.toUpperCase()),el('h3','',T('Opponent Found')),el('b','online-opponent',opp.name),el('p','',opp.uid+' · '+T('Power')+' '+fmt(opp.power)),el('p','online-live',T(m.status==='active'?'Battle session active':'Match ready')));
-      const activate=el('button','online-primary',T(m.status==='active'?'Refresh Session':'Enter Match'));activate.onclick=async()=>{await post('/api/pvp/match/activate',{match_id:m.id});renderPvp(body);};card.append(activate);
+      let session=null;try{session=await post('/api/pvp/match/heartbeat',{match_id:m.id,ready:true});}catch{}
+      const peerCount=(session?.peers||[]).filter(x=>Date.now()/1000-Number(x.last_seen||0)<=15).length;
+      card.append(el('small','',m.id+' · '+m.mode.toUpperCase()),el('h3','',T('Opponent Found')),el('b','online-opponent',opp.name),el('p','',opp.uid+' · '+T('Power')+' '+fmt(opp.power)),el('p','online-live',T((session?.match?.status||m.status)==='active'?'Battle session active':'Match ready')));
+      card.append(el('div','online-peer-state',T('Realtime peers')+': '+peerCount+'/2'));
+      const activate=el('button','online-primary',T((session?.match?.status||m.status)==='active'?'Refresh Session':'Enter Match'));activate.onclick=async()=>{await post('/api/pvp/match/heartbeat',{match_id:m.id,ready:true});renderPvp(body);};card.append(activate);
       card.append(el('small','online-note',T('Realtime session is synchronized. Battle-result synchronization is the next server layer.')));body.append(card);
     }else if(p.status==='waiting'){
       const card=el('section','online-match waiting');card.append(el('h3','',T('Finding opponent…')),el('p','',T('The server is matching by mode and combat power.')));
