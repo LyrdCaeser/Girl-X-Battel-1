@@ -30,7 +30,7 @@ window.GxbOnline=(()=>{
     if(stream){stream.close();stream=null;}
     if(fallbackTimer){clearInterval(fallbackTimer);fallbackTimer=null;}
     const refresh=async()=>{
-      if(!overlay||refreshing)return;
+      if(!overlay||refreshing||!['pvp','leaderboard'].includes(tab))return;
       refreshing=true;
       try{await renderBody(box,true);}catch{}finally{refreshing=false;}
     };
@@ -179,7 +179,7 @@ window.GxbOnline=(()=>{
   async function renderPvp(body,quiet=false){
     const data=await get('/api/pvp/status?mode='+encodeURIComponent(pvpMode));body.replaceChildren();
     const modes=el('div','online-mode');
-    [['arena','Arena'],['team','Team Arena'],['cross','Cross-server Arena']].forEach(([id,label])=>{const b=el('button',id===pvpMode?'on':'',T(label));b.onclick=()=>{pvpMode=id;renderPvp(body);};modes.append(b);});body.append(modes);
+    [['arena','Arena'],['team','Team Arena'],['cross','Cross-server Arena']].forEach(([id,label])=>{const b=el('button',id===pvpMode?'on':'',T(label));b.onclick=()=>{pvpMode=id;renderPvp(body);const box=overlay?.querySelector('.online-box');if(box)openRealtime(box);};modes.append(b);});body.append(modes);
     const rating=data.rating||{rating:1000,wins:0,losses:0,matches:0,season_id:'-'};
     const ratingBox=el('section','online-rating');
     ratingBox.append(el('div','',T('Season')+' '+rating.season_id),el('strong','',String(rating.rating)),el('small','',T('Wins')+' '+rating.wins+' · '+T('Losses')+' '+rating.losses+' · '+T('Matches')+' '+rating.matches));
