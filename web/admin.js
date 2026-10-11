@@ -135,9 +135,35 @@ window.AdminPanel=(()=>{
   function renderTools(body){
     const tools=card('SUPER GM Tools');const grid=el('div','admin-tools');
     const girl=el('div','admin-tool');const sel=document.createElement('select');sel.id='admin-girl';for(const g of girlsCatalog){const o=el('option','',`${g.name} · ${g.stars}★ · ${g.id}`);o.value=g.id;sel.append(o);}girl.append(sel);const count=field(girl,'Số lượng','admin-count','number','1');count.value=1;const level=field(girl,'Cấp','admin-level','number','1');level.value=80;girl.append(btn('Thêm Nữ Thần',()=>act('girl'),'primary'));grid.append(girl);
-    const misc=el('div','admin-tool');[['all_girls','Thêm toàn bộ Nữ Thần'],['max_stars','Nữ Thần đã chọn → 15★'],['levels','Áp cấp cho toàn bộ'],['campaign','Mở 30 ải']].forEach(([a,t])=>misc.append(btn(t,()=>act(a))));const floor=field(misc,'Tầng Tests','admin-floor','number','1');floor.value=1;misc.append(btn('Đặt tầng Tests',()=>act('tower')));grid.append(misc);tools.append(grid);body.append(tools);
+    const misc=el('div','admin-tool');[['all_girls','Thêm toàn bộ Nữ Thần'],['max_stars','Nữ Thần đã chọn → 15★'],['levels','Áp cấp cho toàn bộ'],['campaign','Mở 30 ải']].forEach(([a,t])=>misc.append(btn(t,()=>act(a))));const floor=field(misc,'Tầng Tests','admin-floor','number','1');floor.value=1;misc.append(btn('Đặt tầng Tests',()=>act('tower')));grid.append(misc);
+
+    const live=el('div','admin-tool');
+    live.append(el('h3','','Live Service · Quyền tối thượng'));
+    field(live,'UID','admin-live-uid');
+    field(live,'Server','admin-live-server').value='S1';
+    const mode=document.createElement('select');mode.id='admin-live-mode';for(const m of ['arena','team','cross']){const o=el('option','',m);o.value=m;mode.append(o);}live.append(mode);
+    field(live,'PvP Rating','admin-live-rating','number','1').value=1000;
+    live.append(btn('Đặt PvP Rating',()=>liveServiceAct('pvp_rating'),'primary'));
+    field(live,'Guild EXP +','admin-live-guild-exp','number','1').value=0;
+    field(live,'Contribution +','admin-live-contribution','number','1').value=0;
+    live.append(btn('Cộng Guild Progress',()=>liveServiceAct('guild_progress'),'primary'));
+    field(live,'Guild War ID','admin-live-war');
+    live.append(btn('Force Settle Guild War',()=>liveServiceAct('force_settle_war'),'danger'));
+    live.append(btn('Chạy Maintenance ngay',()=>liveServiceAct('maintenance')));
+    grid.append(live);
+
+    tools.append(grid);body.append(tools);
   }
   async function act(action){try{const data=await api('/api/developer',{action,table_id:Number(val('admin-girl')),count:Number(val('admin-count')),level:Number(val('admin-level')),floor:Number(val('admin-floor'))});state=data.state;loadFormation();renderGame();status('Đã áp dụng vào save QTV.');}catch(e){status(e.message,false);}}
+  async function liveServiceAct(action){try{
+    const payload={action,uid:val('admin-live-uid'),server_id:val('admin-live-server')||'S1',
+      mode:val('admin-live-mode')||'arena',rating:Number(val('admin-live-rating')||0),
+      exp_gain:Number(val('admin-live-guild-exp')||0),contribution_gain:Number(val('admin-live-contribution')||0),
+      war_id:val('admin-live-war')};
+    const result=await api('/api/admin/live-service',payload);
+    status('SUPER GM đã áp dụng: '+action+'.');await refreshDashboard();
+    return result;
+  }catch(e){status(e.message,false);}}
   function renderGame(){if(typeof window.render==='function')window.render();}
   function renderAudit(body){const c=card('Audit Log');const list=el('div','admin-list');for(const a of dash?.audit||[]){const row=el('article','admin-row');const info=el('div','admin-row-main');info.append(el('b','',a.action),el('span','',a.target),el('small','',new Date(a.at*1000).toLocaleString()+' · '+a.operator));row.append(info);list.append(row);}c.append(list);body.append(c);}
   const val=id=>document.getElementById(id)?.value?.trim()||'';
