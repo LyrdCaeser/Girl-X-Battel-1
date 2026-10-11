@@ -178,3 +178,45 @@ Các endpoint chính:
 Online Hub polling heartbeat khoảng 2.5 giây khi màn PvP đang mở.
 
 **Chưa coi đây là battle-result authority cuối cùng.** Matchmaking/session/peer synchronization đã có; bước kế tiếp là server-authoritative combat snapshot/result validation để không tin kết quả do client tự gửi.
+
+
+## Server-authoritative PvP combat
+
+PvP không nhận trường `winner` hoặc kết quả chiến đấu từ client.
+
+Luồng hiện tại:
+
+1. Matchmaking tạo match ID + deterministic seed.
+2. Cả hai peer gửi heartbeat/ready.
+3. Chỉ khi session có đủ hai peer ready thì endpoint battle mới chạy.
+4. Server tải save thật của `player_a` và `player_b` theo UID + Server.
+5. Server lấy formation + hero data trực tiếp từ save.
+6. Lua battle engine chạy ở server bằng seed của match.
+7. `isWin` từ battle report quyết định winner.
+8. Server ghi snapshots, battle report, winner và rating delta vào `pvp_matches`.
+9. Nếu hai client cùng yêu cầu xử lý, kết quả đã hoàn tất được reuse thay vì client ghi đè.
+
+Endpoint:
+- `POST /api/pvp/match/battle`
+- `POST /api/pvp/match/result`
+
+### PvP Season / Rating
+
+Season ID hiện dùng tháng UTC dạng `YYYY-MM`.
+
+Mỗi mode có rating riêng:
+- arena
+- team
+- cross
+
+Rating khởi đầu: 1000. Sau trận authoritative, ELO K=32 cập nhật:
+- rating
+- wins
+- losses
+- matches
+
+Online Hub hiển thị rating hiện tại, W/L, lịch sử trận và top mùa.
+
+### Giới hạn hiện tại
+
+Combat result đã là server-authoritative, nhưng battle adapter hiện dùng phần hero/formation của save và Lua battle engine chung. Một số bonus phía defender như pet/guild/chime hai chiều chưa được mở rộng đầy đủ trong battle host. Không nên coi PvP balance là final cho tới khi battle host hỗ trợ đối xứng toàn bộ bonus A/B.
