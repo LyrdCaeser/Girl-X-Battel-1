@@ -21,6 +21,13 @@ def _db():
         status TEXT NOT NULL DEFAULT 'online',
         created_at INTEGER NOT NULL
     )""")
+    world_cols = {row[1] for row in db.execute("PRAGMA table_info(worlds)")}
+    if "registration_open" not in world_cols:
+        db.execute("ALTER TABLE worlds ADD COLUMN registration_open INTEGER NOT NULL DEFAULT 1")
+    if "character_creation_open" not in world_cols:
+        db.execute("ALTER TABLE worlds ADD COLUMN character_creation_open INTEGER NOT NULL DEFAULT 1")
+    if "message" not in world_cols:
+        db.execute("ALTER TABLE worlds ADD COLUMN message TEXT NOT NULL DEFAULT ''")
     db.execute("""CREATE TABLE IF NOT EXISTS players(
         uid TEXT NOT NULL,
         server_id TEXT NOT NULL,
@@ -94,7 +101,8 @@ def create_world(server_id, name):
         db.execute("INSERT INTO worlds(server_id,name,status,created_at) VALUES(?,?, 'online',?)",(server_id,name,now))
         _audit(db,"world.create",server_id,{"name":name})
         db.commit(); db.close()
-    return {"server_id":server_id,"name":name,"status":"online","created_at":now}
+    return {"server_id":server_id,"name":name,"status":"online","created_at":now,
+            "registration_open":1,"character_creation_open":1,"message":""}
 
 
 def set_world_status(server_id,status):
@@ -275,3 +283,29 @@ def audit(limit=200):
             try:r["detail"]=json.loads(r["detail"])
             except Exception:pass
         db.close(); return rows
+
+
+def set_world_policy(server_id, registration_open=None, character_creation_open=None, message=None):
+    server_id=str(server_id or '').strip().upper()
+    fields=[]; values=[]
+    if registration_open is not None:
+        fields.append("registration_open=?"); values.append(1 if bool(registration_open) else 0)
+    if character_creation_open is not None:
+        fields.append("character_creation_open=?"); values.append(1 if bool(character_creation_open) else 0)
+    if message is not None:
+        fields.append("message=?"); values.append(str(message)[:300])
+    if not fields: raise ValueError("Không có policy nào để cập nhật")
+    with _lock:
+        db=_db()
+        values.append(server_id)
+        cur=db.execute(f"UPDATE worlds SET {', '.join(fields)} WHERE server_id=?", values)
+        if not cur.rowcount:
+            db.close(); raise ValueError("Không tìm thấy server")
+        _audit(db,"world.policy",server_id,{
+            "registration_open": registration_open,
+            "character_creation_open": character_creation_open,
+            "message": message,
+        })
+        db.commit()
+        row=db.execute("SELECT * FROM worlds WHERE server_id=?",(server_id,)).fetchone()
+        out=dict(row); db.close(); return out
