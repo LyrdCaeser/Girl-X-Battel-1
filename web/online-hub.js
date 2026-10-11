@@ -43,17 +43,58 @@ window.GxbOnline=(()=>{
   }
   async function renderGuild(body){
     const data=await get('/api/world-guild');body.replaceChildren();
+    const rankCard=el('section','online-card');rankCard.append(el('h3','',T('Guild Ranking')));
+    for(const r of (data.ranking||[]).slice(0,10)){const row=el('div','online-mini-row');row.append(el('b','','#'+r.rank+' '+r.name),el('span','',T('Power')+' '+fmt(r.total_power)),el('small','',T('Members')+' '+r.member_count));rankCard.append(row);}body.append(rankCard);
+
     if(data.guild){
-      const g=data.guild,hero=el('section','online-guild-hero');hero.append(el('small','',T('Server')+' '+g.server_id),el('h3','',g.name),el('p','',g.notice||T('No guild notice.')),el('b','',T('Members')+': '+g.member_count));body.append(hero);
-      const members=el('div','online-list');for(const m of g.members||[]){const row=el('article','online-member');row.append(el('div','online-main'),el('strong','online-power',fmt(m.power)));row.querySelector('.online-main').append(el('b','',m.character_name),el('small','',m.role+' · '+m.uid));members.append(row);}body.append(members);
+      const g=data.guild,hero=el('section','online-guild-hero');hero.append(el('small','',T('Server')+' '+g.server_id),el('h3','',g.name),el('p','',g.notice||T('No guild notice.')),el('b','',T('Members')+': '+g.member_count+' · '+T('Role')+': '+g.role));body.append(hero);
+
+      if(['leader','deputy'].includes(g.role)){
+        const manage=el('section','online-card');manage.append(el('h3','',T('Guild Management')));
+        const notice=document.createElement('textarea');notice.placeholder=T('Guild Notice');notice.value=g.notice||'';
+        const saveNotice=el('button','online-primary',T('Save Notice'));saveNotice.onclick=async()=>{await post('/api/world-guild/manage',{action:'notice',notice:notice.value});renderGuild(body);};manage.append(notice,saveNotice);
+        const mailTitle=document.createElement('input');mailTitle.placeholder=T('Guild Mail Title');
+        const mailBody=document.createElement('textarea');mailBody.placeholder=T('Guild Mail Body');
+        const sendMail=el('button','online-primary',T('Send Guild Mail'));sendMail.onclick=async()=>{await post('/api/world-guild/manage',{action:'mail',title:mailTitle.value,body:mailBody.value});mailTitle.value='';mailBody.value='';alert(T('Guild mail sent.'));};manage.append(mailTitle,mailBody,sendMail);
+        body.append(manage);
+
+        const apps=el('section','online-card');apps.append(el('h3','',T('Applications')));
+        for(const a of data.applications||[]){const row=el('div','online-app-row'),main=el('div','online-main');main.append(el('b','',a.character_name),el('small','',a.uid+' · '+T('Power')+' '+fmt(a.power)));
+          const yes=el('button','online-primary',T('Approve'));yes.onclick=async()=>{await post('/api/world-guild/manage',{action:'review',target_uid:a.uid,approve:true});renderGuild(body);};
+          const no=el('button','online-danger',T('Reject'));no.onclick=async()=>{await post('/api/world-guild/manage',{action:'review',target_uid:a.uid,approve:false});renderGuild(body);};
+          row.append(main,yes,no);apps.append(row);}
+        if(!(data.applications||[]).length)apps.append(el('p','online-empty',T('No pending applications.')));body.append(apps);
+      }
+
+      const members=el('section','online-card');members.append(el('h3','',T('Guild Members')));
+      for(const m of g.members||[]){const row=el('article','online-member');const main=el('div','online-main');main.append(el('b','',m.character_name),el('small','',m.role+' · '+m.uid));row.append(main,el('strong','online-power',fmt(m.power)));
+        if(g.role==='leader'&&m.uid!==state?.uid){
+          if(m.role==='member'){const dep=el('button','online-small',T('Make Deputy'));dep.onclick=async()=>{await post('/api/world-guild/manage',{action:'role',target_uid:m.uid,role:'deputy'});renderGuild(body);};row.append(dep);}
+          if(m.role==='deputy'){const dem=el('button','online-small',T('Make Member'));dem.onclick=async()=>{await post('/api/world-guild/manage',{action:'role',target_uid:m.uid,role:'member'});renderGuild(body);};row.append(dem);}
+          const tr=el('button','online-small',T('Transfer Leader'));tr.onclick=async()=>{if(confirm(T('Are you sure?'))){await post('/api/world-guild/manage',{action:'transfer',target_uid:m.uid});renderGuild(body);}};row.append(tr);
+        }
+        if(['leader','deputy'].includes(g.role)&&m.uid!==state?.uid&&m.role!=='leader'){const kick=el('button','online-danger',T('Kick'));kick.onclick=async()=>{if(confirm(T('Are you sure?'))){await post('/api/world-guild/manage',{action:'kick',target_uid:m.uid});renderGuild(body);}};row.append(kick);}
+        members.append(row);}body.append(members);
+
+      const chat=el('section','online-card');chat.append(el('h3','',T('Guild Chat')));
+      const chatList=el('div','online-chat');for(const m of data.chat||[]){const msg=el('div','online-chat-msg');msg.append(el('b','',m.character_name),el('span','',m.message),el('small','',new Date(m.created_at*1000).toLocaleTimeString()));chatList.append(msg);}chat.append(chatList);
+      const chatRow=el('div','online-chat-send');const chatInput=document.createElement('input');chatInput.placeholder=T('Write a message…');const send=el('button','online-primary',T('Send'));send.onclick=async()=>{if(!chatInput.value.trim())return;await post('/api/world-guild/manage',{action:'chat',message:chatInput.value});chatInput.value='';renderGuild(body);};chatRow.append(chatInput,send);chat.append(chatRow);body.append(chat);
+
+      const wars=el('section','online-card');wars.append(el('h3','',T('Guild War')));
+      for(const w of data.wars||[]){const row=el('div','online-mini-row');row.append(el('b','',w.guild_a_name+' VS '+w.guild_b_name),el('span','',w.score_a+' - '+w.score_b),el('small','',w.status));wars.append(row);}
+      if(['leader','deputy'].includes(g.role)){
+        const opponents=(data.guilds||[]).filter(x=>x.id!==g.id);if(opponents.length){const sel=document.createElement('select');for(const x of opponents){const o=el('option','',x.name);o.value=x.id;sel.append(o);}const war=el('button','online-primary',T('Challenge Guild'));war.onclick=async()=>{await post('/api/world-guild/manage',{action:'war',opponent_guild_id:Number(sel.value),duration:86400});renderGuild(body);};wars.append(sel,war);}
+      }body.append(wars);
+
       const leave=el('button','online-danger',g.role==='leader'?T('Disband Guild'):T('Leave Guild'));leave.onclick=async()=>{if(!confirm(T('Are you sure?')))return;await post('/api/world-guild/action',{action:'leave'});renderGuild(body);};body.append(leave);return;
     }
+
     const create=el('section','online-card');create.append(el('h3','',T('Create Guild')));
     const name=document.createElement('input');name.placeholder=T('Guild Name');name.maxLength=24;
     const note=document.createElement('textarea');note.placeholder=T('Guild Notice');note.maxLength=180;
     const go=el('button','online-primary',T('Create Guild'));go.onclick=async()=>{await post('/api/world-guild/action',{action:'create',name:name.value,notice:note.value});renderGuild(body);};create.append(name,note,go);body.append(create);
     const list=el('div','online-list');
-    for(const g of data.guilds||[]){const row=el('article','online-guild-row'),main=el('div','online-main');main.append(el('b','',g.name),el('small','',T('Members')+': '+g.member_count+' · Lv.'+g.level));const join=el('button','online-primary',T('Join'));join.onclick=async()=>{await post('/api/world-guild/action',{action:'join',guild_id:g.id});renderGuild(body);};row.append(main,join);list.append(row);}
+    for(const g of data.guilds||[]){const row=el('article','online-guild-row'),main=el('div','online-main');main.append(el('b','',g.name),el('small','',T('Members')+': '+g.member_count+' · Lv.'+g.level));const apply=el('button','online-primary',T('Apply'));apply.onclick=async()=>{await post('/api/world-guild/manage',{action:'apply',guild_id:g.id});apply.disabled=true;apply.textContent=T('Applied');};row.append(main,apply);list.append(row);}
     if(!(data.guilds||[]).length)list.append(el('p','online-empty',T('No Guild has been created on this server.')));body.append(list);
   }
   function matchOpponent(m){const mine=state?.uid;return m.player_a===mine?{uid:m.player_b,name:m.name_b,power:m.power_b}:{uid:m.player_a,name:m.name_a,power:m.power_a};}
