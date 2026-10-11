@@ -77,5 +77,18 @@
   "Join the queue to find another online player.": "Vào hàng chờ để tìm người chơi online khác.",
   "Find Match": "Tìm trận",
   "Recent Matches": "Trận gần đây",
-  "Realtime peers": "Kết nối realtime"
+  "Realtime peers": "Kết nối realtime",
+  "Season": "Mùa",
+  "Wins": "Thắng",
+  "Losses": "Thua",
+  "Matches": "Trận",
+  "Start Battle": "Bắt đầu chiến đấu",
+  "Server is simulating battle…": "Server đang mô phỏng trận đấu…",
+  "The server loads both saved teams and simulates the result. The client cannot submit a winner.": "Server tải đội hình đã lưu của cả hai bên và tự mô phỏng kết quả. Client không thể tự gửi người thắng.",
+  "Season Ranking": "Xếp hạng mùa",
+  "Victory": "Chiến thắng",
+  "Defeat": "Thất bại",
+  "Rating": "Điểm PvP",
+  "Rounds": "Số hiệp",
+  "Back to PvP": "Quay lại PvP"
 }
