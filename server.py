@@ -20,7 +20,7 @@ from gxb2.story import catalog as story_catalog
 from gxb2.dress import catalog as dress_catalog
 from gxb2.skins import catalog as skins_catalog
 from gxb2.souls import catalog as souls_catalog
-from gxb2 import protocol as p, local_promotion, local_config, live_service, auth
+from gxb2 import protocol as p, local_promotion, local_config, live_service, auth, database
 from gxb2.player_engines import PlayerEnginePool
 
 ROOT = Path(__file__).resolve().parent
@@ -296,7 +296,7 @@ class HTTPHandler(BaseHTTPRequestHandler):
             name=path.rsplit('/',1)[-1]
             if name in {'vi.json','en.json','zh-CN.json'}:
                 return self.send(200,(ROOT/'localization'/name).read_bytes(),'application/json; charset=utf-8')
-        if path == '/health': return self.send(200, {'ok': True, 'scope': 'gxb3-private', 'schema_messages': len(p.SCHEMA)})
+        if path == '/health': return self.send(200, {'ok': True, 'scope': 'gxb3-private', 'database': database.backend_name(), 'schema_messages': len(p.SCHEMA)})
         if path == '/api/state': return self.send(200, self.engine.snapshot())
         if path == '/api/bootstrap': return self.send(200, {'payload': self.bootstrap()})
         if path == '/assets/characters.json': return self.send(200, sorted(CHARACTER_ART))
@@ -826,5 +826,6 @@ def main():
         engine.close()
         developer.close()
         player_engines.close()
+        database.close_pool()
 
 if __name__ == '__main__': main()
