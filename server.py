@@ -238,6 +238,10 @@ class HTTPHandler(BaseHTTPRequestHandler):
         if path == '/api/auth/me':
             ctx = self.auth_context()
             return self.send(200, {'authenticated': bool(ctx), 'session': ctx, 'worlds': live_service.worlds()})
+        if path == '/api/auth/sessions':
+            ctx = self.require_auth()
+            if not ctx: return
+            return self.send(200, {'sessions': auth.sessions_for_token(self.session_token())})
         if path.startswith('/api/') and not self.require_auth():
             return
         if path == '/api/admin/config':
@@ -518,15 +522,32 @@ class HTTPHandler(BaseHTTPRequestHandler):
             if path in ('/api/auth/register','/api/auth/login'):
                 if path.endswith('/register'):
                     result = auth.register(data.get('username'), data.get('password'), data.get('character_name'),
-                                           data.get('server_id','S1'), data.get('email',''))
+                                           data.get('server_id','S1'), data.get('email',''),
+                                           self.headers.get('User-Agent',''), self.client_address[0] if self.client_address else '')
                 else:
                     result = auth.login(data.get('username'), data.get('password'), data.get('server_id','S1'),
-                                        self.client_address[0] if self.client_address else '')
+                                        self.client_address[0] if self.client_address else '', self.headers.get('User-Agent',''))
                 secure = self.headers.get('X-Forwarded-Proto','').lower() == 'https'
                 cookie = f"gxb3_session={result['token']}; Path=/; HttpOnly; SameSite=Lax; Max-Age={auth.SESSION_TTL}"
                 if secure: cookie += '; Secure'
-                return self.send(200, {'account': result['account'], 'character_name': result['character_name']},
-                                 headers={'Set-Cookie': cookie})
+                body = {'account': result['account'], 'character_name': result['character_name'], 'session_id': result.get('session_id')}
+                if result.get('recovery_code'): body['recovery_code'] = result['recovery_code']
+                return self.send(200, body, headers={'Set-Cookie': cookie})
+            if path == '/api/auth/reset-password':
+                return self.send(200, auth.reset_password(data.get('username'), data.get('recovery_code'), data.get('new_password')))
+            if path == '/api/auth/recovery-code':
+                ctx = self.require_auth()
+                if not ctx: return
+                return self.send(200, auth.rotate_recovery_code(self.session_token()))
+            if path == '/api/auth/session/revoke':
+                ctx = self.require_auth()
+                if not ctx: return
+                target = str(data.get('session_id') or '')
+                current_sessions = auth.sessions_for_token(self.session_token())
+                is_current = any(x.get('session_id') == target and x.get('current') for x in current_sessions)
+                result = auth.revoke_session(self.session_token(), target)
+                headers = {'Set-Cookie': 'gxb3_session=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0'} if is_current else None
+                return self.send(200, result, headers=headers)
             if path == '/api/auth/logout':
                 auth.logout(self.session_token())
                 self._auth_context = None
@@ -561,7 +582,17 @@ class HTTPHandler(BaseHTTPRequestHandler):
                     return self.send(200, live_service.create_world(data.get('server_id'), data.get('name')))
                 if data.get('action') == 'status':
                     return self.send(200, live_service.set_world_status(str(data.get('server_id') or '').upper(), data.get('status')))
+                if data.get('action') == 'policy':
+                    return self.send(200, live_service.set_world_policy(
+                        str(data.get('server_id') or '').upper(),
+                        data.get('registration_open'), data.get('character_creation_open'), data.get('message')))
                 raise ValueError('Thao tác server không hợp lệ')
+            if path == '/api/admin/account/sessions':
+                if not self.admin_authorized(): return self.send(403, {'error': 'QTV_KEY_REQUIRED'})
+                return self.send(200, {'sessions': auth.account_sessions(data.get('uid'))})
+            if path == '/api/admin/account/revoke-sessions':
+                if not self.admin_authorized(): return self.send(403, {'error': 'QTV_KEY_REQUIRED'})
+                return self.send(200, auth.revoke_account_sessions(data.get('uid')))
             if path == '/api/admin/account/status':
                 if not self.admin_authorized(): return self.send(403, {'error': 'QTV_KEY_REQUIRED'})
                 action = data.get('action')
