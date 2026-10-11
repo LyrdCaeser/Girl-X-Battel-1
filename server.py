@@ -228,6 +228,8 @@ class HTTPHandler(BaseHTTPRequestHandler):
         self.send_header('Content-Length', str(len(content)))
         self.send_header('Cache-Control', 'no-store')
         self.send_header('X-Content-Type-Options', 'nosniff')
+        self.send_header('Referrer-Policy', 'same-origin')
+        self.send_header('Permissions-Policy', 'camera=(), microphone=(), geolocation=()')
         self.send_header('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'")
         self.end_headers()
         self.wfile.write(content)
@@ -515,6 +517,8 @@ class HTTPHandler(BaseHTTPRequestHandler):
         host = self.headers.get('Host', f'localhost:{self.server.server_port}')
         allowed = {f'http://127.0.0.1:{self.server.server_port}', f'http://localhost:{self.server.server_port}',
                    f'http://{host}', f'https://{host}'}
+        if getattr(self.server, 'public_origin', ''):
+            allowed.add(self.server.public_origin.rstrip('/'))
         if origin and origin not in allowed: return self.send(403, {'error': 'Origen no permitido'})
         try:
             data = self.read_body()
@@ -776,22 +780,26 @@ class HTTPHandler(BaseHTTPRequestHandler):
             print(f'Error local: {type(exc).__name__}: {exc}', flush=True)
             return self.send(500, {'error': 'Error del motor local. Consulta la terminal.'})
 
-def make_servers(engine, http_port=9080, tcp_port=9081, developer_engine=None, player_engines=None):
+def make_servers(engine, http_port=9080, tcp_port=9081, developer_engine=None, player_engines=None,
+                 http_host='127.0.0.1', public_origin=''):
     tcp = ThreadTCP(('127.0.0.1', tcp_port), TCPHandler)
     tcp.engine = engine
-    try: http = LocalHTTPServer(('127.0.0.1', http_port), HTTPHandler)
+    try: http = LocalHTTPServer((http_host, http_port), HTTPHandler)
     except Exception:
         tcp.server_close()
         raise
     http.developer_engine = developer_engine
     http.player_engines = player_engines or PlayerEnginePool()
     http.admin_key = ADMIN_KEY
+    http.public_origin = str(public_origin or '').strip()
     http.engine = engine; http.tcp_port = tcp.server_address[1]
     return http, tcp
 
 def main():
     parser = argparse.ArgumentParser(description='Backend local GxB2: combate original, perfil ficticio y guardado local')
-    parser.add_argument('--http-port', type=int, default=9080)
+    parser.add_argument('--http-port', type=int, default=int(os.environ.get('PORT', '9080')))
+    parser.add_argument('--http-host', default=os.environ.get('GXB3_HOST', '127.0.0.1'))
+    parser.add_argument('--public-origin', default=os.environ.get('GXB3_PUBLIC_ORIGIN', ''))
     parser.add_argument('--tcp-port', type=int, default=9081)
     parser.add_argument('--db', type=Path, default=ROOT/'state/profile.sqlite3')
     parser.add_argument('--open', action='store_true', help='Abrir la interfaz local de prueba')
@@ -799,11 +807,14 @@ def main():
     engine = Engine(args.db)
     developer = Engine(args.db.with_name(args.db.stem + ".developer.sqlite3"), developer=True)
     player_engines = PlayerEnginePool()
-    http, tcp = make_servers(engine, args.http_port, args.tcp_port, developer, player_engines)
+    http, tcp = make_servers(engine, args.http_port, args.tcp_port, developer, player_engines,
+                             args.http_host, args.public_origin)
     threads = [threading.Thread(target=s.serve_forever, daemon=True) for s in (http, tcp)]
     for thread in threads: thread.start()
-    url = f'http://localhost:{http.server_port}'
-    print(f'GxB2 Local sẵn sàng: {url}\nSocket kiểm thử: 127.0.0.1:{tcp.server_address[1]}\nQTV: đã bật khóa cố định.\nCtrl+C để dừng.', flush=True)
+    browse_host = 'localhost' if args.http_host in ('0.0.0.0','::') else args.http_host
+    url = f'http://{browse_host}:{http.server_port}'
+    public_note = args.public_origin or '(chưa cấu hình)'
+    print(f'GXB 3 server sẵn sàng: {url}\nHTTP bind: {args.http_host}:{http.server_port}\nPublic origin: {public_note}\nSocket legacy: 127.0.0.1:{tcp.server_address[1]}\nQTV: đã bật khóa cố định.\nCtrl+C để dừng.', flush=True)
     if args.open:
         import webbrowser
         webbrowser.open(url)
