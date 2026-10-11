@@ -21,10 +21,58 @@ python server.py
 
 Legacy TCP battle socket vẫn chỉ bind `127.0.0.1`; không được expose trực tiếp ra Internet.
 
-## Auth
+## Database backend
+
+Mặc định dev/local vẫn dùng SQLite:
 
 - Account DB: `state/auth.sqlite3`
 - Live service DB: `state/live_service.sqlite3`
+
+Production có thể bật PostgreSQL cho **Auth + Live Service** bằng một biến:
+
+```powershell
+$env:GXB3_DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/DBNAME?sslmode=require"
+```
+
+Có thể dùng `DATABASE_URL` thay cho `GXB3_DATABASE_URL`. Khi biến này tồn tại, app tự chuyển Auth, Session, World, Player Registry, GM Mail, Orders và Audit sang PostgreSQL với connection pool.
+
+Pool mặc định:
+
+```text
+GXB3_DB_POOL_MIN=1
+GXB3_DB_POOL_MAX=12
+```
+
+Player gameplay save hiện vẫn nằm riêng tại `state/players/<UID>/<SERVER>.sqlite3`; đây là lớp tiếp theo cần chuyển khỏi local disk khi triển khai nhiều instance.
+
+### Chuyển dữ liệu SQLite hiện có sang PostgreSQL
+
+Kiểm tra trước:
+
+```powershell
+python tools/migrate_sqlite_to_postgres.py --database-url "$env:GXB3_DATABASE_URL" --dry-run
+```
+
+Migration:
+
+```powershell
+python tools/migrate_sqlite_to_postgres.py --database-url "$env:GXB3_DATABASE_URL"
+```
+
+Script migrate:
+- accounts
+- sessions
+- recovery codes
+- login attempts
+- worlds
+- players
+- GM mail
+- orders
+- audit log
+
+Sau khi kiểm tra dữ liệu PostgreSQL đầy đủ mới đặt `GXB3_DATABASE_URL` cho server production.
+
+## Auth
 - Player save: `state/players/<UID>/<SERVER>.sqlite3`
 - Mật khẩu: PBKDF2-HMAC-SHA256 + salt riêng.
 - Session cookie: `HttpOnly; SameSite=Lax`; khi reverse proxy gửi `X-Forwarded-Proto: https`, cookie có thêm `Secure`.
@@ -67,8 +115,8 @@ Các header ứng dụng đang gửi:
 HTTP server hiện tại vẫn dựa trên Python `ThreadingHTTPServer`. Nó phù hợp cho dev/private beta nhỏ nhưng chưa phải kiến trúc cuối cho tải lớn.
 
 Trước public scale cần chuyển lớp transport sang production ASGI/WSGI service, thêm:
-- PostgreSQL cho account/live-service thay SQLite.
-- connection pooling + migrations.
+- PostgreSQL cho account/live-service: **đã có adapter + connection pool + migration utility**.
+- Gameplay save per-world vẫn cần chuyển khỏi SQLite local disk để chạy nhiều instance stateless.
 - Redis/session/rate-limit khi chạy nhiều instance.
 - HTTPS/reverse proxy.
 - backup/restore.
