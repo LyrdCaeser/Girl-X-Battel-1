@@ -18,7 +18,7 @@ from . import fantasy_book, growth_diary, newbie_camp, friend_boss, pet_training
 from . import arena3v3
 from . import puzzle_events, firework_project, local_promotion
 from . import wish, magic_card, two_love, lost_space, vip, activity_kit, activity_draw, jackpot, blind_box, pirate, guild
-from . import home_systems, events, equipment, campaign, point_events, acquisition, clock, explore, relations, missions, shops, arena, patrol, house_exam, hero_challenge, sanctuary, internship, midas, old_campus, guild_lab, echoes, shrine, galaxy, story, dress, skins, house_dress, souls, soul_land, stellar_altar, quick_formation, ev_sand, dress_show, local_config, live_service, database
+from . import home_systems, events, equipment, campaign, point_events, acquisition, clock, explore, relations, missions, shops, arena, patrol, house_exam, hero_challenge, sanctuary, internship, midas, old_campus, guild_lab, echoes, shrine, galaxy, story, dress, skins, house_dress, souls, soul_land, stellar_altar, quick_formation, ev_sand, dress_show, local_config, world_live_config, live_service, database
 from .player_state_db import ScopedPostgresPlayerDB
 from .battle import attributes
 
@@ -2148,12 +2148,12 @@ class Engine:
         interval = int(TABLES['summon']['3']['freetime_interval'])
         return {'last_time_3': max(0, state.get('summon_free_at', 0) - interval)}
 
-    def summon_pool(self, dropbox_id):
+    def summon_pool(self, dropbox_id, server_id='S1'):
         rows = []
         for source in TABLES['dropbox'].values():
             if source['dropbox_id'] != dropbox_id or str(source['item']).split('#')[0] not in TABLES['partner']:
                 continue
-            weight = local_config.summon_weight(source, TABLES['partner'])
+            weight = world_live_config.summon_weight(source, TABLES['partner'], server_id)
             if weight <= 0:
                 continue
             row = dict(source)
@@ -2352,7 +2352,7 @@ class Engine:
                     state['items'][bonus[0]] = int(state['items'].get(bonus[0], 0)) + extra; items[bonus[0]] = items.get(bonus[0], 0) + extra
                 data = {'summon_id': summon_id, 'summon_result': {'items': [{'item_id': int(k), 'item_num': n} for k, n in items.items()]}, 'summon_info': self.summon_info(state)}
                 return [(p.MIDS[name], 'summon_res', data), (p.MIDS['ITEM_CHANGE'], 'item_change_res', self.backpack(state))], None
-            rows, total = self.summon_pool(int(config['dropbox_id']))
+            rows, total = self.summon_pool(int(config['dropbox_id']), state.get('server_id', 'S1'))
             if summon_id == 9 and any(int(TABLES['partner'][str(row['item']).split('#')[0]]['max_star']) != 5 for row in rows):
                 raise GameError('El huevo requiere una tabla de premios de cinco estrellas')
             new = []
