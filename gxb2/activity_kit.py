@@ -15,7 +15,7 @@ Data comes from data/activity_kit.json (tools/extract_activity_kit.py): per acti
 from __future__ import annotations
 import json, re
 from pathlib import Path
-from . import clock, vip, activity_draw
+from . import clock, vip, activity_draw, local_config
 
 ROOT = Path(__file__).resolve().parents[1]
 D = json.loads((ROOT / 'data/activity_kit.json').read_text())
@@ -171,7 +171,7 @@ def action(state, request, now):
         bought = int(s['bought'].get(str(rid), 0))
         if row['limit'] and bought + times > row['limit']: raise KitError('Límite de compras alcanzado')
         if eid in UNLOCK_BY_SPENT and row.get('unlock', 0) > int(s['spent'].get(currency_of(eid) or '', 0)): raise KitError('Bóveda bloqueada')
-        cost = {k: n * times for k, n in pairs(row['cost']).items()}
+        cost = {k: local_config.shop_cost(n) * times for k, n in pairs(row['cost']).items()}
         for k, n in cost.items():
             if int(state['items'].get(k, 0)) < n: raise KitError('Faltan recursos')
         for k, n in cost.items():
