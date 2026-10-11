@@ -202,6 +202,8 @@ class HTTPHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(content)
     def do_GET(self):
+        if self.reject_unauthorized_admin_mode():
+            return
         path = urlparse(self.path).path
         for prefix, folder in (('/vendor/', ROOT/'web/vendor'), ('/assets/detail/sheet/', ROOT/'web/assets/detail/sheet'), ('/assets/souls/', ROOT/'web/assets/souls'), ('/assets/menu/', ROOT/'web/assets/menu'), ('/assets/stellar/', ROOT/'web/assets/stellar'), ('/assets/story-items/', ROOT/'web/assets/story-items'), ('/assets/assistant/', ROOT/'web/assets/assistant'), ('/assets/ev-sand/', ROOT/'web/assets/ev-sand'), ('/assets/guild/', ROOT/'web/assets/guild'), ('/assets/jackpot/', ROOT/'web/assets/jackpot'), ('/assets/firework-project/', ROOT/'web/assets/firework-project'), ('/assets/puzzle-events/', ROOT/'web/assets/puzzle-events'), ('/assets/blind-box/', ROOT/'web/assets/blind-box'), ('/assets/pirate/', ROOT/'web/assets/pirate'), ('/assets/wish/', ROOT/'web/assets/wish'), ('/assets/magic-card/', ROOT/'web/assets/magic-card'), ('/assets/two-love/', ROOT/'web/assets/two-love'), ('/assets/lost-space/', ROOT/'web/assets/lost-space'), ('/assets/pumpkin/', ROOT/'web/assets/pumpkin'), ('/assets/chimes/', ROOT/'web/assets/chimes'), ('/assets/altar/', ROOT/'web/assets/altar'), ('/assets/battle-loading/', ROOT/'web/assets/battle-loading'), ('/assets/summon-result/', ROOT/'web/assets/summon-result'), ('/assets/dress-show/', ROOT/'web/assets/dress-show'), ('/assets/chibis/', ROOT/'web/assets/chibis'), ('/assets/original-ui/', ROOT/'web/assets/original-ui'),
                                ('/assets/spine/', ROOT/'web/assets/spine'), ('/assets/lihui/', ROOT/'web/assets/lihui'), ('/assets/scenes/', ROOT/'web/assets/scenes'),
