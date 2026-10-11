@@ -121,6 +121,9 @@ def ensure_schema(pg):
             server_id TEXT NOT NULL,
             character_name TEXT NOT NULL,
             package TEXT NOT NULL,
+            package_name TEXT NOT NULL DEFAULT '',
+            price_label TEXT NOT NULL DEFAULT '',
+            manual_reward INTEGER NOT NULL DEFAULT 1,
             note TEXT NOT NULL,
             status TEXT NOT NULL DEFAULT 'pending',
             reward TEXT NOT NULL DEFAULT '{}',
@@ -128,6 +131,9 @@ def ensure_schema(pg):
             reviewed_at BIGINT NOT NULL DEFAULT 0,
             reviewer TEXT NOT NULL DEFAULT ''
         )""")
+        c.execute("ALTER TABLE orders ADD COLUMN IF NOT EXISTS package_name TEXT NOT NULL DEFAULT ''")
+        c.execute("ALTER TABLE orders ADD COLUMN IF NOT EXISTS price_label TEXT NOT NULL DEFAULT ''")
+        c.execute("ALTER TABLE orders ADD COLUMN IF NOT EXISTS manual_reward INTEGER NOT NULL DEFAULT 1")
         c.execute("""CREATE TABLE IF NOT EXISTS audit(
             id BIGSERIAL PRIMARY KEY,
             at BIGINT NOT NULL,
