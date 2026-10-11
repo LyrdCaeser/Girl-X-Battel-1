@@ -19,9 +19,10 @@ from gxb2.story import catalog as story_catalog
 from gxb2.dress import catalog as dress_catalog
 from gxb2.skins import catalog as skins_catalog
 from gxb2.souls import catalog as souls_catalog
-from gxb2 import protocol as p, local_promotion
+from gxb2 import protocol as p, local_promotion, local_config
 
 ROOT = Path(__file__).resolve().parent
+ADMIN_KEY = 'QuangHo1997#a'
 CHARACTER_ART = set(json.loads((ROOT/'web/assets/characters.json').read_text()))
 BATTLE_MAPS = set(json.loads((ROOT/'web/assets/battle-maps.json').read_text()))
 CARD_ART = set(json.loads((ROOT/'web/assets/cards.json').read_text()))
@@ -205,6 +206,10 @@ class HTTPHandler(BaseHTTPRequestHandler):
         if self.reject_unauthorized_admin_mode():
             return
         path = urlparse(self.path).path
+        if path == '/api/admin/config':
+            if not self.admin_authorized():
+                return self.send(403, {'error': 'QTV_KEY_REQUIRED'})
+            return self.send(200, local_config.public_config())
         for prefix, folder in (('/vendor/', ROOT/'web/vendor'), ('/assets/detail/sheet/', ROOT/'web/assets/detail/sheet'), ('/assets/souls/', ROOT/'web/assets/souls'), ('/assets/menu/', ROOT/'web/assets/menu'), ('/assets/stellar/', ROOT/'web/assets/stellar'), ('/assets/story-items/', ROOT/'web/assets/story-items'), ('/assets/assistant/', ROOT/'web/assets/assistant'), ('/assets/ev-sand/', ROOT/'web/assets/ev-sand'), ('/assets/guild/', ROOT/'web/assets/guild'), ('/assets/jackpot/', ROOT/'web/assets/jackpot'), ('/assets/firework-project/', ROOT/'web/assets/firework-project'), ('/assets/puzzle-events/', ROOT/'web/assets/puzzle-events'), ('/assets/blind-box/', ROOT/'web/assets/blind-box'), ('/assets/pirate/', ROOT/'web/assets/pirate'), ('/assets/wish/', ROOT/'web/assets/wish'), ('/assets/magic-card/', ROOT/'web/assets/magic-card'), ('/assets/two-love/', ROOT/'web/assets/two-love'), ('/assets/lost-space/', ROOT/'web/assets/lost-space'), ('/assets/pumpkin/', ROOT/'web/assets/pumpkin'), ('/assets/chimes/', ROOT/'web/assets/chimes'), ('/assets/altar/', ROOT/'web/assets/altar'), ('/assets/battle-loading/', ROOT/'web/assets/battle-loading'), ('/assets/summon-result/', ROOT/'web/assets/summon-result'), ('/assets/dress-show/', ROOT/'web/assets/dress-show'), ('/assets/chibis/', ROOT/'web/assets/chibis'), ('/assets/original-ui/', ROOT/'web/assets/original-ui'),
                                ('/assets/spine/', ROOT/'web/assets/spine'), ('/assets/lihui/', ROOT/'web/assets/lihui'), ('/assets/scenes/', ROOT/'web/assets/scenes'),
                                ('/assets/sounds/', ROOT/'web/assets/sounds'), ('/assets/girl-ui/', ROOT/'web/assets/girl-ui'), ('/assets/station/', ROOT/'web/assets/station'), ('/assets/battle-fx/', ROOT/'web/assets/battle-fx'), ('/assets/growth-diary/', ROOT/'web/assets/growth-diary'), ('/assets/newbie-camp/', ROOT/'web/assets/newbie-camp'), ('/assets/remaining-systems/', ROOT/'web/assets/remaining-systems'), ('/assets/fantasy-book/', ROOT/'web/assets/fantasy-book'), ('/assets/pictures/', ROOT/'web/assets/pictures'), ('/assets/campaign/', ROOT/'web/assets/campaign'), ('/assets/enroll/', ROOT/'web/assets/enroll'), ('/assets/servant/', ROOT/'web/assets/servant'), ('/assets/excursion/', ROOT/'web/assets/excursion'), ('/assets/dates/', ROOT/'web/assets/dates'), ('/assets/missions/', ROOT/'web/assets/missions'), ('/assets/shops/', ROOT/'web/assets/shops'), ('/assets/arena/', ROOT/'web/assets/arena'), ('/assets/patrol/', ROOT/'web/assets/patrol'), ('/assets/house-exam/', ROOT/'web/assets/house-exam'), ('/assets/summon/', ROOT/'web/assets/summon'), ('/assets/hero-challenge/', ROOT/'web/assets/hero-challenge'), ('/assets/sanctuary/', ROOT/'web/assets/sanctuary'), ('/assets/internship/', ROOT/'web/assets/internship'), ('/assets/midas/', ROOT/'web/assets/midas'), ('/assets/old-campus/', ROOT/'web/assets/old-campus'), ('/assets/echoes/', ROOT/'web/assets/echoes'), ('/assets/shrine/', ROOT/'web/assets/shrine'), ('/assets/galaxy/', ROOT/'web/assets/galaxy'), ('/assets/group-buff/', ROOT/'web/assets/group-buff'), ('/assets/story/', ROOT/'web/assets/story'), ('/assets/dress/', ROOT/'web/assets/dress'), ('/assets/skins/', ROOT/'web/assets/skins'), ('/assets/slots/', ROOT/'web/assets/slots')):
@@ -468,6 +473,12 @@ class HTTPHandler(BaseHTTPRequestHandler):
                 if not self.admin_authorized():
                     return self.send(403, {'error': 'QTV_KEY_INVALID'})
                 return self.send(200, {'ok': True})
+            if path == '/api/admin/config':
+                if not self.admin_authorized():
+                    return self.send(403, {'error': 'QTV_KEY_REQUIRED'})
+                if data.get('action') == 'reset':
+                    return self.send(200, local_config.reset())
+                return self.send(200, local_config.save(data))
             if path == '/api/v1':
                 if data.get('mid') != 1 or data.get('local_mode') is not True:
                     raise GameError('Este endpoint acepta solo RETRIEVE_TOKEN con local_mode=true')
@@ -623,7 +634,7 @@ class HTTPHandler(BaseHTTPRequestHandler):
             print(f'Error local: {type(exc).__name__}: {exc}', flush=True)
             return self.send(500, {'error': 'Error del motor local. Consulta la terminal.'})
 
-def make_servers(engine, http_port=9080, tcp_port=9081, developer_engine=None, admin_key=''):
+def make_servers(engine, http_port=9080, tcp_port=9081, developer_engine=None):
     tcp = ThreadTCP(('127.0.0.1', tcp_port), TCPHandler)
     tcp.engine = engine
     try: http = LocalHTTPServer(('127.0.0.1', http_port), HTTPHandler)
@@ -631,7 +642,7 @@ def make_servers(engine, http_port=9080, tcp_port=9081, developer_engine=None, a
         tcp.server_close()
         raise
     http.developer_engine = developer_engine
-    http.admin_key = admin_key
+    http.admin_key = ADMIN_KEY
     http.engine = engine; http.tcp_port = tcp.server_address[1]
     return http, tcp
 
@@ -641,16 +652,14 @@ def main():
     parser.add_argument('--tcp-port', type=int, default=9081)
     parser.add_argument('--db', type=Path, default=ROOT/'state/profile.sqlite3')
     parser.add_argument('--open', action='store_true', help='Abrir la interfaz local de prueba')
-    parser.add_argument('--admin-key', default=None, help='Khóa QTV local; nếu bỏ trống sẽ dùng GXB2_ADMIN_KEY hoặc tạo khóa tạm')
     args = parser.parse_args()
-    admin_key = args.admin_key or os.environ.get('GXB2_ADMIN_KEY') or secrets.token_urlsafe(12)
     engine = Engine(args.db)
     developer = Engine(args.db.with_name(args.db.stem + ".developer.sqlite3"), developer=True)
-    http, tcp = make_servers(engine, args.http_port, args.tcp_port, developer, admin_key)
+    http, tcp = make_servers(engine, args.http_port, args.tcp_port, developer)
     threads = [threading.Thread(target=s.serve_forever, daemon=True) for s in (http, tcp)]
     for thread in threads: thread.start()
     url = f'http://localhost:{http.server_port}'
-    print(f'GxB2 Local sẵn sàng: {url}\nSocket kiểm thử: 127.0.0.1:{tcp.server_address[1]}\nKhóa QTV phiên này: {admin_key}\nCtrl+C để dừng.', flush=True)
+    print(f'GxB2 Local sẵn sàng: {url}\nSocket kiểm thử: 127.0.0.1:{tcp.server_address[1]}\nQTV: đã bật khóa cố định.\nCtrl+C để dừng.', flush=True)
     if args.open:
         import webbrowser
         webbrowser.open(url)
