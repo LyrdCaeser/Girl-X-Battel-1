@@ -538,10 +538,10 @@ function render(){
  const last=state.last_battle;$('last-result').textContent=last?"Last encounter: stage "+last.stage+' · '+(last.win?"victory":"defeat")+" · progress saved.":'';
 }
 function visualFailure(scope,e){console.warn(scope,e);try{sessionStorage.setItem('gxb3-last-visual-error',scope+': '+String(e?.message||e));}catch{}}
-async function action(message,data){if(busy)return;busy=true;error('');render();try{let storyPost=0,storyPre=0;const flow=message==='MAP_FIGHT'&&typeof CampaignFlow!=='undefined';if(message==='MAP_FIGHT'&&typeof StoryPlayer!=='undefined'){try{const sp=await api('/api/story/stage',{stage:data.stage_id});storyPost=sp.post||0;storyPre=sp.pre||0;}catch{}}
+async function action(message,data){if(busy)return;busy=true;error('');render();let summonWaitStop=null;try{let storyPost=0,storyPre=0;const flow=message==='MAP_FIGHT'&&typeof CampaignFlow!=='undefined';if(message==='MAP_FIGHT'&&typeof StoryPlayer!=='undefined'){try{const sp=await api('/api/story/stage',{stage:data.stage_id});storyPost=sp.post||0;storyPre=sp.pre||0;}catch{}}
  if(!flow&&storyPre){try{await StoryPlayer.play(storyPre);}catch(e){visualFailure('campaign-story-pre',e);}api('/api/story/action',{action:'seen',plot:storyPre}).catch(()=>{});}
  // Server state is authoritative. Visual layers are optional: a WebView/Spine failure must never turn a successful fight or summon into a failed game action.
- const summonWaitStop=message==='SUMMON'&&typeof SummonAnim!=='undefined'&&SummonAnim.waiting?SummonAnim.waiting(data.summon_id):null;
+ summonWaitStop=message==='SUMMON'&&typeof SummonAnim!=='undefined'&&SummonAnim.waiting?SummonAnim.waiting(data.summon_id):null;
  const serverWork=(async()=>{const r=await api('/api/action',{message,data});if(message==='MAP_FIGHT')r._report=await api('/api/battle/'+r.state.last_battle.id);return r;})();
  let res;
  if(flow){try{res=await CampaignFlow.loading(serverWork);}catch(e){try{res=await serverWork;visualFailure('campaign-loading',e);}catch(serverError){throw serverError;}}}
@@ -552,7 +552,7 @@ async function action(message,data){if(busy)return;busy=true;error('');render();
  if(message==='MAP_FIGHT'){
   const report=res._report||await api('/api/battle/'+state.last_battle.id);
   if(flow){if(storyPre&&typeof StoryPlayer!=='undefined'){try{await StoryPlayer.play(storyPre);}catch(e){visualFailure('campaign-story-pre',e);}api('/api/story/action',{action:'seen',plot:storyPre}).catch(()=>{});}try{await CampaignFlow.sweep();}catch(e){visualFailure('campaign-sweep',e);}}
-  try{await replay(report);}catch(e){visualFailure('campaign-replay',e);const win=report?.isWin===1,rewards=state.last_battle?.rewards||{};if(typeof CampaignUI!=='undefined'){try{CampaignUI.result(win,rewards,{event:false,label:(win?"Victory":"Defeat")+" · stage "+data.stage_id,report});}catch{}}}
+  try{await replay(report);}catch(e){visualFailure('campaign-replay',e);error('Không thể phát hoạt ảnh trận đấu. Hãy thử lại hoặc dùng nút Bỏ qua.');}
   if(storyPost&&state.last_battle?.win&&typeof StoryPlayer!=='undefined'){try{await StoryPlayer.play(storyPost);}catch(e){visualFailure('campaign-story-post',e);}api('/api/story/action',{action:'seen',plot:storyPost}).then(r=>{state=r.state;}).catch(()=>{});}
  }
  if(message==='SUMMON'){
@@ -564,14 +564,14 @@ async function action(message,data){if(busy)return;busy=true;error('');render();
    if(typeof SummonAnim!=='undefined'){try{await SummonAnim.play(data.summon_id,info);}catch(e){visualFailure('summon-animation',e);}}
    if(view!=='girls'&&typeof SummonResult!=='undefined'&&data.summon_id!==9){try{SummonResult.show(data.summon_id,info,sid=>action('SUMMON',{summon_id:sid,times:1}));}catch(e){visualFailure('summon-result',e);}}
    if(view==='girls')renderShardSummon(partners);else renderSummon(partners);
-   if(data.summon_id===9){const reward=$('capsule-egg-result');reward.hidden=false;reward.textContent=" "+(state.roster.find(v=>v.partner_id===partners[0]?.partner_id)?.name||"New Girl")+" · 5★! Saved in Girls.";}
+   if(data.summon_id===9){const reward=$('capsule-egg-result');reward.hidden=false;reward.textContent=" "+(state.roster.find(v=>v.partner_id===partners[0]?.partner_id)?.name||"Nữ Thần mới")+" · 5★! Đã lưu vào danh sách Nữ Thần.";}
   }else if(items.length&&view==='capsule'){
-   $('capsule-result').replaceChildren(...items.map(it=>node('div','capsule-result-card',"+"+number(it.item_num)+" · Item "+it.item_id)));
+   $('capsule-result').replaceChildren(...items.map(it=>node('div','capsule-result-card',"+"+number(it.item_num)+" · Vật phẩm "+it.item_id)));
   }
  }
  return res;}catch(e){summonWaitStop?.();error(e.message);if(view==='capsule')$('capsule-result').textContent=e.message;}finally{busy=false;render();}}
 function renderSummon(partners){$('capsule-result').replaceChildren();for(const partner of partners){const card=node('div','capsule-result-card'),name=state.roster.find(v=>v.partner_id===partner.partner_id)?.name||String(partner.table_id);card.append(portrait(partner.table_id,74),node('strong','',name));$('capsule-result').append(card);}}
-function renderShardSummon(partners){$('shard-draw-result').replaceChildren();if(!partners.length)return;$('shard-draw-result').append(node('h3','',"New Girl recruited!"));const grid=node('div','shard-new-girls');for(const partner of partners){const h=state.roster.find(v=>v.partner_id===partner.partner_id);if(typeof SummonResult!=='undefined')grid.append(SummonResult.heroIcon({table_id:partner.table_id,star:h?.stars||partner.star,name:h?.name}));else grid.append(portrait(partner.table_id,74));}$('shard-draw-result').append(grid);}
+function renderShardSummon(partners){$('shard-draw-result').replaceChildren();if(!partners.length)return;$('shard-draw-result').append(node('h3','',"Đã chiêu mộ Nữ Thần mới!"));const grid=node('div','shard-new-girls');for(const partner of partners){const h=state.roster.find(v=>v.partner_id===partner.partner_id);if(typeof SummonResult!=='undefined')grid.append(SummonResult.heroIcon({table_id:partner.table_id,star:h?.stars||partner.star,name:h?.name}));else grid.append(portrait(partner.table_id,74));}$('shard-draw-result').append(grid);}
 
 function formation(){return formationDraft.flatMap((partner_id,index)=>partner_id?[{partner_id,pos:index+1}]:[]);}
 $('remove-slot').addEventListener('click',()=>{formationDraft[selectedPosition-1]=null;render();});
