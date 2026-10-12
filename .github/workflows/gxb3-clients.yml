@@ -1,0 +1,81 @@
+name: GXB 3 release clients
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [snez-vietnamese]
+    paths:
+      - "clients/**"
+      - ".github/workflows/gxb3-clients.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  windows-exe:
+    name: Windows x64 EXE
+    runs-on: windows-2022
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify production health
+        shell: pwsh
+        run: |
+          $r = Invoke-WebRequest -UseBasicParsing -Uri "https://gxb3-production.onrender.com/healthz" -TimeoutSec 90
+          if ($r.StatusCode -ne 200) { throw "Production health check failed" }
+      - name: Install packager
+        run: python -m pip install -r clients/windows/requirements-build.txt
+      - name: Build single-file EXE
+        run: >
+          pyinstaller --noconfirm --clean --onefile --windowed
+          --name GXB3-Windows-x64
+          --collect-all webview
+          clients/windows/gxb3_launcher.py
+      - name: Verify EXE exists
+        shell: pwsh
+        run: |
+          Get-Item dist\GXB3-Windows-x64.exe | Format-List Name,Length,LastWriteTime
+          if ((Get-Item dist\GXB3-Windows-x64.exe).Length -le 0) { throw "Empty EXE" }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: GXB3-Windows-x64-RC1
+          path: dist/GXB3-Windows-x64.exe
+          if-no-files-found: error
+          compression-level: 9
+
+  android-apk:
+    name: Android APK
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: android-actions/setup-android@v3
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.9"
+      - name: Install Android SDK 35
+        run: yes | sdkmanager "platforms;android-35" "build-tools;35.0.0" || true
+      - name: Verify production health
+        run: curl --fail --retry 4 --retry-delay 5 --max-time 90 https://gxb3-production.onrender.com/healthz
+      - name: Build installable RC APK
+        run: gradle -p clients/android :app:assembleRelease --stacktrace
+      - name: Verify APK
+        run: |
+          APK="clients/android/app/build/outputs/apk/release/app-release.apk"
+          test -s "$APK"
+          ls -lh "$APK"
+          ${ANDROID_HOME}/build-tools/35.0.0/apksigner verify --verbose "$APK"
+          cp "$APK" GXB3-Android-RC1.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: GXB3-Android-RC1
+          path: GXB3-Android-RC1.apk
+          if-no-files-found: error
+          compression-level: 9
