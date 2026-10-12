@@ -23,7 +23,7 @@ from gxb2.skins import catalog as skins_catalog
 from gxb2.souls import catalog as souls_catalog
 from gxb2 import protocol as p, local_promotion, local_config, world_live_config, topup, live_service, auth, database
 from gxb2.player_engines import PlayerEnginePool
-from gxb2.battle import simulate as simulate_battle
+from gxb2.battle import simulate as simulate_battle, ONLINE_BATTLE_ID, normalize_online_seed
 from gxb2.security import FixedWindowRateLimiter, DEFAULT_LIMITS, env_bool, validate_production_config
 from gxb2.production import run_startup_preflight
 
@@ -821,9 +821,9 @@ class HTTPHandler(BaseHTTPRequestHandler):
                 engine_a=self.server.player_engines.get(account['uid'],account['server_id'],attacker['character_name'])
                 engine_b=self.server.player_engines.get(defender_uid,account['server_id'],defender['character_name'])
                 snap_a=engine_a.pvp_team_snapshot(); snap_b=engine_b.pvp_team_snapshot()
-                seed=int.from_bytes(hashlib.sha256(f"{war_id}:{account['uid']}:{defender_uid}".encode()).digest()[:4],'big') or 1
+                seed=normalize_online_seed(int.from_bytes(hashlib.sha256(f"{war_id}:{account['uid']}:{defender_uid}".encode()).digest()[:4],'big'))
                 report=simulate_battle(
-                    snap_a['team'],snap_b['team'],battle_id=seed,seed=seed,
+                    snap_a['team'],snap_b['team'],battle_id=ONLINE_BATTLE_ID,seed=seed,
                     pet_a=snap_a.get('pet'),pet_b=snap_b.get('pet'),
                     guild_skills_a=snap_a.get('guild_skills') or [],
                     guild_skills_b=snap_b.get('guild_skills') or [],
@@ -937,8 +937,8 @@ class HTTPHandler(BaseHTTPRequestHandler):
                     return self.send(409, {'error': 'Đang chờ đối thủ sẵn sàng', 'session': ready})
                 report = simulate_battle(
                     snap_a['team'], snap_b['team'],
-                    battle_id=int(match.get('seed') or 1),
-                    seed=int(match.get('seed') or 1),
+                    battle_id=ONLINE_BATTLE_ID,
+                    seed=normalize_online_seed(int(match.get('seed') or 1)),
                     pet_a=snap_a.get('pet'), pet_b=snap_b.get('pet'),
                     guild_skills_a=snap_a.get('guild_skills') or [],
                     guild_skills_b=snap_b.get('guild_skills') or [],
