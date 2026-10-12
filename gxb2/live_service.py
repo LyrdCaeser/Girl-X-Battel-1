@@ -1353,16 +1353,33 @@ def record_guild_war_battle(war_id, attacker_uid, defender_uid, attacker_snapsho
 
 def maintenance_tick(now=None):
     now=int(now or time.time())
-    refresh_guild_wars()
-    settle_previous_pvp_season(now)
-    with _lock:
-        db=_db()
-        db.execute("DELETE FROM pvp_queue WHERE joined_at<?",(now-600,))
-        db.execute("DELETE FROM pvp_match_peers WHERE last_seen<?",(now-3600,))
-        db.execute("""UPDATE pvp_matches SET status='expired',resolved_at=?
-                      WHERE status IN ('ready','active') AND created_at<?""",(now,now-1800))
-        db.commit(); db.close()
-    return {"ok":True,"at":now}
+    # Only one PostgreSQL worker performs periodic settlement/cleanup. The
+    # advisory xact lock disappears automatically if that worker dies.
+    leader_db=_db()
+    if leader_db.backend=="postgres":
+        leader=leader_db.execute(
+            "SELECT pg_try_advisory_xact_lock(hashtext('gxb3:maintenance')) AS ok"
+        ).fetchone()
+        if not leader or not bool(leader["ok"]):
+            leader_db.rollback(); leader_db.close()
+            return {"ok":True,"at":now,"skipped":"not_maintenance_leader"}
+    try:
+        refresh_guild_wars()
+        settle_previous_pvp_season(now)
+        with _lock:
+            db=_db()
+            db.execute("DELETE FROM pvp_queue WHERE joined_at<?",(now-600,))
+            db.execute("DELETE FROM pvp_match_peers WHERE last_seen<?",(now-3600,))
+            db.execute("""UPDATE pvp_matches SET status='expired',resolved_at=?
+                          WHERE status IN ('ready','active') AND created_at<?""",(now,now-1800))
+            db.commit(); db.close()
+        leader_db.commit()
+        return {"ok":True,"at":now}
+    except Exception:
+        leader_db.rollback()
+        raise
+    finally:
+        leader_db.close()
 
 
 def admin_set_pvp_rating(uid, server_id, mode, rating, season_id=None, operator="SUPER_GM"):
