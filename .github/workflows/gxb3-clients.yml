@@ -6,6 +6,9 @@ on:
     branches: [snez-vietnamese]
     paths:
       - "clients/**"
+      - "web/mobile-layout.css"
+      - "web/frame.css"
+      - "web/frame.js"
       - ".github/workflows/gxb3-clients.yml"
 
 permissions:
@@ -41,7 +44,7 @@ jobs:
           if ((Get-Item dist\GXB3-Windows-x64.exe).Length -le 0) { throw "Empty EXE" }
       - uses: actions/upload-artifact@v4
         with:
-          name: GXB3-Windows-x64-RC3
+          name: GXB3-Windows-x64-RC4
           path: dist/GXB3-Windows-x64.exe
           if-no-files-found: error
           compression-level: 9
@@ -78,10 +81,10 @@ jobs:
           test -s "$APK"
           ls -lh "$APK"
           ${ANDROID_HOME}/build-tools/35.0.0/apksigner verify --verbose "$APK"
-          cp "$APK" GXB3-Android-RC3.apk
+          cp "$APK" GXB3-Android-RC4.apk
       - uses: actions/upload-artifact@v4
         with:
-          name: GXB3-Android-RC3
-          path: GXB3-Android-RC3.apk
+          name: GXB3-Android-RC4
+          path: GXB3-Android-RC4.apk
           if-no-files-found: error
           compression-level: 9
