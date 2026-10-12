@@ -25,7 +25,21 @@ RUN chmod +x /usr/local/bin/luajit-gxb3
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
+# Keep the multi-GB browser art in stable layers. Code-only deploys should
+# not rebuild/re-upload every character asset.
+COPY web/assets ./web/assets
+COPY web/vendor ./web/vendor
+COPY data ./data
+COPY runtime ./runtime
+COPY localization ./localization
+
+# Small, frequently changing application layers come last.
+COPY web/*.html ./web/
+COPY web/*.css ./web/
+COPY web/*.js ./web/
+COPY gxb2 ./gxb2
+COPY tools ./tools
+COPY server.py ./server.py
 
 RUN python -m compileall -q gxb2 server.py tools \
     && /usr/local/bin/luajit-gxb3 -v
