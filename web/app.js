@@ -537,10 +537,37 @@ function render(){
  $('fight').disabled=busy||!chosen?.unlocked||state.level<(chosen?.level_required||1);$('fight').firstChild.textContent=busy?"In progress… ":"Start battle ";$('save-team').disabled=busy;
  const last=state.last_battle;$('last-result').textContent=last?"Last encounter: stage "+last.stage+' · '+(last.win?"victory":"defeat")+" · progress saved.":'';
 }
+function visualFailure(scope,e){console.warn(scope,e);try{sessionStorage.setItem('gxb3-last-visual-error',scope+': '+String(e?.message||e));}catch{}}
 async function action(message,data){if(busy)return;busy=true;error('');render();try{let storyPost=0,storyPre=0;const flow=message==='MAP_FIGHT'&&typeof CampaignFlow!=='undefined';if(message==='MAP_FIGHT'&&typeof StoryPlayer!=='undefined'){try{const sp=await api('/api/story/stage',{stage:data.stage_id});storyPost=sp.post||0;storyPre=sp.pre||0;}catch{}}
- if(!flow&&storyPre){await StoryPlayer.play(storyPre);api('/api/story/action',{action:'seen',plot:storyPre}).catch(()=>{});}
- // Campaign (BattleController): loading screen while the battle is computed → the stage story → `switch` sweep → battle.
- const res=flow?await CampaignFlow.loading((async()=>{const r=await api('/api/action',{message,data});r._report=await api('/api/battle/'+r.state.last_battle.id);return r;})()):await api('/api/action',{message,data});state=res.state;if(message==='SET_HANG_TEAM'||message==='MAP_FIGHT')loadFormation();if(message==='MAP_FIGHT'){const report=res._report||await api('/api/battle/'+state.last_battle.id);if(flow){if(storyPre&&typeof StoryPlayer!=='undefined'){await StoryPlayer.play(storyPre);api('/api/story/action',{action:'seen',plot:storyPre}).catch(()=>{});}await CampaignFlow.sweep();}await replay(report);if(storyPost&&state.last_battle?.win){await StoryPlayer.play(storyPost);api('/api/story/action',{action:'seen',plot:storyPost}).then(r=>{state=r.state;}).catch(()=>{});}}if(message==='SUMMON'){const partners=res.messages[0].data.summon_result.partners;if(typeof SummonAnim!=='undefined'){const info=partners.map(x=>{const h=state.roster.find(v=>v.partner_id===x.partner_id);return {table_id:x.table_id||h?.table_id,star:h?.stars||x.star||0,name:h?.name||''};});await SummonAnim.play(data.summon_id,info);if(view!=='girls'&&typeof SummonResult!=='undefined'&&data.summon_id!==9)SummonResult.show(data.summon_id,info,sid=>action('SUMMON',{summon_id:sid,times:1}));}if(view==='girls')renderShardSummon(partners);else renderSummon(partners);if(data.summon_id===9){const reward=$('capsule-egg-result');reward.hidden=false;reward.textContent=" "+(state.roster.find(v=>v.partner_id===partners[0]?.partner_id)?.name||"New Girl")+" · 5★! Saved in Girls.";}}return res;}catch(e){error(e.message);if(view==='capsule')$('capsule-result').textContent=e.message;}finally{busy=false;render();}}
+ if(!flow&&storyPre){try{await StoryPlayer.play(storyPre);}catch(e){visualFailure('campaign-story-pre',e);}api('/api/story/action',{action:'seen',plot:storyPre}).catch(()=>{});}
+ // Server state is authoritative. Visual layers are optional: a WebView/Spine failure must never turn a successful fight or summon into a failed game action.
+ const serverWork=(async()=>{const r=await api('/api/action',{message,data});if(message==='MAP_FIGHT')r._report=await api('/api/battle/'+r.state.last_battle.id);return r;})();
+ let res;
+ if(flow){try{res=await CampaignFlow.loading(serverWork);}catch(e){try{res=await serverWork;visualFailure('campaign-loading',e);}catch(serverError){throw serverError;}}}
+ else res=await serverWork;
+ state=res.state;
+ if(message==='SET_HANG_TEAM'||message==='MAP_FIGHT')loadFormation();
+ if(message==='MAP_FIGHT'){
+  const report=res._report||await api('/api/battle/'+state.last_battle.id);
+  if(flow){if(storyPre&&typeof StoryPlayer!=='undefined'){try{await StoryPlayer.play(storyPre);}catch(e){visualFailure('campaign-story-pre',e);}api('/api/story/action',{action:'seen',plot:storyPre}).catch(()=>{});}try{await CampaignFlow.sweep();}catch(e){visualFailure('campaign-sweep',e);}}
+  try{await replay(report);}catch(e){visualFailure('campaign-replay',e);const win=report?.isWin===1,rewards=state.last_battle?.rewards||{};if(typeof CampaignUI!=='undefined'){try{CampaignUI.result(win,rewards,{event:false,label:(win?"Victory":"Defeat")+" · stage "+data.stage_id,report});}catch{}}}
+  if(storyPost&&state.last_battle?.win&&typeof StoryPlayer!=='undefined'){try{await StoryPlayer.play(storyPost);}catch(e){visualFailure('campaign-story-post',e);}api('/api/story/action',{action:'seen',plot:storyPost}).then(r=>{state=r.state;}).catch(()=>{});}
+ }
+ if(message==='SUMMON'){
+  const result=res.messages?.[0]?.data?.summon_result||{};
+  const partners=Array.isArray(result.partners)?result.partners:[];
+  const items=Array.isArray(result.items)?result.items:[];
+  if(partners.length){
+   const info=partners.map(x=>{const h=state.roster.find(v=>v.partner_id===x.partner_id);return {table_id:x.table_id||h?.table_id,star:h?.stars||x.star||0,name:h?.name||''};});
+   if(typeof SummonAnim!=='undefined'){try{await SummonAnim.play(data.summon_id,info);}catch(e){visualFailure('summon-animation',e);}}
+   if(view!=='girls'&&typeof SummonResult!=='undefined'&&data.summon_id!==9){try{SummonResult.show(data.summon_id,info,sid=>action('SUMMON',{summon_id:sid,times:1}));}catch(e){visualFailure('summon-result',e);}}
+   if(view==='girls')renderShardSummon(partners);else renderSummon(partners);
+   if(data.summon_id===9){const reward=$('capsule-egg-result');reward.hidden=false;reward.textContent=" "+(state.roster.find(v=>v.partner_id===partners[0]?.partner_id)?.name||"New Girl")+" · 5★! Saved in Girls.";}
+  }else if(items.length&&view==='capsule'){
+   $('capsule-result').replaceChildren(...items.map(it=>node('div','capsule-result-card',"+"+number(it.item_num)+" · Item "+it.item_id)));
+  }
+ }
+ return res;}catch(e){error(e.message);if(view==='capsule')$('capsule-result').textContent=e.message;}finally{busy=false;render();}}
 function renderSummon(partners){$('capsule-result').replaceChildren();for(const partner of partners){const card=node('div','capsule-result-card'),name=state.roster.find(v=>v.partner_id===partner.partner_id)?.name||String(partner.table_id);card.append(portrait(partner.table_id,74),node('strong','',name));$('capsule-result').append(card);}}
 function renderShardSummon(partners){$('shard-draw-result').replaceChildren();if(!partners.length)return;$('shard-draw-result').append(node('h3','',"New Girl recruited!"));const grid=node('div','shard-new-girls');for(const partner of partners){const h=state.roster.find(v=>v.partner_id===partner.partner_id);if(typeof SummonResult!=='undefined')grid.append(SummonResult.heroIcon({table_id:partner.table_id,star:h?.stars||partner.star,name:h?.name}));else grid.append(portrait(partner.table_id,74));}$('shard-draw-result').append(grid);}
 
