@@ -23,6 +23,17 @@ jobs:
       - name: Check Python syntax
         run: python -m compileall -q gxb2 server.py tools
       - name: Check browser JavaScript syntax
-        run: node --check web/admin.js && node --check web/online-hub.js && node --check web/payment.js && node --check web/auth.js
+        run: |
+          node --check web/app.js
+          node --check web/campaign-ui.js
+          node --check web/campaign-flow.js
+          node --check web/summon-anim.js
+          node --check web/summon-result.js
+          node --check web/localization.js
+          node --check web/i18n-vi.js
+          node --check web/admin.js
+          node --check web/online-hub.js
+          node --check web/payment.js
+          node --check web/auth.js
       - name: Run unit tests
         run: python -m unittest discover -s tests -p "test_*.py" -v
