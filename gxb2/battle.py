@@ -10,6 +10,19 @@ from .local_promotion import combat_partner
 
 ROOT = Path(__file__).resolve().parents[1]
 
+# Online PvP/Guild War are hero-vs-hero fights. Keep the report's battle
+# configuration ID stable and use random_seed only for combat randomness.
+# 100001 is the original BattleCreateReport-compatible baseline used by the
+# archived runtime host itself.
+ONLINE_BATTLE_ID = 100001
+ONLINE_SEED_MODULUS = 233280
+
+
+def normalize_online_seed(value: int) -> int:
+    """Map arbitrary IDs/hashes into the original runtime's safe seed range."""
+    seed = int(value) % ONLINE_SEED_MODULUS
+    return seed if seed > 0 else 1
+
 def luajit_runtime() -> Path:
     """Choose the bundled desktop runtime, or an explicit/native override."""
     override = os.environ.get('GXB2_LUAJIT')
