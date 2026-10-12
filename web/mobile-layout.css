@@ -1,0 +1,62 @@
+/* Mobile-only layout. Desktop selectors are deliberately untouched. */
+@media (max-width: 700px), (pointer: coarse) and (max-width: 900px) {
+ html.gxb-mobile,html.gxb-mobile body{width:100%;height:100%;overflow:hidden;overscroll-behavior:none}
+ html.gxb-mobile #app-frame{inset:0;width:100%!important;height:100dvh!important;overflow:hidden;transform:none!important}
+ html.gxb-mobile #app-frame #game-root{width:100%!important;min-width:0!important;max-width:none!important;overflow-x:hidden!important;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)!important}
+ html.gxb-mobile #app-frame #game-root>section:not([hidden]){width:100%!important;max-width:none!important;min-width:0!important;box-sizing:border-box}
+ html.gxb-mobile #app-frame .layout{display:block!important;width:100%!important;min-width:0!important}
+ html.gxb-mobile #app-frame .layout>*{width:100%!important;min-width:0!important;max-width:none!important}
+ html.gxb-mobile #app-frame .intro{flex-wrap:wrap;gap:10px;padding:12px}
+ html.gxb-mobile #app-frame .resources{width:100%;min-width:0;gap:8px}
+ html.gxb-mobile #app-frame .panel{max-width:100%;min-width:0;box-sizing:border-box}
+ html.gxb-mobile #app-frame .home-stage{width:100%!important;height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom))!important;min-height:0!important;aspect-ratio:auto!important;overflow:hidden}
+ html.gxb-mobile #app-frame .home-background{background-position:center center;background-size:cover}
+ html.gxb-mobile #app-frame .home-hero{max-height:80%;max-width:100%;object-fit:contain}
+ html.gxb-mobile #app-frame .home-currency{max-width:100%;gap:3px}
+ html.gxb-mobile #app-frame .home-currency span{min-width:0}
+ html.gxb-mobile #app-frame .campaign-scene{max-width:100%;min-width:0;overflow:hidden}
+ html.gxb-mobile #app-frame .cmp{width:100%;min-width:0}
+ html.gxb-mobile #app-frame .cmp-scene{width:100%;overflow:hidden}
+ html.gxb-mobile #app-frame .roster-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+ html.gxb-mobile #app-frame .formation-board{width:calc(100% - 12px);margin:6px;max-width:none}
+ html.gxb-mobile #app-frame .girls-view,
+ html.gxb-mobile #app-frame .capsule-view,
+ html.gxb-mobile #app-frame .bag-view,
+ html.gxb-mobile #app-frame .girl-detail-view,
+ html.gxb-mobile #app-frame #home-systems-view{width:100%!important;max-width:none!important;min-width:0!important;margin:0!important;border-left:0;border-right:0;border-radius:0}
+ html.gxb-mobile #app-frame .detail-scene{height:min(64dvh,540px)!important;min-height:320px}
+ html.gxb-mobile #app-frame .detail-art-wrap{max-width:100%;overflow:hidden}
+ html.gxb-mobile #app-frame .detail-art-wrap img{max-width:100%;object-fit:contain}
+ html.gxb-mobile #app-frame .detail-tabs{width:100%;grid-template-columns:repeat(auto-fit,minmax(0,1fr))}
+ html.gxb-mobile #app-frame .detail-tabs button{min-width:0;white-space:normal;overflow-wrap:anywhere;font-size:clamp(10px,2.9vw,15px)}
+ html.gxb-mobile #app-frame .bag-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:10px 6px}
+ html.gxb-mobile #app-frame .bag-panel{padding:12px 8px}
+ html.gxb-mobile #app-frame .sa-overlay{width:100%;height:100%;overflow:hidden}
+ html.gxb-mobile #app-frame .sa-waiting-box{width:min(86%,330px);min-width:0;box-sizing:border-box}
+ html.gxb-mobile #app-frame .cr-overlay{inset:0;padding:8px;align-items:center}
+ html.gxb-mobile #app-frame .cr-box{width:100%;max-width:460px;max-height:calc(100dvh - 24px);overflow-y:auto}
+ html.gxb-mobile #app-frame .cr-anim{height:clamp(160px,35dvh,260px)}
+ html.gxb-mobile #app-frame .cr-actions{flex-wrap:wrap;gap:6px}
+ html.gxb-mobile #app-frame .cr-btn{min-width:min(44%,150px);max-width:100%;font-size:15px}
+ html.gxb-mobile #app-frame .online-overlay,
+ html.gxb-mobile #app-frame .online-war-overlay{padding:env(safe-area-inset-top) 6px env(safe-area-inset-bottom)}
+ html.gxb-mobile #app-frame .online-box,
+ html.gxb-mobile #app-frame .online-war-box{width:100%;max-width:100%;max-height:95dvh;border-radius:12px}
+ html.gxb-mobile #app-frame .online-head{padding:12px}
+ html.gxb-mobile #app-frame .online-body{padding:0 10px 14px}
+ html.gxb-mobile #app-frame .online-tabs{padding:0 10px 10px}
+ html.gxb-mobile #app-frame .online-rank,
+ html.gxb-mobile #app-frame .online-member{min-width:0}
+ html.gxb-mobile #app-frame .online-summary{flex-wrap:wrap}
+ html.gxb-mobile #app-frame .gs-overlay>.gs-win{width:min(100%,720px);max-width:100%;max-height:calc(100dvh - 16px);overflow:auto}
+ html.gxb-mobile #app-frame button,
+ html.gxb-mobile #app-frame [role=button]{touch-action:manipulation}
+ html.gxb-mobile #app-frame input,
+ html.gxb-mobile #app-frame select,
+ html.gxb-mobile #app-frame textarea{max-width:100%;min-width:0;font-size:16px}
+}
+@media(max-width:380px){
+ html.gxb-mobile #app-frame .bag-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+ html.gxb-mobile #app-frame .cr-btn{min-width:0;flex:1}
+ html.gxb-mobile #app-frame .detail-tabs button{font-size:10px}
+}
