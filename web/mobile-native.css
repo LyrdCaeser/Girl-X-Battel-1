@@ -1,0 +1,47 @@
+/* Mobile-native presentation, loaded AFTER all feature styles.
+   Desktop selectors are intentionally untouched. */
+html.gxb-mobile,html.gxb-mobile body{width:100%;height:100%;overflow:hidden}
+html.gxb-mobile #app-frame{position:fixed!important;inset:0!important;width:100%!important;height:100dvh!important;transform:none!important;overflow:hidden!important}
+html.gxb-mobile #app-frame #game-root{width:100%!important;min-width:0!important;max-width:none!important;height:100%!important;overflow-x:hidden!important;overflow-y:auto!important;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)!important}
+html.gxb-mobile #app-frame #game-root>section:not([hidden]){width:100%!important;min-width:0!important;max-width:none!important}
+html.gxb-mobile #app-frame .home-view{width:100%!important;max-width:none!important;margin:0!important;padding:0!important}
+html.gxb-mobile #app-frame .home-stage{
+ width:100%!important;max-width:none!important;min-width:0!important;
+ height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom))!important;
+ min-height:0!important;aspect-ratio:auto!important;margin:0!important;
+ border:0!important;border-radius:0!important;box-shadow:none!important
+}
+html.gxb-mobile #app-frame .home-hero{width:100%!important;height:65%!important;bottom:15%!important;object-fit:contain}
+html.gxb-mobile #app-frame .home-top{height:12%!important;min-height:65px;padding:6px 7px!important;gap:4px}
+html.gxb-mobile #app-frame .home-profile{min-width:48px!important;width:54px!important;height:54px!important;flex-shrink:0}
+html.gxb-mobile #app-frame .home-currency{gap:3px!important;flex:1;min-width:0}
+html.gxb-mobile #app-frame .home-currency span{min-width:0;padding:3px!important;font-size:clamp(10px,2.7vw,14px)!important}
+html.gxb-mobile #app-frame .home-side{top:14%!important;width:25%!important;gap:4px!important}
+html.gxb-mobile #app-frame .home-side button{min-height:clamp(48px,8dvh,72px)!important;max-width:100%;overflow:hidden}
+html.gxb-mobile #app-frame .home-side small{max-width:100%;font-size:clamp(9px,2.5vw,12px)!important;white-space:normal!important;line-height:1.1!important;text-align:center}
+html.gxb-mobile #app-frame .home-destinations{bottom:12%!important;height:14%!important;left:1%!important;right:1%!important;gap:5px}
+html.gxb-mobile #app-frame .home-destinations button{min-width:0!important;width:30%!important;border-width:2px!important;border-radius:12px!important}
+html.gxb-mobile #app-frame .home-destinations button.featured{width:40%!important}
+html.gxb-mobile #app-frame .home-destinations strong{font-size:clamp(11px,3.4vw,17px)!important;white-space:normal!important;line-height:1.05;text-align:center}
+html.gxb-mobile #app-frame .home-bottom{height:12%!important;min-height:66px!important;grid-template-columns:repeat(6,minmax(0,1fr))!important}
+html.gxb-mobile #app-frame .home-bottom button{min-width:0!important;overflow:hidden!important;padding:3px 0!important}
+html.gxb-mobile #app-frame .home-bottom small{font-size:clamp(9px,2.4vw,12px)!important;white-space:normal!important;line-height:1.05!important;text-align:center}
+html.gxb-mobile #app-frame .layout{display:block!important;width:100%!important;max-width:none!important;min-width:0!important}
+html.gxb-mobile #app-frame .layout>.panel{width:100%!important;max-width:none!important;min-width:0!important;margin:0!important;padding:12px!important}
+html.gxb-mobile #app-frame .roster-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+html.gxb-mobile #app-frame .battlefield{min-width:0!important;width:100%!important;gap:6px!important;padding:10px 4px!important}
+html.gxb-mobile #app-frame .units{max-width:46%!important;gap:4px!important}
+html.gxb-mobile #app-frame .unit{width:clamp(42px,13vw,65px)!important}
+html.gxb-mobile #app-frame .unit .portrait{width:clamp(40px,12vw,60px)!important;height:clamp(40px,12vw,60px)!important}
+html.gxb-mobile #app-frame .gs-win,html.gxb-mobile #app-frame dialog{
+ max-width:calc(100vw - 16px)!important;max-height:calc(100dvh - 32px)!important;
+ box-sizing:border-box!important
+}
+html.gxb-mobile #app-frame .gs-win-body{max-height:calc(100dvh - 110px);overflow:auto}
+html.gxb-mobile #app-frame button{touch-action:manipulation}
+html.gxb-mobile #app-frame img{max-width:100%}
+@media(max-width:360px){
+ html.gxb-mobile #app-frame .home-side{width:24%!important}
+ html.gxb-mobile #app-frame .home-top{min-height:58px}
+ html.gxb-mobile #app-frame .home-profile{width:46px!important;height:46px!important}
+}
