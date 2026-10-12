@@ -6,7 +6,7 @@ import time
 from pathlib import Path
 
 from . import auth, database, live_service
-from .battle import simulate
+from .battle import simulate, ONLINE_BATTLE_ID, normalize_online_seed
 from .engine import Engine
 
 
@@ -34,7 +34,7 @@ def run_startup_preflight() -> dict:
             snap = engine.pvp_team_snapshot()
             report = simulate(
                 snap["team"], snap["team"],
-                battle_id=123456, seed=123456,
+                battle_id=ONLINE_BATTLE_ID, seed=normalize_online_seed(123456),
                 pet_a=snap.get("pet"), pet_b=snap.get("pet"),
                 guild_skills_a=snap.get("guild_skills") or [],
                 guild_skills_b=snap.get("guild_skills") or [],
