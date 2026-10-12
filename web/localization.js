@@ -1,8 +1,8 @@
 'use strict';
 window.GxbLocale=(()=>{
-  const supported=['vi','en','zh-CN'];
-  let lang=localStorage.getItem('gxb3-language')||'vi',dict={};
-  if(!supported.includes(lang))lang='vi';
+  const supported=['vi'];
+  let lang='vi',dict={};
+  try{localStorage.setItem('gxb3-language','vi');}catch{}
   const current=()=>lang;
   const t=value=>{const s=String(value??'');const trimmed=s.trim();if(!trimmed)return s;const hit=dict[trimmed];return hit? s.replace(trimmed,hit):s;};
   async function load(){
@@ -22,13 +22,13 @@ window.GxbLocale=(()=>{
   function observe(){observer?.disconnect();observer=new MutationObserver(rs=>{for(const r of rs){for(const n of r.addedNodes)translate(n);if(r.type==='characterData')translate(r.target);}});observer.observe(document.documentElement,{subtree:true,childList:true,characterData:true});}
   function installSelector(){
     const rows=[...document.querySelectorAll('.profile-setting-row')];
-    const row=rows.find(r=>r.querySelector('strong')?.textContent.trim()===t('Language')||r.querySelector('strong')?.textContent.trim()==='Language'||r.querySelector('strong')?.textContent.trim()==='Ngôn Ngữ'||r.querySelector('strong')?.textContent.trim()==='语言');
-    if(!row||row.querySelector('#gxb3-language'))return;
-    const host=row.querySelector('div')||row;const old=host.querySelector('small');if(old)old.remove();
-    const sel=document.createElement('select');sel.id='gxb3-language';
-    [['vi','Tiếng Việt'],['en','English'],['zh-CN','简体中文']].forEach(([v,n])=>{const o=document.createElement('option');o.value=v;o.textContent=n;o.selected=v===lang;sel.append(o);});
-    sel.onchange=()=>{localStorage.setItem('gxb3-language',sel.value);location.reload();};host.append(sel);
+    const row=rows.find(r=>['Language','Ngôn Ngữ','语言'].includes(r.querySelector('strong')?.textContent.trim()||''));
+    if(!row)return;
+    const host=row.querySelector('div')||row;
+    host.querySelector('#gxb3-language')?.remove();
+    const small=host.querySelector('small');
+    if(small)small.textContent='Tiếng Việt';
   }
   document.addEventListener('DOMContentLoaded',load,{once:true});
-  return{current,t,setLanguage:v=>{if(supported.includes(v)){localStorage.setItem('gxb3-language',v);location.reload();}},supported};
+  return{current,t,setLanguage:()=>{},supported};
 })();
