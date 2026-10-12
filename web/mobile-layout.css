@@ -1,5 +1,5 @@
 /* Mobile-only layout. Desktop selectors are deliberately untouched. */
-@media (max-width: 700px), (pointer: coarse) and (max-width: 900px) {
+@media screen {
  html.gxb-mobile,html.gxb-mobile body{width:100%;height:100%;overflow:hidden;overscroll-behavior:none}
  html.gxb-mobile #app-frame{inset:0;width:100%!important;height:100dvh!important;overflow:hidden;transform:none!important}
  html.gxb-mobile #app-frame #game-root{width:100%!important;min-width:0!important;max-width:none!important;overflow-x:hidden!important;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)!important}
@@ -62,7 +62,7 @@
 }
 
 /* Mobile RC: dedicated phone geometry for the actual game controls. */
-@media (max-width:700px), (pointer:coarse) and (max-width:900px) {
+@media screen {
  html.gxb-mobile #app-frame .home-top{height:11%;padding:clamp(4px,1.5vw,10px);gap:4px}
  html.gxb-mobile #app-frame .home-profile{min-width:0!important;width:clamp(48px,14vw,68px);height:clamp(48px,14vw,68px)}
  html.gxb-mobile #app-frame .home-currency{min-width:0;max-width:58%}
