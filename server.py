@@ -439,8 +439,9 @@ class HTTPHandler(BaseHTTPRequestHandler):
             return self.send(404, {'error':'Recurso inexistente'})
         if path.startswith('/localization/') and path.endswith('.json'):
             name=path.rsplit('/',1)[-1]
-            if name in {'vi.json','en.json','zh-CN.json'}:
-                return self.send(200,(ROOT/'localization'/name).read_bytes(),'application/json; charset=utf-8')
+            if name == 'vi.json':
+                return self.send(200,(ROOT/'localization'/'vi.json').read_bytes(),'application/json; charset=utf-8')
+            return self.send(404, {'error':'Chỉ hỗ trợ Tiếng Việt'})
         if path == '/health': return self.send(200, {'ok': True, 'scope': 'gxb3-private', 'database': database.backend_name(), 'schema_messages': len(p.SCHEMA)})
         if path == '/api/state': return self.send(200, self.engine.snapshot())
         if path == '/api/bootstrap': return self.send(200, {'payload': self.bootstrap()})
