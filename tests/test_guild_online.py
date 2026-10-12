@@ -83,10 +83,29 @@ class GuildAndSeasonTests(unittest.TestCase):
         )
         self.assertEqual(result["winner_uid"],"GA")
         detail=live_service.guild_war_detail("GA","S1",war["id"])
-        self.assertGreater(detail["war"]["score_a"],0)
-        self.assertGreater(live_service.guild_for_player("GA","S1")["exp"],0)
+        first_score=int(detail["war"]["score_a"])
+        first_exp=int(live_service.guild_for_player("GA","S1")["exp"])
         member=next(x for x in live_service.guild_for_player("GA","S1")["members"] if x["uid"]=="GA")
-        self.assertGreater(member["contribution"],0)
+        first_contrib=int(member["contribution"])
+        self.assertGreater(first_score,0)
+        self.assertGreater(first_exp,0)
+        self.assertGreater(first_contrib,0)
+
+        # Retrying the same authoritative pair must be idempotent: no double
+        # score, Guild EXP or contribution even across multiple workers.
+        repeated=live_service.record_guild_war_battle(
+            war["id"],"GA","GB",
+            {"uid":"GA","server_id":"S1","power":2200,"team":[]},
+            {"uid":"GB","server_id":"S1","power":2100,"team":[]},
+            {"isWin":1,"frames":[],"total_round":5},
+        )
+        self.assertTrue(repeated["idempotent"])
+        self.assertEqual(repeated["battle_id"],result["battle_id"])
+        detail2=live_service.guild_war_detail("GA","S1",war["id"])
+        self.assertEqual(int(detail2["war"]["score_a"]),first_score)
+        self.assertEqual(int(live_service.guild_for_player("GA","S1")["exp"]),first_exp)
+        member2=next(x for x in live_service.guild_for_player("GA","S1")["members"] if x["uid"]=="GA")
+        self.assertEqual(int(member2["contribution"]),first_contrib)
 
         settled=live_service.settle_guild_war(war["id"],force=True)
         self.assertEqual(settled["status"],"finished")
