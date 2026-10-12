@@ -589,13 +589,13 @@ def resolve_pvp_match(match_id, uid, winner_uid):
         if winner_uid not in (row["player_a"],row["player_b"]):
             db.rollback(); db.close(); raise ValueError("Winner không hợp lệ")
         if row["status"]=="finished":
-            out=dict(row); db.commit(); db.close(); return out
+            out=_public_pvp_match(row, include_result=True); db.commit(); db.close(); return out
         now=int(time.time())
         db.execute("UPDATE pvp_matches SET status='finished',winner_uid=?,resolved_at=? WHERE id=?",
                    (str(winner_uid),now,str(match_id)))
         _audit(db,"pvp.finish",str(match_id),{"winner":winner_uid},"SYSTEM")
         row=db.execute("SELECT * FROM pvp_matches WHERE id=?",(str(match_id),)).fetchone()
-        db.commit(); out=dict(row); db.close(); return out
+        db.commit(); out=_public_pvp_match(row, include_result=True); db.close(); return out
 
 
 def pvp_history(uid, limit=50):
