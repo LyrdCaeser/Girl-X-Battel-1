@@ -6,6 +6,7 @@ import uuid
 from pathlib import Path
 
 from . import database, topup
+from .battle import normalize_online_seed
 
 ROOT = Path(__file__).resolve().parents[1]
 PVP_SEASON_REWARDS = json.loads((ROOT / 'data/pvp_season_rewards.json').read_text())
