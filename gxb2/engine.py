@@ -578,6 +578,43 @@ class Engine:
                 'level_cap_before': self.level_cap(before), 'level_cap_after': self.level_cap(after),
                 'local': bool(recipe.get('local'))}
 
+    def profile_unlocks(self, state):
+        """Profile cosmetics unlocked by actual collection/roster progress.
+
+        Heads/frames follow Collection types 3/4. Girl portraits unlock when the
+        corresponding Girl (or a released avatar variant of that Girl) is owned.
+        The currently equipped cosmetic remains valid for legacy saves.
+        """
+        got = collection_mod.owned_ids(state)
+        heads = {'head_1001'}
+        frames = set()
+        for cid, typ, item, _points in collection_mod.ROWS:
+            if cid not in got:
+                continue
+            if int(typ) == 3:
+                raw = int(item)
+                hid = raw if raw < 100000 else raw % 10000
+                if hid:
+                    heads.add(f'head_{hid}')
+            elif int(typ) == 4:
+                frames.add(f'frame_{int(item)}')
+        owned_ids = {str(int(p.get('table_id', 0))) for p in state.get('partners', []) if int(p.get('table_id', 0) or 0)}
+        partners = set()
+        for name in PROFILE_CATALOG.get('partners', []):
+            suffix = str(name).removeprefix('partner_avatar_')
+            if any(suffix == tid or suffix.startswith(tid) for tid in owned_ids):
+                partners.add(name)
+        current = state.get('profile') or {}
+        avatar = str(current.get('avatar') or '')
+        frame = str(current.get('frame') or '')
+        if avatar.startswith('head_'):
+            heads.add(avatar)
+        elif avatar.startswith('partner_avatar_'):
+            partners.add(avatar)
+        if frame:
+            frames.add(frame)
+        return {'heads': sorted(heads), 'partners': sorted(partners), 'frames': sorted(frames)}
+
     def update_profile(self, changes):
         if not isinstance(changes, dict) or not changes or set(changes) - {'name', 'signature', 'avatar', 'frame', 'wallpapers', 'wallpaper_random'}:
             raise GameError('Campos de perfil inválidos')
@@ -609,11 +646,16 @@ class Engine:
                     profile['signature'] = value
                 elif key == 'avatar':
                     if value not in PROFILE_CATALOG['heads'] and value not in PROFILE_CATALOG['partners']:
-                        raise GameError('Icono de perfil desconocido')
+                        raise GameError('Avatar không hợp lệ')
+                    unlocked = self.profile_unlocks(state)
+                    if value not in unlocked['heads'] and value not in unlocked['partners']:
+                        raise GameError('Avatar này chưa được mở khóa')
                     profile['avatar'] = value
                 elif key == 'frame':
                     if value not in PROFILE_CATALOG['frames']:
-                        raise GameError('Marco de perfil desconocido')
+                        raise GameError('Khung avatar không hợp lệ')
+                    if value not in self.profile_unlocks(state)['frames']:
+                        raise GameError('Khung avatar này chưa được mở khóa')
                     profile['frame'] = value
             self._save_profile(state)
             self.db.commit()
@@ -631,6 +673,7 @@ class Engine:
             state['worlds'] = live_service.worlds()
         except Exception:
             state['account_status'] = 'active'; state['mail_info'] = []; state['worlds'] = []
+        state['profile_unlocks'] = self.profile_unlocks(state)
         state['home_systems'] = home_systems.snapshot(state, now=self.now())
         state['event_hub'] = events.snapshot(state, now=self.now())
         state['hang_info'] = campaign.pending(state, now=self.now())
