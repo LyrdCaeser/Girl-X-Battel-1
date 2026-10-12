@@ -50,3 +50,33 @@ html.gxb-mobile #app-frame img{max-width:100%}
 html.gxb-mobile #app-frame #home-view>.home-stage{height:100%!important;min-height:100%!important;max-height:100%!important;aspect-ratio:auto!important}
 html.gxb-mobile #app-frame #home-view{height:100%!important;min-height:0!important}
 html.gxb-mobile #app-frame #game-root.on-home{height:100%!important;overflow:hidden!important;padding-top:0!important;padding-bottom:0!important}
+
+
+/* Phone viewport hardening: the active game screen owns the whole WebView.
+   This prevents the 9:16 desktop-era canvas from ending early on 18:9/19.5:9 phones. */
+html.gxb-mobile #app-frame #game-root{position:relative!important;height:var(--gxb-vh,100dvh)!important;min-height:var(--gxb-vh,100dvh)!important;max-height:var(--gxb-vh,100dvh)!important}
+html.gxb-mobile #app-frame #game-root.on-home{position:relative!important}
+html.gxb-mobile #app-frame #home-view{
+ position:absolute!important;inset:0!important;
+ width:100%!important;height:100%!important;min-height:0!important;max-height:none!important;
+ margin:0!important;padding:0!important;overflow:hidden!important
+}
+html.gxb-mobile #app-frame #home-view>.home-stage{
+ position:absolute!important;inset:0!important;
+ width:100%!important;height:100%!important;min-height:0!important;max-height:none!important;
+ margin:0!important;aspect-ratio:auto!important;border-radius:0!important
+}
+html.gxb-mobile #app-frame #home-view .home-background{position:absolute!important;inset:0!important;background-size:cover!important;background-position:center center!important}
+html.gxb-mobile #app-frame #home-view .home-hero{max-height:none!important}
+
+/* Full-screen feature pages on Android. */
+html.gxb-mobile #app-frame #events-view,
+html.gxb-mobile #app-frame .fantasy-book-view{
+ width:100%!important;height:var(--gxb-vh,100dvh)!important;min-height:var(--gxb-vh,100dvh)!important;
+ max-height:var(--gxb-vh,100dvh)!important;margin:0!important;box-sizing:border-box!important
+}
+html.gxb-mobile #app-frame .fantasy-book-view{overflow:hidden!important;container-type:size!important}
+html.gxb-mobile #app-frame .fantasy-book-view .fb-stage{
+ width:100%!important;height:100%!important;min-height:100%!important;max-height:100%!important;
+ overflow:hidden!important
+}
