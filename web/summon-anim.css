@@ -10,3 +10,9 @@
 .sa-caption{position:absolute;left:0;right:0;bottom:calc(140 * var(--u));z-index:3;display:grid;justify-items:center;gap:calc(6 * var(--u));color:#fff;text-shadow:0 0 6px #000,0 0 6px #000;pointer-events:none}
 .sa-caption b{font-size:calc(40 * var(--u))}.sa-stars{color:#ffd54a;font-size:calc(34 * var(--u));letter-spacing:calc(2 * var(--u))}
 .sa-skip{position:absolute;right:calc(24 * var(--u));top:calc(24 * var(--u));z-index:4;border:calc(2 * var(--u)) solid #fff8;border-radius:calc(24 * var(--u));background:#0006;color:#fff;font-size:calc(26 * var(--u));padding:calc(8 * var(--u)) calc(26 * var(--u));cursor:pointer}
+
+.sa-waiting{position:fixed;inset:0;z-index:2147482200;background:#070914d9;display:grid;place-items:center;backdrop-filter:blur(5px)}
+.sa-waiting-box{min-width:220px;padding:24px 30px;border-radius:20px;background:#15182aee;border:1px solid #ffffff24;box-shadow:0 20px 70px #0009;display:grid;justify-items:center;gap:10px;color:#fff}
+.sa-waiting-box b{font-size:20px}.sa-waiting-box small{color:#c9cce0}
+.sa-waiting-spin{width:42px;height:42px;border:4px solid #ffffff22;border-top-color:#a678ff;border-radius:50%;animation:saWaitingSpin .8s linear infinite}
+@keyframes saWaitingSpin{to{transform:rotate(360deg)}}
