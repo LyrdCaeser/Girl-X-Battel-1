@@ -19,16 +19,23 @@
    document.documentElement.dataset.platform=m;
    document.documentElement.classList.toggle('gxb-desktop',m==='desktop');
    f.dataset.platform=m;
+   const vv=window.visualViewport;
+   const vw=Math.max(1,Math.round(vv?.width||window.innerWidth||document.documentElement.clientWidth||360));
+   const vh=Math.max(1,Math.round(vv?.height||window.innerHeight||document.documentElement.clientHeight||640));
+   document.documentElement.style.setProperty('--gxb-vw',vw+'px');
+   document.documentElement.style.setProperty('--gxb-vh',vh+'px');
    f.style.setProperty('--frame-scale','1');
    f.style.transform='none';
    f.style.left='0';
    f.style.top='0';
-   f.style.width='100vw';
-   f.style.height='100dvh';
+   f.style.width=m==='mobile'?'var(--gxb-vw)':'100vw';
+   f.style.height=m==='mobile'?'var(--gxb-vh)':'100dvh';
  }
 
  addEventListener('resize',fit);
  addEventListener('orientationchange',()=>setTimeout(fit,50));
+ window.visualViewport?.addEventListener('resize',fit);
+ window.visualViewport?.addEventListener('scroll',fit);
  document.addEventListener('DOMContentLoaded',fit);
 
  const nativeScroll=window.scrollTo.bind(window);
