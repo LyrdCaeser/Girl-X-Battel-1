@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 
 from gxb2.engine import Engine
-from gxb2.battle import simulate
+from gxb2.battle import simulate, ONLINE_BATTLE_ID, normalize_online_seed
 from gxb2 import chimes, guild_lab, home_systems
 
 
@@ -46,7 +46,7 @@ class BattleRuntimeTests(unittest.TestCase):
                 try:
                     report = simulate(
                     snap["team"], snap["team"],
-                    battle_id=123456, seed=123456,
+                    battle_id=ONLINE_BATTLE_ID, seed=normalize_online_seed(123456),
                     pet_a=snap.get("pet"), pet_b=snap.get("pet"),
                     guild_skills_a=snap["guild_skills"],
                     guild_skills_b=snap["guild_skills"],
