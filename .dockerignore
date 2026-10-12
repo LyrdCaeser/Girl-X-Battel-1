@@ -14,3 +14,27 @@ backups
 docs/references
 validation
 tests
+
+# Release image: exclude repository-only documentation and recovery material.
+*.md
+!README.md
+data/recovered/
+runtime/luajit-windows-x64.exe
+
+# GXB 3 production ships VI / EN / zh-CN only. These archived localization
+# tables are not used by the current server/runtime and only inflate context.
+runtime/lua/data/tables/de_de/
+runtime/lua/data/tables/fr_fr/
+runtime/lua/data/tables/ja_jp/
+runtime/lua/data/tables/ko_kr/
+runtime/lua/data/tables/zh_tw/
+
+# Local/editor/build leftovers that must never enter the Docker context.
+.vscode/
+.idea/
+work/
+scratchpad/
+real_save_export/
+*.log
+*.tmp
+*.bak
