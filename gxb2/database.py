@@ -15,6 +15,26 @@ _pool_lock = threading.RLock()
 _schema_ready = set()
 
 
+def _rollback_if_needed(conn):
+    """Return pooled PostgreSQL connections in IDLE state.
+
+    psycopg opens a transaction even for plain SELECT statements when
+    autocommit is disabled. Returning an INTRANS connection makes psycopg_pool
+    roll it back noisily. Explicit rollback here is correct for callers that
+    close/release without commit and keeps the pool clean.
+    """
+    try:
+        info = getattr(conn, "info", None)
+        status = getattr(info, "transaction_status", None)
+        if status is not None and getattr(status, "name", str(status)) != "IDLE":
+            conn.rollback()
+    except Exception:
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+
+
 class CursorProxy:
     def __init__(self, cursor, backend):
         self._cursor = cursor
@@ -65,6 +85,8 @@ class DBConnection:
             return
         self._closed = True
         if self._pool is not None:
+            if self.backend == "postgres":
+                _rollback_if_needed(self._conn)
             self._pool.putconn(self._conn)
         else:
             self._conn.close()
@@ -555,6 +577,7 @@ def acquire_postgres():
 
 def release_postgres(conn):
     if conn is not None and _pool is not None:
+        _rollback_if_needed(conn)
         _pool.putconn(conn)
 
 
