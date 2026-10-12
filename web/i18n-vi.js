@@ -357,7 +357,20 @@
       [/^Lv\.?\s*(\d+)$/i, 'Cấp $1'],
       [/^Daily rank award \(rank\s*(\d+)\)$/i, 'Thưởng xếp hạng ngày (hạng $1)'],
       [/^Unlocks at evolution grade\s*(\d+)$/i, 'Mở khóa ở bậc tiến hóa $1'],
-      [/^(.+) will accompany the team\.$/i, '$1 sẽ đồng hành cùng đội.']
+      [/^(.+) will accompany the team\.$/i, '$1 sẽ đồng hành cùng đội.'],
+      [/^Stage\s+(\d+)$/i, 'Ải $1'],
+      [/^Stage\s+(\d+)\s+·\s+(.+)$/i, 'Ải $1 · $2'],
+      [/^stage\s+(\d+)$/i, 'ải $1'],
+      [/^Round\s+(\d+)$/i, 'Hiệp $1'],
+      [/^Round\s+(\d+)\s+·\s+(.+) acts$/i, 'Hiệp $1 · $2 hành động'],
+      [/^Girl\s+(\d+)$/i, 'Nữ Thần $1'],
+      [/^Floor\s+(\d+)$/i, 'Tầng $1'],
+      [/^Difficulty\s+(\d+)$/i, 'Độ khó $1'],
+      [/^Power\s+(.+)$/i, 'Lực chiến $1'],
+      [/^Draw\s+(\d+)$/i, 'Triệu Hồi $1'],
+      [/^(\d+) of (\d+) attempts available today$/i, 'Hôm nay còn $1/$2 lượt'],
+      [/^Requires level\s+(\d+)$/i, 'Yêu cầu cấp $1'],
+      [/^Unlock after acquiring\s+(\d+) Collection Points$/i, 'Mở khóa khi đạt $1 Điểm Bộ Sưu Tập']
     ];
     for (const [re, out] of rules) if (re.test(trimmed)) return s.replace(trimmed, trimmed.replace(re, out));
     return s;
