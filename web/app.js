@@ -632,7 +632,7 @@ $('graduate-materials-toggle').addEventListener('click',async()=>{
 $('graduate-button').addEventListener('click',async()=>{
  const recipe=graduateRecipes[String(graduateTarget)];if(busy||!recipe||graduateAutoIds.length!==recipe.material.length+1)return;
  const reviewed=graduateAutoIds.slice();if(reviewed.some(id=>!id))return;const host=state.roster.find(h=>h.partner_id===reviewed[0]);const names=reviewed.slice(1).map(pid=>{const h=state.roster.find(g=>g.partner_id===pid);return h.name+' '+h.stars+"★ (Lv."+h.lv+')';});
- if(!confirm("Evolve "+host.name+' a '+(recipe.star||5)+"★. Consumes: "+names.join(', ')+". The base Girl keeps her level and equipment."))return;
+ if(!(typeof GirlUI!=='undefined'&&GirlUI.confirm?await GirlUI.confirm("Tiến Hóa "+host.name+" lên "+(recipe.star||5)+"★? Sẽ tiêu hao: "+names.join(', ')+". Nữ Thần chính vẫn giữ cấp và trang bị.",{title:'Xác Nhận Tiến Hóa',ok:'Tiến Hóa'}):false))return;
  busy=true;renderGraduate();let result='';
  try{const message=recipe.kind==='awake'?'AWAKE_PARTNER':'COMPOSE_PARTNER';const data=message==='AWAKE_PARTNER'?{partner_id:reviewed[0],material_ids:reviewed.slice(1)}:{table_id:recipe.target,material_ids:reviewed};const res=await api('/api/action',{message,data});state=res.state;delete graduateManualIds[graduateTarget];loadFormation();result="Graduation completed! The Girl reached "+(recipe.star||5)+'★.';}
  catch(e){result=e.message;}
