@@ -55,7 +55,13 @@ public final class MainActivity extends Activity {
         settings.setAllowFileAccess(false);
         settings.setAllowContentAccess(false);
         settings.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
-        settings.setUserAgentString(settings.getUserAgentString() + " GXB3-Android/1.0");
+        settings.setUseWideViewPort(false);
+        settings.setLoadWithOverviewMode(false);
+        settings.setSupportZoom(false);
+        settings.setBuiltInZoomControls(false);
+        settings.setDisplayZoomControls(false);
+        settings.setTextZoom(100);
+        settings.setUserAgentString(settings.getUserAgentString() + " GXB3-Android/1.0 MobileApp");
 
         CookieManager cookies = CookieManager.getInstance();
         cookies.setAcceptCookie(true);
