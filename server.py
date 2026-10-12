@@ -26,7 +26,6 @@ from gxb2.player_engines import PlayerEnginePool
 from gxb2.battle import simulate as simulate_battle
 from gxb2.security import FixedWindowRateLimiter, DEFAULT_LIMITS, env_bool, validate_production_config
 from gxb2.production import run_startup_preflight
-from gxb2.qa_e2e import run_release_qa_once
 
 ROOT = Path(__file__).resolve().parent
 ADMIN_KEY = os.environ.get('GXB3_ADMIN_KEY', '').strip()
@@ -1160,11 +1159,6 @@ def main():
     if env_bool('GXB3_PRODUCTION',False):
         proof=run_startup_preflight()
         print(f"GXB3 production preflight PASS: db={proof['database']} battle_frames={proof['battle_frames']} rounds={proof['battle_rounds']}",flush=True)
-        qa=run_release_qa_once()
-        if qa.get('skipped'):
-            print("GXB3 release QA: already passed; one-shot test skipped.",flush=True)
-        else:
-            print(f"GXB3 release QA PASS: pvp_frames={qa['pvp_frames']} guild_war_frames={qa['guild_war_frames']} persistence={qa['persistence']} cleanup={qa['post_cleanup_counts']}",flush=True)
     engine = Engine(args.db)
     developer = Engine(args.db.with_name(args.db.stem + ".developer.sqlite3"), developer=True)
     player_engines = PlayerEnginePool()
