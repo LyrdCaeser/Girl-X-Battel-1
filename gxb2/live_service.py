@@ -487,7 +487,7 @@ def enqueue_pvp(uid, server_id, character_name, mode, power=0):
                                 (mode,server_id,uid,power)).fetchone()
         if opponent:
             match_id="PVP-"+uuid.uuid4().hex[:16].upper()
-            seed=uuid.uuid4().int % 2147483647
+            seed=normalize_online_seed(uuid.uuid4().int)
             match_server="CROSS" if mode=="cross" else server_id
             db.execute("""INSERT INTO pvp_matches(
                           id,mode,server_id,server_a,server_b,player_a,player_b,name_a,name_b,power_a,power_b,
