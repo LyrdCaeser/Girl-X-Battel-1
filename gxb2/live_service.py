@@ -456,6 +456,37 @@ def update_world_guild_member(uid, server_id, character_name, power=0):
         db.commit(); db.close()
 
 
+def _public_pvp_match(row, include_result=False):
+    """Serialize a PvP match without exposing internal RNG/snapshots before finish."""
+    data=dict(row)
+    out={key:data.get(key) for key in (
+        "id","mode","server_id","server_a","server_b",
+        "player_a","player_b","name_a","name_b","power_a","power_b",
+        "status","winner_uid","created_at","resolved_at",
+        "rating_delta_a","rating_delta_b",
+    )}
+    if include_result and str(data.get("status"))=="finished":
+        for key in ("snapshot_a","snapshot_b","battle_report"):
+            try:
+                out[key]=json.loads(data.get(key) or "{}")
+            except Exception:
+                out[key]={}
+    return out
+
+
+def pvp_match_internal(match_id, uid):
+    """Server-only raw match lookup. Never return this object directly to clients."""
+    match_id=str(match_id or "").strip(); uid=str(uid or "").strip()
+    with _lock:
+        db=_db()
+        row=db.execute("SELECT * FROM pvp_matches WHERE id=?",(match_id,)).fetchone()
+        if not row:
+            db.close(); raise ValueError("Không tìm thấy trận PvP")
+        if uid not in (row["player_a"],row["player_b"]):
+            db.close(); raise ValueError("Bạn không thuộc trận PvP này")
+        out=dict(row); db.close(); return out
+
+
 def enqueue_pvp(uid, server_id, character_name, mode, power=0):
     uid=str(uid or '').strip(); server_id=str(server_id or '').strip().upper()
     character_name=str(character_name or '').strip()
@@ -468,7 +499,7 @@ def enqueue_pvp(uid, server_id, character_name, mode, power=0):
                                WHERE status IN ('ready','active') AND (player_a=? OR player_b=?)
                                ORDER BY created_at DESC LIMIT 1""",(uid,uid)).fetchone()
         if existing:
-            out=dict(existing); db.commit(); db.close(); return {"status":"matched","match":out}
+            out=_public_pvp_match(existing); db.commit(); db.close(); return {"status":"matched","match":out}
         db.execute("""INSERT INTO pvp_queue(uid,server_id,character_name,mode,power,joined_at,status)
                       VALUES(?,?,?,?,?,?,'waiting')
                       ON CONFLICT(uid,server_id,mode) DO UPDATE SET
@@ -500,7 +531,7 @@ def enqueue_pvp(uid, server_id, character_name, mode, power=0):
                        (uid,server_id,mode,str(opponent["uid"]),str(opponent["server_id"]),mode))
             _audit(db,"pvp.match",match_id,{"mode":mode,"a":opponent["uid"],"b":uid},"SYSTEM")
             row=db.execute("SELECT * FROM pvp_matches WHERE id=?",(match_id,)).fetchone()
-            out={"status":"matched","match":dict(row)}
+            out={"status":"matched","match":_public_pvp_match(row)}
         else:
             out={"status":"waiting","joined_at":now}
         db.commit(); db.close(); return out
@@ -523,7 +554,7 @@ def pvp_status(uid, server_id, mode=""):
                             WHERE (player_a=? OR player_b=?) AND status IN ('ready','active')
                             ORDER BY created_at DESC LIMIT 1""",(uid,uid)).fetchone()
         if match:
-            out={"status":"matched","match":dict(match)}
+            out={"status":"matched","match":_public_pvp_match(match)}
         else:
             if mode:
                 q=db.execute("SELECT * FROM pvp_queue WHERE uid=? AND server_id=? AND mode=?",(uid,server_id,mode)).fetchone()
@@ -544,7 +575,7 @@ def activate_pvp_match(match_id, uid):
         if row["status"]=="ready":
             db.execute("UPDATE pvp_matches SET status='active' WHERE id=?",(str(match_id),))
         row=db.execute("SELECT * FROM pvp_matches WHERE id=?",(str(match_id),)).fetchone()
-        db.commit(); out=dict(row); db.close(); return out
+        db.commit(); out=_public_pvp_match(row); db.close(); return out
 
 
 def resolve_pvp_match(match_id, uid, winner_uid):
@@ -601,7 +632,7 @@ def heartbeat_pvp_match(match_id, uid, ready=True):
             db.execute("UPDATE pvp_matches SET status='active' WHERE id=?",(match_id,))
         row=db.execute("SELECT * FROM pvp_matches WHERE id=?",(match_id,)).fetchone()
         db.commit()
-        out={"match":dict(row),"peers":[dict(p) for p in peers],"all_ready":all_ready}
+        out={"match":_public_pvp_match(row),"peers":[dict(p) for p in peers],"all_ready":all_ready}
         db.close(); return out
 
 
@@ -615,7 +646,7 @@ def pvp_match_session(match_id, uid):
         if uid not in (row["player_a"],row["player_b"]):
             db.close(); raise ValueError("Bạn không thuộc trận PvP này")
         peers=db.execute("SELECT uid,ready,last_seen FROM pvp_match_peers WHERE match_id=?",(match_id,)).fetchall()
-        out={"match":dict(row),"peers":[dict(p) for p in peers],"server_time":now}
+        out={"match":_public_pvp_match(row),"peers":[dict(p) for p in peers],"server_time":now}
         db.close(); return out
 
 
@@ -683,9 +714,7 @@ def finish_authoritative_pvp(match_id, requester_uid, snapshot_a, snapshot_b, re
         if requester_uid not in (row["player_a"],row["player_b"]):
             db.rollback(); db.close(); raise ValueError("Bạn không thuộc trận PvP này")
         if row["status"]=="finished":
-            out=dict(row)
-            try: out["battle_report"]=json.loads(out.get("battle_report") or "{}")
-            except Exception: pass
+            out=_public_pvp_match(row, include_result=True)
             db.commit(); db.close(); return out
         if row["status"] not in ("ready","active"):
             db.rollback(); db.close(); raise ValueError("Trận PvP không ở trạng thái có thể xử lý")
@@ -727,10 +756,7 @@ def finish_authoritative_pvp(match_id, requester_uid, snapshot_a, snapshot_b, re
         },"SYSTEM")
         row=db.execute("SELECT * FROM pvp_matches WHERE id=?",(match_id,)).fetchone()
         db.commit()
-        out=dict(row)
-        out["battle_report"]=json.loads(out.get("battle_report") or "{}")
-        out["snapshot_a"]=json.loads(out.get("snapshot_a") or "{}")
-        out["snapshot_b"]=json.loads(out.get("snapshot_b") or "{}")
+        out=_public_pvp_match(row, include_result=True)
         db.close(); return out
 
 
@@ -742,10 +768,7 @@ def pvp_match_result(match_id, uid):
             db.close(); raise ValueError("Không tìm thấy trận PvP")
         if str(uid) not in (row["player_a"],row["player_b"]):
             db.close(); raise ValueError("Bạn không thuộc trận PvP này")
-        out=dict(row)
-        for key in ("snapshot_a","snapshot_b","battle_report"):
-            try: out[key]=json.loads(out.get(key) or "{}")
-            except Exception: out[key]={}
+        out=_public_pvp_match(row, include_result=True)
         db.close(); return out
 
 
