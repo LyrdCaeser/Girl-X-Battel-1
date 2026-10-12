@@ -15,7 +15,7 @@ let formationDraft=Array(6).fill(null), selectedPosition=1;
 // Shift the complete formation down together: portraits, HP/status HUD and skill effects share these anchors.
 const battlePositions=Object.fromEntries(Object.entries({1:[330,1290],2:[330,960],3:[200,1636],4:[130,1370],5:[130,880],6:[200,616],7:[750,1290],8:[750,960],9:[880,1636],10:[950,1370],11:[950,880],12:[880,616]}).map(([pos,[x,y]])=>[pos,[x,y-200]]));
 const $=id=>document.getElementById(id);
-const number=n=>Number(n||0).toLocaleString('en-US');
+const number=n=>Number(n||0).toLocaleString('vi-VN');
 const list=v=>Array.isArray(v)?v:[];
 const node=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;};
 let menuRoute='settings',menuOrigin='home',menuStack=[];
@@ -127,7 +127,7 @@ function renderMenuExplorer(){
 }
 function portrait(id,size=64,copy=null){
  if(!avatars[String(id)]&&!cardIds.has(Number(id)))id=artId(id);
- const e=node('span','portrait'),a=avatars[String(id)],name=girlsCatalog.find(g=>g.id===Number(id))?.name||state?.roster?.find(g=>g.table_id===Number(id))?.name||"Girl "+id;
+ const e=node('span','portrait'),a=avatars[String(id)],name=girlsCatalog.find(g=>g.id===Number(id))?.name||state?.roster?.find(g=>g.table_id===Number(id))?.name||"Nữ Thần "+id;
  e.style.width=size+'px';e.style.height=size+'px';e.setAttribute('role','img');e.setAttribute('aria-label',name);
  const wornSkin=Number(copy?.equips?.[6]||0);
  const sources=[skinAvatarIds.has(wornSkin)?'/assets/skins/'+wornSkin+'.png':null,a?.src,cardIds.has(Number(id))?'/assets/cards/partner_card_'+id+'.png':null,artIds.has(Number(id))?'/assets/characters/'+id+'.png':null].filter(Boolean);
@@ -660,10 +660,10 @@ let servantAvatars={};api('/assets/servants.json').then(d=>{for(const [k,v]of Ob
 async function replay(report,options={}){
  const event=options.event===true;
  const ids=event?{arena:'event-arena',skip:'event-skip',rewards:'event-rewards',allies:'event-allies',enemies:'event-enemies',title:'event-battle-title',line:'event-battle-line'}:{arena:'arena',skip:'skip',rewards:'rewards',allies:'allies',enemies:'enemies',title:'battle-title',line:'battle-line'};
- const el=key=>$(ids[key]),arena=el('arena'),label=options.label||`stage ${selectedStage}`;
+ const el=key=>$(ids[key]),arena=el('arena'),label=options.label||`Ải ${selectedStage}`;
  arena.querySelectorAll('.battle-asset-note').forEach(e=>e.remove());const token=++battleReplayToken;if(battleAnimation){battleAnimation.destroy();battleAnimation=null;}
- skip=false;arena.hidden=false;if(typeof GxbAudio!=='undefined')GxbAudio.battle();el('skip').hidden=false;el('rewards').replaceChildren();el('allies').replaceChildren();el('enemies').replaceChildren();el('title').textContent=label+" · battle";if(event)$('event-battle-continue').hidden=true;const units=new Map();
- const map=/^battle_map_\w+$/.test(report.map_asset)&&battleMapIds.has(report.map_asset)?report.map_asset:'battle_map_26_1';const field=arena.querySelector('.battlefield');field.style.backgroundImage=`url('/assets/battle-maps/${map}.png')`;field.querySelectorAll('.battle-hud,.battle-round').forEach(e=>e.remove());const round=node('div','battle-round','Round 1');field.append(round);
+ skip=false;arena.hidden=false;if(typeof GxbAudio!=='undefined')GxbAudio.battle();el('skip').hidden=false;el('rewards').replaceChildren();el('allies').replaceChildren();el('enemies').replaceChildren();el('title').textContent=label+" · Chiến Đấu";if(event)$('event-battle-continue').hidden=true;const units=new Map();
+ const map=/^battle_map_\w+$/.test(report.map_asset)&&battleMapIds.has(report.map_asset)?report.map_asset:'battle_map_26_1';const field=arena.querySelector('.battlefield');field.style.backgroundImage=`url('/assets/battle-maps/${map}.png')`;field.querySelectorAll('.battle-hud,.battle-round').forEach(e=>e.remove());const round=node('div','battle-round','Hiệp 1');field.append(round);
  // Sanctuary boss: damage bar toward the next reward tier with the gift and the tiers reached (report.boss_bar).
  const bb=report.boss_bar;let bossFill=null,bossText=null,bossGift=null,bossLost=0,bossLast=100,bossTotalLoss=0;if(bb){for(const f of report.frames)for(const b of list(f.buffs))if(b.pos===7&&typeof b.hp==='number'){if(b.hp<bossLast)bossTotalLoss+=bossLast-b.hp;bossLast=b.hp;}bossLast=100;const wrap=node('div','battle-bossbar');const bar=node('div','bb-bar');bossFill=node('i');bossText=node('span');bar.append(bossFill,bossText);bossGift=node('span','bb-gift');const gi=node('img');gi.src='/assets/sanctuary/trial_icon04.png';gi.alt='';bossGift.append(gi,node('b'));wrap.append(bar,bossGift);field.append(wrap);}
  function bossShow(v){if(!bb)return;const next=bb.tiers.find(t=>t>v)??bb.tiers.at(-1);const reached=bb.tiers.filter(t=>t<=v).length;bossFill.style.width=Math.min(100,v/next*100)+'%';bossText.textContent=number(Math.round(v))+' / '+number(next);bossGift.querySelector('b').textContent=String(reached);}bossShow(bb?bb.before:0);
@@ -672,20 +672,20 @@ async function replay(report,options={}){
  for(const u of report.display_units){const e=node('div','unit'+(u.boss&&bb?' boss-unit':'')),xy=battlePositions[u.pos];if(xy){e.style.left=(xy[0]/1080*100)+'%';e.style.top=((1920-xy[1])/1920*100)+'%';}if(artIds.has(u.table_id)){const art=node('img','unit-art');art.src='/assets/characters/'+u.table_id+'.png';art.alt='';art.loading='lazy';e.append(art);}else e.append(portrait(u.table_id,70));const status=node('div','unit-status');status.append(node('span','unit-level',String(u.level||1)));e.title=u.name;const faction=girlsCatalog.find(g=>g.id===u.table_id)?.group;if(faction){const icon=node('img','unit-faction');icon.src=`/assets/factions/${faction}.png`;icon.alt='';status.append(icon);}e.append(status);const bar=node('div','hp'),fill=node('i');fill.style.width='100%';bar.append(fill);e.append(bar);units.set(u.pos,{element:e,fill,name:u.name,hp:100});el(u.pos<=6?'allies':'enemies').append(e);}
  el('line').textContent="Loading original animations…";try{const animation=await ChibiBattle.create(field,report.display_units,battlePositions,{bossScene:!!bb});if(token!==battleReplayToken){animation.destroy();return;}battleAnimation=animation;animation.speed(battleSpeed);for(const [pos,u] of units){if(animation.has(pos))u.element.classList.add('has-chibi');const xy=animation.anchors.get(pos);if(xy){u.element.style.left=(xy[0]/1080*100)+'%';u.element.style.top=((1920-xy[1])/1920*100)+'%';}}if(animation.missing.length){console.warn("No animated model for",animation.missing);const note=node('span','battle-asset-note',"Animated model pending: "+[...new Set(animation.missing)].join(', '));arena.append(note);};}catch(e){console.warn("Animations unavailable",e);}
  arena.scrollIntoView({behavior:skip?'instant':'smooth',block:'center'});const battleStates=await BattleStates.create(units);let frameIndex=0;
- for(const frame of report.frames){if(skip||token!==battleReplayToken||(event&&view!=='event-battle'))break;round.textContent='Round '+frame.round;++frameIndex;for(const e of list(frame.eps))if(e.pos===13)progressFill.style.width=Math.max(0,Math.min(100,e.ep))+'%';if(frame.skill_id>0&&typeof GxbAudio!=='undefined')GxbAudio.skill(frame.skill_id);if(frame.skill_id>0&&battleAnimation?.fx)battleAnimation.fx(frame.skill_id,frame.pos,[...new Set(list(frame.buffs).filter(b=>typeof b.hp==='number'&&b.pos!==frame.pos).map(b=>b.pos))]);if(frame.skill_id>0)battleAnimation?.play(frame.pos,frame.skill_id%100===0?'attack':'skill');for(const u of units.values())u.element.classList.remove('active');const actor=units.get(frame.pos);if(actor){actor.element.classList.add('active');actor.element.classList.remove('attack');void actor.element.offsetWidth;actor.element.classList.add('attack');}if(frame.skill_id>0)el('line').textContent='Round '+frame.round+' · '+(actor?.name||"Equipment")+" acts";else el('line').textContent='Round '+frame.round;
+ for(const frame of report.frames){if(skip||token!==battleReplayToken||(event&&view!=='event-battle'))break;round.textContent='Hiệp '+frame.round;++frameIndex;for(const e of list(frame.eps))if(e.pos===13)progressFill.style.width=Math.max(0,Math.min(100,e.ep))+'%';if(frame.skill_id>0&&typeof GxbAudio!=='undefined')GxbAudio.skill(frame.skill_id);if(frame.skill_id>0&&battleAnimation?.fx)battleAnimation.fx(frame.skill_id,frame.pos,[...new Set(list(frame.buffs).filter(b=>typeof b.hp==='number'&&b.pos!==frame.pos).map(b=>b.pos))]);if(frame.skill_id>0)battleAnimation?.play(frame.pos,frame.skill_id%100===0?'attack':'skill');for(const u of units.values())u.element.classList.remove('active');const actor=units.get(frame.pos);if(actor){actor.element.classList.add('active');actor.element.classList.remove('attack');void actor.element.offsetWidth;actor.element.classList.add('attack');}if(frame.skill_id>0)el('line').textContent='Round '+frame.round+' · '+(actor?.name||"Trang Bị")+" hành động";else el('line').textContent='Round '+frame.round;
   if(bb)for(const b of list(frame.buffs))if(b.pos===7&&typeof b.hp==='number'){if(b.hp<bossLast)bossLost+=bossLast-b.hp;bossLast=b.hp;bossShow(bb.before+bb.dealt*(bossTotalLoss?bossLost/bossTotalLoss:0));}
   for(const buff of list(frame.buffs)){battleStates.apply(buff);const u=units.get(buff.pos);if(u&&typeof buff.hp==='number'){u.fill.style.width=Math.max(0,Math.min(100,buff.hp))+'%';if(buff.hp<u.hp)battleAnimation?.play(buff.pos,buff.hp<=0?'dead':'hurt');u.hp=buff.hp;u.element.classList.toggle('dead',buff.hp<=0);if(buff.hp<=0)battleStates.clear(buff.pos);}}
   await new Promise(resolve=>setTimeout(resolve,(frame.skill_id>0?1000:240)/battleSpeed));
  }
  for(const hp of list(report.hp)){const u=units.get(hp.pos);if(u){u.fill.style.width=Math.max(0,Math.min(100,hp.hp))+'%';u.element.classList.toggle('dead',hp.hp<=0);u.element.classList.remove('active');}}
- if(bb)bossShow(bb.before+bb.dealt);round.textContent='Round '+(report.frames.at(-1)?.round||1);if(event&&view!=='event-battle')return;
+ if(bb)bossShow(bb.before+bb.dealt);round.textContent='Hiệp '+(report.frames.at(-1)?.round||1);if(event&&view!=='event-battle')return;
  // Let the final attack/death Spine clip finish before revealing the outcome.
  if(!skip)await new Promise(resolve=>setTimeout(resolve,Math.max(350,900/battleSpeed)));
- const win=report.isWin===1;el('title').textContent=(win?"Victory":"Defeat")+' · '+label;el('line').textContent=event?(options.practice?"Practice without rewards or spending "+(options.costLabel||"attempts")+'.':win?"Rewards saved.":"Upgrade your team and try again."):(win?"Progress saved. Continue or upgrade your team.":"Try another lineup or level up your team.");el('skip').hidden=true;
+ const win=report.isWin===1;el('title').textContent=(win?"Chiến Thắng":"Thất Bại")+' · '+label;el('line').textContent=event?(options.practice?"Practice without rewards or spending "+(options.costLabel||"attempts")+'.':win?"Rewards saved.":"Upgrade your team and try again."):(win?"Đã lưu tiến độ. Tiếp tục hoặc nâng cấp đội hình.":"Hãy đổi đội hình hoặc tăng cấp Nữ Thần.");el('skip').hidden=true;
  const rewards=event?options.rewards||{}:state.last_battle?.rewards||{};
  if(event){dailyQuizAwards(el('rewards'),rewards);for(const child of el('rewards').children)child.classList.add('reward');$('event-battle-continue').hidden=false;}
  else{const names={'1':"Gold",'2':"Gems",'3':"Player EXP",'9':"Team EXP"};for(const [id,count]of Object.entries(rewards))el('rewards').append(node('span','reward','+'+number(count)+' '+(names[id]||'objeto '+id)));if(!Object.keys(rewards).length)el('rewards').append(node('span','muted',win?"Repeated stage: no additional reward.":"No resources were spent on this battle."));}
- if(typeof CampaignUI!=='undefined')CampaignUI.result(win,rewards,{event,label:(win?"Victory":"Defeat")+' · '+label,report});
+ if(typeof CampaignUI!=='undefined')CampaignUI.result(win,rewards,{event,label:(win?"Chiến Thắng":"Thất Bại")+' · '+label,report});
 }
 function dailyQuizItemName(id){return id==='1'?"Gold":itemCatalog[id]?.name||"Item "+id;}
 function dailyQuizItemImage(id){if(id==='1')return '/assets/currency/icon_1_small.png';const item=itemCatalog[id];return item?itemPicture(item):'';}
@@ -814,8 +814,8 @@ function renderVip(){
  $('vip-perks').textContent=line(P)+(N?"  →  Next level: +"+Math.round(N.extra_output*100)+"% idle rewards, Midas "+N.midas_buy_times+", Internship "+N.pub_mission_num:'');
 }
 function profileOptionLabel(name){
- if(name.startsWith('partner_avatar_')){const id=Number(name.split('_').pop());return state.roster.find(g=>g.table_id===id)?.name||"Girl "+id;}
- return name.startsWith('frame_')?'Marco '+name.split('_')[1]:'Icono '+name.split('_')[1];
+ if(name.startsWith('partner_avatar_')){const id=Number(name.split('_').pop());return state.roster.find(g=>g.table_id===id)?.name||"Nữ Thần "+id;}
+ return name.startsWith('frame_')?'Khung '+name.split('_')[1]:'Avatar '+name.split('_')[1];
 }
 function renderProfilePicker(){
  $('profile-preview-image').src=profileAsset(profileDraft.avatar);$('profile-preview-frame').src=profileAsset(profileDraft.frame);if(typeof HeroGlow!=='undefined')HeroGlow.profile($('profile-preview-frame').parentElement,profileDraft.frame);
