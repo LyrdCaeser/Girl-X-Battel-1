@@ -5,7 +5,7 @@ import secrets
 import time
 
 from . import auth, database, live_service
-from .battle import simulate
+from .battle import simulate, ONLINE_BATTLE_ID, normalize_online_seed
 from .player_engines import PlayerEnginePool
 
 QA_USERS=("qa_release_a","qa_release_b")
@@ -166,9 +166,9 @@ def run_release_qa_once():
         ready=live_service.heartbeat_pvp_match(mid,uid_b,True)
         if ready["match"].get("status")!="active":
             raise RuntimeError("QA PvP readiness failed")
-        seed=int(match.get("seed") or 1)
+        seed=normalize_online_seed(int(match.get("seed") or 1))
         report=simulate(
-            sa["team"],sb["team"],battle_id=seed,seed=seed,
+            sa["team"],sb["team"],battle_id=ONLINE_BATTLE_ID,seed=seed,
             pet_a=sa.get("pet"),pet_b=sb.get("pet"),
             guild_skills_a=sa.get("guild_skills") or [],
             guild_skills_b=sb.get("guild_skills") or [],
@@ -194,9 +194,9 @@ def run_release_qa_once():
         finally:
             db.close()
         prep=live_service.prepare_guild_war_attack(uid_a,"S1",wid,uid_b)
-        gseed=int.from_bytes(hashlib.sha256(f"{wid}:{uid_a}:{uid_b}".encode()).digest()[:4],"big") or 1
+        gseed=normalize_online_seed(int.from_bytes(hashlib.sha256(f"{wid}:{uid_a}:{uid_b}".encode()).digest()[:4],"big"))
         greport=simulate(
-            sa["team"],sb["team"],battle_id=gseed,seed=gseed,
+            sa["team"],sb["team"],battle_id=ONLINE_BATTLE_ID,seed=gseed,
             pet_a=sa.get("pet"),pet_b=sb.get("pet"),
             guild_skills_a=sa.get("guild_skills") or [],
             guild_skills_b=sb.get("guild_skills") or [],
