@@ -25,6 +25,7 @@ from gxb2 import protocol as p, local_promotion, local_config, world_live_config
 from gxb2.player_engines import PlayerEnginePool
 from gxb2.battle import simulate as simulate_battle
 from gxb2.security import FixedWindowRateLimiter, DEFAULT_LIMITS, env_bool, validate_production_config
+from gxb2.production import run_startup_preflight
 
 ROOT = Path(__file__).resolve().parent
 ADMIN_KEY = os.environ.get('GXB3_ADMIN_KEY', '').strip()
@@ -1155,6 +1156,9 @@ def main():
         database_url=(os.environ.get('GXB3_DATABASE_URL') or os.environ.get('DATABASE_URL') or ''),
     )
     for warning in warnings: print('GXB3 WARNING: '+warning,flush=True)
+    if env_bool('GXB3_PRODUCTION',False):
+        proof=run_startup_preflight()
+        print(f"GXB3 production preflight PASS: db={proof['database']} battle_frames={proof['battle_frames']} rounds={proof['battle_rounds']}",flush=True)
     engine = Engine(args.db)
     developer = Engine(args.db.with_name(args.db.stem + ".developer.sqlite3"), developer=True)
     player_engines = PlayerEnginePool()
