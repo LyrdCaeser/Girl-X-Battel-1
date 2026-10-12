@@ -1,10 +1,12 @@
 package com.gxb3.game;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.webkit.CookieManager;
+import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
@@ -67,7 +69,22 @@ public final class MainActivity extends Activity {
         cookies.setAcceptCookie(true);
         cookies.setAcceptThirdPartyCookies(webView, false);
 
-        webView.setWebChromeClient(new WebChromeClient());
+        webView.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public boolean onJsConfirm(WebView view, String url, String message, JsResult result) {
+                String text = localizeConfirm(message);
+                AlertDialog dialog = new AlertDialog.Builder(MainActivity.this)
+                    .setTitle("GXB 3")
+                    .setMessage(text)
+                    .setNegativeButton("Hủy", (d, which) -> result.cancel())
+                    .setPositiveButton("Xác nhận", (d, which) -> result.confirm())
+                    .setOnCancelListener(d -> result.cancel())
+                    .create();
+                dialog.setCanceledOnTouchOutside(false);
+                dialog.show();
+                return true;
+            }
+        });
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
@@ -89,6 +106,20 @@ public final class MainActivity extends Activity {
         }
         showLoading();
         wakeServerThenOpen();
+    }
+
+    private String localizeConfirm(String message) {
+        String raw = message == null ? "" : message.trim();
+        if (raw.equalsIgnoreCase("This is irreversible. Are you sure you want to do this?")) {
+            return "Thao tác này không thể hoàn tác. Bạn có chắc chắn muốn tiếp tục?";
+        }
+        if (raw.toLowerCase().contains("irreversible")) {
+            return "Thao tác này không thể hoàn tác. Bạn có chắc chắn muốn tiếp tục?";
+        }
+        if (raw.isEmpty()) {
+            return "Bạn có chắc chắn muốn tiếp tục?";
+        }
+        return raw;
     }
 
     private void showLoading() {
