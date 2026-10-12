@@ -166,7 +166,8 @@ def run_release_qa_once():
         ready=live_service.heartbeat_pvp_match(mid,uid_b,True)
         if ready["match"].get("status")!="active":
             raise RuntimeError("QA PvP readiness failed")
-        seed=normalize_online_seed(int(match.get("seed") or 1))
+        internal_match=live_service.pvp_match_internal(mid,uid_a)
+        seed=normalize_online_seed(int(internal_match.get("seed") or 1))
         report=simulate(
             sa["team"],sb["team"],battle_id=ONLINE_BATTLE_ID,seed=seed,
             pet_a=sa.get("pet"),pet_b=sb.get("pet"),
