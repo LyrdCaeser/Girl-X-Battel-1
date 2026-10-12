@@ -541,10 +541,12 @@ function visualFailure(scope,e){console.warn(scope,e);try{sessionStorage.setItem
 async function action(message,data){if(busy)return;busy=true;error('');render();try{let storyPost=0,storyPre=0;const flow=message==='MAP_FIGHT'&&typeof CampaignFlow!=='undefined';if(message==='MAP_FIGHT'&&typeof StoryPlayer!=='undefined'){try{const sp=await api('/api/story/stage',{stage:data.stage_id});storyPost=sp.post||0;storyPre=sp.pre||0;}catch{}}
  if(!flow&&storyPre){try{await StoryPlayer.play(storyPre);}catch(e){visualFailure('campaign-story-pre',e);}api('/api/story/action',{action:'seen',plot:storyPre}).catch(()=>{});}
  // Server state is authoritative. Visual layers are optional: a WebView/Spine failure must never turn a successful fight or summon into a failed game action.
+ const summonWaitStop=message==='SUMMON'&&typeof SummonAnim!=='undefined'&&SummonAnim.waiting?SummonAnim.waiting(data.summon_id):null;
  const serverWork=(async()=>{const r=await api('/api/action',{message,data});if(message==='MAP_FIGHT')r._report=await api('/api/battle/'+r.state.last_battle.id);return r;})();
  let res;
  if(flow){try{res=await CampaignFlow.loading(serverWork);}catch(e){try{res=await serverWork;visualFailure('campaign-loading',e);}catch(serverError){throw serverError;}}}
  else res=await serverWork;
+ summonWaitStop?.();
  state=res.state;
  if(message==='SET_HANG_TEAM'||message==='MAP_FIGHT')loadFormation();
  if(message==='MAP_FIGHT'){
@@ -567,7 +569,7 @@ async function action(message,data){if(busy)return;busy=true;error('');render();
    $('capsule-result').replaceChildren(...items.map(it=>node('div','capsule-result-card',"+"+number(it.item_num)+" · Item "+it.item_id)));
   }
  }
- return res;}catch(e){error(e.message);if(view==='capsule')$('capsule-result').textContent=e.message;}finally{busy=false;render();}}
+ return res;}catch(e){summonWaitStop?.();error(e.message);if(view==='capsule')$('capsule-result').textContent=e.message;}finally{busy=false;render();}}
 function renderSummon(partners){$('capsule-result').replaceChildren();for(const partner of partners){const card=node('div','capsule-result-card'),name=state.roster.find(v=>v.partner_id===partner.partner_id)?.name||String(partner.table_id);card.append(portrait(partner.table_id,74),node('strong','',name));$('capsule-result').append(card);}}
 function renderShardSummon(partners){$('shard-draw-result').replaceChildren();if(!partners.length)return;$('shard-draw-result').append(node('h3','',"New Girl recruited!"));const grid=node('div','shard-new-girls');for(const partner of partners){const h=state.roster.find(v=>v.partner_id===partner.partner_id);if(typeof SummonResult!=='undefined')grid.append(SummonResult.heroIcon({table_id:partner.table_id,star:h?.stars||partner.star,name:h?.name}));else grid.append(portrait(partner.table_id,74));}$('shard-draw-result').append(grid);}
 
