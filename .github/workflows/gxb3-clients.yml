@@ -41,7 +41,7 @@ jobs:
           if ((Get-Item dist\GXB3-Windows-x64.exe).Length -le 0) { throw "Empty EXE" }
       - uses: actions/upload-artifact@v4
         with:
-          name: GXB3-Windows-x64-RC1
+          name: GXB3-Windows-x64-RC2
           path: dist/GXB3-Windows-x64.exe
           if-no-files-found: error
           compression-level: 9
@@ -78,10 +78,10 @@ jobs:
           test -s "$APK"
           ls -lh "$APK"
           ${ANDROID_HOME}/build-tools/35.0.0/apksigner verify --verbose "$APK"
-          cp "$APK" GXB3-Android-RC1.apk
+          cp "$APK" GXB3-Android-RC2.apk
       - uses: actions/upload-artifact@v4
         with:
-          name: GXB3-Android-RC1
-          path: GXB3-Android-RC1.apk
+          name: GXB3-Android-RC2
+          path: GXB3-Android-RC2.apk
           if-no-files-found: error
           compression-level: 9
