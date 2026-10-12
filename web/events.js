@@ -5,11 +5,24 @@ const EventsHub=(()=>{
  // tab hosts the newbie list (EventType.NEWBIE, which had its own entry in the original client).
  const TABS=[['ex','left'],['new','mid'],['month','right']];
  const WORKING=new Set([196,37,189,1,116,13,16,20,309,140,134,331,292,64,338,329,330,150]); // + every id of ActKit (generic kit) once loaded
- const POINT={13:{bg:'summon_giftbag_bg01',text:'summon_giftbag_text01_en_en',desc:'During the event draw Adv. Capsules to earn rewards!',go:'Capsule',route:'capsule'},16:{bg:'prophet_summon_giftbag_bg01',text:'prophet_summon_giftbag_text01_en_en',desc:"Each Seal used will give 1 point. You can receive rewards 6 times during the event!",go:'Enroll',route:'enroll'},20:{bg:'wishing_pool_giftbag_bg01',text:'wishing_pool_giftbag_text01_en_en',desc:'Every pull on the Slot Machine will give 1 point. You can earn reward 8 times during the event!',go:'Slot Machine',route:'slots'}};      // activity ids with a local implementation
- const NAMES={'1':"Gold",'2':"Gems",'3':'EXP'};
+ const POINT={13:{bg:'summon_giftbag_bg01',text:'summon_giftbag_text01_en_en',desc:'Trong thời gian sự kiện, hãy Triệu Hồi Cao Cấp để tích điểm nhận thưởng!',go:'Triệu Hồi',route:'capsule'},16:{bg:'prophet_summon_giftbag_bg01',text:'prophet_summon_giftbag_text01_en_en',desc:"Mỗi Ấn đã dùng nhận 1 điểm. Có thể nhận đủ các mốc thưởng nhiều vòng trong sự kiện!",go:'Chiêu Mộ',route:'enroll'},20:{bg:'wishing_pool_giftbag_bg01',text:'wishing_pool_giftbag_text01_en_en',desc:'Mỗi lần quay Máy Quay nhận 1 điểm. Hãy tích điểm để nhận toàn bộ mốc thưởng!',go:'Máy Quay',route:'slots'}};      // activity ids with a local implementation
+ const NAMES={'1':"Vàng",'2':"Kim Cương",'3':'EXP'};
+ const VI_EVENT={
+  'Events':'Sự Kiện','Calendar':'Lịch Sự Kiện','Resets':'Đặt lại','Open now':'Đang diễn ra','Coming next':'Sắp diễn ra',
+  'Monthly Events':'Sự Kiện Tháng','Exclusives':'Độc Quyền','Novato':'Tân Thủ','Back':'Quay Lại',
+  'Loading events…':'Đang tải sự kiện…','There are no events in this tab.':'Không có sự kiện trong mục này.',
+  'No event data.':'Chưa có dữ liệu sự kiện.','Saved.':'Đã lưu.','Guardando…':'Đang lưu…',
+  'Capsule':'Triệu Hồi','Enroll':'Chiêu Mộ','Slot Machine':'Máy Quay','Left':'Còn lại',
+  'Completed':'Đã hoàn thành','Claimed':'Đã nhận','Day':'Ngày','Item':'Vật phẩm'
+ };
+ const vi=text=>{const raw=String(text??'');const direct=VI_EVENT[raw];if(direct)return direct;if(window.GxbVi){const t=GxbVi.t(raw);if(t!==raw)return t;}return raw
+  .replace(/\bEvents\b/g,'Sự Kiện').replace(/\bMonthly\b/g,'Tháng').replace(/\bWeekly\b/g,'Tuần')
+  .replace(/\bDay\s+(\d+)/g,'Ngày $1').replace(/\bClaimed\b/g,'Đã nhận').replace(/\bReward(s)?\b/g,'Phần thưởng')
+  .replace(/\bGet\s+(\d+)\s+point\(s\)/g,'Đạt $1 điểm').replace(/\bPurchased:\s*/g,'Đã mua: ');
+ };
  let catalog=null,loading=null,tab='ex',selected=null,origin='home',pending=false,message='',visited=false;
  const A=name=>'/assets/events/'+name+'.png';
- const el=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;};
+ const el=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=vi(text);return e;};
  const img=(src,cls,alt='')=>{const i=el('img',cls);i.src=src;i.alt=alt;i.draggable=false;return i;};
  const hub=()=>state.event_hub;
  const fmt=n=>typeof number==='function'?number(n):String(n);
@@ -18,7 +31,7 @@ const EventsHub=(()=>{
  function pairs(text){return String(text||'').split('|').filter(s=>s.includes('#')).map(s=>s.split('#'));}
  function claimable(id){const h=hub();if(id===1)return h.checkin.grid.some(d=>d.can);if(id===116)return h.sevenday.days.some(d=>d.can);return false;}
  function inTab(a,t){if(t==='new')return a.type1===3;if(t==='month')return (a.type1===2||a.type1===7)&&a.type2===3;return (a.type1===2||a.type1===7)&&a.type2!==3;}
- function tabLabel(t){return t==='new'?'Novato':t==='month'?catalog.text.ACTIVITY_NAV_TEXT_2_3||'Monthly Events':catalog.text.ACTIVITY_NAV_TEXT_2_1||'Exclusives';}
+ function tabLabel(t){return t==='new'?'Tân Thủ':t==='month'?'Sự Kiện Tháng':'Độc Quyền';}
  // The original server opened a handful of limited events at a time. Locally: every working event, plus a
  // deterministic weekly rotation of ROTATION archived ones per tab (ISO week number as seed).
  const ROTATION=5;
@@ -30,11 +43,11 @@ const EventsHub=(()=>{
  const slot=id=>cal()?.events.find(e=>e.id===id);
  const openNow=id=>!cal()||!cal().scheduled.includes(id)||!!slot(id);
  const leftText=at=>{const s=Math.max(0,at-Math.floor(Date.now()/1000));const d=Math.floor(s/86400),h=Math.floor(s%86400/3600);return d?d+'d '+h+'h':h+'h '+Math.floor(s%3600/60)+'m';};
- function calendarWin(){const c=cal();if(!c||typeof GirlUI==='undefined')return;const {body}=GirlUI.win({title:'Calendar',cls:'ev-cal'});const sec=(t)=>{body.append(el('h4','ev-cal-h',t));};const row=(a,b)=>{const r=el('div','ev-cal-row');r.append(el('span','',a),el('b','',b));body.append(r);};
-  sec('Resets');for(const r of c.resets)row(r.label,leftText(r.at));
-  sec('Open now');for(const e of c.events)row((e.kind==='month'?'[Monthly] ':'[Weekly] ')+e.title,'ends in '+leftText(e.end));
-  sec('Coming next');for(const e of c.next)row((e.kind==='month'?'[Monthly] ':'[Weekly] ')+e.title,'in '+leftText(e.start));
-  body.append(el('p','ev-cal-note',"Local calendar: weeks run from Monday to Sunday and months start on the 1st. Closed events retain your progress until they return."));}
+ function calendarWin(){const c=cal();if(!c||typeof GirlUI==='undefined')return;const {body}=GirlUI.win({title:'Lịch Sự Kiện',cls:'ev-cal'});const sec=(t)=>{body.append(el('h4','ev-cal-h',t));};const row=(a,b)=>{const r=el('div','ev-cal-row');r.append(el('span','',a),el('b','',b));body.append(r);};
+  sec('Đặt lại');for(const r of c.resets)row(r.label,leftText(r.at));
+  sec('Đang diễn ra');for(const e of c.events)row((e.kind==='month'?'[Monthly] ':'[Weekly] ')+e.title,'còn '+leftText(e.end));
+  sec('Sắp diễn ra');for(const e of c.next)row((e.kind==='month'?'[Monthly] ':'[Weekly] ')+e.title,'sau '+leftText(e.start));
+  body.append(el('p','ev-cal-note',"Lịch game: tuần tính từ Thứ Hai đến Chủ Nhật, tháng bắt đầu từ ngày 1. Sự kiện tạm đóng vẫn giữ nguyên tiến độ cho lần mở tiếp theo."));}
  function list(){const all=catalog.activities.filter(a=>inTab(a,tab)&&!(a.id===116&&hub().sevenday.done));return [...all.filter(a=>WORKING.has(a.id)&&openNow(a.id)),...rotation(all)].sort((a,b)=>(WORKING.has(b.id)-WORKING.has(a.id))||(b.rank-a.rank)||(b.id-a.id));}
  function listAll(){return catalog.activities.filter(a=>inTab(a,tab)&&!(a.id===116&&hub().sevenday.done)).sort((a,b)=>(WORKING.has(b.id)-WORKING.has(a.id))||(b.rank-a.rank)||(b.id-a.id));}
 
@@ -45,15 +58,15 @@ const EventsHub=(()=>{
   const root=$('events-view');if(!root||view!=='events')return;root.replaceChildren();
   const top=el('header','ev-top');const back=el('button','ev-back');back.type='button';back.setAttribute('aria-label',"Back");back.append(img('/assets/ui/win_back_btn.png'));back.onclick=()=>showView(origin==='events'?'home':origin);
   const money=el('div','ev-money');for(const id of ['1','2']){const s=el('span');s.append(img('/assets/currency/icon_'+id+'_small.png'),el('b',undefined,fmt(state.items[id]||0)));money.append(s);}
-  top.append(back,el('h1',undefined,"Events"),money);root.append(top);
-  if(!catalog||!hub()){root.append(el('p','ev-note',message||"Loading events…"));return;}
-  const win=el('div','ev-window');root.append(win);const tabs=el('nav','ev-tabs');for(const [id,pos]of TABS){const b=el('button','ev-tab '+pos+(tab===id?' on':''),tabLabel(id));b.type='button';b.onclick=()=>{if(tab===id)return;tab=id;selected=null;message='';if(typeof GxbAudio!=='undefined')GxbAudio.sfx('ui_switch_page',.6);render();};if(catalog.activities.some(a=>inTab(a,id)&&claimable(a.id)))b.append(img(A('alert_icon'),'ev-tab-red'));tabs.append(b);}win.append(tabs);{const cb=el('button','ev-cal-btn','📅 Calendar');cb.type='button';cb.onclick=calendarWin;win.append(cb);}const panel=el('div','ev-panel');win.append(panel);
+  top.append(back,el('h1',undefined,"Sự Kiện"),money);root.append(top);
+  if(!catalog||!hub()){root.append(el('p','ev-note',message||"Đang tải sự kiện…"));return;}
+  const win=el('div','ev-window');root.append(win);const tabs=el('nav','ev-tabs');for(const [id,pos]of TABS){const b=el('button','ev-tab '+pos+(tab===id?' on':''),tabLabel(id));b.type='button';b.onclick=()=>{if(tab===id)return;tab=id;selected=null;message='';if(typeof GxbAudio!=='undefined')GxbAudio.sfx('ui_switch_page',.6);render();};if(catalog.activities.some(a=>inTab(a,id)&&claimable(a.id)))b.append(img(A('alert_icon'),'ev-tab-red'));tabs.append(b);}win.append(tabs);{const cb=el('button','ev-cal-btn','📅 Lịch');cb.type='button';cb.onclick=calendarWin;win.append(cb);}const panel=el('div','ev-panel');win.append(panel);
   const items=list();if(!items.some(a=>a.id===selected))selected=items[0]?.id??null;
   const strip=el('div','ev-strip');for(const a of items){const b=el('button','ev-title'+(a.id===selected?' on':''));b.type='button';b.title=a.title.replace(/\n/g,' ');b.append(img(A(a.id===selected?'activity_icon_1_middle':'activity_icon_0_middle'),'ev-title-bg'),img(A('icon_'+a.icon),'ev-title-icon'),el('span','ev-title-label',a.title));if(slot(a.id))b.append(el('small','ev-title-left',leftText(slot(a.id).end)));if(claimable(a.id))b.append(img(A('person_icon_red_point'),'ev-title-red'));b.onclick=()=>{selected=a.id;message='';render();};strip.append(b);}panel.append(strip);
   requestAnimationFrame(()=>strip.querySelector('.on')?.scrollIntoView({block:'nearest',inline:'nearest'}));
   const body=el('div','ev-body');panel.append(body);
   const a=items.find(x=>x.id===selected);
-  if(!a)body.append(el('p','ev-note',"There are no events in this tab."));else if(a.id===1)checkIn(body);else if(a.id===116)sevenDay(body,a);else if(POINT[a.id])pointEvent(body,a);else if(a.id===64&&typeof Jackpot!=='undefined')Jackpot.render(body);else if(a.id===196&&typeof FireworkProject!=='undefined')FireworkProject.render(body);else if((a.id===37||a.id===189)&&typeof PuzzleEvents!=='undefined')PuzzleEvents.render(body,a.id);else if(a.id===338&&typeof BlindBox!=='undefined')BlindBox.render(body);else if(a.id===329&&typeof Pirate!=='undefined')Pirate.render(body);else if(a.id===330&&typeof Pirate!=='undefined')Pirate.vaults(body);else if(typeof ActKit!=='undefined'&&ActKit.has(a.id))ActKit.render(body,a);else if(a.id===309&&typeof SandHunt!=='undefined')SandHunt.render(body);else if(a.id===140&&typeof WishCapsule!=='undefined')WishCapsule.panel(body);else if(a.id===134&&typeof MagicCard!=='undefined')MagicCard.render(body);else if(a.id===331&&typeof MatchingPairs!=='undefined')MatchingPairs.render(body);else if(a.id===292&&typeof LostSpace!=='undefined')LostSpace.panel(body);else if(a.id===150&&typeof PumpkinPatch!=='undefined')PumpkinPatch.render(body);else archived(body,a);
+  if(!a)body.append(el('p','ev-note',"Không có sự kiện trong mục này."));else if(a.id===1)checkIn(body);else if(a.id===116)sevenDay(body,a);else if(POINT[a.id])pointEvent(body,a);else if(a.id===64&&typeof Jackpot!=='undefined')Jackpot.render(body);else if(a.id===196&&typeof FireworkProject!=='undefined')FireworkProject.render(body);else if((a.id===37||a.id===189)&&typeof PuzzleEvents!=='undefined')PuzzleEvents.render(body,a.id);else if(a.id===338&&typeof BlindBox!=='undefined')BlindBox.render(body);else if(a.id===329&&typeof Pirate!=='undefined')Pirate.render(body);else if(a.id===330&&typeof Pirate!=='undefined')Pirate.vaults(body);else if(typeof ActKit!=='undefined'&&ActKit.has(a.id))ActKit.render(body,a);else if(a.id===309&&typeof SandHunt!=='undefined')SandHunt.render(body);else if(a.id===140&&typeof WishCapsule!=='undefined')WishCapsule.panel(body);else if(a.id===134&&typeof MagicCard!=='undefined')MagicCard.render(body);else if(a.id===331&&typeof MatchingPairs!=='undefined')MatchingPairs.render(body);else if(a.id===292&&typeof LostSpace!=='undefined')LostSpace.panel(body);else if(a.id===150&&typeof PumpkinPatch!=='undefined')PumpkinPatch.render(body);else archived(body,a);
   const status=el('p','ev-status',message);status.setAttribute('role','status');panel.append(status);
  }
 
@@ -72,8 +85,8 @@ const EventsHub=(()=>{
     const frame=d.can?'frame_can_get':d.got?'frame_has_gotten':'frame_'+Math.ceil(d.pos/5),num='num_'+d.pos+(d.can?'_1':d.got?'_2':'');
     cell.append(img(A('check_in_pop_up_'+frame),'ci-frame'),rewardIcon(id,n,'ci-icon'),img(A('check_in_pop_up_'+num),'ci-num'));
     if(d.got)cell.append(img(A('check_in_pop_up_item_mask'),'ci-mask'),img(A('check_in_pop_up_circle'),'ci-circle'));
-    cell.title="Day "+d.day+': '+itemName(id)+' × '+fmt(n);cell.disabled=pending||!d.can;cell.onclick=()=>send({action:'checkin'});row.append(cell);}}
-  parent.append(el('p','ev-note',"Login day "+h.online_days+" · claimed: "+h.checkin.count+". Each login day unlocks one space (390-day loop, as in the original)."));
+    cell.title="Ngày "+d.day+': '+itemName(id)+' × '+fmt(n);cell.disabled=pending||!d.can;cell.onclick=()=>send({action:'checkin'});row.append(cell);}}
+  parent.append(el('p','ev-note',"Ngày đăng nhập "+h.online_days+" · đã nhận: "+h.checkin.count+". Mỗi ngày đăng nhập mở một ô phần thưởng."));
  }
 
  function sevenDay(parent,a){
@@ -81,23 +94,23 @@ const EventsHub=(()=>{
   box.append(img(A('activity_bg03'),'sd-bg'),img(A('activity_sevenday_text01_en_en'),'sd-title'));
   const grid=el('div','sd-grid');box.append(grid);
   for(const d of h.sevenday.days){const c=el('button','sd-day'+(d.can?' can':'')+(d.got?' got':''));c.type='button';c.append(img(A('day_'+d.day+'_'+(d.got?2:1)),'sd-day-bg'));const rw=el('div','sd-rewards');for(const [id,n]of pairs(d.award))rw.append(rewardIcon(id,n));c.append(rw);c.disabled=pending||!d.can;c.onclick=()=>send({action:'sevenday'});grid.append(c);}
-  parent.append(el('p','ev-note',(a.desc&&a.desc!=='-1'?a.desc+' · ':'')+"One day per login day. Claimed "+h.sevenday.count+'/7.'));
+  parent.append(el('p','ev-note',(a.desc&&a.desc!=='-1'?a.desc+' · ':'')+"Mỗi ngày đăng nhập mở một mốc. Đã nhận "+h.sevenday.count+'/7.'));
  }
 
  // Point events (SummonGiftBag / ProphetSummonGiftBag / WishingPoolGiftBag): banner, loop counter, tiers.
  function left(info){const secs=Math.max(0,info.ends_at-(state.server_time||Date.now()/1000));return Math.floor(secs/86400)+'D '+Math.floor(secs%86400/3600)+'H';}
  function pointEvent(parent,a){const cfg=POINT[a.id],info=state.point_events_info?.[a.id];if(!info){parent.append(el('p','ev-note',"No event data."));return;}
-  const ban=el('div','pe-banner');ban.style.backgroundImage=`url('${A(cfg.bg)}')`;ban.append(img(A(cfg.text),'pe-title'),el('p','pe-desc',a.id===20?'Every pull on the Slot Machine will give 1 point. You can earn rewards '+info.times+' times during the event!':cfg.desc));
-  const strip=el('div','pe-strip');strip.append(el('b','','Completed ('+info.rounds+'/'+info.times+')'),el('span','pe-left',left(info)),el('span','pe-left-label','Left'));ban.append(strip);
+  const ban=el('div','pe-banner');ban.style.backgroundImage=`url('${A(cfg.bg)}')`;ban.append(img(A(cfg.text),'pe-title'),el('p','pe-desc',a.id===20?'Mỗi lần quay Máy Quay nhận 1 điểm. Có thể hoàn thành '+info.times+' vòng thưởng trong sự kiện!':cfg.desc));
+  const strip=el('div','pe-strip');strip.append(el('b','','Đã hoàn thành ('+info.rounds+'/'+info.times+')'),el('span','pe-left',left(info)),el('span','pe-left-label','Còn lại'));ban.append(strip);
   const go=el('button','pe-go',cfg.go);go.type='button';go.style.backgroundImage=`url('${A('house_icon_1')}')`;go.disabled=!cfg.route;go.title=cfg.route?'':"The slot machine has not been restored yet";go.onclick=()=>{if(cfg.route==='capsule')showView('capsule');else if(cfg.route==='enroll'&&typeof Enroll!=='undefined')Enroll.open('events');else if(cfg.route==='slots'&&typeof Slots!=='undefined')Slots.open('events');};ban.append(go);parent.append(ban);
-  const list=el('div','pe-list');for(const t of info.tiers){const row=el('div','pe-row');const l=el('div','pe-left-col');l.append(el('b','','Get '+t.point+' point(s)'));const bar=el('div','pe-bar');bar.style.backgroundImage=`url('${A('activity_bar_bg')}')`;const fill=el('i');fill.style.width=Math.min(100,(t.got?t.point:info.point)/t.point*100)+'%';fill.style.backgroundImage=`url('${A('activity_bar_thumb')}')`;bar.append(fill,el('span','',(t.got?t.point:Math.min(info.point,t.point))+'/'+t.point));l.append(bar);row.append(l);
+  const list=el('div','pe-list');for(const t of info.tiers){const row=el('div','pe-row');const l=el('div','pe-left-col');l.append(el('b','','Đạt '+t.point+' điểm'));const bar=el('div','pe-bar');bar.style.backgroundImage=`url('${A('activity_bar_bg')}')`;const fill=el('i');fill.style.width=Math.min(100,(t.got?t.point:info.point)/t.point*100)+'%';fill.style.backgroundImage=`url('${A('activity_bar_thumb')}')`;bar.append(fill,el('span','',(t.got?t.point:Math.min(info.point,t.point))+'/'+t.point));l.append(bar);row.append(l);
    const rw=el('div','pe-rewards');for(const [id,n]of pairs(t.awards)){const r=rewardIcon(id,n,'pe-item');if(t.got)r.append(img(A('icon_check'),'pe-check'));rw.append(r);}row.append(rw);list.append(row);}
-  parent.append(list);parent.append(el('p','ev-note',"Rewards are added directly to your Bag at each level (originally delivered by Mail). Weekly reset: Monday at 00:00 local time."));}
+  parent.append(list);parent.append(el('p','ev-note',"Phần thưởng được cộng trực tiếp vào Túi Đồ khi đạt từng mốc. Đặt lại hằng tuần vào 00:00 Thứ Hai."));}
 
  function archived(parent,a){
   const c=el('div','ev-archive');c.append(img(A('icon_'+a.icon),'ev-archive-icon'),el('h2',undefined,a.title.replace(/\n/g,' ')));
   if(a.desc&&a.desc!=='-1')c.append(el('p',undefined,a.desc));
-  c.append(el('p','ev-note',"This week's rotating event (ID "+a.id+"). Gameplay has not been restored yet; this is a preview of the original artwork. Rotation changes every Monday."));parent.append(c);
+  c.append(el('p','ev-note',"Sự kiện luân phiên tuần này (ID "+a.id+"). Nội dung chơi của sự kiện này đang được hoàn thiện; lịch luân phiên đổi vào mỗi Thứ Hai."));parent.append(c);
  }
  function openPoint(id,from){tab='ex';selected=id;open(from);}
  return {open,openPoint,render};
