@@ -3,12 +3,12 @@
 // desktop uses the full desktop window. Never scale the desktop layout into a phone.
 (()=>{
  const ua=navigator.userAgent||'';
- const forceMobile=/GXB3-Android/i.test(ua);
+ const forceMobile=/GXB3-Android|Android|iPhone|iPod/i.test(ua);
  const coarse=matchMedia('(pointer:coarse)').matches;
  const narrow=matchMedia('(max-width:700px)').matches;
 
  function mode(){
-   return forceMobile || (coarse && narrow) ? 'mobile' : 'desktop';
+   return forceMobile || narrow || (coarse && matchMedia('(max-width:900px)').matches) ? 'mobile' : 'desktop';
  }
 
  function fit(){
