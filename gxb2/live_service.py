@@ -23,6 +23,12 @@ def _audit(db, action, target, detail, operator="GM"):
                (int(time.time()), operator, action, target, json.dumps(detail, ensure_ascii=False)))
 
 
+def _for_update(db, sql, *, skip_locked=False):
+    if db.backend != "postgres":
+        return sql
+    return sql.rstrip() + (" FOR UPDATE SKIP LOCKED" if skip_locked else " FOR UPDATE")
+
+
 def worlds():
     with _lock:
         db=_db()
@@ -508,14 +514,14 @@ def enqueue_pvp(uid, server_id, character_name, mode, power=0):
                         joined_at=excluded.joined_at,status='waiting'""",
                    (uid,server_id,character_name,mode,power,now))
         if mode=="cross":
-            opponent=db.execute("""SELECT * FROM pvp_queue
+            opponent=db.execute(_for_update(db, """SELECT * FROM pvp_queue
                                    WHERE mode=? AND status='waiting' AND uid<>?
-                                   ORDER BY ABS(power-?),joined_at LIMIT 1""",
+                                   ORDER BY ABS(power-?),joined_at LIMIT 1""", skip_locked=True),
                                 (mode,uid,power)).fetchone()
         else:
-            opponent=db.execute("""SELECT * FROM pvp_queue
+            opponent=db.execute(_for_update(db, """SELECT * FROM pvp_queue
                                    WHERE mode=? AND status='waiting' AND server_id=? AND uid<>?
-                                   ORDER BY ABS(power-?),joined_at LIMIT 1""",
+                                   ORDER BY ABS(power-?),joined_at LIMIT 1""", skip_locked=True),
                                 (mode,server_id,uid,power)).fetchone()
         if opponent:
             match_id="PVP-"+uuid.uuid4().hex[:16].upper()
@@ -709,7 +715,7 @@ def finish_authoritative_pvp(match_id, requester_uid, snapshot_a, snapshot_b, re
         raise ValueError("PvP result payload không hợp lệ")
     with _lock:
         db=_db(); db.execute("BEGIN IMMEDIATE")
-        row=db.execute("SELECT * FROM pvp_matches WHERE id=?",(match_id,)).fetchone()
+        row=db.execute(_for_update(db, "SELECT * FROM pvp_matches WHERE id=?"),(match_id,)).fetchone()
         if not row:
             db.rollback(); db.close(); raise ValueError("Không tìm thấy trận PvP")
         if requester_uid not in (row["player_a"],row["player_b"]):
@@ -1281,7 +1287,7 @@ def record_guild_war_battle(war_id, attacker_uid, defender_uid, attacker_snapsho
     now=int(time.time())
     with _lock:
         db=_db(); db.execute("BEGIN IMMEDIATE")
-        war=db.execute("SELECT * FROM guild_wars WHERE id=?",(str(war_id),)).fetchone()
+        war=db.execute(_for_update(db, "SELECT * FROM guild_wars WHERE id=?"),(str(war_id),)).fetchone()
         if not war:
             db.rollback(); db.close(); raise ValueError("Không tìm thấy Guild War")
         if war["status"]!="active" or now < int(war["starts_at"]) or now >= int(war["ends_at"]):
@@ -1294,6 +1300,15 @@ def record_guild_war_battle(war_id, attacker_uid, defender_uid, attacker_snapsho
             db.rollback(); db.close(); raise ValueError("Cặp Guild War không hợp lệ")
         if int(attacker["guild_id"]) not in (int(war["guild_a"]),int(war["guild_b"])):
             db.rollback(); db.close(); raise ValueError("Guild tấn công không thuộc Guild War")
+        existing=db.execute("""SELECT id,winner_uid,score FROM guild_war_battles
+                               WHERE war_id=? AND attacker_uid=? AND defender_uid=?""",
+                            (str(war_id),str(attacker_uid),str(defender_uid))).fetchone()
+        if existing:
+            updated=db.execute("SELECT * FROM guild_wars WHERE id=?",(str(war_id),)).fetchone()
+            db.commit()
+            out={"battle_id":existing["id"],"winner_uid":existing["winner_uid"],
+                 "score":int(existing["score"]),"war":dict(updated),"idempotent":True}
+            db.close(); return out
         is_win=int(report.get("isWin",0))==1
         winner_uid=str(attacker_uid) if is_win else str(defender_uid)
         cfg=GUILD_ONLINE_CONFIG.get("guild_war") or {}
