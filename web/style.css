@@ -377,3 +377,8 @@ body:has(#girls-view:not([hidden])){background:#d4dfeb}#girls-return{margin-righ
 #app-frame #tower-view .tn-nav{position:absolute!important;top:auto!important;bottom:0!important}
 .tn-stage .gs-win-body{overflow:visible}.tn-close{right:0;top:0}
 .tn-keep-out{position:absolute;left:28%;top:calc(100 * var(--u));width:calc(171 * var(--u));height:calc(129 * var(--u));object-fit:contain}
+
+.profile-option{position:relative}
+.profile-option.locked{filter:grayscale(.78) brightness(.55);opacity:.7}
+.profile-option.locked img{pointer-events:none}
+.profile-option .profile-lock{position:absolute;right:5px;bottom:5px;width:25px;height:25px;border-radius:50%;display:grid;place-items:center;background:#090b12dd;border:1px solid #ffffff35;font-size:13px}
