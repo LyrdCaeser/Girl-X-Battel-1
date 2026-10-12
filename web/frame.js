@@ -5,7 +5,7 @@
  const ua=navigator.userAgent||'';
  const forceMobile=/GXB3-Android|Android|iPhone|iPod/i.test(ua);
  const coarse=matchMedia('(pointer:coarse)').matches;
- const narrow=matchMedia('(max-width:700px)').matches;
+ const narrow=matchMedia('(max-width:900px)').matches;
 
  function mode(){
    return forceMobile || narrow || (coarse && matchMedia('(max-width:900px)').matches) ? 'mobile' : 'desktop';
@@ -16,6 +16,7 @@
    if(!f)return;
    const m=mode();
    document.documentElement.classList.toggle('gxb-mobile',m==='mobile');
+   document.documentElement.dataset.platform=m;
    document.documentElement.classList.toggle('gxb-desktop',m==='desktop');
    f.dataset.platform=m;
    f.style.setProperty('--frame-scale','1');
