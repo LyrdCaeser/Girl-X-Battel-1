@@ -241,6 +241,19 @@ def run_release_qa_once():
     counts=_clean_counts()
     if any(counts[k] for k in ("accounts","players","guilds","guild_wars","pvp_matches","pvp_queue")):
         raise RuntimeError(f"QA cleanup did not restore clean state: {counts}")
+    if database.is_postgres():
+        # Restore user-facing serial IDs as well: the first real account/Guild
+        # after release should still start from the pristine sequence.
+        conn=database.acquire_postgres()
+        try:
+            for seq in ("accounts_id_seq","world_guilds_id_seq","world_guild_chat_id_seq"):
+                conn.execute(f"ALTER SEQUENCE {seq} RESTART WITH 1")
+            conn.commit()
+        except Exception:
+            conn.rollback()
+            raise
+        finally:
+            database.release_postgres(conn)
     proof["post_cleanup_counts"]=counts
     db=live_service._db()
     try:
