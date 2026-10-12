@@ -54,3 +54,7 @@
 .fb-gembtn{display:flex!important;align-items:center;justify-content:center;gap:6px;margin:0 auto}.fb-gembtn img{width:22px}.fb-pnote{font-size:12px;color:#6b7390;text-align:center;margin:8px 0 0}.fb-pnote.warn{color:#b0506a}
 .fb-tab{color:#fff7e6;text-shadow:0 1px 2px #6b3b10}.fb-tab.on{color:#7a4a12;text-shadow:none}
 .fb-exlogo{object-fit:contain}.fb-logo{object-fit:contain}
+
+.fb-load-error{min-height:100%;display:grid;place-content:center;gap:12px;text-align:center;padding:24px;box-sizing:border-box;background:linear-gradient(#e9f3ff,#f8f0ff);color:#48597a}.fb-load-error h2{margin:0;font-size:28px}.fb-load-error p{margin:0;max-width:420px}
+html.gxb-mobile .fantasy-book-view{width:100%!important;height:100%!important;min-height:100%!important;overflow:auto!important;background:#edf4ff}
+html.gxb-mobile .fantasy-book-view .fb-stage{width:100%!important;min-height:100%!important}
