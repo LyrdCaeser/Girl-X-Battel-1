@@ -58,3 +58,20 @@
 .fb-load-error{min-height:100%;display:grid;place-content:center;gap:12px;text-align:center;padding:24px;box-sizing:border-box;background:linear-gradient(#e9f3ff,#f8f0ff);color:#48597a}.fb-load-error h2{margin:0;font-size:28px}.fb-load-error p{margin:0;max-width:420px}
 html.gxb-mobile .fantasy-book-view{width:100%!important;height:100%!important;min-height:100%!important;overflow:auto!important;background:#edf4ff}
 html.gxb-mobile .fantasy-book-view .fb-stage{width:100%!important;min-height:100%!important}
+
+
+/* Phone: preserve the original 720x1280 book canvas, center it inside the
+   real WebView and paint the remaining tall-screen area with the book scene
+   instead of exposing the desktop/body background. */
+html.gxb-mobile .fantasy-book-view{
+ container-type:size!important;
+ --u:min(calc(100cqw / 720),calc(100cqh / 1280))!important;
+ display:grid!important;place-items:center!important;
+ background:linear-gradient(#dcecff,#f8eff8)!important
+}
+html.gxb-mobile .fantasy-book-view .fb-stage{
+ width:calc(720 * var(--u))!important;
+ height:calc(1280 * var(--u))!important;
+ min-height:0!important;max-height:none!important;
+ position:relative!important;margin:0 auto!important;overflow:hidden!important
+}
