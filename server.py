@@ -917,7 +917,7 @@ class HTTPHandler(BaseHTTPRequestHandler):
             if path == '/api/pvp/match/battle':
                 ctx = self.auth_context(); account = ctx['account']
                 session = live_service.pvp_match_session(data.get('match_id'), account['uid'])
-                match = session['match']
+                match = live_service.pvp_match_internal(data.get('match_id'), account['uid'])
                 if match.get('status') == 'finished':
                     return self.send(200, {'result': live_service.pvp_match_result(match['id'], account['uid'])})
                 server_a = str(match.get('server_a') or match.get('server_id') or '').upper()
