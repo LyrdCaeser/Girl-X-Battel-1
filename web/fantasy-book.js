@@ -11,11 +11,11 @@ const FantasyBook=(()=>{
  const at=(e,x,y,w,h)=>{e.style.left=`calc(${360+x-w/2} * var(--u))`;e.style.top=`calc(${640-y-(h||0)/2} * var(--u))`;e.style.width=`calc(${w} * var(--u))`;if(h!=null)e.style.height=`calc(${h} * var(--u))`;return e;};
  const btn=(cls,text,fn,off)=>{const b=el('button',cls,text);b.type='button';b.onclick=fn;b.disabled=!!off;return b;};
  const T=k=>(window.FB_TEXT||{})[k]||'';
- const info=()=>state.fantasy_book_info;
+ const info=()=>state?.fantasy_book_info||null;
  // Two themed seasons alternate: "Fantasy Book" (Pages 223 · Floral Stamp 221 · Crystal Leaf 222, the *_new sprites) and
  // "Restart the Engine!" (Gearwheel 117 · Screws 119 · Mecha Core 120, the first battle pass skin).
  const THEMES={book:{top:'battle_pass_top_bg_new',logo:'battle_pass_logo_new_en_en',logoH:215,t:['battle_pass_title_0_new','battle_pass_title_1_new','battle_pass_title_2_new'],exTop:()=>'bp_exchange_top_bg',exLogo:()=>'bp_exchange_shop_en_en',sbg:'bp_shop_item_bg',buy:'battle_pass_buy_btn_new',names:null,title:'Sách Kỳ Ảo',draw:'Dấu Trang Hoa'},
-  engine:{top:'battle_pass_top_bg',logo:'battle_pass_logo_en_en',logoH:256,t:['battle_pass_title_0','battle_pass_title_1','battle_pass_title_2'],exTop:k=>k===2?'battle_pass_exchange_top_bg_2':'battle_pass_exchange_top_bg_1',exLogo:k=>k===2?'battle_pass_shop_2_en_en':'battle_pass_shop_1_en_en',sbg:'battle_pass_shop_item_bg',buy:'battle_pass_buy_btn',names:['Screws','Mecha Core','Smithy'],title:'Khởi Động Lại Động Cơ!',draw:'Lò Rèn'}};
+  engine:{top:'battle_pass_top_bg',logo:'battle_pass_logo_en_en',logoH:256,t:['battle_pass_title_0','battle_pass_title_1','battle_pass_title_2'],exTop:k=>k===2?'battle_pass_exchange_top_bg_2':'battle_pass_exchange_top_bg_1',exLogo:k=>k===2?'battle_pass_shop_2_en_en':'battle_pass_shop_1_en_en',sbg:'battle_pass_shop_item_bg',buy:'battle_pass_buy_btn',names:['Ốc Vít','Lõi Cơ Giáp','Xưởng Rèn'],title:'Khởi Động Lại Động Cơ!',draw:'Lò Rèn'}};
  const TH=()=>THEMES[info()?.theme]||THEMES.book;
  const disp=id=>{id=String(id);const e=info()?.theme==='engine';return id==='117'?(info()?.page||'223'):e&&id==='221'?'119':e&&id==='222'?'120':id;};
  function pairs(t){return String(t||'').split('|').filter(x=>x.includes('#')).map(x=>x.split('#'));}
@@ -25,7 +25,7 @@ const FantasyBook=(()=>{
  async function open(from){origin=from||view;tab=0;note='';root();showView('fantasy-book');render();if(!window.FB_LEVELS){try{const b=await api('/assets/fantasy-book/book.json');window.FB_TEXT=b.text||{};window.FB_LEVELS=b.levels||[];window.FB_SHOP=b.shop||[];window.FB_LOTTERY=b.lottery_cost;window.FB_ODDS=b.odds||[];}catch(e){window.FB_TEXT={};note='Không thể tải dữ liệu Sách Kỳ Ảo: '+e.message;render();return;}}await act({action:'open'});}
  async function act(req,after){if(busy)return null;busy=true;note='';try{const r=await api('/api/fantasy-book/action',req);state=r.state;if(after)after(r);return r;}catch(e){note=e.message;return null;}finally{busy=false;render();}}
  function left(){const end=Number(info()?.end||0);if(!end)return 'Đang cập nhật';const s=Math.max(0,end-Math.floor(Date.now()/1000));return Math.floor(s/86400)+' ngày '+Math.floor(s%86400/3600)+' giờ còn lại';}
- function render(){const r=root();if(view!=='fantasy-book'){clearInterval(timer);return;}r.replaceChildren();if(!info()){clearInterval(timer);const box=el('div','fb-load-error');box.append(el('h2','','Sách Kỳ Ảo'),el('p','',note||'Đang tải dữ liệu Sách Kỳ Ảo…'));const back=btn('gs-btn','Quay Lại',()=>showView(origin==='fantasy-book'?'home':origin));box.append(back);r.append(box);return;}const st=el('div','fb-stage');r.append(st);
+ function render(){const r=root();if(view!=='fantasy-book'){clearInterval(timer);return;}r.replaceChildren();if(!info()){clearInterval(timer);const box=el('div','fb-load-error');box.append(el('h2','','Sách Kỳ Ảo'),el('p','',note||'Đang tải dữ liệu Sách Kỳ Ảo…'));const retry=btn('gs-btn','Tải Lại',()=>{window.FB_LEVELS=null;open(origin);});const back=btn('gs-btn','Quay Lại',()=>showView(origin==='fantasy-book'?'home':origin));box.append(retry,back);r.append(box);return;}const st=el('div','fb-stage');r.append(st);
   [progress,tasks,exchange,trophies][tab](st);
   // battle_pass_b_nav_1 with the four tabs (content y 16 + 522)
   const nav=at(el('div','fb-nav'),0,538,720,60);nav.style.backgroundImage=`url('${A('battle_pass_b_nav_1')}')`;
@@ -33,7 +33,7 @@ const FantasyBook=(()=>{
   // WindowTop (gold, gems, back) and the bottom navigation
   const top=at(el('div','fb-top'),0,612,720,56);for(const id of ['1','2']){const c=el('span','fb-res');c.append(img(iconOf(id)),el('b','',number(state.items?.[id]||0)));top.append(c);}
   top.append(btn('fb-back','',()=>showView(origin==='fantasy-book'?'home':origin)));top.lastChild.append(img('/assets/ui/win_back_btn.png'));st.append(top);
-  const src=document.querySelector('.menu-explorer-bottom');if(src){const n=src.cloneNode(true);n.classList.add('fb-bnav');n.querySelectorAll('button').forEach(b=>b.classList.remove('current'));st.append(n);}
+  const src=document.querySelector('.menu-explorer-bottom');if(src){const n=src.cloneNode(true);n.classList.add('fb-bnav');n.querySelectorAll('button').forEach(b=>{b.classList.remove('current');b.addEventListener('click',()=>{if(b.dataset.view)showView(b.dataset.view);else if(b.dataset.menu)openMenu(b.dataset.menu,'fantasy-book');});});st.append(n);}
   if(note)st.append(at(el('p','fb-note',note),0,-420,600,null));
   clearInterval(timer);timer=setInterval(()=>{const c=root().querySelector('.fb-count');if(!c||view!=='fantasy-book'){clearInterval(timer);return;}c.textContent=left();const rf=root().querySelector('.fb-refresh b');if(rf){const s=Math.max(0,info().refresh_day-Math.floor(Date.now()/1000));rf.textContent=[Math.floor(s/3600),Math.floor(s%3600/60),s%60].map(n=>String(n).padStart(2,'0')).join(':');}},1000);}
  // shared: the level strip (Lv badge, "Current Pages", bar, n/span, + buy level)
@@ -62,7 +62,7 @@ const FantasyBook=(()=>{
   const tabs=at(el('div','fb-subtabs'),0,148,720,55);(T('BP_MISSION_TAGS')||'Hằng Ngày|Hằng Tuần|Bổ Sung').split('|').forEach((n,k)=>{const b=btn('fb-subtab'+(sub===k?' on':''),n,()=>{sub=k;render();});b.style.backgroundImage=`url('${A(sub===k?'bp_mission_yeqina_2':'bp_mission_yeqina_1')}')`;tabs.append(b);});st.append(tabs);
   if(sub===0){const rf=at(el('div','fb-refresh'),0,100,360,40);rf.append(el('span','',T('BP_MISSION_REFRESH_TIME')||'Làm mới sau:'),el('b','',''));st.append(rf);}
   const list=at(el('div','fb-tasks'),0,sub===0?-210:-190,720,sub===0?560:600);for(const t of i.tasks.filter(t=>t.type===sub+1)){const r=el('div','fb-task'+(t.claimed?' done':''));
-   const d=el('div','fb-tdesc');d.append(el('b','',t.text));const bar=el('div','fb-tbar');const f=el('i');f.style.width=Math.min(100,t.have*100/t.need)+'%';bar.append(f,el('small','',`${t.have}/${t.need}`));d.append(bar);if(!t.tracked)d.append(el('em','',"Chưa có điều kiện tương ứng"));r.append(d);
+   const d=el('div','fb-tdesc');d.append(el('b','',window.GxbLocale?.t(t.text)||t.text));const bar=el('div','fb-tbar');const f=el('i');f.style.width=Math.min(100,t.have*100/t.need)+'%';bar.append(f,el('small','',`${t.have}/${t.need}`));d.append(bar);if(!t.tracked)d.append(el('em','',"Chưa có điều kiện tương ứng"));r.append(d);
    const aw=el('div','fb-titems');for(const [k,n]of pairs(t.award))aw.append(item(k,n));for(const [k,n]of pairs(t.pages))aw.append(item(k,n));r.append(aw);
    if(t.claimed)r.append(img(A('mission_awarded_en_en'),'fb-stamp'));else{const b=btn('fb-claim','Nhận',()=>act({action:'task',id:t.id},r=>{if(r)CampaignUI.popup(t.text,{...(r.got||{}),'117':r.pages});}),t.have<t.need);b.style.backgroundImage=`url('${A('blue_btn_54_54')}')`;r.append(b);}
    list.append(r);}st.append(list);}
@@ -78,16 +78,16 @@ const FantasyBook=(()=>{
    return;}
   const grid=at(el('div','fb-shop'),0,-190,720,600);const s=info().shop||{};
   for(const row of (window.FB_SHOP||[]).filter(r=>r.type===shopTab)){const bought=Number(s[row.id]||0),sold=bought>=row.limit;const c=el('div','fb-sitem'+(sold?' sold':''));c.style.backgroundImage=`url('${A(TH().sbg)}')`;
-   const [ik,iv]=String(row.item).split('#');const it=item(ik,iv);c.append(el('b','fb-sname',itemCatalog?.[ik]?.name||''),it,el('small','',`Purchased: ${bought}/${row.limit}`));
+   const [ik,iv]=String(row.item).split('#');const it=item(ik,iv);c.append(el('b','fb-sname',itemCatalog?.[ik]?.name||''),it,el('small','',`Đã mua: ${bought}/${row.limit}`));
    const [ck,cv]=String(row.cost).split('#');const b=btn('fb-sbuy','',()=>act({action:'buy',id:row.id},r=>{if(r?.got)CampaignUI.popup(T('BP_TITLE')||'Sách Kỳ Ảo',r.got);}),sold);b.append(img(iconOf(ck)),el('b','',number(Number(cv))));c.append(b);grid.append(c);}
   st.append(grid);}
  async function odds(){try{const o=window.FB_ODDS||[];CampaignUI.popup(TH().draw+'\n\n'+o.map(([it,p])=>{const [k,n]=it.split('#');return (itemCatalog?.[k]?.name||k)+' ×'+n+' · '+p+'%';}).join('\n'),{});}catch(e){CampaignUI.popup(e.message,{});}}
  // ---- Trophies (battle_pass_achieve_new): the achievements, claimed through /api/missions/action
  function trophies(st){header(st,info().theme==='engine'?'battle_pass_top_bg_b':'battle_pass_achieve_bg_new',-159,421,168,420,T('BP_ACHIEVEMENT_DES'));
   const list=at(el('div','fb-tasks fb-troph'),0,-81,720,760);for(const t of (state.missions_info?.trophies||[])){const r=el('div','fb-task'+(t.done?' done':''));
-   const d=el('div','fb-tdesc');d.append(el('b','',String(t.text).replace('{1}',t.need)));const need=Number(t.need)||1,have=Number(t.have||0);const bar=el('div','fb-tbar');const f=el('i');f.style.width=Math.min(100,have*100/need)+'%';bar.append(f,el('small','',`${Math.min(have,need)}/${need}`));d.append(bar);r.append(d);
+   const d=el('div','fb-tdesc');d.append(el('b','',(window.GxbLocale?.t(String(t.text))||String(t.text)).replace('{1}',t.need)));const need=Number(t.need)||1,have=Number(t.have||0);const bar=el('div','fb-tbar');const f=el('i');f.style.width=Math.min(100,have*100/need)+'%';bar.append(f,el('small','',`${Math.min(have,need)}/${need}`));d.append(bar);r.append(d);
    const aw=el('div','fb-titems');for(const [k,n]of pairs(t.award).slice(0,2))aw.append(item(k,n));r.append(aw);
-   if(t.done)r.append(img(A('mission_awarded_en_en'),'fb-stamp'));else{const b=btn('fb-claim','Nhận',async()=>{try{const x=await api('/api/missions/action',{action:'trophy',type:t.type});state=x.state;CampaignUI.popup('Trophy',x.got||{});}catch(e){note=e.message;}render();},!t.can);b.style.backgroundImage=`url('${A('blue_btn_54_54')}')`;r.append(b);}
+   if(t.done)r.append(img(A('mission_awarded_en_en'),'fb-stamp'));else{const b=btn('fb-claim','Nhận',async()=>{try{const x=await api('/api/missions/action',{action:'trophy',type:t.type});state=x.state;CampaignUI.popup('Thành Tựu',x.got||{});}catch(e){note=e.message;}render();},!t.can);b.style.backgroundImage=`url('${A('blue_btn_54_54')}')`;r.append(b);}
    list.append(r);}st.append(list);}
  // BattlePassBuyLevWindow: raise the level with Gems (discount in the last 2 weeks)
  function buyLevel(){const i=info();let n=1;const {body,close}=GirlUI.win({title:T('BP_BUY_LEV_WINDOW')||'Mua Cấp Sách',cls:'fb-buylev'});
