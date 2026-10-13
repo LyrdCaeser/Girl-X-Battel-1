@@ -1,1 +1,4523 @@
-{"events":{"183":{"title":"Super Exchange","shop":[{"id":1,"cost":"940002#50|2#4000","award":"4102008#1","limit":1,"group":0,"unlock":0},{"id":2,"cost":"940002#50|2#2500","award":"4102007#1","limit":1,"group":0,"unlock":0},{"id":3,"cost":"940002#50|1#1000000","award":"940004#50","limit":1,"group":0,"unlock":0},{"id":4,"cost":"940001#60|2#100","award":"940002#50","limit":3,"group":0,"unlock":0},{"id":5,"cost":"20#1|1#1000000","award":"424#1","limit":10,"group":0,"unlock":0},{"id":6,"cost":"36#10|2#200","award":"358#10","limit":5,"group":0,"unlock":0},{"id":7,"cost":"35#5|2#100","award":"29#2","limit":10,"group":0,"unlock":0},{"id":8,"cost":"33#1|2#100","award":"36#1","limit":10,"group":0,"unlock":0},{"id":9,"cost":"9#100000|2#200","award":"14#3000","limit":40,"group":0,"unlock":0},{"id":10,"cost":"1#100000|2#200","award":"10#3000","limit":40,"group":0,"unlock":0},{"id":11,"cost":"24#1|2#30","award":"25#1","limit":10,"group":0,"unlock":0},{"id":12,"cost":"73#100|2#100","award":"4901001#1","limit":1,"group":0,"unlock":0},{"id":13,"cost":"424#1|2#200","award":"418#1","limit":20,"group":0,"unlock":0},{"id":14,"cost":"360#1000|10#1000","award":"359#100","limit":100,"group":0,"unlock":0}],"shop_table":"activity_exchange_award"},"64":{"title":"Jackpot of Fortune","shop":[{"id":1,"cost":"2#700","award":"345#1|57#35","limit":10,"group":0,"unlock":0}],"shop_table":"activity_jackpot_exchange"},"232":{"title":"Skin Exchange","shop":[{"id":1,"cost":"254#120","award":"7182#1","limit":2,"group":1,"unlock":0},{"id":2,"cost":"254#120","award":"7194#1","limit":2,"group":1,"unlock":0},{"id":3,"cost":"254#120","award":"7196#1","limit":2,"group":1,"unlock":0},{"id":4,"cost":"254#120","award":"7188#1","limit":2,"group":1,"unlock":0},{"id":5,"cost":"254#120","award":"7197#1","limit":2,"group":1,"unlock":0},{"id":6,"cost":"254#120","award":"7198#1","limit":2,"group":1,"unlock":0},{"id":7,"cost":"254#120","award":"7109#1","limit":2,"group":2,"unlock":0},{"id":8,"cost":"254#120","award":"7115#1","limit":2,"group":2,"unlock":0},{"id":9,"cost":"254#120","award":"7110#1","limit":2,"group":2,"unlock":0},{"id":10,"cost":"254#90","award":"7114#1","limit":2,"group":2,"unlock":0},{"id":11,"cost":"254#120","award":"7111#1","limit":2,"group":2,"unlock":0},{"id":12,"cost":"254#120","award":"7118#1","limit":2,"group":2,"unlock":0},{"id":13,"cost":"254#120","award":"7116#1","limit":2,"group":2,"unlock":0},{"id":14,"cost":"254#90","award":"7108#1","limit":2,"group":2,"unlock":0},{"id":15,"cost":"254#120","award":"7112#1","limit":2,"group":2,"unlock":0},{"id":16,"cost":"254#120","award":"7099#1","limit":2,"group":2,"unlock":0},{"id":17,"cost":"254#120","award":"7113#1","limit":2,"group":2,"unlock":0},{"id":18,"cost":"254#120","award":"7034#1","limit":2,"group":3,"unlock":0},{"id":19,"cost":"254#120","award":"7038#1","limit":2,"group":3,"unlock":0},{"id":20,"cost":"254#120","award":"7041#1","limit":2,"group":3,"unlock":0},{"id":21,"cost":"254#120","award":"7043#1","limit":2,"group":3,"unlock":0},{"id":22,"cost":"254#120","award":"7033#1","limit":2,"group":3,"unlock":0},{"id":23,"cost":"254#90","award":"7047#1","limit":2,"group":3,"unlock":0}],"shop_table":"activity_beach_shop"},"244":{"title":"Antique Limited Exchange","shop":[{"id":1,"cost":"170#250|73#150","award":"6761#1","limit":1,"group":0,"unlock":0},{"id":2,"cost":"170#250|73#150","award":"6461#1","limit":1,"group":0,"unlock":0},{"id":3,"cost":"170#250|73#150","award":"6707#1","limit":1,"group":0,"unlock":0},{"id":4,"cost":"170#250|73#150","award":"6725#1","limit":1,"group":0,"unlock":0},{"id":5,"cost":"170#250|73#150","award":"6743#1","limit":1,"group":0,"unlock":0},{"id":6,"cost":"170#250|73#150","award":"6455#1","limit":1,"group":0,"unlock":0},{"id":7,"cost":"170#250|73#150","award":"6755#1","limit":1,"group":0,"unlock":0},{"id":8,"cost":"170#250|73#150","award":"6713#1","limit":1,"group":0,"unlock":0},{"id":9,"cost":"170#250|73#150","award":"6437#1","limit":1,"group":0,"unlock":0},{"id":10,"cost":"170#250|73#150","award":"6701#1","limit":1,"group":0,"unlock":0}],"shop_table":"activity_equip_exchange"},"299":{"title":"Kid's Store","shop":[{"id":1,"cost":"363#50","award":"4101067#1","limit":1,"group":1,"unlock":0},{"id":2,"cost":"363#100","award":"4101008#1","limit":1,"group":1,"unlock":0},{"id":3,"cost":"363#200","award":"6773#1|6000#3000","limit":1,"group":1,"unlock":0},{"id":4,"cost":"363#50","award":"424#20","limit":1,"group":1,"unlock":0},{"id":5,"cost":"363#100","award":"4104023#1|4102008#1","limit":1,"group":1,"unlock":0},{"id":6,"cost":"363#200","award":"6785#1|6000#3000","limit":1,"group":1,"unlock":0},{"id":7,"cost":"363#100","award":"4101008#1","limit":1,"group":1,"unlock":0},{"id":8,"cost":"363#125","award":"45#1","limit":1,"group":1,"unlock":0},{"id":9,"cost":"363#150","award":"4101010#1","limit":1,"group":1,"unlock":0},{"id":10,"cost":"363#250","award":"6791#1|6000#3000","limit":1,"group":1,"unlock":0},{"id":11,"cost":"363#100","award":"418#50","limit":1,"group":1,"unlock":0},{"id":12,"cost":"363#150","award":"4101010#1","limit":1,"group":1,"unlock":0},{"id":13,"cost":"363#200","award":"4402015#1|6000#6000","limit":1,"group":1,"unlock":0},{"id":14,"cost":"363#350","award":"940059#100","limit":1,"group":1,"unlock":0},{"id":15,"cost":"363#500","award":"358#200|4206001#200|5100020#1|4901001#3","limit":1,"group":2,"unlock":0},{"id":16,"cost":"363#400","award":"6779#1","limit":1,"group":3,"unlock":0},{"id":17,"cost":"363#300","award":"4402015#1","limit":1,"group":3,"unlock":0},{"id":18,"cost":"363#200","award":"4901001#1","limit":1,"group":3,"unlock":0},{"id":19,"cost":"363#10","award":"4201042#1","limit":99,"group":3,"unlock":0},{"id":20,"cost":"363#10","award":"4206001#1","limit":99,"group":3,"unlock":0},{"id":21,"cost":"363#10","award":"435#1","limit":99,"group":3,"unlock":0}],"shop_table":"activity_children_shop","missions":[{"id":1,"need":20,"award":"365#1","limit":100,"daily":0,"text":"Pull Slot Machine 20 times"},{"id":2,"need":1,"award":"365#1","limit":200,"daily":0,"text":"Consume 1 Space Radar"},{"id":3,"need":200,"award":"365#2","limit":100,"daily":0,"text":"Consume 200 Gems"},{"id":4,"need":3,"award":"365#2","limit":25,"daily":0,"text":"Consume 3 League Tickets"},{"id":5,"need":1,"award":"365#5","limit":10,"daily":0,"text":"Finish 1 4-Star (or above) Internship Quest"}],"mission_table":"activity_children_task"},"274":{"title":"Firework Display","shop":[{"id":1,"cost":"317#6","award":"20#5","limit":4,"group":0,"unlock":0},{"id":2,"cost":"317#6","award":"36#15","limit":4,"group":0,"unlock":0},{"id":3,"cost":"317#3","award":"10#4000","limit":99,"group":0,"unlock":0},{"id":4,"cost":"317#3","award":"14#4000","limit":99,"group":0,"unlock":0},{"id":5,"cost":"317#1","award":"9#1500000","limit":99,"group":0,"unlock":0},{"id":6,"cost":"317#1","award":"1#1500000","limit":99,"group":0,"unlock":0},{"id":7,"cost":"317#30","award":"4102007#1","limit":1,"group":0,"unlock":0},{"id":8,"cost":"317#25","award":"4101067#1","limit":1,"group":0,"unlock":0},{"id":9,"cost":"317#8","award":"73#15","limit":4,"group":0,"unlock":0},{"id":10,"cost":"317#8","award":"170#15","limit":4,"group":0,"unlock":0},{"id":11,"cost":"317#4","award":"6000#150","limit":20,"group":0,"unlock":0},{"id":12,"cost":"317#4","award":"216#200","limit":20,"group":0,"unlock":0},{"id":13,"cost":"317#40","award":"4102056#1","limit":1,"group":0,"unlock":0},{"id":14,"cost":"317#8","award":"4201042#5","limit":10,"group":0,"unlock":0},{"id":15,"cost":"317#5","award":"359#1000","limit":10,"group":0,"unlock":0},{"id":16,"cost":"317#5","award":"360#10000","limit":10,"group":0,"unlock":0},{"id":17,"cost":"317#4","award":"199#1000","limit":10,"group":0,"unlock":0},{"id":18,"cost":"317#4","award":"198#10000","limit":10,"group":0,"unlock":0},{"id":19,"cost":"317#15","award":"358#10","limit":10,"group":0,"unlock":0},{"id":20,"cost":"317#80","award":"4101010#1","limit":2,"group":0,"unlock":0},{"id":21,"cost":"317#100","award":"940059#100","limit":1,"group":0,"unlock":0},{"id":22,"cost":"317#100","award":"6779#1","limit":2,"group":0,"unlock":0},{"id":23,"cost":"317#40","award":"4501002#1","limit":1,"group":0,"unlock":0},{"id":24,"cost":"317#50","award":"986001#10","limit":2,"group":0,"unlock":0},{"id":25,"cost":"317#80","award":"4402015#1","limit":2,"group":0,"unlock":0},{"id":26,"cost":"317#30","award":"4102008#1","limit":2,"group":0,"unlock":0},{"id":27,"cost":"317#60","award":"4104023#1","limit":1,"group":0,"unlock":0}],"shop_table":"activity_firework_shop"},"206":{"title":"The Secret of Time","shop":[{"id":1,"cost":"236#5","award":"20001059#1","limit":1,"group":1,"unlock":0},{"id":2,"cost":"236#35","award":"36#10","limit":1,"group":1,"unlock":0},{"id":3,"cost":"236#60","award":"20#5","limit":1,"group":1,"unlock":0},{"id":4,"cost":"236#20","award":"14#3000","limit":1,"group":1,"unlock":0},{"id":5,"cost":"236#10","award":"10#1500","limit":2,"group":1,"unlock":0},{"id":6,"cost":"236#50","award":"930203#50","limit":1,"group":2,"unlock":0},{"id":7,"cost":"236#60","award":"930197#50","limit":1,"group":2,"unlock":0},{"id":8,"cost":"236#180","award":"4501002#1","limit":1,"group":2,"unlock":0},{"id":9,"cost":"236#80","award":"93#1","limit":1,"group":2,"unlock":0},{"id":10,"cost":"236#50","award":"29#10","limit":1,"group":2,"unlock":0},{"id":11,"cost":"236#300","award":"4102008#1","limit":2,"group":3,"unlock":0},{"id":12,"cost":"236#60","award":"4102018#1","limit":2,"group":3,"unlock":0},{"id":13,"cost":"236#50","award":"4101020#1","limit":2,"group":3,"unlock":0},{"id":14,"cost":"236#250","award":"940034#50","limit":1,"group":3,"unlock":0},{"id":15,"cost":"236#30","award":"36#10","limit":2,"group":3,"unlock":0},{"id":16,"cost":"236#450","award":"4101008#1","limit":2,"group":4,"unlock":0},{"id":17,"cost":"236#180","award":"4501002#1","limit":1,"group":4,"unlock":0},{"id":18,"cost":"236#200","award":"170#80","limit":1,"group":4,"unlock":0},{"id":19,"cost":"236#100","award":"20#10","limit":2,"group":4,"unlock":0},{"id":20,"cost":"236#10","award":"4201008#1","limit":99,"group":4,"unlock":0}],"shop_table":"activity_time_shop","missions":[{"id":1,"need":6,"award":"2#50|235#2","limit":1,"daily":0,"text":"Complete all other missions"},{"id":2,"need":1,"award":"2#10","limit":1,"daily":0,"text":"Daily Login"},{"id":3,"need":3,"award":"35#1","limit":1,"daily":0,"text":"Use Normal Slot Machine 3 times"},{"id":4,"need":5,"award":"14#100","limit":1,"daily":0,"text":"Complete 5 Junior Varsity battles"},{"id":5,"need":1,"award":"9#100000","limit":1,"daily":0,"text":"Challenge Friend Boss 1 time"},{"id":6,"need":2,"award":"1#100000","limit":1,"daily":0,"text":"Use Alchemy twice to get Coins"},{"id":7,"need":500,"award":"10#100","limit":1,"daily":0,"text":"Spend 500 Gems"},{"id":8,"need":6,"award":"2#50|235#2","limit":1,"daily":0,"text":"Complete all other missions"},{"id":9,"need":1,"award":"2#10","limit":1,"daily":0,"text":"Daily Login"},{"id":10,"need":1,"award":"24#2","limit":1,"daily":0,"text":"Complete 1 4-star Quest in Internship"},{"id":11,"need":1,"award":"14#100","limit":1,"daily":0,"text":"Purchase 1 merchandise in Market"},{"id":12,"need":6,"award":"9#100000","limit":1,"daily":0,"text":"Clear 6 Quizzes in Daily Quiz"},{"id":13,"need":15,"award":"1#100000","limit":1,"daily":0,"text":"Send out 15 Hearts"},{"id":14,"need":3,"award":"10#100","limit":1,"daily":0,"text":"Draw from Adv. Capsule 3 times"},{"id":15,"need":6,"award":"2#50|235#2","limit":1,"daily":0,"text":"Complete all other missions"},{"id":16,"need":1,"award":"2#10","limit":1,"daily":0,"text":"Daily Login"},{"id":17,"need":5,"award":"35#1","limit":1,"daily":0,"text":"Collect Auto-Battle Loot 5 times in Campaign"},{"id":18,"need":10,"award":"14#100","limit":1,"daily":0,"text":"Complete 10 Junior Varsity battles"},{"id":19,"need":50,"award":"9#100000","limit":1,"daily":0,"text":"Upgrade your Girl(s) 50 times"},{"id":20,"need":10,"award":"1#100000","limit":1,"daily":0,"text":"Forge 10 Gears"},{"id":21,"need":1000,"award":"10#100","limit":1,"daily":0,"text":"Spend 1000 Gems"},{"id":22,"need":6,"award":"2#50|235#2","limit":1,"daily":0,"text":"Complete all other missions"},{"id":23,"need":1,"award":"2#10","limit":1,"daily":0,"text":"Daily Login"},{"id":24,"need":10,"award":"35#1","limit":1,"daily":0,"text":"Transfer 10 Girls"},{"id":25,"need":2,"award":"14#100","limit":1,"daily":0,"text":"Purchase 2 merchandise in Market"},{"id":26,"need":12,"award":"9#100000","limit":1,"daily":0,"text":"Clear 12 Quizzes in Daily Quiz"},{"id":27,"need":5,"award":"1#100000","limit":1,"daily":0,"text":"Draw 5 BFF Capsules"},{"id":28,"need":6,"award":"10#100","limit":1,"daily":0,"text":"Draw from Adv. Capsule 6 times"},{"id":29,"need":6,"award":"2#50|235#2","limit":1,"daily":0,"text":"Complete all other missions"},{"id":30,"need":1,"award":"2#10","limit":1,"daily":0,"text":"Daily Login"},{"id":31,"need":6,"award":"35#1","limit":1,"daily":0,"text":"Use Normal Slot Machine 6 times"},{"id":32,"need":15,"award":"14#100","limit":1,"daily":0,"text":"Complete 15 Junior Varsity battles"},{"id":33,"need":2,"award":"9#100000","limit":1,"daily":0,"text":"Challenge Friend Boss 2 times"},{"id":34,"need":4,"award":"1#100000","limit":1,"daily":0,"text":"Use Alchemy 4 times to get Coins"},{"id":35,"need":1500,"award":"10#100","limit":1,"daily":0,"text":"Spend 1500 Gems"},{"id":36,"need":6,"award":"2#50|235#2","limit":1,"daily":0,"text":"Complete all other missions"},{"id":37,"need":1,"award":"2#10","limit":1,"daily":0,"text":"Daily Login"},{"id":38,"need":2,"award":"24#2","limit":1,"daily":0,"text":"Complete 2 4-star Quests in Internship"},{"id":39,"need":3,"award":"14#100","limit":1,"daily":0,"text":"Purchase 3 merchandise in Market"},{"id":40,"need":18,"award":"9#100000","limit":1,"daily":0,"text":"Clear 18 Quizzes in Daily Quiz"},{"id":41,"need":30,"award":"1#100000","limit":1,"daily":0,"text":"Send out 30 Hearts"},{"id":42,"need":9,"award":"10#100","limit":1,"daily":0,"text":"Draw from Adv. Capsule 9 times"},{"id":43,"need":6,"award":"2#50|235#2","limit":1,"daily":0,"text":"Complete all other missions"},{"id":44,"need":1,"award":"2#10","limit":1,"daily":0,"text":"Daily Login"},{"id":45,"need":10,"award":"35#1","limit":1,"daily":0,"text":"Collect Auto-Battle Loot 10 times in Campaign"},{"id":46,"need":20,"award":"14#100","limit":1,"daily":0,"text":"Complete 20 Junior Varsity battles"},{"id":47,"need":100,"award":"9#100000","limit":1,"daily":0,"text":"Upgrade your Girl(s) 100 times"},{"id":48,"need":20,"award":"1#100000","limit":1,"daily":0,"text":"Forge 20 Gears"},{"id":49,"need":2000,"award":"10#100","limit":1,"daily":0,"text":"Spend 2000 Gems"}],"mission_table":"activity_time_mission"},"346":{"title":"Catch An Astral","shop":[{"id":1,"cost":"455#4","award":"940059#25","limit":4,"group":0,"unlock":0},{"id":2,"cost":"455#5","award":"4402015#1","limit":2,"group":0,"unlock":0},{"id":3,"cost":"455#4","award":"4901001#1","limit":1,"group":0,"unlock":0},{"id":4,"cost":"455#6","award":"5100020#1","limit":2,"group":0,"unlock":0},{"id":5,"cost":"455#4","award":"4104023#1","limit":2,"group":0,"unlock":0},{"id":6,"cost":"455#1","award":"170#50","limit":5,"group":0,"unlock":0},{"id":7,"cost":"456#12","award":"4101010#1","limit":1,"group":0,"unlock":0},{"id":8,"cost":"456#8","award":"4101008#1","limit":2,"group":0,"unlock":0},{"id":9,"cost":"456#1","award":"4201042#5","limit":10,"group":0,"unlock":0},{"id":10,"cost":"456#1","award":"418#5","limit":10,"group":0,"unlock":0},{"id":11,"cost":"456#10","award":"930233#50","limit":1,"group":0,"unlock":0},{"id":12,"cost":"456#12","award":"930234#50","limit":1,"group":0,"unlock":0},{"id":13,"cost":"456#16","award":"930235#50","limit":1,"group":0,"unlock":0},{"id":14,"cost":"456#1","award":"417#2000","limit":10,"group":0,"unlock":0},{"id":15,"cost":"456#1","award":"419#50","limit":10,"group":0,"unlock":0},{"id":16,"cost":"456#2","award":"20#5","limit":2,"group":0,"unlock":0},{"id":17,"cost":"456#1","award":"359#750","limit":20,"group":0,"unlock":0},{"id":18,"cost":"457#10","award":"4102007#1","limit":3,"group":0,"unlock":0},{"id":19,"cost":"457#4","award":"358#3","limit":10,"group":0,"unlock":0},{"id":20,"cost":"457#3","award":"36#10","limit":10,"group":0,"unlock":0},{"id":21,"cost":"457#2","award":"424#2","limit":10,"group":0,"unlock":0},{"id":22,"cost":"457#1","award":"423#2","limit":10,"group":0,"unlock":0},{"id":23,"cost":"457#1","award":"10#5000","limit":10,"group":0,"unlock":0},{"id":24,"cost":"457#1","award":"14#5000","limit":10,"group":0,"unlock":0},{"id":25,"cost":"457#1","award":"1#5000000","limit":99,"group":0,"unlock":0},{"id":26,"cost":"457#1","award":"9#5000000","limit":99,"group":0,"unlock":0}],"shop_table":"activity_star_plan_shop"},"166":{"title":"Luvly's Journey","shop":[{"id":1,"cost":"232#1000","award":"5100020#1","limit":1,"group":0,"unlock":0},{"id":2,"cost":"232#800","award":"4101010#1","limit":1,"group":0,"unlock":0},{"id":3,"cost":"232#600","award":"4501002#1","limit":1,"group":0,"unlock":0},{"id":4,"cost":"232#500","award":"4102008#1","limit":1,"group":0,"unlock":0},{"id":5,"cost":"232#400","award":"259#20","limit":1,"group":0,"unlock":0},{"id":6,"cost":"232#400","award":"418#30","limit":1,"group":0,"unlock":0},{"id":7,"cost":"232#300","award":"334#50","limit":1,"group":0,"unlock":0},{"id":8,"cost":"232#300","award":"374#80","limit":1,"group":0,"unlock":0},{"id":9,"cost":"232#200","award":"170#50","limit":2,"group":0,"unlock":0},{"id":10,"cost":"232#50","award":"198#20000","limit":2,"group":0,"unlock":0},{"id":11,"cost":"232#50","award":"199#5000","limit":2,"group":0,"unlock":0},{"id":12,"cost":"232#50","award":"360#1000","limit":5,"group":0,"unlock":0},{"id":13,"cost":"232#50","award":"359#100","limit":5,"group":0,"unlock":0},{"id":14,"cost":"232#40","award":"216#500","limit":6,"group":0,"unlock":0},{"id":15,"cost":"232#40","award":"419#50","limit":6,"group":0,"unlock":0},{"id":16,"cost":"232#30","award":"417#2000","limit":6,"group":0,"unlock":0},{"id":17,"cost":"232#30","award":"258#10","limit":2,"group":0,"unlock":0},{"id":18,"cost":"232#30","award":"261#30","limit":5,"group":0,"unlock":0},{"id":19,"cost":"232#30","award":"260#300","limit":5,"group":0,"unlock":0},{"id":20,"cost":"232#20","award":"14#3000","limit":10,"group":0,"unlock":0},{"id":21,"cost":"232#10","award":"9#2000000","limit":10,"group":0,"unlock":0},{"id":22,"cost":"232#10","award":"1#2000000","limit":10,"group":0,"unlock":0}],"shop_table":"activity_lafuli_shop"},"304":{"title":"Celebration Party","shop":[{"id":1,"cost":"379#100","award":"6791#1","limit":1,"group":0,"unlock":0},{"id":2,"cost":"379#50","award":"4901001#1","limit":1,"group":0,"unlock":0},{"id":3,"cost":"379#100","award":"4402015#1","limit":2,"group":0,"unlock":0},{"id":4,"cost":"379#25","award":"358#100","limit":2,"group":0,"unlock":0},{"id":5,"cost":"379#2","award":"418#10","limit":100,"group":0,"unlock":0},{"id":6,"cost":"379#2","award":"359#1000","limit":99,"group":0,"unlock":0},{"id":7,"cost":"379#2","award":"360#10000","limit":99,"group":0,"unlock":0}],"shop_table":"activity_4birthday_shop","missions":[{"id":1,"need":1,"award":"378#1|1#500000","limit":40,"daily":0,"text":"Acquire a 5-star Girl"},{"id":2,"need":1,"award":"378#1|379#5","limit":1,"daily":0,"text":"Acquire a 5-star Promethea"},{"id":3,"need":1,"award":"378#1|379#5","limit":1,"daily":0,"text":"Acquire a 5-star Cupid"},{"id":4,"need":1,"award":"378#2|379#10","limit":1,"daily":0,"text":"Graduate Promethea or Cupid to 6-star"},{"id":5,"need":1,"award":"378#6|36#10","limit":1,"daily":0,"text":"Awake Promethea or Cupid to 9-star"},{"id":6,"need":1,"award":"378#10|93#1","limit":1,"daily":0,"text":"Awake Promethea or Cupid to 10-star"},{"id":7,"need":1,"award":"378#1|9#1000000","limit":20,"daily":0,"text":"Finish 1 4-Star (or above) Internship Quest"},{"id":8,"need":3,"award":"378#1|10#600","limit":20,"daily":0,"text":"Consume 3 League Tickets"},{"id":9,"need":500,"award":"378#1|14#1000","limit":20,"daily":0,"text":"Consume 500 Gems"}],"mission_table":"activity_4birthday_task"},"330":{"title":"Palace Vaults","shop":[{"id":1,"cost":"411#50","award":"1#1000000","limit":999,"group":0,"unlock":0},{"id":2,"cost":"411#50","award":"9#1000000","limit":999,"group":0,"unlock":0},{"id":3,"cost":"411#200","award":"6000#400","limit":5,"group":0,"unlock":0},{"id":4,"cost":"411#400","award":"36#10","limit":5,"group":0,"unlock":0},{"id":5,"cost":"411#500","award":"940004#50","limit":5,"group":0,"unlock":0},{"id":6,"cost":"411#600","award":"93#1","limit":1,"group":0,"unlock":0},{"id":7,"cost":"411#2000","award":"4101067#1","limit":1,"group":0,"unlock":2500},{"id":8,"cost":"411#1000","award":"4102007#1","limit":1,"group":0,"unlock":2500},{"id":9,"cost":"411#1200","award":"36#30","limit":1,"group":0,"unlock":2500},{"id":10,"cost":"411#500","award":"4205004#6","limit":10,"group":0,"unlock":2500},{"id":11,"cost":"411#500","award":"4206001#6","limit":10,"group":0,"unlock":2500},{"id":12,"cost":"411#1500","award":"4102008#1","limit":1,"group":0,"unlock":2500},{"id":13,"cost":"411#2000","award":"4102057#1","limit":1,"group":0,"unlock":5000},{"id":14,"cost":"411#2500","award":"4104022#1","limit":1,"group":0,"unlock":5000},{"id":15,"cost":"411#3000","award":"930235#50","limit":1,"group":0,"unlock":5000},{"id":16,"cost":"411#3500","award":"6785#1","limit":1,"group":0,"unlock":5000},{"id":17,"cost":"411#2500","award":"4101008#1","limit":1,"group":0,"unlock":5000},{"id":18,"cost":"411#1500","award":"4705002#20","limit":2,"group":0,"unlock":5000},{"id":19,"cost":"411#4000","award":"4402015#1","limit":1,"group":0,"unlock":7500},{"id":20,"cost":"411#2000","award":"4501002#1","limit":1,"group":0,"unlock":7500},{"id":21,"cost":"411#4500","award":"6779#1","limit":1,"group":0,"unlock":7500},{"id":22,"cost":"411#1000","award":"358#25","limit":2,"group":0,"unlock":7500},{"id":23,"cost":"411#500","award":"4206001#25","limit":10,"group":0,"unlock":7500},{"id":24,"cost":"411#2500","award":"4101010#1","limit":1,"group":0,"unlock":7500},{"id":25,"cost":"411#4000","award":"4402015#1","limit":1,"group":0,"unlock":12500},{"id":26,"cost":"411#4500","award":"5100020#1","limit":2,"group":0,"unlock":12500},{"id":27,"cost":"411#1500","award":"940059#50","limit":4,"group":0,"unlock":12500},{"id":28,"cost":"411#5000","award":"6791#1","limit":1,"group":0,"unlock":12500},{"id":29,"cost":"411#1500","award":"930235#50","limit":1,"group":0,"unlock":12500},{"id":30,"cost":"411#2000","award":"4901001#1","limit":2,"group":0,"unlock":20000},{"id":31,"cost":"411#2000","award":"986001#20","limit":2,"group":0,"unlock":20000},{"id":32,"cost":"411#1000","award":"358#30","limit":10,"group":0,"unlock":20000},{"id":33,"cost":"411#4500","award":"5100021#1","limit":2,"group":0,"unlock":20000},{"id":34,"cost":"411#500","award":"334#10","limit":10,"group":0,"unlock":20000}],"shop_table":"activity_pirate_shop_awards"},"333":{"title":"Lantern Secrets","shop":[{"id":1,"cost":"432#40|433#6","award":"4402015#1","limit":1,"group":0,"unlock":0},{"id":2,"cost":"432#25|433#5","award":"6761#1","limit":1,"group":0,"unlock":0},{"id":3,"cost":"432#25|433#4","award":"6437#1","limit":1,"group":0,"unlock":0},{"id":4,"cost":"432#20|433#3","award":"418#100","limit":2,"group":0,"unlock":0},{"id":5,"cost":"432#20|433#3","award":"4501002#1","limit":2,"group":0,"unlock":0},{"id":6,"cost":"432#10|433#2","award":"4705002#50","limit":3,"group":0,"unlock":0},{"id":7,"cost":"432#25|433#3","award":"4101010#1","limit":1,"group":0,"unlock":0},{"id":8,"cost":"432#15|433#3","award":"930235#50","limit":1,"group":0,"unlock":0},{"id":9,"cost":"432#10|433#2","award":"940045#50","limit":1,"group":0,"unlock":0},{"id":10,"cost":"432#10|433#2","award":"940046#50","limit":1,"group":0,"unlock":0},{"id":11,"cost":"432#20|433#2","award":"4901001#1","limit":1,"group":0,"unlock":0},{"id":12,"cost":"432#5|433#2","award":"453#1","limit":1,"group":0,"unlock":0},{"id":13,"cost":"431#20|432#5","award":"7218#1","limit":1,"group":0,"unlock":0},{"id":14,"cost":"431#20|432#5","award":"7217#1","limit":1,"group":0,"unlock":0},{"id":15,"cost":"431#15|432#5","award":"7132#1","limit":1,"group":0,"unlock":0},{"id":16,"cost":"431#15|432#5","award":"7131#1","limit":1,"group":0,"unlock":0},{"id":17,"cost":"431#10","award":"170#10","limit":5,"group":0,"unlock":0},{"id":18,"cost":"432#5","award":"20#10","limit":3,"group":0,"unlock":0},{"id":19,"cost":"433#1","award":"359#10000","limit":999,"group":0,"unlock":0},{"id":20,"cost":"432#1","award":"4201042#1","limit":999,"group":0,"unlock":0},{"id":21,"cost":"431#2","award":"36#1","limit":999,"group":0,"unlock":0},{"id":22,"cost":"430#1","award":"358#5","limit":999,"group":0,"unlock":0}],"shop_table":"activity_halloween2022_shop"},"295":{"title":"Falling Stars","shop":[{"id":1,"cost":"361#200","award":"5100020#1","limit":1,"group":0,"unlock":0},{"id":2,"cost":"361#170","award":"4402015#1","limit":1,"group":0,"unlock":0},{"id":3,"cost":"361#85","award":"4101010#1","limit":2,"group":0,"unlock":0},{"id":4,"cost":"361#60","award":"4104023#1","limit":2,"group":0,"unlock":0},{"id":5,"cost":"361#30","award":"4101067#1","limit":2,"group":0,"unlock":0},{"id":6,"cost":"361#50","award":"4101008#1","limit":2,"group":0,"unlock":0}],"shop_table":"activity_star_altar_exchange","missions":[{"id":1,"need":6,"award":"358#80|4104023#1","limit":1,"daily":0,"text":"Complete all other missions"},{"id":2,"need":25,"award":"358#1","limit":32,"daily":0,"text":"Obtain 25 Stellar Shard - ♐"},{"id":3,"need":3,"award":"361#1","limit":120,"daily":0,"text":"Use 3 Seals"},{"id":4,"need":30,"award":"361#1","limit":100,"daily":0,"text":"Pull Slot Machine 30 times"},{"id":5,"need":15,"award":"361#1","limit":120,"daily":0,"text":"Pull Adv. Capsule 15 times"},{"id":6,"need":3,"award":"361#1","limit":120,"daily":0,"text":"Consume 3 Rudders"},{"id":7,"need":8,"award":"361#1","limit":20,"daily":0,"text":"Consume 8 Space Radars"},{"id":8,"need":50,"award":"361#1","limit":650,"daily":0,"text":"Obtain 50 VIP Exp"},{"id":9,"need":1,"award":"361#1","limit":30,"daily":0,"text":"Obtain a 5-star Girl"},{"id":10,"need":1,"award":"361#5","limit":1,"daily":0,"text":"Obtain a 10-star Cosmos Girl"},{"id":11,"need":1,"award":"361#15","limit":1,"daily":0,"text":"Obtain a 12-star Girl"}],"mission_table":"activity_star_altar_mission"},"234":{"title":"Jungle Exploration","shop":[{"id":1,"cost":"256#1250|257#240","award":"6779#1|6000#6000","limit":1,"group":0,"unlock":0},{"id":2,"cost":"256#1000|257#360","award":"6791#1|6000#6000","limit":1,"group":0,"unlock":0},{"id":3,"cost":"256#1000|257#120","award":"4901001#1","limit":3,"group":0,"unlock":0},{"id":4,"cost":"256#4000|257#80","award":"940059#100","limit":2,"group":0,"unlock":0},{"id":5,"cost":"256#2000|257#120","award":"4104023#1","limit":1,"group":0,"unlock":0},{"id":6,"cost":"256#750|257#30","award":"4102008#1","limit":8,"group":0,"unlock":0},{"id":7,"cost":"256#50|257#3","award":"418#1","limit":100,"group":0,"unlock":0},{"id":8,"cost":"256#100","award":"170#10","limit":10,"group":0,"unlock":0},{"id":9,"cost":"256#75","award":"20#2","limit":20,"group":0,"unlock":0},{"id":10,"cost":"256#50","award":"36#3","limit":20,"group":0,"unlock":0},{"id":11,"cost":"257#5","award":"4201042#3","limit":999,"group":0,"unlock":0},{"id":12,"cost":"256#1","award":"940004#1","limit":999,"group":0,"unlock":0}],"shop_table":"activity_jungle_shop"},"317":{"title":"Goldfish Scooper","shop":[{"id":1,"cost":"395#30000","award":"5100021#1","limit":2,"group":1,"unlock":0},{"id":2,"cost":"395#10000","award":"4501002#1","limit":2,"group":1,"unlock":0},{"id":3,"cost":"395#8000","award":"4101008#1","limit":2,"group":1,"unlock":0},{"id":4,"cost":"395#12000","award":"4101010#1","limit":2,"group":1,"unlock":0},{"id":5,"cost":"395#24000","award":"4402015#1","limit":2,"group":1,"unlock":0},{"id":6,"cost":"395#7500","award":"420#1","limit":3,"group":1,"unlock":0},{"id":7,"cost":"395#5000","award":"360#50000","limit":5,"group":1,"unlock":0},{"id":8,"cost":"395#5000","award":"359#5000","limit":5,"group":1,"unlock":0},{"id":9,"cost":"395#6000","award":"930214#50","limit":2,"group":1,"unlock":0},{"id":10,"cost":"395#6000","award":"930213#50","limit":2,"group":1,"unlock":0},{"id":11,"cost":"395#3000","award":"930196#50","limit":3,"group":1,"unlock":0},{"id":12,"cost":"395#3000","award":"930201#50","limit":3,"group":1,"unlock":0},{"id":13,"cost":"395#3000","award":"930204#50","limit":3,"group":1,"unlock":0},{"id":14,"cost":"395#3000","award":"930192#50","limit":3,"group":1,"unlock":0},{"id":15,"cost":"395#5000","award":"418#5","limit":5,"group":1,"unlock":0},{"id":16,"cost":"395#2500","award":"6000#1000","limit":10,"group":1,"unlock":0},{"id":17,"cost":"395#500","award":"417#600","limit":20,"group":1,"unlock":0},{"id":18,"cost":"395#500","award":"419#15","limit":20,"group":1,"unlock":0},{"id":19,"cost":"395#1000","award":"14#5000","limit":5,"group":1,"unlock":0},{"id":20,"cost":"395#1000","award":"10#5000","limit":5,"group":1,"unlock":0},{"id":21,"cost":"395#1","award":"1#5000","limit":9999,"group":1,"unlock":0},{"id":22,"cost":"395#1","award":"9#5000","limit":9999,"group":1,"unlock":0}],"shop_table":"activity_goldfish_shop"},"248":{"title":"Trick or Treat","shop":[{"id":1,"cost":"299#28","award":"4402006#1","limit":1,"group":0,"unlock":0},{"id":2,"cost":"299#28","award":"4101010#1","limit":1,"group":0,"unlock":0},{"id":3,"cost":"299#20","award":"4601001#1","limit":2,"group":0,"unlock":0},{"id":4,"cost":"299#20","award":"4101008#1","limit":1,"group":0,"unlock":0},{"id":5,"cost":"299#2","award":"73#25","limit":2,"group":0,"unlock":0},{"id":6,"cost":"299#1","award":"170#15","limit":2,"group":0,"unlock":0},{"id":7,"cost":"298#40000","award":"4402006#1","limit":1,"group":0,"unlock":0},{"id":8,"cost":"298#20000","award":"4501002#1","limit":1,"group":0,"unlock":0},{"id":9,"cost":"298#12500","award":"4102008#1","limit":1,"group":0,"unlock":0},{"id":10,"cost":"298#10000","award":"4102007#1","limit":1,"group":0,"unlock":0},{"id":11,"cost":"298#1250","award":"259#5","limit":2,"group":0,"unlock":0},{"id":12,"cost":"298#1250","award":"258#5","limit":2,"group":0,"unlock":0},{"id":13,"cost":"298#500","award":"261#10","limit":10,"group":0,"unlock":0},{"id":14,"cost":"298#500","award":"260#100","limit":10,"group":0,"unlock":0},{"id":15,"cost":"298#50","award":"1#225000","limit":9999,"group":0,"unlock":0},{"id":16,"cost":"298#50","award":"9#225000","limit":9999,"group":0,"unlock":0},{"id":17,"cost":"298#50","award":"14#150","limit":9999,"group":0,"unlock":0}],"shop_table":"activity_trickortreat_shop","missions":[{"id":1,"need":4,"award":"297#2","limit":1,"daily":0,"text":"Complete all Daily missions on this page"},{"id":2,"need":1,"award":"297#1","limit":1,"daily":0,"text":"Complete 1 battle in Tests"},{"id":3,"need":5,"award":"297#1","limit":1,"daily":0,"text":"Engage 5 battles in Junior Varsity"},{"id":4,"need":500,"award":"297#1","limit":1,"daily":0,"text":"Consume 500 Gems in game"},{"id":5,"need":1,"award":"297#1","limit":1,"daily":0,"text":"Purchase 1 piece of Furniture"},{"id":6,"need":4,"award":"297#5","limit":1,"daily":0,"text":"Complete all Weekly missions on this page"},{"id":7,"need":5,"award":"297#2","limit":1,"daily":0,"text":"Log in 5 Days"},{"id":8,"need":5000,"award":"297#2","limit":1,"daily":0,"text":"Consume 5000 Gems"},{"id":9,"need":10,"award":"297#2","limit":1,"daily":0,"text":"Draw 10 times in Outfit Sale"},{"id":10,"need":10,"award":"297#2","limit":1,"daily":0,"text":"Complete ten 4-star (or higher) Internship quests"}],"mission_table":"activity_trickortreat_task"},"141":{"title":"Fairytale Land","shop":[{"id":1,"cost":"167#150","award":"20#1","limit":4,"group":0,"unlock":1},{"id":2,"cost":"167#2","award":"43#10","limit":10,"group":0,"unlock":1},{"id":3,"cost":"167#2","award":"69#15","limit":10,"group":0,"unlock":1},{"id":4,"cost":"167#150","award":"36#2","limit":10,"group":0,"unlock":1},{"id":5,"cost":"167#15","award":"1#250000","limit":999,"group":0,"unlock":1},{"id":6,"cost":"167#15","award":"9#250000","limit":999,"group":0,"unlock":1},{"id":7,"cost":"167#250","award":"956001#10","limit":5,"group":0,"unlock":1},{"id":8,"cost":"167#100","award":"20001040#1","limit":1,"group":0,"unlock":1},{"id":9,"cost":"167#45","award":"74#8","limit":5,"group":0,"unlock":1}],"shop_table":"activity_fairytale_shop","missions":[],"mission_table":"activity_fairytale_mission"},"121":{"title":"Lovely Date","shop":[{"id":1,"cost":"130#90","award":"7101#1","limit":1,"group":0,"unlock":0},{"id":2,"cost":"130#90","award":"7102#1","limit":1,"group":0,"unlock":0},{"id":3,"cost":"130#10","award":"135#1","limit":10,"group":0,"unlock":0},{"id":4,"cost":"130#55","award":"930086#50","limit":1,"group":0,"unlock":0},{"id":5,"cost":"130#55","award":"930083#50","limit":1,"group":0,"unlock":0},{"id":6,"cost":"130#85","award":"93#1","limit":1,"group":0,"unlock":0},{"id":7,"cost":"130#9","award":"74#30","limit":5,"group":0,"unlock":0},{"id":8,"cost":"130#6","award":"940001#60","limit":5,"group":0,"unlock":0},{"id":9,"cost":"130#2","award":"10#500","limit":999,"group":0,"unlock":0},{"id":10,"cost":"130#1","award":"1#250000","limit":999,"group":0,"unlock":0},{"id":11,"cost":"130#1","award":"9#250000","limit":999,"group":0,"unlock":0}],"shop_table":"activity_date_shop"},"260":{"title":"Lucky Dips","missions":[{"id":1,"need":3,"award":"309#1","limit":10,"daily":0,"text":""},{"id":2,"need":200,"award":"309#1","limit":20,"daily":0,"text":""},{"id":3,"need":200,"award":"309#1","limit":20,"daily":0,"text":""},{"id":4,"need":1,"award":"309#1","limit":20,"daily":0,"text":""},{"id":5,"need":250,"award":"309#2","limit":100,"daily":0,"text":""},{"id":6,"need":10,"award":"309#1","limit":80,"daily":0,"text":""},{"id":7,"need":5,"award":"309#1","limit":80,"daily":0,"text":""},{"id":8,"need":1,"award":"309#1","limit":80,"daily":0,"text":""},{"id":9,"need":1,"award":"309#1","limit":80,"daily":0,"text":""}],"mission_table":"activity_luckyboxes_mission"},"251":{"title":"Treasure Hunt","missions":[{"id":1,"need":1,"award":"302#1","limit":1,"daily":0,"text":""},{"id":2,"need":5,"award":"302#1","limit":1,"daily":0,"text":""},{"id":3,"need":6,"award":"302#1","limit":1,"daily":0,"text":""},{"id":4,"need":500,"award":"302#1","limit":1,"daily":0,"text":""},{"id":5,"need":5,"award":"302#5","limit":1,"daily":0,"text":""},{"id":6,"need":2000,"award":"302#3","limit":1,"daily":0,"text":""},{"id":7,"need":400,"award":"302#2","limit":1,"daily":0,"text":""},{"id":8,"need":800,"award":"302#3","limit":1,"daily":0,"text":""},{"id":9,"need":200,"award":"302#2","limit":1,"daily":0,"text":""},{"id":10,"need":500,"award":"302#3","limit":1,"daily":0,"text":""},{"id":11,"need":40,"award":"302#2","limit":1,"daily":0,"text":""},{"id":12,"need":80,"award":"302#3","limit":1,"daily":0,"text":""},{"id":13,"need":1,"award":"302#2","limit":1,"daily":0,"text":""},{"id":14,"need":1,"award":"302#3","limit":1,"daily":0,"text":""},{"id":15,"need":1000,"award":"302#2","limit":1,"daily":0,"text":""},{"id":16,"need":2000,"award":"302#3","limit":1,"daily":0,"text":""},{"id":17,"need":30,"award":"302#2","limit":1,"daily":0,"text":""},{"id":18,"need":75,"award":"302#3","limit":1,"daily":0,"text":""}],"mission_table":"activity_secrettreasure_mission"},"214":{"title":"Bizarre Adventures","missions":[{"id":1,"need":4,"award":"238#1","limit":1,"daily":0,"text":"Complete all the other tasks (Daily)"},{"id":2,"need":1,"award":"239#10","limit":1,"daily":0,"text":"Complete 1 battle in Tests"},{"id":3,"need":5,"award":"239#10","limit":1,"daily":0,"text":"Engage 5 battles in Junior Varsity"},{"id":4,"need":1,"award":"239#10","limit":1,"daily":0,"text":"Complete all Daily Tasks in Fantasy Book"},{"id":5,"need":1,"award":"239#10","limit":1,"daily":0,"text":"Purchase 1 piece of Furniture"},{"id":6,"need":6,"award":"239#15|238#6","limit":1,"daily":0,"text":"Complete all the other tasks (Weekly)"},{"id":7,"need":5,"award":"239#5|238#2","limit":1,"daily":0,"text":"Log in 5 Days"},{"id":8,"need":4000,"award":"239#5|238#2","limit":1,"daily":0,"text":"Consume 4000 Gems"},{"id":9,"need":200,"award":"239#5|238#2","limit":1,"daily":0,"text":"Pull Slot Machine 200 times"},{"id":10,"need":400,"award":"239#10|238#5","limit":1,"daily":0,"text":"Pull Slot Machine 400 times"},{"id":11,"need":100,"award":"239#5|238#2","limit":1,"daily":0,"text":"Pull Advanced Capsule 100 times"},{"id":12,"need":200,"award":"239#10|238#5","limit":1,"daily":0,"text":"Pull Advanced Capsule 200 times"},{"id":13,"need":20,"award":"239#5|238#2","limit":1,"daily":0,"text":"Enroll 20 times"},{"id":14,"need":40,"award":"239#10|238#5","limit":1,"daily":0,"text":"Enroll 40 times"},{"id":15,"need":30,"award":"239#5|238#2","limit":1,"daily":0,"text":"Use 30 Rudders in total"},{"id":16,"need":75,"award":"239#10|238#5","limit":1,"daily":0,"text":"Use 75 Rudders in total"},{"id":17,"need":1,"award":"239#5|238#1","limit":1,"daily":0,"text":"Acquire 1 5-Star Girl"},{"id":18,"need":1,"award":"239#10|238#2","limit":1,"daily":0,"text":"Acquire 1 6-Star Girl"}],"mission_table":"activity_space_explore_mission"},"230":{"title":"To The Beach!","missions":[{"id":1,"need":5,"award":"253#20","limit":1,"daily":0,"text":"Log in 5 Days"},{"id":2,"need":1,"award":"253#50","limit":1,"daily":0,"text":"Acquire 1 Skin"},{"id":3,"need":1,"award":"253#20","limit":1,"daily":0,"text":"Acquire a 5-star Girl"},{"id":4,"need":1,"award":"253#35","limit":1,"daily":0,"text":"Acquire a 6-star Girl"},{"id":5,"need":200,"award":"253#50","limit":1,"daily":0,"text":"Pull Advanced Capsule 200 times"},{"id":6,"need":500,"award":"253#100","limit":1,"daily":0,"text":"Draw Advanced Capsule 500 times"},{"id":7,"need":60,"award":"253#20","limit":1,"daily":0,"text":"Enroll 60 times"},{"id":8,"need":150,"award":"253#70","limit":1,"daily":0,"text":"Enroll 150 times"}],"mission_table":"activity_beach_mission"},"325":{"title":"Game Console Fixer","missions":[{"id":1,"need":1,"award":"408#1","limit":7,"daily":0,"text":"Daily Login ({1}/7)"},{"id":2,"need":1,"award":"408#1","limit":10,"daily":0,"text":"Complete a 4-star or higher Internship Quest ({1}/10)"},{"id":3,"need":3,"award":"408#1","limit":10,"daily":0,"text":"Complete 3 battles in Junior Varsity ({1}/10)"},{"id":4,"need":10,"award":"408#2","limit":20,"daily":0,"text":"Consume 10 Seals ({1}/20)"}],"mission_table":"activity_repair_console_mission"},"338":{"title":"Blind Box Frenzy","missions":[{"id":1,"need":50,"award":"438#1","limit":1,"daily":0,"text":"Obtain {1} VIP Exp"},{"id":2,"need":250,"award":"438#2","limit":1,"daily":0,"text":"Obtain {1} VIP Exp"},{"id":3,"need":500,"award":"438#3","limit":1,"daily":0,"text":"Obtain {1} VIP Exp"},{"id":4,"need":1000,"award":"438#4","limit":1,"daily":0,"text":"Obtain {1} VIP Exp"},{"id":5,"need":2500,"award":"438#5","limit":1,"daily":0,"text":"Obtain {1} VIP Exp"},{"id":6,"need":5000,"award":"438#6","limit":1,"daily":0,"text":"Obtain {1} VIP Exp"},{"id":7,"need":7500,"award":"438#7","limit":1,"daily":0,"text":"Obtain {1} VIP Exp"},{"id":8,"need":10000,"award":"438#8","limit":1,"daily":0,"text":"Obtain {1} VIP Exp"},{"id":9,"need":15000,"award":"438#9","limit":1,"daily":0,"text":"Obtain {1} VIP Exp"}],"mission_table":"activity_blind_box_mission"},"308":{"title":"Wish Upon a Chime","missions":[{"id":1,"need":13,"award":"386#5","limit":1,"daily":0,"text":"Complete all Tasks on the Message Board"},{"id":2,"need":5000,"award":"385#5","limit":1,"daily":0,"text":"Consume 5000 Fantasy Dust during the event"},{"id":3,"need":15000,"award":"385#10","limit":1,"daily":0,"text":"Consume 15000 Fantasy Dust during the event"},{"id":4,"need":30000,"award":"385#20","limit":1,"daily":0,"text":"Consume 30000 Fantasy Dust during the event"},{"id":5,"need":100,"award":"385#5","limit":1,"daily":0,"text":"Consume 100 Fantasy Talisman during the event"},{"id":6,"need":200,"award":"385#10","limit":1,"daily":0,"text":"Consume 200 Fantasy Talisman during the event"},{"id":7,"need":400,"award":"385#20","limit":1,"daily":0,"text":"Consume 400 Fantasy Talisman during the event"},{"id":8,"need":20,"award":"385#10","limit":1,"daily":0,"text":"Charge your Chimes for 20 times during the event"},{"id":9,"need":50,"award":"385#20","limit":1,"daily":0,"text":"Charge your Chimes for 50 times during the event"},{"id":10,"need":1,"award":"386#5","limit":1,"daily":0,"text":"Enchant or Ascend 1 time during the event"},{"id":11,"need":30,"award":"4704001#10","limit":1,"daily":0,"text":"Consume 30 Jade Cranes during the event"},{"id":12,"need":60,"award":"4705002#10","limit":1,"daily":0,"text":"Consume 60 Jade Cranes during the event"},{"id":13,"need":100,"award":"334#5","limit":1,"daily":0,"text":"Consume 100 Jade Cranes during the event"},{"id":14,"need":150,"award":"334#15","limit":1,"daily":0,"text":"Consume 150 Jade Cranes during the event"},{"id":15,"need":25,"award":"385#10|4501002#1","limit":1,"daily":0,"text":"Consume 25 Gilded Cranes during the event"},{"id":16,"need":50,"award":"385#20|986001#20","limit":1,"daily":0,"text":"Consume 50 Gilded Cranes during the event"},{"id":17,"need":75,"award":"418#20|4201042#10","limit":1,"daily":0,"text":"Consume 75 Gilded Cranes during the event"},{"id":18,"need":100,"award":"4402015#1|334#50","limit":1,"daily":0,"text":"Consume 100 Gilded Cranes during the event"},{"id":19,"need":200,"award":"6779#1|986001#25","limit":1,"daily":0,"text":"Consume 200 Gilded Cranes during the event"},{"id":20,"need":350,"award":"940059#50|448#1","limit":1,"daily":0,"text":"Consume 350 Gilded Cranes during the event"},{"id":21,"need":500,"award":"940059#100|6000#30000","limit":1,"daily":0,"text":"Consume 500 Gilded Cranes during the event"}],"mission_table":"activity_chime_mission"},"93":{"title":"Coffee Lab","missions":[{"id":1,"need":1,"award":"90#2","limit":1,"daily":0,"text":"Collect Auto-Battle Loot {1} times in Campaign"},{"id":2,"need":1,"award":"90#2","limit":1,"daily":0,"text":"Complete {1} Internship Quest(s) (4-star or above)"},{"id":3,"need":1,"award":"90#2","limit":1,"daily":0,"text":"Complete {1} battles in Junior Varsity"},{"id":4,"need":1,"award":"90#2","limit":1,"daily":0,"text":""}],"mission_table":"activity_making_coffee_mission"},"279":{"title":"Luvly's Dream Castle","missions":[{"id":1,"need":1,"award":"1#1000000","limit":30,"daily":0,"text":"Unlock 1 5-star Girl in Girls - Gallery"},{"id":2,"need":1,"award":"1#2000000","limit":20,"daily":0,"text":"Unlock 1 6-star Girl in Girls - Gallery"},{"id":3,"need":1,"award":"1#3000000","limit":10,"daily":0,"text":"Unlock 1 10-star Girl in Girls - Gallery"},{"id":4,"need":1,"award":"10#1000|335#1","limit":50,"daily":0,"text":"Acquire 1 5-Star Girl"},{"id":5,"need":3,"award":"9#1000000|335#1","limit":50,"daily":0,"text":"Consume 3 League Tickets"},{"id":6,"need":200,"award":"9#2000000","limit":30,"daily":0,"text":"Consume 200 Gems"},{"id":7,"need":250,"award":"14#1000|335#2","limit":100,"daily":0,"text":"Obtain 250 VIP Exp during the event"}],"mission_table":"activity_lflcastle_task"},"300":{"title":"Dimensional Manor","missions":[{"id":1,"need":4,"award":"369#250|1#100000","limit":1,"daily":1,"text":"Complete all Daily missions on this page"},{"id":2,"need":3,"award":"369#50|1#50000","limit":1,"daily":1,"text":"Complete [c][35b843]{1}[-][/c] battles in Junior Varsity"},{"id":3,"need":1,"award":"369#50|1#50000","limit":1,"daily":1,"text":"Explore [c][35b843]{1}[-][/c] time(s) in Echoes of Time"},{"id":4,"need":1,"award":"369#50|1#50000","limit":1,"daily":1,"text":"Complete [c][35b843]{1}[-][/c] Internship Quest(s) ([c][35b843]4-star[-][/c] or above)"},{"id":5,"need":200,"award":"369#50|1#50000","limit":1,"daily":1,"text":"Consume [c][35b843]{1}[-][/c] Gems"},{"id":6,"need":1,"award":"369#200|370#5|1#300000","limit":1,"daily":0,"text":"Plant [c][35b843]{1}[-][/c] [c][35b843]Marvelous Fruit(s)[-][/c]"},{"id":7,"need":1,"award":"369#200|370#5|1#300000","limit":1,"daily":0,"text":"Set a defender in your Manor"},{"id":8,"need":1,"award":"369#200|370#5|1#300000","limit":1,"daily":0,"text":"Own [c][35b843]{1}[-][/c] Flower(s) beyond Lv. [c][35b843]{2}[-][/c]"},{"id":9,"need":1,"award":"369#100|370#5|1#300000","limit":1,"daily":0,"text":"Raid [c][35b843]{1}[-][/c] time(s)"},{"id":10,"need":3,"award":"369#200|370#10|1#600000","limit":1,"daily":0,"text":""},{"id":11,"need":2,"award":"369#200|370#15|1#600000","limit":1,"daily":0,"text":""},{"id":12,"need":10,"award":"369#200|370#10|1#600000","limit":1,"daily":0,"text":""},{"id":13,"need":4,"award":"369#300|370#15|1#600000","limit":1,"daily":0,"text":""},{"id":14,"need":4,"award":"369#300|370#15|1#900000","limit":1,"daily":0,"text":""},{"id":15,"need":6,"award":"370#15|1#900000","limit":1,"daily":0,"text":""},{"id":16,"need":6,"award":"370#15|1#900000","limit":1,"daily":0,"text":""},{"id":17,"need":30,"award":"369#300|370#15|1#900000","limit":1,"daily":0,"text":""},{"id":18,"need":6,"award":"370#15|1#1500000","limit":1,"daily":0,"text":""},{"id":19,"need":10,"award":"370#15|1#1500000","limit":1,"daily":0,"text":""}],"mission_table":"activity_spfarm_task"},"290":{"title":"Easter Egg Factory","missions":[{"id":1,"need":30,"award":"348#1","limit":10,"daily":0,"text":"Break 30 Easter Eggs"},{"id":2,"need":10,"award":"347#2","limit":10,"daily":0,"text":"Pull Adv. Capsule 10 times"},{"id":3,"need":3,"award":"347#1|258#1","limit":30,"daily":0,"text":"Consume 3 League Tickets"},{"id":4,"need":200,"award":"347#1|423#1","limit":100,"daily":0,"text":"Consume 200 Gems"},{"id":5,"need":1,"award":"347#2|9#500000","limit":30,"daily":0,"text":"Acquire a 5-star Girl"},{"id":6,"need":1,"award":"930218#50","limit":1,"daily":0,"text":"Acquire 1 5-star Chizuko"},{"id":7,"need":1,"award":"4102007#1","limit":1,"daily":0,"text":"Graduate Chizuko to 6-star"},{"id":8,"need":1,"award":"4101008#1","limit":1,"daily":0,"text":"Awake Chizuko to 9-star"},{"id":9,"need":1,"award":"4101010#1","limit":1,"daily":0,"text":"Awake Chizuko to 10-star"},{"id":10,"need":1,"award":"347#1|417#250","limit":10,"daily":0,"text":"Finish 1 4-Star Quests in Internship"},{"id":11,"need":1,"award":"347#5|419#25","limit":2,"daily":0,"text":"Finish a 5-Star Quest in Internship"},{"id":12,"need":1,"award":"347#10|418#5","limit":1,"daily":0,"text":"Finish a 6-Star Quest in Internship"}],"mission_table":"activity_easter2022_mission"}},"unpaired":["activity_limit_exchange_awards (Girls/10-Star Exchange need a girl picker)","activity_doll_buy","activity_return_shop","activity_festival","activity_food_festival_awards","activity_point_giftbox","activity_giftbox","activity_gamble_plus_mission","activity_turing_task","activity_vampire_task","activity_candy_collect_task"],"names":{"1":"Coin","2":"Gem","9":"EXP Juice","10":"Lunch Box","14":"Crystal Chisel","20":"Seal","24":"Internship Scroll","25":"Advance Internship Scroll","29":"Super Slot Ticket","33":"Capsule Coin","35":"Slot Ticket","36":"Adv. Capsule Coin","43":"Gift Box","45":"Oath Ring","57":"Jackpot Energy","69":"Furniture Coin","73":"Rune Engraving","74":"Costume Ticket","90":"Coffee Encyclopedia","93":"Elite Badge","130":"Love Rose","135":"Gift of Love","167":"Eye of Lazurite","170":"Lucky Crystal","198":"Standard File","199":"Exclusive File","216":"Servant Crystal","232":"Shining Pearl","235":"Magic Circuit","236":"Time Shards","238":"Adventure Capsule Coin","239":"Void Ember","253":"Colorful Sand","254":"Swimsuit Ticket","256":"Ancient Silver Coin","257":"Ancient Gold Coin","258":"Plain Button","259":"Fancy Button","260":"Plain Silk","261":"Dyed Silk","297":"Ghost Potion","298":"Candy Pumpkin","299":"Candy Basket","302":"Compass","309":"Lucky Coin","317":"Firework Point Card","334":"Chime Resource Bag - Orange","335":"Beach Sand","345":"Clockwork Coin","347":"Easter Slingshot","348":"Laser Gun","358":"Star Token","359":"Brilliant Sphere","360":"Tarnished Sphere","361":"Stellar Shards - ♐","363":"Childhood Delight","365":"Rabbit Badge","369":"Marvelous Seed","370":"Loud Speaker","374":"Chime Resource Bag - Red","378":"Pastry Bag","379":"Party Drink","385":"Jade Crane","386":"Gilded Crane","395":"Goldfish Coin","408":"Bonnie's Battery","411":"Pirate Coin","417":"Soul Gem","418":"Soul Mirror","419":"Soul Dice","420":"Soul Charm","423":"Soul Token","424":"Shiny Soul Token","430":"Witch's Potion","431":"Horned Pumpkin","432":"Winged Pumpkin","433":"IM PUMPKIN","435":"Random Anima Artifact Chest","438":"Blind Box Coupon","448":"Customized Anima Stone Set Chest","453":"Random Anima Stone Set Chest","455":"Scorpius Ticket","456":"Sagittarius Ticket","457":"Pisces Ticket","6000":"Afterglow","6437":"The Wings of lcarus","6455":"Echoes","6461":"Burning Blades","6701":"Soul Destruction","6707":"Sacred Vial","6713":"Eternal Dawn","6725":"Reaper's Voice","6743":"Snow Chime","6755":"Windbringer","6761":"Nebula Slasher","6773":"Midnight Star","6779":"Peacock Tambourine","6785":"Galaxy Paintbrush","6791":"Necronomicon","7033":"Summer Breeze","7034":"Azure Sea","7038":"Wave Surfer","7041":"Ocean Breeze","7043":"Summer Fantasy","7047":"Alluring Face","7099":"Sun Glitter","7101":"Past Idol","7102":"Summer Outfit","7108":"Sea Warrior","7109":"Sea Spells","7110":"Beach Pod","7111":"Full View","7112":"Wave Mistress","7113":"Halo Shimmer","7114":"Sweet Berry","7115":"Seaside Maid","7116":"Oceanic Twins","7118":"Sunkissed","7131":"Soul Reaper","7132":"Troublemaker","7182":"Seaside Tasks","7188":"Maritime","7194":"Colorful Reef","7196":"Beach Vacation","7197":"Boom Beach","7198":"Tentacle Trouble","7217":"Pro Trickster","7218":"Candy Witch","930083":"5-star Fencer","930086":"5-star Giana","930192":"5-star Vivian","930196":"5-star Vera","930197":"5-star Apate","930201":"5-star Estel","930203":"5-star Holly","930204":"5-star Teresa","930213":"5-star Gwen & Brigit","930214":"5-star Maia","930218":"5-star Chizuko","930233":"5-star Hadea","930234":"5-star Zeusia","930235":"5-star Apollis","940001":"4-star Girls Shard","940002":"5-star Girls Shard","940004":"Elite 5-star Girls Shard","940034":"6-Star Fairy Doll","940045":"9-Star Demon Doll","940046":"9-Star Angel Doll","940059":"Customized 10-star Cosmos Girls Shard","956001":"Orange Antique Shard","986001":"Shard of Reflections","4101008":"9-star Doll Chest","4101010":"10-star Doll Chest","4101020":"5-Star Customized Chest","4101067":"5-Star Customized Chest","4102007":"6-star Doll Chest","4102008":"6-star Doll chest","4102018":"Customized L&D Chest","4102056":"Customized L&D Chest","4102057":"Customized L&D Chest","4104022":"5-Star Customized Chest (6 factions)","4104023":"5-Star Customized Chest (6 factions)","4201008":"Regular Customized Resource Chest","4201042":"Regular Customized Resource Chest","4205004":"Customized File Chest","4206001":"Customized Sphere Chest","4402006":"Customized Orange Antique Chest","4402015":"Customized Orange Antique Chest","4501002":"Customized Class Set Chest","4601001":"Customized Halloween Outfit Chest","4704001":"Chime Shard Chest - Green","4705002":"Chime Shard Chest - Red","4901001":"Customized Orange Anima Artifact Chest","5100020":"Ancient Coin","5100021":"Thunder Potion","20001040":"Fairytale Land","20001059":"Limited: Holly"}}
+{
+  "events": {
+    "64": {
+      "title": "Giải Độc Đắc May Mắn",
+      "shop": [
+        {
+          "id": 1,
+          "cost": "2#700",
+          "award": "345#1|57#35",
+          "limit": 10,
+          "group": 0,
+          "unlock": 0
+        }
+      ],
+      "shop_table": "activity_jackpot_exchange"
+    },
+    "93": {
+      "title": "Phòng Thí Nghiệm Cà Phê",
+      "missions": [
+        {
+          "id": 1,
+          "need": 1,
+          "award": "90#2",
+          "limit": 1,
+          "daily": 0,
+          "text": "Collect Auto-Battle Loot {1} times in Campaign"
+        },
+        {
+          "id": 2,
+          "need": 1,
+          "award": "90#2",
+          "limit": 1,
+          "daily": 0,
+          "text": "Complete {1} Internship Quest(s) (4-star or above)"
+        },
+        {
+          "id": 3,
+          "need": 1,
+          "award": "90#2",
+          "limit": 1,
+          "daily": 0,
+          "text": "Complete {1} battles in Junior Varsity"
+        },
+        {
+          "id": 4,
+          "need": 1,
+          "award": "90#2",
+          "limit": 1,
+          "daily": 0,
+          "text": ""
+        }
+      ],
+      "mission_table": "activity_making_coffee_mission"
+    },
+    "121": {
+      "title": "Buổi Hẹn Ngọt Ngào",
+      "shop": [
+        {
+          "id": 1,
+          "cost": "130#90",
+          "award": "7101#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 2,
+          "cost": "130#90",
+          "award": "7102#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 3,
+          "cost": "130#10",
+          "award": "135#1",
+          "limit": 10,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 4,
+          "cost": "130#55",
+          "award": "930086#50",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 5,
+          "cost": "130#55",
+          "award": "930083#50",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 6,
+          "cost": "130#85",
+          "award": "93#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 7,
+          "cost": "130#9",
+          "award": "74#30",
+          "limit": 5,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 8,
+          "cost": "130#6",
+          "award": "940001#60",
+          "limit": 5,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 9,
+          "cost": "130#2",
+          "award": "10#500",
+          "limit": 999,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 10,
+          "cost": "130#1",
+          "award": "1#250000",
+          "limit": 999,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 11,
+          "cost": "130#1",
+          "award": "9#250000",
+          "limit": 999,
+          "group": 0,
+          "unlock": 0
+        }
+      ],
+      "shop_table": "activity_date_shop"
+    },
+    "141": {
+      "title": "Xứ Sở Cổ Tích",
+      "shop": [
+        {
+          "id": 1,
+          "cost": "167#150",
+          "award": "20#1",
+          "limit": 4,
+          "group": 0,
+          "unlock": 1
+        },
+        {
+          "id": 2,
+          "cost": "167#2",
+          "award": "43#10",
+          "limit": 10,
+          "group": 0,
+          "unlock": 1
+        },
+        {
+          "id": 3,
+          "cost": "167#2",
+          "award": "69#15",
+          "limit": 10,
+          "group": 0,
+          "unlock": 1
+        },
+        {
+          "id": 4,
+          "cost": "167#150",
+          "award": "36#2",
+          "limit": 10,
+          "group": 0,
+          "unlock": 1
+        },
+        {
+          "id": 5,
+          "cost": "167#15",
+          "award": "1#250000",
+          "limit": 999,
+          "group": 0,
+          "unlock": 1
+        },
+        {
+          "id": 6,
+          "cost": "167#15",
+          "award": "9#250000",
+          "limit": 999,
+          "group": 0,
+          "unlock": 1
+        },
+        {
+          "id": 7,
+          "cost": "167#250",
+          "award": "956001#10",
+          "limit": 5,
+          "group": 0,
+          "unlock": 1
+        },
+        {
+          "id": 8,
+          "cost": "167#100",
+          "award": "20001040#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 1
+        },
+        {
+          "id": 9,
+          "cost": "167#45",
+          "award": "74#8",
+          "limit": 5,
+          "group": 0,
+          "unlock": 1
+        }
+      ],
+      "shop_table": "activity_fairytale_shop",
+      "missions": [],
+      "mission_table": "activity_fairytale_mission"
+    },
+    "166": {
+      "title": "Hành Trình Luvly",
+      "shop": [
+        {
+          "id": 1,
+          "cost": "232#1000",
+          "award": "5100020#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 2,
+          "cost": "232#800",
+          "award": "4101010#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 3,
+          "cost": "232#600",
+          "award": "4501002#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 4,
+          "cost": "232#500",
+          "award": "4102008#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 5,
+          "cost": "232#400",
+          "award": "259#20",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 6,
+          "cost": "232#400",
+          "award": "418#30",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 7,
+          "cost": "232#300",
+          "award": "334#50",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 8,
+          "cost": "232#300",
+          "award": "374#80",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 9,
+          "cost": "232#200",
+          "award": "170#50",
+          "limit": 2,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 10,
+          "cost": "232#50",
+          "award": "198#20000",
+          "limit": 2,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 11,
+          "cost": "232#50",
+          "award": "199#5000",
+          "limit": 2,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 12,
+          "cost": "232#50",
+          "award": "360#1000",
+          "limit": 5,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 13,
+          "cost": "232#50",
+          "award": "359#100",
+          "limit": 5,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 14,
+          "cost": "232#40",
+          "award": "216#500",
+          "limit": 6,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 15,
+          "cost": "232#40",
+          "award": "419#50",
+          "limit": 6,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 16,
+          "cost": "232#30",
+          "award": "417#2000",
+          "limit": 6,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 17,
+          "cost": "232#30",
+          "award": "258#10",
+          "limit": 2,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 18,
+          "cost": "232#30",
+          "award": "261#30",
+          "limit": 5,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 19,
+          "cost": "232#30",
+          "award": "260#300",
+          "limit": 5,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 20,
+          "cost": "232#20",
+          "award": "14#3000",
+          "limit": 10,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 21,
+          "cost": "232#10",
+          "award": "9#2000000",
+          "limit": 10,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 22,
+          "cost": "232#10",
+          "award": "1#2000000",
+          "limit": 10,
+          "group": 0,
+          "unlock": 0
+        }
+      ],
+      "shop_table": "activity_lafuli_shop"
+    },
+    "183": {
+      "title": "Đổi Thưởng Siêu Cấp",
+      "shop": [
+        {
+          "id": 1,
+          "cost": "940002#50|2#4000",
+          "award": "4102008#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 2,
+          "cost": "940002#50|2#2500",
+          "award": "4102007#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 3,
+          "cost": "940002#50|1#1000000",
+          "award": "940004#50",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 4,
+          "cost": "940001#60|2#100",
+          "award": "940002#50",
+          "limit": 3,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 5,
+          "cost": "20#1|1#1000000",
+          "award": "424#1",
+          "limit": 10,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 6,
+          "cost": "36#10|2#200",
+          "award": "358#10",
+          "limit": 5,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 7,
+          "cost": "35#5|2#100",
+          "award": "29#2",
+          "limit": 10,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 8,
+          "cost": "33#1|2#100",
+          "award": "36#1",
+          "limit": 10,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 9,
+          "cost": "9#100000|2#200",
+          "award": "14#3000",
+          "limit": 40,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 10,
+          "cost": "1#100000|2#200",
+          "award": "10#3000",
+          "limit": 40,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 11,
+          "cost": "24#1|2#30",
+          "award": "25#1",
+          "limit": 10,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 12,
+          "cost": "73#100|2#100",
+          "award": "4901001#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 13,
+          "cost": "424#1|2#200",
+          "award": "418#1",
+          "limit": 20,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 14,
+          "cost": "360#1000|10#1000",
+          "award": "359#100",
+          "limit": 100,
+          "group": 0,
+          "unlock": 0
+        }
+      ],
+      "shop_table": "activity_exchange_award"
+    },
+    "206": {
+      "title": "Bí Mật Thời Gian",
+      "shop": [
+        {
+          "id": 1,
+          "cost": "236#5",
+          "award": "20001059#1",
+          "limit": 1,
+          "group": 1,
+          "unlock": 0
+        },
+        {
+          "id": 2,
+          "cost": "236#35",
+          "award": "36#10",
+          "limit": 1,
+          "group": 1,
+          "unlock": 0
+        },
+        {
+          "id": 3,
+          "cost": "236#60",
+          "award": "20#5",
+          "limit": 1,
+          "group": 1,
+          "unlock": 0
+        },
+        {
+          "id": 4,
+          "cost": "236#20",
+          "award": "14#3000",
+          "limit": 1,
+          "group": 1,
+          "unlock": 0
+        },
+        {
+          "id": 5,
+          "cost": "236#10",
+          "award": "10#1500",
+          "limit": 2,
+          "group": 1,
+          "unlock": 0
+        },
+        {
+          "id": 6,
+          "cost": "236#50",
+          "award": "930203#50",
+          "limit": 1,
+          "group": 2,
+          "unlock": 0
+        },
+        {
+          "id": 7,
+          "cost": "236#60",
+          "award": "930197#50",
+          "limit": 1,
+          "group": 2,
+          "unlock": 0
+        },
+        {
+          "id": 8,
+          "cost": "236#180",
+          "award": "4501002#1",
+          "limit": 1,
+          "group": 2,
+          "unlock": 0
+        },
+        {
+          "id": 9,
+          "cost": "236#80",
+          "award": "93#1",
+          "limit": 1,
+          "group": 2,
+          "unlock": 0
+        },
+        {
+          "id": 10,
+          "cost": "236#50",
+          "award": "29#10",
+          "limit": 1,
+          "group": 2,
+          "unlock": 0
+        },
+        {
+          "id": 11,
+          "cost": "236#300",
+          "award": "4102008#1",
+          "limit": 2,
+          "group": 3,
+          "unlock": 0
+        },
+        {
+          "id": 12,
+          "cost": "236#60",
+          "award": "4102018#1",
+          "limit": 2,
+          "group": 3,
+          "unlock": 0
+        },
+        {
+          "id": 13,
+          "cost": "236#50",
+          "award": "4101020#1",
+          "limit": 2,
+          "group": 3,
+          "unlock": 0
+        },
+        {
+          "id": 14,
+          "cost": "236#250",
+          "award": "940034#50",
+          "limit": 1,
+          "group": 3,
+          "unlock": 0
+        },
+        {
+          "id": 15,
+          "cost": "236#30",
+          "award": "36#10",
+          "limit": 2,
+          "group": 3,
+          "unlock": 0
+        },
+        {
+          "id": 16,
+          "cost": "236#450",
+          "award": "4101008#1",
+          "limit": 2,
+          "group": 4,
+          "unlock": 0
+        },
+        {
+          "id": 17,
+          "cost": "236#180",
+          "award": "4501002#1",
+          "limit": 1,
+          "group": 4,
+          "unlock": 0
+        },
+        {
+          "id": 18,
+          "cost": "236#200",
+          "award": "170#80",
+          "limit": 1,
+          "group": 4,
+          "unlock": 0
+        },
+        {
+          "id": 19,
+          "cost": "236#100",
+          "award": "20#10",
+          "limit": 2,
+          "group": 4,
+          "unlock": 0
+        },
+        {
+          "id": 20,
+          "cost": "236#10",
+          "award": "4201008#1",
+          "limit": 99,
+          "group": 4,
+          "unlock": 0
+        }
+      ],
+      "shop_table": "activity_time_shop",
+      "missions": [
+        {
+          "id": 1,
+          "need": 6,
+          "award": "2#50|235#2",
+          "limit": 1,
+          "daily": 0,
+          "text": "Complete all other missions"
+        },
+        {
+          "id": 2,
+          "need": 1,
+          "award": "2#10",
+          "limit": 1,
+          "daily": 0,
+          "text": "Daily Login"
+        },
+        {
+          "id": 3,
+          "need": 3,
+          "award": "35#1",
+          "limit": 1,
+          "daily": 0,
+          "text": "Use Normal Slot Machine 3 times"
+        },
+        {
+          "id": 4,
+          "need": 5,
+          "award": "14#100",
+          "limit": 1,
+          "daily": 0,
+          "text": "Complete 5 Junior Varsity battles"
+        },
+        {
+          "id": 5,
+          "need": 1,
+          "award": "9#100000",
+          "limit": 1,
+          "daily": 0,
+          "text": "Challenge Friend Boss 1 time"
+        },
+        {
+          "id": 6,
+          "need": 2,
+          "award": "1#100000",
+          "limit": 1,
+          "daily": 0,
+          "text": "Use Alchemy twice to get Coins"
+        },
+        {
+          "id": 7,
+          "need": 500,
+          "award": "10#100",
+          "limit": 1,
+          "daily": 0,
+          "text": "Spend 500 Gems"
+        },
+        {
+          "id": 8,
+          "need": 6,
+          "award": "2#50|235#2",
+          "limit": 1,
+          "daily": 0,
+          "text": "Complete all other missions"
+        },
+        {
+          "id": 9,
+          "need": 1,
+          "award": "2#10",
+          "limit": 1,
+          "daily": 0,
+          "text": "Daily Login"
+        },
+        {
+          "id": 10,
+          "need": 1,
+          "award": "24#2",
+          "limit": 1,
+          "daily": 0,
+          "text": "Complete 1 4-star Quest in Internship"
+        },
+        {
+          "id": 11,
+          "need": 1,
+          "award": "14#100",
+          "limit": 1,
+          "daily": 0,
+          "text": "Purchase 1 merchandise in Market"
+        },
+        {
+          "id": 12,
+          "need": 6,
+          "award": "9#100000",
+          "limit": 1,
+          "daily": 0,
+          "text": "Clear 6 Quizzes in Daily Quiz"
+        },
+        {
+          "id": 13,
+          "need": 15,
+          "award": "1#100000",
+          "limit": 1,
+          "daily": 0,
+          "text": "Send out 15 Hearts"
+        },
+        {
+          "id": 14,
+          "need": 3,
+          "award": "10#100",
+          "limit": 1,
+          "daily": 0,
+          "text": "Draw from Adv. Capsule 3 times"
+        },
+        {
+          "id": 15,
+          "need": 6,
+          "award": "2#50|235#2",
+          "limit": 1,
+          "daily": 0,
+          "text": "Complete all other missions"
+        },
+        {
+          "id": 16,
+          "need": 1,
+          "award": "2#10",
+          "limit": 1,
+          "daily": 0,
+          "text": "Daily Login"
+        },
+        {
+          "id": 17,
+          "need": 5,
+          "award": "35#1",
+          "limit": 1,
+          "daily": 0,
+          "text": "Collect Auto-Battle Loot 5 times in Campaign"
+        },
+        {
+          "id": 18,
+          "need": 10,
+          "award": "14#100",
+          "limit": 1,
+          "daily": 0,
+          "text": "Complete 10 Junior Varsity battles"
+        },
+        {
+          "id": 19,
+          "need": 50,
+          "award": "9#100000",
+          "limit": 1,
+          "daily": 0,
+          "text": "Upgrade your Girl(s) 50 times"
+        },
+        {
+          "id": 20,
+          "need": 10,
+          "award": "1#100000",
+          "limit": 1,
+          "daily": 0,
+          "text": "Forge 10 Gears"
+        },
+        {
+          "id": 21,
+          "need": 1000,
+          "award": "10#100",
+          "limit": 1,
+          "daily": 0,
+          "text": "Spend 1000 Gems"
+        },
+        {
+          "id": 22,
+          "need": 6,
+          "award": "2#50|235#2",
+          "limit": 1,
+          "daily": 0,
+          "text": "Complete all other missions"
+        },
+        {
+          "id": 23,
+          "need": 1,
+          "award": "2#10",
+          "limit": 1,
+          "daily": 0,
+          "text": "Daily Login"
+        },
+        {
+          "id": 24,
+          "need": 10,
+          "award": "35#1",
+          "limit": 1,
+          "daily": 0,
+          "text": "Transfer 10 Girls"
+        },
+        {
+          "id": 25,
+          "need": 2,
+          "award": "14#100",
+          "limit": 1,
+          "daily": 0,
+          "text": "Purchase 2 merchandise in Market"
+        },
+        {
+          "id": 26,
+          "need": 12,
+          "award": "9#100000",
+          "limit": 1,
+          "daily": 0,
+          "text": "Clear 12 Quizzes in Daily Quiz"
+        },
+        {
+          "id": 27,
+          "need": 5,
+          "award": "1#100000",
+          "limit": 1,
+          "daily": 0,
+          "text": "Draw 5 BFF Capsules"
+        },
+        {
+          "id": 28,
+          "need": 6,
+          "award": "10#100",
+          "limit": 1,
+          "daily": 0,
+          "text": "Draw from Adv. Capsule 6 times"
+        },
+        {
+          "id": 29,
+          "need": 6,
+          "award": "2#50|235#2",
+          "limit": 1,
+          "daily": 0,
+          "text": "Complete all other missions"
+        },
+        {
+          "id": 30,
+          "need": 1,
+          "award": "2#10",
+          "limit": 1,
+          "daily": 0,
+          "text": "Daily Login"
+        },
+        {
+          "id": 31,
+          "need": 6,
+          "award": "35#1",
+          "limit": 1,
+          "daily": 0,
+          "text": "Use Normal Slot Machine 6 times"
+        },
+        {
+          "id": 32,
+          "need": 15,
+          "award": "14#100",
+          "limit": 1,
+          "daily": 0,
+          "text": "Complete 15 Junior Varsity battles"
+        },
+        {
+          "id": 33,
+          "need": 2,
+          "award": "9#100000",
+          "limit": 1,
+          "daily": 0,
+          "text": "Challenge Friend Boss 2 times"
+        },
+        {
+          "id": 34,
+          "need": 4,
+          "award": "1#100000",
+          "limit": 1,
+          "daily": 0,
+          "text": "Use Alchemy 4 times to get Coins"
+        },
+        {
+          "id": 35,
+          "need": 1500,
+          "award": "10#100",
+          "limit": 1,
+          "daily": 0,
+          "text": "Spend 1500 Gems"
+        },
+        {
+          "id": 36,
+          "need": 6,
+          "award": "2#50|235#2",
+          "limit": 1,
+          "daily": 0,
+          "text": "Complete all other missions"
+        },
+        {
+          "id": 37,
+          "need": 1,
+          "award": "2#10",
+          "limit": 1,
+          "daily": 0,
+          "text": "Daily Login"
+        },
+        {
+          "id": 38,
+          "need": 2,
+          "award": "24#2",
+          "limit": 1,
+          "daily": 0,
+          "text": "Complete 2 4-star Quests in Internship"
+        },
+        {
+          "id": 39,
+          "need": 3,
+          "award": "14#100",
+          "limit": 1,
+          "daily": 0,
+          "text": "Purchase 3 merchandise in Market"
+        },
+        {
+          "id": 40,
+          "need": 18,
+          "award": "9#100000",
+          "limit": 1,
+          "daily": 0,
+          "text": "Clear 18 Quizzes in Daily Quiz"
+        },
+        {
+          "id": 41,
+          "need": 30,
+          "award": "1#100000",
+          "limit": 1,
+          "daily": 0,
+          "text": "Send out 30 Hearts"
+        },
+        {
+          "id": 42,
+          "need": 9,
+          "award": "10#100",
+          "limit": 1,
+          "daily": 0,
+          "text": "Draw from Adv. Capsule 9 times"
+        },
+        {
+          "id": 43,
+          "need": 6,
+          "award": "2#50|235#2",
+          "limit": 1,
+          "daily": 0,
+          "text": "Complete all other missions"
+        },
+        {
+          "id": 44,
+          "need": 1,
+          "award": "2#10",
+          "limit": 1,
+          "daily": 0,
+          "text": "Daily Login"
+        },
+        {
+          "id": 45,
+          "need": 10,
+          "award": "35#1",
+          "limit": 1,
+          "daily": 0,
+          "text": "Collect Auto-Battle Loot 10 times in Campaign"
+        },
+        {
+          "id": 46,
+          "need": 20,
+          "award": "14#100",
+          "limit": 1,
+          "daily": 0,
+          "text": "Complete 20 Junior Varsity battles"
+        },
+        {
+          "id": 47,
+          "need": 100,
+          "award": "9#100000",
+          "limit": 1,
+          "daily": 0,
+          "text": "Upgrade your Girl(s) 100 times"
+        },
+        {
+          "id": 48,
+          "need": 20,
+          "award": "1#100000",
+          "limit": 1,
+          "daily": 0,
+          "text": "Forge 20 Gears"
+        },
+        {
+          "id": 49,
+          "need": 2000,
+          "award": "10#100",
+          "limit": 1,
+          "daily": 0,
+          "text": "Spend 2000 Gems"
+        }
+      ],
+      "mission_table": "activity_time_mission"
+    },
+    "214": {
+      "title": "Cuộc Phiêu Lưu Kỳ Bí",
+      "missions": [
+        {
+          "id": 1,
+          "need": 4,
+          "award": "238#1",
+          "limit": 1,
+          "daily": 0,
+          "text": "Complete all the other tasks (Daily)"
+        },
+        {
+          "id": 2,
+          "need": 1,
+          "award": "239#10",
+          "limit": 1,
+          "daily": 0,
+          "text": "Complete 1 battle in Tests"
+        },
+        {
+          "id": 3,
+          "need": 5,
+          "award": "239#10",
+          "limit": 1,
+          "daily": 0,
+          "text": "Engage 5 battles in Junior Varsity"
+        },
+        {
+          "id": 4,
+          "need": 1,
+          "award": "239#10",
+          "limit": 1,
+          "daily": 0,
+          "text": "Complete all Daily Tasks in Fantasy Book"
+        },
+        {
+          "id": 5,
+          "need": 1,
+          "award": "239#10",
+          "limit": 1,
+          "daily": 0,
+          "text": "Purchase 1 piece of Furniture"
+        },
+        {
+          "id": 6,
+          "need": 6,
+          "award": "239#15|238#6",
+          "limit": 1,
+          "daily": 0,
+          "text": "Complete all the other tasks (Weekly)"
+        },
+        {
+          "id": 7,
+          "need": 5,
+          "award": "239#5|238#2",
+          "limit": 1,
+          "daily": 0,
+          "text": "Log in 5 Days"
+        },
+        {
+          "id": 8,
+          "need": 4000,
+          "award": "239#5|238#2",
+          "limit": 1,
+          "daily": 0,
+          "text": "Consume 4000 Gems"
+        },
+        {
+          "id": 9,
+          "need": 200,
+          "award": "239#5|238#2",
+          "limit": 1,
+          "daily": 0,
+          "text": "Pull Slot Machine 200 times"
+        },
+        {
+          "id": 10,
+          "need": 400,
+          "award": "239#10|238#5",
+          "limit": 1,
+          "daily": 0,
+          "text": "Pull Slot Machine 400 times"
+        },
+        {
+          "id": 11,
+          "need": 100,
+          "award": "239#5|238#2",
+          "limit": 1,
+          "daily": 0,
+          "text": "Pull Advanced Capsule 100 times"
+        },
+        {
+          "id": 12,
+          "need": 200,
+          "award": "239#10|238#5",
+          "limit": 1,
+          "daily": 0,
+          "text": "Pull Advanced Capsule 200 times"
+        },
+        {
+          "id": 13,
+          "need": 20,
+          "award": "239#5|238#2",
+          "limit": 1,
+          "daily": 0,
+          "text": "Enroll 20 times"
+        },
+        {
+          "id": 14,
+          "need": 40,
+          "award": "239#10|238#5",
+          "limit": 1,
+          "daily": 0,
+          "text": "Enroll 40 times"
+        },
+        {
+          "id": 15,
+          "need": 30,
+          "award": "239#5|238#2",
+          "limit": 1,
+          "daily": 0,
+          "text": "Use 30 Rudders in total"
+        },
+        {
+          "id": 16,
+          "need": 75,
+          "award": "239#10|238#5",
+          "limit": 1,
+          "daily": 0,
+          "text": "Use 75 Rudders in total"
+        },
+        {
+          "id": 17,
+          "need": 1,
+          "award": "239#5|238#1",
+          "limit": 1,
+          "daily": 0,
+          "text": "Acquire 1 5-Star Girl"
+        },
+        {
+          "id": 18,
+          "need": 1,
+          "award": "239#10|238#2",
+          "limit": 1,
+          "daily": 0,
+          "text": "Acquire 1 6-Star Girl"
+        }
+      ],
+      "mission_table": "activity_space_explore_mission"
+    },
+    "230": {
+      "title": "Ra Bãi Biển Nào!",
+      "missions": [
+        {
+          "id": 1,
+          "need": 5,
+          "award": "253#20",
+          "limit": 1,
+          "daily": 0,
+          "text": "Log in 5 Days"
+        },
+        {
+          "id": 2,
+          "need": 1,
+          "award": "253#50",
+          "limit": 1,
+          "daily": 0,
+          "text": "Acquire 1 Skin"
+        },
+        {
+          "id": 3,
+          "need": 1,
+          "award": "253#20",
+          "limit": 1,
+          "daily": 0,
+          "text": "Acquire a 5-star Girl"
+        },
+        {
+          "id": 4,
+          "need": 1,
+          "award": "253#35",
+          "limit": 1,
+          "daily": 0,
+          "text": "Acquire a 6-star Girl"
+        },
+        {
+          "id": 5,
+          "need": 200,
+          "award": "253#50",
+          "limit": 1,
+          "daily": 0,
+          "text": "Pull Advanced Capsule 200 times"
+        },
+        {
+          "id": 6,
+          "need": 500,
+          "award": "253#100",
+          "limit": 1,
+          "daily": 0,
+          "text": "Draw Advanced Capsule 500 times"
+        },
+        {
+          "id": 7,
+          "need": 60,
+          "award": "253#20",
+          "limit": 1,
+          "daily": 0,
+          "text": "Enroll 60 times"
+        },
+        {
+          "id": 8,
+          "need": 150,
+          "award": "253#70",
+          "limit": 1,
+          "daily": 0,
+          "text": "Enroll 150 times"
+        }
+      ],
+      "mission_table": "activity_beach_mission"
+    },
+    "232": {
+      "title": "Đổi Trang Phục",
+      "shop": [
+        {
+          "id": 1,
+          "cost": "254#120",
+          "award": "7182#1",
+          "limit": 2,
+          "group": 1,
+          "unlock": 0
+        },
+        {
+          "id": 2,
+          "cost": "254#120",
+          "award": "7194#1",
+          "limit": 2,
+          "group": 1,
+          "unlock": 0
+        },
+        {
+          "id": 3,
+          "cost": "254#120",
+          "award": "7196#1",
+          "limit": 2,
+          "group": 1,
+          "unlock": 0
+        },
+        {
+          "id": 4,
+          "cost": "254#120",
+          "award": "7188#1",
+          "limit": 2,
+          "group": 1,
+          "unlock": 0
+        },
+        {
+          "id": 5,
+          "cost": "254#120",
+          "award": "7197#1",
+          "limit": 2,
+          "group": 1,
+          "unlock": 0
+        },
+        {
+          "id": 6,
+          "cost": "254#120",
+          "award": "7198#1",
+          "limit": 2,
+          "group": 1,
+          "unlock": 0
+        },
+        {
+          "id": 7,
+          "cost": "254#120",
+          "award": "7109#1",
+          "limit": 2,
+          "group": 2,
+          "unlock": 0
+        },
+        {
+          "id": 8,
+          "cost": "254#120",
+          "award": "7115#1",
+          "limit": 2,
+          "group": 2,
+          "unlock": 0
+        },
+        {
+          "id": 9,
+          "cost": "254#120",
+          "award": "7110#1",
+          "limit": 2,
+          "group": 2,
+          "unlock": 0
+        },
+        {
+          "id": 10,
+          "cost": "254#90",
+          "award": "7114#1",
+          "limit": 2,
+          "group": 2,
+          "unlock": 0
+        },
+        {
+          "id": 11,
+          "cost": "254#120",
+          "award": "7111#1",
+          "limit": 2,
+          "group": 2,
+          "unlock": 0
+        },
+        {
+          "id": 12,
+          "cost": "254#120",
+          "award": "7118#1",
+          "limit": 2,
+          "group": 2,
+          "unlock": 0
+        },
+        {
+          "id": 13,
+          "cost": "254#120",
+          "award": "7116#1",
+          "limit": 2,
+          "group": 2,
+          "unlock": 0
+        },
+        {
+          "id": 14,
+          "cost": "254#90",
+          "award": "7108#1",
+          "limit": 2,
+          "group": 2,
+          "unlock": 0
+        },
+        {
+          "id": 15,
+          "cost": "254#120",
+          "award": "7112#1",
+          "limit": 2,
+          "group": 2,
+          "unlock": 0
+        },
+        {
+          "id": 16,
+          "cost": "254#120",
+          "award": "7099#1",
+          "limit": 2,
+          "group": 2,
+          "unlock": 0
+        },
+        {
+          "id": 17,
+          "cost": "254#120",
+          "award": "7113#1",
+          "limit": 2,
+          "group": 2,
+          "unlock": 0
+        },
+        {
+          "id": 18,
+          "cost": "254#120",
+          "award": "7034#1",
+          "limit": 2,
+          "group": 3,
+          "unlock": 0
+        },
+        {
+          "id": 19,
+          "cost": "254#120",
+          "award": "7038#1",
+          "limit": 2,
+          "group": 3,
+          "unlock": 0
+        },
+        {
+          "id": 20,
+          "cost": "254#120",
+          "award": "7041#1",
+          "limit": 2,
+          "group": 3,
+          "unlock": 0
+        },
+        {
+          "id": 21,
+          "cost": "254#120",
+          "award": "7043#1",
+          "limit": 2,
+          "group": 3,
+          "unlock": 0
+        },
+        {
+          "id": 22,
+          "cost": "254#120",
+          "award": "7033#1",
+          "limit": 2,
+          "group": 3,
+          "unlock": 0
+        },
+        {
+          "id": 23,
+          "cost": "254#90",
+          "award": "7047#1",
+          "limit": 2,
+          "group": 3,
+          "unlock": 0
+        }
+      ],
+      "shop_table": "activity_beach_shop"
+    },
+    "234": {
+      "title": "Thám Hiểm Rừng Rậm",
+      "shop": [
+        {
+          "id": 1,
+          "cost": "256#1250|257#240",
+          "award": "6779#1|6000#6000",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 2,
+          "cost": "256#1000|257#360",
+          "award": "6791#1|6000#6000",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 3,
+          "cost": "256#1000|257#120",
+          "award": "4901001#1",
+          "limit": 3,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 4,
+          "cost": "256#4000|257#80",
+          "award": "940059#100",
+          "limit": 2,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 5,
+          "cost": "256#2000|257#120",
+          "award": "4104023#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 6,
+          "cost": "256#750|257#30",
+          "award": "4102008#1",
+          "limit": 8,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 7,
+          "cost": "256#50|257#3",
+          "award": "418#1",
+          "limit": 100,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 8,
+          "cost": "256#100",
+          "award": "170#10",
+          "limit": 10,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 9,
+          "cost": "256#75",
+          "award": "20#2",
+          "limit": 20,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 10,
+          "cost": "256#50",
+          "award": "36#3",
+          "limit": 20,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 11,
+          "cost": "257#5",
+          "award": "4201042#3",
+          "limit": 999,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 12,
+          "cost": "256#1",
+          "award": "940004#1",
+          "limit": 999,
+          "group": 0,
+          "unlock": 0
+        }
+      ],
+      "shop_table": "activity_jungle_shop"
+    },
+    "244": {
+      "title": "Đổi Cổ Vật Giới Hạn",
+      "shop": [
+        {
+          "id": 1,
+          "cost": "170#250|73#150",
+          "award": "6761#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 2,
+          "cost": "170#250|73#150",
+          "award": "6461#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 3,
+          "cost": "170#250|73#150",
+          "award": "6707#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 4,
+          "cost": "170#250|73#150",
+          "award": "6725#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 5,
+          "cost": "170#250|73#150",
+          "award": "6743#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 6,
+          "cost": "170#250|73#150",
+          "award": "6455#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 7,
+          "cost": "170#250|73#150",
+          "award": "6755#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 8,
+          "cost": "170#250|73#150",
+          "award": "6713#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 9,
+          "cost": "170#250|73#150",
+          "award": "6437#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 10,
+          "cost": "170#250|73#150",
+          "award": "6701#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        }
+      ],
+      "shop_table": "activity_equip_exchange"
+    },
+    "248": {
+      "title": "Cho Kẹo Hay Bị Ghẹo",
+      "shop": [
+        {
+          "id": 1,
+          "cost": "299#28",
+          "award": "4402006#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 2,
+          "cost": "299#28",
+          "award": "4101010#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 3,
+          "cost": "299#20",
+          "award": "4601001#1",
+          "limit": 2,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 4,
+          "cost": "299#20",
+          "award": "4101008#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 5,
+          "cost": "299#2",
+          "award": "73#25",
+          "limit": 2,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 6,
+          "cost": "299#1",
+          "award": "170#15",
+          "limit": 2,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 7,
+          "cost": "298#40000",
+          "award": "4402006#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 8,
+          "cost": "298#20000",
+          "award": "4501002#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 9,
+          "cost": "298#12500",
+          "award": "4102008#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 10,
+          "cost": "298#10000",
+          "award": "4102007#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 11,
+          "cost": "298#1250",
+          "award": "259#5",
+          "limit": 2,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 12,
+          "cost": "298#1250",
+          "award": "258#5",
+          "limit": 2,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 13,
+          "cost": "298#500",
+          "award": "261#10",
+          "limit": 10,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 14,
+          "cost": "298#500",
+          "award": "260#100",
+          "limit": 10,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 15,
+          "cost": "298#50",
+          "award": "1#225000",
+          "limit": 9999,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 16,
+          "cost": "298#50",
+          "award": "9#225000",
+          "limit": 9999,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 17,
+          "cost": "298#50",
+          "award": "14#150",
+          "limit": 9999,
+          "group": 0,
+          "unlock": 0
+        }
+      ],
+      "shop_table": "activity_trickortreat_shop",
+      "missions": [
+        {
+          "id": 1,
+          "need": 4,
+          "award": "297#2",
+          "limit": 1,
+          "daily": 0,
+          "text": "Complete all Daily missions on this page"
+        },
+        {
+          "id": 2,
+          "need": 1,
+          "award": "297#1",
+          "limit": 1,
+          "daily": 0,
+          "text": "Complete 1 battle in Tests"
+        },
+        {
+          "id": 3,
+          "need": 5,
+          "award": "297#1",
+          "limit": 1,
+          "daily": 0,
+          "text": "Engage 5 battles in Junior Varsity"
+        },
+        {
+          "id": 4,
+          "need": 500,
+          "award": "297#1",
+          "limit": 1,
+          "daily": 0,
+          "text": "Consume 500 Gems in game"
+        },
+        {
+          "id": 5,
+          "need": 1,
+          "award": "297#1",
+          "limit": 1,
+          "daily": 0,
+          "text": "Purchase 1 piece of Furniture"
+        },
+        {
+          "id": 6,
+          "need": 4,
+          "award": "297#5",
+          "limit": 1,
+          "daily": 0,
+          "text": "Complete all Weekly missions on this page"
+        },
+        {
+          "id": 7,
+          "need": 5,
+          "award": "297#2",
+          "limit": 1,
+          "daily": 0,
+          "text": "Log in 5 Days"
+        },
+        {
+          "id": 8,
+          "need": 5000,
+          "award": "297#2",
+          "limit": 1,
+          "daily": 0,
+          "text": "Consume 5000 Gems"
+        },
+        {
+          "id": 9,
+          "need": 10,
+          "award": "297#2",
+          "limit": 1,
+          "daily": 0,
+          "text": "Draw 10 times in Outfit Sale"
+        },
+        {
+          "id": 10,
+          "need": 10,
+          "award": "297#2",
+          "limit": 1,
+          "daily": 0,
+          "text": "Complete ten 4-star (or higher) Internship quests"
+        }
+      ],
+      "mission_table": "activity_trickortreat_task"
+    },
+    "251": {
+      "title": "Săn Kho Báu",
+      "missions": [
+        {
+          "id": 1,
+          "need": 1,
+          "award": "302#1",
+          "limit": 1,
+          "daily": 0,
+          "text": ""
+        },
+        {
+          "id": 2,
+          "need": 5,
+          "award": "302#1",
+          "limit": 1,
+          "daily": 0,
+          "text": ""
+        },
+        {
+          "id": 3,
+          "need": 6,
+          "award": "302#1",
+          "limit": 1,
+          "daily": 0,
+          "text": ""
+        },
+        {
+          "id": 4,
+          "need": 500,
+          "award": "302#1",
+          "limit": 1,
+          "daily": 0,
+          "text": ""
+        },
+        {
+          "id": 5,
+          "need": 5,
+          "award": "302#5",
+          "limit": 1,
+          "daily": 0,
+          "text": ""
+        },
+        {
+          "id": 6,
+          "need": 2000,
+          "award": "302#3",
+          "limit": 1,
+          "daily": 0,
+          "text": ""
+        },
+        {
+          "id": 7,
+          "need": 400,
+          "award": "302#2",
+          "limit": 1,
+          "daily": 0,
+          "text": ""
+        },
+        {
+          "id": 8,
+          "need": 800,
+          "award": "302#3",
+          "limit": 1,
+          "daily": 0,
+          "text": ""
+        },
+        {
+          "id": 9,
+          "need": 200,
+          "award": "302#2",
+          "limit": 1,
+          "daily": 0,
+          "text": ""
+        },
+        {
+          "id": 10,
+          "need": 500,
+          "award": "302#3",
+          "limit": 1,
+          "daily": 0,
+          "text": ""
+        },
+        {
+          "id": 11,
+          "need": 40,
+          "award": "302#2",
+          "limit": 1,
+          "daily": 0,
+          "text": ""
+        },
+        {
+          "id": 12,
+          "need": 80,
+          "award": "302#3",
+          "limit": 1,
+          "daily": 0,
+          "text": ""
+        },
+        {
+          "id": 13,
+          "need": 1,
+          "award": "302#2",
+          "limit": 1,
+          "daily": 0,
+          "text": ""
+        },
+        {
+          "id": 14,
+          "need": 1,
+          "award": "302#3",
+          "limit": 1,
+          "daily": 0,
+          "text": ""
+        },
+        {
+          "id": 15,
+          "need": 1000,
+          "award": "302#2",
+          "limit": 1,
+          "daily": 0,
+          "text": ""
+        },
+        {
+          "id": 16,
+          "need": 2000,
+          "award": "302#3",
+          "limit": 1,
+          "daily": 0,
+          "text": ""
+        },
+        {
+          "id": 17,
+          "need": 30,
+          "award": "302#2",
+          "limit": 1,
+          "daily": 0,
+          "text": ""
+        },
+        {
+          "id": 18,
+          "need": 75,
+          "award": "302#3",
+          "limit": 1,
+          "daily": 0,
+          "text": ""
+        }
+      ],
+      "mission_table": "activity_secrettreasure_mission"
+    },
+    "260": {
+      "title": "Bốc Thăm May Mắn",
+      "missions": [
+        {
+          "id": 1,
+          "need": 3,
+          "award": "309#1",
+          "limit": 10,
+          "daily": 0,
+          "text": ""
+        },
+        {
+          "id": 2,
+          "need": 200,
+          "award": "309#1",
+          "limit": 20,
+          "daily": 0,
+          "text": ""
+        },
+        {
+          "id": 3,
+          "need": 200,
+          "award": "309#1",
+          "limit": 20,
+          "daily": 0,
+          "text": ""
+        },
+        {
+          "id": 4,
+          "need": 1,
+          "award": "309#1",
+          "limit": 20,
+          "daily": 0,
+          "text": ""
+        },
+        {
+          "id": 5,
+          "need": 250,
+          "award": "309#2",
+          "limit": 100,
+          "daily": 0,
+          "text": ""
+        },
+        {
+          "id": 6,
+          "need": 10,
+          "award": "309#1",
+          "limit": 80,
+          "daily": 0,
+          "text": ""
+        },
+        {
+          "id": 7,
+          "need": 5,
+          "award": "309#1",
+          "limit": 80,
+          "daily": 0,
+          "text": ""
+        },
+        {
+          "id": 8,
+          "need": 1,
+          "award": "309#1",
+          "limit": 80,
+          "daily": 0,
+          "text": ""
+        },
+        {
+          "id": 9,
+          "need": 1,
+          "award": "309#1",
+          "limit": 80,
+          "daily": 0,
+          "text": ""
+        }
+      ],
+      "mission_table": "activity_luckyboxes_mission"
+    },
+    "274": {
+      "title": "Trình Diễn Pháo Hoa",
+      "shop": [
+        {
+          "id": 1,
+          "cost": "317#6",
+          "award": "20#5",
+          "limit": 4,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 2,
+          "cost": "317#6",
+          "award": "36#15",
+          "limit": 4,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 3,
+          "cost": "317#3",
+          "award": "10#4000",
+          "limit": 99,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 4,
+          "cost": "317#3",
+          "award": "14#4000",
+          "limit": 99,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 5,
+          "cost": "317#1",
+          "award": "9#1500000",
+          "limit": 99,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 6,
+          "cost": "317#1",
+          "award": "1#1500000",
+          "limit": 99,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 7,
+          "cost": "317#30",
+          "award": "4102007#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 8,
+          "cost": "317#25",
+          "award": "4101067#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 9,
+          "cost": "317#8",
+          "award": "73#15",
+          "limit": 4,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 10,
+          "cost": "317#8",
+          "award": "170#15",
+          "limit": 4,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 11,
+          "cost": "317#4",
+          "award": "6000#150",
+          "limit": 20,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 12,
+          "cost": "317#4",
+          "award": "216#200",
+          "limit": 20,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 13,
+          "cost": "317#40",
+          "award": "4102056#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 14,
+          "cost": "317#8",
+          "award": "4201042#5",
+          "limit": 10,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 15,
+          "cost": "317#5",
+          "award": "359#1000",
+          "limit": 10,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 16,
+          "cost": "317#5",
+          "award": "360#10000",
+          "limit": 10,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 17,
+          "cost": "317#4",
+          "award": "199#1000",
+          "limit": 10,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 18,
+          "cost": "317#4",
+          "award": "198#10000",
+          "limit": 10,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 19,
+          "cost": "317#15",
+          "award": "358#10",
+          "limit": 10,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 20,
+          "cost": "317#80",
+          "award": "4101010#1",
+          "limit": 2,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 21,
+          "cost": "317#100",
+          "award": "940059#100",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 22,
+          "cost": "317#100",
+          "award": "6779#1",
+          "limit": 2,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 23,
+          "cost": "317#40",
+          "award": "4501002#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 24,
+          "cost": "317#50",
+          "award": "986001#10",
+          "limit": 2,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 25,
+          "cost": "317#80",
+          "award": "4402015#1",
+          "limit": 2,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 26,
+          "cost": "317#30",
+          "award": "4102008#1",
+          "limit": 2,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 27,
+          "cost": "317#60",
+          "award": "4104023#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        }
+      ],
+      "shop_table": "activity_firework_shop"
+    },
+    "279": {
+      "title": "Lâu Đài Mộng Mơ Luvly",
+      "missions": [
+        {
+          "id": 1,
+          "need": 1,
+          "award": "1#1000000",
+          "limit": 30,
+          "daily": 0,
+          "text": "Unlock 1 5-star Girl in Girls - Gallery"
+        },
+        {
+          "id": 2,
+          "need": 1,
+          "award": "1#2000000",
+          "limit": 20,
+          "daily": 0,
+          "text": "Unlock 1 6-star Girl in Girls - Gallery"
+        },
+        {
+          "id": 3,
+          "need": 1,
+          "award": "1#3000000",
+          "limit": 10,
+          "daily": 0,
+          "text": "Unlock 1 10-star Girl in Girls - Gallery"
+        },
+        {
+          "id": 4,
+          "need": 1,
+          "award": "10#1000|335#1",
+          "limit": 50,
+          "daily": 0,
+          "text": "Acquire 1 5-Star Girl"
+        },
+        {
+          "id": 5,
+          "need": 3,
+          "award": "9#1000000|335#1",
+          "limit": 50,
+          "daily": 0,
+          "text": "Consume 3 League Tickets"
+        },
+        {
+          "id": 6,
+          "need": 200,
+          "award": "9#2000000",
+          "limit": 30,
+          "daily": 0,
+          "text": "Consume 200 Gems"
+        },
+        {
+          "id": 7,
+          "need": 250,
+          "award": "14#1000|335#2",
+          "limit": 100,
+          "daily": 0,
+          "text": "Obtain 250 VIP Exp during the event"
+        }
+      ],
+      "mission_table": "activity_lflcastle_task"
+    },
+    "290": {
+      "title": "Xưởng Trứng Phục Sinh",
+      "missions": [
+        {
+          "id": 1,
+          "need": 30,
+          "award": "348#1",
+          "limit": 10,
+          "daily": 0,
+          "text": "Break 30 Easter Eggs"
+        },
+        {
+          "id": 2,
+          "need": 10,
+          "award": "347#2",
+          "limit": 10,
+          "daily": 0,
+          "text": "Pull Adv. Capsule 10 times"
+        },
+        {
+          "id": 3,
+          "need": 3,
+          "award": "347#1|258#1",
+          "limit": 30,
+          "daily": 0,
+          "text": "Consume 3 League Tickets"
+        },
+        {
+          "id": 4,
+          "need": 200,
+          "award": "347#1|423#1",
+          "limit": 100,
+          "daily": 0,
+          "text": "Consume 200 Gems"
+        },
+        {
+          "id": 5,
+          "need": 1,
+          "award": "347#2|9#500000",
+          "limit": 30,
+          "daily": 0,
+          "text": "Acquire a 5-star Girl"
+        },
+        {
+          "id": 6,
+          "need": 1,
+          "award": "930218#50",
+          "limit": 1,
+          "daily": 0,
+          "text": "Acquire 1 5-star Chizuko"
+        },
+        {
+          "id": 7,
+          "need": 1,
+          "award": "4102007#1",
+          "limit": 1,
+          "daily": 0,
+          "text": "Graduate Chizuko to 6-star"
+        },
+        {
+          "id": 8,
+          "need": 1,
+          "award": "4101008#1",
+          "limit": 1,
+          "daily": 0,
+          "text": "Awake Chizuko to 9-star"
+        },
+        {
+          "id": 9,
+          "need": 1,
+          "award": "4101010#1",
+          "limit": 1,
+          "daily": 0,
+          "text": "Awake Chizuko to 10-star"
+        },
+        {
+          "id": 10,
+          "need": 1,
+          "award": "347#1|417#250",
+          "limit": 10,
+          "daily": 0,
+          "text": "Finish 1 4-Star Quests in Internship"
+        },
+        {
+          "id": 11,
+          "need": 1,
+          "award": "347#5|419#25",
+          "limit": 2,
+          "daily": 0,
+          "text": "Finish a 5-Star Quest in Internship"
+        },
+        {
+          "id": 12,
+          "need": 1,
+          "award": "347#10|418#5",
+          "limit": 1,
+          "daily": 0,
+          "text": "Finish a 6-Star Quest in Internship"
+        }
+      ],
+      "mission_table": "activity_easter2022_mission"
+    },
+    "295": {
+      "title": "Sao Băng",
+      "shop": [
+        {
+          "id": 1,
+          "cost": "361#200",
+          "award": "5100020#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 2,
+          "cost": "361#170",
+          "award": "4402015#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 3,
+          "cost": "361#85",
+          "award": "4101010#1",
+          "limit": 2,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 4,
+          "cost": "361#60",
+          "award": "4104023#1",
+          "limit": 2,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 5,
+          "cost": "361#30",
+          "award": "4101067#1",
+          "limit": 2,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 6,
+          "cost": "361#50",
+          "award": "4101008#1",
+          "limit": 2,
+          "group": 0,
+          "unlock": 0
+        }
+      ],
+      "shop_table": "activity_star_altar_exchange",
+      "missions": [
+        {
+          "id": 1,
+          "need": 6,
+          "award": "358#80|4104023#1",
+          "limit": 1,
+          "daily": 0,
+          "text": "Complete all other missions"
+        },
+        {
+          "id": 2,
+          "need": 25,
+          "award": "358#1",
+          "limit": 32,
+          "daily": 0,
+          "text": "Obtain 25 Stellar Shard - ♐"
+        },
+        {
+          "id": 3,
+          "need": 3,
+          "award": "361#1",
+          "limit": 120,
+          "daily": 0,
+          "text": "Use 3 Seals"
+        },
+        {
+          "id": 4,
+          "need": 30,
+          "award": "361#1",
+          "limit": 100,
+          "daily": 0,
+          "text": "Pull Slot Machine 30 times"
+        },
+        {
+          "id": 5,
+          "need": 15,
+          "award": "361#1",
+          "limit": 120,
+          "daily": 0,
+          "text": "Pull Adv. Capsule 15 times"
+        },
+        {
+          "id": 6,
+          "need": 3,
+          "award": "361#1",
+          "limit": 120,
+          "daily": 0,
+          "text": "Consume 3 Rudders"
+        },
+        {
+          "id": 7,
+          "need": 8,
+          "award": "361#1",
+          "limit": 20,
+          "daily": 0,
+          "text": "Consume 8 Space Radars"
+        },
+        {
+          "id": 8,
+          "need": 50,
+          "award": "361#1",
+          "limit": 650,
+          "daily": 0,
+          "text": "Obtain 50 VIP Exp"
+        },
+        {
+          "id": 9,
+          "need": 1,
+          "award": "361#1",
+          "limit": 30,
+          "daily": 0,
+          "text": "Obtain a 5-star Girl"
+        },
+        {
+          "id": 10,
+          "need": 1,
+          "award": "361#5",
+          "limit": 1,
+          "daily": 0,
+          "text": "Obtain a 10-star Cosmos Girl"
+        },
+        {
+          "id": 11,
+          "need": 1,
+          "award": "361#15",
+          "limit": 1,
+          "daily": 0,
+          "text": "Obtain a 12-star Girl"
+        }
+      ],
+      "mission_table": "activity_star_altar_mission"
+    },
+    "299": {
+      "title": "Cửa Hàng Thiếu Nhi",
+      "shop": [
+        {
+          "id": 1,
+          "cost": "363#50",
+          "award": "4101067#1",
+          "limit": 1,
+          "group": 1,
+          "unlock": 0
+        },
+        {
+          "id": 2,
+          "cost": "363#100",
+          "award": "4101008#1",
+          "limit": 1,
+          "group": 1,
+          "unlock": 0
+        },
+        {
+          "id": 3,
+          "cost": "363#200",
+          "award": "6773#1|6000#3000",
+          "limit": 1,
+          "group": 1,
+          "unlock": 0
+        },
+        {
+          "id": 4,
+          "cost": "363#50",
+          "award": "424#20",
+          "limit": 1,
+          "group": 1,
+          "unlock": 0
+        },
+        {
+          "id": 5,
+          "cost": "363#100",
+          "award": "4104023#1|4102008#1",
+          "limit": 1,
+          "group": 1,
+          "unlock": 0
+        },
+        {
+          "id": 6,
+          "cost": "363#200",
+          "award": "6785#1|6000#3000",
+          "limit": 1,
+          "group": 1,
+          "unlock": 0
+        },
+        {
+          "id": 7,
+          "cost": "363#100",
+          "award": "4101008#1",
+          "limit": 1,
+          "group": 1,
+          "unlock": 0
+        },
+        {
+          "id": 8,
+          "cost": "363#125",
+          "award": "45#1",
+          "limit": 1,
+          "group": 1,
+          "unlock": 0
+        },
+        {
+          "id": 9,
+          "cost": "363#150",
+          "award": "4101010#1",
+          "limit": 1,
+          "group": 1,
+          "unlock": 0
+        },
+        {
+          "id": 10,
+          "cost": "363#250",
+          "award": "6791#1|6000#3000",
+          "limit": 1,
+          "group": 1,
+          "unlock": 0
+        },
+        {
+          "id": 11,
+          "cost": "363#100",
+          "award": "418#50",
+          "limit": 1,
+          "group": 1,
+          "unlock": 0
+        },
+        {
+          "id": 12,
+          "cost": "363#150",
+          "award": "4101010#1",
+          "limit": 1,
+          "group": 1,
+          "unlock": 0
+        },
+        {
+          "id": 13,
+          "cost": "363#200",
+          "award": "4402015#1|6000#6000",
+          "limit": 1,
+          "group": 1,
+          "unlock": 0
+        },
+        {
+          "id": 14,
+          "cost": "363#350",
+          "award": "940059#100",
+          "limit": 1,
+          "group": 1,
+          "unlock": 0
+        },
+        {
+          "id": 15,
+          "cost": "363#500",
+          "award": "358#200|4206001#200|5100020#1|4901001#3",
+          "limit": 1,
+          "group": 2,
+          "unlock": 0
+        },
+        {
+          "id": 16,
+          "cost": "363#400",
+          "award": "6779#1",
+          "limit": 1,
+          "group": 3,
+          "unlock": 0
+        },
+        {
+          "id": 17,
+          "cost": "363#300",
+          "award": "4402015#1",
+          "limit": 1,
+          "group": 3,
+          "unlock": 0
+        },
+        {
+          "id": 18,
+          "cost": "363#200",
+          "award": "4901001#1",
+          "limit": 1,
+          "group": 3,
+          "unlock": 0
+        },
+        {
+          "id": 19,
+          "cost": "363#10",
+          "award": "4201042#1",
+          "limit": 99,
+          "group": 3,
+          "unlock": 0
+        },
+        {
+          "id": 20,
+          "cost": "363#10",
+          "award": "4206001#1",
+          "limit": 99,
+          "group": 3,
+          "unlock": 0
+        },
+        {
+          "id": 21,
+          "cost": "363#10",
+          "award": "435#1",
+          "limit": 99,
+          "group": 3,
+          "unlock": 0
+        }
+      ],
+      "shop_table": "activity_children_shop",
+      "missions": [
+        {
+          "id": 1,
+          "need": 20,
+          "award": "365#1",
+          "limit": 100,
+          "daily": 0,
+          "text": "Pull Slot Machine 20 times"
+        },
+        {
+          "id": 2,
+          "need": 1,
+          "award": "365#1",
+          "limit": 200,
+          "daily": 0,
+          "text": "Consume 1 Space Radar"
+        },
+        {
+          "id": 3,
+          "need": 200,
+          "award": "365#2",
+          "limit": 100,
+          "daily": 0,
+          "text": "Consume 200 Gems"
+        },
+        {
+          "id": 4,
+          "need": 3,
+          "award": "365#2",
+          "limit": 25,
+          "daily": 0,
+          "text": "Consume 3 League Tickets"
+        },
+        {
+          "id": 5,
+          "need": 1,
+          "award": "365#5",
+          "limit": 10,
+          "daily": 0,
+          "text": "Finish 1 4-Star (or above) Internship Quest"
+        }
+      ],
+      "mission_table": "activity_children_task"
+    },
+    "300": {
+      "title": "Trang Viên Không Gian",
+      "missions": [
+        {
+          "id": 1,
+          "need": 4,
+          "award": "369#250|1#100000",
+          "limit": 1,
+          "daily": 1,
+          "text": "Complete all Daily missions on this page"
+        },
+        {
+          "id": 2,
+          "need": 3,
+          "award": "369#50|1#50000",
+          "limit": 1,
+          "daily": 1,
+          "text": "Complete [c][35b843]{1}[-][/c] battles in Junior Varsity"
+        },
+        {
+          "id": 3,
+          "need": 1,
+          "award": "369#50|1#50000",
+          "limit": 1,
+          "daily": 1,
+          "text": "Explore [c][35b843]{1}[-][/c] time(s) in Echoes of Time"
+        },
+        {
+          "id": 4,
+          "need": 1,
+          "award": "369#50|1#50000",
+          "limit": 1,
+          "daily": 1,
+          "text": "Complete [c][35b843]{1}[-][/c] Internship Quest(s) ([c][35b843]4-star[-][/c] or above)"
+        },
+        {
+          "id": 5,
+          "need": 200,
+          "award": "369#50|1#50000",
+          "limit": 1,
+          "daily": 1,
+          "text": "Consume [c][35b843]{1}[-][/c] Gems"
+        },
+        {
+          "id": 6,
+          "need": 1,
+          "award": "369#200|370#5|1#300000",
+          "limit": 1,
+          "daily": 0,
+          "text": "Plant [c][35b843]{1}[-][/c] [c][35b843]Marvelous Fruit(s)[-][/c]"
+        },
+        {
+          "id": 7,
+          "need": 1,
+          "award": "369#200|370#5|1#300000",
+          "limit": 1,
+          "daily": 0,
+          "text": "Set a defender in your Manor"
+        },
+        {
+          "id": 8,
+          "need": 1,
+          "award": "369#200|370#5|1#300000",
+          "limit": 1,
+          "daily": 0,
+          "text": "Own [c][35b843]{1}[-][/c] Flower(s) beyond Lv. [c][35b843]{2}[-][/c]"
+        },
+        {
+          "id": 9,
+          "need": 1,
+          "award": "369#100|370#5|1#300000",
+          "limit": 1,
+          "daily": 0,
+          "text": "Raid [c][35b843]{1}[-][/c] time(s)"
+        },
+        {
+          "id": 10,
+          "need": 3,
+          "award": "369#200|370#10|1#600000",
+          "limit": 1,
+          "daily": 0,
+          "text": ""
+        },
+        {
+          "id": 11,
+          "need": 2,
+          "award": "369#200|370#15|1#600000",
+          "limit": 1,
+          "daily": 0,
+          "text": ""
+        },
+        {
+          "id": 12,
+          "need": 10,
+          "award": "369#200|370#10|1#600000",
+          "limit": 1,
+          "daily": 0,
+          "text": ""
+        },
+        {
+          "id": 13,
+          "need": 4,
+          "award": "369#300|370#15|1#600000",
+          "limit": 1,
+          "daily": 0,
+          "text": ""
+        },
+        {
+          "id": 14,
+          "need": 4,
+          "award": "369#300|370#15|1#900000",
+          "limit": 1,
+          "daily": 0,
+          "text": ""
+        },
+        {
+          "id": 15,
+          "need": 6,
+          "award": "370#15|1#900000",
+          "limit": 1,
+          "daily": 0,
+          "text": ""
+        },
+        {
+          "id": 16,
+          "need": 6,
+          "award": "370#15|1#900000",
+          "limit": 1,
+          "daily": 0,
+          "text": ""
+        },
+        {
+          "id": 17,
+          "need": 30,
+          "award": "369#300|370#15|1#900000",
+          "limit": 1,
+          "daily": 0,
+          "text": ""
+        },
+        {
+          "id": 18,
+          "need": 6,
+          "award": "370#15|1#1500000",
+          "limit": 1,
+          "daily": 0,
+          "text": ""
+        },
+        {
+          "id": 19,
+          "need": 10,
+          "award": "370#15|1#1500000",
+          "limit": 1,
+          "daily": 0,
+          "text": ""
+        }
+      ],
+      "mission_table": "activity_spfarm_task"
+    },
+    "304": {
+      "title": "Tiệc Ăn Mừng",
+      "shop": [
+        {
+          "id": 1,
+          "cost": "379#100",
+          "award": "6791#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 2,
+          "cost": "379#50",
+          "award": "4901001#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 3,
+          "cost": "379#100",
+          "award": "4402015#1",
+          "limit": 2,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 4,
+          "cost": "379#25",
+          "award": "358#100",
+          "limit": 2,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 5,
+          "cost": "379#2",
+          "award": "418#10",
+          "limit": 100,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 6,
+          "cost": "379#2",
+          "award": "359#1000",
+          "limit": 99,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 7,
+          "cost": "379#2",
+          "award": "360#10000",
+          "limit": 99,
+          "group": 0,
+          "unlock": 0
+        }
+      ],
+      "shop_table": "activity_4birthday_shop",
+      "missions": [
+        {
+          "id": 1,
+          "need": 1,
+          "award": "378#1|1#500000",
+          "limit": 40,
+          "daily": 0,
+          "text": "Acquire a 5-star Girl"
+        },
+        {
+          "id": 2,
+          "need": 1,
+          "award": "378#1|379#5",
+          "limit": 1,
+          "daily": 0,
+          "text": "Acquire a 5-star Promethea"
+        },
+        {
+          "id": 3,
+          "need": 1,
+          "award": "378#1|379#5",
+          "limit": 1,
+          "daily": 0,
+          "text": "Acquire a 5-star Cupid"
+        },
+        {
+          "id": 4,
+          "need": 1,
+          "award": "378#2|379#10",
+          "limit": 1,
+          "daily": 0,
+          "text": "Graduate Promethea or Cupid to 6-star"
+        },
+        {
+          "id": 5,
+          "need": 1,
+          "award": "378#6|36#10",
+          "limit": 1,
+          "daily": 0,
+          "text": "Awake Promethea or Cupid to 9-star"
+        },
+        {
+          "id": 6,
+          "need": 1,
+          "award": "378#10|93#1",
+          "limit": 1,
+          "daily": 0,
+          "text": "Awake Promethea or Cupid to 10-star"
+        },
+        {
+          "id": 7,
+          "need": 1,
+          "award": "378#1|9#1000000",
+          "limit": 20,
+          "daily": 0,
+          "text": "Finish 1 4-Star (or above) Internship Quest"
+        },
+        {
+          "id": 8,
+          "need": 3,
+          "award": "378#1|10#600",
+          "limit": 20,
+          "daily": 0,
+          "text": "Consume 3 League Tickets"
+        },
+        {
+          "id": 9,
+          "need": 500,
+          "award": "378#1|14#1000",
+          "limit": 20,
+          "daily": 0,
+          "text": "Consume 500 Gems"
+        }
+      ],
+      "mission_table": "activity_4birthday_task"
+    },
+    "308": {
+      "title": "Ước Nguyện Chuông Gió",
+      "missions": [
+        {
+          "id": 1,
+          "need": 13,
+          "award": "386#5",
+          "limit": 1,
+          "daily": 0,
+          "text": "Complete all Tasks on the Message Board"
+        },
+        {
+          "id": 2,
+          "need": 5000,
+          "award": "385#5",
+          "limit": 1,
+          "daily": 0,
+          "text": "Consume 5000 Fantasy Dust during the event"
+        },
+        {
+          "id": 3,
+          "need": 15000,
+          "award": "385#10",
+          "limit": 1,
+          "daily": 0,
+          "text": "Consume 15000 Fantasy Dust during the event"
+        },
+        {
+          "id": 4,
+          "need": 30000,
+          "award": "385#20",
+          "limit": 1,
+          "daily": 0,
+          "text": "Consume 30000 Fantasy Dust during the event"
+        },
+        {
+          "id": 5,
+          "need": 100,
+          "award": "385#5",
+          "limit": 1,
+          "daily": 0,
+          "text": "Consume 100 Fantasy Talisman during the event"
+        },
+        {
+          "id": 6,
+          "need": 200,
+          "award": "385#10",
+          "limit": 1,
+          "daily": 0,
+          "text": "Consume 200 Fantasy Talisman during the event"
+        },
+        {
+          "id": 7,
+          "need": 400,
+          "award": "385#20",
+          "limit": 1,
+          "daily": 0,
+          "text": "Consume 400 Fantasy Talisman during the event"
+        },
+        {
+          "id": 8,
+          "need": 20,
+          "award": "385#10",
+          "limit": 1,
+          "daily": 0,
+          "text": "Charge your Chimes for 20 times during the event"
+        },
+        {
+          "id": 9,
+          "need": 50,
+          "award": "385#20",
+          "limit": 1,
+          "daily": 0,
+          "text": "Charge your Chimes for 50 times during the event"
+        },
+        {
+          "id": 10,
+          "need": 1,
+          "award": "386#5",
+          "limit": 1,
+          "daily": 0,
+          "text": "Enchant or Ascend 1 time during the event"
+        },
+        {
+          "id": 11,
+          "need": 30,
+          "award": "4704001#10",
+          "limit": 1,
+          "daily": 0,
+          "text": "Consume 30 Jade Cranes during the event"
+        },
+        {
+          "id": 12,
+          "need": 60,
+          "award": "4705002#10",
+          "limit": 1,
+          "daily": 0,
+          "text": "Consume 60 Jade Cranes during the event"
+        },
+        {
+          "id": 13,
+          "need": 100,
+          "award": "334#5",
+          "limit": 1,
+          "daily": 0,
+          "text": "Consume 100 Jade Cranes during the event"
+        },
+        {
+          "id": 14,
+          "need": 150,
+          "award": "334#15",
+          "limit": 1,
+          "daily": 0,
+          "text": "Consume 150 Jade Cranes during the event"
+        },
+        {
+          "id": 15,
+          "need": 25,
+          "award": "385#10|4501002#1",
+          "limit": 1,
+          "daily": 0,
+          "text": "Consume 25 Gilded Cranes during the event"
+        },
+        {
+          "id": 16,
+          "need": 50,
+          "award": "385#20|986001#20",
+          "limit": 1,
+          "daily": 0,
+          "text": "Consume 50 Gilded Cranes during the event"
+        },
+        {
+          "id": 17,
+          "need": 75,
+          "award": "418#20|4201042#10",
+          "limit": 1,
+          "daily": 0,
+          "text": "Consume 75 Gilded Cranes during the event"
+        },
+        {
+          "id": 18,
+          "need": 100,
+          "award": "4402015#1|334#50",
+          "limit": 1,
+          "daily": 0,
+          "text": "Consume 100 Gilded Cranes during the event"
+        },
+        {
+          "id": 19,
+          "need": 200,
+          "award": "6779#1|986001#25",
+          "limit": 1,
+          "daily": 0,
+          "text": "Consume 200 Gilded Cranes during the event"
+        },
+        {
+          "id": 20,
+          "need": 350,
+          "award": "940059#50|448#1",
+          "limit": 1,
+          "daily": 0,
+          "text": "Consume 350 Gilded Cranes during the event"
+        },
+        {
+          "id": 21,
+          "need": 500,
+          "award": "940059#100|6000#30000",
+          "limit": 1,
+          "daily": 0,
+          "text": "Consume 500 Gilded Cranes during the event"
+        }
+      ],
+      "mission_table": "activity_chime_mission"
+    },
+    "317": {
+      "title": "Vớt Cá Vàng",
+      "shop": [
+        {
+          "id": 1,
+          "cost": "395#30000",
+          "award": "5100021#1",
+          "limit": 2,
+          "group": 1,
+          "unlock": 0
+        },
+        {
+          "id": 2,
+          "cost": "395#10000",
+          "award": "4501002#1",
+          "limit": 2,
+          "group": 1,
+          "unlock": 0
+        },
+        {
+          "id": 3,
+          "cost": "395#8000",
+          "award": "4101008#1",
+          "limit": 2,
+          "group": 1,
+          "unlock": 0
+        },
+        {
+          "id": 4,
+          "cost": "395#12000",
+          "award": "4101010#1",
+          "limit": 2,
+          "group": 1,
+          "unlock": 0
+        },
+        {
+          "id": 5,
+          "cost": "395#24000",
+          "award": "4402015#1",
+          "limit": 2,
+          "group": 1,
+          "unlock": 0
+        },
+        {
+          "id": 6,
+          "cost": "395#7500",
+          "award": "420#1",
+          "limit": 3,
+          "group": 1,
+          "unlock": 0
+        },
+        {
+          "id": 7,
+          "cost": "395#5000",
+          "award": "360#50000",
+          "limit": 5,
+          "group": 1,
+          "unlock": 0
+        },
+        {
+          "id": 8,
+          "cost": "395#5000",
+          "award": "359#5000",
+          "limit": 5,
+          "group": 1,
+          "unlock": 0
+        },
+        {
+          "id": 9,
+          "cost": "395#6000",
+          "award": "930214#50",
+          "limit": 2,
+          "group": 1,
+          "unlock": 0
+        },
+        {
+          "id": 10,
+          "cost": "395#6000",
+          "award": "930213#50",
+          "limit": 2,
+          "group": 1,
+          "unlock": 0
+        },
+        {
+          "id": 11,
+          "cost": "395#3000",
+          "award": "930196#50",
+          "limit": 3,
+          "group": 1,
+          "unlock": 0
+        },
+        {
+          "id": 12,
+          "cost": "395#3000",
+          "award": "930201#50",
+          "limit": 3,
+          "group": 1,
+          "unlock": 0
+        },
+        {
+          "id": 13,
+          "cost": "395#3000",
+          "award": "930204#50",
+          "limit": 3,
+          "group": 1,
+          "unlock": 0
+        },
+        {
+          "id": 14,
+          "cost": "395#3000",
+          "award": "930192#50",
+          "limit": 3,
+          "group": 1,
+          "unlock": 0
+        },
+        {
+          "id": 15,
+          "cost": "395#5000",
+          "award": "418#5",
+          "limit": 5,
+          "group": 1,
+          "unlock": 0
+        },
+        {
+          "id": 16,
+          "cost": "395#2500",
+          "award": "6000#1000",
+          "limit": 10,
+          "group": 1,
+          "unlock": 0
+        },
+        {
+          "id": 17,
+          "cost": "395#500",
+          "award": "417#600",
+          "limit": 20,
+          "group": 1,
+          "unlock": 0
+        },
+        {
+          "id": 18,
+          "cost": "395#500",
+          "award": "419#15",
+          "limit": 20,
+          "group": 1,
+          "unlock": 0
+        },
+        {
+          "id": 19,
+          "cost": "395#1000",
+          "award": "14#5000",
+          "limit": 5,
+          "group": 1,
+          "unlock": 0
+        },
+        {
+          "id": 20,
+          "cost": "395#1000",
+          "award": "10#5000",
+          "limit": 5,
+          "group": 1,
+          "unlock": 0
+        },
+        {
+          "id": 21,
+          "cost": "395#1",
+          "award": "1#5000",
+          "limit": 9999,
+          "group": 1,
+          "unlock": 0
+        },
+        {
+          "id": 22,
+          "cost": "395#1",
+          "award": "9#5000",
+          "limit": 9999,
+          "group": 1,
+          "unlock": 0
+        }
+      ],
+      "shop_table": "activity_goldfish_shop"
+    },
+    "325": {
+      "title": "Sửa Máy Chơi Game",
+      "missions": [
+        {
+          "id": 1,
+          "need": 1,
+          "award": "408#1",
+          "limit": 7,
+          "daily": 0,
+          "text": "Daily Login ({1}/7)"
+        },
+        {
+          "id": 2,
+          "need": 1,
+          "award": "408#1",
+          "limit": 10,
+          "daily": 0,
+          "text": "Complete a 4-star or higher Internship Quest ({1}/10)"
+        },
+        {
+          "id": 3,
+          "need": 3,
+          "award": "408#1",
+          "limit": 10,
+          "daily": 0,
+          "text": "Complete 3 battles in Junior Varsity ({1}/10)"
+        },
+        {
+          "id": 4,
+          "need": 10,
+          "award": "408#2",
+          "limit": 20,
+          "daily": 0,
+          "text": "Consume 10 Seals ({1}/20)"
+        }
+      ],
+      "mission_table": "activity_repair_console_mission"
+    },
+    "330": {
+      "title": "Kho Báu Hoàng Cung",
+      "shop": [
+        {
+          "id": 1,
+          "cost": "411#50",
+          "award": "1#1000000",
+          "limit": 999,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 2,
+          "cost": "411#50",
+          "award": "9#1000000",
+          "limit": 999,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 3,
+          "cost": "411#200",
+          "award": "6000#400",
+          "limit": 5,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 4,
+          "cost": "411#400",
+          "award": "36#10",
+          "limit": 5,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 5,
+          "cost": "411#500",
+          "award": "940004#50",
+          "limit": 5,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 6,
+          "cost": "411#600",
+          "award": "93#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 7,
+          "cost": "411#2000",
+          "award": "4101067#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 2500
+        },
+        {
+          "id": 8,
+          "cost": "411#1000",
+          "award": "4102007#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 2500
+        },
+        {
+          "id": 9,
+          "cost": "411#1200",
+          "award": "36#30",
+          "limit": 1,
+          "group": 0,
+          "unlock": 2500
+        },
+        {
+          "id": 10,
+          "cost": "411#500",
+          "award": "4205004#6",
+          "limit": 10,
+          "group": 0,
+          "unlock": 2500
+        },
+        {
+          "id": 11,
+          "cost": "411#500",
+          "award": "4206001#6",
+          "limit": 10,
+          "group": 0,
+          "unlock": 2500
+        },
+        {
+          "id": 12,
+          "cost": "411#1500",
+          "award": "4102008#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 2500
+        },
+        {
+          "id": 13,
+          "cost": "411#2000",
+          "award": "4102057#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 5000
+        },
+        {
+          "id": 14,
+          "cost": "411#2500",
+          "award": "4104022#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 5000
+        },
+        {
+          "id": 15,
+          "cost": "411#3000",
+          "award": "930235#50",
+          "limit": 1,
+          "group": 0,
+          "unlock": 5000
+        },
+        {
+          "id": 16,
+          "cost": "411#3500",
+          "award": "6785#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 5000
+        },
+        {
+          "id": 17,
+          "cost": "411#2500",
+          "award": "4101008#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 5000
+        },
+        {
+          "id": 18,
+          "cost": "411#1500",
+          "award": "4705002#20",
+          "limit": 2,
+          "group": 0,
+          "unlock": 5000
+        },
+        {
+          "id": 19,
+          "cost": "411#4000",
+          "award": "4402015#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 7500
+        },
+        {
+          "id": 20,
+          "cost": "411#2000",
+          "award": "4501002#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 7500
+        },
+        {
+          "id": 21,
+          "cost": "411#4500",
+          "award": "6779#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 7500
+        },
+        {
+          "id": 22,
+          "cost": "411#1000",
+          "award": "358#25",
+          "limit": 2,
+          "group": 0,
+          "unlock": 7500
+        },
+        {
+          "id": 23,
+          "cost": "411#500",
+          "award": "4206001#25",
+          "limit": 10,
+          "group": 0,
+          "unlock": 7500
+        },
+        {
+          "id": 24,
+          "cost": "411#2500",
+          "award": "4101010#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 7500
+        },
+        {
+          "id": 25,
+          "cost": "411#4000",
+          "award": "4402015#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 12500
+        },
+        {
+          "id": 26,
+          "cost": "411#4500",
+          "award": "5100020#1",
+          "limit": 2,
+          "group": 0,
+          "unlock": 12500
+        },
+        {
+          "id": 27,
+          "cost": "411#1500",
+          "award": "940059#50",
+          "limit": 4,
+          "group": 0,
+          "unlock": 12500
+        },
+        {
+          "id": 28,
+          "cost": "411#5000",
+          "award": "6791#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 12500
+        },
+        {
+          "id": 29,
+          "cost": "411#1500",
+          "award": "930235#50",
+          "limit": 1,
+          "group": 0,
+          "unlock": 12500
+        },
+        {
+          "id": 30,
+          "cost": "411#2000",
+          "award": "4901001#1",
+          "limit": 2,
+          "group": 0,
+          "unlock": 20000
+        },
+        {
+          "id": 31,
+          "cost": "411#2000",
+          "award": "986001#20",
+          "limit": 2,
+          "group": 0,
+          "unlock": 20000
+        },
+        {
+          "id": 32,
+          "cost": "411#1000",
+          "award": "358#30",
+          "limit": 10,
+          "group": 0,
+          "unlock": 20000
+        },
+        {
+          "id": 33,
+          "cost": "411#4500",
+          "award": "5100021#1",
+          "limit": 2,
+          "group": 0,
+          "unlock": 20000
+        },
+        {
+          "id": 34,
+          "cost": "411#500",
+          "award": "334#10",
+          "limit": 10,
+          "group": 0,
+          "unlock": 20000
+        }
+      ],
+      "shop_table": "activity_pirate_shop_awards"
+    },
+    "333": {
+      "title": "Bí Mật Đèn Lồng",
+      "shop": [
+        {
+          "id": 1,
+          "cost": "432#40|433#6",
+          "award": "4402015#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 2,
+          "cost": "432#25|433#5",
+          "award": "6761#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 3,
+          "cost": "432#25|433#4",
+          "award": "6437#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 4,
+          "cost": "432#20|433#3",
+          "award": "418#100",
+          "limit": 2,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 5,
+          "cost": "432#20|433#3",
+          "award": "4501002#1",
+          "limit": 2,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 6,
+          "cost": "432#10|433#2",
+          "award": "4705002#50",
+          "limit": 3,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 7,
+          "cost": "432#25|433#3",
+          "award": "4101010#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 8,
+          "cost": "432#15|433#3",
+          "award": "930235#50",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 9,
+          "cost": "432#10|433#2",
+          "award": "940045#50",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 10,
+          "cost": "432#10|433#2",
+          "award": "940046#50",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 11,
+          "cost": "432#20|433#2",
+          "award": "4901001#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 12,
+          "cost": "432#5|433#2",
+          "award": "453#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 13,
+          "cost": "431#20|432#5",
+          "award": "7218#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 14,
+          "cost": "431#20|432#5",
+          "award": "7217#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 15,
+          "cost": "431#15|432#5",
+          "award": "7132#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 16,
+          "cost": "431#15|432#5",
+          "award": "7131#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 17,
+          "cost": "431#10",
+          "award": "170#10",
+          "limit": 5,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 18,
+          "cost": "432#5",
+          "award": "20#10",
+          "limit": 3,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 19,
+          "cost": "433#1",
+          "award": "359#10000",
+          "limit": 999,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 20,
+          "cost": "432#1",
+          "award": "4201042#1",
+          "limit": 999,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 21,
+          "cost": "431#2",
+          "award": "36#1",
+          "limit": 999,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 22,
+          "cost": "430#1",
+          "award": "358#5",
+          "limit": 999,
+          "group": 0,
+          "unlock": 0
+        }
+      ],
+      "shop_table": "activity_halloween2022_shop"
+    },
+    "338": {
+      "title": "Cơn Sốt Hộp Mù",
+      "missions": [
+        {
+          "id": 1,
+          "need": 50,
+          "award": "438#1",
+          "limit": 1,
+          "daily": 0,
+          "text": "Obtain {1} VIP Exp"
+        },
+        {
+          "id": 2,
+          "need": 250,
+          "award": "438#2",
+          "limit": 1,
+          "daily": 0,
+          "text": "Obtain {1} VIP Exp"
+        },
+        {
+          "id": 3,
+          "need": 500,
+          "award": "438#3",
+          "limit": 1,
+          "daily": 0,
+          "text": "Obtain {1} VIP Exp"
+        },
+        {
+          "id": 4,
+          "need": 1000,
+          "award": "438#4",
+          "limit": 1,
+          "daily": 0,
+          "text": "Obtain {1} VIP Exp"
+        },
+        {
+          "id": 5,
+          "need": 2500,
+          "award": "438#5",
+          "limit": 1,
+          "daily": 0,
+          "text": "Obtain {1} VIP Exp"
+        },
+        {
+          "id": 6,
+          "need": 5000,
+          "award": "438#6",
+          "limit": 1,
+          "daily": 0,
+          "text": "Obtain {1} VIP Exp"
+        },
+        {
+          "id": 7,
+          "need": 7500,
+          "award": "438#7",
+          "limit": 1,
+          "daily": 0,
+          "text": "Obtain {1} VIP Exp"
+        },
+        {
+          "id": 8,
+          "need": 10000,
+          "award": "438#8",
+          "limit": 1,
+          "daily": 0,
+          "text": "Obtain {1} VIP Exp"
+        },
+        {
+          "id": 9,
+          "need": 15000,
+          "award": "438#9",
+          "limit": 1,
+          "daily": 0,
+          "text": "Obtain {1} VIP Exp"
+        }
+      ],
+      "mission_table": "activity_blind_box_mission"
+    },
+    "346": {
+      "title": "Bắt Lấy Tinh Tú",
+      "shop": [
+        {
+          "id": 1,
+          "cost": "455#4",
+          "award": "940059#25",
+          "limit": 4,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 2,
+          "cost": "455#5",
+          "award": "4402015#1",
+          "limit": 2,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 3,
+          "cost": "455#4",
+          "award": "4901001#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 4,
+          "cost": "455#6",
+          "award": "5100020#1",
+          "limit": 2,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 5,
+          "cost": "455#4",
+          "award": "4104023#1",
+          "limit": 2,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 6,
+          "cost": "455#1",
+          "award": "170#50",
+          "limit": 5,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 7,
+          "cost": "456#12",
+          "award": "4101010#1",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 8,
+          "cost": "456#8",
+          "award": "4101008#1",
+          "limit": 2,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 9,
+          "cost": "456#1",
+          "award": "4201042#5",
+          "limit": 10,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 10,
+          "cost": "456#1",
+          "award": "418#5",
+          "limit": 10,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 11,
+          "cost": "456#10",
+          "award": "930233#50",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 12,
+          "cost": "456#12",
+          "award": "930234#50",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 13,
+          "cost": "456#16",
+          "award": "930235#50",
+          "limit": 1,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 14,
+          "cost": "456#1",
+          "award": "417#2000",
+          "limit": 10,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 15,
+          "cost": "456#1",
+          "award": "419#50",
+          "limit": 10,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 16,
+          "cost": "456#2",
+          "award": "20#5",
+          "limit": 2,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 17,
+          "cost": "456#1",
+          "award": "359#750",
+          "limit": 20,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 18,
+          "cost": "457#10",
+          "award": "4102007#1",
+          "limit": 3,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 19,
+          "cost": "457#4",
+          "award": "358#3",
+          "limit": 10,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 20,
+          "cost": "457#3",
+          "award": "36#10",
+          "limit": 10,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 21,
+          "cost": "457#2",
+          "award": "424#2",
+          "limit": 10,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 22,
+          "cost": "457#1",
+          "award": "423#2",
+          "limit": 10,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 23,
+          "cost": "457#1",
+          "award": "10#5000",
+          "limit": 10,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 24,
+          "cost": "457#1",
+          "award": "14#5000",
+          "limit": 10,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 25,
+          "cost": "457#1",
+          "award": "1#5000000",
+          "limit": 99,
+          "group": 0,
+          "unlock": 0
+        },
+        {
+          "id": 26,
+          "cost": "457#1",
+          "award": "9#5000000",
+          "limit": 99,
+          "group": 0,
+          "unlock": 0
+        }
+      ],
+      "shop_table": "activity_star_plan_shop"
+    }
+  },
+  "unpaired": [
+    "activity_limit_exchange_awards (Girls/10-Star Exchange need a girl picker)",
+    "activity_doll_buy",
+    "activity_return_shop",
+    "activity_festival",
+    "activity_food_festival_awards",
+    "activity_point_giftbox",
+    "activity_giftbox",
+    "activity_gamble_plus_mission",
+    "activity_turing_task",
+    "activity_vampire_task",
+    "activity_candy_collect_task"
+  ],
+  "names": {
+    "1": "Coin",
+    "2": "Gem",
+    "9": "EXP Juice",
+    "10": "Lunch Box",
+    "14": "Crystal Chisel",
+    "20": "Seal",
+    "24": "Internship Scroll",
+    "25": "Advance Internship Scroll",
+    "29": "Super Slot Ticket",
+    "33": "Capsule Coin",
+    "35": "Slot Ticket",
+    "36": "Adv. Capsule Coin",
+    "43": "Gift Box",
+    "45": "Oath Ring",
+    "57": "Jackpot Energy",
+    "69": "Furniture Coin",
+    "73": "Rune Engraving",
+    "74": "Costume Ticket",
+    "90": "Coffee Encyclopedia",
+    "93": "Elite Badge",
+    "130": "Love Rose",
+    "135": "Gift of Love",
+    "167": "Eye of Lazurite",
+    "170": "Lucky Crystal",
+    "198": "Standard File",
+    "199": "Exclusive File",
+    "216": "Servant Crystal",
+    "232": "Shining Pearl",
+    "235": "Magic Circuit",
+    "236": "Time Shards",
+    "238": "Adventure Capsule Coin",
+    "239": "Void Ember",
+    "253": "Colorful Sand",
+    "254": "Swimsuit Ticket",
+    "256": "Ancient Silver Coin",
+    "257": "Ancient Gold Coin",
+    "258": "Plain Button",
+    "259": "Fancy Button",
+    "260": "Plain Silk",
+    "261": "Dyed Silk",
+    "297": "Ghost Potion",
+    "298": "Candy Pumpkin",
+    "299": "Candy Basket",
+    "302": "Compass",
+    "309": "Lucky Coin",
+    "317": "Firework Point Card",
+    "334": "Chime Resource Bag - Orange",
+    "335": "Beach Sand",
+    "345": "Clockwork Coin",
+    "347": "Easter Slingshot",
+    "348": "Laser Gun",
+    "358": "Star Token",
+    "359": "Brilliant Sphere",
+    "360": "Tarnished Sphere",
+    "361": "Stellar Shards - ♐",
+    "363": "Childhood Delight",
+    "365": "Rabbit Badge",
+    "369": "Marvelous Seed",
+    "370": "Loud Speaker",
+    "374": "Chime Resource Bag - Red",
+    "378": "Pastry Bag",
+    "379": "Party Drink",
+    "385": "Jade Crane",
+    "386": "Gilded Crane",
+    "395": "Goldfish Coin",
+    "408": "Bonnie's Battery",
+    "411": "Pirate Coin",
+    "417": "Soul Gem",
+    "418": "Soul Mirror",
+    "419": "Soul Dice",
+    "420": "Soul Charm",
+    "423": "Soul Token",
+    "424": "Shiny Soul Token",
+    "430": "Witch's Potion",
+    "431": "Horned Pumpkin",
+    "432": "Winged Pumpkin",
+    "433": "IM PUMPKIN",
+    "435": "Random Anima Artifact Chest",
+    "438": "Blind Box Coupon",
+    "448": "Customized Anima Stone Set Chest",
+    "453": "Random Anima Stone Set Chest",
+    "455": "Scorpius Ticket",
+    "456": "Sagittarius Ticket",
+    "457": "Pisces Ticket",
+    "6000": "Afterglow",
+    "6437": "The Wings of lcarus",
+    "6455": "Echoes",
+    "6461": "Burning Blades",
+    "6701": "Soul Destruction",
+    "6707": "Sacred Vial",
+    "6713": "Eternal Dawn",
+    "6725": "Reaper's Voice",
+    "6743": "Snow Chime",
+    "6755": "Windbringer",
+    "6761": "Nebula Slasher",
+    "6773": "Midnight Star",
+    "6779": "Peacock Tambourine",
+    "6785": "Galaxy Paintbrush",
+    "6791": "Necronomicon",
+    "7033": "Summer Breeze",
+    "7034": "Azure Sea",
+    "7038": "Wave Surfer",
+    "7041": "Ocean Breeze",
+    "7043": "Summer Fantasy",
+    "7047": "Alluring Face",
+    "7099": "Sun Glitter",
+    "7101": "Past Idol",
+    "7102": "Summer Outfit",
+    "7108": "Sea Warrior",
+    "7109": "Sea Spells",
+    "7110": "Beach Pod",
+    "7111": "Full View",
+    "7112": "Wave Mistress",
+    "7113": "Halo Shimmer",
+    "7114": "Sweet Berry",
+    "7115": "Seaside Maid",
+    "7116": "Oceanic Twins",
+    "7118": "Sunkissed",
+    "7131": "Soul Reaper",
+    "7132": "Troublemaker",
+    "7182": "Seaside Tasks",
+    "7188": "Maritime",
+    "7194": "Colorful Reef",
+    "7196": "Beach Vacation",
+    "7197": "Boom Beach",
+    "7198": "Tentacle Trouble",
+    "7217": "Pro Trickster",
+    "7218": "Candy Witch",
+    "930083": "5-star Fencer",
+    "930086": "5-star Giana",
+    "930192": "5-star Vivian",
+    "930196": "5-star Vera",
+    "930197": "5-star Apate",
+    "930201": "5-star Estel",
+    "930203": "5-star Holly",
+    "930204": "5-star Teresa",
+    "930213": "5-star Gwen & Brigit",
+    "930214": "5-star Maia",
+    "930218": "5-star Chizuko",
+    "930233": "5-star Hadea",
+    "930234": "5-star Zeusia",
+    "930235": "5-star Apollis",
+    "940001": "4-star Girls Shard",
+    "940002": "5-star Girls Shard",
+    "940004": "Elite 5-star Girls Shard",
+    "940034": "6-Star Fairy Doll",
+    "940045": "9-Star Demon Doll",
+    "940046": "9-Star Angel Doll",
+    "940059": "Customized 10-star Cosmos Girls Shard",
+    "956001": "Orange Antique Shard",
+    "986001": "Shard of Reflections",
+    "4101008": "9-star Doll Chest",
+    "4101010": "10-star Doll Chest",
+    "4101020": "5-Star Customized Chest",
+    "4101067": "5-Star Customized Chest",
+    "4102007": "6-star Doll Chest",
+    "4102008": "6-star Doll chest",
+    "4102018": "Customized L&D Chest",
+    "4102056": "Customized L&D Chest",
+    "4102057": "Customized L&D Chest",
+    "4104022": "5-Star Customized Chest (6 factions)",
+    "4104023": "5-Star Customized Chest (6 factions)",
+    "4201008": "Regular Customized Resource Chest",
+    "4201042": "Regular Customized Resource Chest",
+    "4205004": "Customized File Chest",
+    "4206001": "Customized Sphere Chest",
+    "4402006": "Customized Orange Antique Chest",
+    "4402015": "Customized Orange Antique Chest",
+    "4501002": "Customized Class Set Chest",
+    "4601001": "Customized Halloween Outfit Chest",
+    "4704001": "Chime Shard Chest - Green",
+    "4705002": "Chime Shard Chest - Red",
+    "4901001": "Customized Orange Anima Artifact Chest",
+    "5100020": "Ancient Coin",
+    "5100021": "Thunder Potion",
+    "20001040": "Fairytale Land",
+    "20001059": "Limited: Holly"
+  }
+}
