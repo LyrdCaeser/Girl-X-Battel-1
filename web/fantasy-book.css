@@ -75,3 +75,19 @@ html.gxb-mobile .fantasy-book-view .fb-stage{
  min-height:0!important;max-height:none!important;
  position:relative!important;margin:0 auto!important;overflow:hidden!important
 }
+
+/* Vietnamese title cards replace title sprites containing embedded English text. */
+.fantasy-book-view .fb-logo-vi,.fantasy-book-view .fb-exlogo-vi{
+ display:flex;align-items:center;justify-content:center;box-sizing:border-box;
+ padding:calc(16 * var(--u));margin:0;text-align:center;text-wrap:balance;
+ font:bold calc(43 * var(--u))/1.17 system-ui,sans-serif;
+ color:#fff3c3;text-shadow:0 calc(3 * var(--u)) calc(5 * var(--u)) #6b3978,0 0 calc(9 * var(--u)) #3d418f;
+ background:radial-gradient(ellipse at center,#9474d4bf 12%,#6543a074 65%,transparent 78%);
+}
+.fantasy-book-view .fb-exlogo-vi{font-size:calc(39 * var(--u));color:#fff3c2}
+.fantasy-book-view .fb-stamp-vi{
+ display:flex;align-items:center;justify-content:center;box-sizing:border-box;
+ min-height:calc(56 * var(--u));border:calc(3 * var(--u)) solid #8dba82;
+ border-radius:calc(7 * var(--u));background:#d6e9d5;
+ color:#37743a;font-size:calc(20 * var(--u));font-weight:900;text-align:center;transform:rotate(-7deg)
+}
