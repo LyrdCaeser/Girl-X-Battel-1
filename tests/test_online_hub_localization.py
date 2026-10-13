@@ -17,7 +17,7 @@ class OnlineHubVietnameseTests(unittest.TestCase):
         cls.locale = json.loads((ROOT / "localization" / "vi.json").read_text(encoding="utf-8"))
 
     def test_all_literal_multiplayer_labels_have_vietnamese_entries(self):
-        labels = set(re.findall(r"\\bT\\(\\s*['\"]([^'\"]+)['\"]\\s*\\)", self.hub))
+        labels = set(re.findall(r"""\bT\(\s*['"]([^'"]+)['"]\s*\)""", self.hub))
         self.assertGreater(len(labels), 75)
         missing = sorted(labels.difference(self.locale))
         self.assertFalse(missing, "Multiplayer labels missing translations: " + repr(missing))
