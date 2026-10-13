@@ -13,7 +13,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 1,
-   "text": "Upgrade 1 Girl to Lvl-10",
+   "text": "Nâng 1 Nữ Thần lên cấp 10",
    "window": "slot_window"
   },
   "2": {
@@ -29,7 +29,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 2,
-   "text": "Acquire 1 5-star Girl",
+   "text": "Sở hữu 1 Nữ Thần 5 sao",
    "window": "summon_window"
   },
   "3": {
@@ -61,7 +61,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 4,
-   "text": "Obtain 1000 Coins from Campaign Loot",
+   "text": "Nhận 1000 Vàng từ phần thưởng treo máy Chiến Dịch",
    "window": "campaign_window"
   },
   "5": {
@@ -93,7 +93,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 6,
-   "text": "Upgrade 1 Girl to Lvl-30",
+   "text": "Nâng 1 Nữ Thần lên cấp 30",
    "window": "slot_window"
   },
   "7": {
@@ -125,7 +125,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 8,
-   "text": "Pass Stage 1-12 in Campaign",
+   "text": "Vượt ải 1-12 trong Chiến Dịch",
    "window": "campaign_window"
   },
   "9": {
@@ -157,7 +157,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 10,
-   "text": "Consume 3 Slot Tickets",
+   "text": "Dùng 3 vé Máy Quay",
    "window": "gamble_window"
   },
   "11": {
@@ -205,7 +205,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 13,
-   "text": "Draw from Adv. Capsule 2 times",
+   "text": "Triệu Hồi Cao Cấp 2 lần",
    "window": "summon_window"
   },
   "14": {
@@ -221,7 +221,7 @@
    "activity_id": "",
    "special_mission": 1,
    "id": 14,
-   "text": "Obtain 5000 Coins from Campaign Loot",
+   "text": "Nhận 5000 Vàng từ phần thưởng treo máy Chiến Dịch",
    "window": "campaign_window"
   },
   "15": {
@@ -237,7 +237,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 15,
-   "text": "Pass Stage 10 in Tests",
+   "text": "Vượt tầng 10 Thử Thách",
    "window": "tower_window"
   },
   "16": {
@@ -253,7 +253,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 16,
-   "text": "Pass Stage 2-10 in Campaign",
+   "text": "Vượt ải 2-10 trong Chiến Dịch",
    "window": "campaign_window"
   },
   "17": {
@@ -285,7 +285,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 18,
-   "text": "Upgrade a Girl to Lvl-60",
+   "text": "Nâng 1 Nữ Thần lên cấp 60",
    "window": "slot_window"
   },
   "19": {
@@ -349,7 +349,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 22,
-   "text": "Draw from Adv. Capsule 10 times",
+   "text": "Triệu Hồi Cao Cấp 10 lần",
    "window": "summon_window"
   },
   "23": {
@@ -365,7 +365,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 23,
-   "text": "Win 3 Battles in Junior Varsity Varsity or Ultimate League",
+   "text": "Thắng 3 trận ở Đấu Trường Sơ Cấp, Đấu Trường Đội hoặc Liên Đấu Đỉnh Cao",
    "window": "arena_window"
   },
   "24": {
@@ -381,7 +381,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 24,
-   "text": "Pass Stage 4-5 in Campaign",
+   "text": "Vượt ải 4-5 trong Chiến Dịch",
    "window": "campaign_window"
   },
   "25": {
@@ -413,7 +413,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 26,
-   "text": "Upgrade a Girl to Lvl-100",
+   "text": "Nâng 1 Nữ Thần lên cấp 100",
    "window": "slot_window"
   },
   "27": {
@@ -429,7 +429,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 27,
-   "text": "Consume 1 Seal",
+   "text": "Dùng 1 Ấn Chiêu Mộ",
    "window": "prophet_window"
   },
   "28": {
@@ -461,7 +461,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 29,
-   "text": "Upgrade a Technology in Guild-Lab to Lvl-10",
+   "text": "Nâng 1 Công Nghệ Nghiên Cứu Bang Hội lên cấp 10",
    "window": "guild_territory_window"
   },
   "30": {
@@ -477,7 +477,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 30,
-   "text": "Finish 1 4-Star (or above) Internship Quest",
+   "text": "Hoàn thành 1 nhiệm vụ Thực Tập 4 sao trở lên",
    "window": "tavern_window"
   },
   "31": {
@@ -493,7 +493,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 31,
-   "text": "Pass Stage 50 in Tests",
+   "text": "Vượt tầng 50 Thử Thách",
    "window": "tower_window"
   },
   "32": {
@@ -509,7 +509,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 32,
-   "text": "Pass Stage 5-10 in Campaign",
+   "text": "Vượt ải 5-10 trong Chiến Dịch",
    "window": "campaign_window"
   },
   "33": {
@@ -525,7 +525,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 33,
-   "text": "Upgrade 3 Girls to Lvl-100",
+   "text": "Nâng 3 Nữ Thần lên cấp 100",
    "window": "slot_window"
   },
   "34": {
@@ -541,7 +541,7 @@
    "activity_id": "",
    "special_mission": 1,
    "id": 34,
-   "text": "Obtain 10000 Coins from Dorm",
+   "text": "Nhận 10000 Vàng từ Ký Túc Xá",
    "window": "house_window"
   },
   "35": {
@@ -573,7 +573,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 36,
-   "text": "Pass Stage 7-10 in Campaign",
+   "text": "Vượt ải 7-10 trong Chiến Dịch",
    "window": "campaign_window"
   },
   "37": {
@@ -589,7 +589,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 37,
-   "text": "Acquire a 6-star Girl",
+   "text": "Sở hữu 1 Nữ Thần 6 sao",
    "window": "slot_window"
   },
   "38": {
@@ -621,7 +621,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 39,
-   "text": "Upgrade 1 Girl to Lvl-140",
+   "text": "Nâng 1 Nữ Thần lên cấp 140",
    "window": "slot_window"
   },
   "40": {
@@ -637,7 +637,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 40,
-   "text": "Reach Player Level 44",
+   "text": "Đạt cấp người chơi 44",
    "window": "campaign_window"
   },
   "41": {
@@ -653,7 +653,7 @@
    "activity_id": "",
    "special_mission": 1,
    "id": 41,
-   "text": "Complete 1 battle in Sanctuary",
+   "text": "Hoàn thành 1 trận tại Sanctuary",
    "window": "trial_enter_window"
   },
   "42": {
@@ -669,7 +669,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 42,
-   "text": "Upgrade 4 Girls to Lvl-100",
+   "text": "Nâng 4 Nữ Thần lên cấp 100",
    "window": "slot_window"
   },
   "43": {
@@ -685,7 +685,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 43,
-   "text": "Pass Stage 100 in Tests",
+   "text": "Vượt tầng 100 Thử Thách",
    "window": "tower_window"
   },
   "44": {
@@ -701,7 +701,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 44,
-   "text": "Pass Stage 9-10 in Campaign",
+   "text": "Vượt ải 9-10 trong Chiến Dịch",
    "window": "campaign_window"
   },
   "45": {
@@ -717,7 +717,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 45,
-   "text": "Upgrade 2 Technologies in Guild-Lab to Lvl-10",
+   "text": "Nâng 2 Công Nghệ Nghiên Cứu Bang Hội lên cấp 10",
    "window": "guild_territory_window"
   },
   "46": {
@@ -733,7 +733,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 46,
-   "text": "Upgrade a Crystal to 1-star Yellow Crystal",
+   "text": "Nâng Pha Lê thành Yellow 1 sao",
    "window": "slot_window"
   },
   "47": {
@@ -749,7 +749,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 47,
-   "text": "Pass Stage 135 in Tests",
+   "text": "Vượt tầng 135 Thử Thách",
    "window": "tower_window"
   },
   "48": {
@@ -765,7 +765,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 48,
-   "text": "Pass Stage 3 of a Character Challenge",
+   "text": "Vượt ải 3 trong Thử Thách Nhân Vật",
    "window": "hero_challenge_window"
   },
   "49": {
@@ -797,7 +797,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 50,
-   "text": "Finish 1 5-Star (or above) Internship Quest",
+   "text": "Hoàn thành 1 nhiệm vụ Thực Tập 5 sao trở lên",
    "window": "tavern_window"
   },
   "51": {
@@ -813,7 +813,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 51,
-   "text": "Win 10 Battles in Junior Varsity Varsity or Ultimate League",
+   "text": "Thắng 10 trận ở Đấu Trường Sơ Cấp, Đấu Trường Đội hoặc Liên Đấu Đỉnh Cao",
    "window": "arena_window"
   },
   "52": {
@@ -829,7 +829,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 52,
-   "text": "Pass Stage 11-10 in Campaign",
+   "text": "Vượt ải 11-10 trong Chiến Dịch",
    "window": "campaign_window"
   },
   "53": {
@@ -861,7 +861,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 54,
-   "text": "Explore 1 time in Excursion",
+   "text": "Thám Hiểm 1 lần",
    "window": "explore_window"
   },
   "55": {
@@ -893,7 +893,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 56,
-   "text": "Pass Stage 13-10 in Campaign",
+   "text": "Vượt ải 13-10 trong Chiến Dịch",
    "window": "campaign_window"
   },
   "57": {
@@ -909,7 +909,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 57,
-   "text": "Reach Player Level 58",
+   "text": "Đạt cấp người chơi 58",
    "window": "campaign_window"
   },
   "58": {
@@ -925,7 +925,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 58,
-   "text": "Upgrade a Servant Aura to Lvl-5",
+   "text": "Nâng Hào Quang Linh Thú lên cấp 5",
    "window": "pet_window"
   },
   "59": {
@@ -941,7 +941,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 59,
-   "text": "Upgrade a Crystal to 1-star Rune Crystal",
+   "text": "Nâng Pha Lê thành Rune 1 sao",
    "window": "slot_window"
   },
   "60": {
@@ -957,7 +957,7 @@
    "activity_id": "",
    "special_mission": 1,
    "id": 60,
-   "text": "Obtain 300000 Coins from Campaign Loot",
+   "text": "Nhận 300000 Vàng từ phần thưởng treo máy Chiến Dịch",
    "window": "campaign_window"
   },
   "61": {
@@ -973,7 +973,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 61,
-   "text": "Upgrade a Servant to Lvl-5",
+   "text": "Nâng 1 Linh Thú lên cấp 5",
    "window": "pet_window"
   },
   "62": {
@@ -989,7 +989,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 62,
-   "text": "Upgrade a Girl to Lvl-160",
+   "text": "Nâng 1 Nữ Thần lên cấp 160",
    "window": "slot_window"
   },
   "63": {
@@ -1021,7 +1021,7 @@
    "activity_id": "",
    "special_mission": 1,
    "id": 64,
-   "text": "Deal 800000 damage to Guild Bosses in total",
+   "text": "Gây tổng 800000 sát thương lên Boss Bang Hội",
    "window": "guild_territory_window"
   },
   "65": {
@@ -1053,7 +1053,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 66,
-   "text": "Finish 1 6-Star (or above) Internship Quest",
+   "text": "Hoàn thành 1 nhiệm vụ Thực Tập 6 sao trở lên",
    "window": "tavern_window"
   },
   "67": {
@@ -1069,7 +1069,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 67,
-   "text": "Pass Stage 150 in Tests",
+   "text": "Vượt tầng 150 Thử Thách",
    "window": "tower_window"
   },
   "68": {
@@ -1085,7 +1085,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 68,
-   "text": "Pass Stage 14-10 in Campaign",
+   "text": "Vượt ải 14-10 trong Chiến Dịch",
    "window": "campaign_window"
   },
   "69": {
@@ -1117,7 +1117,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 70,
-   "text": "Upgrade a Servant to Lvl-15",
+   "text": "Nâng 1 Linh Thú lên cấp 15",
    "window": "pet_window"
   },
   "71": {
@@ -1133,7 +1133,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 71,
-   "text": "Acquire a 7-star Girl",
+   "text": "Sở hữu 1 Nữ Thần 7 sao",
    "window": "slot_window"
   },
   "72": {
@@ -1149,7 +1149,7 @@
    "activity_id": "",
    "special_mission": 1,
    "id": 72,
-   "text": "Obtain 350000 Coins from Campaign Loot",
+   "text": "Nhận 350000 Vàng từ phần thưởng treo máy Chiến Dịch",
    "window": "campaign_window"
   },
   "73": {
@@ -1165,7 +1165,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 73,
-   "text": "Pass Stage 15-5 in Campaign",
+   "text": "Vượt ải 15-5 trong Chiến Dịch",
    "window": "campaign_window"
   },
   "74": {
@@ -1181,7 +1181,7 @@
    "activity_id": "",
    "special_mission": 1,
    "id": 74,
-   "text": "Deal 1000000 damage to Guild Bosses in total",
+   "text": "Gây tổng 1000000 sát thương lên Boss Bang Hội",
    "window": "guild_territory_window"
   },
   "75": {
@@ -1197,7 +1197,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 75,
-   "text": "Pass Stage 200 in Tests",
+   "text": "Vượt tầng 200 Thử Thách",
    "window": "tower_window"
   },
   "76": {
@@ -1229,7 +1229,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 77,
-   "text": "Upgrade an Antique to 2-star",
+   "text": "Nâng Cổ Vật lên 2 sao",
    "window": "slot_window"
   },
   "78": {
@@ -1245,7 +1245,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 78,
-   "text": "Upgrade a Servant Aura to Lvl-10",
+   "text": "Nâng Hào Quang Linh Thú lên cấp 10",
    "window": "pet_window"
   },
   "79": {
@@ -1261,7 +1261,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 79,
-   "text": "Pass Stage 10 in Easy phase of Patrol",
+   "text": "Vượt ải 10 Tuần Tra độ khó Dễ",
    "window": "dungeon_window"
   },
   "80": {
@@ -1277,7 +1277,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 80,
-   "text": "Pass Stage 15-10 in Campaign",
+   "text": "Vượt ải 15-10 trong Chiến Dịch",
    "window": "campaign_window"
   },
   "81": {
@@ -1293,7 +1293,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 81,
-   "text": "Unlock 10 Technologies in Planetarium of Echoes of Time",
+   "text": "Mở khóa 10 công nghệ tại Đài Thiên Văn Vọng Âm Thời Gian",
    "window": "time_cloister_main_window"
   },
   "82": {
@@ -1309,7 +1309,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 82,
-   "text": "Upgrade a Girl to Lvl-180",
+   "text": "Nâng 1 Nữ Thần lên cấp 180",
    "window": "slot_window"
   },
   "83": {
@@ -1325,7 +1325,7 @@
    "activity_id": "",
    "special_mission": 1,
    "id": 83,
-   "text": "Deal 2000000 damage to Guild Bosses in total",
+   "text": "Gây tổng 2000000 sát thương lên Boss Bang Hội",
    "window": "guild_territory_window"
   },
   "84": {
@@ -1341,7 +1341,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 84,
-   "text": "Pass Stage 50 in Easy phase of Patrol",
+   "text": "Vượt ải 50 Tuần Tra độ khó Dễ",
    "window": "dungeon_window"
   },
   "85": {
@@ -1357,7 +1357,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 85,
-   "text": "Upgrade a Servant Aura to Lvl-20",
+   "text": "Nâng Hào Quang Linh Thú lên cấp 20",
    "window": "pet_window"
   },
   "86": {
@@ -1405,7 +1405,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 88,
-   "text": "Win 20 Battles in Junior Varsity Varsity or Ultimate League",
+   "text": "Thắng 20 trận ở Đấu Trường Sơ Cấp, Đấu Trường Đội hoặc Liên Đấu Đỉnh Cao",
    "window": "arena_window"
   },
   "89": {
@@ -1421,7 +1421,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 89,
-   "text": "Consume 5 Seals",
+   "text": "Dùng 5 Ấn Chiêu Mộ",
    "window": "prophet_window"
   },
   "90": {
@@ -1453,7 +1453,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 91,
-   "text": "Pass Stage 250 in Tests",
+   "text": "Vượt tầng 250 Thử Thách",
    "window": "tower_window"
   },
   "92": {
@@ -1469,7 +1469,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 92,
-   "text": "Pass Stage 16-10 in Campaign",
+   "text": "Vượt ải 16-10 trong Chiến Dịch",
    "window": "campaign_window"
   },
   "93": {
@@ -1485,7 +1485,7 @@
    "activity_id": "",
    "special_mission": 1,
    "id": 93,
-   "text": "Obtain 500000 Coins from Campaign Loot",
+   "text": "Nhận 500000 Vàng từ phần thưởng treo máy Chiến Dịch",
    "window": "campaign_window"
   },
   "94": {
@@ -1501,7 +1501,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 94,
-   "text": "Pass Stage 10 in House Exam of one of the 6 Houses",
+   "text": "Vượt ải 10 Khảo Thí Học Viện ở một trong 6 hệ",
    "window": "academy_assessment_window"
   },
   "95": {
@@ -1517,7 +1517,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 95,
-   "text": "Finish 2 6-Star (or above) Internship Quests",
+   "text": "Hoàn thành 2 nhiệm vụ Thực Tập 6 sao trở lên",
    "window": "tavern_window"
   },
   "96": {
@@ -1533,7 +1533,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 96,
-   "text": "Upgrade a Servant Aura to Lvl-25",
+   "text": "Nâng Hào Quang Linh Thú lên cấp 25",
    "window": "pet_window"
   },
   "97": {
@@ -1549,7 +1549,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 97,
-   "text": "Pass Stage 17-5 in Campaign",
+   "text": "Vượt ải 17-5 trong Chiến Dịch",
    "window": "campaign_window"
   },
   "98": {
@@ -1597,7 +1597,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 100,
-   "text": "Explore 20 times in Excursion",
+   "text": "Thám Hiểm 20 lần",
    "window": "explore_window"
   },
   "101": {
@@ -1629,7 +1629,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 102,
-   "text": "Pass Stage 100 in Easy phase of Patrol",
+   "text": "Vượt ải 100 Tuần Tra độ khó Dễ",
    "window": "dungeon_window"
   },
   "103": {
@@ -1645,7 +1645,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 103,
-   "text": "Upgrade a Girl to Lvl-200",
+   "text": "Nâng 1 Nữ Thần lên cấp 200",
    "window": "slot_window"
   },
   "104": {
@@ -1661,7 +1661,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 104,
-   "text": "Acquire a 9-star Girl",
+   "text": "Sở hữu 1 Nữ Thần 9 sao",
    "window": "slot_window"
   },
   "105": {
@@ -1677,7 +1677,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 105,
-   "text": "Pass Stage 17-10 in Campaign",
+   "text": "Vượt ải 17-10 trong Chiến Dịch",
    "window": "campaign_window"
   },
   "106": {
@@ -1693,7 +1693,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 106,
-   "text": "Pass Stage 6 of a Character Challenge",
+   "text": "Vượt ải 6 trong Thử Thách Nhân Vật",
    "window": "hero_challenge_window"
   },
   "107": {
@@ -1741,7 +1741,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 109,
-   "text": "Pass Stage 18-5 in Campaign",
+   "text": "Vượt ải 18-5 trong Chiến Dịch",
    "window": "campaign_window"
   },
   "110": {
@@ -1757,7 +1757,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 110,
-   "text": "Upgrade a Crystal to 1-star Paradise Crystal",
+   "text": "Nâng Pha Lê thành Paradise 1 sao",
    "window": "slot_window"
   },
   "111": {
@@ -1773,7 +1773,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 111,
-   "text": "Pass Stage 300 in Tests",
+   "text": "Vượt tầng 300 Thử Thách",
    "window": "tower_window"
   },
   "112": {
@@ -1821,7 +1821,7 @@
    "activity_id": "",
    "special_mission": 1,
    "id": 114,
-   "text": "Deal 5000000 damage to Guild Bosses in total",
+   "text": "Gây tổng 5000000 sát thương lên Boss Bang Hội",
    "window": "guild_territory_window"
   },
   "115": {
@@ -1837,7 +1837,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 115,
-   "text": "Pass Stage 330 in Tests",
+   "text": "Vượt tầng 330 Thử Thách",
    "window": "tower_window"
   },
   "116": {
@@ -1853,7 +1853,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 116,
-   "text": "Pass Stage 1-10 in Practical Work",
+   "text": "Vượt ải 1-10 Thực Hành",
    "window": "activity_window"
   },
   "117": {
@@ -1869,7 +1869,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 117,
-   "text": "Consume 30 Slot Tickets",
+   "text": "Dùng 30 vé Máy Quay",
    "window": "gamble_window"
   },
   "118": {
@@ -1885,7 +1885,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 118,
-   "text": "Unlock 20 Technologies in Planetarium of Echoes of Time",
+   "text": "Mở khóa 20 công nghệ tại Đài Thiên Văn Vọng Âm Thời Gian",
    "window": "time_cloister_main_window"
   },
   "119": {
@@ -1901,7 +1901,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 119,
-   "text": "Pass Stage 6 of 3 Character Challenges",
+   "text": "Vượt ải 6 ở 3 Thử Thách Nhân Vật",
    "window": "hero_challenge_window"
   },
   "120": {
@@ -1917,7 +1917,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 120,
-   "text": "Pass Stage 18-10 in Campaign",
+   "text": "Vượt ải 18-10 trong Chiến Dịch",
    "window": "campaign_window"
   },
   "121": {
@@ -1933,7 +1933,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 121,
-   "text": "Upgrade an Antique to 4-star",
+   "text": "Nâng Cổ Vật lên 4 sao",
    "window": "slot_window"
   },
   "122": {
@@ -1949,7 +1949,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 122,
-   "text": "Upgrade 4 Technologies in Guild-Lab to Lvl-20",
+   "text": "Nâng 4 Công Nghệ Nghiên Cứu Bang Hội lên cấp 20",
    "window": "guild_territory_window"
   },
   "123": {
@@ -1965,7 +1965,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 123,
-   "text": "Pass Stage 350 in Tests",
+   "text": "Vượt tầng 350 Thử Thách",
    "window": "tower_window"
   },
   "124": {
@@ -1981,7 +1981,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 124,
-   "text": "Explore 50 times in Excursion",
+   "text": "Thám Hiểm 50 lần",
    "window": "explore_window"
   },
   "125": {
@@ -1997,7 +1997,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 125,
-   "text": "Pass Stage 19-5 in Campaign",
+   "text": "Vượt ải 19-5 trong Chiến Dịch",
    "window": "campaign_window"
   },
   "126": {
@@ -2013,7 +2013,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 126,
-   "text": "Upgrade 2 Servant Auras to Lvl-30",
+   "text": "Nâng 2 Hào Quang Linh Thú lên cấp 30",
    "window": "pet_window"
   },
   "127": {
@@ -2029,7 +2029,7 @@
    "activity_id": "",
    "special_mission": 1,
    "id": 127,
-   "text": "Deal 10000000 damage to Guild Bosses in total",
+   "text": "Gây tổng 10000000 sát thương lên Boss Bang Hội",
    "window": "guild_territory_window"
   },
   "128": {
@@ -2045,7 +2045,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 128,
-   "text": "Consume 10 Seals",
+   "text": "Dùng 10 Ấn Chiêu Mộ",
    "window": "prophet_window"
   },
   "129": {
@@ -2061,7 +2061,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 129,
-   "text": "Upgrade a Crystal to 1-star Agate Crystal",
+   "text": "Nâng Pha Lê thành Agate 1 sao",
    "window": "slot_window"
   },
   "130": {
@@ -2077,7 +2077,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 130,
-   "text": "Pass Stage 2-10 in Practical Work",
+   "text": "Vượt ải 2-10 Thực Hành",
    "window": "activity_window"
   },
   "131": {
@@ -2093,7 +2093,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 131,
-   "text": "Win 30 Battles in Junior Varsity Varsity or Ultimate League",
+   "text": "Thắng 30 trận ở Đấu Trường Sơ Cấp, Đấu Trường Đội hoặc Liên Đấu Đỉnh Cao",
    "window": "arena_window"
   },
   "132": {
@@ -2109,7 +2109,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 132,
-   "text": "Draw from Adv. Capsule 50 times",
+   "text": "Triệu Hồi Cao Cấp 50 lần",
    "window": "summon_window"
   },
   "133": {
@@ -2125,7 +2125,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 133,
-   "text": "Pass Stage 19-10 in Campaign",
+   "text": "Vượt ải 19-10 trong Chiến Dịch",
    "window": "campaign_window"
   },
   "134": {
@@ -2141,7 +2141,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 134,
-   "text": "Pass Stage 50 in Normal phase of Patrol",
+   "text": "Vượt ải 50 Tuần Tra độ khó Thường",
    "window": "dungeon_window"
   },
   "135": {
@@ -2157,7 +2157,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 135,
-   "text": "Acquire a 10-Star Girl",
+   "text": "Sở hữu 1 Nữ Thần 10 sao",
    "window": "slot_window"
   },
   "136": {
@@ -2173,7 +2173,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 136,
-   "text": "Pass Level 1 in Old Campus Exploration",
+   "text": "Vượt cấp 1 Khám Phá Học Viện Cũ",
    "window": "old_school_main_window"
   },
   "137": {
@@ -2189,7 +2189,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 137,
-   "text": "Consume 20 Seals",
+   "text": "Dùng 20 Ấn Chiêu Mộ",
    "window": "prophet_window"
   },
   "138": {
@@ -2205,7 +2205,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 138,
-   "text": "Finish a 7-Star Quest in Internship",
+   "text": "Hoàn thành 1 nhiệm vụ Thực Tập 7 sao",
    "window": "tavern_window"
   },
   "139": {
@@ -2221,7 +2221,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 139,
-   "text": "Pass Stage 400 in Tests",
+   "text": "Vượt tầng 400 Thử Thách",
    "window": "tower_window"
   },
   "140": {
@@ -2237,7 +2237,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 140,
-   "text": "Total Score in Old Campus Exploration reaches 40",
+   "text": "Đạt 40 điểm Khám Phá Học Viện Cũ",
    "window": "old_school_main_window"
   },
   "141": {
@@ -2253,7 +2253,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 141,
-   "text": "Pass Stage 20-5 in Campaign",
+   "text": "Vượt ải 20-5 trong Chiến Dịch",
    "window": "campaign_window"
   },
   "142": {
@@ -2269,7 +2269,7 @@
    "activity_id": "",
    "special_mission": 1,
    "id": 142,
-   "text": "Deal 50000000 damage to Guild Bosses in total",
+   "text": "Gây tổng 50000000 sát thương lên Boss Bang Hội",
    "window": "guild_territory_window"
   },
   "143": {
@@ -2285,7 +2285,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 143,
-   "text": "Upgrade 3 Servant Auras to Lvl-30",
+   "text": "Nâng 3 Hào Quang Linh Thú lên cấp 30",
    "window": "pet_window"
   },
   "144": {
@@ -2301,7 +2301,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 144,
-   "text": "Acquire a 11-star Girl",
+   "text": "Sở hữu 1 Nữ Thần 11 sao",
    "window": "slot_window"
   },
   "145": {
@@ -2333,7 +2333,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 146,
-   "text": "Pass Stage 80 in Normal phase of Patrol",
+   "text": "Vượt ải 80 Tuần Tra độ khó Thường",
    "window": "dungeon_window"
   },
   "147": {
@@ -2349,7 +2349,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 147,
-   "text": "Pass Stage 20 in House Exam of one of the 6 Houses",
+   "text": "Vượt ải 20 Khảo Thí Học Viện ở một trong 6 hệ",
    "window": "academy_assessment_window"
   },
   "148": {
@@ -2365,7 +2365,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 148,
-   "text": "Upgrade 6 Technologies in Guild-Lab to Lvl-20",
+   "text": "Nâng 6 Công Nghệ Nghiên Cứu Bang Hội lên cấp 20",
    "window": "guild_territory_window"
   },
   "149": {
@@ -2381,7 +2381,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 149,
-   "text": "Pass Stage 20-10 in Campaign",
+   "text": "Vượt ải 20-10 trong Chiến Dịch",
    "window": "campaign_window"
   },
   "150": {
@@ -2397,7 +2397,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 150,
-   "text": "Upgrade 4 Servant Auras to Lvl-30",
+   "text": "Nâng 4 Hào Quang Linh Thú lên cấp 30",
    "window": "pet_window"
   },
   "151": {
@@ -2429,7 +2429,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 152,
-   "text": "Acquire a 13-star Girl",
+   "text": "Sở hữu 1 Nữ Thần 13 sao",
    "window": "slot_window"
   },
   "153": {
@@ -2461,7 +2461,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 154,
-   "text": "Pass Stage 100 in Normal phase of Patrol",
+   "text": "Vượt ải 100 Tuần Tra độ khó Thường",
    "window": "dungeon_window"
   },
   "155": {
@@ -2477,7 +2477,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 155,
-   "text": "Pass Stage 40 in House Exam of one of the 6 Houses",
+   "text": "Vượt ải 40 Khảo Thí Học Viện ở một trong 6 hệ",
    "window": "academy_assessment_window"
   },
   "156": {
@@ -2509,7 +2509,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 157,
-   "text": "Acquire a 15-star Girl",
+   "text": "Sở hữu 1 Nữ Thần 15 sao",
    "window": "slot_window"
   },
   "158": {
@@ -2557,7 +2557,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 160,
-   "text": "Pass Stage 3-10 in Practical Work",
+   "text": "Vượt ải 3-10 Thực Hành",
    "window": "activity_window"
   }
  },
