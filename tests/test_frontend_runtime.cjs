@@ -53,30 +53,23 @@ class Element {
 
 function testLobby() {
   const stage = new Element('div');
-  const listeners = {};
   const document = {
     readyState: 'loading',
     querySelector: selector => selector === '#home-view .home-stage' ? stage : null,
     createElement: tag => new Element(tag),
-    addEventListener: (name, fn) => {listeners[name] = fn;},
+    addEventListener: () => {},
   };
   const ctx = vm.createContext({document, window: {}, homeHeroIndex: 0});
   vm.runInContext(fs.readFileSync(path.join(ROOT, 'web/lobby-dialogue.js'), 'utf8'), ctx);
   const dialogue = vm.runInContext('LobbyDialogue', ctx);
-  // The game can request a hero before DOMContentLoaded.
   dialogue.sync(43001);
-  assert.equal(typeof listeners.DOMContentLoaded, 'function');
-  listeners.DOMContentLoaded();
-  const speech = stage.querySelector('#gxb3-lobby-speech');
-  assert.ok(speech, 'lobby dialogue must be mounted');
-  assert.equal(speech.children[0].textContent, 'Nun');
-  assert.match(speech.children[1].textContent, /Thượng Đế/);
   dialogue.sync(42001);
-  assert.equal(speech.children[0].textContent, 'Miya');
   dialogue.sync(41001);
-  assert.equal(speech.children[0].textContent, 'Zombia');
-  assert.ok(dialogue.translateQuote(41001, 'original').includes('xác sống'));
-  console.log('PASS | lobby: initial and live hero dialogue selection');
+  assert.equal(stage.children.length, 0, 'do not cover original MainWindow artwork with an invented speech box');
+  assert.match(dialogue.translateQuote(43001, ''), /Thượng Đế/);
+  assert.match(dialogue.translateQuote(42001, ''), /thao tác/);
+  assert.match(dialogue.translateQuote(41001, ''), /xác sống/);
+  console.log('PASS | lobby: original artwork unobstructed; authentic quotes in character details');
 }
 
 async function testPvpResult() {
