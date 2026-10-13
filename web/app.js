@@ -273,7 +273,19 @@ function renderGirlDetail(){
  $('detail-gear-note').textContent="Equipped gear: "+(hero.equips?.length||0)+" / 4. Equipping items from this panel is not available yet.";
  const gearStock=$('detail-gear-stock');gearStock.replaceChildren();for(const [id,count] of Object.entries(state.items).filter(([id,count])=>Number(count)>0&&itemCatalog[id]?.category===1).slice(0,12)){const item=itemCatalog[id],e=node('div','detail-stock-item'),img=node('img');img.src=itemPicture(item)||'/assets/ui/item_bg.png';img.alt='';e.append(img,node('small','',item.name+' ×'+number(count)));gearStock.append(e);}if(!gearStock.childElementCount)gearStock.append(node('p','detail-note',"No equipment in the Bag."));
  const skins=$('detail-skin-list');skins.replaceChildren();for(const [id,label] of [[hero.table_id,'Original'],...(girl.skins||[]).map((id,i)=>[id,'Skin '+(i+1)])]){const src=detailImage(id),button=node('button','detail-skin'+((previewSkinId||hero.table_id)===id?' active':''));button.disabled=!src;const img=node('img');img.src=src||'/assets/ui/item_bg.png';img.alt='';button.append(img,node('strong','',label),node('small','',id===hero.table_id?'Base':src?"Preview":"Artwork unavailable"));button.addEventListener('click',()=>{previewSkinId=id===hero.table_id?null:id;renderGirlDetail();});skins.append(button);}if(!girl.skins?.length)skins.append(node('p','detail-note',"No skins registered for this Girl in the local data."));
- $('detail-awake-status').textContent="Current Awake: "+number(hero.awake||0)+'. '+(hero.stars<10?"The original client unlocks Awake at advanced evolution stages.":"Awake is not connected to the local backend yet.");
+ const nextAwake=Object.entries(graduateRecipes).find(([,r])=>r.kind==='awake'&&Number(r.source)===Number(hero.table_id)&&Number(r.star)===Number(hero.stars)+1);
+ const awakeArea=$('detail-awake'),awakeBtn=awakeArea.querySelector('#detail-awake-open')||node('button','detail-awake-open');
+ awakeBtn.id='detail-awake-open';awakeBtn.type='button';
+ if(!awakeBtn.parentElement)awakeArea.append(awakeBtn);
+ awakeBtn.hidden=!nextAwake;awakeBtn.disabled=busy||!nextAwake;
+ awakeBtn.textContent='Mở Giao Diện Thức Tỉnh';
+ if(nextAwake){
+  const [key,recipe]=nextAwake;
+  $('detail-awake-status').textContent='Thức Tỉnh hiện tại: '+number(hero.awake||0)+' · Mục tiêu: '+recipe.star+'★. Công thức và vật liệu sẽ được chọn tại giao diện Tiến Hóa gốc.';
+  awakeBtn.onclick=()=>{graduateGroup=Number(recipe.group)||Number(girl.group)||1;graduateStars=new Set([Number(recipe.star)]);graduateTarget=key;showView('graduate');};
+ }else{
+  $('detail-awake-status').textContent='Thức Tỉnh hiện tại: '+number(hero.awake||0)+'. Nữ Thần này chưa có công thức Thức Tỉnh tiếp theo trong dữ liệu máy chủ.';
+ }
  if(typeof Equipment!=='undefined'){Equipment.gear(hero);Equipment.attrs(hero);}
  if(typeof GirlUI!=='undefined')GirlUI.detail(hero);
  if(typeof Skins!=='undefined')Skins.detail(hero);
