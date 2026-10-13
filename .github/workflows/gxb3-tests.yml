@@ -27,6 +27,8 @@ jobs:
           node --check web/app.js
           node --check web/story.js
           node --check web/home-menus.js
+          node --check web/newbie-camp.js
+          node --check web/growth-diary.js
           node --check web/mail.js
           node --check web/campaign-ui.js
           node --check web/campaign-flow.js
