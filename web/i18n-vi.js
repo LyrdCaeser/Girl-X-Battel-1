@@ -573,10 +573,10 @@
     translateNode(document.body);
     const dev = document.getElementById('dev-open');
     if (dev) dev.textContent = 'QTV';
-    const pay = document.getElementById('payment-open');
-    if (pay && !pay.dataset.boundPayment) {
-      pay.dataset.boundPayment = '1';
-      pay.addEventListener('click', () => window.GxbPayment?.open());
+    const vipPackages = document.getElementById('vip-packages-open');
+    if (vipPackages && !vipPackages.dataset.boundPackages) {
+      vipPackages.dataset.boundPackages = '1';
+      vipPackages.addEventListener('click', () => window.HomeMenus?.open('giftpacks', 'profile'));
     }
     const lang = [...document.querySelectorAll('.profile-setting-row strong')]
       .find(x => x.textContent.trim() === 'Ngôn ngữ');
