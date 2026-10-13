@@ -26,11 +26,12 @@ window.GxbOnline=(()=>{
     head.append(el('div','online-brand',T('GXB 3 Online')),el('h2','',T(title)));
     const x=el('button','online-close','✕');x.onclick=close;head.append(x);box.append(head);
     const nav=el('nav','online-tabs');
-    [['leaderboard','Leaderboard'],['guild','Guild'],['pvp','PvP Match']].forEach(([id,label])=>{const b=el('button',id===tab?'on':'',T(label));b.onclick=()=>{tab=id;renderBody(box);};nav.append(b);});
+    [['leaderboard','Leaderboard'],['guild','Guild'],['pvp','PvP Match']].forEach(([id,label])=>{const b=el('button',id===tab?'on':'',T(label));b.onclick=()=>{if(id==='guild'&&typeof Guild!=='undefined'&&Guild.openOnline){close();Guild.openOnline('guild','home');return;}tab=id;renderBody(box);};nav.append(b);});
     box.append(nav);const body=el('div','online-body');body.id='online-body';box.append(body);overlay.append(box);
     overlay.onclick=e=>{if(e.target===overlay)close();};(window.GxbFrame?.root()||document.body).append(overlay);return box;
   }
   async function open(next='leaderboard',mode='arena'){
+    if(next==='guild'&&typeof Guild!=='undefined'&&Guild.openOnline){close();await Guild.openOnline('guild','home');return;}
     tab=next;pvpMode=mode;
     const box=shell(next==='guild'?'Guild':next==='pvp'?'PvP Match':'Leaderboard');
     await renderBody(box);openRealtime(box);
