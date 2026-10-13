@@ -107,6 +107,7 @@ jobs:
           mkdir -p build/Payload/GXB3.app
           cp clients/ios/Info.plist build/Payload/GXB3.app/Info.plist
           xcrun swiftc \
+            -parse-as-library \
             -target arm64-apple-ios15.0 \
             -sdk "$(xcrun --sdk iphoneos --show-sdk-path)" \
             -O \
