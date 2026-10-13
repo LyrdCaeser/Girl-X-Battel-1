@@ -29,7 +29,7 @@ window.GxbPayment=(()=>{
     }catch(e){status.textContent=e.message;return null;}
   }
 
-  async function open(){
+  async function open(selectedPackageId=null){
     close();
     const packages=await catalog();
     overlay=el('div','pay-overlay');
@@ -51,6 +51,7 @@ window.GxbPayment=(()=>{
       const o=el('option','',p.name+(p.price_label?' · '+p.price_label:''));
       o.value=p.id;o.dataset.manual=p.manual_reward?'1':'0';pkg.append(o);
     }
+    if(selectedPackageId && packages.some(p=>p.id===selectedPackageId))pkg.value=selectedPackageId;
     if(!packages.length){
       const o=el('option','',T('No top-up package is currently available'));o.value='';pkg.append(o);pkg.disabled=true;
     }
