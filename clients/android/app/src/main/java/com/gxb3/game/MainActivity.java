@@ -2,6 +2,7 @@ package com.gxb3.game;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -20,7 +21,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public final class MainActivity extends Activity {
-    private static final String GAME_ORIGIN = "https://gxb3-production.onrender.com";
+    private static final String GAME_ORIGIN = "https://180-93-111-99.sslip.io";
     private static final String READY_URL = GAME_ORIGIN + "/readyz";
     private WebView webView;
 
@@ -89,8 +90,18 @@ public final class MainActivity extends Activity {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 Uri uri = request.getUrl();
-                return !("https".equalsIgnoreCase(uri.getScheme())
-                        && "gxb3-production.onrender.com".equalsIgnoreCase(uri.getHost()));
+                if ("https".equalsIgnoreCase(uri.getScheme())
+                        && "180-93-111-99.sslip.io".equalsIgnoreCase(uri.getHost())) {
+                    return false;
+                }
+                if ("https".equalsIgnoreCase(uri.getScheme())
+                        || "http".equalsIgnoreCase(uri.getScheme())
+                        || "zalo".equalsIgnoreCase(uri.getScheme())) {
+                    try {
+                        startActivity(new Intent(Intent.ACTION_VIEW, uri));
+                    } catch (Exception ignored) { }
+                }
+                return true;
             }
 
             @Override
