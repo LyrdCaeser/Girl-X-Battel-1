@@ -51,7 +51,7 @@ const Guild=(()=>{
  function tabs(st,labels,cur,y,w,pick){const n=labels.length;labels.forEach((l,i)=>{const side=i===0?'left':i===n-1?'right':'mid';const b=put(st,btn('gd2-abs gd2-nav '+side+(cur===i?' on':''),l,()=>pick(i)),(i-(n-1)/2)*w,y,w,48);b.disabled=false;});}
  function none(st,label,y){pic(st,'bp_none_bg',0,y+22,285,302);text(st,label,0,y-150,'gd2-none');}
 
- function render(){if(view!=='guild'||!data)return;clearInterval(ticker);ticker=null;const g=info();if(seen!==state){seen=state;if(state.server_time)skew=state.server_time-Date.now()/1000;}
+ function render(){if(onlineMode){renderOnlineGuild();return;}if(view!=='guild'||!data)return;clearInterval(ticker);ticker=null;const g=info();if(seen!==state){seen=state;if(state.server_time)skew=state.server_time-Date.now()/1000;}
   if(!g||!g.unlocked){const b=el('div','gd-body');b.append(el('p','gd-lock',"Bang Hội mở khóa sau khi vượt qua ải Chiến Dịch "+(g?.unlock_stage||32)+"."));shell(b);return;}
   if(!g.has){createScreen(g);return;}
   const keep=root().querySelector('.gd2-scroll')?.scrollTop||0;const st=stage();({office,dining,gym,war})[tab](st,g);const sc=st.querySelector('.gd2-scroll');if(sc)sc.scrollTop=keep;
@@ -183,5 +183,92 @@ const Guild=(()=>{
   [['guild_war_award',T('GUILD_WAR_AWARD','Rewards'),8],['guild_war_record',T('REOCRD','Record'),126],['guild_war_rank',T('CAMPAIGN_RANK','Rank'),244.1]].forEach(([s,l,x])=>{const b=put(st,btn('gd2-abs gd2-ib','',soon),x,by+31.4,77,77);b.disabled=false;b.append(img(S(s)));text(st,l,x,by-3.6,'gd2-icolabel');});
   const bell=put(st,btn('gd2-abs gd2-ib','',soon),-83,by-40,44,44);bell.disabled=false;bell.append(img(S('guild_war_btn04')));
   B(st,'blue',T('SIGN_UP','Register'),soon,46,by-55,172,69).disabled=false;B(st,'blue',T('MY_TEAM','My Team'),soon,230,by-55,172,69).disabled=false;}
- return {handles,open,render};
+
+ // Online guilds are real shared PostgreSQL entities. Use the original Guild
+ // windows, backdrop and flags; never call the legacy NPC guild action API.
+ let onlineMode=false,onlineData=null,onlineBusy=false;
+ const onlineText=(parent,tag,cls,txt)=>{const e=el(tag,cls,txt);parent.append(e);return e;};
+ async function onlineRequest(url,payload){
+  if(onlineBusy)return;
+  onlineBusy=true;
+  try{await api(url,payload);await loadOnlineGuild();}
+  catch(e){note=e.message||'Không thể kết nối Bang Hội';renderOnlineGuild();}
+  finally{onlineBusy=false;}
+ }
+ async function loadOnlineGuild(){
+  try{onlineData=await api('/api/world-guild');note='';}
+  catch(e){onlineData=null;note=e.message||'Bang Hội trực tuyến chưa sẵn sàng';}
+  renderOnlineGuild();
+ }
+ async function openOnline(_key,from){
+  onlineMode=true;origin=(from&&from!=='guild')?from:view==='guild'?'home':view;
+  root();showView('guild');await loadOnlineGuild();
+ }
+ function onlineButton(parent,label,fn,disabled=false){
+  parent.append(btn('gd-go',label,fn,disabled));return parent.lastElementChild;
+ }
+ function renderOnlineGuild(){
+  if(!onlineMode||view!=='guild')return;
+  const b=el('div','gd-body'),d=onlineData;
+  onlineText(b,'h3','','Bang Hội Trực Tuyến');
+  if(!d){onlineText(b,'p','gd-help',note||'Đang tải Bang Hội từ máy chủ…');shell(b);return;}
+  if(d.guild){
+   const g=d.guild;
+   const identity=el('div','gd-online-identity');
+   identity.append(img(A('guild_flag_'+(Number(g.flag)||1))));
+   const summary=el('div');
+   summary.append(el('h3','',g.name),el('p','',g.notice||'Chưa có thông báo Bang Hội.'),
+    el('p','', 'Cấp '+g.level+' · '+g.member_count+' thành viên · EXP '+fmt(g.exp)));
+   identity.append(summary);b.append(identity);
+   if(['leader','deputy'].includes(g.role)){
+    const noticeInput=el('textarea','gd-input');noticeInput.placeholder='Thông báo Bang Hội';noticeInput.maxLength=180;noticeInput.value=g.notice||'';
+    b.append(noticeInput);
+    onlineButton(b,'Lưu thông báo',()=>onlineRequest('/api/world-guild/manage',{action:'notice',notice:noticeInput.value}));
+   }
+   onlineText(b,'h3','','Thành viên thật');
+   for(const m of g.members||[]){
+    const row=el('div','gd-online-member');
+    row.append(el('b','',m.character_name),el('small','',m.role==='leader'?'Bang Chủ':m.role==='deputy'?'Phó Bang':'Thành Viên'));
+    b.append(row);
+   }
+   if(['leader','deputy'].includes(g.role)){
+    onlineText(b,'h3','','Đơn xin gia nhập');
+    for(const a of d.applications||[]){
+      const row=el('div','gd-online-member');
+      row.append(el('b','',a.character_name));
+      row.append(btn('gd-go','Duyệt',()=>onlineRequest('/api/world-guild/manage',{action:'review',target_uid:a.uid,approve:true})));
+      row.append(btn('gd-go','Từ chối',()=>onlineRequest('/api/world-guild/manage',{action:'review',target_uid:a.uid,approve:false})));
+      b.append(row);
+    }
+   }
+   onlineText(b,'h3','','Trò Chuyện Bang Hội');
+   for(const m of (d.chat||[]).slice(-30))onlineText(b,'p','gd-online-message',m.character_name+': '+m.message);
+   const chat=el('input','gd-input');chat.placeholder='Nhắn với thành viên thật';chat.maxLength=300;
+   b.append(chat);onlineButton(b,'Gửi',()=>{if(chat.value.trim())onlineRequest('/api/world-guild/manage',{action:'chat',message:chat.value});});
+   onlineText(b,'h3','','Bang Chiến');
+   for(const w of d.wars||[])onlineText(b,'p','gd-online-message',w.guild_a_name+' VS '+w.guild_b_name+' · '+w.score_a+' : '+w.score_b);
+   onlineButton(b,g.role==='leader'?'Giải tán Bang Hội':'Rời Bang Hội',async()=>{
+    if(await GirlUI.confirm('Xác nhận thao tác Bang Hội?',{title:'Xác nhận',ok:'Đồng Ý',danger:true}))
+      await onlineRequest('/api/world-guild/action',{action:'leave'});
+   });
+  }else{
+   const form=el('div','gd-online-create');
+   onlineText(form,'h3','','Tạo Bang Hội');
+   const name=el('input','gd-input');name.placeholder='Tên Bang Hội';name.maxLength=24;
+   const notice=el('textarea','gd-input');notice.placeholder='Thông báo Bang Hội';notice.maxLength=180;
+   form.append(name,notice);onlineButton(form,'Tạo Bang Hội',()=>onlineRequest('/api/world-guild/action',{action:'create',name:name.value,notice:notice.value}));
+   b.append(form);
+   onlineText(b,'h3','','Danh sách Bang Hội trên máy chủ');
+   for(const g of d.guilds||[]){
+    const row=el('div','gd-online-member');row.append(el('b','',g.name),el('small','',g.member_count+' thành viên'));
+    row.append(btn('gd-go','Xin gia nhập',()=>onlineRequest('/api/world-guild/manage',{action:'apply',guild_id:g.id})));
+    b.append(row);
+   }
+   if(!(d.guilds||[]).length)onlineText(b,'p','gd-help','Chưa có Bang Hội nào trên máy chủ này.');
+  }
+  if(note)onlineText(b,'p','gd-note',note);
+  shell(b);
+ }
+
+ return {handles,open,openOnline,render};
 })();
