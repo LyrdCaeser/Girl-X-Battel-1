@@ -45,6 +45,8 @@ def main():
           expected_http=401, headers={"X-GXB2-Admin-Key": "legacy-key-must-not-work"})
     check("Lobby speech served", PUBLIC + "/lobby-dialogue.js",
           assertion=lambda _, data: b"LobbyDialogue" in data)
+    check("Lobby dialogue CSS served", PUBLIC + "/lobby-dialogue.css",
+          assertion=lambda _, data: b"#gxb3-lobby-speech" in data)
     check("Game entry links lobby script", PUBLIC + "/",
           assertion=lambda _, data: b"/lobby-dialogue.js" in data)
     print("=== RESULT:", "PASS" if not FAILS else f"FAILED ({FAILS})", "===")
