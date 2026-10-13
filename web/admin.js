@@ -111,11 +111,11 @@ window.AdminPanel=(()=>{
     }
   }
   async function playerStatus(p,action){try{
-    const reason=action==='ban'?(prompt('Lý do ban ở server '+p.server_id+':','Vi phạm quy định')||'Vi phạm quy định'):'';
+    const reason=action==='ban'?(await GirlUI.promptText('Lý do cấm trên máy chủ '+p.server_id+':',{title:'Cấm Người Chơi',value:'Vi phạm quy định',maxLength:160,minLength:1})||'Vi phạm quy định'):'';
     await api('/api/admin/player/status',{uid:p.uid,server_id:p.server_id,action,reason});status(action==='ban'?'Đã ban nhân vật ở server này.':'Đã unban nhân vật ở server này.');await refreshDashboard();render();
   }catch(e){status(e.message,false);}}
   async function accountStatus(p,action){try{
-    const reason=action==='ban'?(prompt('Lý do khóa toàn tài khoản:','Vi phạm nghiêm trọng')||'Vi phạm nghiêm trọng'):'';
+    const reason=action==='ban'?(await GirlUI.promptText('Lý do khóa toàn tài khoản:',{title:'Khóa Tài Khoản',value:'Vi phạm nghiêm trọng',maxLength:160,minLength:1})||'Vi phạm nghiêm trọng'):'';
     await api('/api/admin/account/status',{uid:p.uid,action,reason});status(action==='ban'?'Đã khóa toàn tài khoản và thu hồi phiên đăng nhập.':'Đã mở khóa tài khoản.');await refreshDashboard();render();
   }catch(e){status(e.message,false);}}
   async function revokeSessions(uid){try{
