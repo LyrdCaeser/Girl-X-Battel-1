@@ -10,7 +10,7 @@ window.AdminPanel=(()=>{
   function ensure(){
     if(root)return root;
     root=el('section','admin-view');root.id='admin-view';root.hidden=true;
-    const head=el('header','admin-head');head.append(btn('← Game',close),el('div','admin-title-wrap'),btn('Thoát QTV',logout,'danger'));
+    const head=el('header','admin-head');head.append(btn('← Game',close),el('div','admin-title-wrap'),btn('Đóng GM Tools',close,'danger'));
     head.querySelector('.admin-title-wrap').append(el('small','','SUPER GM'),el('h1','','Hệ Thống QTV · Nữ Thần Chiến Đấu - GXB 3'));
     root.append(head);
 
