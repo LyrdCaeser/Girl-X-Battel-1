@@ -52,5 +52,19 @@ class StoryVietnameseEditorialTests(unittest.TestCase):
         self.assertEqual(chapters[66]["name"], "Nobunaga")
 
 
+    def test_memories_screen_has_no_english_or_spanish_player_prompts(self):
+        source = (ROOT / "web" / "story.js").read_text(encoding="utf-8")
+        self.assertIn("Chìa Khóa Ký Ức", source)
+        self.assertIn("Hoàn thành phần cốt truyện trước để mở khóa.", source)
+        self.assertIn("Tự Động", source)
+        self.assertIn("Nhật Ký", source)
+        for forbidden in (
+            "Pass Campaign ", "Unlock by completing", "Key of Memory",
+            "o usa ", "tienes ", "'Memories'", "'Recall'", "'Auto'",
+        ):
+            with self.subTest(forbidden=forbidden):
+                self.assertNotIn(forbidden, source)
+
+
 if __name__ == "__main__":
     unittest.main()
