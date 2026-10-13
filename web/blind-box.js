@@ -13,7 +13,7 @@ const BlindBox=(()=>{
  const T=k=>data.text[k]||'';
  function load(){if(data)return Promise.resolve(data);if(!loading)loading=api('/assets/blind-box.json').then(d=>{data=d;});return loading;}
  const row=id=>data.rows.find(r=>r.id===id);
- function name(id){return itemCatalog?.[id]?.name||data.names[id]||"Item "+id;}
+ function name(id){return itemCatalog?.[id]?.name||data.names[id]||"Vật phẩm "+id;}
  function icon(id){id=String(id);if(id==='1'||id==='2')return '/assets/currency/icon_'+id+'_small.png';const it=itemCatalog?.[id];if(it&&typeof itemPicture==='function'){const p=itemPicture(it);if(p)return p;}return null;}
  function reward(id,cls='bb-item'){const [k,n]=String(row(id).awards).split('|')[0].split('#');const w=el('span',cls);const s=icon(k);if(s)w.append(img(s));else w.append(el('em','',name(k)));w.append(el('b','',fmt(n)));w.title=name(k)+' × '+fmt(n);return w;}
  async function act(req){if(busy)return null;busy=true;note='';try{const r=await api('/api/blind-box/action',req);state=r.state;return r;}catch(e){note=e.message;return null;}finally{busy=false;}}
@@ -30,10 +30,10 @@ const BlindBox=(()=>{
    grid.append(cell);});root.append(grid);
   const acts=el('div','bb-acts');
   acts.append(btn('bb-open','x1',()=>open(1),!s.ready||s.tickets<1||s.total_left<1),btn('bb-open','x5',()=>open(5),!s.ready||s.tickets<5||s.total_left<5));
-  if(!s.ready)acts.append(btn('bb-open pick',"Choose rewards",()=>choose()));
+  if(!s.ready)acts.append(btn('bb-open pick',"Chọn Phần Thưởng",()=>choose()));
   if(s.grand_taken&&s.round<s.rounds)acts.append(btn('bb-open next','Sang Vòng '+(s.round+1),async()=>{if(await GirlUI.confirm('Chuyển sang vòng tiếp theo?',{title:'Xác Nhận',ok:'Tiếp Tục'})){await act({action:'next'});paint();}}));
-  root.append(acts,el('small','bb-info',"Guaranteed jackpot in "+Math.max(0,data.guarantee+1-s.draws)+" opens · Remaining: "+s.total_left+" boxes"));
-  if(last?.got&&Object.keys(last.got).length){const g=el('div','bb-last');g.append(el('b','',"Received:"));for(const [k,n] of Object.entries(last.got)){const w=el('span','bb-item');const src=icon(k);if(src)w.append(img(src));w.append(el('b','',fmt(n)));w.title=name(k);g.append(w);}root.append(g);}
+  root.append(acts,el('small','bb-info',"Bảo đảm giải lớn sau "+Math.max(0,data.guarantee+1-s.draws)+" lượt mở · Còn "+s.total_left+" hộp"));
+  if(last?.got&&Object.keys(last.got).length){const g=el('div','bb-last');g.append(el('b','',"Đã Nhận:"));for(const [k,n] of Object.entries(last.got)){const w=el('span','bb-item');const src=icon(k);if(src)w.append(img(src));w.append(el('b','',fmt(n)));w.title=name(k);g.append(w);}root.append(g);}
   root.append(el('p','bb-note',note));
   if(typeof ActKit!=='undefined'&&ActKit.has(338)){const box=el('div','bb-missions');root.append(box);ActKit.render(box,{id:338});}
   if(picking)root.append(picker(s));}
@@ -43,7 +43,7 @@ const BlindBox=(()=>{
    sec.append(el('b','','Chọn {2} phần thưởng bậc {1}'.replace('{1}',t-1).replace('{2}',need)));const list=el('div','bb-pool');
    for(const id of s.pool[t]){const c=btn('bb-choice'+(picking.chosen.includes(id)?' on':''),'',()=>{if(picking.chosen.includes(id))picking.chosen=picking.chosen.filter(x=>x!==id);else{if(have()>=need)return;picking.chosen.push(id);}paint();});c.append(reward(id),el('small','','x'+row(id).num));list.append(c);}
    sec.append(list);w.append(sec);});
-  w.append(el('p','bb-note',picking.chosen.length+'/8'),btn('bb-open',"Confirm",async()=>{const r=await act({action:'select',ids:picking.chosen});if(r)picking=null;paint();},picking.chosen.length!==8),btn('bb-open cancel',"Cancel",()=>{picking=null;paint();}));return ov;}
- async function open(n){const s=info();if(!s.locked&&!(await GirlUI.confirm('Mở hộp ngay?',{title:'Xác Nhận Mở Hộp',ok:'Mở'})))return;const r=await act({action:'open',num:n});last=r;paint();if(r?.grand&&typeof GirlUI!=='undefined')GirlUI.toast("Round jackpot!");}
+  w.append(el('p','bb-note',picking.chosen.length+'/8'),btn('bb-open',"Xác Nhận",async()=>{const r=await act({action:'select',ids:picking.chosen});if(r)picking=null;paint();},picking.chosen.length!==8),btn('bb-open cancel',"Hủy",()=>{picking=null;paint();}));return ov;}
+ async function open(n){const s=info();if(!s.locked&&!(await GirlUI.confirm('Mở hộp ngay?',{title:'Xác Nhận Mở Hộp',ok:'Mở'})))return;const r=await act({action:'open',num:n});last=r;paint();if(r?.grand&&typeof GirlUI!=='undefined')GirlUI.toast("Nhận Giải Lớn Của Vòng!");}
  return {render,has:id=>id===338};
 })();
