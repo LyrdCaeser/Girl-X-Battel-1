@@ -805,7 +805,7 @@ function renderProfile(){
 const VIP_SOURCES={campaign:"Chiến Dịch (ải)",level:"Cấp người chơi",tasks:"Nhiệm vụ và thành tựu",login:"Số ngày đã chơi",lab:"Phòng Nghiên Cứu Bang Hội",collection:"Bộ Sưu Tập Yume"};
 function renderVip(){
  const v=state.vip_info;if(!v)return;
- $('vip-level').textContent='VIP '+v.level;
+ $('vip-level').textContent=String(v.level);
  $('vip-exp').textContent=v.next?number(v.exp)+' / '+number(v.next)+' VIP EXP':number(v.exp)+" EXP VIP · đã đạt cấp tối đa";
  $('vip-fill').style.width=v.next?Math.min(100,100*(v.exp-v.base)/(v.next-v.base))+'%':'100%';
  $('vip-sources').replaceChildren(...Object.entries(v.sources).map(([k,n])=>{const li=document.createElement('li');li.textContent=(VIP_SOURCES[k]||k)+': +'+number(n);return li;}));
