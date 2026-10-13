@@ -38,7 +38,9 @@ class LobbyAssetsTests(unittest.TestCase):
         with urlopen(f"http://127.0.0.1:{self.http.server_port}/lobby-dialogue.css", timeout=5) as response:
             self.assertEqual(response.status, 200)
             self.assertIn("text/css", response.headers["Content-Type"])
-            self.assertIn(b"#gxb3-lobby-speech", response.read())
+            css = response.read()
+            self.assertIn(b"#dev-open", css)
+            self.assertNotIn(b"#gxb3-lobby-speech", css)
 
     def test_other_mobile_stylesheets(self):
         """Assets used in index.html must be served even if not manually listed."""
