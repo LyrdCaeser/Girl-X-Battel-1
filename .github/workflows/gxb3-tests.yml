@@ -31,6 +31,7 @@ jobs:
           node --check web/summon-result.js
           node --check web/localization.js
           node --check web/i18n-vi.js
+          node --check web/lobby-dialogue.js
           node --check web/admin.js
           node --check web/online-hub.js
           node --check web/payment.js
