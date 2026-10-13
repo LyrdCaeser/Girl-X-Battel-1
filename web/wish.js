@@ -41,7 +41,7 @@ const WishCapsule=(()=>{
   ctl.append(buttons);box.append(art,ctl,arrow('left'),dots());}
  function select(){const s=state.wish_info;const {body,close}=GirlUI.win({title:T('WISH_GACHA_SELECT_PARTNER_WINDOW')||'Choose your Wish Girl',cls:'wc-select'});
   body.append(el('p','wc-note',T('WISH_GACHA_TIPS_3')));const grid=el('div','wc-grid');
-  for(const id of data.partners){const g=girl(id);const c=btn('wc-card'+(id===s.select?' on':''),'',async()=>{if(id===s.select){close();return;}if(s.select&&!confirm(T('WISH_GACHA_TEXT12')||'Confirm to switch your Wish Girl?'))return;close();await act({action:'select',partner:id});capsule();});
+  for(const id of data.partners){const g=girl(id);const c=btn('wc-card'+(id===s.select?' on':''),'',async()=>{if(id===s.select){close();return;}if(s.select&&!await GirlUI.confirm('Đổi Nữ Thần Ước Nguyện đã chọn?',{title:'Đổi Nữ Thần',ok:'Đổi'}))return;close();await act({action:'select',partner:id});capsule();});
    c.append(img('/assets/cards/partner_card_'+id+'.png'),el('small','',g?.name||String(id)));if(g?.group)c.append(img('/assets/factions/group'+g.group+'.png','wc-faction'));grid.append(c);}
   body.append(grid);}
  function tips(){const s=state.wish_info;const {body}=GirlUI.win({title:T('WISH_GACHA_TEXT6')||'Current Progress',cls:'wc-tips'});
