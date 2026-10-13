@@ -49,8 +49,32 @@ const HomeMenus=(()=>{
   const text=el('textarea');text.maxLength=500;text.placeholder="Write a message";text.setAttribute('aria-label',"Chat message");c.append(text);
   button(c,"Send",()=>{},true);button(c,"Save draft",()=>send({action:'draft',recipient:tab==='private'?who.value:({world:'World',english:'English',servers:'Servers',recruit:'Recruit'}[tab]),text:text.value}));
  }
- function mail(parent){if(!tab)tab='system';if(tab==='detail'){const m=info().mail.find(m=>m.id===selected);if(!m){change('system');return;}const c=card(parent,m.title,'mail_item');paragraph(c,m.text,'hm-text');rewards(c,m.awards);button(c,m.claimed?"Attachments collected":"Collect attachments",()=>send({action:'mail_claim',id:m.id}),m.claimed);button(c,"Delete mail",async()=>{await send({action:'mail_delete',id:m.id});if(!info().mail.find(x=>x.id===m.id))change('system');},!!m.awards&&!m.claimed);return;}
-  navigation(parent,[['friend',"Friends"],['system','Sistema'],['gm','GM']]);
+ async function claimServerMail(mailId){
+  if(pending)return;
+  pending=true;message='';
+  try{
+   const result=await api('/api/mail/claim',{mail_id:mailId});
+   if(result?.state)state=result.state;
+   message='Đã nhận vật phẩm đính kèm.';
+  }catch(e){message=e.message||'Không thể nhận thư.';}
+  finally{pending=false;render();}
+ }
+ function serverMail(parent){
+  const rows=Array.isArray(state?.mail_info)?state.mail_info:[];
+  if(!rows.length)paragraph(parent,'Chưa có thư máy chủ.');
+  for(const m of rows){
+   const claimed=m.status==='claimed';
+   const c=card(parent,m.title||'Thư Máy Chủ',claimed?'mail_sys02':'mail_gm01');
+   if(m.created_at)paragraph(c,new Date(Number(m.created_at)*1000).toLocaleString('vi-VN'));
+   if(m.body)paragraph(c,m.body,'hm-text');
+   const items=Object.entries(m.attachments||{}).filter(([,count])=>Number(count)>0);
+   if(items.length)rewards(c,items.map(([id,count])=>id+'#'+count).join('|'));
+   if(m.status==='pending')button(c,'Nhận Đính Kèm',()=>claimServerMail(m.id),pending);
+   else if(claimed)paragraph(c,'Đã nhận đính kèm.');
+  }
+ }
+ function mail(parent){if(!tab)tab='server';if(tab==='server'){navigation(parent,[['server','Thư Máy Chủ'],['friend','Thư Bạn Bè'],['system','Thư Hệ Thống'],['gm','Thư QTV']]);serverMail(parent);return;}if(tab==='detail'){const m=info().mail.find(m=>m.id===selected);if(!m){change('system');return;}const c=card(parent,m.title,'mail_item');paragraph(c,m.text,'hm-text');rewards(c,m.awards);button(c,m.claimed?"Attachments collected":"Collect attachments",()=>send({action:'mail_claim',id:m.id}),m.claimed);button(c,"Delete mail",async()=>{await send({action:'mail_delete',id:m.id});if(!info().mail.find(x=>x.id===m.id))change('system');},!!m.awards&&!m.claimed);return;}
+  navigation(parent,[['server','Thư Máy Chủ'],['friend','Thư Bạn Bè'],['system','Thư Hệ Thống'],['gm','Thư QTV']]);
   const rows=info().mail.filter(m=>m.type===tab);if(!rows.length)paragraph(parent,"Mailbox empty. No mail has been imported from the original server.");
   for(const m of rows){const c=card(parent,(m.read?'':'● ')+m.title,tab==='gm'?'mail_gm01':tab==='system'?'mail_sys01':'mail_box');button(c,"Open mail",async()=>{await send({action:'mail_read',id:m.id});change('detail',m.id);});}
   button(parent,"Collect all attachments",()=>send({action:'mail_claim_all'}),!info().mail.some(m=>!m.claimed));if(state.developer)button(parent,"Create test mail · DEV",()=>send({action:'mail_test'}));
