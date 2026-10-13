@@ -1,7 +1,7 @@
 'use strict';
 // Home windows reconstructed from archived Lua routes and data tables.
 const HomeMenus=(()=>{
- const titles={friends:"Friends",chat:'Chat',mail:"Mail",book:'Fantasy Book',servant:'Servant',expedition:"Excursion",'starry-altar':'Cosmos Portal','luvly-castle':'Luvly’s Dream Castle','drift-bottle':'Adrift Message',events:"Sự Kiện",giftpacks:'Gift Packs',treasure:'Quà Đặc Biệt'};
+ const titles={friends:"Bạn Bè",chat:'Trò Chuyện',mail:"Hòm Thư",book:'Sách Kỳ Ảo',servant:'Linh Thú',expedition:"Thám Hiểm",'starry-altar':'Cổng Vũ Trụ','luvly-castle':'Lâu Đài Luvly','drift-bottle':'Tin Nhắn Trôi Dạt',events:"Sự Kiện",giftpacks:'Gói Quà',treasure:'Quà Đặc Biệt'};
  const petNames={101:'Hunter',201:'Kraken',301:'Deerling',401:'Void',501:'Robert',601:'Elixir',701:'Flora',801:'Sea Serpent',901:'Crystal Golem'};
  let stack=[],catalog=null,root='friends',tab='',selected=null,origin='home',pending=false,message='',page=0,loaded=null,topupPackages=null,topupLoading=false;
  const el=(tag,text,cls)=>node(tag,cls,text),asset=name=>'/assets/home-systems/'+name+'.png';
