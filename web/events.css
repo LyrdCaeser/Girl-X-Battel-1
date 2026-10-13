@@ -112,3 +112,33 @@ html.gxb-mobile #events-view .ev-window{max-width:100%;min-width:0}
 html.gxb-mobile #events-view .ev-panel{min-width:0;max-width:100%;overflow:hidden}
 html.gxb-mobile #events-view .ev-strip{max-width:100%;overscroll-behavior-x:contain}
 html.gxb-mobile #events-view .ev-title-label{overflow-wrap:anywhere}
+
+/* Vietnamese captions replace old baked-English event title sprites. */
+#events-view .bb-logo-vi,
+#events-view .pi-logo-vi,
+#events-view .fw-logo-vi,
+#events-view .pe-logo-vi{
+  box-sizing:border-box;display:flex;justify-content:center;align-items:center;
+  width:fit-content;max-width:96%;height:auto;min-height:42px;margin:8px auto 12px;
+  padding:9px 16px;border-radius:14px;
+  background:linear-gradient(145deg,#fff5d8,#efb66c);
+  border:2px solid #fff9e8;color:#75402c;font:bold clamp(18px,4vw,27px)/1.15 system-ui,sans-serif;
+  text-align:center;text-wrap:balance;text-shadow:0 1px #fff
+}
+#events-view .bb-logo-vi{font-size:clamp(16px,3.5vw,23px);margin:0}
+#events-view .pi-logo-vi{background:linear-gradient(135deg,#19498b,#389de0);color:#fff5c6;text-shadow:0 2px #102a5b}
+#events-view .fw-logo-vi{background:linear-gradient(135deg,#fee2a8,#ff8f62);color:#803518}
+#events-view .pe-logo-vi{background:linear-gradient(135deg,#ffdbe5,#e89dc5);color:#803b67}
+#events-view .pk-logo-vi{
+  display:flex;align-items:center;justify-content:center;margin:0!important;
+  padding:calc(12 * var(--u));box-sizing:border-box;
+  font:bold calc(34 * var(--u))/1.15 system-ui,sans-serif;
+  color:#fff2c7;text-align:center;text-wrap:balance;
+  background:linear-gradient(145deg,#7f319bb8,#b651e0ba);
+  text-shadow:0 2px 6px #3a0844
+}
+#events-view .jp-title-vi{display:flex;align-items:center;justify-content:center;
+  height:calc(54 * var(--u));min-height:25px;
+  font:bold clamp(15px,4vw,25px)/1.15 system-ui,sans-serif;
+  color:#fff3a5;text-align:center;text-shadow:0 2px 3px #522544,0 0 7px #481e5a
+}
