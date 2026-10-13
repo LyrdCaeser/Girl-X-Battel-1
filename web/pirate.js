@@ -12,10 +12,10 @@ const Pirate=(()=>{
  const info=()=>state.pirate_info;
  const T=k=>data.text[k]||'';
  function load(){if(data)return Promise.resolve(data);if(!loading)loading=api('/assets/pirate.json').then(d=>{data=d;});return loading;}
- function name(id){return itemCatalog?.[id]?.name||data.names[id]||"Item "+id;}
+ function name(id){return itemCatalog?.[id]?.name||data.names[id]||"Vật phẩm "+id;}
  function icon(id){id=String(id);if(id==='1'||id==='2')return '/assets/currency/icon_'+id+'_small.png';const it=itemCatalog?.[id];if(it&&typeof itemPicture==='function'){const p=itemPicture(it);if(p)return p;}return null;}
  function chip(id,n,extra){const w=el('span','pi-chip');const s=icon(id);if(s)w.append(img(s));else w.append(el('em','',name(id)));w.append(el('b','',fmt(n)));if(extra)w.append(el('small','',extra));w.title=name(id);return w;}
- async function act(req){if(busy)return null;busy=true;note='';try{const r=await api('/api/pirate/action',req);state=r.state;if(r.got&&Object.keys(r.got).length)note="Received: "+Object.entries(r.got).map(([k,n])=>fmt(n)+' × '+name(k)).join(', ');return r;}catch(e){note=e.message;return null;}finally{busy=false;}}
+ async function act(req){if(busy)return null;busy=true;note='';try{const r=await api('/api/pirate/action',req);state=r.state;if(r.got&&Object.keys(r.got).length)note="Đã nhận: "+Object.entries(r.got).map(([k,n])=>fmt(n)+' × '+name(k)).join(', ');return r;}catch(e){note=e.message;return null;}finally{busy=false;}}
  async function render(parent){await load();host=parent;mode='deep';raid=null;paint();if(!info().started)act({action:'open'}).then(()=>{if(host?.isConnected)paint();});}
  async function vaults(parent){await load();host=parent;mode='vault';paint();}
  function paint(){if(!host)return;host.querySelector('.pi-root')?.remove();const root=el('div','pi-root '+mode);host.append(root);if(mode==='vault')return paintVaults(root);
@@ -24,7 +24,7 @@ const Pirate=(()=>{
    btn('pi-mini'+(s.pack_ready?' go':''),s.pack_ready?"Gói Miễn Phí":'✔',async()=>{await act({action:'pack'});paint();},!s.pack_ready),btn('pi-mini','?',()=>CampaignUI.popup((T('ACTIVITY_PIRATE_HELP')||'').split('|').join('\n'),{})));root.append(top);
   const map=el('div','pi-map');[[4,0],[56,14],[2,36],[34,44],[54,62]].forEach(([x,y],i)=>{const l=el('div','pi-land');l.style.left=x+'%';l.style.top=y+'%';l.append(img(A('activity_pirate_land'+(i+1)),'pi-land-img'),el('b','',T('ACTIVITY_PIRATE_PLACE'+(i+1))),btn('pi-raid','Đột Kích',()=>{raid={land:i+1,num:1};paint();}));map.append(l);});root.append(map);
   const col=el('div','pi-col');col.append(el('b','','Tiến Độ Sưu Tập'));const row=el('div','pi-chests');data.collection.forEach((c,i)=>{const w=el('span','pi-chest'+(s.have[c.item]>=c.need?' got':''));w.append(img(A('activity_pirate_icon_box'+(i+1)),'pi-chest-img'),el('small','',Math.min(s.have[c.item],c.need)+'/'+c.need));w.title=name(c.item);row.append(w);});col.append(row,btn('pi-go','Đến Kho Báu',()=>{if(typeof EventsHub!=='undefined')EventsHub.openPoint(330,'home');}));root.append(col);
-  root.append(el('p','pi-note',note||''),el('small','pi-foot',"Total raids: "+s.raids+" · Guaranteed chest in "+s.guarantee_in+" raid(s)"));
+  root.append(el('p','pi-note',note||''),el('small','pi-foot',"Số lần đột kích: "+s.raids+" · Bảo đảm rương sau "+s.guarantee_in+" lần"));
   if(raid)root.append(raidWindow(s));}
  function raidWindow(s){const ov=el('div','pi-overlay'),w=el('div','pi-win');ov.append(w);const land=data.lands[raid.land-1];
   const head=el('div','pi-win-h');head.append(el('b','',('{1} - Đột Kích').replace('{1}',T('ACTIVITY_PIRATE_PLACE'+raid.land))),btn('pi-x','✕',()=>{raid=null;paint();}));w.append(head,el('h4','','Thưởng Mỗi Lần Đột Kích'),el('small','','Phần Thưởng'));
