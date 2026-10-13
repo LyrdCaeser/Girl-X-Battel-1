@@ -32,7 +32,7 @@ const Sanctuary=(()=>{
   st.append(at(el('div','sn-sanctum',info.sanctum),16,146,360));
   // Round buttons: blessings, reset, help, shop.
   const bless=at(btn('sn-round','',()=>{panel='bless';render();}),440,92,56,56);bless.append(el('span','','✦'));bless.title='Blessings you have acquired this round';if(info.buffs.length)bless.append(el('i','sn-badge',String(info.buffs.length)));st.append(bless);
-  const rs=at(btn('sn-round','',async()=>{if(!info.reset_ready){note='Cannot Reset';render();return;}if(confirm("Return to stage 1? You have 1 reset per day (local midnight); resets do not accumulate."))await act({action:'reset'});}),504,92,56,56);rs.append(el('span','','↺'));rs.title=info.reset_ready?'Reset available：1':'Cannot Reset';if(!info.reset_ready)rs.classList.add('off');st.append(rs);
+  const rs=at(btn('sn-round','',async()=>{if(!info.reset_ready){note='Cannot Reset';render();return;}if(await GirlUI.confirm("Quay về tầng 1? Chỉ được đặt lại một lần mỗi ngày, lượt đặt lại không cộng dồn.",{title:"Đặt Lại Thánh Địa",ok:"Đặt Lại",danger:true}))await act({action:'reset'});}),504,92,56,56);rs.append(el('span','','↺'));rs.title=info.reset_ready?'Reset available：1':'Cannot Reset';if(!info.reset_ready)rs.classList.add('off');st.append(rs);
   st.append(at(btn('sn-round','?',()=>CampaignUI.popup(String(HELP),{})),568,92,56,56));
   const shop=at(btn('sn-shopbtn','',()=>{if(typeof Shops!=='undefined')Shops.open('sanctuary-mode',13);}),632,76,82,86);shop.append(img('/assets/arena/shop.png','sn-shopimg'),el('b','','SHOP'));st.append(shop);
   // Boss medallion (NewTrialBossInfoWindow) at the top: grey until the boss stage.
