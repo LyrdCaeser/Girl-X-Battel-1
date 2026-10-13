@@ -194,6 +194,23 @@ const GirlUI=(()=>{
  function toast(text){const host=sheetRoot();if(!host||!text)return;host.querySelector('.gs-toast')?.remove();const t=el('div','gs-toast',text);host.append(t);setTimeout(()=>t.remove(),2200);}
  function confirmGame(message,{title='Xác Nhận',ok='Đồng Ý',cancel='Hủy',danger=false}={}){return new Promise(resolve=>{const host=sheetRoot();host.querySelector('.gs-confirm-overlay')?.remove();const ov=el('div','gs-overlay gs-confirm-overlay');const w=el('div','gs-win gs-confirm');const bar=el('div','gs-win-bar');bar.append(el('b','',title));w.append(bar);const body=el('div','gs-win-body');body.append(el('p','gs-confirm-text',message));const actions=el('div','gs-btns');const no=el('button','gs-btn white',cancel);const yes=el('button','gs-btn'+(danger?' red':''),ok);no.type=yes.type='button';let done=false;const finish=value=>{if(done)return;done=true;ov.remove();resolve(value);};no.onclick=()=>finish(false);yes.onclick=()=>finish(true);actions.append(no,yes);body.append(actions);w.append(body);ov.append(w);ov.onclick=e=>{if(e.target===ov)finish(false);};host.append(ov);yes.focus();});}
  // Star display as in the client: 1–5 yellow stars, 6–9 red stars (stars−5), 10 winged emblem, 11–15 emblem with number.
+ function promptText(message,{title='Nhập Nội Dung',value='',maxLength=100,minLength=1,ok='Xác Nhận',cancel='Hủy'}={}){
+    return new Promise(resolve=>{
+      const host=sheetRoot(),ov=el('div','gs-overlay gs-text-overlay'),w=el('div','gs-win gs-number'),bar=el('div','gs-win-bar');
+      bar.append(el('b','',title));w.append(bar);
+      const body=el('div','gs-win-body'),label=el('label','gs-number-label',String(message||'Nhập nội dung'));
+      const input=el('input','gs-number-input');input.type='text';input.autocomplete='off';
+      input.maxLength=maxLength;input.value=String(value||'').slice(0,maxLength);
+      label.append(input);body.append(label);const actions=el('div','gs-btns');
+      const no=el('button','gs-btn white',cancel),yes=el('button','gs-btn',ok);no.type=yes.type='button';
+      let done=false;const finish=v=>{if(done)return;done=true;ov.remove();resolve(v);};
+      no.onclick=()=>finish(null);
+      yes.onclick=()=>{const v=input.value.trim();if(v.length<minLength||v.length>maxLength){input.focus();return;}finish(v);};
+      input.onkeydown=e=>{if(e.key==='Enter')yes.click();if(e.key==='Escape')finish(null);};
+      actions.append(no,yes);body.append(actions);w.append(body);ov.append(w);ov.onclick=e=>{if(e.target===ov)finish(null);};
+      host.append(ov);input.focus();
+    });
+  }
  function promptNumber(message,{title='Chọn Số Lượng',value=1,min=1,max=999,ok='Xác Nhận',cancel='Hủy'}={}){
     return new Promise(resolve=>{
       const host=sheetRoot(),ov=el('div','gs-overlay gs-number-overlay'),w=el('div','gs-win gs-number'),bar=el('div','gs-win-bar');
@@ -212,5 +229,5 @@ const GirlUI=(()=>{
     });
   }
  function stars(n,kind='card'){n=Number(n)||0;const w=el('span','gu-stars '+kind);if(n>=10){const base=kind==='tag'?'potentiality_nametag_star':'potentiality_card_star';w.append(img('/assets/girl-ui/'+base+(n>=15?'_max':'')+'.png','gu-emblem'));if(n>10)w.append(el('b','gu-emblem-num',String(n-10)));}else{const red=n>5;for(let i=0;i<(red?n-5:n);i++)w.append(img('/assets/girl-ui/partner_star_'+(red?'red':'yellow')+'.png','gu-star'));}w.title=n+'★';return w;}
- return {detail,load,picture,stars,win,toast,notice,promptNumber,confirm:confirmGame,eliteSkills,resonate,reverse,rich};
+ return {detail,load,picture,stars,win,toast,notice,promptNumber,promptText,confirm:confirmGame,eliteSkills,resonate,reverse,rich};
 })();
