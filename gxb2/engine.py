@@ -429,8 +429,8 @@ class Engine:
                 self.db.rollback();raise
             return {'state':self.snapshot(),**result}
 
-    def developer_action(self, request):
-        if not self.developer: raise GameError('Activa la partida de desarrollo')
+    def developer_action(self, request, *, super_gm=False):
+        if not self.developer and not super_gm: raise GameError('Chỉ SUPER GM mới có quyền dùng công cụ này')
         with self.lock:
             state = self._load()
             action = request.get('action')
