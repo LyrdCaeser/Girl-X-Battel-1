@@ -5,7 +5,7 @@
 // guild_dininghall, guild_gym_window, guild_boss_window, guild_war_info_window. Sprites come from /assets/sprite/<name>.png.
 const Guild=(()=>{
  let origin='home',tab='office',data=null,loading=null,busy=false,ticker=null,page=null,bossOpen=null,cafe='order',warTab=1,fx=null,skew=0,seen=null,form={name:'',flag:1,notice:''},note='';
- const KEYS={'guild':'office','guild-search':'office','guild-create':'office','guild-hall':'office','guild-members':'office','guild-dining':'dining','guild-gym':'gym','guild-war':'war'};
+ const KEYS={'guild-territory':'office','guild':'office','guild-search':'office','guild-create':'office','guild-hall':'office','guild-members':'office','guild-dining':'dining','guild-gym':'gym','guild-war':'war'};
  const A=n=>'/assets/guild/'+n+'.png',S=n=>'/assets/sprite/'+n+'.png';
  const el=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;};
  const img=(src,cls)=>{const i=el('img',cls);i.src=src;i.alt='';i.draggable=false;return i;};
@@ -16,7 +16,7 @@ const Guild=(()=>{
  const T=(k,d='')=>data?.text?.[k]||d;
  const info=()=>state.guild_info;
  const toast=t=>{if(typeof GirlUI!=='undefined')GirlUI.toast(t);};
- function handles(key){if(!(key in KEYS)||typeof state==='undefined'||!state)return false;if(key==='guild'&&info()?.has&&info().unlocked){return false;}return true;}
+ function handles(key){return key in KEYS && typeof state!=='undefined' && !!state;}
  function root(){let r=$('guild-view');if(!r){r=el('section','guild-view');r.id='guild-view';r.hidden=true;$('home-systems-view').after(r);}return r;}
  async function open(key,from){origin=(from&&from!=='guild')?from:origin;tab=KEYS[key]||'office';note='';page=null;bossOpen=null;if(!data&&!loading)loading=api('/assets/guild.json').then(d=>{data=d;});await loading;root();showView('guild');
   if(info()?.has){try{state=(await api('/api/guild/action',{action:'open'})).state;}catch{}}render();}
