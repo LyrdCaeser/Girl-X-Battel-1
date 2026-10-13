@@ -86,8 +86,8 @@ const Shrine=(()=>{
   const row=el('div','ts-level');const set=v=>{diff=Math.max(1,Math.min(r.max_diff,v));render();};
   row.append(btn('ts-arrow','«',()=>set(diff-10)),btn('ts-arrow','‹',()=>set(diff-1)),lantern(diff),btn('ts-arrow','›',()=>set(diff+1)),btn('ts-arrow','»',()=>set(diff+10)));w.append(row);
   w.append(el('p','ts-hint',`Recommended Difficulty Level: ${r.suggest}`));
-  w.append(btn('ts-go','Confirm',async()=>{if(diff>r.suggest&&!confirm('This Difficult Level could be too hard for you confirm to continue?'))return;
-   if(!confirm('Confirm to consume 1 Invitation Card and enter the Trial? The Girls\' attribute and status in this Trial will not be updated by your adjustments in other features.'))return;
+  w.append(btn('ts-go','Confirm',async()=>{if(diff>r.suggest&&!await GirlUI.confirm('Độ khó này có thể vượt quá khả năng hiện tại. Tiếp tục?'))return;
+   if(!await GirlUI.confirm('Tiêu hao 1 Thẻ Mời để vào thử thách? Thuộc tính trong lượt chơi sẽ không đổi theo đội hình bên ngoài.'))return;
    modal=null;const res=await act({action:'start',route,diff});if(res){panel='run';sel=null;pick=[];render();}}));}
  // ShrineHurdleWindow (captures 06-07).
  function runView(st,info){const run=info.run;st.style.backgroundImage=`url('${A('shrine_hurdle_main_bg.webp')}')`;st.classList.add('ts-run');
@@ -100,9 +100,9 @@ const Shrine=(()=>{
   const main=el('div','ts-runmain');st.append(main);
   if(run.type==null)wayView(main,run);else if(run.type===1||run.type===5)battleView(main,run,info);else if(run.type===2)rewardView(main,run,info);else if(run.type===3)storeView(main,run,info);else if(run.type===4)recoverView(main,run,info);
   if(run.can_next&&run.type!==3){const n=btn('ts-next','',next);n.append(img(A('shrine_hurdle_next_img.png')),el('b','',run.floor>=15?'Results':'Next'));main.append(n);}
-  const out=btn('ts-out','',async()=>{if(!confirm('Confirm to give up the Trial?'))return;const r=await act({action:'giveup_trial'});if(r?.end){result=r.end;panel='trials';render();}});out.append(img(A('shrine_hurdle_out_btn.png')));st.append(out);}
+  const out=btn('ts-out','',async()=>{if(!await GirlUI.confirm('Từ bỏ thử thách hiện tại?'))return;const r=await act({action:'giveup_trial'});if(r?.end){result=r.end;panel='trials';render();}});out.append(img(A('shrine_hurdle_out_btn.png')));st.append(out);}
  async function next(){const r=await act({action:'next'});if(r?.end){result=r.end;panel='trials';render();}}
- function wayView(main,run){main.append(el('p','ts-prompt','Please select'));const row=el('div','ts-ways');run.types.forEach((t,i)=>{const b=btn('ts-way','',async()=>{const msg={1:'Confirm to enter Battle Stage?',2:'Confirm to enter Reward Stage?',3:'Confirm to enter Store Stage?',4:'Confirm to enter Recover Stage?'}[t];if(msg&&!confirm(msg))return;await act({action:'way',index:i});});
+ function wayView(main,run){main.append(el('p','ts-prompt','Please select'));const row=el('div','ts-ways');run.types.forEach((t,i)=>{const b=btn('ts-way','',async()=>{const msg={1:'Xác nhận vào Battle?',2:'Xác nhận vào Reward?',3:'Xác nhận vào Store?',4:'Xác nhận vào Recover?'}[t];if(msg&&!await GirlUI.confirm(msg))return;await act({action:'way',index:i});});
    b.append(img(A('shrine_hurdle_door'+(i+1)+'.png'),'ts-door'),typeIcon(t),el('b','',TYPE_NAME[t]));row.append(b);});main.append(row);}
  function battleView(main,run,info){const e=run.enemy||[];const boss=run.type===5;const box=el('div','ts-enemy'+(boss?' boss':''));if(e[0])box.append(chibi(e[0].table_id));
   const lv=el('div','ts-enemylist');for(const u of e){const s=el('span','ts-emini');if(typeof portrait==='function')s.append(portrait(u.table_id,44));s.append(el('small','',`Lv.${u.lv}`));lv.append(s);}box.append(lv);
@@ -125,7 +125,7 @@ const Shrine=(()=>{
   c.append(el('b','ts-bname',b.name+(lv>1?` +${lv-1}`:'')),el('p','ts-bdesc',b.desc.replace('{1}',b.values[Math.max(0,Math.min(2,lv-1))])));if(extra)c.append(extra);return c;}
  function rewardView(main,run,info){main.append(el('p','ts-prompt',run.can_next?'Boost Obtained':'Please select'));const row=el('div','ts-buffs');
   if(!run.can_next){(run.extra.skills||[]).forEach((bid,i)=>{const c=buffCard(String(bid),info,1);if(sel===i)c.classList.add('on');c.onclick=()=>{sel=i;render();};row.append(c);});main.append(row);
-   const acts=el('div','ts-rewardacts');const g=btn('ts-white','Give Up',async()=>{if(!confirm('Confirm to give up the buff and get Trial Tokens instead?'))return;sel=null;await act({action:'pick_buff'});});g.prepend(chip('324','+'+info.giveup_gold,'ts-chip ts-gain'));
+   const acts=el('div','ts-rewardacts');const g=btn('ts-white','Give Up',async()=>{if(!await GirlUI.confirm('Bỏ hiệu ứng tăng cường để nhận Xu Thử Thách?'))return;sel=null;await act({action:'pick_buff'});});g.prepend(chip('324','+'+info.giveup_gold,'ts-chip ts-gain'));
    const s=btn('ts-go','Select',async()=>{if(sel==null){note='Please select';render();return;}const i=sel;sel=null;await act({action:'pick_buff',index:i});});acts.append(g,s);main.append(acts);}
   else{const owned=Object.keys(run.skills);const last=owned[owned.length-1];if(last)row.append(buffCard(last,info,run.skills[last]));main.append(row);}}
  function storeView(main,run,info){const tabs=el('div','ts-tabs');['Purchase','Upgrade'].forEach((t,i)=>tabs.append(btn('ts-tab'+(tab===i?' on':''),t,()=>{tab=i;render();})));main.append(tabs);
@@ -137,7 +137,7 @@ const Shrine=(()=>{
  function recoverView(main,run,info){if(run.can_next){main.append(el('p','ts-prompt','Recovered'));return;}main.append(el('p','ts-prompt','Please select'));const row=el('div','ts-recover');
   for(const k of ['1','2','3']){const t=info.restore[k];const c=btn('ts-heal'+(sel===k?' on':''),'',()=>{sel=k;render();});c.append(img(A('shrine_hurdle_case_img'+k+'.png')),el('b','',t.name),el('p','',t.desc));row.append(c);}main.append(row);
   if(sel==='3'){const pool=el('div','ts-pool');for(const p of [...run.partners].sort((a,b)=>a.hp-b.hp))pool.append(girlCard(p,pick[0]===p.partner_id,()=>{pick=[p.partner_id];render();}));main.append(pool);}
-  main.append(btn('ts-go','Select',async()=>{if(!sel){note='Please select';render();return;}const req={action:'recover',choice:Number(sel)};if(sel==='3'){const p=run.partners.find(x=>x.partner_id===pick[0]);if(!p){note="Choose a Girl";render();return;}if(p.hp>60&&!confirm('The Girl you choose still has relatively high HP. Confirm to continue?'))return;req.partner_id=p.partner_id;}sel=null;pick=[];await act(req);}));}
+  main.append(btn('ts-go','Select',async()=>{if(!sel){note='Please select';render();return;}const req={action:'recover',choice:Number(sel)};if(sel==='3'){const p=run.partners.find(x=>x.partner_id===pick[0]);if(!p){note="Choose a Girl";render();return;}if(p.hp>60&&!await GirlUI.confirm('Nữ Thần đã chọn còn nhiều HP. Tiếp tục hồi phục?'))return;req.partner_id=p.partner_id;}sel=null;pick=[];await act(req);}));}
  function buffsModal(st,info){const run=info.run;const w=overlay(st,'Buff Obtained');const row=el('div','ts-buffs ts-wrap');const ids=Object.keys(run.skills);if(!ids.length)w.append(el('p','ts-note','No Data'));for(const b of ids)row.append(buffCard(b,info,run.skills[b]));w.append(row);}
  function hpModal(st,info){const w=overlay(st,'HP Status');const pool=el('div','ts-pool');for(const p of info.run.partners)pool.append(girlCard(p,false,()=>{}));w.append(pool);}
  function resultView(st){const r=result;const ov=el('div','ts-overlay');const w=el('div','ts-win ts-result');w.append(el('h3','','Results'),el('p','ts-big',number(r.score)),el('p','',r.completed?"Trial completed!":"Trial abandoned"),el('p','',`Highest unlocked difficulty: ${r.max_diff}`));
