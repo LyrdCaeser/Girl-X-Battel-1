@@ -40,7 +40,7 @@ const HeroChallenge=(()=>{
   for(const g of f.dead){const c=el('div','hc-girl dead');c.append(face(g,64),el('small','','✝'));c.title=g.name+" (eliminated)";girls.append(c);}box.append(girls);
   const extras=el('div','hc-extras');for(const b of f.buffs){const i=info.buff_info[b];const c=el('span','hc-buff');c.append(img(A(i.icon)));c.title=`${i.name}: ${i.desc}`;extras.append(c);}
   for(const p of f.pets){const i=info.pet_info[p];const c=el('span','hc-pet');c.append(img('/assets/servant/'+i.avatar+'.png'));c.title=i.name;extras.append(c);}
-  if(!f.puzzle)extras.append(btn('hc-small alt','Reset',async()=>{if(confirm("Reset? Girls, buffs, and Servants acquired in this attempt will be lost (costs 1 Challenge Coupon)."))await act({action:'reset',fort:f.fort});}));
+  if(!f.puzzle)extras.append(btn('hc-small alt','Reset',async()=>{if(await GirlUI.confirm("Đặt lại thử thách? Tiến độ và phần thưởng tạm thời của lượt này sẽ mất. Tiêu hao 1 Phiếu Thử Thách.",{title:"Đặt Lại Thử Thách",ok:"Đặt Lại",danger:true}))await act({action:'reset',fort:f.fort});}));
   box.append(extras);w.append(box);
   const rows=el('div','hc-rows');f.stages.forEach((s,i)=>{const passed=f.current===-1||s.id<f.current,cur=s.id===f.current;const row=el('div','hc-row'+(passed?' passed':cur?' current':' locked'));
    row.append(el('b','hc-num',String(i+1)));const txt=el('div','hc-txt');txt.append(el('b','',s.name),el('small','',s.desc));row.append(txt);
