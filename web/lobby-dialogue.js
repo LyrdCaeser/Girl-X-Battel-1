@@ -46,5 +46,9 @@ const LobbyDialogue=(()=>{
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});
   else init();
-  return{sync,speak};
+  function translateQuote(id,source){
+    const entry=dialogues[Number(id)];
+    return entry?entry.text:typeof window.GxbVi?.t==='function'?window.GxbVi.t(source||''):source||'';
+  }
+  return{sync,speak,translateQuote};
 })();
