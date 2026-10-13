@@ -6,7 +6,7 @@ import time
 import urllib.request
 import webbrowser
 
-GAME_URL = "https://gxb3-production.onrender.com"
+GAME_URL = "https://180-93-111-99.sslip.io"
 READY_URL = GAME_URL + "/readyz"
 
 LOADING_HTML = """<!doctype html>
@@ -72,7 +72,7 @@ def main() -> int:
 
     try:
         window = webview.create_window(
-            "GXB 3",
+            "GXB 3 · ALPHA RC6",
             html=LOADING_HTML,
             width=1280,
             height=800,
