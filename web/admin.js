@@ -38,6 +38,25 @@ window.AdminPanel=(()=>{
     grid.append(stats);
     const me=card('Player đang mở');me.append(el('p','',`UID: ${state?.uid||'-'}`),el('p','',`Server: ${state?.server_id||'-'}`),el('p','',`Tên Nhân Vật: ${state?.name||'-'}`),el('p','',`Trạng thái: ${state?.account_status||'active'}`));grid.append(me);
     body.append(grid);
+    const tests=card('Kiểm tra SUPER GM & Bang Hội (chỉ đọc)');
+    const trigger=btn('Kiểm tra trực tiếp trên máy chủ',async()=>{
+      trigger.disabled=true;
+      const results=[];
+      try{
+        const me=await api('/api/auth/me');
+        const owner=!!me.is_super_gm;
+        results.push((owner?'PASS':'FAIL')+' · Quyền SUPER GM của tài khoản đăng nhập');
+        if(!owner)throw Error('Máy chủ không xác nhận tài khoản SUPER GM');
+        const admin=await api('/api/admin/dashboard');
+        results.push('PASS · API QTV (thế giới: '+(admin.worlds||[]).length+', tài khoản: '+(admin.accounts||[]).length+')');
+        const guild=await api('/api/world-guild');
+        results.push('PASS · Bang Hội Online (bang hội: '+(guild.guilds||[]).length+', chiến tranh: '+(guild.wars||[]).length+')');
+      }catch(e){results.push('FAIL · '+(e.message||String(e)));}
+      finally{trigger.disabled=false;log.textContent=results.join('\n');}
+    },'primary');
+    const log=el('pre','admin-note','Chưa chạy kiểm tra.');
+    log.style.whiteSpace='pre-wrap';
+    tests.append(trigger,log);body.append(tests);
   }
   function renderMail(body){
     const c=card('GM Mail · gửi bất kỳ vật phẩm qua UID + Server + Tên Nhân Vật');
