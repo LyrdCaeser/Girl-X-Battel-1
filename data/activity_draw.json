@@ -1,1 +1,1527 @@
-{"events":{"308":{"unit":"pulls","modes":[{"cost":"385#1","always":"","groups":[{"weight":1,"prizes":[{"awards":"325#100","weight":1100},{"awards":"326#1","weight":780},{"awards":"325#200","weight":900},{"awards":"326#2","weight":580},{"awards":"325#300","weight":700},{"awards":"326#3","weight":480},{"awards":"325#400","weight":500},{"awards":"326#4","weight":380},{"awards":"325#500","weight":300},{"awards":"326#5","weight":180},{"awards":"982001#1","weight":1300},{"awards":"983001#1","weight":1300},{"awards":"984001#1","weight":300},{"awards":"984002#1","weight":300},{"awards":"984003#1","weight":300},{"awards":"984004#1","weight":300},{"awards":"985001#1","weight":100},{"awards":"985002#1","weight":100},{"awards":"985003#1","weight":100}]}]},{"cost":"386#1","always":"","groups":[{"weight":1,"prizes":[{"awards":"325#100","weight":900},{"awards":"326#1","weight":550},{"awards":"325#200","weight":700},{"awards":"326#2","weight":400},{"awards":"325#300","weight":500},{"awards":"326#3","weight":300},{"awards":"325#400","weight":300},{"awards":"326#4","weight":200},{"awards":"325#500","weight":100},{"awards":"326#5","weight":50},{"awards":"982001#1","weight":900},{"awards":"983001#1","weight":900},{"awards":"984001#1","weight":750},{"awards":"984002#1","weight":750},{"awards":"984003#1","weight":750},{"awards":"984004#1","weight":750},{"awards":"985001#1","weight":300},{"awards":"985002#1","weight":300},{"awards":"985003#1","weight":300},{"awards":"986001#1","weight":300}]}]}],"guarantee":{"mode":1,"every":20,"awards":"986001#1"},"milestones":[],"title":"Wish Upon a Chime"},"317":{"unit":"scoops","modes":[{"cost":"394#1","always":"","groups":[{"weight":1,"prizes":[{"awards":"1#1000000","weight":174},{"awards":"9#1000000","weight":174},{"awards":"14#750","weight":150},{"awards":"10#750","weight":150},{"awards":"360#2000","weight":75},{"awards":"359#200","weight":75},{"awards":"419#5","weight":100},{"awards":"417#200","weight":100},{"awards":"4104022#1","weight":2},{"awards":"399#1","weight":60},{"awards":"400#1","weight":30},{"awards":"401#1","weight":10}]}]}],"milestones":[{"need":20,"awards":"36#10","area":0},{"need":40,"awards":"20#5","area":0},{"need":60,"awards":"4201042#10","area":0},{"need":80,"awards":"4501002#1","area":0},{"need":100,"awards":"358#30","area":0},{"need":130,"awards":"4101008#1","area":0},{"need":160,"awards":"4402015#1|6000#2000","area":0},{"need":200,"awards":"4101010#1|4201042#100","area":0},{"need":240,"awards":"6779#1|6000#4000","area":0},{"need":280,"awards":"5100020#1|4201042#100","area":0},{"need":320,"awards":"4901001#2|420#10","area":0},{"need":360,"awards":"5100021#1|418#300","area":0},{"need":400,"awards":"4402015#1|6000#9000","area":0},{"need":480,"awards":"5100020#1|5100021#1","area":0},{"need":600,"awards":"6791#1|6000#15000","area":0}],"buy":{"cost":"2#3000","get":"394#20|20#10","limit":2},"title":"Goldfish Scooper"},"245":{"unit":"fish","modes":[{"cost":"283#5","always":"","groups":[{"weight":1,"prizes":[{"awards":"1#500000","weight":1670},{"awards":"9#500000","weight":1670},{"awards":"14#400","weight":1670},{"awards":"10#400","weight":1670},{"awards":"26#250","weight":1670},{"awards":"27#30","weight":1670}]}]}],"bonus":{"chance":1000,"prizes":[{"awards":"36#5","weight":1000},{"awards":"258#3","weight":1000},{"awards":"360#6000","weight":1000},{"awards":"359#600","weight":1000},{"awards":"423#3","weight":1000}]},"milestones":[{"need":10,"awards":"36#20","area":0},{"need":15,"awards":"4102007#1","area":0},{"need":20,"awards":"4201042#25","area":0},{"need":25,"awards":"4102008#1","area":0},{"need":30,"awards":"358#25","area":0},{"need":40,"awards":"4402015#1|6000#3000","area":0},{"need":50,"awards":"4501002#1|4201042#150","area":0},{"need":60,"awards":"424#100|4101010#1","area":0},{"need":80,"awards":"4901001#1|418#100","area":0},{"need":100,"awards":"6779#1|6000#3000","area":0},{"need":120,"awards":"4402015#1|4206001#300","area":0},{"need":150,"awards":"4104023#1|6000#6000","area":0},{"need":180,"awards":"5100020#1|6000#12000","area":0},{"need":225,"awards":"5100021#1|4201042#200","area":0},{"need":270,"awards":"6791#1|4201042#400","area":0}],"title":"Seaside Fishing"},"286":{"unit":"spins","modes":[{"cost":"345#1","always":"","groups":[{"weight":1,"prizes":[{"awards":"1#1000000","weight":60,"stock":40},{"awards":"9#1000000","weight":60,"stock":40},{"awards":"360#1000","weight":60,"stock":40},{"awards":"359#100","weight":60,"stock":40},{"awards":"417#100","weight":60,"stock":40},{"awards":"426#100","weight":60,"stock":40},{"awards":"35#100|36#20|20#10","weight":40,"stock":1},{"awards":"7162#1|7158#1|74#168","weight":40,"stock":1},{"awards":"4102007#1","weight":40,"stock":1},{"awards":"93#1|940004#50|6000#6000","weight":40,"stock":1},{"awards":"940006#50|940005#50|6000#6000","weight":40,"stock":1},{"awards":"4102008#1","weight":40,"stock":1},{"awards":"4703001#100|4704001#80|4705002#50","weight":40,"stock":1},{"awards":"423#50|424#30|418#50","weight":40,"stock":1},{"awards":"4501002#1","weight":40,"stock":1},{"awards":"360#100000|359#10000|417#20000","weight":40,"stock":1},{"awards":"258#100|259#50|260#2000","weight":40,"stock":1},{"awards":"4101010#1","weight":40,"stock":1},{"awards":"36#30","weight":40,"stock":1},{"awards":"20#10","weight":40,"stock":1},{"awards":"4201042#10","weight":40,"stock":1}]}]}],"milestones":[{"need":40,"awards":"2#888|1#2000000","area":0},{"need":80,"awards":"1#10000000|9#10000000","area":0},{"need":120,"awards":"93#1|29#20","area":0},{"need":160,"awards":"36#30|20#10","area":0},{"need":200,"awards":"940004#50|4102007#1","area":0},{"need":240,"awards":"4101067#1|4102008#1","area":0},{"need":280,"awards":"4501002#1|170#30","area":0},{"need":320,"awards":"4102056#1|4206001#30","area":0},{"need":400,"awards":"4402015#1|6000#3000","area":0},{"need":480,"awards":"930235#50|4206001#60","area":0},{"need":560,"awards":"4901001#1|420#3","area":0},{"need":640,"awards":"6779#1|6000#3000","area":0},{"need":720,"awards":"930235#50|4206001#120","area":0},{"need":840,"awards":"417#50000|419#1000","area":0},{"need":960,"awards":"6791#1|418#250","area":0}],"title":"Spin the Wheel!"},"290":{"unit":"eggs","modes":[{"cost":"347#1","always":"","groups":[{"weight":1,"prizes":[{"awards":"1#2000000","weight":100},{"awards":"9#2000000","weight":100},{"awards":"10#1500","weight":100},{"awards":"14#1500","weight":100},{"awards":"424#1","weight":100},{"awards":"198#2500","weight":100},{"awards":"199#500","weight":100},{"awards":"360#5000","weight":100},{"awards":"359#500","weight":100},{"awards":"216#100","weight":100},{"awards":"976001#2","weight":100},{"awards":"258#2","weight":100}]}]},{"cost":"348#1","always":"","groups":[{"weight":1,"prizes":[{"awards":"35#50","weight":100},{"awards":"36#10","weight":100},{"awards":"20#5","weight":100},{"awards":"73#15","weight":100},{"awards":"170#15","weight":100},{"awards":"358#3","weight":100},{"awards":"418#2","weight":100},{"awards":"4201042#6","weight":100}]}]}],"milestones":[{"need":10,"awards":"4201042#10|2#888","area":0},{"need":50,"awards":"36#30|20#10","area":0},{"need":100,"awards":"940006#100|940005#100","area":0},{"need":150,"awards":"4102008#1|4102007#1","area":0},{"need":200,"awards":"4501002#1|930218#50","area":0},{"need":250,"awards":"986001#20|4206001#40","area":0},{"need":300,"awards":"4402015#1|6000#3000","area":0},{"need":330,"awards":"358#30|4206001#60","area":0},{"need":360,"awards":"418#50|419#1000","area":0},{"need":390,"awards":"4901001#1|417#6000","area":0},{"need":420,"awards":"4104023#1|14#100000","area":0},{"need":450,"awards":"6779#1|6000#3000","area":0},{"need":500,"awards":"4901001#2|4201042#100","area":0},{"need":550,"awards":"930235#50|4101010#1","area":0},{"need":600,"awards":"6791#1|6000#6000","area":0},{"need":650,"awards":"5100021#1|420#5","area":0},{"need":700,"awards":"4901001#3|418#100","area":0},{"need":800,"awards":"940059#100|4206001#180","area":0},{"need":900,"awards":"6791#1|4402015#1","area":0},{"need":1000,"awards":"5100020#1|418#500","area":0}],"title":"Easter Egg Factory"},"298":{"unit":"draws","modes":[{"cost":"364#1","always":"363#10","groups":[{"weight":1,"prizes":[{"awards":"36#5","weight":100},{"awards":"20#2","weight":100},{"awards":"358#1","weight":25},{"awards":"349#1","weight":50},{"awards":"25#4","weight":100},{"awards":"29#3","weight":100},{"awards":"6000#500","weight":100},{"awards":"417#1000","weight":50},{"awards":"359#500","weight":75},{"awards":"360#5000","weight":75},{"awards":"326#50","weight":75},{"awards":"325#3000","weight":75},{"awards":"424#2","weight":50},{"awards":"418#1","weight":25}]}]}],"milestones":[{"need":50,"awards":"93#1","area":0},{"need":100,"awards":"424#10","area":0},{"need":200,"awards":"170#10","area":0},{"need":300,"awards":"4201042#100","area":0},{"need":400,"awards":"418#20","area":0},{"need":500,"awards":"435#100","area":0},{"need":600,"awards":"420#1","area":0}],"buy":{"cost":"2#500","get":"364#1","limit":50},"title":"Childhood Memories"},"260":{"unit":"draws","modes":[{"cost":"309#1","always":"","groups":[{"weight":1,"prizes":[{"awards":"1#100000","weight":1300},{"awards":"35#1","weight":350},{"awards":"9#100000","weight":1300},{"awards":"36#1","weight":350},{"awards":"14#100","weight":1300},{"awards":"29#1","weight":350},{"awards":"10#100","weight":1300},{"awards":"73#1","weight":350},{"awards":"26#100","weight":1300},{"awards":"2#100","weight":350},{"awards":"27#10","weight":1300},{"awards":"216#5","weight":350}]}]}],"big":[{"awards":"73#10|170#10|36#10","rate":0.01},{"awards":"940004#50|940016#50|940015#50","rate":0.01},{"awards":"93#1|36#20|29#10","rate":0.01},{"awards":"4101050#1|940005#50|940006#50","rate":0.01},{"awards":"73#20|170#20|4501002#1","rate":0.01},{"awards":"4101010#1|940036#50|940035#50","rate":0.01}],"pity":{"max":100,"add":2},"milestones":[],"title":"Lucky Dips"},"234":{"unit":"explorations","modes":[{"cost":"255#1","always":"","groups":[{"weight":1,"prizes":[{"awards":"256#3","weight":250},{"awards":"256#4","weight":550},{"awards":"256#5","weight":150},{"awards":"256#6","weight":50}]}]}],"milestones":[{"need":50,"awards":"1#1000000|257#5","area":1},{"need":100,"awards":"1#4000000|257#5","area":1},{"need":200,"awards":"14#10000|257#10","area":1},{"need":300,"awards":"4201042#5|257#10","area":1},{"need":400,"awards":"36#10|257#10","area":1},{"need":500,"awards":"4705002#20|257#10","area":1},{"need":650,"awards":"418#10|257#15","area":1},{"need":800,"awards":"6000#5000|257#15","area":1}],"title":"Jungle Exploration"},"283":{"unit":"rings","modes":[{"cost":"343#1","always":"","groups":[{"weight":60,"prizes":[{"awards":"36#4","weight":20},{"awards":"360#2500","weight":20},{"awards":"73#5","weight":20},{"awards":"170#5","weight":20},{"awards":"2#500","weight":20}]},{"weight":60,"prizes":[{"awards":"36#5","weight":20},{"awards":"6000#300","weight":20},{"awards":"359#400","weight":20},{"awards":"417#500","weight":20},{"awards":"419#10","weight":20}]},{"weight":80,"prizes":[{"awards":"36#2","weight":20},{"awards":"1#1500000","weight":20},{"awards":"9#1500000","weight":20},{"awards":"26#1000","weight":20},{"awards":"27#250","weight":20}]},{"weight":80,"prizes":[{"awards":"36#3","weight":20},{"awards":"25#10","weight":20},{"awards":"10#1500","weight":20},{"awards":"14#1500","weight":20},{"awards":"199#300","weight":20}]}]}],"milestones":[{"need":1,"awards":"2#1000","area":0},{"need":2,"awards":"10#10000|14#10000","area":0},{"need":3,"awards":"36#15","area":0},{"need":4,"awards":"940006#50|940005#50","area":0},{"need":5,"awards":"20#10","area":0},{"need":6,"awards":"4206001#20|93#1","area":0},{"need":7,"awards":"4501002#1","area":0},{"need":8,"awards":"417#1500|424#10","area":0},{"need":9,"awards":"358#15","area":0},{"need":10,"awards":"435#8|4201042#15|418#10","area":0},{"need":11,"awards":"4101067#1","area":0},{"need":12,"awards":"435#15|4201042#30|418#20","area":0},{"need":13,"awards":"4102056#1","area":0},{"need":14,"awards":"2#2000|986001#10|985003#20","area":0},{"need":15,"awards":"940059#50","area":0},{"need":16,"awards":"4402015#1","area":0},{"need":17,"awards":"4104023#1","area":0},{"need":18,"awards":"435#40|4201042#80|418#40","area":0},{"need":19,"awards":"6779#1","area":0},{"need":20,"awards":"4901001#1|4201042#80|418#40","area":0},{"need":21,"awards":"5100020#1","area":0},{"need":22,"awards":"4901001#1|4201042#100|418#50","area":0},{"need":23,"awards":"5100021#1","area":0},{"need":24,"awards":"940059#150|4201042#100|418#50","area":0},{"need":25,"awards":"6791#1","area":0},{"need":26,"awards":"435#15|4201042#30|418#20","area":0}],"buy":{"cost":"2#200","get":"343#1","limit":30},"title":"Ring Toss"}},"names":{"1":"Coin","2":"Gem","9":"EXP Juice","10":"Lunch Box","14":"Crystal Chisel","20":"Seal","25":"Advance Internship Scroll","26":"Servant Cookie","27":"Spirit Cookie","29":"Super Slot Ticket","35":"Slot Ticket","36":"Adv. Capsule Coin","73":"Rune Engraving","74":"Costume Ticket","93":"Elite Badge","170":"Lucky Crystal","198":"Standard File","199":"Exclusive File","216":"Servant Crystal","255":"Traditional Riceball","256":"Ancient Silver Coin","257":"Ancient Gold Coin","258":"Plain Button","259":"Fancy Button","260":"Plain Silk","283":"Fishing Rod","309":"Lucky Coin","325":"Fantasy Dust","326":"Fantasy Talisman","334":"Chime Resource Bag - Orange","343":"Ring Toss Ticket","345":"Clockwork Coin","347":"Easter Slingshot","348":"Laser Gun","349":"Space Radar","358":"Star Token","359":"Brilliant Sphere","360":"Tarnished Sphere","363":"Childhood Delight","364":"Rabbit Balloon","374":"Chime Resource Bag - Red","385":"Jade Crane","386":"Gilded Crane","394":"Paper Scoop","417":"Soul Gem","418":"Soul Mirror","419":"Soul Dice","420":"Soul Charm","423":"Soul Token","424":"Shiny Soul Token","426":"Soul Essence","435":"Random Anima Artifact Chest","6000":"Afterglow","6779":"Peacock Tambourine","6791":"Necronomicon","7158":"Jester","7162":"AI Joker","930218":"5-star Chizuko","930235":"5-star Apollis","940004":"Elite 5-star Girls Shard","940005":"Elite 5-star Demon Shard","940006":"Elite 5-star Angel Shard","940015":"5-star Demon Shard","940016":"5-star Angel Shard","940035":"6-Star Demon Doll","940036":"6-Star Angel Doll","940059":"Customized 10-star Cosmos Girls Shard","976001":"Orange Outfit Shard","982001":"Shard of Cherries","983001":"Shard of Kittens","984001":"Shard of the Spectre","984002":"Shard of Order","984003":"Shard of Freedom","984004":"Shard of Faeries","985001":"Shard of the Abyss","985002":"Shard of the Heavens","985003":"Shard of the Galaxy","986001":"Shard of Reflections","4101008":"9-star Doll Chest","4101010":"10-star Doll Chest","4101050":"5-Star Customized Chest","4101067":"5-Star Customized Chest","4102007":"6-star Doll Chest","4102008":"6-star Doll chest","4102056":"Customized L&D Chest","4104022":"5-Star Customized Chest (6 factions)","4104023":"5-Star Customized Chest (6 factions)","4201042":"Regular Customized Resource Chest","4206001":"Customized Sphere Chest","4402015":"Customized Orange Antique Chest","4501002":"Customized Class Set Chest","4703001":"Chime Shard Chest - Purple","4704001":"Chime Shard Chest - Green","4705002":"Chime Shard Chest - Red","4901001":"Customized Orange Anima Artifact Chest","5100020":"Ancient Coin","5100021":"Thunder Potion"}}
+{
+  "events": {
+    "234": {
+      "unit": "lượt khám phá",
+      "modes": [
+        {
+          "cost": "255#1",
+          "always": "",
+          "groups": [
+            {
+              "weight": 1,
+              "prizes": [
+                {
+                  "awards": "256#3",
+                  "weight": 250
+                },
+                {
+                  "awards": "256#4",
+                  "weight": 550
+                },
+                {
+                  "awards": "256#5",
+                  "weight": 150
+                },
+                {
+                  "awards": "256#6",
+                  "weight": 50
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "milestones": [
+        {
+          "need": 50,
+          "awards": "1#1000000|257#5",
+          "area": 1
+        },
+        {
+          "need": 100,
+          "awards": "1#4000000|257#5",
+          "area": 1
+        },
+        {
+          "need": 200,
+          "awards": "14#10000|257#10",
+          "area": 1
+        },
+        {
+          "need": 300,
+          "awards": "4201042#5|257#10",
+          "area": 1
+        },
+        {
+          "need": 400,
+          "awards": "36#10|257#10",
+          "area": 1
+        },
+        {
+          "need": 500,
+          "awards": "4705002#20|257#10",
+          "area": 1
+        },
+        {
+          "need": 650,
+          "awards": "418#10|257#15",
+          "area": 1
+        },
+        {
+          "need": 800,
+          "awards": "6000#5000|257#15",
+          "area": 1
+        }
+      ],
+      "title": "Thám Hiểm Rừng Rậm"
+    },
+    "245": {
+      "unit": "cá",
+      "modes": [
+        {
+          "cost": "283#5",
+          "always": "",
+          "groups": [
+            {
+              "weight": 1,
+              "prizes": [
+                {
+                  "awards": "1#500000",
+                  "weight": 1670
+                },
+                {
+                  "awards": "9#500000",
+                  "weight": 1670
+                },
+                {
+                  "awards": "14#400",
+                  "weight": 1670
+                },
+                {
+                  "awards": "10#400",
+                  "weight": 1670
+                },
+                {
+                  "awards": "26#250",
+                  "weight": 1670
+                },
+                {
+                  "awards": "27#30",
+                  "weight": 1670
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "bonus": {
+        "chance": 1000,
+        "prizes": [
+          {
+            "awards": "36#5",
+            "weight": 1000
+          },
+          {
+            "awards": "258#3",
+            "weight": 1000
+          },
+          {
+            "awards": "360#6000",
+            "weight": 1000
+          },
+          {
+            "awards": "359#600",
+            "weight": 1000
+          },
+          {
+            "awards": "423#3",
+            "weight": 1000
+          }
+        ]
+      },
+      "milestones": [
+        {
+          "need": 10,
+          "awards": "36#20",
+          "area": 0
+        },
+        {
+          "need": 15,
+          "awards": "4102007#1",
+          "area": 0
+        },
+        {
+          "need": 20,
+          "awards": "4201042#25",
+          "area": 0
+        },
+        {
+          "need": 25,
+          "awards": "4102008#1",
+          "area": 0
+        },
+        {
+          "need": 30,
+          "awards": "358#25",
+          "area": 0
+        },
+        {
+          "need": 40,
+          "awards": "4402015#1|6000#3000",
+          "area": 0
+        },
+        {
+          "need": 50,
+          "awards": "4501002#1|4201042#150",
+          "area": 0
+        },
+        {
+          "need": 60,
+          "awards": "424#100|4101010#1",
+          "area": 0
+        },
+        {
+          "need": 80,
+          "awards": "4901001#1|418#100",
+          "area": 0
+        },
+        {
+          "need": 100,
+          "awards": "6779#1|6000#3000",
+          "area": 0
+        },
+        {
+          "need": 120,
+          "awards": "4402015#1|4206001#300",
+          "area": 0
+        },
+        {
+          "need": 150,
+          "awards": "4104023#1|6000#6000",
+          "area": 0
+        },
+        {
+          "need": 180,
+          "awards": "5100020#1|6000#12000",
+          "area": 0
+        },
+        {
+          "need": 225,
+          "awards": "5100021#1|4201042#200",
+          "area": 0
+        },
+        {
+          "need": 270,
+          "awards": "6791#1|4201042#400",
+          "area": 0
+        }
+      ],
+      "title": "Câu Cá Ven Biển"
+    },
+    "260": {
+      "unit": "lượt quay",
+      "modes": [
+        {
+          "cost": "309#1",
+          "always": "",
+          "groups": [
+            {
+              "weight": 1,
+              "prizes": [
+                {
+                  "awards": "1#100000",
+                  "weight": 1300
+                },
+                {
+                  "awards": "35#1",
+                  "weight": 350
+                },
+                {
+                  "awards": "9#100000",
+                  "weight": 1300
+                },
+                {
+                  "awards": "36#1",
+                  "weight": 350
+                },
+                {
+                  "awards": "14#100",
+                  "weight": 1300
+                },
+                {
+                  "awards": "29#1",
+                  "weight": 350
+                },
+                {
+                  "awards": "10#100",
+                  "weight": 1300
+                },
+                {
+                  "awards": "73#1",
+                  "weight": 350
+                },
+                {
+                  "awards": "26#100",
+                  "weight": 1300
+                },
+                {
+                  "awards": "2#100",
+                  "weight": 350
+                },
+                {
+                  "awards": "27#10",
+                  "weight": 1300
+                },
+                {
+                  "awards": "216#5",
+                  "weight": 350
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "big": [
+        {
+          "awards": "73#10|170#10|36#10",
+          "rate": 0.01
+        },
+        {
+          "awards": "940004#50|940016#50|940015#50",
+          "rate": 0.01
+        },
+        {
+          "awards": "93#1|36#20|29#10",
+          "rate": 0.01
+        },
+        {
+          "awards": "4101050#1|940005#50|940006#50",
+          "rate": 0.01
+        },
+        {
+          "awards": "73#20|170#20|4501002#1",
+          "rate": 0.01
+        },
+        {
+          "awards": "4101010#1|940036#50|940035#50",
+          "rate": 0.01
+        }
+      ],
+      "pity": {
+        "max": 100,
+        "add": 2
+      },
+      "milestones": [],
+      "title": "Bốc Thăm May Mắn"
+    },
+    "283": {
+      "unit": "rings",
+      "modes": [
+        {
+          "cost": "343#1",
+          "always": "",
+          "groups": [
+            {
+              "weight": 60,
+              "prizes": [
+                {
+                  "awards": "36#4",
+                  "weight": 20
+                },
+                {
+                  "awards": "360#2500",
+                  "weight": 20
+                },
+                {
+                  "awards": "73#5",
+                  "weight": 20
+                },
+                {
+                  "awards": "170#5",
+                  "weight": 20
+                },
+                {
+                  "awards": "2#500",
+                  "weight": 20
+                }
+              ]
+            },
+            {
+              "weight": 60,
+              "prizes": [
+                {
+                  "awards": "36#5",
+                  "weight": 20
+                },
+                {
+                  "awards": "6000#300",
+                  "weight": 20
+                },
+                {
+                  "awards": "359#400",
+                  "weight": 20
+                },
+                {
+                  "awards": "417#500",
+                  "weight": 20
+                },
+                {
+                  "awards": "419#10",
+                  "weight": 20
+                }
+              ]
+            },
+            {
+              "weight": 80,
+              "prizes": [
+                {
+                  "awards": "36#2",
+                  "weight": 20
+                },
+                {
+                  "awards": "1#1500000",
+                  "weight": 20
+                },
+                {
+                  "awards": "9#1500000",
+                  "weight": 20
+                },
+                {
+                  "awards": "26#1000",
+                  "weight": 20
+                },
+                {
+                  "awards": "27#250",
+                  "weight": 20
+                }
+              ]
+            },
+            {
+              "weight": 80,
+              "prizes": [
+                {
+                  "awards": "36#3",
+                  "weight": 20
+                },
+                {
+                  "awards": "25#10",
+                  "weight": 20
+                },
+                {
+                  "awards": "10#1500",
+                  "weight": 20
+                },
+                {
+                  "awards": "14#1500",
+                  "weight": 20
+                },
+                {
+                  "awards": "199#300",
+                  "weight": 20
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "milestones": [
+        {
+          "need": 1,
+          "awards": "2#1000",
+          "area": 0
+        },
+        {
+          "need": 2,
+          "awards": "10#10000|14#10000",
+          "area": 0
+        },
+        {
+          "need": 3,
+          "awards": "36#15",
+          "area": 0
+        },
+        {
+          "need": 4,
+          "awards": "940006#50|940005#50",
+          "area": 0
+        },
+        {
+          "need": 5,
+          "awards": "20#10",
+          "area": 0
+        },
+        {
+          "need": 6,
+          "awards": "4206001#20|93#1",
+          "area": 0
+        },
+        {
+          "need": 7,
+          "awards": "4501002#1",
+          "area": 0
+        },
+        {
+          "need": 8,
+          "awards": "417#1500|424#10",
+          "area": 0
+        },
+        {
+          "need": 9,
+          "awards": "358#15",
+          "area": 0
+        },
+        {
+          "need": 10,
+          "awards": "435#8|4201042#15|418#10",
+          "area": 0
+        },
+        {
+          "need": 11,
+          "awards": "4101067#1",
+          "area": 0
+        },
+        {
+          "need": 12,
+          "awards": "435#15|4201042#30|418#20",
+          "area": 0
+        },
+        {
+          "need": 13,
+          "awards": "4102056#1",
+          "area": 0
+        },
+        {
+          "need": 14,
+          "awards": "2#2000|986001#10|985003#20",
+          "area": 0
+        },
+        {
+          "need": 15,
+          "awards": "940059#50",
+          "area": 0
+        },
+        {
+          "need": 16,
+          "awards": "4402015#1",
+          "area": 0
+        },
+        {
+          "need": 17,
+          "awards": "4104023#1",
+          "area": 0
+        },
+        {
+          "need": 18,
+          "awards": "435#40|4201042#80|418#40",
+          "area": 0
+        },
+        {
+          "need": 19,
+          "awards": "6779#1",
+          "area": 0
+        },
+        {
+          "need": 20,
+          "awards": "4901001#1|4201042#80|418#40",
+          "area": 0
+        },
+        {
+          "need": 21,
+          "awards": "5100020#1",
+          "area": 0
+        },
+        {
+          "need": 22,
+          "awards": "4901001#1|4201042#100|418#50",
+          "area": 0
+        },
+        {
+          "need": 23,
+          "awards": "5100021#1",
+          "area": 0
+        },
+        {
+          "need": 24,
+          "awards": "940059#150|4201042#100|418#50",
+          "area": 0
+        },
+        {
+          "need": 25,
+          "awards": "6791#1",
+          "area": 0
+        },
+        {
+          "need": 26,
+          "awards": "435#15|4201042#30|418#20",
+          "area": 0
+        }
+      ],
+      "buy": {
+        "cost": "2#200",
+        "get": "343#1",
+        "limit": 30
+      },
+      "title": "Ném Vòng"
+    },
+    "286": {
+      "unit": "spins",
+      "modes": [
+        {
+          "cost": "345#1",
+          "always": "",
+          "groups": [
+            {
+              "weight": 1,
+              "prizes": [
+                {
+                  "awards": "1#1000000",
+                  "weight": 60,
+                  "stock": 40
+                },
+                {
+                  "awards": "9#1000000",
+                  "weight": 60,
+                  "stock": 40
+                },
+                {
+                  "awards": "360#1000",
+                  "weight": 60,
+                  "stock": 40
+                },
+                {
+                  "awards": "359#100",
+                  "weight": 60,
+                  "stock": 40
+                },
+                {
+                  "awards": "417#100",
+                  "weight": 60,
+                  "stock": 40
+                },
+                {
+                  "awards": "426#100",
+                  "weight": 60,
+                  "stock": 40
+                },
+                {
+                  "awards": "35#100|36#20|20#10",
+                  "weight": 40,
+                  "stock": 1
+                },
+                {
+                  "awards": "7162#1|7158#1|74#168",
+                  "weight": 40,
+                  "stock": 1
+                },
+                {
+                  "awards": "4102007#1",
+                  "weight": 40,
+                  "stock": 1
+                },
+                {
+                  "awards": "93#1|940004#50|6000#6000",
+                  "weight": 40,
+                  "stock": 1
+                },
+                {
+                  "awards": "940006#50|940005#50|6000#6000",
+                  "weight": 40,
+                  "stock": 1
+                },
+                {
+                  "awards": "4102008#1",
+                  "weight": 40,
+                  "stock": 1
+                },
+                {
+                  "awards": "4703001#100|4704001#80|4705002#50",
+                  "weight": 40,
+                  "stock": 1
+                },
+                {
+                  "awards": "423#50|424#30|418#50",
+                  "weight": 40,
+                  "stock": 1
+                },
+                {
+                  "awards": "4501002#1",
+                  "weight": 40,
+                  "stock": 1
+                },
+                {
+                  "awards": "360#100000|359#10000|417#20000",
+                  "weight": 40,
+                  "stock": 1
+                },
+                {
+                  "awards": "258#100|259#50|260#2000",
+                  "weight": 40,
+                  "stock": 1
+                },
+                {
+                  "awards": "4101010#1",
+                  "weight": 40,
+                  "stock": 1
+                },
+                {
+                  "awards": "36#30",
+                  "weight": 40,
+                  "stock": 1
+                },
+                {
+                  "awards": "20#10",
+                  "weight": 40,
+                  "stock": 1
+                },
+                {
+                  "awards": "4201042#10",
+                  "weight": 40,
+                  "stock": 1
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "milestones": [
+        {
+          "need": 40,
+          "awards": "2#888|1#2000000",
+          "area": 0
+        },
+        {
+          "need": 80,
+          "awards": "1#10000000|9#10000000",
+          "area": 0
+        },
+        {
+          "need": 120,
+          "awards": "93#1|29#20",
+          "area": 0
+        },
+        {
+          "need": 160,
+          "awards": "36#30|20#10",
+          "area": 0
+        },
+        {
+          "need": 200,
+          "awards": "940004#50|4102007#1",
+          "area": 0
+        },
+        {
+          "need": 240,
+          "awards": "4101067#1|4102008#1",
+          "area": 0
+        },
+        {
+          "need": 280,
+          "awards": "4501002#1|170#30",
+          "area": 0
+        },
+        {
+          "need": 320,
+          "awards": "4102056#1|4206001#30",
+          "area": 0
+        },
+        {
+          "need": 400,
+          "awards": "4402015#1|6000#3000",
+          "area": 0
+        },
+        {
+          "need": 480,
+          "awards": "930235#50|4206001#60",
+          "area": 0
+        },
+        {
+          "need": 560,
+          "awards": "4901001#1|420#3",
+          "area": 0
+        },
+        {
+          "need": 640,
+          "awards": "6779#1|6000#3000",
+          "area": 0
+        },
+        {
+          "need": 720,
+          "awards": "930235#50|4206001#120",
+          "area": 0
+        },
+        {
+          "need": 840,
+          "awards": "417#50000|419#1000",
+          "area": 0
+        },
+        {
+          "need": 960,
+          "awards": "6791#1|418#250",
+          "area": 0
+        }
+      ],
+      "title": "Quay Vòng Quay!"
+    },
+    "290": {
+      "unit": "eggs",
+      "modes": [
+        {
+          "cost": "347#1",
+          "always": "",
+          "groups": [
+            {
+              "weight": 1,
+              "prizes": [
+                {
+                  "awards": "1#2000000",
+                  "weight": 100
+                },
+                {
+                  "awards": "9#2000000",
+                  "weight": 100
+                },
+                {
+                  "awards": "10#1500",
+                  "weight": 100
+                },
+                {
+                  "awards": "14#1500",
+                  "weight": 100
+                },
+                {
+                  "awards": "424#1",
+                  "weight": 100
+                },
+                {
+                  "awards": "198#2500",
+                  "weight": 100
+                },
+                {
+                  "awards": "199#500",
+                  "weight": 100
+                },
+                {
+                  "awards": "360#5000",
+                  "weight": 100
+                },
+                {
+                  "awards": "359#500",
+                  "weight": 100
+                },
+                {
+                  "awards": "216#100",
+                  "weight": 100
+                },
+                {
+                  "awards": "976001#2",
+                  "weight": 100
+                },
+                {
+                  "awards": "258#2",
+                  "weight": 100
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "cost": "348#1",
+          "always": "",
+          "groups": [
+            {
+              "weight": 1,
+              "prizes": [
+                {
+                  "awards": "35#50",
+                  "weight": 100
+                },
+                {
+                  "awards": "36#10",
+                  "weight": 100
+                },
+                {
+                  "awards": "20#5",
+                  "weight": 100
+                },
+                {
+                  "awards": "73#15",
+                  "weight": 100
+                },
+                {
+                  "awards": "170#15",
+                  "weight": 100
+                },
+                {
+                  "awards": "358#3",
+                  "weight": 100
+                },
+                {
+                  "awards": "418#2",
+                  "weight": 100
+                },
+                {
+                  "awards": "4201042#6",
+                  "weight": 100
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "milestones": [
+        {
+          "need": 10,
+          "awards": "4201042#10|2#888",
+          "area": 0
+        },
+        {
+          "need": 50,
+          "awards": "36#30|20#10",
+          "area": 0
+        },
+        {
+          "need": 100,
+          "awards": "940006#100|940005#100",
+          "area": 0
+        },
+        {
+          "need": 150,
+          "awards": "4102008#1|4102007#1",
+          "area": 0
+        },
+        {
+          "need": 200,
+          "awards": "4501002#1|930218#50",
+          "area": 0
+        },
+        {
+          "need": 250,
+          "awards": "986001#20|4206001#40",
+          "area": 0
+        },
+        {
+          "need": 300,
+          "awards": "4402015#1|6000#3000",
+          "area": 0
+        },
+        {
+          "need": 330,
+          "awards": "358#30|4206001#60",
+          "area": 0
+        },
+        {
+          "need": 360,
+          "awards": "418#50|419#1000",
+          "area": 0
+        },
+        {
+          "need": 390,
+          "awards": "4901001#1|417#6000",
+          "area": 0
+        },
+        {
+          "need": 420,
+          "awards": "4104023#1|14#100000",
+          "area": 0
+        },
+        {
+          "need": 450,
+          "awards": "6779#1|6000#3000",
+          "area": 0
+        },
+        {
+          "need": 500,
+          "awards": "4901001#2|4201042#100",
+          "area": 0
+        },
+        {
+          "need": 550,
+          "awards": "930235#50|4101010#1",
+          "area": 0
+        },
+        {
+          "need": 600,
+          "awards": "6791#1|6000#6000",
+          "area": 0
+        },
+        {
+          "need": 650,
+          "awards": "5100021#1|420#5",
+          "area": 0
+        },
+        {
+          "need": 700,
+          "awards": "4901001#3|418#100",
+          "area": 0
+        },
+        {
+          "need": 800,
+          "awards": "940059#100|4206001#180",
+          "area": 0
+        },
+        {
+          "need": 900,
+          "awards": "6791#1|4402015#1",
+          "area": 0
+        },
+        {
+          "need": 1000,
+          "awards": "5100020#1|418#500",
+          "area": 0
+        }
+      ],
+      "title": "Xưởng Trứng Phục Sinh"
+    },
+    "298": {
+      "unit": "lượt quay",
+      "modes": [
+        {
+          "cost": "364#1",
+          "always": "363#10",
+          "groups": [
+            {
+              "weight": 1,
+              "prizes": [
+                {
+                  "awards": "36#5",
+                  "weight": 100
+                },
+                {
+                  "awards": "20#2",
+                  "weight": 100
+                },
+                {
+                  "awards": "358#1",
+                  "weight": 25
+                },
+                {
+                  "awards": "349#1",
+                  "weight": 50
+                },
+                {
+                  "awards": "25#4",
+                  "weight": 100
+                },
+                {
+                  "awards": "29#3",
+                  "weight": 100
+                },
+                {
+                  "awards": "6000#500",
+                  "weight": 100
+                },
+                {
+                  "awards": "417#1000",
+                  "weight": 50
+                },
+                {
+                  "awards": "359#500",
+                  "weight": 75
+                },
+                {
+                  "awards": "360#5000",
+                  "weight": 75
+                },
+                {
+                  "awards": "326#50",
+                  "weight": 75
+                },
+                {
+                  "awards": "325#3000",
+                  "weight": 75
+                },
+                {
+                  "awards": "424#2",
+                  "weight": 50
+                },
+                {
+                  "awards": "418#1",
+                  "weight": 25
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "milestones": [
+        {
+          "need": 50,
+          "awards": "93#1",
+          "area": 0
+        },
+        {
+          "need": 100,
+          "awards": "424#10",
+          "area": 0
+        },
+        {
+          "need": 200,
+          "awards": "170#10",
+          "area": 0
+        },
+        {
+          "need": 300,
+          "awards": "4201042#100",
+          "area": 0
+        },
+        {
+          "need": 400,
+          "awards": "418#20",
+          "area": 0
+        },
+        {
+          "need": 500,
+          "awards": "435#100",
+          "area": 0
+        },
+        {
+          "need": 600,
+          "awards": "420#1",
+          "area": 0
+        }
+      ],
+      "buy": {
+        "cost": "2#500",
+        "get": "364#1",
+        "limit": 50
+      },
+      "title": "Ký Ức Tuổi Thơ"
+    },
+    "308": {
+      "unit": "pulls",
+      "modes": [
+        {
+          "cost": "385#1",
+          "always": "",
+          "groups": [
+            {
+              "weight": 1,
+              "prizes": [
+                {
+                  "awards": "325#100",
+                  "weight": 1100
+                },
+                {
+                  "awards": "326#1",
+                  "weight": 780
+                },
+                {
+                  "awards": "325#200",
+                  "weight": 900
+                },
+                {
+                  "awards": "326#2",
+                  "weight": 580
+                },
+                {
+                  "awards": "325#300",
+                  "weight": 700
+                },
+                {
+                  "awards": "326#3",
+                  "weight": 480
+                },
+                {
+                  "awards": "325#400",
+                  "weight": 500
+                },
+                {
+                  "awards": "326#4",
+                  "weight": 380
+                },
+                {
+                  "awards": "325#500",
+                  "weight": 300
+                },
+                {
+                  "awards": "326#5",
+                  "weight": 180
+                },
+                {
+                  "awards": "982001#1",
+                  "weight": 1300
+                },
+                {
+                  "awards": "983001#1",
+                  "weight": 1300
+                },
+                {
+                  "awards": "984001#1",
+                  "weight": 300
+                },
+                {
+                  "awards": "984002#1",
+                  "weight": 300
+                },
+                {
+                  "awards": "984003#1",
+                  "weight": 300
+                },
+                {
+                  "awards": "984004#1",
+                  "weight": 300
+                },
+                {
+                  "awards": "985001#1",
+                  "weight": 100
+                },
+                {
+                  "awards": "985002#1",
+                  "weight": 100
+                },
+                {
+                  "awards": "985003#1",
+                  "weight": 100
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "cost": "386#1",
+          "always": "",
+          "groups": [
+            {
+              "weight": 1,
+              "prizes": [
+                {
+                  "awards": "325#100",
+                  "weight": 900
+                },
+                {
+                  "awards": "326#1",
+                  "weight": 550
+                },
+                {
+                  "awards": "325#200",
+                  "weight": 700
+                },
+                {
+                  "awards": "326#2",
+                  "weight": 400
+                },
+                {
+                  "awards": "325#300",
+                  "weight": 500
+                },
+                {
+                  "awards": "326#3",
+                  "weight": 300
+                },
+                {
+                  "awards": "325#400",
+                  "weight": 300
+                },
+                {
+                  "awards": "326#4",
+                  "weight": 200
+                },
+                {
+                  "awards": "325#500",
+                  "weight": 100
+                },
+                {
+                  "awards": "326#5",
+                  "weight": 50
+                },
+                {
+                  "awards": "982001#1",
+                  "weight": 900
+                },
+                {
+                  "awards": "983001#1",
+                  "weight": 900
+                },
+                {
+                  "awards": "984001#1",
+                  "weight": 750
+                },
+                {
+                  "awards": "984002#1",
+                  "weight": 750
+                },
+                {
+                  "awards": "984003#1",
+                  "weight": 750
+                },
+                {
+                  "awards": "984004#1",
+                  "weight": 750
+                },
+                {
+                  "awards": "985001#1",
+                  "weight": 300
+                },
+                {
+                  "awards": "985002#1",
+                  "weight": 300
+                },
+                {
+                  "awards": "985003#1",
+                  "weight": 300
+                },
+                {
+                  "awards": "986001#1",
+                  "weight": 300
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "guarantee": {
+        "mode": 1,
+        "every": 20,
+        "awards": "986001#1"
+      },
+      "milestones": [],
+      "title": "Ước Nguyện Chuông Gió"
+    },
+    "317": {
+      "unit": "scoops",
+      "modes": [
+        {
+          "cost": "394#1",
+          "always": "",
+          "groups": [
+            {
+              "weight": 1,
+              "prizes": [
+                {
+                  "awards": "1#1000000",
+                  "weight": 174
+                },
+                {
+                  "awards": "9#1000000",
+                  "weight": 174
+                },
+                {
+                  "awards": "14#750",
+                  "weight": 150
+                },
+                {
+                  "awards": "10#750",
+                  "weight": 150
+                },
+                {
+                  "awards": "360#2000",
+                  "weight": 75
+                },
+                {
+                  "awards": "359#200",
+                  "weight": 75
+                },
+                {
+                  "awards": "419#5",
+                  "weight": 100
+                },
+                {
+                  "awards": "417#200",
+                  "weight": 100
+                },
+                {
+                  "awards": "4104022#1",
+                  "weight": 2
+                },
+                {
+                  "awards": "399#1",
+                  "weight": 60
+                },
+                {
+                  "awards": "400#1",
+                  "weight": 30
+                },
+                {
+                  "awards": "401#1",
+                  "weight": 10
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "milestones": [
+        {
+          "need": 20,
+          "awards": "36#10",
+          "area": 0
+        },
+        {
+          "need": 40,
+          "awards": "20#5",
+          "area": 0
+        },
+        {
+          "need": 60,
+          "awards": "4201042#10",
+          "area": 0
+        },
+        {
+          "need": 80,
+          "awards": "4501002#1",
+          "area": 0
+        },
+        {
+          "need": 100,
+          "awards": "358#30",
+          "area": 0
+        },
+        {
+          "need": 130,
+          "awards": "4101008#1",
+          "area": 0
+        },
+        {
+          "need": 160,
+          "awards": "4402015#1|6000#2000",
+          "area": 0
+        },
+        {
+          "need": 200,
+          "awards": "4101010#1|4201042#100",
+          "area": 0
+        },
+        {
+          "need": 240,
+          "awards": "6779#1|6000#4000",
+          "area": 0
+        },
+        {
+          "need": 280,
+          "awards": "5100020#1|4201042#100",
+          "area": 0
+        },
+        {
+          "need": 320,
+          "awards": "4901001#2|420#10",
+          "area": 0
+        },
+        {
+          "need": 360,
+          "awards": "5100021#1|418#300",
+          "area": 0
+        },
+        {
+          "need": 400,
+          "awards": "4402015#1|6000#9000",
+          "area": 0
+        },
+        {
+          "need": 480,
+          "awards": "5100020#1|5100021#1",
+          "area": 0
+        },
+        {
+          "need": 600,
+          "awards": "6791#1|6000#15000",
+          "area": 0
+        }
+      ],
+      "buy": {
+        "cost": "2#3000",
+        "get": "394#20|20#10",
+        "limit": 2
+      },
+      "title": "Vớt Cá Vàng"
+    }
+  },
+  "names": {
+    "1": "Coin",
+    "2": "Gem",
+    "9": "EXP Juice",
+    "10": "Lunch Box",
+    "14": "Crystal Chisel",
+    "20": "Seal",
+    "25": "Advance Internship Scroll",
+    "26": "Servant Cookie",
+    "27": "Spirit Cookie",
+    "29": "Super Slot Ticket",
+    "35": "Slot Ticket",
+    "36": "Adv. Capsule Coin",
+    "73": "Rune Engraving",
+    "74": "Costume Ticket",
+    "93": "Elite Badge",
+    "170": "Lucky Crystal",
+    "198": "Standard File",
+    "199": "Exclusive File",
+    "216": "Servant Crystal",
+    "255": "Traditional Riceball",
+    "256": "Ancient Silver Coin",
+    "257": "Ancient Gold Coin",
+    "258": "Plain Button",
+    "259": "Fancy Button",
+    "260": "Plain Silk",
+    "283": "Fishing Rod",
+    "309": "Lucky Coin",
+    "325": "Fantasy Dust",
+    "326": "Fantasy Talisman",
+    "334": "Chime Resource Bag - Orange",
+    "343": "Ring Toss Ticket",
+    "345": "Clockwork Coin",
+    "347": "Easter Slingshot",
+    "348": "Laser Gun",
+    "349": "Space Radar",
+    "358": "Star Token",
+    "359": "Brilliant Sphere",
+    "360": "Tarnished Sphere",
+    "363": "Childhood Delight",
+    "364": "Rabbit Balloon",
+    "374": "Chime Resource Bag - Red",
+    "385": "Jade Crane",
+    "386": "Gilded Crane",
+    "394": "Paper Scoop",
+    "417": "Soul Gem",
+    "418": "Soul Mirror",
+    "419": "Soul Dice",
+    "420": "Soul Charm",
+    "423": "Soul Token",
+    "424": "Shiny Soul Token",
+    "426": "Soul Essence",
+    "435": "Random Anima Artifact Chest",
+    "6000": "Afterglow",
+    "6779": "Peacock Tambourine",
+    "6791": "Necronomicon",
+    "7158": "Jester",
+    "7162": "AI Joker",
+    "930218": "5-star Chizuko",
+    "930235": "5-star Apollis",
+    "940004": "Elite 5-star Girls Shard",
+    "940005": "Elite 5-star Demon Shard",
+    "940006": "Elite 5-star Angel Shard",
+    "940015": "5-star Demon Shard",
+    "940016": "5-star Angel Shard",
+    "940035": "6-Star Demon Doll",
+    "940036": "6-Star Angel Doll",
+    "940059": "Customized 10-star Cosmos Girls Shard",
+    "976001": "Orange Outfit Shard",
+    "982001": "Shard of Cherries",
+    "983001": "Shard of Kittens",
+    "984001": "Shard of the Spectre",
+    "984002": "Shard of Order",
+    "984003": "Shard of Freedom",
+    "984004": "Shard of Faeries",
+    "985001": "Shard of the Abyss",
+    "985002": "Shard of the Heavens",
+    "985003": "Shard of the Galaxy",
+    "986001": "Shard of Reflections",
+    "4101008": "9-star Doll Chest",
+    "4101010": "10-star Doll Chest",
+    "4101050": "5-Star Customized Chest",
+    "4101067": "5-Star Customized Chest",
+    "4102007": "6-star Doll Chest",
+    "4102008": "6-star Doll chest",
+    "4102056": "Customized L&D Chest",
+    "4104022": "5-Star Customized Chest (6 factions)",
+    "4104023": "5-Star Customized Chest (6 factions)",
+    "4201042": "Regular Customized Resource Chest",
+    "4206001": "Customized Sphere Chest",
+    "4402015": "Customized Orange Antique Chest",
+    "4501002": "Customized Class Set Chest",
+    "4703001": "Chime Shard Chest - Purple",
+    "4704001": "Chime Shard Chest - Green",
+    "4705002": "Chime Shard Chest - Red",
+    "4901001": "Customized Orange Anima Artifact Chest",
+    "5100020": "Ancient Coin",
+    "5100021": "Thunder Potion"
+  }
+}
