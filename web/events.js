@@ -20,9 +20,13 @@ const EventsHub=(()=>{
   'Limited Event':'Sự Kiện Giới Hạn','Newbie Event':'Sự Kiện Tân Thủ',
   'Anniversary':'Kỷ Niệm','Birthday':'Sinh Nhật','Exchange':'Đổi Thưởng',
   'Mission':'Nhiệm Vụ','Shop':'Cửa Hàng','Gift Pack':'Gói Quà','Login':'Đăng Nhập',
-  'Purchase':'Mua','Draw':'Quay','Ranking':'Xếp Hạng','Rewards':'Phần Thưởng'
+  'Purchase':'Mua','Draw':'Quay','Ranking':'Xếp Hạng','Rewards':'Phần Thưởng',
+  'Guardando…':'Đang lưu…','Received: ':'Đã nhận: ','Saved.':'Đã lưu.',
+  'Sign In':'Điểm Danh','Resets':'Làm mới','Monthly':'Hằng Tháng',
+  'Refresh':'Làm Mới','Collection':'Bộ Sưu Tập','Point':'Điểm','Points':'Điểm',
+  'Gift':'Quà Tặng','Event':'Sự Kiện','Reward':'Phần Thưởng','Current':'Hiện Có'
  };
- const vi=text=>{const raw=String(text??'');const direct=VI_EVENT[raw];if(direct)return direct;if(window.GxbVi){const t=GxbVi.t(raw);if(t!==raw)return t;}return raw
+ const vi=text=>{const raw=String(text??'');const direct=VI_EVENT[raw];if(direct)return direct;if(window.GxbLocale){const t=GxbLocale.t(raw);if(t!==raw)return t;}return raw
   .replace(/\bEvents?\b/g,'Sự Kiện').replace(/\bMonthly\b/g,'Tháng').replace(/\bWeekly\b/g,'Tuần')
   .replace(/\bExclusive(s)?\b/g,'Độc Quyền').replace(/\bNewbie\b/g,'Tân Thủ')
   .replace(/\bCheck[ -]?in\b/gi,'Điểm Danh').replace(/\bLogin\b/g,'Đăng Nhập')
@@ -55,7 +59,7 @@ const EventsHub=(()=>{
  const cal=()=>state.calendar_info;
  const slot=id=>cal()?.events.find(e=>e.id===id);
  const openNow=id=>!cal()||!cal().scheduled.includes(id)||!!slot(id);
- const leftText=at=>{const s=Math.max(0,at-Math.floor(Date.now()/1000));const d=Math.floor(s/86400),h=Math.floor(s%86400/3600);return d?d+'d '+h+'h':h+'h '+Math.floor(s%3600/60)+'m';};
+ const leftText=at=>{const s=Math.max(0,at-Math.floor(Date.now()/1000));const d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60);return d?d+' ngày '+h+' giờ':h?h+' giờ '+m+' phút':m+' phút';};
  function calendarWin(){const c=cal();if(!c||typeof GirlUI==='undefined')return;const {body}=GirlUI.win({title:'Lịch Sự Kiện',cls:'ev-cal'});const sec=(t)=>{body.append(el('h4','ev-cal-h',t));};const row=(a,b)=>{const r=el('div','ev-cal-row');r.append(el('span','',a),el('b','',b));body.append(r);};
   sec('Đặt lại');for(const r of c.resets)row(r.label,leftText(r.at));
   sec('Đang diễn ra');for(const e of c.events)row((e.kind==='month'?'[Tháng] ':'[Tuần] ')+vi(e.title),'còn '+leftText(e.end));
@@ -65,11 +69,11 @@ const EventsHub=(()=>{
  function listAll(){return catalog.activities.filter(a=>inTab(a,tab)&&!(a.id===116&&hub().sevenday.done)).sort((a,b)=>(WORKING.has(b.id)-WORKING.has(a.id))||(b.rank-a.rank)||(b.id-a.id));}
 
  function open(from){origin=from||'home';message='';showView('events');if(!catalog&&!loading)loading=Promise.all([api('/assets/events/catalog.json'),typeof ActKit!=='undefined'?ActKit.load():null]).then(([c])=>{catalog=c;if(typeof ActKit!=='undefined')ActKit.ids().forEach(i=>WORKING.add(i));render();}).catch(e=>{message=e.message;loading=null;render();});if(!visited){visited=true;send({action:'visit'},true);}}
- async function send(request,quiet=false){if(pending)return;pending=true;if(!quiet){message='Guardando…';render();}try{const r=await api('/api/events/action',request);state=r.state;const got=Object.entries(r.awards||{});message=got.length?"Received: "+got.map(([k,n])=>fmt(n)+' × '+itemName(k)).join(', '):(quiet?'':"Saved.");}catch(e){message=e.message;}finally{pending=false;render();if(typeof window.render==='function')window.render();}}
+ async function send(request,quiet=false){if(pending)return;pending=true;if(!quiet){message='Đang lưu…';render();}try{const r=await api('/api/events/action',request);state=r.state;const got=Object.entries(r.awards||{});message=got.length?"Đã nhận: "+got.map(([k,n])=>fmt(n)+' × '+itemName(k)).join(', '):(quiet?'':"Đã lưu.");if(got.length&&!quiet&&typeof GirlUI!=='undefined')GirlUI.toast(message);}catch(e){message=e.message;}finally{pending=false;render();if(typeof window.render==='function')window.render();}}
 
  function render(){
   const root=$('events-view');if(!root||view!=='events')return;root.replaceChildren();
-  const top=el('header','ev-top');const back=el('button','ev-back');back.type='button';back.setAttribute('aria-label',"Back");back.append(img('/assets/ui/win_back_btn.png'));back.onclick=()=>showView(origin==='events'?'home':origin);
+  const top=el('header','ev-top');const back=el('button','ev-back');back.type='button';back.setAttribute('aria-label',"Quay Lại");back.append(img('/assets/ui/win_back_btn.png'));back.onclick=()=>showView(origin==='events'?'home':origin);
   const money=el('div','ev-money');for(const id of ['1','2']){const s=el('span');s.append(img('/assets/currency/icon_'+id+'_small.png'),el('b',undefined,fmt(state.items[id]||0)));money.append(s);}
   top.append(back,el('h1',undefined,"Sự Kiện"),money);root.append(top);
   if(!catalog||!hub()){root.append(el('p','ev-note',message||"Đang tải sự kiện…"));return;}
@@ -104,16 +108,16 @@ const EventsHub=(()=>{
 
  function sevenDay(parent,a){
   const h=hub(),box=el('div','sd-stage');parent.append(box);
-  box.append(img(A('activity_bg03'),'sd-bg'),img(A('activity_sevenday_text01_en_en'),'sd-title'));
+  box.append(img(A('activity_bg03'),'sd-bg'),el('h2','sd-title sd-title-vi','Đăng Nhập 7 Ngày'));
   const grid=el('div','sd-grid');box.append(grid);
   for(const d of h.sevenday.days){const c=el('button','sd-day'+(d.can?' can':'')+(d.got?' got':''));c.type='button';c.append(img(A('day_'+d.day+'_'+(d.got?2:1)),'sd-day-bg'));const rw=el('div','sd-rewards');for(const [id,n]of pairs(d.award))rw.append(rewardIcon(id,n));c.append(rw);c.disabled=pending||!d.can;c.onclick=()=>send({action:'sevenday'});grid.append(c);}
   parent.append(el('p','ev-note',(a.desc&&a.desc!=='-1'?a.desc+' · ':'')+"Mỗi ngày đăng nhập mở một mốc. Đã nhận "+h.sevenday.count+'/7.'));
  }
 
  // Point events (SummonGiftBag / ProphetSummonGiftBag / WishingPoolGiftBag): banner, loop counter, tiers.
- function left(info){const secs=Math.max(0,info.ends_at-(state.server_time||Date.now()/1000));return Math.floor(secs/86400)+'D '+Math.floor(secs%86400/3600)+'H';}
+ function left(info){const secs=Math.max(0,info.ends_at-(state.server_time||Date.now()/1000));return Math.floor(secs/86400)+' ngày '+Math.floor(secs%86400/3600)+' giờ';}
  function pointEvent(parent,a){const cfg=POINT[a.id],info=state.point_events_info?.[a.id];if(!info){parent.append(el('p','ev-note',"No event data."));return;}
-  const ban=el('div','pe-banner');ban.style.backgroundImage=`url('${A(cfg.bg)}')`;ban.append(img(A(cfg.text),'pe-title'),el('p','pe-desc',a.id===20?'Mỗi lần quay Máy Quay nhận 1 điểm. Có thể hoàn thành '+info.times+' vòng thưởng trong sự kiện!':cfg.desc));
+  const ban=el('div','pe-banner');ban.style.backgroundImage=`url('${A(cfg.bg)}')`;ban.append(el('h2','pe-title pe-title-vi',({13:'Thưởng Điểm Triệu Hồi',16:'Thưởng Điểm Chiêu Mộ',20:'Thưởng Điểm Máy Quay'})[a.id]||vi(a.title)),el('p','pe-desc',a.id===20?'Mỗi lần quay Máy Quay nhận 1 điểm. Có thể hoàn thành '+info.times+' vòng thưởng trong sự kiện!':cfg.desc));
   const strip=el('div','pe-strip');strip.append(el('b','','Đã hoàn thành ('+info.rounds+'/'+info.times+')'),el('span','pe-left',left(info)),el('span','pe-left-label','Còn lại'));ban.append(strip);
   const go=el('button','pe-go',cfg.go);go.type='button';go.style.backgroundImage=`url('${A('house_icon_1')}')`;go.disabled=!cfg.route;go.title=cfg.route?'':"Máy Quay hiện chưa khả dụng";go.onclick=()=>{if(cfg.route==='capsule')showView('capsule');else if(cfg.route==='enroll'&&typeof Enroll!=='undefined')Enroll.open('events');else if(cfg.route==='slots'&&typeof Slots!=='undefined')Slots.open('events');};ban.append(go);parent.append(ban);
   const list=el('div','pe-list');for(const t of info.tiers){const row=el('div','pe-row');const l=el('div','pe-left-col');l.append(el('b','','Đạt '+t.point+' điểm'));const bar=el('div','pe-bar');bar.style.backgroundImage=`url('${A('activity_bar_bg')}')`;const fill=el('i');fill.style.width=Math.min(100,(t.got?t.point:info.point)/t.point*100)+'%';fill.style.backgroundImage=`url('${A('activity_bar_thumb')}')`;bar.append(fill,el('span','',(t.got?t.point:Math.min(info.point,t.point))+'/'+t.point));l.append(bar);row.append(l);
@@ -123,7 +127,7 @@ const EventsHub=(()=>{
  function archived(parent,a){
   const c=el('div','ev-archive');c.append(img(A('icon_'+a.icon),'ev-archive-icon'),el('h2',undefined,vi(a.title.replace(/\n/g,' '))));
   if(a.desc&&a.desc!=='-1')c.append(el('p',undefined,vi(a.desc)));
-  c.append(el('p','ev-note',"Sự kiện luân phiên tuần này (ID "+a.id+"). Nội dung chơi của sự kiện này đang được hoàn thiện; lịch luân phiên đổi vào mỗi Thứ Hai."));parent.append(c);
+  c.append(el('p','ev-note',"Sự kiện luân phiên tuần này. Nội dung đang được hoàn thiện; lịch đổi vào mỗi Thứ Hai."));parent.append(c);
  }
  function openPoint(id,from){tab='ex';selected=id;open(from);}
  return {open,openPoint,render};
