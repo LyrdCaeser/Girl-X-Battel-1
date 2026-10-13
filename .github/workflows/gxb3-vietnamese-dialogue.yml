@@ -6,12 +6,14 @@ on:
       max_items:
         description: "So dong dich moi (0 = tat ca; co the chay lai de dich tiep)"
         required: true
-        default: "0"
+        default: "50"
         type: choice
         options:
-          - "0"
+          - "50"
+          - "250"
           - "1000"
           - "2500"
+          - "0"
 
 permissions:
   contents: write
