@@ -66,9 +66,9 @@ const Story=(()=>{
     row.append(img(A+'cg/'+s.icon+'.png','sm-simg'));const t=el('div','sm-stext');t.append(el('b','',s.name),el('small','',`Stage ${s.label}`));row.append(t,el('span','sm-state',open?'▶':'🔒'));list.append(row);}st.append(list);}
   if(note)st.append(el('p','sm-err',note));}
  async function replay(s){for(const p of s.memory.length?s.memory:[s.pre,s.post].filter(Boolean))await StoryPlayer.play(p,{title:`${s.label} ${s.name}`});}
- function unlockModal(s,opened){const formerOk=!s.former||opened.has(s.former);const [k,n]=(s.unlock||'208#2').split('#');
+ async function unlockModal(s,opened){const formerOk=!s.former||opened.has(s.former);const [k,n]=(s.unlock||'208#2').split('#');
   const msg=`${s.name}\n\nPass Campaign ${s.label} to unlock` + (formerOk?`\n\n…or consume ${n} Key of Memory to unlock instantly.`:'\n\nUnlock by completing previous story section');
   if(!formerOk||info().keys<Number(n)){note=formerOk?`Pass Campaign ${s.label} to unlock (o usa ${n} Key of Memory; tienes ${info().keys}).`:'Unlock by completing previous story section';render();return;}
-  if(confirm(msg+'\n\nConfirm to unlock story?'))act({action:'unlock',id:s.id});}
+  if(await GirlUI.confirm(msg+'\n\nMở khóa phần truyện này?',{title:'Mở Khóa Cốt Truyện',ok:'Mở Khóa'}))act({action:'unlock',id:s.id});}
  return {open,render};
 })();
