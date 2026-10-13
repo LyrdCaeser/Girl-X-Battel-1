@@ -1,6 +1,6 @@
 'use strict';
 window.GxbAuth=(()=>{
-  let overlay=null,session=null,worlds=[];
+  let overlay=null,session=null,worlds=[],isSuperGM=false;
   const el=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n;};
   async function request(url,body){
     const r=await fetch(url,{method:body===undefined?'GET':'POST',headers:body===undefined?{}:{'Content-Type':'application/json'},body:body===undefined?undefined:JSON.stringify(body),credentials:'same-origin'});
@@ -71,7 +71,7 @@ window.GxbAuth=(()=>{
   }
   async function init(){
     try{
-      const data=await request('/api/auth/me');worlds=data.worlds||[];session=data.session||null;
+      const data=await request('/api/auth/me');worlds=data.worlds||[];session=data.session||null;isSuperGM=!!data.is_super_gm;
       if(!data.authenticated){show();return false;}
       remove();
       queueMicrotask(installAccountControls);
@@ -80,6 +80,14 @@ window.GxbAuth=(()=>{
   }
   function installAccountControls(){
     const settings=document.getElementById('profile-settings-page');if(!settings||settings.querySelector('.auth-account-row'))return;
+    const infoPage=document.getElementById('profile-info-page');
+    const oldGM=document.getElementById('gxb3-profile-supergm');oldGM?.remove();
+    if(isSuperGM&&infoPage){
+      const gm=el('button','profile-primary gxb3-supergm-entry','GM Tools (QTV · SUPER GM)');
+      gm.id='gxb3-profile-supergm';gm.type='button';
+      gm.onclick=async()=>{try{await window.AdminPanel?.open();}catch(e){window.GirlUI?.notice?.(e.message,{title:'Quản trị'});}};
+      infoPage.append(gm);
+    }
     const row=el('div','profile-setting-row auth-account-row');const div=el('div');div.append(el('strong','','Tài khoản'),el('small','',session?.account?`${session.account.username} · ${session.account.uid}`:''));
     const sessionsBtn=el('button','auth-small-btn','Thiết bị');sessionsBtn.onclick=openSessions;
     const recoveryBtn=el('button','auth-small-btn','Mã khôi phục');recoveryBtn.onclick=rotateRecovery;
@@ -120,5 +128,5 @@ window.GxbAuth=(()=>{
   }
 
   window.GxbAuthReady=init();
-  return{request,session:()=>session,worlds:()=>worlds,logout:async()=>{await request('/api/auth/logout',{});location.reload();}};
+  return{request,session:()=>session,isSuperGM:()=>isSuperGM,worlds:()=>worlds,logout:async()=>{await request('/api/auth/logout',{});location.reload();}};
 })();
