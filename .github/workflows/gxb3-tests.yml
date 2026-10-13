@@ -36,5 +36,7 @@ jobs:
           node --check web/online-hub.js
           node --check web/payment.js
           node --check web/auth.js
+      - name: Audit Vietnamese dialogue coverage (read-only)
+        run: python tools/translate_vi_dialogue.py
       - name: Run unit tests
         run: python -m unittest discover -s tests -p "test_*.py" -v
