@@ -82,3 +82,6 @@
 .sm-juke-h{margin:8px 0 2px;color:#4c6aa5;border-bottom:1px solid #d7e0f2}
 .sm-song{flex:none;display:grid;grid-template-columns:24px 1fr auto;align-items:center;gap:8px;text-align:left;border:2px solid #d5deec;border-radius:10px;background:#fff;padding:6px 10px;cursor:pointer;color:#3b4b72}
 .sm-song i{font-style:normal;color:#6d93d8}.sm-song small{color:#8a93b0;font-size:11px}.sm-song.on{border-color:#f0b43c;background:#fff8e2}.sm-song.on i{color:#e08a1a}
+
+/* Replace original English NEW baked into the decorative graphic with a localized text layer. */
+.sm-newest span.sm-new{display:flex;align-items:center;justify-content:center;height:16%;width:72%;left:14%;right:14%;bottom:5%;border-radius:8px;background:linear-gradient(180deg,#ffdb83,#d98425);color:#653314;text-shadow:0 1px #ffeab2;font-weight:900;font-size:clamp(12px,2.4cqw,18px);letter-spacing:.14em}
