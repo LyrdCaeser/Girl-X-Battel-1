@@ -98,5 +98,16 @@ window.GxbPayment=(()=>{
     overlay.append(box);(window.GxbFrame?.root()||document.body).append(overlay);
   }
 
+  // The original VIP profile and Gift Packs window are the storefront.
+  // This component is payment-method confirmation only.
+  document.addEventListener('DOMContentLoaded',()=>{
+    const vip=document.getElementById('vip-packages-open');
+    if(vip&&!vip.dataset.boundPackages){
+      vip.dataset.boundPackages='1';
+      vip.addEventListener('click',()=>{
+        if(typeof HomeMenus!=='undefined')HomeMenus.open('giftpacks','profile');
+      });
+    }
+  },{once:true});
   return{open,close};
 })();
