@@ -135,7 +135,10 @@ const HomeMenus=(()=>{
    if(vip){
     const progress=card(parent,'VIP '+vip.level,'mail_gift_bg');
     paragraph(progress,'Điểm VIP: '+number(vip.exp||0)+(vip.next?' / '+number(vip.next):' · Đã đạt cấp tối đa'));
-    if(vip.perks)paragraph(progress,String(vip.perks));
+    if(vip.perks){
+     const p=vip.perks;
+     paragraph(progress,'Thưởng treo máy +'+Math.round(Number(p.extra_output||0)*100)+'% · Midas '+(p.midas_buy_times||0)+' lượt/ngày · Thực tập '+(p.pub_mission_num||0)+' lượt/ngày');
+    }
    }
    if(topupPackages===null){
     paragraph(parent,'Đang tải gói nạp của máy chủ…');
