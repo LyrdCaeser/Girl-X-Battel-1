@@ -97,3 +97,33 @@
  html.gxb-mobile #app-frame .home-side small{font-size:9px}
  html.gxb-mobile #app-frame #capsule-result{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
+
+/* GXB3 mobile fit: hidden screens must remain hidden even when a layout rule uses !important.
+   The previous .layout display:block!important made inactive PC panels leak into phone views. */
+html.gxb-mobile #app-frame [hidden]{display:none!important}
+html.gxb-mobile #app-frame #game-root{box-sizing:border-box!important;min-width:0!important;max-width:100%!important;overflow-x:hidden!important}
+html.gxb-mobile #app-frame #game-root > section:not([hidden]){max-width:100%!important;box-sizing:border-box!important}
+html.gxb-mobile #app-frame .home-left{left:0!important;width:36%!important;max-width:36%!important}
+html.gxb-mobile #app-frame .home-right{right:0!important;width:19%!important;max-width:19%!important}
+html.gxb-mobile #app-frame .home-destinations{left:0!important;right:0!important;width:100%!important}
+html.gxb-mobile #app-frame .home-bottom{left:0!important;right:0!important;width:100%!important}
+html.gxb-mobile #app-frame .home-destinations button,
+html.gxb-mobile #app-frame .home-bottom button{min-width:0!important;max-width:100%!important}
+html.gxb-mobile #app-frame #events-view{width:100%!important;max-width:100%!important;height:100%!important;max-height:100%!important;overflow-y:auto!important;overscroll-behavior:contain}
+html.gxb-mobile #app-frame .fantasy-book-view:not([hidden]){
+  width:100%!important;height:100%!important;min-height:0!important;max-height:100%!important;
+  display:grid!important;place-items:center!important;overflow:hidden!important;
+  container-type:size!important;box-sizing:border-box!important;
+  background:linear-gradient(180deg,#c9e4fd 0%,#eaf4ff 28%,#f8e7f4 100%)!important
+}
+html.gxb-mobile #app-frame .fantasy-book-view .fb-stage{
+  --u:min(calc(100cqw / 720),calc(100cqh / 1280));
+  position:relative!important;flex:none!important;
+  width:calc(720 * var(--u))!important;height:calc(1280 * var(--u))!important;
+  min-width:0!important;min-height:0!important;max-width:100%!important;max-height:100%!important;
+  margin:0 auto!important;overflow:hidden!important
+}
+@media (orientation:landscape) and (max-height:550px){
+  html.gxb-mobile #app-frame .home-side button{height:clamp(33px,12dvh,62px)!important}
+  html.gxb-mobile #app-frame .home-bottom{height:16%!important}
+}
