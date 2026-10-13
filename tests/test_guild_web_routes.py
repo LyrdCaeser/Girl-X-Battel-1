@@ -11,15 +11,17 @@ WEB = Path(__file__).resolve().parents[1] / "web"
 class GuildWebRoutingTests(unittest.TestCase):
     def test_all_guild_menu_entries_use_online_service_only(self):
         app = (WEB / "app.js").read_text(encoding="utf-8")
-        self.assertEqual(app.count("GxbOnline.open('guild')"), 2)
+        self.assertEqual(app.count("Guild.openOnline(key,origin||view)"), 2)
         self.assertNotIn("Guild.open(", app)
-        self.assertIn("Bang Hội Online chưa sẵn sàng", app)
+        self.assertIn("Bang Hội chưa sẵn sàng", app)
 
     def test_guild_online_reads_real_authenticated_endpoint(self):
-        hub = (WEB / "online-hub.js").read_text(encoding="utf-8")
-        self.assertIn("get('/api/world-guild')", hub)
-        self.assertIn("post('/api/world-guild/manage'", hub)
-        self.assertIn("post('/api/world-guild/action'", hub)
+        guild = (WEB / "guild.js").read_text(encoding="utf-8")
+        self.assertIn("api('/api/world-guild')", guild)
+        self.assertIn("api('/api/world-guild/manage'", guild)
+        self.assertIn("api('/api/world-guild/action'", guild)
+        self.assertIn("GuildTerritory.paint(back,false)", guild)
+        self.assertIn("renderOnlineGuild", guild)
 
 
 if __name__ == "__main__":
