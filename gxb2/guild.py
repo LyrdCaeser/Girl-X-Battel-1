@@ -51,7 +51,7 @@ def add(state, got):
 
 def take(state, cost):
     for k, n in cost.items():
-        if int(state['items'].get(k, 0)) < n: raise GuildError('Faltan recursos')
+        if int(state['items'].get(k, 0)) < n: raise GuildError('Không đủ tài nguyên')
     for k, n in cost.items(): state['items'][k] = int(state['items'].get(k, 0)) - n
 
 
@@ -177,29 +177,29 @@ def bosses():
 def action(state, request, now, rng=secrets.randbelow, fight=None, player_level=1):
     act = request.get('action')
     if act == 'create':
-        if state.get('guild'): raise GuildError('Ya tienes un gremio')
-        if not unlocked(state): raise GuildError('El gremio se abre en la fase %d' % UNLOCK_STAGE)
+        if state.get('guild'): raise GuildError('Bạn đã có Bang Hội')
+        if not unlocked(state): raise GuildError('Bang Hội mở khóa sau ải %d' % UNLOCK_STAGE)
         name = str(request.get('name', '')).strip(); lo, hi = [int(x) for x in str(M['guild_name_num_max']).split('|')]
-        if not lo <= len(name) <= hi: raise GuildError('El nombre debe tener entre %d y %d caracteres' % (lo, hi))
-        if not any(c.isalpha() for c in name): raise GuildError('El nombre necesita al menos una letra')
+        if not lo <= len(name) <= hi: raise GuildError('Tên Bang Hội phải có từ %d đến %d ký tự' % (lo, hi))
+        if not any(c.isalpha() for c in name): raise GuildError('Tên Bang Hội phải chứa ít nhất một chữ cái')
         flag = int(request.get('flag', 1))
-        if flag not in D['flags']: raise GuildError('Bandera desconocida')
+        if flag not in D['flags']: raise GuildError('Lá cờ không hợp lệ')
         cd = int(state.get('guild_dissolved_at', 0)) + int(M['guild_dissolve_cd'])
-        if now < cd: raise GuildError('Espera antes de crear otro gremio')
+        if now < cd: raise GuildError('Vui lòng chờ trước khi tạo Bang Hội mới')
         take(state, pairs(M['create_guild_cost']))
         state['guild'] = fresh(name, flag, str(request.get('notice', ''))[:100], now, rng)
-        log(state['guild'], now, 'Gremio creado')
+        log(state['guild'], now, 'Đã tạo Bang Hội')
         return {}
     g = data(state, now, rng)
-    if not g: raise GuildError('No tienes gremio')
+    if not g: raise GuildError('Bạn chưa gia nhập Bang Hội')
     lv = level_of(g['exp'])
     if act == 'edit':
         if 'name' in request and str(request['name']).strip() != g['name']:
             name = str(request['name']).strip(); lo, hi = [int(x) for x in str(M['guild_name_num_max']).split('|')]
-            if not lo <= len(name) <= hi or not any(c.isalpha() for c in name): raise GuildError('Nombre no válido')
+            if not lo <= len(name) <= hi or not any(c.isalpha() for c in name): raise GuildError('Tên không hợp lệ')
             take(state, pairs(M['modify_guild_name_cost'])); g['name'] = name
         if 'flag' in request:
-            if int(request['flag']) not in D['flags']: raise GuildError('Bandera desconocida')
+            if int(request['flag']) not in D['flags']: raise GuildError('Lá cờ không hợp lệ')
             g['flag'] = int(request['flag'])
         if 'notice' in request: g['notice'] = str(request['notice'])[:100]
         return {}
@@ -207,48 +207,48 @@ def action(state, request, now, rng=secrets.randbelow, fight=None, player_level=
         state['guild'] = None; state['guild_dissolved_at'] = now
         return {}
     if act == 'checkin':
-        if g['checkin_day'] == clock.day(now): raise GuildError('Ya firmaste hoy')
+        if g['checkin_day'] == clock.day(now): raise GuildError('Hôm nay bạn đã điểm danh')
         g['checkin_day'] = clock.day(now); got = pairs(M['guild_sign_in_coin']); add(state, got)
-        g['exp'] += int(M['guild_sign_in_exp']); log(g, now, 'Firma diaria: +%s exp' % M['guild_sign_in_exp'])
+        g['exp'] += int(M['guild_sign_in_exp']); log(g, now, 'Điểm danh hằng ngày: +%s EXP' % M['guild_sign_in_exp'])
         return {'got': got}
     if act == 'donate':
-        if lv < int(M['guild_order_open']): raise GuildError('Se abre en el nivel %s del gremio' % M['guild_order_open'])
+        if lv < int(M['guild_order_open']): raise GuildError('Mở khóa khi Bang Hội đạt cấp %s' % M['guild_order_open'])
         opts = [pairs(x) for x in str(M['guild_mill_donate']).split('|')]
         i = int(request.get('index', 0))
-        if not 0 <= i < len(opts): raise GuildError('Opción no válida')
-        if mill_level(g) >= max(MILL) and int(g['mill']['gold']) >= int(MILL[max(MILL)]['all_gold']): raise GuildError('El molino ya está al máximo')
+        if not 0 <= i < len(opts): raise GuildError('Lựa chọn không hợp lệ')
+        if mill_level(g) >= max(MILL) and int(g['mill']['gold']) >= int(MILL[max(MILL)]['all_gold']): raise GuildError('Cối xay đã đạt cấp tối đa')
         take(state, opts[i]); g['mill']['gold'] += sum(opts[i].values())
         g['orders']['list'] = new_orders(g, rng, g['orders']['list'])   # a higher Mill opens more order slots
         return {}
     if act in ('order_start', 'order_complete', 'order_upgrade', 'order_refresh'):
-        if lv < int(M['guild_order_open']): raise GuildError('Se abre en el nivel %s del gremio' % M['guild_order_open'])
+        if lv < int(M['guild_order_open']): raise GuildError('Mở khóa khi Bang Hội đạt cấp %s' % M['guild_order_open'])
         orders = g['orders']['list']
         if act == 'order_refresh':
-            if now < int(g['orders']['refresh_at']): raise GuildError('Los pedidos nuevos llegan cada 12 h')
+            if now < int(g['orders']['refresh_at']): raise GuildError('Đơn hàng mới xuất hiện sau mỗi 12 giờ')
             keep = [o for o in orders if o['start']]
             g['orders']['list'] = new_orders(g, rng, keep); g['orders']['refresh_at'] = now + int(M['guild_order_cd'])
             return {}
         i = int(request.get('slot', -1))
-        if not 0 <= i < len(orders): raise GuildError('Pedido no disponible')
+        if not 0 <= i < len(orders): raise GuildError('Đơn hàng không khả dụng')
         o = orders[i]; row = ORDER[o['id']]
         if act == 'order_start':
-            if o['start']: raise GuildError('El pedido ya está en marcha')
+            if o['start']: raise GuildError('Đơn hàng đang được xử lý')
             o['start'] = now; return {}
         if act == 'order_upgrade':
             nid = int(row['next_id'] or 0)
-            if o['start'] or nid not in ORDER: raise GuildError('Este pedido no se puede mejorar')
+            if o['start'] or nid not in ORDER: raise GuildError('Không thể nâng cấp đơn hàng này')
             take(state, pairs(row['up_cost'])); o['id'] = nid; return {}
-        if not o['start'] or now < o['start'] + int(row['time']): raise GuildError('El pedido aún no está listo')
+        if not o['start'] or now < o['start'] + int(row['time']): raise GuildError('Đơn hàng chưa hoàn tất')
         factor = int(MILL[mill_level(g)]['factor']) / 10000
         got = {k: int(n * factor) for k, n in pairs(row['awards']).items()}; add(state, got)
         orders.pop(i); g['orders']['list'] = new_orders(g, rng, orders)
         return {'got': got}
     if act == 'boss_fight':
         bid = int(request.get('boss', 0)); b = g['boss']
-        if bid not in BOSS or bid > min(int(M['guild_boss_max_id']) - 1, max(BOSS)): raise GuildError('Jefe no disponible')
-        if bid > b['current']: raise GuildError('Derrota antes al jefe anterior')
+        if bid not in BOSS or bid > min(int(M['guild_boss_max_id']) - 1, max(BOSS)): raise GuildError('Thủ lĩnh chưa khả dụng')
+        if bid > b['current']: raise GuildError('Hãy đánh bại thủ lĩnh trước đó')
         cost, fights = boss_cost(g, now)
-        if cost is None: raise GuildError('No quedan combates hasta que pase el enfriamiento')
+        if cost is None: raise GuildError('Đã hết lượt chiến đấu, hãy chờ hồi lượt')
         take(state, cost)
         row = BOSS[bid]
         win, report = fight(row) if fight else (True, None)
@@ -261,9 +261,9 @@ def action(state, request, now, rng=secrets.randbelow, fight=None, player_level=
             day = clock.day(now)
             if b['exp_day'] != day: b['exp_day'] = day; b['exp_n'] = 0
             if b['exp_n'] < int(M['guild_boss_exp_num_max']): b['exp_n'] += 1; g['exp'] += int(row['guild_exp'] or 0)
-            log(g, now, 'Jefe %d derrotado' % bid)
+            log(g, now, 'Đã đánh bại thủ lĩnh %d' % bid)
         add(state, got)
         return {'got': got, 'win': win, 'report_index': report}
     if act == 'open':
         return {}
-    raise GuildError('Acción no disponible')
+    raise GuildError('Thao tác không khả dụng')
