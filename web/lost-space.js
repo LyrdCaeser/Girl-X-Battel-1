@@ -48,16 +48,16 @@ const LostSpace=(()=>{
   const dbl=at(btn('ls-abs ls-bb','',()=>GirlUI.toast(data.event_text[5].desc)),-173,-566,92,84);dbl.append(img(A('activity_lost_space_btn_double')),el('b','',String(s.double)));st.append(dbl);
   const sk=at(btn('ls-abs ls-bb ls-skill'+(s.skill&&s.energy>=s.cap?' full':''),'',()=>s.skill?laser(s):skills(s)),-66,-571,80,80);sk.append(img(A('activity_lost_space_btn_skill')));if(s.skill)sk.append(img(A(data.skill_text[s.skill].icon),'ls-sk-icon'));sk.append(el('b','',s.skill?s.energy+'/'+s.cap:'—'));st.append(sk);
   const ch=at(btn('ls-abs ls-change','',()=>skills(s)),-102,-544,38,40);ch.append(img(A('activity_lost_space_btn_qh')));st.append(ch);
-  const auto=at(btn('ls-abs ls-bb','',()=>autoExplore(s)),44,-566,84,84);auto.append(img(A('activity_lost_space_btn_zzts')),el('b','',T('ACTIVITY_LOST_SPACE_TEXT11')||'Auto Explore'));st.append(auto);
-  const all=at(btn('ls-abs ls-claim',T('ACTIVITY_LOST_SPACE_AUTO_GET')||'Claim All',async()=>{const r=await act({action:'claim'});if(r)toastGot(r.got);}),232,-572,228,96);st.append(all);
+  const auto=at(btn('ls-abs ls-bb','',()=>autoExplore(s)),44,-566,84,84);auto.append(img(A('activity_lost_space_btn_zzts')),el('b','',T('ACTIVITY_LOST_SPACE_TEXT11')||'Tự Thám Hiểm'));st.append(auto);
+  const all=at(btn('ls-abs ls-claim',T('ACTIVITY_LOST_SPACE_AUTO_GET')||'Nhận Tất Cả',async()=>{const r=await act({action:'claim'});if(r)toastGot(r.got);}),232,-572,228,96);st.append(all);
   st.append(at(img(A('activity_lost_space_xian'),'ls-abs'),0,-635,756,38));
   if(s.stash){const tag=at(el('div','ls-abs ls-stashtag',data.event_text[2].name),-47,475,300,40);st.append(tag);}}
  function toastGot(got){const e=Object.entries(got||{});if(e.length)GirlUI.toast(e.slice(0,4).map(([k,n])=>'+'+number(n)+' '+(itemCatalog?.[k]?.name||k)).join(' · ')+(e.length>4?' …':''));}
  async function tap(s,i,kind){
   if(kind==='grey'){GirlUI.toast(T('ACTIVITY_LOST_SPACE_SKILL_NO_CLICK'));return;}
-  if(kind==='common'){if(s.skill&&s.energy>=s.cap&&!confirm(T('ACTIVITY_LOST_SPACE_SKILL_ENERGY_TIPS')))return;const r=await act({action:'open',id:i});if(r){flash=[i];draw();}return;}
+  if(kind==='common'){if(s.skill&&s.energy>=s.cap&&!await GirlUI.confirm('Sử dụng kỹ năng lúc này sẽ tiêu hao năng lượng. Tiếp tục?',{title:'Xác Nhận Sử Dụng',ok:'Tiếp Tục'}))return;const r=await act({action:'open',id:i});if(r){flash=[i];draw();}return;}
   if(kind==='award'){const r=await act({action:'claim',ids:[i]});if(r)toastGot(r.got);return;}
-  if(kind==='event'){const e=Number(s.content[i].slice(2));if(e===5&&!s.stash&&!confirm(T('ACTIVITY_LOST_SPACE_EXIT_TIPS1')))return;
+  if(kind==='event'){const e=Number(s.content[i].slice(2));if(e===5&&!s.stash&&!await GirlUI.confirm('Bạn muốn rời khu vực này trước khi tìm thấy kho tiếp tế?',{title:'Xác Nhận Rời Khu',ok:'Tiếp Tục'}))return;
    const r=await act({action:'event',id:i});if(!r)return;if(r.got){toastGot(r.got);GirlUI.toast(T('ACTIVITY_LOST_SPACE_AWARD_NUM').replace('{1}',r.stage));}
    if(r.stash_found)GirlUI.toast(T('ACTIVITY_LOST_SPACE_SKILL_MASK_TREASURE_SHOW'));if(r.event===2)GirlUI.toast(T('ACTIVITY_LOST_SPACE_SKILL_MASK_EXIT_SHOW').replace('Portal','Reward'));if(r.pos!==undefined){flash=[r.pos];draw();}}}
  async function laser(s){if(s.energy<s.cap){skills(s);return;}const r=await act({action:'laser'});if(r){flash=r.found.map(x=>x[0]);draw();GirlUI.toast(data.skill_text[s.skill].name+' ×'+r.found.length);}}
