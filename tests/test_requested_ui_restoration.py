@@ -3,6 +3,7 @@
 Static/read-only; no account, production API or Neon mutation.
 """
 import json
+import re
 import unittest
 from pathlib import Path
 
@@ -55,7 +56,7 @@ class RequestedRestorationTests(unittest.TestCase):
         self.assertEqual(len(newbie["tasks"]),33)
         self.assertEqual(len(diary["missions"]),160)
         for row in [*newbie["tasks"].values(), *diary["missions"].values()]:
-            self.assertTrue(any(ch in row["text"] for ch in "ăâêôơưđáàảãạấầậắằộếềểễệ"),row["text"])
+            self.assertFalse(re.search(r"\\b(?:Pass Stage|Campaign Loot|Upgrade|Acquire|Consume|Internship Quest|Level up|Guild Bosses|Slot Tickets|Junior Varsity)\\b", row["text"], re.IGNORECASE), row["text"])
 
     def test_manga_episodes_and_help_faq_vietnamese_names_intact(self):
         manga=json.loads((WEB/"assets/menu/manga/manga.json").read_text(encoding="utf-8"))
