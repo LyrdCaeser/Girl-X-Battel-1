@@ -45,7 +45,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 3,
-   "text": "Transfer 1 Girl",
+   "text": "Chuyển Hóa 1 Nữ Thần",
    "window": "altar_window"
   },
   "4": {
@@ -77,7 +77,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 5,
-   "text": "Purchase 2 times in Market",
+   "text": "Mua vật phẩm 2 lần tại Chợ",
    "window": "market_window"
   },
   "6": {
@@ -109,7 +109,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 7,
-   "text": "Equip 1 Girl with 4 pieces of Gears that is at Blue quality or above",
+   "text": "Trang bị 4 món đồ chất lượng Xanh Dương trở lên cho 1 Nữ Thần",
    "window": "slot_window"
   },
   "8": {
@@ -141,7 +141,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 9,
-   "text": "Complete a battle in Campaign or Junior Varsity with 6 Girls in your team",
+   "text": "Hoàn thành một trận Chiến Dịch hoặc Đấu Trường Sơ Cấp với đội hình 6 Nữ Thần",
    "window": "campaign_window"
   },
   "10": {
@@ -173,7 +173,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 11,
-   "text": "Summon 1 5-star Girl with Shards",
+   "text": "Triệu Hồi 1 Nữ Thần 5 sao bằng mảnh ghép",
    "window": "slot_window"
   },
   "12": {
@@ -189,7 +189,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 12,
-   "text": "Activate a Crystal",
+   "text": "Kích hoạt một Pha Lê",
    "window": "slot_window"
   },
   "13": {
@@ -269,7 +269,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 17,
-   "text": "Graduate 1 Girl to 5-star",
+   "text": "Tiến Hóa 1 Nữ Thần lên 5 sao",
    "window": "shenxue_window"
   },
   "18": {
@@ -301,7 +301,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 19,
-   "text": "Purchase 3 times in Market",
+   "text": "Mua vật phẩm 3 lần tại Chợ",
    "window": "market_window"
   },
   "20": {
@@ -317,7 +317,7 @@
    "activity_id": "",
    "special_mission": 1,
    "id": 20,
-   "text": "Craft 1 Gear in Forge",
+   "text": "Rèn 1 trang bị",
    "window": "smithy_window"
   },
   "21": {
@@ -333,7 +333,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 21,
-   "text": "Have 5 players in your Friendlist",
+   "text": "Có 5 người chơi trong danh sách Bạn Bè",
    "window": "friend_window"
   },
   "22": {
@@ -397,7 +397,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 25,
-   "text": "Create or Join a Guild",
+   "text": "Tạo hoặc gia nhập Bang Hội",
    "window": "guild_territory_window"
   },
   "26": {
@@ -445,7 +445,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 28,
-   "text": "Consume 1 Plain Button or Fancy Button",
+   "text": "Dùng 1 Nút Thường hoặc Nút Cao Cấp",
    "window": "dress_summon_window"
   },
   "29": {
@@ -557,7 +557,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 35,
-   "text": "Exchange 1 Girl",
+   "text": "Đổi 1 Nữ Thần",
    "window": "prophet_window"
   },
   "36": {
@@ -605,7 +605,7 @@
    "activity_id": "",
    "special_mission": 1,
    "id": 38,
-   "text": "Obtain 5000 Coins from Echoes of Time Observation",
+   "text": "Nhận 5.000 Vàng từ Quan Sát Vọng Âm Thời Gian",
    "window": "time_cloister_main_window"
   },
   "39": {
@@ -781,7 +781,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 49,
-   "text": "Consume 5 Plain Buttons or Fancy Buttons in total",
+   "text": "Dùng tổng cộng 5 Nút Thường hoặc Nút Cao Cấp",
    "window": "dress_summon_window"
   },
   "50": {
@@ -845,7 +845,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 53,
-   "text": "Equip an Antique that is of Blue quality or above",
+   "text": "Trang bị 1 Cổ Vật chất lượng Xanh Dương trở lên",
    "window": "slot_window"
   },
   "54": {
@@ -877,7 +877,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 55,
-   "text": "Tame 1 Servant",
+   "text": "Thuần hóa 1 Linh Thú",
    "window": "pet_window"
   },
   "56": {
@@ -1005,7 +1005,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 63,
-   "text": "Equip a Girl with 4 pieces of Gears that is at Orange quality or above",
+   "text": "Trang bị 4 món đồ chất lượng Cam trở lên cho 1 Nữ Thần",
    "window": "slot_window"
   },
   "64": {
@@ -1037,7 +1037,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 65,
-   "text": "Equip an Antique that is of Green quality or above",
+   "text": "Trang bị 1 Cổ Vật chất lượng Lục trở lên",
    "window": "slot_window"
   },
   "66": {
@@ -1101,7 +1101,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 69,
-   "text": "Pull from BFF Capsule for 3 times",
+   "text": "Triệu Hồi BFF 3 lần",
    "window": "summon_window"
   },
   "70": {
@@ -1213,7 +1213,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 76,
-   "text": "Purchase 1 piece of Furniture",
+   "text": "Mua 1 món Nội Thất",
    "window": "house_window"
   },
   "77": {
@@ -1373,7 +1373,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 86,
-   "text": "Open 5 Chests in Excursion",
+   "text": "Mở 5 Rương trong Thám Hiểm",
    "window": "explore_window"
   },
   "87": {
@@ -1389,7 +1389,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 87,
-   "text": "Challenge Stage 9 for 1 time in Sanctuary",
+   "text": "Thử sức ở ải 9 Thánh Vực 1 lần",
    "window": "trial_enter_window"
   },
   "88": {
@@ -1437,7 +1437,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 90,
-   "text": "Exchange 1 reward in League Store",
+   "text": "Đổi 1 phần thưởng ở Cửa Hàng Đấu Trường",
    "window": "shop_window"
   },
   "91": {
@@ -1565,7 +1565,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 98,
-   "text": "Consume 1 Star Token",
+   "text": "Dùng 1 Vé Ngôi Sao",
    "window": "starry_altar_window"
   },
   "99": {
@@ -1581,7 +1581,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 99,
-   "text": "Defeat Friend Boss 5 times",
+   "text": "Đánh bại Boss Bạn Bè 5 lần",
    "window": "friend_window"
   },
   "100": {
@@ -1613,7 +1613,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 101,
-   "text": "Purchase 3 items from Patrol Merchants",
+   "text": "Mua 3 vật phẩm từ Thương Nhân Tuần Tra",
    "window": "dungeon_window"
   },
   "102": {
@@ -1709,7 +1709,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 107,
-   "text": "Evolve your Servant for 1 time",
+   "text": "Tiến Hóa Linh Thú 1 lần",
    "window": "pet_window"
   },
   "108": {
@@ -1725,7 +1725,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 108,
-   "text": "Consume 1 Super Slot Ticket",
+   "text": "Dùng 1 Vé Máy Quay Siêu Cấp",
    "window": "gamble_window"
   },
   "109": {
@@ -1789,7 +1789,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 112,
-   "text": "Consume 10 Plain Buttons or Fancy Buttons in total",
+   "text": "Dùng tổng cộng 10 Nút Thường hoặc Nút Cao Cấp",
    "window": "dress_summon_window"
   },
   "113": {
@@ -1805,7 +1805,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 113,
-   "text": "Increase the Intimacy of a Girl to 20",
+   "text": "Tăng độ thân mật với 1 Nữ Thần lên 20",
    "window": "slot_window"
   },
   "114": {
@@ -2317,7 +2317,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 145,
-   "text": "Pull Adv. Capsule 100 times",
+   "text": "Triệu Hồi Cao Cấp 100 lần",
    "window": "summon_window"
   },
   "146": {
@@ -2413,7 +2413,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 151,
-   "text": "Upgrade Elite Skills for 5 times",
+   "text": "Nâng cấp Kỹ Năng Tinh Anh 5 lần",
    "window": "slot_window"
   },
   "152": {
@@ -2445,7 +2445,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 153,
-   "text": "Attack Training Dummy for 5 times in Servant Training",
+   "text": "Tấn công Hình Nộm Huấn Luyện 5 lần trong Huấn Luyện Linh Thú",
    "window": "pet_start_window"
   },
   "154": {
@@ -2493,7 +2493,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 156,
-   "text": "Unlock 1 Servant Ulticore",
+   "text": "Mở khóa 1 Lõi Tuyệt Kỹ Linh Thú",
    "window": "pet_window"
   },
   "157": {
@@ -2525,7 +2525,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 158,
-   "text": "Complete a Trial in Tsuruga Grand Shrine",
+   "text": "Hoàn thành 1 Thử Thách tại Đại Thần Xã Tsuruga",
    "window": "shrine_hurdle_entrance_window"
   },
   "159": {
@@ -2541,7 +2541,7 @@
    "activity_id": "",
    "special_mission": "",
    "id": 159,
-   "text": "Upgrade Astral Core Node for 1 time",
+   "text": "Nâng cấp 1 nút Lõi Tinh Tú",
    "window": "slot_window"
   },
   "160": {
