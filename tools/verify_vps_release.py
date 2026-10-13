@@ -47,6 +47,10 @@ def main():
           assertion=lambda _, data: b"LobbyDialogue" in data)
     check("Lobby dialogue CSS served", PUBLIC + "/lobby-dialogue.css",
           assertion=lambda _, data: b"#gxb3-lobby-speech" in data)
+    check("Mobile native CSS served", PUBLIC + "/mobile-native.css",
+          assertion=lambda _, data: len(data) > 100)
+    check("Mobile layout CSS served", PUBLIC + "/mobile-layout.css",
+          assertion=lambda _, data: len(data) > 100)
     check("Game entry links lobby script", PUBLIC + "/",
           assertion=lambda _, data: b"/lobby-dialogue.js" in data)
     print("=== RESULT:", "PASS" if not FAILS else f"FAILED ({FAILS})", "===")
