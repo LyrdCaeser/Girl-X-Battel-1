@@ -306,7 +306,7 @@ function renderLeague(){
   button.addEventListener('click',()=>openMenu({'Tests':'tests','Daily Quiz':'quiz','Patrol':'patrol','Sanctuary':'sanctuary','Echoes of Time':'echoes','Tsuruga Shrine':'shrine','Practice':'practice','House Exam':'house-exam','Land of Souls':'soul-land','Character Challenge':'hero-challenge','Arena':'arena','Team Arena':'team-arena','Cross-server Arena':'cross-arena'}[name],'league'));cards.append(button);
  }
 }
-function notice(name){const e=$('home-notice');e.textContent=name+" is not available in the local version yet.";e.hidden=false;setTimeout(()=>e.hidden=true,3000);}
+function notice(name){const e=$('home-notice');e.textContent="Tính năng "+(window.GxbLocale?.t(name)||name)+" sẽ sớm được mở.";e.hidden=false;setTimeout(()=>e.hidden=true,3000);}
 function graduateBadge(star){
  const badge=node('span','graduate-star-badge '+(star===10?'gold-stars':star>=6?'red-stars':'yellow-stars'),star===10?'✦':star>=6?'★'.repeat(star-5):'★'.repeat(star));
  if(star===10){const emblem=node('img','graduate-ten-star');emblem.src='/assets/girl-ui/star_orange.png';emblem.alt='';badge.replaceChildren(emblem);}
@@ -622,7 +622,7 @@ function openGraduateMaterial(index){const picker=$('graduate-picker');if(!picke
 $('graduate-auto').addEventListener('change',()=>{delete graduateManualIds[graduateTarget];renderGraduate();});
 $('graduate-materials-toggle').addEventListener('click',async()=>{
  const host=state.roster.find(g=>g.partner_id===graduateAutoIds[0]);
- if(!host){alert("Choose the base Girl first to view her attributes.");return;}
+ if(!host){GirlUI.notice("Hãy chọn Nữ Thần chính trước khi xem thuộc tính.",{title:"Thông Báo"});return;}
  const {modal,body}=graduateDialog('Nuevos atributos',$('graduate-materials-toggle'));modal.id='graduate-attributes';body.textContent='Calculando…';
  try{const result=await api('/api/graduate/preview',{partner_id:host.partner_id,target_id:graduateRecipes[graduateTarget]?.target||0});body.replaceChildren();body.append(node('p','',host.name+' · '+result.from_star+'★ → '+result.to_star+'★'));
  const table=node('table'),row=node('tr');row.append(node('th','','Atributo'),node('th','',"Current"),node('th','',"After"));table.append(row);
