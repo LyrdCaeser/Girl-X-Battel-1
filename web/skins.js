@@ -56,7 +56,7 @@ const Skins=(()=>{
   const rows=Object.entries(cat.skins).filter(([,v])=>v.shop).map(([id,v])=>({id:Number(id),...v,girl:girlsCatalog.find(g=>v.partners.includes(g.id))})).filter(r=>!storeGroup||r.girl?.group===storeGroup).sort((a,b)=>b.id-a.id);
   for(const r of rows){const c=el('div','sk-store-card');const pic=el('div','sk-store-pic');pic.style.backgroundImage=`url('/assets/skins/cards/${r.id}.webp')`;const rr=Number(r.rarity||0);if(rr){const q=el('span','sk-rarity',RARITY[rr]);q.style.backgroundImage=`url('${U}collection_dress_new_bg_${rr}.png')`;pic.append(q);}
    const n=owned(r.id);if(n)pic.append(el('span','sk-store-own','×'+n));c.append(pic,el('b','sk-store-name',r.name),el('small','sk-store-girl',r.girl?.name||''));
-   const [ck,cn]=String(r.shop).split('#');const buy=btn('sk-store-buy','',async()=>{if(!confirm(`Buy ${r.name} for ${cn} Costume Tickets?`))return;try{const res=await api('/api/skins/action',{action:'buy',skin:r.id});state=res.state;close();await store();CampaignUI.popup('Skin Store',res.got);}catch(e){GirlUI.toast(e.message);}});
+   const [ck,cn]=String(r.shop).split('#');const buy=btn('sk-store-buy','',async()=>{if(!(await GirlUI.confirm(`Mua ${r.name} với ${cn} Vé Trang Phục?`,{title:'Xác Nhận Mua',ok:'Mua'})))return;try{const res=await api('/api/skins/action',{action:'buy',skin:r.id});state=res.state;close();await store();CampaignUI.popup('Skin Store',res.got);}catch(e){GirlUI.toast(e.message);}});
    if(tsrc){const i=el('img');i.src=tsrc;i.alt='';buy.append(i);}buy.append(el('span','',number(Number(cn))));buy.disabled=Number(state.items?.[ck]||0)<Number(cn);c.append(buy);grid.append(c);}
   body.append(grid);}
  return {detail,store};
