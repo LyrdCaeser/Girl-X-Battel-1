@@ -26,6 +26,8 @@ jobs:
         run: |
           node --check web/app.js
           node --check web/story.js
+          node --check web/home-menus.js
+          node --check web/mail.js
           node --check web/campaign-ui.js
           node --check web/campaign-flow.js
           node --check web/summon-anim.js
