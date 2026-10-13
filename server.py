@@ -643,6 +643,18 @@ class HTTPHandler(BaseHTTPRequestHandler):
         if path in files:
             filename, mime = files[path]
             return self.send(200, (ROOT/'web'/filename).read_bytes(), mime)
+        # Root-level JS/CSS are public client assets. Files added after the
+        # manual registry should not become 404s, but nothing outside web/
+        # (including nested paths and server configuration) is exposed.
+        if path.startswith('/') and path.count('/') == 1:
+            filename = path[1:]
+            suffix = Path(filename).suffix.lower()
+            mime = {'.js': 'application/javascript; charset=utf-8',
+                    '.css': 'text/css; charset=utf-8'}.get(suffix)
+            if mime and filename and not filename.startswith('.'):
+                static_file = ROOT / 'web' / filename
+                if static_file.is_file():
+                    return self.send(200, static_file.read_bytes(), mime)
         return self.send(404, {'error': 'Ruta no implementada'})
     def bootstrap(self):
         ctx = self.auth_context()
