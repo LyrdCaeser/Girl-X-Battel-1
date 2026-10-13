@@ -22,7 +22,7 @@ class StoryVietnameseEditorialTests(unittest.TestCase):
         self.assertEqual(len(data["forts"]), 19)
         self.assertEqual(len(data["episodes"]), 3)
         self.assertEqual(data["lines"]["1"]["x"], 2)
-        self.assertEqual(data["lines"]["2027"]["x"], 2028)
+        self.assertEqual(data["lines"]["2027"]["x"], -1)  # Original scene endpoint
         self.assertEqual(data["lines"]["1659"]["x"], 1660)
         self.assertNotIn("d", data["lines"]["1659"], "Non-dialogue scene controls must stay intact")
 
