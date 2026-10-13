@@ -35,6 +35,6 @@ const PumpkinPatch=(()=>{
   const g=el('div','pk-grid');rows(row.award).forEach(([k,n],j)=>{const c=el('div','pk-odd');c.append(item(k,n),el('small','',(w[j]/tot*100).toFixed(1)+'%'));g.append(c);});body.append(g);}
  function rounds(s){const {body}=GirlUI.win({title:T('ACTIVITY_HALLOWEEN_AWARD')||'Thưởng Gói Quà',cls:'pk-win'});const g=el('div','pk-grid');
   data.rounds.forEach((r,i)=>{const [k,n]=rows(r.award)[0];const c=el('div','pk-odd'+(i+1<s.round?' done':i+1===s.round?' now':''));c.append(item(k,n),el('small','',(i+1===data.rounds.length?'Vòng '+(i+1)+'+':'Vòng '+(i+1))));g.append(c);});body.append(g);}
- function buy(s){const left=s.limit-s.buy;if(left<=0){GirlUI.toast("Daily limit reached");return;}const n=Number(prompt("Pumpkin Daggers (150 Gems each, remaining: "+left+' hoy)','1'))||0;if(n>0)act({action:'buy',num:Math.min(n,left)});}
+ async function buy(s){const left=s.limit-s.buy;if(left<=0){GirlUI.toast('Đã đạt giới hạn mua hằng ngày');return;}const n=await GirlUI.promptNumber('Mua Dao Bí Ngô (150 Kim Cương/chiếc; còn '+left+' lượt)',{title:'Mua Dao Bí Ngô',value:1,min:1,max:left});if(n)act({action:'buy',num:n});}
  return {render};
 })();
