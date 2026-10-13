@@ -20,7 +20,7 @@ const Guild=(()=>{
  function root(){let r=$('guild-view');if(!r){r=el('section','guild-view');r.id='guild-view';r.hidden=true;$('home-systems-view').after(r);}return r;}
  async function open(key,from){origin=(from&&from!=='guild')?from:origin;tab=KEYS[key]||'office';note='';page=null;bossOpen=null;if(!data&&!loading)loading=api('/assets/guild.json').then(d=>{data=d;});await loading;root();showView('guild');
   if(info()?.has){try{state=(await api('/api/guild/action',{action:'open'})).state;}catch{}}render();}
- function name(id){id=String(id);return id==='4'?'Guild Coins':id==='1'?"Gold":id==='2'?"Gems":id==='5'?'Guild EXP':itemCatalog?.[id]?.name||data.names?.[id]||"Item "+id;}
+ function name(id){id=String(id);return id==='4'?'Xu Bang Hội':id==='1'?"Vàng":id==='2'?"Kim Cương":id==='5'?'EXP Bang Hội':itemCatalog?.[id]?.name||data.names?.[id]||"Vật phẩm "+id;}
  function icon(id){id=String(id);if(id==='1'||id==='2')return '/assets/currency/icon_'+id+'_small.png';if(id==='4')return '/assets/original-ui/guild-lab/coin.png';const it=itemCatalog?.[id];if(it&&typeof itemPicture==='function'){const p=itemPicture(it);if(p)return p;}return null;}
  function chip(id,n){const w=el('span','gd-chip');const s=icon(id);if(s)w.append(img(s));else w.append(el('em','',name(id)));w.append(el('b','',fmt(n)));w.title=name(id)+' × '+fmt(n);return w;}
  function chips(text,mult=1){const w=el('span','gd-chips');for(const [k,n] of pairs(text))w.append(chip(k,Math.floor(Number(n)*mult)));return w;}
@@ -52,7 +52,7 @@ const Guild=(()=>{
  function none(st,label,y){pic(st,'bp_none_bg',0,y+22,285,302);text(st,label,0,y-150,'gd2-none');}
 
  function render(){if(view!=='guild'||!data)return;clearInterval(ticker);ticker=null;const g=info();if(seen!==state){seen=state;if(state.server_time)skew=state.server_time-Date.now()/1000;}
-  if(!g||!g.unlocked){const b=el('div','gd-body');b.append(el('p','gd-lock',"Guild unlocks after clearing Campaign stage "+(g?.unlock_stage||32)+"."));shell(b);return;}
+  if(!g||!g.unlocked){const b=el('div','gd-body');b.append(el('p','gd-lock',"Bang Hội mở khóa sau khi vượt qua ải Chiến Dịch "+(g?.unlock_stage||32)+"."));shell(b);return;}
   if(!g.has){createScreen(g);return;}
   const keep=root().querySelector('.gd2-scroll')?.scrollTop||0;const st=stage();({office,dining,gym,war})[tab](st,g);const sc=st.querySelector('.gd2-scroll');if(sc)sc.scrollTop=keep;
   if(st.querySelector('[data-until]'))ticker=setInterval(()=>{if(view==='guild')tick();else{clearInterval(ticker);ticker=null;}},1000);}
@@ -66,7 +66,7 @@ const Guild=(()=>{
   const nt=el('textarea','gd-input');nt.placeholder=T('GUILD_TEXT23','Guild Notice');nt.maxLength=100;nt.value=form.notice;nt.oninput=()=>{form.notice=nt.value;};
   const flags=el('div','gd-flags');for(const f of g.flags){const c=btn('gd-flagpick'+(form.flag===f?' on':''),'',()=>{form.flag=f;render();});c.append(img(A('guild_flag_'+f)));flags.append(c);}
   const cost=el('div','gd-cost');cost.append(el('span','',"Cost"),chips(g.create_cost));
-  b.append(nm,nt,flags,cost,btn('gd-go',"Create Guild",async()=>{const r=await act({action:'create',name:form.name,flag:form.flag,notice:form.notice});if(r)toast("Guild created!");}));
+  b.append(nm,nt,flags,cost,btn('gd-go',"Tạo Bang Hội",async()=>{const r=await act({action:'create',name:form.name,flag:form.flag,notice:form.notice});if(r)toast("Đã tạo Bang Hội!");}));
   b.append(el('small','gd-help',"Without a server, your Guild has simulated members who join daily, sign in daily, and level it up with you."));shell(b);}
 
  // ---- members (NPC members of gxb2/guild.py + the player as Leader) ----
