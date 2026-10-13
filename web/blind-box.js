@@ -31,7 +31,7 @@ const BlindBox=(()=>{
   const acts=el('div','bb-acts');
   acts.append(btn('bb-open','x1',()=>open(1),!s.ready||s.tickets<1||s.total_left<1),btn('bb-open','x5',()=>open(5),!s.ready||s.tickets<5||s.total_left<5));
   if(!s.ready)acts.append(btn('bb-open pick',"Choose rewards",()=>choose()));
-  if(s.grand_taken&&s.round<s.rounds)acts.append(btn('bb-open next','Ir a la ronda '+(s.round+1),async()=>{if(confirm(T('ACTIVITY_BLIND_BOX_TEXT08'))){await act({action:'next'});paint();}}));
+  if(s.grand_taken&&s.round<s.rounds)acts.append(btn('bb-open next','Ir a la ronda '+(s.round+1),async()=>{if(await GirlUI.confirm(T('ACTIVITY_BLIND_BOX_TEXT08')||'Chuyển sang vòng tiếp theo?',{title:'Xác Nhận',ok:'Tiếp Tục'})){await act({action:'next'});paint();}}));
   root.append(acts,el('small','bb-info',"Guaranteed jackpot in "+Math.max(0,data.guarantee+1-s.draws)+" opens · Remaining: "+s.total_left+" boxes"));
   if(last?.got&&Object.keys(last.got).length){const g=el('div','bb-last');g.append(el('b','',"Received:"));for(const [k,n] of Object.entries(last.got)){const w=el('span','bb-item');const src=icon(k);if(src)w.append(img(src));w.append(el('b','',fmt(n)));w.title=name(k);g.append(w);}root.append(g);}
   root.append(el('p','bb-note',note));
@@ -44,6 +44,6 @@ const BlindBox=(()=>{
    for(const id of s.pool[t]){const c=btn('bb-choice'+(picking.chosen.includes(id)?' on':''),'',()=>{if(picking.chosen.includes(id))picking.chosen=picking.chosen.filter(x=>x!==id);else{if(have()>=need)return;picking.chosen.push(id);}paint();});c.append(reward(id),el('small','','x'+row(id).num));list.append(c);}
    sec.append(list);w.append(sec);});
   w.append(el('p','bb-note',picking.chosen.length+'/8'),btn('bb-open',"Confirm",async()=>{const r=await act({action:'select',ids:picking.chosen});if(r)picking=null;paint();},picking.chosen.length!==8),btn('bb-open cancel',"Cancel",()=>{picking=null;paint();}));return ov;}
- async function open(n){const s=info();if(!s.locked&&!confirm(T('ACTIVITY_BLIND_BOX_TEXT07')))return;const r=await act({action:'open',num:n});last=r;paint();if(r?.grand&&typeof GirlUI!=='undefined')GirlUI.toast("Round jackpot!");}
+ async function open(n){const s=info();if(!s.locked&&!(await GirlUI.confirm(T('ACTIVITY_BLIND_BOX_TEXT07')||'Mở hộp ngay?',{title:'Xác Nhận Mở Hộp',ok:'Mở'})))return;const r=await act({action:'open',num:n});last=r;paint();if(r?.grand&&typeof GirlUI!=='undefined')GirlUI.toast("Round jackpot!");}
  return {render,has:id=>id===338};
 })();
