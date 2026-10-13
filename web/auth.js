@@ -87,8 +87,8 @@ window.GxbAuth=(()=>{
 
     const serverRow=el('div','profile-setting-row auth-server-row');const host=el('div');host.append(el('strong','','Server / Nhân Vật'),el('small','',session?`${session.account.server_id} · ${session.character_name}`:''));
     const select=worldSelect('auth-account-server');select.value=session?.account?.server_id||'S1';
-    const go=el('button','auth-small-btn','Chuyển');go.onclick=async()=>{try{await request('/api/auth/switch-server',{server_id:select.value});location.reload();}catch(e){alert(e.message);}};
-    const create=el('button','auth-small-btn','Tạo NV');create.onclick=async()=>{const name=prompt('Tên Nhân Vật ở '+select.value+':','');if(!name)return;try{await request('/api/auth/create-character',{server_id:select.value,character_name:name});location.reload();}catch(e){alert(e.message);}};
+    const go=el('button','auth-small-btn','Chuyển');go.onclick=async()=>{try{await request('/api/auth/switch-server',{server_id:select.value});location.reload();}catch(e){GirlUI.notice(e.message,{title:'Thông Báo Tài Khoản'});}};
+    const create=el('button','auth-small-btn','Tạo NV');create.onclick=async()=>{const name=await GirlUI.promptText('Tên Nhân Vật ở '+select.value+':',{title:'Tạo Nhân Vật',value:'',maxLength:24,minLength:1});if(!name)return;try{await request('/api/auth/create-character',{server_id:select.value,character_name:name});location.reload();}catch(e){GirlUI.notice(e.message,{title:'Thông Báo Tài Khoản'});}};
     serverRow.append(host,select,go,create);settings.append(serverRow);
   }
 
@@ -101,7 +101,7 @@ window.GxbAuth=(()=>{
       const c=el('code','auth-recovery-code',code);box.append(c);
       const copy=el('button','auth-primary','Sao chép mã');copy.onclick=()=>navigator.clipboard.writeText(code).catch(()=>{});
       const close=el('button','auth-link','Đóng');close.onclick=()=>modal.remove();box.append(copy,close);modal.append(box);document.body.append(modal);
-    }catch(e){alert(e.message);}
+    }catch(e){GirlUI.notice(e.message,{title:'Thông Báo Tài Khoản'});}
   }
   async function openSessions(){
     try{
@@ -111,12 +111,12 @@ window.GxbAuth=(()=>{
       for(const ss of data.sessions||[]){
         const row=el('article','auth-device-row'),info=el('div');
         info.append(el('b','',ss.current?'Thiết bị hiện tại':'Phiên đăng nhập'),el('span','',ss.user_agent||'Không rõ thiết bị'),el('small','',ss.server_id+' · '+new Date(ss.last_seen*1000).toLocaleString()));
-        const revoke=el('button','auth-small-btn',ss.current?'Đăng xuất phiên này':'Thu hồi');revoke.onclick=async()=>{try{await request('/api/auth/session/revoke',{session_id:ss.session_id});if(ss.current)location.reload();else row.remove();}catch(e){alert(e.message);}};
+        const revoke=el('button','auth-small-btn',ss.current?'Đăng xuất phiên này':'Thu hồi');revoke.onclick=async()=>{try{await request('/api/auth/session/revoke',{session_id:ss.session_id});if(ss.current)location.reload();else row.remove();}catch(e){GirlUI.notice(e.message,{title:'Thông Báo Tài Khoản'});}};
         row.append(info,revoke);list.append(row);
       }
       if(!(data.sessions||[]).length)list.append(el('p','auth-recovery-note','Không có phiên hoạt động.'));
       box.append(list);const close=el('button','auth-link','Đóng');close.onclick=()=>modal.remove();box.append(close);modal.append(box);document.body.append(modal);
-    }catch(e){alert(e.message);}
+    }catch(e){GirlUI.notice(e.message,{title:'Thông Báo Tài Khoản'});}
   }
 
   window.GxbAuthReady=init();
