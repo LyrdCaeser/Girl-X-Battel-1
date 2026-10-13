@@ -87,3 +87,28 @@
 .ev-cal-h{margin:10px 0 4px;color:#4c6aa5;border-bottom:1px solid #d7e0f2}.ev-cal-row{display:flex;justify-content:space-between;gap:10px;padding:3px 0;font-size:13px}.ev-cal-row b{color:#d0662c;white-space:nowrap}
 .ev-cal-note{margin:10px 0 0;font-size:11px;color:#7a86a6}
 .ev-cal-btn{top:-38px;right:150px}
+
+/* Vietnamese event artwork captions: keep original graphic backgrounds, replace
+   English-only raster lettering with readable native game labels. */
+#events-view .sd-title-vi{
+  display:block;position:relative;z-index:2;
+  width:max-content;max-width:88%;margin:8px auto 12px;
+  padding:calc(12 * var(--u)) calc(22 * var(--u));
+  border:calc(3 * var(--u)) solid #fff5c9;border-radius:calc(16 * var(--u));
+  background:linear-gradient(135deg,#fff2a8,#eab45a);
+  color:#714021;text-align:center;font-weight:900;
+  font-size:clamp(17px,calc(30 * var(--u)),26px);
+  line-height:1.2;text-shadow:0 1px #fff8
+}
+#events-view .pe-title-vi{
+  position:absolute;right:calc(18 * var(--u));top:calc(15 * var(--u));
+  width:calc(410 * var(--u));max-width:60%;
+  margin:0;text-align:center;line-height:1.12;
+  font-size:clamp(17px,calc(38 * var(--u)),26px);
+  font-weight:900;color:#fff3b3;
+  text-shadow:0 2px 3px #742e22,0 0 9px #712d4c
+}
+html.gxb-mobile #events-view .ev-window{max-width:100%;min-width:0}
+html.gxb-mobile #events-view .ev-panel{min-width:0;max-width:100%;overflow:hidden}
+html.gxb-mobile #events-view .ev-strip{max-width:100%;overscroll-behavior-x:contain}
+html.gxb-mobile #events-view .ev-title-label{overflow-wrap:anywhere}
