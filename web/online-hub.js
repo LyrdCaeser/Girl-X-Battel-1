@@ -4,6 +4,15 @@ window.GxbOnline=(()=>{
   const el=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n;};
   const T=s=>window.GxbLocale?GxbLocale.t(s):s;
   const fmt=n=>typeof number==='function'?number(Number(n||0)):String(n||0);
+  // API values remain stable English identifiers; translate only visible labels.
+  const guildRoleLabel=role=>({leader:'Bang Chủ',deputy:'Phó Bang',member:'Thành Viên'})[role]||String(role||'');
+  const pvpModeLabel=mode=>({arena:'Đấu Trường',team:'Đấu Trường Đội',cross:'Đấu Trường Liên Máy Chủ'})[mode]||String(mode||'');
+  const matchStatusLabel=status=>({
+    idle:'Chưa ghép trận',queued:'Đang xếp hàng',waiting:'Đang tìm đối thủ',
+    matched:'Đã ghép trận',ready:'Sẵn sàng',scheduled:'Đã lên lịch',
+    active:'Đang diễn ra',finished:'Đã kết thúc',
+    cancelled:'Đã hủy',expired:'Đã hết hạn'
+  })[status]||String(status||'');
   async function get(url){return api(url);}
   async function post(url,body){return api(url,body);}
   function close(){
@@ -74,7 +83,7 @@ window.GxbOnline=(()=>{
       hero.append(el('small','',T('Server')+' '+g.server_id),el('h3','',g.name),
         el('p','',g.notice||T('No guild notice.')),
         el('b','',T('Guild Level')+' '+g.level+' · EXP '+fmt(g.exp)),
-        el('span','',T('Members')+': '+g.member_count+' · '+T('Role')+': '+g.role));
+        el('span','',T('Members')+': '+g.member_count+' · '+T('Role')+': '+guildRoleLabel(g.role)));
       body.append(hero);
 
       if(['leader','deputy'].includes(g.role)){
@@ -95,7 +104,7 @@ window.GxbOnline=(()=>{
       }
 
       const members=el('section','online-card');members.append(el('h3','',T('Guild Members')));
-      for(const m of g.members||[]){const row=el('article','online-member');const main=el('div','online-main');main.append(el('b','',m.character_name),el('small','',m.role+' · '+m.uid+' · '+T('Contribution')+' '+fmt(m.contribution||0)));row.append(main,el('strong','online-power',fmt(m.power)));
+      for(const m of g.members||[]){const row=el('article','online-member');const main=el('div','online-main');main.append(el('b','',m.character_name),el('small','',guildRoleLabel(m.role)+' · '+m.uid+' · '+T('Contribution')+' '+fmt(m.contribution||0)));row.append(main,el('strong','online-power',fmt(m.power)));
         if(g.role==='leader'&&m.uid!==state?.uid){
           if(m.role==='member'){const dep=el('button','online-small',T('Make Deputy'));dep.onclick=async()=>{await post('/api/world-guild/manage',{action:'role',target_uid:m.uid,role:'deputy'});renderGuild(body);};row.append(dep);}
           if(m.role==='deputy'){const dem=el('button','online-small',T('Make Member'));dem.onclick=async()=>{await post('/api/world-guild/manage',{action:'role',target_uid:m.uid,role:'member'});renderGuild(body);};row.append(dem);}
@@ -142,7 +151,7 @@ window.GxbOnline=(()=>{
       const w=data.war,head=el('header','online-war-head');
       head.append(el('div','',w.guild_a_name+' VS '+w.guild_b_name),el('strong','',w.score_a+' - '+w.score_b));
       const x=el('button','online-close','✕');x.onclick=()=>modal.remove();head.append(x);box.append(head);
-      box.append(el('p','online-note',T('Status')+': '+w.status+' · '+T('Guild War ID')+': '+w.id));
+      box.append(el('p','online-note',T('Status')+': '+matchStatusLabel(w.status)+' · '+T('Guild War ID')+': '+w.id));
       if(w.status==='active'){
         const enemies=el('div','online-list');
         for(const enemy of data.enemies||[]){
@@ -201,7 +210,7 @@ window.GxbOnline=(()=>{
       const m=p.match,opp=matchOpponent(m),card=el('section','online-match');
       let session=null;try{session=await post('/api/pvp/match/heartbeat',{match_id:m.id,ready:true});}catch{}
       const peerCount=(session?.peers||[]).filter(x=>Date.now()/1000-Number(x.last_seen||0)<=15).length;
-      card.append(el('small','',m.id+' · '+m.mode.toUpperCase()),el('h3','',T('Opponent Found')),el('b','online-opponent',opp.name),el('p','',opp.uid+' · '+T('Power')+' '+fmt(opp.power)),el('p','online-live',T((session?.match?.status||m.status)==='active'?'Battle session active':'Match ready')));
+      card.append(el('small','',m.id+' · '+pvpModeLabel(m.mode)),el('h3','',T('Opponent Found')),el('b','online-opponent',opp.name),el('p','',opp.uid+' · '+T('Power')+' '+fmt(opp.power)),el('p','online-live',T((session?.match?.status||m.status)==='active'?'Battle session active':'Match ready')));
       card.append(el('div','online-peer-state',T('Realtime peers')+': '+peerCount+'/2'));
       const statusNow=session?.match?.status||m.status;
       const activate=el('button','online-primary',T(statusNow==='active'?'Refresh Session':'Enter Match'));activate.onclick=async()=>{await post('/api/pvp/match/heartbeat',{match_id:m.id,ready:true});renderPvp(body);};card.append(activate);
@@ -224,11 +233,11 @@ window.GxbOnline=(()=>{
     for(const r of (data.rating_board||[]).slice(0,20)){const row=el('article','online-history-row');row.append(el('b','','#'+r.rank+' '+(r.character_name||r.uid)),el('span','',String(r.rating)),el('small','',r.server_id+' · '+T('Wins')+' '+r.wins));board.append(row);}body.append(board);
     const hist=el('div','online-history');hist.append(el('h3','',T('Recent Matches')));
     for(const m of data.history||[]){const opp=matchOpponent(m),r=el('article','online-history-row');const won=m.status==='finished'&&m.winner_uid===state?.uid;const delta=m.player_a===state?.uid?Number(m.rating_delta_a||0):Number(m.rating_delta_b||0);
-      r.append(el('b','',opp.name),el('span','',m.status==='finished'?(won?T('Victory'):T('Defeat')):m.status),el('small','',m.mode+' · '+(m.status==='finished'?(delta>=0?'+':'')+delta+' '+T('Rating'):'')+' · '+new Date(m.created_at*1000).toLocaleString()));hist.append(r);}
+      r.append(el('b','',opp.name),el('span','',m.status==='finished'?(won?T('Victory'):T('Defeat')):matchStatusLabel(m.status)),el('small','',pvpModeLabel(m.mode)+' · '+(m.status==='finished'?(delta>=0?'+':'')+delta+' '+T('Rating'):'')+' · '+new Date(m.created_at*1000).toLocaleString()));hist.append(r);}
     body.append(hist);
   }
   function showBattleResult(body,result){
-    if(timer)clearInterval(timer);timer=null;body.replaceChildren();
+    body.replaceChildren();
     const mine=state?.uid,won=result?.winner_uid===mine,delta=result?.player_a===mine?Number(result?.rating_delta_a||0):Number(result?.rating_delta_b||0);
     const card=el('section','online-result '+(won?'win':'lose'));card.append(el('small','',result?.id||''),el('h2','',T(won?'Victory':'Defeat')),el('strong','',T('Rating')+' '+(delta>=0?'+':'')+delta));
     const report=result?.battle_report||{};if(report.total_round!==undefined)card.append(el('p','',T('Rounds')+': '+report.total_round));
