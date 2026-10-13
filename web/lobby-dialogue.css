@@ -1,7 +1,3 @@
-/* The archived lobby portrait stays unchanged; overlay only restores its dialogue. */
-#home-view .home-stage #gxb3-lobby-speak{position:absolute;left:32%;top:20%;width:36%;height:47%;z-index:2;background:transparent;border:0;cursor:pointer;touch-action:manipulation}
-#home-view .home-stage #gxb3-lobby-speech{position:absolute;left:15%;right:15%;bottom:30%;z-index:3;background:linear-gradient(160deg,rgba(21,29,65,.93),rgba(49,35,86,.94));border:1px solid rgba(253,226,164,.8);border-radius:16px;padding:10px 14px 12px;color:#fff;box-shadow:0 5px 15px #1118;pointer-events:none;text-align:center;line-height:1.45;box-sizing:border-box}
-#home-view .home-stage #gxb3-lobby-speech[hidden]{display:none!important}
-#gxb3-lobby-speech strong{display:block;color:#ffe5ad;font-size:clamp(12px,2.5cqw,16px);margin-bottom:3px}
-#gxb3-lobby-speech span{display:block;font-size:clamp(12px,2.3cqw,15px)}
+/* Use the game's original StoryPlayer (.sp-dialog) and character-detail panels.
+   There is no extra dialogue box covering the original lobby artwork. */
 #dev-open{display:none!important}
