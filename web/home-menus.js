@@ -158,38 +158,30 @@ const HomeMenus=(()=>{
   });
  }
  function gifts(parent){
-  const c=card(parent,root==='treasure'?'Quà Đặc Biệt':'Gói Quà','mail_gift_bg');
-  paragraph(c,'Danh sách gói quà và các quyền lợi của game được giữ nguyên. Thanh toán đơn hàng qua Zalo và chỉ nhận quà sau khi QTV xác nhận.');
-  link(c,'Hòm Thư','mail');link(c,'Sự Kiện','events');
-  if(root==='giftpacks'){
-   const vip=state?.vip_info;
-   if(vip){
-    const progress=card(parent,'VIP '+vip.level,'mail_gift_bg');
+  // Only server-published packages are orderable. Archived preview cards had
+  // prices from a different store and are not a valid purchasing interface.
+  const vip=state?.vip_info;
+  if(vip){
+    const progress=card(parent,'VIP '+vip.level);
     paragraph(progress,'Điểm VIP: '+number(vip.exp||0)+(vip.next?' / '+number(vip.next):' · Đã đạt cấp tối đa'));
     if(vip.perks){
-     const p=vip.perks;
-     paragraph(progress,'Thưởng treo máy +'+Math.round(Number(p.extra_output||0)*100)+'% · Midas '+(p.midas_buy_times||0)+' lượt/ngày · Thực tập '+(p.pub_mission_num||0)+' lượt/ngày');
+      const p=vip.perks;
+      paragraph(progress,'Thưởng treo máy +'+Math.round(Number(p.extra_output||0)*100)+'% · Midas '+(p.midas_buy_times||0)+' lượt/ngày · Thực tập '+(p.pub_mission_num||0)+' lượt/ngày');
     }
-   }
-   if(topupPackages===null){
-    paragraph(parent,'Đang tải gói nạp của máy chủ…');
+  }
+  if(topupPackages===null){
+    paragraph(parent,'Đang tải gói nạp được máy chủ công bố…');
     loadTopupPackages();
-   }else if(!topupPackages.length){
-    paragraph(parent,'Hiện chưa có gói nạp nào được máy chủ công bố.');
-   }else{
+  }else if(!topupPackages.length){
+    paragraph(parent,'Máy chủ chưa công bố gói nạp khả dụng.');
+  }else{
     for(const pack of topupPackages){
-     const offer=card(parent,pack.name||pack.id,'mail_gift_bg');
-     if(pack.price_label)paragraph(offer,pack.price_label);
-     button(offer,'Chọn Gói · Thanh Toán Zalo',()=>window.GxbPayment?.open(pack.id),!window.GxbPayment);
+      const offer=card(parent,pack.name||pack.id);
+      if(pack.price_label)paragraph(offer,pack.price_label);
+      button(offer,'Thanh Toán Qua Zalo',()=>window.GxbPayment?.open(pack.id),!window.GxbPayment);
     }
-   }
   }
-  for(const pack of catalog.gift_previews||[]){
-   const offer=card(parent,pack.title);
-   paragraph(offer,'Giá từ dữ liệu gốc: '+pack.price+' '+pack.currency);
-   if(pack.daily_diamond)rewards(offer,pack.daily_diamond);
-   paragraph(offer,'Gói gốc tham khảo · chỉ đặt mua khi máy chủ có gói tương ứng.');
-  }
+  paragraph(parent,'Giá, quà tặng và trạng thái đơn do máy chủ xác nhận. Thưởng chỉ được gửi qua Hòm Thư sau khi đơn đã duyệt.');
  }
  function openFriendsBoss(from){launch('friends',from);tab='coop';render();RemainingSystems.openFriendTab();}
  return {openFriendsBoss,handles:key=>Object.hasOwn(titles,key),open:launch,render};
