@@ -187,10 +187,21 @@ class HTTPHandler(BaseHTTPRequestHandler):
             return False
         return True
 
+    def is_super_gm(self):
+        """Bind SUPER GM to the existing owner account, never to a client-supplied email/key."""
+        ctx = self.auth_context()
+        account = (ctx or {}).get('account') or {}
+        owner_email = os.environ.get('GXB3_OWNER_EMAIL', 'trieuquangholuxury@gmail.com').strip().casefold()
+        owner_uid = os.environ.get('GXB3_OWNER_UID', 'GXB3-00000001').strip()
+        return bool(
+            ctx and owner_email and owner_uid
+            and str(account.get('email') or '').strip().casefold() == owner_email
+            and str(account.get('uid') or '') == owner_uid
+        )
+
     def admin_authorized(self):
-        supplied = self.headers.get('X-GXB2-Admin-Key', '')
-        expected = getattr(self.server, 'admin_key', '')
-        return bool(expected and supplied and hmac.compare_digest(supplied, expected))
+        # An old shared GM key alone must never grant account or developer privileges.
+        return self.is_super_gm()
 
     def reject_unauthorized_admin_mode(self):
         if self.headers.get('X-GXB2-Mode') == 'developer' and not self.admin_authorized():
@@ -326,7 +337,7 @@ class HTTPHandler(BaseHTTPRequestHandler):
                 return self.send(503,{'ready':False,'database':database.backend_name()})
         if path == '/api/auth/me':
             ctx = self.auth_context()
-            return self.send(200, {'authenticated': bool(ctx), 'session': ctx, 'worlds': live_service.worlds()})
+            return self.send(200, {'authenticated': bool(ctx), 'session': ctx, 'worlds': live_service.worlds(), 'is_super_gm': self.is_super_gm()})
         if path == '/api/auth/sessions':
             ctx = self.require_auth()
             if not ctx: return
