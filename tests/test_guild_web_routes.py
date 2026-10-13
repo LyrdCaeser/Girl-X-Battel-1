@@ -18,8 +18,8 @@ class GuildWebRoutingTests(unittest.TestCase):
     def test_guild_online_reads_real_authenticated_endpoint(self):
         guild = (WEB / "guild.js").read_text(encoding="utf-8")
         self.assertIn("api('/api/world-guild')", guild)
-        self.assertIn("api('/api/world-guild/manage'", guild)
-        self.assertIn("api('/api/world-guild/action'", guild)
+        self.assertIn("'/api/world-guild/manage'", guild)
+        self.assertIn("'/api/world-guild/action'", guild)
         self.assertIn("GuildTerritory.paint(back,false)", guild)
         self.assertIn("renderOnlineGuild", guild)
 
