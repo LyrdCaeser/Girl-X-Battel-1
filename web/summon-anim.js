@@ -54,8 +54,8 @@ const SummonAnim=(()=>{
  }
  async function play(summonId,partners){document.querySelector('.sa-waiting')?.remove();if(typeof PIXI==='undefined'||!partners?.length)return;await assets();skipped=false;
   overlay=el('div','sa-overlay');const stage=el('div','sa-stage');const bg=el('img','sa-bg');bg.src='/assets/summon/summon_scene.png';bg.alt='';stage.append(bg);overlay.append(stage);
-  const touch=el('div','sa-touch');touch.hidden=true;const hint=el('button','sa-hint','Desliza hacia abajo ▼');hint.type='button';hint.hidden=true;const cap=el('div','sa-caption');cap.hidden=true;
-  const skip=el('button','sa-skip','Skip');skip.type='button';skip.onclick=()=>{skipped=true;};overlay.append(touch,hint,cap,skip);(window.GxbFrame?.root()||document.body).append(overlay);
+  const touch=el('div','sa-touch');touch.hidden=true;const hint=el('button','sa-hint','Vuốt xuống để tiếp tục ▼');hint.type='button';hint.hidden=true;const cap=el('div','sa-caption');cap.hidden=true;
+  const skip=el('button','sa-skip','Bỏ Qua');skip.type='button';skip.onclick=()=>{skipped=true;};overlay.append(touch,hint,cap,skip);(window.GxbFrame?.root()||document.body).append(overlay);
   try{const kind=KIND[summonId];
    if(kind){const m=await layer('/assets/spine/fx_ui_gacha_revision',1.2,.66);run(m.fig,kind+'04',true);await swipe();if(!skipped){sfx('vd_egg');await run(m.fig,kind+'01');}if(!skipped)await run(m.fig,kind+'02');if(!skipped){sfx('gacha_obtain');await run(m.fig,kind+'03');}m.done();}
    for(let i=0;i<partners.length&&!skipped;i++)await reveal(partners[i],i,!!kind);
