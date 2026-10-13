@@ -8,14 +8,14 @@ const LobbyDialogue=(()=>{
     43001:{name:'Nun',text:'Thế giới này được Thượng Đế tạo ra. Vậy nên, hãy bày tỏ lòng biết ơn với Người.'}
   };
   const heroes=[41001,42001,43001];
-  let shownId=0,stage,bubble,nameEl,lineEl;
+  let shownId=0,selectedId=heroes[0],stage,bubble,nameEl,lineEl;
   function currentHero(){
     try{return heroes[((Number(homeHeroIndex)||0)%heroes.length+heroes.length)%heroes.length];}
     catch{return heroes[0];}
   }
   function speak(){
     if(!stage||!bubble)return;
-    const id=currentHero(),entry=dialogues[id];
+    const id=selectedId,entry=dialogues[id];
     if(!entry)return;
     shownId=id;
     nameEl.textContent=entry.name;
@@ -23,9 +23,12 @@ const LobbyDialogue=(()=>{
     bubble.hidden=false;
   }
   function sync(id){
-    if(!stage||!bubble)return;
-    const selected=Number(id)||currentHero();
-    if(selected!==shownId)speak();
+    const requested=Number(id);
+    const selected=heroes.includes(requested)?requested:currentHero();
+    if(selected!==selectedId||selected!==shownId){
+      selectedId=selected;
+      speak();
+    }
   }
   function init(){
     stage=document.querySelector('#home-view .home-stage');
