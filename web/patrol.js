@@ -52,7 +52,7 @@ const Patrol=(()=>{
    const o=info.curr_shop_item;const model=['zhanghongpifu','shengdanxueqiao','mizhubaozang'][info.shop_tier-1]||'zhanghongpifu';
    const mHost=actor('right','m'+o.id,()=>{fx(st,'chuansongmen',380,420,340,'texiao01',1600);const h=el('div','pt-chibi appear');GxbSpine.mount(h,'/assets/spine/'+model,{width:320,height:320,fit:.85,y:.6,className:'pt-canvas',sequence:[['idle',true]]}).catch(()=>{});return h;});at(mHost,340,420,380,380);st.append(mHost);
    const m=at(el('div','pt-merchant'),330,300,370);m.append(el('p','pt-say','Well if it isn\'t Senpai! Take a look at my merchandise!'));const row=el('div','pt-offer');for(const [k,n]of Object.entries(o.item))row.append(chip(k,n));row.append(el('span','pt-arrow','→'));for(const [k,n]of Object.entries(o.cost))row.append(chip(k,n));m.append(row);
-   const acts=el('div','pt-acts');acts.append(btn('pt-go','Buy',async()=>{const k=Object.keys(o.cost)[0],n=o.cost[k];if(!confirm(`Spend ${number(n)} ${nameOf(k)} in ${Object.entries(o.item).map(([i,c])=>c+'× '+nameOf(i)).join(', ')}?`))return;const res=await act({action:'merchant'});if(res?.got)CampaignUI.popup('Compra',res.got);}),btn('pt-go alt','Skip',()=>act({action:'merchant',skip:true})));m.append(acts);st.append(m);}
+   const acts=el('div','pt-acts');acts.append(btn('pt-go','Buy',async()=>{const k=Object.keys(o.cost)[0],n=o.cost[k];if(!await GirlUI.confirm(`Dùng ${number(n)} ${nameOf(k)} để mua ${Object.entries(o.item).map(([i,c])=>c+'× '+nameOf(i)).join(', ')}?`,{title:'Mua Vật Phẩm',ok:'Mua'}))return;const res=await act({action:'merchant'});if(res?.got)CampaignUI.popup('Compra',res.got);}),btn('pt-go alt','Skip',()=>act({action:'merchant',skip:true})));m.append(acts);st.append(m);}
   else if(!info.all_pass&&info.enemies.length){
    // Enemy: the first enemy model (DungeonWindow:initEnemyModel) after the difangchuchang smoke; tap = preview of all.
    const e0=info.enemies.find(e=>e.hp>0)||info.enemies[0];const key='e'+info.stage+':'+e0.table_id;
@@ -73,7 +73,7 @@ const Patrol=(()=>{
   if(!info.alive)st.append(at(el('p','pt-note pt-box',"All Girls on the team have been eliminated. The round ends here."),60,780,600));
   if(note)st.append(at(el('p','pt-note pt-err',note),60,800,600));
   if(panel)popup(st,info);}
- async function useDrug(d){const info=state.patrol_info,p=info.partners.find(x=>x.index===selected);if(!p)return;if(!confirm(`Are you sure you want to use ${d.name}? (${p.name})`))return;await act({action:'use_drug',index:selected,drug_id:d.id});}
+ async function useDrug(d){const info=state.patrol_info,p=info.partners.find(x=>x.index===selected);if(!p)return;if(!await GirlUI.confirm(`Sử dụng ${d.name} cho ${p.name}?`,{title:'Dùng Thuốc',ok:'Sử Dụng'}))return;await act({action:'use_drug',index:selected,drug_id:d.id});}
  async function fightNow(){const info=state.patrol_info;const p=info.partners.find(x=>x.index===selected);if(!p||p.hp<=0){note="Choose a Girl with HP";render();return;}
   const label=`Patrol · ${info.phase} ${info.phase_stage}`;const r=await act({action:'fight',index:selected});if(!r)return;const got={...(r.award?.got||{})};
   // Victory result (1 of 3): chest → rewards grid; item/merchant → a line in the label and on the Patrol screen.
