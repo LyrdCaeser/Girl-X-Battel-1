@@ -17,7 +17,7 @@ window.GxbPayment=(()=>{
       const out=await api('/api/payment/packages');
       return Array.isArray(out?.packages)?out.packages:[];
     }catch{
-      return [{id:'CUSTOM',name:T('Custom package'),price_label:T('Contact via Zalo'),manual_reward:true}];
+      return []; // Never fabricate a package when the server catalog is unavailable.
     }
   }
 
@@ -45,7 +45,7 @@ window.GxbPayment=(()=>{
     const cp=el('button','pay-copy',T('Copy number'));const status=el('small','pay-status','');cp.onclick=()=>copy(ZALO,status);
     row.append(info,cp);box.append(row,status);
 
-    const uid=state?.uid||'GXB3-000001',server=state?.server_id||'S1',name=state?.name||'Nữ Thần';
+    const uid=state?.uid||'',server=state?.server_id||'',name=state?.name||'';
     const pkg=document.createElement('select');pkg.className='pay-input';
     for(const p of packages){
       const o=el('option','',p.name+(p.price_label?' · '+p.price_label:''));
@@ -71,6 +71,7 @@ window.GxbPayment=(()=>{
     const create=el('button','pay-primary',T('Create top-up order'));
     const openZalo=el('a','pay-zalo',T('Open Zalo'));openZalo.href='https://zalo.me/'+ZALO;openZalo.target='_blank';openZalo.rel='noopener noreferrer';
     create.onclick=async()=>{
+      if(!uid||!server||!name){status.textContent='Vui lòng đăng nhập và chọn nhân vật trước khi tạo đơn nạp.';return;}
       if(!pkg.value){status.textContent=T('No top-up package is currently available');return;}
       create.disabled=true;
       try{
