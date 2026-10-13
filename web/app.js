@@ -802,16 +802,16 @@ function renderProfile(){
  $('profile-info-page').hidden=profileTab!=='info';$('profile-settings-page').hidden=profileTab!=='settings';
  if(typeof ProfileSenpai!=='undefined')ProfileSenpai.render();
 }
-const VIP_SOURCES={campaign:"Campaign (stages)",level:"Player Level",tasks:"Tasks and Trophies",login:"Days played",lab:"Guild Lab",collection:"Yume Collection (Trophies)"};
+const VIP_SOURCES={campaign:"Chiến Dịch (ải)",level:"Cấp người chơi",tasks:"Nhiệm vụ và thành tựu",login:"Số ngày đã chơi",lab:"Phòng Nghiên Cứu Bang Hội",collection:"Bộ Sưu Tập Yume"};
 function renderVip(){
  const v=state.vip_info;if(!v)return;
  $('vip-level').textContent='VIP '+v.level;
- $('vip-exp').textContent=v.next?number(v.exp)+' / '+number(v.next)+' VIP EXP':number(v.exp)+" VIP EXP · maximum level";
+ $('vip-exp').textContent=v.next?number(v.exp)+' / '+number(v.next)+' VIP EXP':number(v.exp)+" EXP VIP · đã đạt cấp tối đa";
  $('vip-fill').style.width=v.next?Math.min(100,100*(v.exp-v.base)/(v.next-v.base))+'%':'100%';
  $('vip-sources').replaceChildren(...Object.entries(v.sources).map(([k,n])=>{const li=document.createElement('li');li.textContent=(VIP_SOURCES[k]||k)+': +'+number(n);return li;}));
  const P=v.perks,N=v.next_perks;
- const line=(p)=>"Idle reward bonus +"+Math.round(p.extra_output*100)+'% · Midas '+p.midas_buy_times+" purchases/day +"+Math.round(p.extra_midas*100)+"% · Internship "+p.pub_mission_num+"/day · Max. Girls "+p.partners_limit;
- $('vip-perks').textContent=line(P)+(N?"  →  Next level: +"+Math.round(N.extra_output*100)+"% idle rewards, Midas "+N.midas_buy_times+", Internship "+N.pub_mission_num:'');
+ const line=(p)=>"Thưởng treo máy +"+Math.round(p.extra_output*100)+'% · Midas '+p.midas_buy_times+" lượt/ngày +"+Math.round(p.extra_midas*100)+"% · Thực tập "+p.pub_mission_num+" lượt/ngày · Giới hạn nữ thần "+p.partners_limit;
+ $('vip-perks').textContent=line(P)+(N?"  →  Cấp tiếp theo: +"+Math.round(N.extra_output*100)+"% thưởng treo máy, Midas "+N.midas_buy_times+", Thực tập "+N.pub_mission_num:'');
 }
 function profileOptionLabel(name){
  if(name.startsWith('partner_avatar_')){const id=Number(name.split('_').pop());return state.roster.find(g=>g.table_id===id)?.name||"Nữ Thần "+id;}
