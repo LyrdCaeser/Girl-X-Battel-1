@@ -71,6 +71,6 @@ const LostSpace=(()=>{
  function preview(s){const {body}=GirlUI.win({title:T('ACTIVITY_LOST_SPACE_AWARD_TITLE')||'Xem Trước',cls:'ls-win'});const g=el('div','ls-pgrid');
   for(const z of Object.keys(data.awards).map(Number).sort((a,b)=>a-b)){const c=el('div','ls-pz'+(z<s.stage?' done':z===s.stage?' now':''));c.append(el('small','',T('ACTIVITY_LOST_SPACE_AWARD_NUM').replace('{1}',z)),chip(data.awards[z].award));if(data.awards[z].if_treasure)c.append(img(A('activity_lost_space_icon_bjzb'),'ls-flag'));g.append(c);}body.append(g);
   setTimeout(()=>g.querySelector('.now')?.scrollIntoView({block:'center'}),50);}
- function buy(s){const left=s.buy_limit-s.buy;if(left<=0){GirlUI.toast("Daily limit reached");return;}const n=Number(prompt("Space Radars (100 Gems each, remaining: "+left+' hoy)','5'))||0;if(n>0)act({action:'buy',num:Math.min(n,left)});}
+ async function buy(s){const left=s.buy_limit-s.buy;if(left<=0){GirlUI.toast('Đã đạt giới hạn mua hằng ngày');return;}const n=await GirlUI.promptNumber('Mua Ra-đa Không Gian (100 Kim Cương/chiếc; còn '+left+' lượt)',{title:'Mua Ra-đa',value:Math.min(5,left),min:1,max:left});if(n)act({action:'buy',num:n});}
  return {panel,open,render:draw};
 })();
