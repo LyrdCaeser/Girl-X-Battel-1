@@ -382,3 +382,15 @@ body:has(#girls-view:not([hidden])){background:#d4dfeb}#girls-return{margin-righ
 .profile-option.locked{filter:grayscale(.78) brightness(.55);opacity:.7}
 .profile-option.locked img{pointer-events:none}
 .profile-option .profile-lock{position:absolute;right:5px;bottom:5px;width:25px;height:25px;border-radius:50%;display:grid;place-items:center;background:#090b12dd;border:1px solid #ffffff35;font-size:13px}
+
+/* Native currency add affordances, next to the original Gold / Gem counters. */
+#home-view .home-currency .home-currency-add{
+  display:inline-grid;place-items:center;flex:0 0 auto;width:20px;height:20px;
+  padding:0!important;border:1px solid #e8ffff!important;border-radius:6px;
+  background:linear-gradient(#72e1ee,#257cce)!important;color:#fff!important;
+  font-weight:900;font-size:17px;line-height:1;box-shadow:0 2px 0 #1c4b85;
+  text-shadow:0 1px #225c9b;cursor:pointer;pointer-events:auto
+}
+#home-view .home-currency{z-index:6}
+#girl-detail-view #detail-grade-up{margin-left:6px;background:linear-gradient(#ffdf8b,#dc8e30);color:#58310b;border:1px solid #f1c86c}
+#girl-detail-view #detail-grade-up[hidden]{display:none!important}
