@@ -138,16 +138,16 @@ class TCPHandler(socketserver.BaseRequestHandler):
             except (EOFError, OSError): return
             try:
                 name = p.NAMES.get(mid)
-                if name is None: raise GameError(f'ID desconocido: {mid}')
+                if name is None: raise GameError(f'ID không hợp lệ: {mid}')
                 if not authenticated and name not in ('CHECK_LOGIN', 'RECONNECT'):
-                    raise GameError('Primero inicia una sesión local de prueba')
+                    raise GameError('Vui lòng đăng nhập trước khi thao tác')
                 typ = p.message_type(mid, 'req')
                 if typ not in p.CLASSES:
-                    raise GameError(f'{name}: esquema de petición no disponible')
+                    raise GameError(f'{name}: định dạng yêu cầu chưa được hỗ trợ')
                 data = p.decode(typ, payload)
                 if name == 'RECONNECT':
                     candidate = data.get('next_seq', sequence)
-                    if not 1 <= candidate < 0xFFFFFFFF: raise GameError('Secuencia inválida')
+                    if not 1 <= candidate < 0xFFFFFFFF: raise GameError('Thứ tự gói tin không hợp lệ')
                     sequence = candidate
                 packets = self.server.engine.handle(name, data)
                 if name in ('CHECK_LOGIN', 'RECONNECT'):
@@ -156,7 +156,7 @@ class TCPHandler(socketserver.BaseRequestHandler):
                 packets = [(p.MIDS['ERROR_MESSAGE'], 'error_message', {'error_code': -1, 'error_msg': str(exc), 'error_mid': mid})]
             except Exception as exc:
                 print(f'Error de procesamiento en ID {mid}: {type(exc).__name__}', flush=True)
-                packets = [(p.MIDS['ERROR_MESSAGE'], 'error_message', {'error_code': -1, 'error_msg': 'Error interno del prototipo local', 'error_mid': mid})]
+                packets = [(p.MIDS['ERROR_MESSAGE'], 'error_message', {'error_code': -1, 'error_msg': 'Lỗi xử lý nội bộ', 'error_mid': mid})]
             try:
                 for out_mid, out_type, body in packets:
                     self.request.sendall(p.frame(out_mid, p.encode(out_type, body), sequence))
@@ -631,7 +631,7 @@ class HTTPHandler(BaseHTTPRequestHandler):
                 return self.send(200, (ROOT/'web/assets/events'/f'{stem}.png').read_bytes(), 'image/png')
         if path.startswith('/api/battle/'):
             try: return self.send(200, self.engine.get_battle(int(path.rsplit('/', 1)[-1])))
-            except (ValueError, GameError): return self.send(404, {'error': 'Batalla inexistente'})
+            except (ValueError, GameError): return self.send(404, {'error': 'Không tìm thấy trận đấu'})
         if path.startswith('/assets/img-guides/'):
             filename = path.rsplit('/', 1)[-1]
             folder = ROOT/'web/assets/img-guides'
@@ -655,7 +655,7 @@ class HTTPHandler(BaseHTTPRequestHandler):
                 static_file = ROOT / 'web' / filename
                 if static_file.is_file():
                     return self.send(200, static_file.read_bytes(), mime)
-        return self.send(404, {'error': 'Ruta no implementada'})
+        return self.send(404, {'error': 'Đường dẫn không tồn tại'})
     def bootstrap(self):
         ctx = self.auth_context()
         account = ctx['account'] if ctx else {'uid': 'local-player-1', 'server_id': 'S1'}
@@ -664,7 +664,7 @@ class HTTPHandler(BaseHTTPRequestHandler):
                 'server_time': int(time.time()), 'log_url': f'http://localhost:{self.server.server_port}/local-log'}
     def read_body(self):
         length = int(self.headers.get('Content-Length', '0'))
-        if not 0 <= length <= 1024*1024: raise GameError('Petición demasiado grande')
+        if not 0 <= length <= 1024*1024: raise GameError('Dữ liệu gửi lên quá lớn')
         raw = self.rfile.read(length)
         content_type = self.headers.get('Content-Type', '')
         if content_type.startswith('application/json'):
@@ -676,8 +676,8 @@ class HTTPHandler(BaseHTTPRequestHandler):
             message = BytesParser(policy=default).parsebytes(('Content-Type: '+content_type+'\r\nMIME-Version: 1.0\r\n\r\n').encode()+raw)
             payload = next((part.get_payload(decode=True) for part in message.iter_parts() if part.get_param('name', header='content-disposition') == 'payload'), b'{}')
             data = json.loads(payload)
-        else: raise GameError('Tipo de contenido no compatible')
-        if not isinstance(data, dict): raise GameError('La petición debe ser un objeto')
+        else: raise GameError('Định dạng dữ liệu không được hỗ trợ')
+        if not isinstance(data, dict): raise GameError('Dữ liệu yêu cầu phải là đối tượng JSON')
         return data
     def do_POST(self):
         if self.reject_unauthorized_admin_mode():
@@ -688,7 +688,7 @@ class HTTPHandler(BaseHTTPRequestHandler):
                    f'http://{host}', f'https://{host}'}
         if getattr(self.server, 'public_origin', ''):
             allowed.add(self.server.public_origin.rstrip('/'))
-        if origin and origin not in allowed: return self.send(403, {'error': 'Origen no permitido'})
+        if origin and origin not in allowed: return self.send(403, {'error': 'Nguồn truy cập không được phép'})
         try:
             data = self.read_body()
             path = urlparse(self.path).path
@@ -1133,7 +1133,7 @@ class HTTPHandler(BaseHTTPRequestHandler):
                 return self.send(200, self.engine.run_daily_quiz(data, sweep=True))
             if path == '/api/tower/fight':
                 return self.send(200, self.engine.run_tower(data))
-            return self.send(404, {'error': 'Ruta no implementada'})
+            return self.send(404, {'error': 'Đường dẫn không tồn tại'})
         except (ValueError, KeyError) as exc: return self.send(400, {'error': str(exc)})
         except Exception as exc:
             print(f'Error local: {type(exc).__name__}: {exc}', flush=True)
