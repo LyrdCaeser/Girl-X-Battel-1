@@ -37,7 +37,7 @@ const EventsHub=(()=>{
   .replace(/\bGet\s+(\d+)\s+point\(s\)/g,'Đạt $1 điểm').replace(/\bPurchased:\s*/g,'Đã mua: ')
   .replace(/\bLeft\b/g,'Còn lại').replace(/\bCompleted\b/g,'Đã hoàn thành');
  };
- let catalog=null,loading=null,tab='ex',selected=null,origin='home',pending=false,message='',visited=false;
+ let catalog=null,loading=null,tab='ex',selected=null,pinnedId=null,origin='home',pending=false,message='',visited=false;
  const A=name=>'/assets/events/'+name+'.png';
  const el=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=vi(text);return e;};
  const img=(src,cls,alt='')=>{const i=el('img',cls);i.src=src;i.alt=alt;i.draggable=false;return i;};
@@ -65,7 +65,7 @@ const EventsHub=(()=>{
   sec('Đang diễn ra');for(const e of c.events)row((e.kind==='month'?'[Tháng] ':'[Tuần] ')+vi(e.title),'còn '+leftText(e.end));
   sec('Sắp diễn ra');for(const e of c.next)row((e.kind==='month'?'[Tháng] ':'[Tuần] ')+vi(e.title),'sau '+leftText(e.start));
   body.append(el('p','ev-cal-note',"Lịch game: tuần tính từ Thứ Hai đến Chủ Nhật, tháng bắt đầu từ ngày 1. Sự kiện tạm đóng vẫn giữ nguyên tiến độ cho lần mở tiếp theo."));}
- function list(){const all=catalog.activities.filter(a=>inTab(a,tab)&&!(a.id===116&&hub().sevenday.done));return [...all.filter(a=>WORKING.has(a.id)&&openNow(a.id)),...rotation(all)].sort((a,b)=>(WORKING.has(b.id)-WORKING.has(a.id))||(b.rank-a.rank)||(b.id-a.id));}
+ function list(){const all=catalog.activities.filter(a=>inTab(a,tab)&&!(a.id===116&&hub().sevenday.done));const rows=[...all.filter(a=>WORKING.has(a.id)&&openNow(a.id)),...rotation(all)];if(pinnedId){const original=catalog.activities.find(a=>a.id===pinnedId);if(original&&!rows.some(a=>a.id===pinnedId))rows.unshift(original);}return rows.sort((a,b)=>(a.id===pinnedId?1:0)-(b.id===pinnedId?1:0)?(b.id===pinnedId?1:0)-(a.id===pinnedId?1:0):(WORKING.has(b.id)-WORKING.has(a.id))||(b.rank-a.rank)||(b.id-a.id));}
  function listAll(){return catalog.activities.filter(a=>inTab(a,tab)&&!(a.id===116&&hub().sevenday.done)).sort((a,b)=>(WORKING.has(b.id)-WORKING.has(a.id))||(b.rank-a.rank)||(b.id-a.id));}
 
  function open(from){origin=from||'home';message='';showView('events');if(!catalog&&!loading)loading=Promise.all([api('/assets/events/catalog.json'),typeof ActKit!=='undefined'?ActKit.load():null]).then(([c])=>{catalog=c;if(typeof ActKit!=='undefined')ActKit.ids().forEach(i=>WORKING.add(i));render();}).catch(e=>{message=e.message;loading=null;render();});if(!visited){visited=true;send({action:'visit'},true);}}
@@ -77,7 +77,7 @@ const EventsHub=(()=>{
   const money=el('div','ev-money');for(const id of ['1','2']){const s=el('span');s.append(img('/assets/currency/icon_'+id+'_small.png'),el('b',undefined,fmt(state.items[id]||0)));money.append(s);}
   top.append(back,el('h1',undefined,"Sự Kiện"),money);root.append(top);
   if(!catalog||!hub()){root.append(el('p','ev-note',message||"Đang tải sự kiện…"));return;}
-  const win=el('div','ev-window');root.append(win);const tabs=el('nav','ev-tabs');for(const [id,pos]of TABS){const b=el('button','ev-tab '+pos+(tab===id?' on':''),tabLabel(id));b.type='button';b.onclick=()=>{if(tab===id)return;tab=id;selected=null;message='';if(typeof GxbAudio!=='undefined')GxbAudio.sfx('ui_switch_page',.6);render();};if(catalog.activities.some(a=>inTab(a,id)&&claimable(a.id)))b.append(img(A('alert_icon'),'ev-tab-red'));tabs.append(b);}win.append(tabs);{const cb=el('button','ev-cal-btn','📅 Lịch');cb.type='button';cb.onclick=calendarWin;win.append(cb);}const panel=el('div','ev-panel');win.append(panel);
+  const win=el('div','ev-window');root.append(win);const tabs=el('nav','ev-tabs');for(const [id,pos]of TABS){const b=el('button','ev-tab '+pos+(tab===id?' on':''),tabLabel(id));b.type='button';b.onclick=()=>{if(tab===id)return;tab=id;selected=null;pinnedId=null;message='';if(typeof GxbAudio!=='undefined')GxbAudio.sfx('ui_switch_page',.6);render();};if(catalog.activities.some(a=>inTab(a,id)&&claimable(a.id)))b.append(img(A('alert_icon'),'ev-tab-red'));tabs.append(b);}win.append(tabs);{const cb=el('button','ev-cal-btn','📅 Lịch');cb.type='button';cb.onclick=calendarWin;win.append(cb);}const panel=el('div','ev-panel');win.append(panel);
   const items=list();if(!items.some(a=>a.id===selected))selected=items[0]?.id??null;
   const strip=el('div','ev-strip');for(const a of items){const b=el('button','ev-title'+(a.id===selected?' on':''));b.type='button';b.title=vi(a.title.replace(/\n/g,' '));b.append(img(A(a.id===selected?'activity_icon_1_middle':'activity_icon_0_middle'),'ev-title-bg'),img(A('icon_'+a.icon),'ev-title-icon'),el('span','ev-title-label',vi(a.title)));if(slot(a.id))b.append(el('small','ev-title-left',leftText(slot(a.id).end)));if(claimable(a.id))b.append(img(A('person_icon_red_point'),'ev-title-red'));b.onclick=()=>{selected=a.id;message='';render();};strip.append(b);}panel.append(strip);
   requestAnimationFrame(()=>strip.querySelector('.on')?.scrollIntoView({block:'nearest',inline:'nearest'}));
@@ -129,6 +129,7 @@ const EventsHub=(()=>{
   if(a.desc&&a.desc!=='-1')c.append(el('p',undefined,vi(a.desc)));
   c.append(el('p','ev-note',"Sự kiện luân phiên tuần này. Nội dung đang được hoàn thiện; lịch đổi vào mỗi Thứ Hai."));parent.append(c);
  }
- function openPoint(id,from){tab='ex';selected=id;open(from);}
- return {open,openPoint,render};
+ function openPoint(id,from){tab='ex';selected=id;pinnedId=id;open(from);}
+ function openOriginalEvent(id,from){const entry={166:'ex',167:'ex',191:'ex',279:'ex'};tab=entry[id]||'ex';selected=id;pinnedId=id;open(from);}
+ return {open,openPoint,openOriginalEvent,render};
 })();
