@@ -4,7 +4,7 @@
 // do not intercept the original .home-mail button with a separate modal.
 window.GxbMail=(()=>{
   function open(){
-    if(window.HomeMenus?.open)window.HomeMenus.open('mail','home');
+    if(typeof HomeMenus!=='undefined')HomeMenus.open('mail','home');
     else window.GirlUI?.notice?.('Hòm Thư chưa sẵn sàng. Vui lòng tải lại trang.',{title:'Hòm Thư'});
   }
   function close(){}
