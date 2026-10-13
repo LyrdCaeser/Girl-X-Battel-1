@@ -985,9 +985,9 @@ class HTTPHandler(BaseHTTPRequestHandler):
                 packets = self.engine.handle(name, request)
                 return self.send(200, {'state': self.engine.snapshot(), 'messages': [{'id': mid, 'type': typ, 'data': body} for mid, typ, body in packets]})
             if path == '/api/developer':
-                if not self.admin_authorized() or self.headers.get('X-GXB2-Mode') != 'developer':
+                if not self.admin_authorized():
                     return self.send(403, {'error': 'QTV_KEY_REQUIRED'})
-                return self.send(200, {'state': self.engine.developer_action(data)})
+                return self.send(200, {'state': self.engine.developer_action(data, super_gm=True)})
             if path == '/api/home/action':
                 return self.send(200, self.engine.home_action(data))
             if path == '/api/dress-show/action':
