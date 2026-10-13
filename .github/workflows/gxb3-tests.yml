@@ -36,6 +36,8 @@ jobs:
           node --check web/online-hub.js
           node --check web/payment.js
           node --check web/auth.js
+      - name: Run browser-free JS regression tests
+        run: node tests/test_frontend_runtime.cjs
       - name: Audit Vietnamese dialogue coverage (read-only)
         run: python tools/translate_vi_dialogue.py
       - name: Run unit tests
