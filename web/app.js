@@ -254,8 +254,19 @@ function renderGirlDetail(){
  const pips=$('detail-grade-pips');pips.replaceChildren();for(let i=0;i<6;i++)pips.append(node('span',i<Number(hero.grade||0)?'filled':'','◆'));
  const cost=hero.next_cost||{},gold=Number(cost['1']||0),exp=Number(cost['9']||0),atCap=hero.lv>=hero.level_cap;
  $('detail-cost-text').textContent=atCap?'MAX':'🪙 '+number(gold)+'  ·  ✦ '+number(exp);
- const levelButton=$('detail-level-up');levelButton.disabled=busy||atCap||Number(state.items['1']||0)<gold||Number(state.items['9']||0)<exp;levelButton.textContent=busy?'Guardando…':atCap?"Current maximum level":"Level up once";
- $('detail-level-note').textContent=atCap?"This grade's level cap has been reached. Graduate from 4★ to 5★ is available in Campus if you have the materials.":levelButton.disabled?"You need more Gold or Girl EXP to level up.":"Level and resource spending are saved in this local save.";
+ const levelButton=$('detail-level-up');
+ const hasLevelCost=Object.keys(cost).length>0;
+ levelButton.disabled=busy||atCap||!hasLevelCost||Object.entries(cost).some(([id,n])=>Number(state.items[id]||0)<Number(n));
+ levelButton.textContent=busy?'Đang xử lý…':atCap?'Đã đạt giới hạn cấp':'Tăng 1 cấp';
+ const gradeButton=$('detail-grade-up');
+ const gradeCost=hero.grade_cost||{};
+ const isGradeMax=Number(hero.grade||0)>=Number(hero.max_grade||0);
+ const readyToGrade=atCap&&!isGradeMax&&Object.keys(gradeCost).length>0;
+ gradeButton.hidden=isGradeMax;
+ gradeButton.disabled=busy||!readyToGrade||Object.entries(gradeCost).some(([id,n])=>Number(state.items[id]||0)<Number(n));
+ gradeButton.textContent=isGradeMax?'Đã tiến hóa tối đa':'Tiến Hóa';
+ gradeButton.title=Object.entries(gradeCost).map(([id,n])=>(itemCatalog[id]?.name||('Vật phẩm '+id))+': '+number(n)).join(' · ');
+ $('detail-level-note').textContent=atCap?(isGradeMax?'Đã đạt giới hạn tiến hóa của bậc sao này.':'Đạt giới hạn cấp: nhấn Tiến Hóa khi đủ nguyên liệu.'):levelButton.disabled?'Không đủ tài nguyên hoặc dữ liệu chi phí tăng cấp.':'Tăng cấp sử dụng tài nguyên thật từ Túi Đồ.';
  const stats=$('detail-stats');stats.replaceChildren();for(const [label,base,growth,icon] of [['HP','base_hp','grow_hp','attr_hp_icon'],['ATK','base_atk','grow_atk','attr_atk_icon'],['DEF','base_arm','grow_arm','attr_def_icon'],['SPD','base_spd','grow_spd','attr_spd_icon']]){const e=node('div','detail-stat'),img=node('img');img.src='/assets/detail/'+icon+'.png';img.alt='';const value=Math.round(Number(meta.stats?.[base]||0)+Number(meta.stats?.[growth]||0)*(hero.lv-1));e.append(img,node('span','',label+': '+number(value)));stats.append(e);}
  const skills=$('detail-skills');skills.replaceChildren();for(const skill of meta.skills||[]){const e=node('div','detail-skill'),img=node('img');img.src=skill.icon?'/assets/skills/'+skill.icon+'.png':'/assets/detail/skill_icon_bg.png';img.alt='';e.title=skill.name;e.append(img,node('small','',skill.name));skills.append(e);}
  const slots=$('detail-gear-slots');slots.replaceChildren();for(const [index,icon] of ['partner_weapon','partner_cloth','partner_treasure','partner_shoes'].entries()){const e=node('div','detail-gear-slot'),img=node('img');img.src='/assets/detail/'+icon+'.png';img.alt='';const equipped=hero.equips?.[index];e.append(img,node('span','',equipped?'Equipado':"Empty"));slots.append(e);}
@@ -649,11 +660,19 @@ $('detail-prev').addEventListener('click',()=>cycleGirl(-1));
 $('detail-next').addEventListener('click',()=>cycleGirl(1));
 document.querySelectorAll('[data-detail-tab]').forEach(button=>button.addEventListener('click',()=>{detailTab=button.dataset.detailTab;renderGirlDetail();}));
 $('detail-level-up').addEventListener('click',()=>action('PARTNER_LEVUP',{partner_id:selectedGirlPartnerId,incr_lv:1}));
+$('detail-grade-up').addEventListener('click',async()=>{
+ const hero=state.roster.find(h=>h.partner_id===selectedGirlPartnerId);
+ if(!hero||Number(hero.lv)<Number(hero.level_cap)||Number(hero.grade)>=Number(hero.max_grade))return;
+ const cost=Object.entries(hero.grade_cost||{}).map(([id,n])=>(itemCatalog[id]?.name||('Vật phẩm '+id))+' × '+number(n)).join(' · ');
+ if(typeof GirlUI!=='undefined'&&!(await GirlUI.confirm('Tiến hóa '+hero.name+'?\\n'+cost,{title:'Xác nhận tiến hóa',ok:'Tiến Hóa'})))return;
+ await action('PARTNER_GRADEUP',{partner_id:hero.partner_id});
+});
 $('bag-detail-close').addEventListener('click',()=>{$('bag-detail').hidden=true;});
 $('bag-forge').addEventListener('click',()=>{const panel=$('bag-detail');$('bag-detail-name').textContent='Forge';$('bag-detail-count').textContent="Forge coming soon";$('bag-detail-description').textContent="The Bag already uses your actual items. Forge recipes and operations will be added when equipment tables are connected.";$('bag-detail-image').src='/assets/ui/quality_6.png';$('bag-detail-image').alt='';panel.hidden=false;});
 const comingRoutes={"Guild":'guild',"Menu":'settings',"Mail":'mail',"Gift Packs":'giftpacks',"Events":'events',"Treasure":'treasure',"Friends":'friends',"Fantasy Book":'book','Servant':'servant',"Excursion":'expedition',"Store":'black-market'};
 document.querySelectorAll('[data-coming]').forEach(b=>b.addEventListener('click',()=>{const key=comingRoutes[b.dataset.coming];if(key){openMenu(key);return;}notice(b.dataset.coming);}));
-$('home-gold')?.closest('span')?.addEventListener('click',()=>{if(typeof Midas!=='undefined')Midas.open();});
+$('home-add-gold')?.addEventListener('click',()=>{if(typeof Midas!=='undefined')Midas.open();});
+$('home-add-gems')?.addEventListener('click',()=>{if(typeof HomeMenus!=='undefined')HomeMenus.open('giftpacks','home');});
 $('home-profile').addEventListener('click',()=>{profileTab='info';$('profile-picker').hidden=true;showView('profile');});
 for(const [id,summon_id,times] of [['summon-free',3,1],['summon-one',1,1],['summon-ten',2,1],['summon-senior-free',8,1],['summon-senior-one',6,1],['summon-senior-ten',7,1],['summon-senior-gem-one',4,1],['summon-senior-gem-ten',5,1],['summon-bff-one',15,1],['summon-bff-ten',16,1],['summon-egg',9,1]])$(id).addEventListener('click',()=>action('SUMMON',{summon_id,times}));
 let servantAvatars={};api('/assets/servants.json').then(d=>{for(const [k,v]of Object.entries(d.pets||{}))servantAvatars[k]=v.avatar;}).catch(()=>{});
