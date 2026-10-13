@@ -25,6 +25,7 @@ jobs:
       - name: Check browser JavaScript syntax
         run: |
           node --check web/app.js
+          node --check web/story.js
           node --check web/campaign-ui.js
           node --check web/campaign-flow.js
           node --check web/summon-anim.js
