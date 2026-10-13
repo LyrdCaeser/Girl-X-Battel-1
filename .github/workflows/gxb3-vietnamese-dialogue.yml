@@ -42,7 +42,7 @@ jobs:
       - name: Check corpus before translating
         run: python tools/translate_vi_dialogue.py
       - name: Translate original narrative content (offline model)
-        run: python tools/translate_vi_dialogue.py --apply --batch-size 12 --limit "\${{ inputs.max_items }}"
+        run: python tools/translate_vi_dialogue.py --apply --batch-size 12 --limit "${{ inputs.max_items }}"
       - name: Review untranslated candidates
         run: |
           python tools/translate_vi_dialogue.py --verify || echo "Translation candidates remain: see report, rerun or edit manually."
