@@ -23,7 +23,7 @@
           "award": "90#2",
           "limit": 1,
           "daily": 0,
-          "text": "Collect Auto-Battle Loot {1} times in Campaign"
+          "text": "Thu thập chiến lợi phẩm tự động {1} lần trong Chiến Dịch"
         },
         {
           "id": 2,
@@ -31,7 +31,7 @@
           "award": "90#2",
           "limit": 1,
           "daily": 0,
-          "text": "Complete {1} Internship Quest(s) (4-star or above)"
+          "text": "Hoàn thành {1} nhiệm vụ Thực Tập (4 sao trở lên)"
         },
         {
           "id": 3,
@@ -39,7 +39,7 @@
           "award": "90#2",
           "limit": 1,
           "daily": 0,
-          "text": "Complete {1} battles in Junior Varsity"
+          "text": "Hoàn thành {1} trận đấu ở Đấu Trường Sơ Cấp"
         },
         {
           "id": 4,
@@ -698,7 +698,7 @@
           "award": "2#50|235#2",
           "limit": 1,
           "daily": 0,
-          "text": "Complete all other missions"
+          "text": "Hoàn thành tất cả nhiệm vụ khác"
         },
         {
           "id": 2,
@@ -706,7 +706,7 @@
           "award": "2#10",
           "limit": 1,
           "daily": 0,
-          "text": "Daily Login"
+          "text": "Đăng Nhập Hằng Ngày"
         },
         {
           "id": 3,
@@ -714,7 +714,7 @@
           "award": "35#1",
           "limit": 1,
           "daily": 0,
-          "text": "Use Normal Slot Machine 3 times"
+          "text": "Quay Máy Quay Thường 3 lần"
         },
         {
           "id": 4,
@@ -722,7 +722,7 @@
           "award": "14#100",
           "limit": 1,
           "daily": 0,
-          "text": "Complete 5 Junior Varsity battles"
+          "text": "Hoàn thành 5 trận ở Đấu Trường Sơ Cấp"
         },
         {
           "id": 5,
@@ -730,7 +730,7 @@
           "award": "9#100000",
           "limit": 1,
           "daily": 0,
-          "text": "Challenge Friend Boss 1 time"
+          "text": "Thách đấu Trùm Bạn Bè 1 lần"
         },
         {
           "id": 6,
@@ -738,7 +738,7 @@
           "award": "1#100000",
           "limit": 1,
           "daily": 0,
-          "text": "Use Alchemy twice to get Coins"
+          "text": "Dùng Luyện Kim 2 lần để nhận Vàng"
         },
         {
           "id": 7,
@@ -746,7 +746,7 @@
           "award": "10#100",
           "limit": 1,
           "daily": 0,
-          "text": "Spend 500 Gems"
+          "text": "Tiêu 500 Kim Cương"
         },
         {
           "id": 8,
@@ -754,7 +754,7 @@
           "award": "2#50|235#2",
           "limit": 1,
           "daily": 0,
-          "text": "Complete all other missions"
+          "text": "Hoàn thành tất cả nhiệm vụ khác"
         },
         {
           "id": 9,
@@ -762,7 +762,7 @@
           "award": "2#10",
           "limit": 1,
           "daily": 0,
-          "text": "Daily Login"
+          "text": "Đăng Nhập Hằng Ngày"
         },
         {
           "id": 10,
@@ -770,7 +770,7 @@
           "award": "24#2",
           "limit": 1,
           "daily": 0,
-          "text": "Complete 1 4-star Quest in Internship"
+          "text": "Hoàn thành 1 nhiệm vụ Thực Tập 4 sao"
         },
         {
           "id": 11,
@@ -778,7 +778,7 @@
           "award": "14#100",
           "limit": 1,
           "daily": 0,
-          "text": "Purchase 1 merchandise in Market"
+          "text": "Mua 1 vật phẩm trong Chợ"
         },
         {
           "id": 12,
@@ -786,7 +786,7 @@
           "award": "9#100000",
           "limit": 1,
           "daily": 0,
-          "text": "Clear 6 Quizzes in Daily Quiz"
+          "text": "Hoàn thành 6 câu đố Nhiệm Vụ Hằng Ngày"
         },
         {
           "id": 13,
@@ -794,7 +794,7 @@
           "award": "1#100000",
           "limit": 1,
           "daily": 0,
-          "text": "Send out 15 Hearts"
+          "text": "Gửi đi 15 Trái Tim"
         },
         {
           "id": 14,
@@ -802,7 +802,7 @@
           "award": "10#100",
           "limit": 1,
           "daily": 0,
-          "text": "Draw from Adv. Capsule 3 times"
+          "text": "Quay Triệu Hồi Cao Cấp 3 lần"
         },
         {
           "id": 15,
@@ -810,7 +810,7 @@
           "award": "2#50|235#2",
           "limit": 1,
           "daily": 0,
-          "text": "Complete all other missions"
+          "text": "Hoàn thành tất cả nhiệm vụ khác"
         },
         {
           "id": 16,
@@ -818,7 +818,7 @@
           "award": "2#10",
           "limit": 1,
           "daily": 0,
-          "text": "Daily Login"
+          "text": "Đăng Nhập Hằng Ngày"
         },
         {
           "id": 17,
@@ -826,7 +826,7 @@
           "award": "35#1",
           "limit": 1,
           "daily": 0,
-          "text": "Collect Auto-Battle Loot 5 times in Campaign"
+          "text": "Thu thập chiến lợi phẩm tự động 5 lần trong Chiến Dịch"
         },
         {
           "id": 18,
@@ -834,7 +834,7 @@
           "award": "14#100",
           "limit": 1,
           "daily": 0,
-          "text": "Complete 10 Junior Varsity battles"
+          "text": "Hoàn thành 10 trận ở Đấu Trường Sơ Cấp"
         },
         {
           "id": 19,
@@ -842,7 +842,7 @@
           "award": "9#100000",
           "limit": 1,
           "daily": 0,
-          "text": "Upgrade your Girl(s) 50 times"
+          "text": "Nâng cấp Nữ Thần tổng cộng 50 lần"
         },
         {
           "id": 20,
@@ -850,7 +850,7 @@
           "award": "1#100000",
           "limit": 1,
           "daily": 0,
-          "text": "Forge 10 Gears"
+          "text": "Rèn 10 Trang Bị"
         },
         {
           "id": 21,
@@ -858,7 +858,7 @@
           "award": "10#100",
           "limit": 1,
           "daily": 0,
-          "text": "Spend 1000 Gems"
+          "text": "Tiêu 1.000 Kim Cương"
         },
         {
           "id": 22,
@@ -866,7 +866,7 @@
           "award": "2#50|235#2",
           "limit": 1,
           "daily": 0,
-          "text": "Complete all other missions"
+          "text": "Hoàn thành tất cả nhiệm vụ khác"
         },
         {
           "id": 23,
@@ -874,7 +874,7 @@
           "award": "2#10",
           "limit": 1,
           "daily": 0,
-          "text": "Daily Login"
+          "text": "Đăng Nhập Hằng Ngày"
         },
         {
           "id": 24,
@@ -882,7 +882,7 @@
           "award": "35#1",
           "limit": 1,
           "daily": 0,
-          "text": "Transfer 10 Girls"
+          "text": "Chuyển đổi 10 Nữ Thần"
         },
         {
           "id": 25,
@@ -890,7 +890,7 @@
           "award": "14#100",
           "limit": 1,
           "daily": 0,
-          "text": "Purchase 2 merchandise in Market"
+          "text": "Mua 2 vật phẩm trong Chợ"
         },
         {
           "id": 26,
@@ -898,7 +898,7 @@
           "award": "9#100000",
           "limit": 1,
           "daily": 0,
-          "text": "Clear 12 Quizzes in Daily Quiz"
+          "text": "Hoàn thành 12 câu đố Nhiệm Vụ Hằng Ngày"
         },
         {
           "id": 27,
@@ -906,7 +906,7 @@
           "award": "1#100000",
           "limit": 1,
           "daily": 0,
-          "text": "Draw 5 BFF Capsules"
+          "text": "Triệu Hồi Bạn Thân 5 lần"
         },
         {
           "id": 28,
@@ -914,7 +914,7 @@
           "award": "10#100",
           "limit": 1,
           "daily": 0,
-          "text": "Draw from Adv. Capsule 6 times"
+          "text": "Quay Triệu Hồi Cao Cấp 6 lần"
         },
         {
           "id": 29,
@@ -922,7 +922,7 @@
           "award": "2#50|235#2",
           "limit": 1,
           "daily": 0,
-          "text": "Complete all other missions"
+          "text": "Hoàn thành tất cả nhiệm vụ khác"
         },
         {
           "id": 30,
@@ -930,7 +930,7 @@
           "award": "2#10",
           "limit": 1,
           "daily": 0,
-          "text": "Daily Login"
+          "text": "Đăng Nhập Hằng Ngày"
         },
         {
           "id": 31,
@@ -938,7 +938,7 @@
           "award": "35#1",
           "limit": 1,
           "daily": 0,
-          "text": "Use Normal Slot Machine 6 times"
+          "text": "Quay Máy Quay Thường 6 lần"
         },
         {
           "id": 32,
@@ -946,7 +946,7 @@
           "award": "14#100",
           "limit": 1,
           "daily": 0,
-          "text": "Complete 15 Junior Varsity battles"
+          "text": "Hoàn thành 15 trận ở Đấu Trường Sơ Cấp"
         },
         {
           "id": 33,
@@ -954,7 +954,7 @@
           "award": "9#100000",
           "limit": 1,
           "daily": 0,
-          "text": "Challenge Friend Boss 2 times"
+          "text": "Thách đấu Trùm Bạn Bè 2 lần"
         },
         {
           "id": 34,
@@ -962,7 +962,7 @@
           "award": "1#100000",
           "limit": 1,
           "daily": 0,
-          "text": "Use Alchemy 4 times to get Coins"
+          "text": "Dùng Luyện Kim 4 lần để nhận Vàng"
         },
         {
           "id": 35,
@@ -970,7 +970,7 @@
           "award": "10#100",
           "limit": 1,
           "daily": 0,
-          "text": "Spend 1500 Gems"
+          "text": "Tiêu 1.500 Kim Cương"
         },
         {
           "id": 36,
@@ -978,7 +978,7 @@
           "award": "2#50|235#2",
           "limit": 1,
           "daily": 0,
-          "text": "Complete all other missions"
+          "text": "Hoàn thành tất cả nhiệm vụ khác"
         },
         {
           "id": 37,
@@ -986,7 +986,7 @@
           "award": "2#10",
           "limit": 1,
           "daily": 0,
-          "text": "Daily Login"
+          "text": "Đăng Nhập Hằng Ngày"
         },
         {
           "id": 38,
@@ -994,7 +994,7 @@
           "award": "24#2",
           "limit": 1,
           "daily": 0,
-          "text": "Complete 2 4-star Quests in Internship"
+          "text": "Hoàn thành 2 nhiệm vụ Thực Tập 4 sao"
         },
         {
           "id": 39,
@@ -1002,7 +1002,7 @@
           "award": "14#100",
           "limit": 1,
           "daily": 0,
-          "text": "Purchase 3 merchandise in Market"
+          "text": "Mua 3 vật phẩm trong Chợ"
         },
         {
           "id": 40,
@@ -1010,7 +1010,7 @@
           "award": "9#100000",
           "limit": 1,
           "daily": 0,
-          "text": "Clear 18 Quizzes in Daily Quiz"
+          "text": "Hoàn thành 18 câu đố Nhiệm Vụ Hằng Ngày"
         },
         {
           "id": 41,
@@ -1018,7 +1018,7 @@
           "award": "1#100000",
           "limit": 1,
           "daily": 0,
-          "text": "Send out 30 Hearts"
+          "text": "Gửi đi 30 Trái Tim"
         },
         {
           "id": 42,
@@ -1026,7 +1026,7 @@
           "award": "10#100",
           "limit": 1,
           "daily": 0,
-          "text": "Draw from Adv. Capsule 9 times"
+          "text": "Quay Triệu Hồi Cao Cấp 9 lần"
         },
         {
           "id": 43,
@@ -1034,7 +1034,7 @@
           "award": "2#50|235#2",
           "limit": 1,
           "daily": 0,
-          "text": "Complete all other missions"
+          "text": "Hoàn thành tất cả nhiệm vụ khác"
         },
         {
           "id": 44,
@@ -1042,7 +1042,7 @@
           "award": "2#10",
           "limit": 1,
           "daily": 0,
-          "text": "Daily Login"
+          "text": "Đăng Nhập Hằng Ngày"
         },
         {
           "id": 45,
@@ -1050,7 +1050,7 @@
           "award": "35#1",
           "limit": 1,
           "daily": 0,
-          "text": "Collect Auto-Battle Loot 10 times in Campaign"
+          "text": "Thu thập chiến lợi phẩm tự động 10 lần trong Chiến Dịch"
         },
         {
           "id": 46,
@@ -1058,7 +1058,7 @@
           "award": "14#100",
           "limit": 1,
           "daily": 0,
-          "text": "Complete 20 Junior Varsity battles"
+          "text": "Hoàn thành 20 trận ở Đấu Trường Sơ Cấp"
         },
         {
           "id": 47,
@@ -1066,7 +1066,7 @@
           "award": "9#100000",
           "limit": 1,
           "daily": 0,
-          "text": "Upgrade your Girl(s) 100 times"
+          "text": "Nâng cấp Nữ Thần tổng cộng 100 lần"
         },
         {
           "id": 48,
@@ -1074,7 +1074,7 @@
           "award": "1#100000",
           "limit": 1,
           "daily": 0,
-          "text": "Forge 20 Gears"
+          "text": "Rèn 20 Trang Bị"
         },
         {
           "id": 49,
@@ -1082,7 +1082,7 @@
           "award": "10#100",
           "limit": 1,
           "daily": 0,
-          "text": "Spend 2000 Gems"
+          "text": "Tiêu 2.000 Kim Cương"
         }
       ],
       "mission_table": "activity_time_mission"
@@ -1096,7 +1096,7 @@
           "award": "238#1",
           "limit": 1,
           "daily": 0,
-          "text": "Complete all the other tasks (Daily)"
+          "text": "Hoàn thành các nhiệm vụ hằng ngày còn lại"
         },
         {
           "id": 2,
@@ -1104,7 +1104,7 @@
           "award": "239#10",
           "limit": 1,
           "daily": 0,
-          "text": "Complete 1 battle in Tests"
+          "text": "Hoàn thành 1 trận Chiến Thử"
         },
         {
           "id": 3,
@@ -1112,7 +1112,7 @@
           "award": "239#10",
           "limit": 1,
           "daily": 0,
-          "text": "Engage 5 battles in Junior Varsity"
+          "text": "Tham gia 5 trận Đấu Trường Sơ Cấp"
         },
         {
           "id": 4,
@@ -1120,7 +1120,7 @@
           "award": "239#10",
           "limit": 1,
           "daily": 0,
-          "text": "Complete all Daily Tasks in Fantasy Book"
+          "text": "Hoàn thành toàn bộ nhiệm vụ hằng ngày trong Sách Kỳ Ảo"
         },
         {
           "id": 5,
@@ -1128,7 +1128,7 @@
           "award": "239#10",
           "limit": 1,
           "daily": 0,
-          "text": "Purchase 1 piece of Furniture"
+          "text": "Mua 1 món Nội Thất"
         },
         {
           "id": 6,
@@ -1136,7 +1136,7 @@
           "award": "239#15|238#6",
           "limit": 1,
           "daily": 0,
-          "text": "Complete all the other tasks (Weekly)"
+          "text": "Hoàn thành các nhiệm vụ hằng tuần còn lại"
         },
         {
           "id": 7,
@@ -1144,7 +1144,7 @@
           "award": "239#5|238#2",
           "limit": 1,
           "daily": 0,
-          "text": "Log in 5 Days"
+          "text": "Đăng nhập trong 5 ngày"
         },
         {
           "id": 8,
@@ -1152,7 +1152,7 @@
           "award": "239#5|238#2",
           "limit": 1,
           "daily": 0,
-          "text": "Consume 4000 Gems"
+          "text": "Tiêu 4.000 Kim Cương"
         },
         {
           "id": 9,
@@ -1160,7 +1160,7 @@
           "award": "239#5|238#2",
           "limit": 1,
           "daily": 0,
-          "text": "Pull Slot Machine 200 times"
+          "text": "Quay Máy Quay 200 lần"
         },
         {
           "id": 10,
@@ -1168,7 +1168,7 @@
           "award": "239#10|238#5",
           "limit": 1,
           "daily": 0,
-          "text": "Pull Slot Machine 400 times"
+          "text": "Quay Máy Quay 400 lần"
         },
         {
           "id": 11,
@@ -1176,7 +1176,7 @@
           "award": "239#5|238#2",
           "limit": 1,
           "daily": 0,
-          "text": "Pull Advanced Capsule 100 times"
+          "text": "Triệu Hồi Cao Cấp 100 lần"
         },
         {
           "id": 12,
@@ -1184,7 +1184,7 @@
           "award": "239#10|238#5",
           "limit": 1,
           "daily": 0,
-          "text": "Pull Advanced Capsule 200 times"
+          "text": "Triệu Hồi Cao Cấp 200 lần"
         },
         {
           "id": 13,
@@ -1192,7 +1192,7 @@
           "award": "239#5|238#2",
           "limit": 1,
           "daily": 0,
-          "text": "Enroll 20 times"
+          "text": "Chiêu Mộ 20 lần"
         },
         {
           "id": 14,
@@ -1200,7 +1200,7 @@
           "award": "239#10|238#5",
           "limit": 1,
           "daily": 0,
-          "text": "Enroll 40 times"
+          "text": "Chiêu Mộ 40 lần"
         },
         {
           "id": 15,
@@ -1208,7 +1208,7 @@
           "award": "239#5|238#2",
           "limit": 1,
           "daily": 0,
-          "text": "Use 30 Rudders in total"
+          "text": "Dùng tổng cộng 30 Bánh Lái"
         },
         {
           "id": 16,
@@ -1216,7 +1216,7 @@
           "award": "239#10|238#5",
           "limit": 1,
           "daily": 0,
-          "text": "Use 75 Rudders in total"
+          "text": "Dùng tổng cộng 75 Bánh Lái"
         },
         {
           "id": 17,
@@ -1224,7 +1224,7 @@
           "award": "239#5|238#1",
           "limit": 1,
           "daily": 0,
-          "text": "Acquire 1 5-Star Girl"
+          "text": "Nhận 1 Nữ Thần 5 sao"
         },
         {
           "id": 18,
@@ -1232,7 +1232,7 @@
           "award": "239#10|238#2",
           "limit": 1,
           "daily": 0,
-          "text": "Acquire 1 6-Star Girl"
+          "text": "Nhận 1 Nữ Thần 6 sao"
         }
       ],
       "mission_table": "activity_space_explore_mission"
@@ -1246,7 +1246,7 @@
           "award": "253#20",
           "limit": 1,
           "daily": 0,
-          "text": "Log in 5 Days"
+          "text": "Đăng nhập trong 5 ngày"
         },
         {
           "id": 2,
@@ -1254,7 +1254,7 @@
           "award": "253#50",
           "limit": 1,
           "daily": 0,
-          "text": "Acquire 1 Skin"
+          "text": "Nhận 1 Trang Phục"
         },
         {
           "id": 3,
@@ -1262,7 +1262,7 @@
           "award": "253#20",
           "limit": 1,
           "daily": 0,
-          "text": "Acquire a 5-star Girl"
+          "text": "Nhận được một Nữ Thần 5 sao"
         },
         {
           "id": 4,
@@ -1270,7 +1270,7 @@
           "award": "253#35",
           "limit": 1,
           "daily": 0,
-          "text": "Acquire a 6-star Girl"
+          "text": "Nhận được một Nữ Thần 6 sao"
         },
         {
           "id": 5,
@@ -1278,7 +1278,7 @@
           "award": "253#50",
           "limit": 1,
           "daily": 0,
-          "text": "Pull Advanced Capsule 200 times"
+          "text": "Triệu Hồi Cao Cấp 200 lần"
         },
         {
           "id": 6,
@@ -1286,7 +1286,7 @@
           "award": "253#100",
           "limit": 1,
           "daily": 0,
-          "text": "Draw Advanced Capsule 500 times"
+          "text": "Triệu Hồi Cao Cấp 500 lần"
         },
         {
           "id": 7,
@@ -1294,7 +1294,7 @@
           "award": "253#20",
           "limit": 1,
           "daily": 0,
-          "text": "Enroll 60 times"
+          "text": "Chiêu Mộ 60 lần"
         },
         {
           "id": 8,
@@ -1302,7 +1302,7 @@
           "award": "253#70",
           "limit": 1,
           "daily": 0,
-          "text": "Enroll 150 times"
+          "text": "Chiêu Mộ 150 lần"
         }
       ],
       "mission_table": "activity_beach_mission"
@@ -1833,7 +1833,7 @@
           "award": "297#2",
           "limit": 1,
           "daily": 0,
-          "text": "Complete all Daily missions on this page"
+          "text": "Hoàn thành mọi nhiệm vụ hằng ngày trên trang này"
         },
         {
           "id": 2,
@@ -1841,7 +1841,7 @@
           "award": "297#1",
           "limit": 1,
           "daily": 0,
-          "text": "Complete 1 battle in Tests"
+          "text": "Hoàn thành 1 trận Chiến Thử"
         },
         {
           "id": 3,
@@ -1849,7 +1849,7 @@
           "award": "297#1",
           "limit": 1,
           "daily": 0,
-          "text": "Engage 5 battles in Junior Varsity"
+          "text": "Tham gia 5 trận Đấu Trường Sơ Cấp"
         },
         {
           "id": 4,
@@ -1857,7 +1857,7 @@
           "award": "297#1",
           "limit": 1,
           "daily": 0,
-          "text": "Consume 500 Gems in game"
+          "text": "Tiêu 500 Kim Cương trong game"
         },
         {
           "id": 5,
@@ -1865,7 +1865,7 @@
           "award": "297#1",
           "limit": 1,
           "daily": 0,
-          "text": "Purchase 1 piece of Furniture"
+          "text": "Mua 1 món Nội Thất"
         },
         {
           "id": 6,
@@ -1873,7 +1873,7 @@
           "award": "297#5",
           "limit": 1,
           "daily": 0,
-          "text": "Complete all Weekly missions on this page"
+          "text": "Hoàn thành mọi nhiệm vụ hằng tuần trên trang này"
         },
         {
           "id": 7,
@@ -1881,7 +1881,7 @@
           "award": "297#2",
           "limit": 1,
           "daily": 0,
-          "text": "Log in 5 Days"
+          "text": "Đăng nhập trong 5 ngày"
         },
         {
           "id": 8,
@@ -1889,7 +1889,7 @@
           "award": "297#2",
           "limit": 1,
           "daily": 0,
-          "text": "Consume 5000 Gems"
+          "text": "Tiêu 5.000 Kim Cương"
         },
         {
           "id": 9,
@@ -1897,7 +1897,7 @@
           "award": "297#2",
           "limit": 1,
           "daily": 0,
-          "text": "Draw 10 times in Outfit Sale"
+          "text": "Quay 10 lần trong Ưu Đãi Trang Phục"
         },
         {
           "id": 10,
@@ -1905,7 +1905,7 @@
           "award": "297#2",
           "limit": 1,
           "daily": 0,
-          "text": "Complete ten 4-star (or higher) Internship quests"
+          "text": "Hoàn thành 10 nhiệm vụ Thực Tập từ 4 sao trở lên"
         }
       ],
       "mission_table": "activity_trickortreat_task"
@@ -2369,7 +2369,7 @@
           "award": "1#1000000",
           "limit": 30,
           "daily": 0,
-          "text": "Unlock 1 5-star Girl in Girls - Gallery"
+          "text": "Mở khóa 1 Nữ Thần 5 sao trong Bộ Sưu Tập"
         },
         {
           "id": 2,
@@ -2377,7 +2377,7 @@
           "award": "1#2000000",
           "limit": 20,
           "daily": 0,
-          "text": "Unlock 1 6-star Girl in Girls - Gallery"
+          "text": "Mở khóa 1 Nữ Thần 6 sao trong Bộ Sưu Tập"
         },
         {
           "id": 3,
@@ -2385,7 +2385,7 @@
           "award": "1#3000000",
           "limit": 10,
           "daily": 0,
-          "text": "Unlock 1 10-star Girl in Girls - Gallery"
+          "text": "Mở khóa 1 Nữ Thần 10 sao trong Bộ Sưu Tập"
         },
         {
           "id": 4,
@@ -2393,7 +2393,7 @@
           "award": "10#1000|335#1",
           "limit": 50,
           "daily": 0,
-          "text": "Acquire 1 5-Star Girl"
+          "text": "Nhận 1 Nữ Thần 5 sao"
         },
         {
           "id": 5,
@@ -2401,7 +2401,7 @@
           "award": "9#1000000|335#1",
           "limit": 50,
           "daily": 0,
-          "text": "Consume 3 League Tickets"
+          "text": "Dùng 3 Vé Đấu Trường"
         },
         {
           "id": 6,
@@ -2409,7 +2409,7 @@
           "award": "9#2000000",
           "limit": 30,
           "daily": 0,
-          "text": "Consume 200 Gems"
+          "text": "Tiêu 200 Kim Cương"
         },
         {
           "id": 7,
@@ -2417,7 +2417,7 @@
           "award": "14#1000|335#2",
           "limit": 100,
           "daily": 0,
-          "text": "Obtain 250 VIP Exp during the event"
+          "text": "Nhận 250 EXP VIP trong sự kiện"
         }
       ],
       "mission_table": "activity_lflcastle_task"
@@ -2431,7 +2431,7 @@
           "award": "348#1",
           "limit": 10,
           "daily": 0,
-          "text": "Break 30 Easter Eggs"
+          "text": "Đập 30 Trứng Phục Sinh"
         },
         {
           "id": 2,
@@ -2439,7 +2439,7 @@
           "award": "347#2",
           "limit": 10,
           "daily": 0,
-          "text": "Pull Adv. Capsule 10 times"
+          "text": "Triệu Hồi Cao Cấp 10 lần"
         },
         {
           "id": 3,
@@ -2447,7 +2447,7 @@
           "award": "347#1|258#1",
           "limit": 30,
           "daily": 0,
-          "text": "Consume 3 League Tickets"
+          "text": "Dùng 3 Vé Đấu Trường"
         },
         {
           "id": 4,
@@ -2455,7 +2455,7 @@
           "award": "347#1|423#1",
           "limit": 100,
           "daily": 0,
-          "text": "Consume 200 Gems"
+          "text": "Tiêu 200 Kim Cương"
         },
         {
           "id": 5,
@@ -2463,7 +2463,7 @@
           "award": "347#2|9#500000",
           "limit": 30,
           "daily": 0,
-          "text": "Acquire a 5-star Girl"
+          "text": "Nhận được một Nữ Thần 5 sao"
         },
         {
           "id": 6,
@@ -2471,7 +2471,7 @@
           "award": "930218#50",
           "limit": 1,
           "daily": 0,
-          "text": "Acquire 1 5-star Chizuko"
+          "text": "Nhận 1 Chizuko 5 sao"
         },
         {
           "id": 7,
@@ -2479,7 +2479,7 @@
           "award": "4102007#1",
           "limit": 1,
           "daily": 0,
-          "text": "Graduate Chizuko to 6-star"
+          "text": "Nâng Chizuko lên 6 sao"
         },
         {
           "id": 8,
@@ -2487,7 +2487,7 @@
           "award": "4101008#1",
           "limit": 1,
           "daily": 0,
-          "text": "Awake Chizuko to 9-star"
+          "text": "Thức Tỉnh Chizuko lên 9 sao"
         },
         {
           "id": 9,
@@ -2495,7 +2495,7 @@
           "award": "4101010#1",
           "limit": 1,
           "daily": 0,
-          "text": "Awake Chizuko to 10-star"
+          "text": "Thức Tỉnh Chizuko lên 10 sao"
         },
         {
           "id": 10,
@@ -2503,7 +2503,7 @@
           "award": "347#1|417#250",
           "limit": 10,
           "daily": 0,
-          "text": "Finish 1 4-Star Quests in Internship"
+          "text": "Hoàn thành 1 nhiệm vụ Thực Tập 4 sao"
         },
         {
           "id": 11,
@@ -2511,7 +2511,7 @@
           "award": "347#5|419#25",
           "limit": 2,
           "daily": 0,
-          "text": "Finish a 5-Star Quest in Internship"
+          "text": "Hoàn thành 1 nhiệm vụ Thực Tập 5 sao"
         },
         {
           "id": 12,
@@ -2519,7 +2519,7 @@
           "award": "347#10|418#5",
           "limit": 1,
           "daily": 0,
-          "text": "Finish a 6-Star Quest in Internship"
+          "text": "Hoàn thành 1 nhiệm vụ Thực Tập 6 sao"
         }
       ],
       "mission_table": "activity_easter2022_mission"
@@ -2584,7 +2584,7 @@
           "award": "358#80|4104023#1",
           "limit": 1,
           "daily": 0,
-          "text": "Complete all other missions"
+          "text": "Hoàn thành tất cả nhiệm vụ khác"
         },
         {
           "id": 2,
@@ -2592,7 +2592,7 @@
           "award": "358#1",
           "limit": 32,
           "daily": 0,
-          "text": "Obtain 25 Stellar Shard - ♐"
+          "text": "Nhận 25 Mảnh Tinh Tú ♐"
         },
         {
           "id": 3,
@@ -2600,7 +2600,7 @@
           "award": "361#1",
           "limit": 120,
           "daily": 0,
-          "text": "Use 3 Seals"
+          "text": "Dùng 3 Ấn Chiêu Mộ"
         },
         {
           "id": 4,
@@ -2608,7 +2608,7 @@
           "award": "361#1",
           "limit": 100,
           "daily": 0,
-          "text": "Pull Slot Machine 30 times"
+          "text": "Quay Máy Quay 30 lần"
         },
         {
           "id": 5,
@@ -2616,7 +2616,7 @@
           "award": "361#1",
           "limit": 120,
           "daily": 0,
-          "text": "Pull Adv. Capsule 15 times"
+          "text": "Triệu Hồi Cao Cấp 15 lần"
         },
         {
           "id": 6,
@@ -2624,7 +2624,7 @@
           "award": "361#1",
           "limit": 120,
           "daily": 0,
-          "text": "Consume 3 Rudders"
+          "text": "Dùng 3 Bánh Lái"
         },
         {
           "id": 7,
@@ -2632,7 +2632,7 @@
           "award": "361#1",
           "limit": 20,
           "daily": 0,
-          "text": "Consume 8 Space Radars"
+          "text": "Dùng 8 Ra-đa Không Gian"
         },
         {
           "id": 8,
@@ -2640,7 +2640,7 @@
           "award": "361#1",
           "limit": 650,
           "daily": 0,
-          "text": "Obtain 50 VIP Exp"
+          "text": "Nhận 50 EXP VIP"
         },
         {
           "id": 9,
@@ -2648,7 +2648,7 @@
           "award": "361#1",
           "limit": 30,
           "daily": 0,
-          "text": "Obtain a 5-star Girl"
+          "text": "Nhận một Nữ Thần 5 sao"
         },
         {
           "id": 10,
@@ -2656,7 +2656,7 @@
           "award": "361#5",
           "limit": 1,
           "daily": 0,
-          "text": "Obtain a 10-star Cosmos Girl"
+          "text": "Nhận một Nữ Thần Vũ Trụ 10 sao"
         },
         {
           "id": 11,
@@ -2664,7 +2664,7 @@
           "award": "361#15",
           "limit": 1,
           "daily": 0,
-          "text": "Obtain a 12-star Girl"
+          "text": "Nhận một Nữ Thần 12 sao"
         }
       ],
       "mission_table": "activity_star_altar_mission"
@@ -2849,7 +2849,7 @@
           "award": "365#1",
           "limit": 100,
           "daily": 0,
-          "text": "Pull Slot Machine 20 times"
+          "text": "Quay Máy Quay 20 lần"
         },
         {
           "id": 2,
@@ -2857,7 +2857,7 @@
           "award": "365#1",
           "limit": 200,
           "daily": 0,
-          "text": "Consume 1 Space Radar"
+          "text": "Dùng 1 Ra-đa Không Gian"
         },
         {
           "id": 3,
@@ -2865,7 +2865,7 @@
           "award": "365#2",
           "limit": 100,
           "daily": 0,
-          "text": "Consume 200 Gems"
+          "text": "Tiêu 200 Kim Cương"
         },
         {
           "id": 4,
@@ -2873,7 +2873,7 @@
           "award": "365#2",
           "limit": 25,
           "daily": 0,
-          "text": "Consume 3 League Tickets"
+          "text": "Dùng 3 Vé Đấu Trường"
         },
         {
           "id": 5,
@@ -2881,7 +2881,7 @@
           "award": "365#5",
           "limit": 10,
           "daily": 0,
-          "text": "Finish 1 4-Star (or above) Internship Quest"
+          "text": "Hoàn thành 1 nhiệm vụ Thực Tập từ 4 sao trở lên"
         }
       ],
       "mission_table": "activity_children_task"
@@ -2895,7 +2895,7 @@
           "award": "369#250|1#100000",
           "limit": 1,
           "daily": 1,
-          "text": "Complete all Daily missions on this page"
+          "text": "Hoàn thành mọi nhiệm vụ hằng ngày trên trang này"
         },
         {
           "id": 2,
@@ -2903,7 +2903,7 @@
           "award": "369#50|1#50000",
           "limit": 1,
           "daily": 1,
-          "text": "Complete [c][35b843]{1}[-][/c] battles in Junior Varsity"
+          "text": "Hoàn thành {1} trận ở Đấu Trường Sơ Cấp"
         },
         {
           "id": 3,
@@ -2911,7 +2911,7 @@
           "award": "369#50|1#50000",
           "limit": 1,
           "daily": 1,
-          "text": "Explore [c][35b843]{1}[-][/c] time(s) in Echoes of Time"
+          "text": "Thám hiểm {1} lần trong Vọng Âm Thời Gian"
         },
         {
           "id": 4,
@@ -2919,7 +2919,7 @@
           "award": "369#50|1#50000",
           "limit": 1,
           "daily": 1,
-          "text": "Complete [c][35b843]{1}[-][/c] Internship Quest(s) ([c][35b843]4-star[-][/c] or above)"
+          "text": "Hoàn thành {1} nhiệm vụ Thực Tập (từ 4 sao trở lên)"
         },
         {
           "id": 5,
@@ -2927,7 +2927,7 @@
           "award": "369#50|1#50000",
           "limit": 1,
           "daily": 1,
-          "text": "Consume [c][35b843]{1}[-][/c] Gems"
+          "text": "Tiêu {1} Kim Cương"
         },
         {
           "id": 6,
@@ -2935,7 +2935,7 @@
           "award": "369#200|370#5|1#300000",
           "limit": 1,
           "daily": 0,
-          "text": "Plant [c][35b843]{1}[-][/c] [c][35b843]Marvelous Fruit(s)[-][/c]"
+          "text": "Trồng {1} Quả Kỳ Diệu"
         },
         {
           "id": 7,
@@ -2943,7 +2943,7 @@
           "award": "369#200|370#5|1#300000",
           "limit": 1,
           "daily": 0,
-          "text": "Set a defender in your Manor"
+          "text": "Bố trí một người phòng thủ trong Trang Viên"
         },
         {
           "id": 8,
@@ -2951,7 +2951,7 @@
           "award": "369#200|370#5|1#300000",
           "limit": 1,
           "daily": 0,
-          "text": "Own [c][35b843]{1}[-][/c] Flower(s) beyond Lv. [c][35b843]{2}[-][/c]"
+          "text": "Sở hữu {1} bông hoa trên cấp {2}"
         },
         {
           "id": 9,
@@ -2959,7 +2959,7 @@
           "award": "369#100|370#5|1#300000",
           "limit": 1,
           "daily": 0,
-          "text": "Raid [c][35b843]{1}[-][/c] time(s)"
+          "text": "Đột kích {1} lần"
         },
         {
           "id": 10,
@@ -3112,7 +3112,7 @@
           "award": "378#1|1#500000",
           "limit": 40,
           "daily": 0,
-          "text": "Acquire a 5-star Girl"
+          "text": "Nhận được một Nữ Thần 5 sao"
         },
         {
           "id": 2,
@@ -3120,7 +3120,7 @@
           "award": "378#1|379#5",
           "limit": 1,
           "daily": 0,
-          "text": "Acquire a 5-star Promethea"
+          "text": "Nhận 1 Promethea 5 sao"
         },
         {
           "id": 3,
@@ -3128,7 +3128,7 @@
           "award": "378#1|379#5",
           "limit": 1,
           "daily": 0,
-          "text": "Acquire a 5-star Cupid"
+          "text": "Nhận 1 Cupid 5 sao"
         },
         {
           "id": 4,
@@ -3136,7 +3136,7 @@
           "award": "378#2|379#10",
           "limit": 1,
           "daily": 0,
-          "text": "Graduate Promethea or Cupid to 6-star"
+          "text": "Nâng Promethea hoặc Cupid lên 6 sao"
         },
         {
           "id": 5,
@@ -3144,7 +3144,7 @@
           "award": "378#6|36#10",
           "limit": 1,
           "daily": 0,
-          "text": "Awake Promethea or Cupid to 9-star"
+          "text": "Thức Tỉnh Promethea hoặc Cupid lên 9 sao"
         },
         {
           "id": 6,
@@ -3152,7 +3152,7 @@
           "award": "378#10|93#1",
           "limit": 1,
           "daily": 0,
-          "text": "Awake Promethea or Cupid to 10-star"
+          "text": "Thức Tỉnh Promethea hoặc Cupid lên 10 sao"
         },
         {
           "id": 7,
@@ -3160,7 +3160,7 @@
           "award": "378#1|9#1000000",
           "limit": 20,
           "daily": 0,
-          "text": "Finish 1 4-Star (or above) Internship Quest"
+          "text": "Hoàn thành 1 nhiệm vụ Thực Tập từ 4 sao trở lên"
         },
         {
           "id": 8,
@@ -3168,7 +3168,7 @@
           "award": "378#1|10#600",
           "limit": 20,
           "daily": 0,
-          "text": "Consume 3 League Tickets"
+          "text": "Dùng 3 Vé Đấu Trường"
         },
         {
           "id": 9,
@@ -3176,7 +3176,7 @@
           "award": "378#1|14#1000",
           "limit": 20,
           "daily": 0,
-          "text": "Consume 500 Gems"
+          "text": "Tiêu 500 Kim Cương"
         }
       ],
       "mission_table": "activity_4birthday_task"
@@ -3190,7 +3190,7 @@
           "award": "386#5",
           "limit": 1,
           "daily": 0,
-          "text": "Complete all Tasks on the Message Board"
+          "text": "Hoàn thành mọi nhiệm vụ trong Bảng Tin"
         },
         {
           "id": 2,
@@ -3198,7 +3198,7 @@
           "award": "385#5",
           "limit": 1,
           "daily": 0,
-          "text": "Consume 5000 Fantasy Dust during the event"
+          "text": "Dùng 5.000 Bụi Kỳ Ảo trong sự kiện"
         },
         {
           "id": 3,
@@ -3206,7 +3206,7 @@
           "award": "385#10",
           "limit": 1,
           "daily": 0,
-          "text": "Consume 15000 Fantasy Dust during the event"
+          "text": "Dùng 15.000 Bụi Kỳ Ảo trong sự kiện"
         },
         {
           "id": 4,
@@ -3214,7 +3214,7 @@
           "award": "385#20",
           "limit": 1,
           "daily": 0,
-          "text": "Consume 30000 Fantasy Dust during the event"
+          "text": "Dùng 30.000 Bụi Kỳ Ảo trong sự kiện"
         },
         {
           "id": 5,
@@ -3222,7 +3222,7 @@
           "award": "385#5",
           "limit": 1,
           "daily": 0,
-          "text": "Consume 100 Fantasy Talisman during the event"
+          "text": "Dùng 100 Bùa Kỳ Ảo trong sự kiện"
         },
         {
           "id": 6,
@@ -3230,7 +3230,7 @@
           "award": "385#10",
           "limit": 1,
           "daily": 0,
-          "text": "Consume 200 Fantasy Talisman during the event"
+          "text": "Dùng 200 Bùa Kỳ Ảo trong sự kiện"
         },
         {
           "id": 7,
@@ -3238,7 +3238,7 @@
           "award": "385#20",
           "limit": 1,
           "daily": 0,
-          "text": "Consume 400 Fantasy Talisman during the event"
+          "text": "Dùng 400 Bùa Kỳ Ảo trong sự kiện"
         },
         {
           "id": 8,
@@ -3246,7 +3246,7 @@
           "award": "385#10",
           "limit": 1,
           "daily": 0,
-          "text": "Charge your Chimes for 20 times during the event"
+          "text": "Nạp năng lượng cho Chuông 20 lần trong sự kiện"
         },
         {
           "id": 9,
@@ -3254,7 +3254,7 @@
           "award": "385#20",
           "limit": 1,
           "daily": 0,
-          "text": "Charge your Chimes for 50 times during the event"
+          "text": "Nạp năng lượng cho Chuông 50 lần trong sự kiện"
         },
         {
           "id": 10,
@@ -3262,7 +3262,7 @@
           "award": "386#5",
           "limit": 1,
           "daily": 0,
-          "text": "Enchant or Ascend 1 time during the event"
+          "text": "Cường Hóa hoặc Thăng Bậc Chuông 1 lần trong sự kiện"
         },
         {
           "id": 11,
@@ -3270,7 +3270,7 @@
           "award": "4704001#10",
           "limit": 1,
           "daily": 0,
-          "text": "Consume 30 Jade Cranes during the event"
+          "text": "Dùng 30 Hạc Ngọc trong sự kiện"
         },
         {
           "id": 12,
@@ -3278,7 +3278,7 @@
           "award": "4705002#10",
           "limit": 1,
           "daily": 0,
-          "text": "Consume 60 Jade Cranes during the event"
+          "text": "Dùng 60 Hạc Ngọc trong sự kiện"
         },
         {
           "id": 13,
@@ -3286,7 +3286,7 @@
           "award": "334#5",
           "limit": 1,
           "daily": 0,
-          "text": "Consume 100 Jade Cranes during the event"
+          "text": "Dùng 100 Hạc Ngọc trong sự kiện"
         },
         {
           "id": 14,
@@ -3294,7 +3294,7 @@
           "award": "334#15",
           "limit": 1,
           "daily": 0,
-          "text": "Consume 150 Jade Cranes during the event"
+          "text": "Dùng 150 Hạc Ngọc trong sự kiện"
         },
         {
           "id": 15,
@@ -3302,7 +3302,7 @@
           "award": "385#10|4501002#1",
           "limit": 1,
           "daily": 0,
-          "text": "Consume 25 Gilded Cranes during the event"
+          "text": "Dùng 25 Hạc Mạ Vàng trong sự kiện"
         },
         {
           "id": 16,
@@ -3310,7 +3310,7 @@
           "award": "385#20|986001#20",
           "limit": 1,
           "daily": 0,
-          "text": "Consume 50 Gilded Cranes during the event"
+          "text": "Dùng 50 Hạc Mạ Vàng trong sự kiện"
         },
         {
           "id": 17,
@@ -3318,7 +3318,7 @@
           "award": "418#20|4201042#10",
           "limit": 1,
           "daily": 0,
-          "text": "Consume 75 Gilded Cranes during the event"
+          "text": "Dùng 75 Hạc Mạ Vàng trong sự kiện"
         },
         {
           "id": 18,
@@ -3326,7 +3326,7 @@
           "award": "4402015#1|334#50",
           "limit": 1,
           "daily": 0,
-          "text": "Consume 100 Gilded Cranes during the event"
+          "text": "Dùng 100 Hạc Mạ Vàng trong sự kiện"
         },
         {
           "id": 19,
@@ -3334,7 +3334,7 @@
           "award": "6779#1|986001#25",
           "limit": 1,
           "daily": 0,
-          "text": "Consume 200 Gilded Cranes during the event"
+          "text": "Dùng 200 Hạc Mạ Vàng trong sự kiện"
         },
         {
           "id": 20,
@@ -3342,7 +3342,7 @@
           "award": "940059#50|448#1",
           "limit": 1,
           "daily": 0,
-          "text": "Consume 350 Gilded Cranes during the event"
+          "text": "Dùng 350 Hạc Mạ Vàng trong sự kiện"
         },
         {
           "id": 21,
@@ -3350,7 +3350,7 @@
           "award": "940059#100|6000#30000",
           "limit": 1,
           "daily": 0,
-          "text": "Consume 500 Gilded Cranes during the event"
+          "text": "Dùng 500 Hạc Mạ Vàng trong sự kiện"
         }
       ],
       "mission_table": "activity_chime_mission"
@@ -3546,7 +3546,7 @@
           "award": "408#1",
           "limit": 7,
           "daily": 0,
-          "text": "Daily Login ({1}/7)"
+          "text": "Đăng nhập hằng ngày ({1}/7)"
         },
         {
           "id": 2,
@@ -3554,7 +3554,7 @@
           "award": "408#1",
           "limit": 10,
           "daily": 0,
-          "text": "Complete a 4-star or higher Internship Quest ({1}/10)"
+          "text": "Hoàn thành nhiệm vụ Thực Tập từ 4 sao trở lên ({1}/10)"
         },
         {
           "id": 3,
@@ -3562,7 +3562,7 @@
           "award": "408#1",
           "limit": 10,
           "daily": 0,
-          "text": "Complete 3 battles in Junior Varsity ({1}/10)"
+          "text": "Hoàn thành 3 trận Đấu Trường Sơ Cấp ({1}/10)"
         },
         {
           "id": 4,
@@ -3570,7 +3570,7 @@
           "award": "408#2",
           "limit": 20,
           "daily": 0,
-          "text": "Consume 10 Seals ({1}/20)"
+          "text": "Dùng 10 Ấn Chiêu Mộ ({1}/20)"
         }
       ],
       "mission_table": "activity_repair_console_mission"
@@ -4044,7 +4044,7 @@
           "award": "438#1",
           "limit": 1,
           "daily": 0,
-          "text": "Obtain {1} VIP Exp"
+          "text": "Nhận {1} EXP VIP"
         },
         {
           "id": 2,
@@ -4052,7 +4052,7 @@
           "award": "438#2",
           "limit": 1,
           "daily": 0,
-          "text": "Obtain {1} VIP Exp"
+          "text": "Nhận {1} EXP VIP"
         },
         {
           "id": 3,
@@ -4060,7 +4060,7 @@
           "award": "438#3",
           "limit": 1,
           "daily": 0,
-          "text": "Obtain {1} VIP Exp"
+          "text": "Nhận {1} EXP VIP"
         },
         {
           "id": 4,
@@ -4068,7 +4068,7 @@
           "award": "438#4",
           "limit": 1,
           "daily": 0,
-          "text": "Obtain {1} VIP Exp"
+          "text": "Nhận {1} EXP VIP"
         },
         {
           "id": 5,
@@ -4076,7 +4076,7 @@
           "award": "438#5",
           "limit": 1,
           "daily": 0,
-          "text": "Obtain {1} VIP Exp"
+          "text": "Nhận {1} EXP VIP"
         },
         {
           "id": 6,
@@ -4084,7 +4084,7 @@
           "award": "438#6",
           "limit": 1,
           "daily": 0,
-          "text": "Obtain {1} VIP Exp"
+          "text": "Nhận {1} EXP VIP"
         },
         {
           "id": 7,
@@ -4092,7 +4092,7 @@
           "award": "438#7",
           "limit": 1,
           "daily": 0,
-          "text": "Obtain {1} VIP Exp"
+          "text": "Nhận {1} EXP VIP"
         },
         {
           "id": 8,
@@ -4100,7 +4100,7 @@
           "award": "438#8",
           "limit": 1,
           "daily": 0,
-          "text": "Obtain {1} VIP Exp"
+          "text": "Nhận {1} EXP VIP"
         },
         {
           "id": 9,
@@ -4108,7 +4108,7 @@
           "award": "438#9",
           "limit": 1,
           "daily": 0,
-          "text": "Obtain {1} VIP Exp"
+          "text": "Nhận {1} EXP VIP"
         }
       ],
       "mission_table": "activity_blind_box_mission"
