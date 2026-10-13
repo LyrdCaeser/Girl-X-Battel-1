@@ -245,7 +245,7 @@ window.GxbOnline=(()=>{
   }
   function bind(){
     document.addEventListener('click',e=>{
-      const guild=e.target.closest('[data-coming="Guild"]');if(guild){e.preventDefault();e.stopImmediatePropagation();open('guild');return;}
+      const guild=e.target.closest('[data-coming="Guild"]');if(guild){e.preventDefault();e.stopImmediatePropagation();if(typeof Guild!=='undefined'&&Guild.openOnline)Guild.openOnline('guild','home');return;}
       const rank=e.target.closest('.idle-icon[title^="Ranking"]');if(rank){e.preventDefault();e.stopImmediatePropagation();open('leaderboard');return;}
       const league=e.target.closest('.league-card');if(league){const label=league.getAttribute('aria-label');if(label==='Team Arena'||label==='Cross-server Arena'){e.preventDefault();e.stopImmediatePropagation();open('pvp',label==='Team Arena'?'team':'cross');}}
     },true);
