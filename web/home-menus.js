@@ -16,7 +16,7 @@ const HomeMenus=(()=>{
  async function send(request){if(pending)return;pending=true;message='Đang lưu…';render();try{const result=await api('/api/home/action',request);state=result.state;message="Đã lưu.";if(result.awards)message="Đã quay xong. Xem kết quả trong lịch sử.";}catch(e){message=e.message;}finally{pending=false;render();}}
  function navigation(parent,entries){const nav=el('nav',undefined,'hm-tabs');for(const [id,label]of entries)button(nav,label,()=>{page=0;change(id);},tab===id,'');parent.append(nav);}
  function link(parent,label,route){button(parent,label,()=>{if(route==='campaign'||route==='capsule'||route==='graduate')showView(route);else openMenu(route,'home-systems');});}
- function launch(key,from){if(from==='home-systems'&&view==='home-systems')stack.push({root,tab,selected,page,origin});else stack=[];if(from!=='home-systems'||!stack.length)origin=from||'home';root=key;tab='';selected=null;page=0;message='';showView('home-systems');if(!catalog&&!loaded){loaded=api('/assets/home-systems/catalog.json').then(c=>{catalog=c;if(view==='home-systems')render();}).catch(e=>{message=e.message;loaded=null;render();});}}
+ function launch(key,from){if(key==='friends')onlinePlayers=null;if(from==='home-systems'&&view==='home-systems')stack.push({root,tab,selected,page,origin});else stack=[];if(from!=='home-systems'||!stack.length)origin=from||'home';root=key;tab='';selected=null;page=0;message='';showView('home-systems');if(!catalog&&!loaded){loaded=api('/assets/home-systems/catalog.json').then(c=>{catalog=c;if(view==='home-systems')render();}).catch(e=>{message=e.message;loaded=null;render();});}}
  function back(){if(tab==='detail'||tab==='building'||tab==='adventure'||tab==='training'){change('');return;}if(stack.length){({root,tab,selected,page,origin}=stack.pop());message='';showView('home-systems');render();return;}showView(origin==='home-systems'?'home':origin);}
  function render(){const wrap=$('home-systems-view');if(!wrap||view!=='home-systems')return;wrap.replaceChildren();wrap.dataset.hmRoot=root;
   const top=el('header',undefined,'hm-top');const b=button(top,'',back);b.setAttribute('aria-label',"Back");b.append(image('mail_back_bg','hm-back'));b.replaceChildren();const arrow=el('img');arrow.src='/assets/ui/win_back_btn.png';arrow.alt='';b.append(arrow);top.append(el('h1',titles[root]));const money=el('div',undefined,'hm-money');money.append(el('span',"Vàng "+number(state.items['1'])),el('span',"Kim Cương "+number(state.items['2'])));top.append(money);wrap.append(top);
@@ -27,7 +27,38 @@ const HomeMenus=(()=>{
  }
  const info=()=>state.home_systems;
  async function heart(req){try{const r=await api('/api/hearts/action',req);state=r.state;if(r.got&&Object.keys(r.got).length&&typeof CampaignUI!=='undefined')CampaignUI.popup('Hearts',r.got);}catch(e){if(typeof GirlUI!=='undefined')GirlUI.toast(e.message);else console.error('Lỗi thao tác:',e);}render();}
+ let onlinePlayers=null,onlinePlayersBusy=false;
+ function loadRealPlayers(){
+  if(onlinePlayersBusy)return;
+  onlinePlayersBusy=true;
+  api('/api/world/online?server_id='+encodeURIComponent(state?.server_id||'S1')).then(res=>{
+   onlinePlayers=Array.isArray(res?.players)?res.players:[];
+  }).catch(e=>{
+   onlinePlayers=[];
+   message=e.message||'Không thể tải người chơi trực tuyến.';
+  }).finally(()=>{
+   onlinePlayersBusy=false;
+   if(view==='home-systems'&&root==='friends')render();
+  });
+ }
  function friends(parent){
+  // Real server population only. Local contacts and recommended NPCs must never
+  // masquerade as real online people or a successful friend request.
+  if(!tab)tab='online';
+  if(tab==='online'){
+   const header=card(parent,'Người Chơi Trực Tuyến');
+   const refresh=button(header,'Làm mới danh sách',()=>{onlinePlayers=null;loadRealPlayers();});
+   refresh.disabled=onlinePlayersBusy;
+   if(onlinePlayers===null){paragraph(parent,'Đang lấy danh sách người chơi từ máy chủ…');loadRealPlayers();}
+   else if(!onlinePlayers.length)paragraph(parent,'Hiện không có người chơi nào được máy chủ xác nhận đang trực tuyến.');
+   else for(const p of onlinePlayers){
+    const row=el('div',undefined,'hm-rec');
+    row.append(el('b',p.character_name||p.name||p.uid),el('small','Cấp '+(p.level||1)));
+    parent.append(row);
+   }
+   paragraph(parent,'Danh sách này lấy trực tiếp từ máy chủ. Chức năng gửi lời mời kết bạn đang chờ kết nối; không tạo lời mời giả.');
+   return;
+  }
   if(!tab)tab='list';if(tab==='detail'){const c=info().contacts.find(c=>c.id===selected);if(!c){change('list');return;}const panel=card(parent,c.name);const avatar=el('img',undefined,'hm-avatar');avatar.src='/assets/profile/'+c.avatar+'.png';avatar.alt=c.name;panel.append(avatar);paragraph(panel,"Local contact for this save.");const form=el('form');const text=el('textarea');text.maxLength=500;text.placeholder="Message (local draft)";text.setAttribute('aria-label',"Message for "+c.name);form.append(text);button(form,"Save draft",()=>send({action:'draft',recipient:c.name,text:text.value}));panel.append(form);button(panel,"Delete contact",async()=>{await send({action:'contact_delete',id:c.id});change('list');});return;}
   const nav=el('nav',undefined,'hm-tabs');for(const [id,label]of [['list',"List"],['search',"Search"],['requests','Solicitudes'],['coop','Co-op']]){const b=button(nav,label,()=>{change(id);if(id==='coop')RemainingSystems.openFriendTab();},tab===id);b.setAttribute('aria-current',tab===id?'page':'false');}parent.append(nav);
   if(tab==='coop'){RemainingSystems.friendPanel(parent);return;}
