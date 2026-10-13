@@ -75,7 +75,7 @@ const Dates=(()=>{
   CampaignUI.popup('Intimacy bonus',{});const box=document.querySelector('.cr-overlay .cr-box');const d=el('div','dt-attr');d.append(el('p','',"Level "+lv+': '+fmt(cur.bonus)),el('p','',"Next ("+next.point+'): '+fmt(next.bonus)),el('p','dt-small-note',"These bonuses apply in battle (original HeroAttr)."));box.querySelector('.cr-rewards')?.replaceWith(d);}
  function pledge(h){if(h.is_vowed){CampaignUI.popup(h.name+": Oath completed. Maximum Intimacy "+GROW()+'.',{});const l=allLines(h).find(x=>x.type===16);play(l?.sound,l?.text);return;}
   if((h.love_point||0)<BASE()){CampaignUI.popup("Oath requires "+BASE()+" Intimacy ("+(h.love_point||0)+' ahora).',{});return;}
-  if(!confirm("Perform the Oath with "+h.name+'? Cuesta 1 anillo.'))return;act({action:'vow',partner_id:h.partner_id}).then(r=>{if(r){const l=allLines(hero()).find(x=>x.type===16);play(l?.sound,l?.text||'♥');note="Oath completed!";render();}});}
+  if(!(await GirlUI.confirm("Lập lời thề với "+h.name+"? Sẽ tiêu hao 1 Nhẫn.",{title:'Xác Nhận Lời Thề',ok:'Lập Lời Thề'})))return;act({action:'vow',partner_id:h.partner_id}).then(r=>{if(r){const l=allLines(hero()).find(x=>x.type===16);play(l?.sound,l?.text||'♥');note="Oath completed!";render();}});}
  // PartnerNameTag (partner_name_tag prefab 282×80): partner_name_frame_bg, faction at -90,2, stars at 18,17, name at 18,-21.
  function nameTag(h){const t=el('div','dt-nametag');t.append(img(A('partner_name_frame_bg'),'dt-nt-bg'));const g=girlsCatalog.find(x=>x.id===h.table_id);
   t.append(img('/assets/factions/'+(g?.group||h.group||1)+'.png','dt-nt-group'));const st=el('div','dt-nt-stars');const n=Number(h.stars||g?.stars||1);
