@@ -287,3 +287,14 @@
 /* Shared sheets outside Girl detail must measure the game, not the browser viewport. */
 .gs-overlay{container-type:inline-size;--u:calc(100cqw / 720)}
 .gs-overlay>.gs-win{max-width:94%;max-height:94%;min-width:0}
+
+/* Quantity input rendered inside the game instead of the browser's prompt. */
+.gs-number-overlay{z-index:10020!important}
+.gs-number{width:min(420px,calc(100vw - 24px));max-height:calc(100dvh - 24px)}
+.gs-number .gs-number-label{display:flex;flex-direction:column;gap:12px;
+  color:#425c83;font-weight:700;line-height:1.4;text-align:center}
+.gs-number .gs-number-input{display:block;box-sizing:border-box;width:100%;min-height:48px;
+  padding:10px 12px;border:2px solid #9db9dc;border-radius:10px;
+  background:#fff;color:#263f64;font-size:18px;font-weight:700;text-align:center}
+.gs-number .gs-btns{display:flex;justify-content:center;gap:10px;margin-top:16px}
+.gs-number .gs-btns>button{min-width:100px;min-height:40px}
