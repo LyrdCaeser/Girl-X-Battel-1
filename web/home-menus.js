@@ -3,7 +3,7 @@
 const HomeMenus=(()=>{
  const titles={friends:"Friends",chat:'Chat',mail:"Mail",book:'Fantasy Book',servant:'Servant',expedition:"Excursion",'starry-altar':'Cosmos Portal','luvly-castle':'Luvly’s Dream Castle','drift-bottle':'Adrift Message',events:"Events",giftpacks:'Gift Packs',treasure:'Regalo especial'};
  const petNames={101:'Hunter',201:'Kraken',301:'Deerling',401:'Void',501:'Robert',601:'Elixir',701:'Flora',801:'Sea Serpent',901:'Crystal Golem'};
- let stack=[],catalog=null,root='friends',tab='',selected=null,origin='home',pending=false,message='',page=0,loaded=null;
+ let stack=[],catalog=null,root='friends',tab='',selected=null,origin='home',pending=false,message='',page=0,loaded=null,topupPackages=null,topupLoading=false;
  const el=(tag,text,cls)=>node(tag,cls,text),asset=name=>'/assets/home-systems/'+name+'.png';
  function image(name,cls='hm-art',alt=''){const img=el('img',undefined,cls);img.src=asset(name);img.alt=alt;return img;}
  function paragraph(parent,text,cls='hm-note'){parent.append(el('p',text,cls));}
@@ -113,7 +113,50 @@ const HomeMenus=(()=>{
   if(tab==='map'){link(parent,'Adrift Message','drift-bottle');link(parent,"View events",'events');}else if(tab==='rewards')for(const r of catalog.activity_lafuli_award){const c=card(parent,r.point+" points");rewards(c,r.award);paragraph(c,"Archived event reward.");}else for(const r of catalog.activity_lafuli_shop){const c=card(parent,'Oferta '+r.id);rewards(c,r.award);const used=info().castle_shop?.[r.id]||0;paragraph(c,used+' / '+r.limit+' compradas');costButton(c,"Buy",r.cost,{action:'castle_shop',id:Number(r.id)},used>=Number(r.limit));}}
  function drift(parent){const scene=el('div',undefined,'hm-archive-scene');scene.style.backgroundImage=`url('${asset('activity_lafuli_drift_bg')}')`;parent.append(scene);paragraph(parent,"Recovered Adrift Message board: 21 spaces. Select one to inspect its rewards. Event movement and encounters have not been restored yet.");const board=el('div',undefined,'hm-drift-board');parent.append(board);for(const r of catalog.activity_lafuli_drift)button(board,r.id,()=>{selected=Number(r.id);render();},false,Number(r.id)===selected?'chosen':'');if(selected){const r=catalog.activity_lafuli_drift.find(r=>Number(r.id)===selected),c=card(parent,'Casilla '+r.id,r.icon_png);if(r.award.includes('#'))rewards(c,r.award);else paragraph(c,"Encounter or card choice");for(const n of [1,2,3])if(r['award'+n])rewards(c,r['award'+n]);paragraph(c,"Next: "+r.next_id+" · previous: "+r.back_id);}link(parent,"Back to the castle",'luvly-castle');}
  function events(parent){paragraph(parent,"Recovered activities. Original server schedules and rankings are unavailable.");for(const [title,key,icon]of[['Daily Quiz','quiz',''],['Tests','tests',''],['Luvly’s Dream Castle','luvly-castle',''],['Adrift Message','drift-bottle','lafuli_drift_card'],['Cosmos Portal','starry-altar','starry_bg_jlxz_1']]){const c=card(parent,title,icon);link(c,'Entrar',key);}}
- function gifts(parent){const c=card(parent,root==='treasure'?'Regalo especial':'Gift Packs','mail_gift_bg');paragraph(c,"Archived pack catalog. Purchases, eligibility, and timers depend on the original server and are not simulated here.");link(c,"Mail and attachments",'mail');link(c,"Events",'events');for(const r of catalog.gift_previews||[]){const offer=card(parent,r.title);paragraph(offer,"Archived price: "+r.price+' '+r.currency);if(r.daily_diamond)rewards(offer,r.daily_diamond);paragraph(offer,"Preview · no local purchase");}}
+ function loadTopupPackages(){
+  if(topupPackages!==null||topupLoading)return;
+  topupLoading=true;
+  api('/api/payment/packages').then(out=>{
+   topupPackages=Array.isArray(out?.packages)?out.packages:[];
+  }).catch(e=>{
+   topupPackages=[];
+   message=e.message||'Không thể tải danh sách gói nạp.';
+  }).finally(()=>{
+   topupLoading=false;
+   if(view==='home-systems'&&root==='giftpacks')render();
+  });
+ }
+ function gifts(parent){
+  const c=card(parent,root==='treasure'?'Quà Đặc Biệt':'Gói Quà','mail_gift_bg');
+  paragraph(c,'Danh sách gói quà và các quyền lợi của game được giữ nguyên. Thanh toán đơn hàng qua Zalo và chỉ nhận quà sau khi QTV xác nhận.');
+  link(c,'Hòm Thư','mail');link(c,'Sự Kiện','events');
+  if(root==='giftpacks'){
+   const vip=state?.vip_info;
+   if(vip){
+    const progress=card(parent,'VIP '+vip.level,'mail_gift_bg');
+    paragraph(progress,'Điểm VIP: '+number(vip.exp||0)+(vip.next?' / '+number(vip.next):' · Đã đạt cấp tối đa'));
+    if(vip.perks)paragraph(progress,String(vip.perks));
+   }
+   if(topupPackages===null){
+    paragraph(parent,'Đang tải gói nạp của máy chủ…');
+    loadTopupPackages();
+   }else if(!topupPackages.length){
+    paragraph(parent,'Hiện chưa có gói nạp nào được máy chủ công bố.');
+   }else{
+    for(const pack of topupPackages){
+     const offer=card(parent,pack.name||pack.id,'mail_gift_bg');
+     if(pack.price_label)paragraph(offer,pack.price_label);
+     button(offer,'Chọn Gói · Thanh Toán Zalo',()=>window.GxbPayment?.open(pack.id),!window.GxbPayment);
+    }
+   }
+  }
+  for(const pack of catalog.gift_previews||[]){
+   const offer=card(parent,pack.title);
+   paragraph(offer,'Giá từ dữ liệu gốc: '+pack.price+' '+pack.currency);
+   if(pack.daily_diamond)rewards(offer,pack.daily_diamond);
+   paragraph(offer,'Gói gốc tham khảo · chỉ đặt mua khi máy chủ có gói tương ứng.');
+  }
+ }
  function openFriendsBoss(from){launch('friends',from);tab='coop';render();RemainingSystems.openFriendTab();}
  return {openFriendsBoss,handles:key=>Object.hasOwn(titles,key),open:launch,render};
 })();
