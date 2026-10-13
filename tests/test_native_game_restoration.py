@@ -71,6 +71,19 @@ class NativeGameWindowTests(unittest.TestCase):
         self.assertEqual(plot["lines"]["183"]["d"], "(Sững sờ)...")
         self.assertEqual(plot["lines"]["3379"]["d"], "Tên")
 
+    def test_newbie_and_growth_diary_ui_is_vietnamese(self):
+        for script, title in (
+            ("newbie-camp.js", "Trại Tân Thủ"),
+            ("growth-diary.js", "Nhật Ký Trưởng Thành"),
+        ):
+            with self.subTest(script=script):
+                content = (ROOT / "web" / script).read_text(encoding="utf-8")
+                self.assertIn(title, content)
+                self.assertIn("Phần Thưởng", content)
+                for forbidden in ("'Back'", "'Claimed'", "'Unavailable'", "'Go'"):
+                    self.assertNotIn(forbidden, content)
+
+
 
 if __name__ == "__main__":
     unittest.main()
