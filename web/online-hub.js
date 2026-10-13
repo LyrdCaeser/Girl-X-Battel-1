@@ -83,7 +83,7 @@ window.GxbOnline=(()=>{
         const saveNotice=el('button','online-primary',T('Save Notice'));saveNotice.onclick=async()=>{await post('/api/world-guild/manage',{action:'notice',notice:notice.value});renderGuild(body);};manage.append(notice,saveNotice);
         const mailTitle=document.createElement('input');mailTitle.placeholder=T('Guild Mail Title');
         const mailBody=document.createElement('textarea');mailBody.placeholder=T('Guild Mail Body');
-        const sendMail=el('button','online-primary',T('Send Guild Mail'));sendMail.onclick=async()=>{await post('/api/world-guild/manage',{action:'mail',title:mailTitle.value,body:mailBody.value});mailTitle.value='';mailBody.value='';alert(T('Guild mail sent.'));};manage.append(mailTitle,mailBody,sendMail);
+        const sendMail=el('button','online-primary',T('Send Guild Mail'));sendMail.onclick=async()=>{await post('/api/world-guild/manage',{action:'mail',title:mailTitle.value,body:mailBody.value});mailTitle.value='';mailBody.value='';GirlUI.notice(T('Guild mail sent.'),{title:'Thư Bang Hội'});};manage.append(mailTitle,mailBody,sendMail);
         body.append(manage);
 
         const apps=el('section','online-card');apps.append(el('h3','',T('Applications')));
@@ -99,9 +99,9 @@ window.GxbOnline=(()=>{
         if(g.role==='leader'&&m.uid!==state?.uid){
           if(m.role==='member'){const dep=el('button','online-small',T('Make Deputy'));dep.onclick=async()=>{await post('/api/world-guild/manage',{action:'role',target_uid:m.uid,role:'deputy'});renderGuild(body);};row.append(dep);}
           if(m.role==='deputy'){const dem=el('button','online-small',T('Make Member'));dem.onclick=async()=>{await post('/api/world-guild/manage',{action:'role',target_uid:m.uid,role:'member'});renderGuild(body);};row.append(dem);}
-          const tr=el('button','online-small',T('Transfer Leader'));tr.onclick=async()=>{if(confirm(T('Are you sure?'))){await post('/api/world-guild/manage',{action:'transfer',target_uid:m.uid});renderGuild(body);}};row.append(tr);
+          const tr=el('button','online-small',T('Transfer Leader'));tr.onclick=async()=>{if(await GirlUI.confirm(T('Are you sure?'),{title:'Xác Nhận',ok:'Đồng Ý',danger:true})){await post('/api/world-guild/manage',{action:'transfer',target_uid:m.uid});renderGuild(body);}};row.append(tr);
         }
-        if(['leader','deputy'].includes(g.role)&&m.uid!==state?.uid&&m.role!=='leader'){const kick=el('button','online-danger',T('Kick'));kick.onclick=async()=>{if(confirm(T('Are you sure?'))){await post('/api/world-guild/manage',{action:'kick',target_uid:m.uid});renderGuild(body);}};row.append(kick);}
+        if(['leader','deputy'].includes(g.role)&&m.uid!==state?.uid&&m.role!=='leader'){const kick=el('button','online-danger',T('Kick'));kick.onclick=async()=>{if(await GirlUI.confirm(T('Are you sure?'),{title:'Xác Nhận',ok:'Đồng Ý',danger:true})){await post('/api/world-guild/manage',{action:'kick',target_uid:m.uid});renderGuild(body);}};row.append(kick);}
         members.append(row);}body.append(members);
 
       const chat=el('section','online-card');chat.append(el('h3','',T('Guild Chat')));
@@ -124,7 +124,7 @@ window.GxbOnline=(()=>{
         const opponents=(data.guilds||[]).filter(x=>x.id!==g.id);if(opponents.length){const sel=document.createElement('select');for(const x of opponents){const o=el('option','',x.name);o.value=x.id;sel.append(o);}const war=el('button','online-primary',T('Challenge Guild'));war.onclick=async()=>{await post('/api/world-guild/manage',{action:'war',opponent_guild_id:Number(sel.value),duration:86400});renderGuild(body);};wars.append(sel,war);}
       }body.append(wars);
 
-      const leave=el('button','online-danger',g.role==='leader'?T('Disband Guild'):T('Leave Guild'));leave.onclick=async()=>{if(!confirm(T('Are you sure?')))return;await post('/api/world-guild/action',{action:'leave'});renderGuild(body);};body.append(leave);return;
+      const leave=el('button','online-danger',g.role==='leader'?T('Disband Guild'):T('Leave Guild'));leave.onclick=async()=>{if(!await GirlUI.confirm(T('Are you sure?'),{title:'Xác Nhận',ok:'Đồng Ý',danger:true}))return;await post('/api/world-guild/action',{action:'leave'});renderGuild(body);};body.append(leave);return;
     }
 
     const create=el('section','online-card');create.append(el('h3','',T('Create Guild')));
@@ -154,10 +154,10 @@ window.GxbOnline=(()=>{
             try{
               const out=await post('/api/guild-war/battle',{war_id:w.id,defender_uid:enemy.uid});
               const r=out.result||{};
-              alert((r.winner_uid===state?.uid?T('Victory'):T('Defeat'))+' · +'+fmt(r.score)+' '+T('Guild War Score'));
+              GirlUI.notice((r.winner_uid===state?.uid?T('Victory'):T('Defeat'))+' · +'+fmt(r.score)+' '+T('Guild War Score'),{title:'Kết Quả Bang Hội Chiến'});
               modal.remove();
               const body=document.getElementById('online-body');if(body)renderGuild(body);
-            }catch(e){fight.disabled=false;fight.textContent=T('Attack');alert(e.message);}
+            }catch(e){fight.disabled=false;fight.textContent=T('Attack');GirlUI.notice(e.message,{title:'Thông Báo'});}
           };
           row.append(main,fight);enemies.append(row);
         }
@@ -172,7 +172,7 @@ window.GxbOnline=(()=>{
         history.append(row);
       }
       box.append(history);modal.append(box);document.body.append(modal);
-    }catch(e){alert(e.message);}
+    }catch(e){GirlUI.notice(e.message,{title:'Thông Báo'});}
   }
 
   function matchOpponent(m){const mine=state?.uid;return m.player_a===mine?{uid:m.player_b,name:m.name_b,power:m.power_b}:{uid:m.player_a,name:m.name_a,power:m.power_a};}
@@ -191,7 +191,7 @@ window.GxbOnline=(()=>{
         const items=Object.entries(seasonReward.reward||{}).map(([id,n])=>'#'+id+' × '+fmt(n)).join(' · ');
         reward.append(el('span','',items||T('No reward')));
         if(seasonReward.claimed)reward.append(el('small','',T('Claimed')));
-        else{const claim=el('button','online-primary',T('Claim Reward'));claim.onclick=async()=>{claim.disabled=true;try{await post('/api/pvp/season/claim',{mode:pvpMode});await renderPvp(body);}catch(e){claim.disabled=false;alert(e.message);}};reward.append(claim);}
+        else{const claim=el('button','online-primary',T('Claim Reward'));claim.onclick=async()=>{claim.disabled=true;try{await post('/api/pvp/season/claim',{mode:pvpMode});await renderPvp(body);}catch(e){claim.disabled=false;GirlUI.notice(e.message,{title:'Thông Báo'});}};reward.append(claim);}
       }else reward.append(el('small','',T('Not eligible')));
       ratingBox.append(reward);
     }
@@ -209,7 +209,7 @@ window.GxbOnline=(()=>{
         const fight=el('button','online-fight',T('Start Battle'));
         fight.onclick=async()=>{fight.disabled=true;fight.textContent=T('Server is simulating battle…');try{
           const out=await post('/api/pvp/match/battle',{match_id:m.id});showBattleResult(body,out.result);
-        }catch(e){fight.disabled=false;fight.textContent=T('Start Battle');alert(e.message);}};
+        }catch(e){fight.disabled=false;fight.textContent=T('Start Battle');GirlUI.notice(e.message,{title:'Thông Báo'});}};
         card.append(fight);
       }
       card.append(el('small','online-note',T('The server loads both saved teams and simulates the result. The client cannot submit a winner.')));body.append(card);
