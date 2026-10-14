@@ -348,8 +348,14 @@ class Engine:
                     raise GameError('Tài khoản đang bị khóa')
                 # Neon: claim + reward update are one transaction, so a failed
                 # player-save cannot leave a paid/GM mail marked claimed.
+                # ScopedPostgresPlayerDB is a player-persistence adapter, not
+                # a live_service.DBConnection and has no .backend attribute.
+                # Borrow its active PostgreSQL connection so claiming the mail
+                # and persisting rewards are ONE atomic transaction.
+                live_db = self.db.borrowed_live_transaction() if isinstance(
+                    self.db, ScopedPostgresPlayerDB) else None
                 attachments = live_service.claim_mail(str(mail_id), uid, server_id,
-                    db=self.db if self.db.backend == 'postgres' else None)
+                    db=live_db)
                 inventory = dict(attachments)
                 vip.claim_reward(state, inventory)
                 for item_id, amount in inventory.items():
