@@ -59,6 +59,7 @@ class SuperGmSecurityTests(unittest.TestCase):
     def test_value_moving_admin_routes_require_second_factor(self):
         from pathlib import Path
         source = (Path(__file__).resolve().parents[1] / "server.py").read_text()
+        source = source[source.index("    def do_POST(self):"):]
         for endpoint in ("/api/admin/mail/send", "/api/admin/order/review",
                          "/api/admin/topup-packages"):
             with self.subTest(endpoint=endpoint):
