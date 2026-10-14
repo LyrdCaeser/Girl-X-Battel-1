@@ -149,3 +149,12 @@ html.gxb-mobile #events-view .ev-title-label{overflow-wrap:anywhere}
 
 .ev-native-pack-tabs{display:flex;flex-wrap:wrap;gap:4px;padding:5px;background:rgba(242,248,253,.96);position:relative;z-index:2}
 .ev-native-pack-tabs .ev-tab{flex:1 1 88px;min-height:36px;font-weight:700;font-size:clamp(11px,2.8vw,14px)}
+
+.ev-original-gems{padding:8px 4px;margin:12px 0}
+.ev-original-gems h3{color:#17477b;margin:7px 0}
+.ev-gems-offer{display:flex;align-items:center;gap:9px;padding:9px 7px;margin:7px 0;border-radius:9px;border:1px solid #b3c9e6;background:rgba(255,255,255,.92);min-width:0}
+.ev-gems-offer .ev-item{width:43px;height:43px;object-fit:contain;flex:none}
+.ev-gems-data{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1;overflow-wrap:anywhere;color:#3e5974;font-size:12px}
+.ev-gems-data b{color:#144c7d;font-size:14px}
+.ev-gems-offer .ev-native-pay{flex:none;max-width:36%;white-space:normal}
+@media(max-width:365px){.ev-gems-offer{flex-wrap:wrap}.ev-gems-offer .ev-native-pay{margin-left:auto;max-width:100%}}
