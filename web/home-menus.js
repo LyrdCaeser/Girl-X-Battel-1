@@ -177,6 +177,7 @@ const HomeMenus=(()=>{
   finally{pending=false;render();}
  }
  function serverMail(parent){
+  button(parent,'◈ Nhập mã Giftcode',()=>window.open('/giftcode-studio/','_blank','noopener'));
   const rows=Array.isArray(state?.mail_info)?state.mail_info:[];
   if(!rows.length)paragraph(parent,'Chưa có thư máy chủ.');
   for(const m of rows){
