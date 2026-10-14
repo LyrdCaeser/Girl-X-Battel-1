@@ -146,3 +146,6 @@ html.gxb-mobile #events-view .ev-title-label{overflow-wrap:anywhere}
 /* Zalo checkout is attached beneath original event artwork, not a replacement event. */
 .ev-original-payment{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin:10px 2px;padding:10px;border-radius:9px;background:rgba(249,238,202,.88);color:#68421a}
 .ev-original-payment .ev-native-pay{border:1px solid #8bb3de;border-radius:8px;background:linear-gradient(#a7e0fb,#3b85cf);padding:9px 12px;color:#15315b;font-weight:700;min-height:42px}
+
+.ev-native-pack-tabs{display:flex;flex-wrap:wrap;gap:4px;padding:5px;background:rgba(242,248,253,.96);position:relative;z-index:2}
+.ev-native-pack-tabs .ev-tab{flex:1 1 88px;min-height:36px;font-weight:700;font-size:clamp(11px,2.8vw,14px)}
