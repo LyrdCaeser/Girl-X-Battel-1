@@ -8,7 +8,7 @@ const HomeMenus=(()=>{
  function image(name,cls='hm-art',alt=''){const img=el('img',undefined,cls);img.src=asset(name);img.alt=alt;return img;}
  function paragraph(parent,text,cls='hm-note'){parent.append(el('p',text,cls));}
  function button(parent,text,fn,disabled=false,cls=''){const b=el('button',text,cls);b.type='button';b.disabled=pending||disabled;b.addEventListener('click',fn);parent.append(b);return b;}
- function change(next,id=null){tab=next;selected=id;message='';render();}
+ function change(next,id=null){if(root==='chat'){chatRows=[];chatLoadedKey='';chatTyped='';chatError='';}tab=next;selected=id;message='';render();}
  function card(parent,title,icon){const c=el('article',undefined,'hm-card');if(icon&&catalog.assets.includes(icon))c.append(image(icon,'hm-card-icon'));c.append(el('h3',title));parent.append(c);return c;}
  function rewards(parent,text){const bar=el('div',undefined,'hm-rewards');for(const s of String(text||'').split('|')){if(!s.includes('#'))continue;const [id,num]=s.split('#'),label=el('span',undefined,'hm-reward');const icon=catalog.items[id]?.icon;if(catalog.assets.includes(icon))label.append(image(icon,'hm-item-icon'));label.append(el('span',number(num)),el('small',itemCatalog[id]?.name||({'1':"Vàng",'2':"Kim Cương",'26':'Đá Linh Thú','27':'EXP Kỹ Năng','117':'EXP Sách','203':'Bánh Mì','204':"Vật Liệu Xây Dựng",'205':"Vật Liệu Huấn Luyện",'221':'Xu Sách','222':"Vé Sách",'232':'Xu Lâu Đài','358':"Vé Vũ Trụ"}[id])||"Vật phẩm "+id));bar.append(label);}parent.append(bar);}
  function affordable(text){return String(text||'').split('|').every(p=>{const [id,n]=p.split('#');return !n||Number(state.items[id]||0)>=Number(n);});}
@@ -16,7 +16,7 @@ const HomeMenus=(()=>{
  async function send(request){if(pending)return;pending=true;message='Đang lưu…';render();try{const result=await api('/api/home/action',request);state=result.state;message="Đã lưu.";if(result.awards)message="Đã quay xong. Xem kết quả trong lịch sử.";}catch(e){message=e.message;}finally{pending=false;render();}}
  function navigation(parent,entries){const nav=el('nav',undefined,'hm-tabs');for(const [id,label]of entries)button(nav,label,()=>{page=0;change(id);},tab===id,'');parent.append(nav);}
  function link(parent,label,route){button(parent,label,()=>{if(route==='campaign'||route==='capsule'||route==='graduate')showView(route);else openMenu(route,'home-systems');});}
- function launch(key,from){if(key==='friends')onlinePlayers=null;if(from==='home-systems'&&view==='home-systems')stack.push({root,tab,selected,page,origin});else stack=[];if(from!=='home-systems'||!stack.length)origin=from||'home';root=key;tab='';selected=null;page=0;message='';showView('home-systems');if(!catalog&&!loaded){loaded=api('/assets/home-systems/catalog.json').then(c=>{catalog=c;if(view==='home-systems')render();}).catch(e=>{message=e.message;loaded=null;render();});}}
+ function launch(key,from){if(key==='chat'){chatRows=[];chatLoadedKey='';chatRecipient='';chatTyped='';chatError='';}if(key==='friends')onlinePlayers=null;if(from==='home-systems'&&view==='home-systems')stack.push({root,tab,selected,page,origin});else stack=[];if(from!=='home-systems'||!stack.length)origin=from||'home';root=key;tab='';selected=null;page=0;message='';showView('home-systems');if(!catalog&&!loaded){loaded=api('/assets/home-systems/catalog.json').then(c=>{catalog=c;if(view==='home-systems')render();}).catch(e=>{message=e.message;loaded=null;render();});}}
  function back(){if(tab==='detail'||tab==='building'||tab==='adventure'||tab==='training'){change('');return;}if(stack.length){({root,tab,selected,page,origin}=stack.pop());message='';showView('home-systems');render();return;}showView(origin==='home-systems'?'home':origin);}
  function render(){const wrap=$('home-systems-view');if(!wrap||view!=='home-systems')return;wrap.replaceChildren();wrap.dataset.hmRoot=root;
   const top=el('header',undefined,'hm-top');const b=button(top,'',back);b.setAttribute('aria-label',"Back");b.append(image('mail_back_bg','hm-back'));b.replaceChildren();const arrow=el('img');arrow.src='/assets/ui/win_back_btn.png';arrow.alt='';b.append(arrow);top.append(el('h1',titles[root]));const money=el('div',undefined,'hm-money');money.append(el('span',"Vàng "+number(state.items['1'])),el('span',"Kim Cương "+number(state.items['2'])));top.append(money);wrap.append(top);
@@ -71,15 +71,93 @@ const HomeMenus=(()=>{
   const draw=q=>{grid.replaceChildren();for(const c of info().contacts.filter(c=>c.name.toLocaleLowerCase().includes(q.toLocaleLowerCase()))){const row=card(grid,c.name);const img=el('img',undefined,'hm-avatar');img.src='/assets/profile/'+c.avatar+'.png';img.alt='';row.prepend(img);button(row,"View profile",()=>change('detail',c.id));const hi=state.hearts_info||{sent:[],got:[]};const sb=button(row,hi.sent.includes(c.id)?"Sent ♥":"Send ♥",()=>heart({action:'send',ids:[c.id]}));sb.disabled=hi.sent.includes(c.id);const gb=button(row,hi.got.includes(c.id)?'Reclamado':"Claim ♥",()=>heart({action:'claim',ids:[c.id]}));gb.disabled=hi.got.includes(c.id);}if(!grid.childElementCount)paragraph(grid,"No local contacts.");};
   if(tab==='search'){const rec=state.hearts_info?.recommended||[];if(rec.length){const rc=card(parent,'Recommended');for(const r of rec){const row=el('div',undefined,'hm-rec');row.append(el('b',r.name),el('small','Lv. '+r.lv));button(row,"Add",()=>heart({action:'add',rid:r.rid}));rc.append(row);}}const search=el('input');search.placeholder="Search contacts by name";search.setAttribute('aria-label',"Search contacts");search.addEventListener('input',()=>draw(search.value));parent.insertBefore(search,grid);const add=card(parent,"Add local contact");const name=el('input');name.maxLength=20;name.placeholder="Contact name";name.setAttribute('aria-label',"Contact name");add.append(name);button(add,"Add",()=>send({action:'contact_add',name:name.value,avatar:state.profile.avatar}));paragraph(add,"Saves a local entry; no request is sent to another person.");}draw('');
  }
- function chat(parent){
-  if(!tab)tab='world';navigation(parent,[['world','World'],['english','English'],['servers','Servers'],['recruit','Recruit'],['private','Private'],['drafts',"Drafts"]]);
-  paragraph(parent,"Channel messages come from simulated players. Your messages are saved as local drafts.");
-  if(tab==='drafts'){const c=card(parent,"New draft",'mail_box');const who=el('input');who.maxLength=40;who.placeholder='Destinatario';who.setAttribute('aria-label','Destinatario');const text=el('textarea');text.maxLength=500;text.placeholder="Write a message";text.setAttribute('aria-label',"Draft text");c.append(who,text);button(c,"Save draft",()=>send({action:'draft',recipient:who.value,text:text.value}));paragraph(c,"Drafts are saved here. They are not sent.");for(const d of info().drafts){const row=card(parent,d.recipient||"No recipient");paragraph(row,d.text,'hm-text');button(row,"Delete draft",()=>send({action:'draft_delete',id:d.id}));}return;}
-  const c=card(parent,tab==='private'?"Private messages":'Chat · '+({world:'World',english:'English',servers:'Servers',recruit:'Recruit'}[tab]||tab));if(tab!=='private'&&typeof Bots!=='undefined')c.append(Bots.chat(tab));else paragraph(c,"No incoming messages.");
-  const who=el('input');who.maxLength=40;who.placeholder='Destinatario';who.setAttribute('aria-label','Destinatario');if(tab==='private')c.append(who);
-  const text=el('textarea');text.maxLength=500;text.placeholder="Write a message";text.setAttribute('aria-label',"Chat message");c.append(text);
-  button(c,"Send",()=>{},true);button(c,"Save draft",()=>send({action:'draft',recipient:tab==='private'?who.value:({world:'World',english:'English',servers:'Servers',recruit:'Recruit'}[tab]),text:text.value}));
+
+ let chatRows=[],chatBusy=false,chatSending=false,chatLoadedKey='',chatRecipient='',chatTyped='',chatError='';
+ const chatKey=()=>[state?.server_id||'',tab||'world',tab==='private'?chatRecipient:''].join(':');
+ async function refreshRealChat(silent=false){
+  if(chatBusy||root!=='chat'||view!=='home-systems')return;
+  const key=chatKey();
+  chatBusy=true;
+  try{
+   const url='/api/chat/messages?channel='+encodeURIComponent(tab||'world')
+       +(tab==='private'&&chatRecipient?'&recipient_uid='+encodeURIComponent(chatRecipient):'');
+   const response=await api(url);
+   // An earlier response must not replace messages from a different tab/account.
+   if(root!=='chat'||view!=='home-systems'||key!==chatKey())return;
+   chatRows=Array.isArray(response?.messages)?response.messages:[];
+   chatLoadedKey=key;chatError='';
+   const focused=document.activeElement;
+   if(!silent||!focused||!focused.closest?.('.hm-chat-composer'))render();
+  }catch(e){
+   chatError=e.message||'Không thể kết nối Trò Chuyện.';
+   if(!silent&&root==='chat'&&view==='home-systems')render();
+  }finally{chatBusy=false;}
  }
+ async function submitRealChat(){
+  const text=chatTyped.trim();
+  if(chatSending||!text)return;
+  if(tab==='private'&&!chatRecipient){chatError='Nhập UID người nhận để nhắn tin riêng.';render();return;}
+  chatSending=true;
+  try{
+   await api('/api/chat/send',{channel:tab,message:text,recipient_uid:tab==='private'?chatRecipient:''});
+   chatTyped='';chatError='';
+   await refreshRealChat(false);
+  }catch(e){chatError=e.message||'Máy chủ không nhận được tin nhắn.';render();}
+  finally{chatSending=false;}
+ }
+ function chat(parent){
+  if(!tab)tab='world';
+  navigation(parent,[['world','Thế Giới'],['vietnamese','Tiếng Việt'],['english','Tiếng Anh'],['servers','Máy Chủ'],['recruit','Tuyển Thành Viên'],['private','Tin Riêng']]);
+  paragraph(parent,'Trò chuyện trực tuyến trên máy chủ '+(state?.server_id||'S1')+'. Chỉ hiển thị tin nhắn từ tài khoản người chơi thật.');
+  if(tab==='private'){
+   const search=card(parent,'Trò Chuyện Riêng');
+   const uid=el('input');uid.type='text';uid.maxLength=64;uid.autocomplete='off';
+   uid.placeholder='Nhập UID người nhận (cùng máy chủ)';
+   uid.setAttribute('aria-label','UID người nhận');
+   uid.value=chatRecipient;search.append(uid);
+   button(search,'Xem hội thoại',()=>{
+    const target=uid.value.trim();
+    if(target!==chatRecipient){chatRecipient=target;chatRows=[];chatLoadedKey='';}
+    chatError='';chatTyped='';
+    refreshRealChat();
+   });
+   paragraph(search,chatRecipient?'Đang xem cuộc trò chuyện với '+chatRecipient:'Chưa chọn người nhận: hiển thị lịch sử tin nhắn riêng của chính bạn.');
+  }
+  const key=chatKey(),messages=card(parent,'Tin Nhắn Thật · '+({world:'Thế Giới',vietnamese:'Tiếng Việt',english:'Tiếng Anh',servers:'Máy Chủ',recruit:'Tuyển Thành Viên',private:'Tin Riêng'}[tab]||tab));
+  const feed=el('div',undefined,'hm-chat-feed');
+  feed.setAttribute('aria-live','polite');
+  if(chatLoadedKey!==key){
+   paragraph(feed,chatBusy?'Đang tải tin nhắn…':'Đang kết nối máy chủ…');
+   if(!chatBusy)refreshRealChat();
+  }else if(!chatRows.length){
+   paragraph(feed,'Chưa có tin nhắn thật trong kênh này.');
+  }else for(const m of chatRows){
+   const row=el('article',undefined,'hm-chat-message');
+   if(m.uid===state?.uid)row.classList.add('is-mine');
+   const heading=el('div',undefined,'hm-chat-message-head');
+   heading.append(el('strong',m.character_name||m.uid));
+   if(m.channel==='private')heading.append(el('small',' · '+(m.uid===state?.uid?'Gửi tới '+m.recipient_uid:m.uid)));
+   if(m.created_at)heading.append(el('time',new Date(Number(m.created_at)*1000).toLocaleString('vi-VN')));
+   row.append(heading,el('p',m.message));feed.append(row);
+  }
+  messages.append(feed);
+  const tools=el('div',undefined,'hm-chat-tools');
+  button(tools,'Làm mới',()=>refreshRealChat(false),chatBusy);
+  messages.append(tools);
+  const composer=el('div',undefined,'hm-chat-composer');
+  const input=el('textarea');input.maxLength=280;input.rows=3;
+  input.placeholder='Nhập tin nhắn (tối đa 280 ký tự)…';
+  input.value=chatTyped;input.setAttribute('aria-label','Soạn tin nhắn');
+  input.addEventListener('input',()=>{chatTyped=input.value;});
+  input.addEventListener('keydown',e=>{
+   if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();chatTyped=input.value;submitRealChat();}
+  });
+  composer.append(input);
+  button(composer,chatSending?'Đang gửi…':'Gửi',()=>{chatTyped=input.value;submitRealChat();},chatSending||(tab==='private'&&!chatRecipient),'hm-chat-send');
+  messages.append(composer);
+  if(chatError)paragraph(parent,chatError,'hm-chat-error');
+ }
+
  async function claimServerMail(mailId){
   if(pending)return;
   pending=true;message='';
@@ -184,5 +262,9 @@ const HomeMenus=(()=>{
   paragraph(parent,'Giá, quà tặng và trạng thái đơn do máy chủ xác nhận. Thưởng chỉ được gửi qua Hòm Thư sau khi đơn đã duyệt.');
  }
  function openFriendsBoss(from){launch('friends',from);tab='coop';render();RemainingSystems.openFriendTab();}
+ // Poll only while the player actually has the online chat window open.
+ setInterval(()=>{
+  if(root==='chat'&&view==='home-systems'&&catalog&&!chatBusy)refreshRealChat(true);
+ },12000);
  return {openFriendsBoss,handles:key=>Object.hasOwn(titles,key),open:launch,render};
 })();
