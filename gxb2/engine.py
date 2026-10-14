@@ -346,7 +346,10 @@ class Engine:
                 profile = live_service.player(uid, server_id)
                 if profile and profile.get('status') == 'banned':
                     raise GameError('Tài khoản đang bị khóa')
-                attachments = live_service.claim_mail(str(mail_id), uid, server_id)
+                # Neon: claim + reward update are one transaction, so a failed
+                # player-save cannot leave a paid/GM mail marked claimed.
+                attachments = live_service.claim_mail(str(mail_id), uid, server_id,
+                    db=self.db if self.db.backend == 'postgres' else None)
                 for item_id, amount in attachments.items():
                     state['items'][str(item_id)] = int(state['items'].get(str(item_id), 0)) + int(amount)
                 self._save_profile(state)
