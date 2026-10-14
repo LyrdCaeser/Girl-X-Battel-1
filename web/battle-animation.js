@@ -3,6 +3,20 @@ const ChibiBattle=(()=>{
  let cataloguePromise;const dataCache=new Map();
  async function catalogue(){return cataloguePromise||(cataloguePromise=fetch('/assets/chibis/catalog.json').then(r=>{if(!r.ok)throw Error("Chibi catalog unavailable");return r.json();}));}
  async function load(name){if(dataCache.has(name))return dataCache.get(name);const promise=new Promise((resolve,reject)=>{const loader=new PIXI.Loader();loader.add(name,`/assets/chibis/${name}/model.json`,{metadata:{spineAtlasFile:`/assets/chibis/${name}/model.atlas`}});loader.onError.add(e=>reject(e));loader.load((_,resources)=>{const data=resources[name]?.spineData;if(data)resolve(data);else reject(Error("Could not read "+name));});});dataCache.set(name,promise);try{return await promise;}catch(e){dataCache.delete(name);throw e;}}
+ // The archived Spine models use different native bone/attachment dimensions.
+ // Fit BOTH axes into one 1080 x 1920 battle footprint, instead of sizing by
+ // height alone (which made wide/tall skins enormous on portrait phones).
+ function fitScaleForBounds(bounds,{boss=false,bossScene=false,bossScale=1}={}){
+  const width=Math.max(1,Number(bounds?.width)||1),height=Math.max(1,Number(bounds?.height)||1);
+  if(bossScene){
+   // Dedicated boss compositions intentionally use larger art; still bound it
+   // to the visible arena to avoid covering the entire phone.
+   const requested=Number(bossScale);
+   return Math.min(Number.isFinite(requested)&&requested>0?requested*1.5:1.5,760/width,850/height);
+  }
+  const maxWidth=boss?310:250,maxHeight=boss?365:285;
+  return Math.min(boss?2.25:2.6,maxWidth/width,maxHeight/height);
+ }
  let fxTable=null;const fxCache=new Map();
  function fxSkills(){return fxTable||(fxTable=fetch('/assets/battle-fx/skills.json').then(r=>r.ok?r.json():{}).catch(()=>({})));}
  function fxLoad(res){if(fxCache.has(res))return fxCache.get(res);const p=new Promise((resolve,reject)=>{const loader=new PIXI.Loader();loader.add('fx_'+res,`/assets/battle-fx/${res}/model.json`,{metadata:{spineAtlasFile:`/assets/battle-fx/${res}/model.atlas`}});loader.onError.add(e=>reject(e));loader.load((_,r)=>{const d=r['fx_'+res]?.spineData;if(d)resolve(d);else reject(Error('fx '+res));});});fxCache.set(res,p);p.catch(()=>fxCache.delete(res));return p;}
@@ -11,7 +25,7 @@ const ChibiBattle=(()=>{
   const app=new PIXI.Application({width:1080,height:1920,transparent:true,antialias:true,resolution:1,autoDensity:false});
   app.view.className='chibi-canvas';app.view.dataset.models='0';app.view.setAttribute('aria-label',"Girls animated with the original skeletons");field.prepend(app.view);
   const figures=new Map(),missing=[],anchors=new Map(),headAnchors=new Map();
-  await Promise.all(units.map(async u=>{const meta=(u.skin_id&&catalogueData[u.skin_id])||catalogueData[u.table_id];if(!meta){missing.push(u.table_id);return;}try{const data=await load(meta.model);if(cancelled)return;const figure=new PIXI.spine.Spine(data);const idle=data.animations.some(a=>a.name==='idle')?'idle':data.animations[0]?.name;if(idle)figure.state.setAnimation(0,idle,true);figure.stateData.defaultMix=.08;figure.update(0);const bounds=figure.getLocalBounds();let scale=Math.min(1.15,390/Math.max(1,bounds.height));let xy=positions[u.pos];let dx=0,dy=0;if(u.boss){/* BaseFighter:getScale (model scale + monster scale) on the 1080-wide canvas = client UI ×1.5; is_boss stands between pos and pos+1 */scale=bossScene?u.boss.scale*1.5:Math.min(330/Math.max(1,bounds.height),scale*1.2);if(u.boss.center){const o=positions[u.pos%6===0?u.pos-1:u.pos+1];if(o)xy=[(xy[0]+o[0])/2,(xy[1]+o[1])/2];}dx=(u.boss.offset?.[0]||0)*1.5*(u.pos>6?1:-1)*.35;dy=-(u.boss.offset?.[1]||0)*1.5;}figure.scale.set(u.pos>6?-scale:scale,scale);figure.x=xy[0]+dx;figure.y=1920-xy[1]+110+dy;anchors.set(u.pos,xy);if(u.boss&&bossScene){/* Layout of the reference capture (Sanctuary boss): feet near 80 % of the height, centred in its half. */const sx=u.pos>6?-scale:scale;figure.y=1920*.8-(bounds.y+bounds.height)*scale;figure.x=(u.pos>6?1080*.72:1080*.28)-(bounds.x+bounds.width/2)*sx;}figure.zIndex=figure.y;app.stage.addChild(figure);
+  await Promise.all(units.map(async u=>{const meta=(u.skin_id&&catalogueData[u.skin_id])||catalogueData[u.table_id];if(!meta){missing.push(u.table_id);return;}try{const data=await load(meta.model);if(cancelled)return;const figure=new PIXI.spine.Spine(data);const idle=data.animations.some(a=>a.name==='idle')?'idle':data.animations[0]?.name;if(idle)figure.state.setAnimation(0,idle,true);figure.stateData.defaultMix=.08;figure.update(0);const bounds=figure.getLocalBounds();let scale=fitScaleForBounds(bounds,{boss:!!u.boss,bossScene:!!u.boss&&bossScene,bossScale:u.boss?.scale});let xy=positions[u.pos];let dx=0,dy=0;if(u.boss){/* Boss footprint is bounded separately; is_boss stands between pos and pos+1. */if(u.boss.center){const o=positions[u.pos%6===0?u.pos-1:u.pos+1];if(o)xy=[(xy[0]+o[0])/2,(xy[1]+o[1])/2];}dx=(u.boss.offset?.[0]||0)*1.5*(u.pos>6?1:-1)*.35;dy=-(u.boss.offset?.[1]||0)*1.5;}figure.scale.set(u.pos>6?-scale:scale,scale);figure.x=xy[0]+dx;figure.y=1920-xy[1]+110+dy;anchors.set(u.pos,xy);if(u.boss&&bossScene){/* Layout of the reference capture (Sanctuary boss): feet near 80 % of the height, centred in its half. */const sx=u.pos>6?-scale:scale;figure.y=1920*.8-(bounds.y+bounds.height)*scale;figure.x=(u.pos>6?1080*.72:1080*.28)-(bounds.x+bounds.width/2)*sx;}figure.zIndex=figure.y;app.stage.addChild(figure);
   // Derive UI health position from the actual rendered skeleton bounds,
   // not an empty formation slot or its foot coordinate.
   const worldBounds=figure.getBounds();
@@ -33,7 +47,7 @@ const ChibiBattle=(()=>{
   function destroy(){cancelled=true;app.destroy(true,{children:true,texture:false,baseTexture:false});}
   return {play,speed,destroy,fx,anchors,headAnchors,has:pos=>figures.has(pos),missing};
  }
- return {create,catalogue};
+ return {create,catalogue,fitScaleForBounds};
 })();
 
 // BattleWindow + BaseFighter: 0/1 add, 2 work, 3/4 remove one matching name/sign.
