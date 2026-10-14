@@ -394,3 +394,19 @@ body:has(#girls-view:not([hidden])){background:#d4dfeb}#girls-return{margin-righ
 #home-view .home-currency{z-index:6}
 #girl-detail-view #detail-grade-up{margin-left:6px;background:linear-gradient(#ffdf8b,#dc8e30);color:#58310b;border:1px solid #f1c86c}
 #girl-detail-view #detail-grade-up[hidden]{display:none!important}
+
+/* RC7: health stays above the actual displayed Spine bounds, not behind a sprite. */
+.battlefield .unit.hp-head-anchor{
+  height:0!important;transform:translate(-50%,0)!important;
+  pointer-events:none;z-index:4!important;overflow:visible!important
+}
+.battlefield .unit.hp-head-anchor .hp{
+  left:0!important;top:0!important;width:100%!important;
+  margin:0!important;z-index:6!important
+}
+.battlefield .unit.hp-head-anchor .unit-status{
+  top:-22px!important;left:0!important;z-index:6!important
+}
+.battlefield .unit.hp-head-anchor .unit-buffs{
+  position:absolute;top:-40px;left:0;z-index:6
+}
