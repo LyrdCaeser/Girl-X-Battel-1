@@ -237,12 +237,16 @@ window.AdminPanel=(()=>{
       document.getElementById('gm-topup-price').value=p.price_label||'';
       document.getElementById('gm-topup-manual').checked=!!p.manual_reward;
       packageEditId=p.id;packageRewards={...(p.reward||{})};
+      document.getElementById('gm-topup-vip-exp').value=Number(packageRewards['999999991']||0);
       status('Đã chọn gói '+p.name);
     }));
     catalog.append(form);
     field(catalog,'Mã gói','gm-topup-id').placeholder='PACKAGE_ID';
     field(catalog,'Tên gói','gm-topup-name').placeholder='Gói VIP';
     field(catalog,'Giá hiển thị','gm-topup-price').placeholder='Liên hệ Zalo';
+    const vipField=field(catalog,'VIP EXP theo gói (chỉ gửi thư sau khi QTV duyệt)','gm-topup-vip-exp','number');
+    vipField.min='0';vipField.max='2000000';vipField.step='1';vipField.value='0';
+    catalog.append(el('p','admin-note','Đặt đúng số VIP EXP của gói. Chọn “Thưởng do QTV duyệt thủ công” nếu chưa cấu hình phần thưởng tự động.'));
     const label=el('label','admin-check');const checkbox=document.createElement('input');
     checkbox.type='checkbox';checkbox.id='gm-topup-manual';
     label.append(checkbox,document.createTextNode('Thưởng do QTV duyệt thủ công'));catalog.append(label);
@@ -274,10 +278,15 @@ window.AdminPanel=(()=>{
   let packageEditId='',packageRewards={};
   async function saveSelectedPackage(){
     try{
+      const vipExp=Number(val('gm-topup-vip-exp')||0);
+      if(!Number.isSafeInteger(vipExp)||vipExp<0||vipExp>2000000)
+        throw Error('VIP EXP phải nằm trong khoảng 0 đến 2.000.000');
+      const rewards={...packageRewards};
+      if(vipExp)rewards['999999991']=vipExp;else delete rewards['999999991'];
       const pack={id:val('gm-topup-id'),name:val('gm-topup-name'),
         price_label:val('gm-topup-price'),
         manual_reward:!!document.getElementById('gm-topup-manual')?.checked,
-        reward:packageRewards};
+        reward:rewards};
       if(!pack.id||!pack.name)throw Error('Cần mã gói và tên gói');
       const packages=[...(topupCfg?.packages||[])];
       const pos=packages.findIndex(x=>x.id===packageEditId);
