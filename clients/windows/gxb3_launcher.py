@@ -18,7 +18,7 @@ html,body{margin:0;width:100%;height:100%;background:#090b12;color:#fff;font-fam
 .spinner{width:44px;height:44px;border:4px solid #252b3d;border-top-color:#8f5cff;border-radius:50%;animation:s 1s linear infinite}
 @keyframes s{to{transform:rotate(360deg)}}
 </style></head><body><div class="wrap">
-<div class="logo">GXB 3</div><div class="spinner"></div>
+<div class="logo">Nữ Thần Chiến Đấu - GXB 3</div><div class="spinner"></div>
 <div class="sub">Đang khởi động máy chủ và chuẩn bị trò chơi...</div>
 </div></body></html>"""
 
@@ -27,7 +27,7 @@ ERROR_HTML = """<!doctype html>
 html,body{margin:0;width:100%;height:100%;background:#090b12;color:#fff;font-family:Segoe UI,Arial,sans-serif}
 .wrap{height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;text-align:center}
 h1{margin:0}.sub{color:#b9c1d9;max-width:520px;line-height:1.6}
-</style></head><body><div class="wrap"><h1>GXB 3</h1>
+</style></head><body><div class="wrap"><h1>Nữ Thần Chiến Đấu - GXB 3</h1>
 <div class="sub">Không thể kết nối máy chủ. Kiểm tra mạng rồi mở lại trò chơi.</div>
 </div></body></html>"""
 
@@ -72,7 +72,7 @@ def main() -> int:
 
     try:
         window = webview.create_window(
-            "GXB 3 · ALPHA RC6",
+            "Nữ Thần Chiến Đấu - GXB 3 · ALPHA RC7",
             html=LOADING_HTML,
             width=1280,
             height=800,
