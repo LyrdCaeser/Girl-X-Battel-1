@@ -1,15 +1,16 @@
 'use strict';
 (()=>{
 const $=id=>document.getElementById(id);
-const state={me:null,admin:false,catalog:[],basket:{},worlds:[],codes:[],page:0,view:'redeem'};
+const state={me:null,admin:false,panelUnlocked:false,panelAccess:'',catalog:[],basket:{},worlds:[],codes:[],page:0,view:'redeem'};
 const limit=16;
 const txt=(tag,text,cls)=>{const x=document.createElement(tag);if(cls)x.className=cls;x.textContent=String(text??'');return x;};
-const api=async(path,body,gm=false)=>{
+const api=async(path,body,gm=false,unlock=false)=>{
  const options={credentials:'same-origin',headers:{'Accept':'application/json'}};
  if(body!==undefined){options.method='POST';options.headers['Content-Type']='application/json';options.body=JSON.stringify(body);}
  if(gm)options.headers['X-GXB3-GM-Key']=$('gm-key').value;
+ if(unlock)options.headers['X-GXB3-Giftcode-Access']=state.panelAccess;
  const r=await fetch(path,options),data=await r.json().catch(()=>({}));
- if(!r.ok)throw Error(data.error||'Máy chủ gặp lỗi, vui lòng thử lại');
+ if(!r.ok){const err=data?.error;const detail=typeof err==='string'?err:(typeof err?.message==='string'?err.message:'Kết nối API thất bại (HTTP '+r.status+')');throw Error(detail);}
  return data;
 };
 function notice(msg,ok=true){const el=$('global-status');el.textContent=msg;el.dataset.ok=ok?'1':'0';}
@@ -19,7 +20,8 @@ function switchView(view){
  const titles={create:'Tạo Giftcode',history:'Giftcode đã phát hành',redeem:'Đổi Giftcode'};
  $('page-title').textContent=titles[view];
  for(const el of document.querySelectorAll('.nav-btn')){el.classList.toggle('active',el.dataset.view===view);el.hidden=!state.admin&&el.dataset.view!=='redeem';}
- for(const name of ['create','history','redeem'])$(name+'-view').hidden=view!==name||!state.me;
+ for(const name of ['create','history','redeem'])$(name+'-view').hidden=view!==name||!state.me||(name==='create'&&!state.panelUnlocked);
+ $('create-lock').hidden=!state.me||!state.admin||view!=='create'||state.panelUnlocked;
  if(view==='history'&&state.admin)refreshCodes().catch(e=>notice(e.message,false));
 }
 function updateStats(){
@@ -29,6 +31,7 @@ function updateStats(){
 }
 async function bootstrap(){
  const m=await api('/api/auth/me');state.me=m.authenticated?m.session:null;state.admin=Boolean(m.is_super_gm);
+ if(!state.admin){state.panelUnlocked=false;state.panelAccess='';}
  $('login-panel').hidden=Boolean(state.me);
  $('restricted').hidden=!state.me||state.admin;
  $('account-label').textContent=state.me?(state.me.account?.username||state.me.account?.uid||'Đã đăng nhập'):'Chưa đăng nhập';
@@ -101,7 +104,7 @@ function renderCodes(){
   };actions.append(see);
   if(data.active){const revoke=txt('button','Khóa mã','danger');revoke.onclick=async()=>{
    if(!confirm('Vô hiệu hóa '+data.code+'? Người chơi sẽ không đổi mã này được nữa.'))return;
-   try{await api('/api/giftcode/admin/revoke',{code:data.code},true);notice('Đã khóa '+data.code);await refreshCodes();}catch(e){notice(e.message,false);}
+   try{await api('/api/giftcode/admin/revoke',{code:data.code},true,true);notice('Đã khóa '+data.code);await refreshCodes();}catch(e){notice(e.message,false);}
   };actions.append(revoke);}
   row.append(detail,actions);box.append(row);
  }
@@ -113,13 +116,21 @@ $('item-search').oninput=()=>{state.page=0;renderCatalog();};$('item-kind').onch
 $('prev-page').onclick=()=>{state.page--;renderCatalog();};$('next-page').onclick=()=>{state.page++;renderCatalog();};
 $('clear-basket').onclick=()=>{state.basket={};renderBasket();};
 $('refresh-history').onclick=()=>refreshCodes().catch(e=>notice(e.message,false));
+$('unlock-form').onsubmit=async event=>{
+ event.preventDefault();
+ const button=event.currentTarget.querySelector('button');button.disabled=true;
+ try{const result=await api('/api/giftcode/admin/unlock',{password:$('unlock-password').value});
+   state.panelAccess=result.access;state.panelUnlocked=true;
+   $('unlock-password').value='';switchView('create');notice('Đã mở khóa mục Tạo Giftcode.');
+ }catch(e){notice(e.message,false);}finally{button.disabled=false;}
+};
 $('verify-key').onclick=async()=>{try{await api('/api/admin/gm/verify-key',{},true);notice('Khóa QTV hợp lệ.');}catch(e){notice(e.message,false);}};
 $('create-code').onclick=async()=>{
  const b=$('create-code');if(!Object.keys(state.basket).length){notice('Hãy chọn ít nhất một vật phẩm.',false);return;}
  const expiry=$('expiry').value;
  const payload={code:$('code').value,title:$('title').value,message:$('message').value,server_id:$('world').value,max_uses:Number($('max-uses').value),expires_at:expiry?Math.floor(new Date(expiry).getTime()/1000):0,rewards:state.basket};
  b.disabled=true;
- try{const res=await api('/api/giftcode/admin/create',payload,true);$('new-code').hidden=false;$('created-code').textContent=res.code;notice('Đã tạo giftcode thật trên máy chủ!');$('code').value='';await refreshCodes();}catch(e){notice(e.message,false);}finally{b.disabled=false;}
+ try{const res=await api('/api/giftcode/admin/create',payload,true,true);$('new-code').hidden=false;$('created-code').textContent=res.code;notice('Đã tạo giftcode thật trên máy chủ!');$('code').value='';await refreshCodes();}catch(e){notice(e.message,false);}finally{b.disabled=false;}
 };
 $('copy-code').onclick=()=>copyText($('created-code').textContent);
 $('redeem-form').onsubmit=async e=>{
@@ -127,5 +138,25 @@ $('redeem-form').onsubmit=async e=>{
  try{const r=await api('/api/giftcode/redeem',{code:$('redeem-code').value});notice(r.message);$('redeem-code').value='';}
  catch(err){notice(err.message,false);}finally{btn.disabled=false;}
 };
-bootstrap().catch(err=>{notice(err.message,false);$('server-status').textContent='Không kết nối được';});
+
+async function start(){
+ // Hide all privileged navigation until the server confirms SUPER GM ownership.
+ for(const el of document.querySelectorAll('.nav-btn'))el.hidden=true;
+ for(const name of ['create','history','redeem'])$(name+'-view').hidden=true;
+ const ticket=new URLSearchParams(location.search).get('ticket');
+ if(ticket){
+   // Drop bearer ticket from address bar before making any other request.
+   history.replaceState(null,'',location.pathname);
+   try{await api('/api/giftcode/sso/exchange',{ticket});notice('Đã liên kết đăng nhập từ GXB 3.');}
+   catch(e){notice('Liên kết đăng nhập: '+e.message,false);}
+ }
+ try{await bootstrap();}
+ catch(err){
+   $('server-status').textContent='Chưa kết nối máy chủ';
+   $('login-panel').hidden=false;
+   $('page-title').textContent='Liên kết tài khoản GXB 3';
+   notice(err.message||'Lỗi kết nối máy chủ',false);
+ }
+}
+start();
 })();

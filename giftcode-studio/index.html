@@ -4,13 +4,13 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0b1023">
 <title>Giftcode Studio — Nữ Thần Chiến Đấu GXB 3</title>
-<link rel="stylesheet" href="./style.css?v=2">
-<script defer src="./app.js?v=2"></script>
+<link rel="stylesheet" href="./style.css?v=3">
+<script defer src="./app.js?v=3"></script>
 </head>
 <body>
 <div class="shell">
 <aside class="sidebar">
-  <a class="brand" href="/giftcode-studio/"><span class="logo">✦</span><span><b>Giftcode Studio</b><small>NỮ THẦN CHIẾN ĐẤU · GXB 3</small></span></a>
+  <a class="brand" href="/"><span class="logo">✦</span><span><b>Giftcode Studio</b><small>NỮ THẦN CHIẾN ĐẤU · GXB 3</small></span></a>
   <div class="side-section">QUẢN LÝ PHÁT HÀNH</div>
   <nav class="nav" aria-label="Danh mục">
     <button class="nav-btn active" data-view="create">✦ <span>Tạo giftcode</span></button>
@@ -20,13 +20,15 @@
   <div class="side-bottom">
     <span class="server-dot"></span> Kết nối máy chủ GXB 3
     <small>Dữ liệu lưu trên server, không lưu tại trình duyệt.</small>
-    <a href="https://180-93-111-99.sslip.io/" class="game-link">↗ Quay lại trò chơi</a>
+    
   </div>
 </aside>
 <main class="main">
   <header class="topbar"><div><span class="eyebrow">GXB 3 / HỆ THỐNG QUÀ TẶNG</span><h1 id="page-title">Tạo Giftcode</h1></div><div class="account"><span id="server-status">Đang kết nối...</span><span id="account-label">Chưa đăng nhập</span></div></header>
   <section id="login-panel" class="panel login-card" hidden>
     <h2>Đăng nhập tài khoản GXB 3</h2><p class="muted">Đăng nhập game để sử dụng Giftcode Studio. Chỉ tài khoản SUPER GM có thể tạo và khóa mã.</p>
+    <a id="game-sso" class="game-sso" href="https://180-93-111-99.sslip.io/api/giftcode/sso/start">↗ Liên kết đăng nhập trực tiếp từ game GXB 3</a>
+    <p class="muted mini">Đã đăng nhập game? Bấm liên kết trên để chuyển tài khoản an toàn. Hoặc đăng nhập thủ công bên dưới.</p>
     <form id="login-form" class="form-row">
       <label>Tên đăng nhập<input name="username" autocomplete="username" required></label>
       <label>Mật khẩu<input name="password" type="password" autocomplete="current-password" required></label>
@@ -35,6 +37,15 @@
     </form><p id="login-status" role="status"></p>
   </section>
   <div id="restricted" class="panel" hidden><h2>Quản trị viên mới được truy cập</h2><p class="muted">Tài khoản đang đăng nhập không có quyền SUPER GM. Bạn vẫn có thể đổi giftcode tại mục “Đổi giftcode”.</p></div>
+  <section id="create-lock" class="view panel login-card" hidden>
+    <span class="eyebrow">KHU VỰC BẢO VỆ</span><h2>Khóa mục Tạo Giftcode</h2>
+    <p class="muted">Chỉ SUPER GM được mở mục tạo mã. Hãy nhập khóa quản trị Giftcode Studio đã cấu hình trên VPS.</p>
+    <form id="unlock-form" class="form-row">
+      <label>Khóa Tạo Giftcode <input id="unlock-password" type="password" autocomplete="off" required></label>
+      <button class="primary" type="submit">Mở khóa mục tạo mã</button>
+    </form>
+    <p class="muted mini">Khóa mở giao diện không thay thế khóa hành động QTV bảo vệ cấp vật phẩm.</p>
+  </section>
   <section id="create-view" class="view" hidden>
     <div class="stats">
       <div class="stat"><span>Mã đã tạo</span><b id="stat-total">—</b></div>
@@ -79,7 +90,7 @@
     <p class="muted">Mã được kiểm tra trên server, quà sẽ được gửi vào Hòm Thư Máy Chủ của tài khoản đang đăng nhập.</p>
     <form id="redeem-form" class="redeem-form"><input id="redeem-code" maxlength="40" required placeholder="Nhập mã giftcode" autocomplete="off"><button class="primary" type="submit">Đổi mã</button></form>
     <p class="muted">Mỗi tài khoản chỉ đổi một mã một lần. Không cần nhập UID hay mật khẩu QTV.</p>
-    <a href="https://180-93-111-99.sslip.io/" class="game-link">↗ Vào game mở Hòm Thư</a>
+    <p class="muted mini">Quà sẽ xuất hiện trong Hòm Thư Máy Chủ ở game GXB 3.</p>
   </section>
   <p id="global-status" role="status" aria-live="polite"></p>
 </main>
