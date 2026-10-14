@@ -370,6 +370,18 @@ class HTTPHandler(BaseHTTPRequestHandler):
             server_id = (query.get('server_id') or [ctx['account']['server_id']])[0]
             limit = int((query.get('limit') or ['100'])[0])
             return self.send(200, {'server_id': server_id, 'ranking': live_service.leaderboard(server_id, limit)})
+        if path == '/api/chat/messages':
+            ctx = self.auth_context()
+            account = ctx['account']
+            query = parse_qs(parsed.query)
+            channel = (query.get('channel') or ['world'])[0]
+            target = (query.get('recipient_uid') or [''])[0]
+            return self.send(200, {
+                'server_id': account['server_id'],
+                'channel': channel,
+                'messages': live_service.chat_messages(
+                    account['uid'], account['server_id'], channel, target)
+            })
         if path == '/api/world-guild':
             ctx = self.auth_context(); account = ctx['account']
             guild = live_service.guild_for_player(account['uid'], account['server_id'])
@@ -714,6 +726,7 @@ class HTTPHandler(BaseHTTPRequestHandler):
             if path in ('/api/pvp/match/battle','/api/guild-war/battle') and not self.rate_limit('battle'): return
             if path.startswith('/api/admin/') and not self.rate_limit('admin'): return
             if path == '/api/world-guild/manage' and str(data.get('action') or '') == 'chat' and not self.rate_limit('guild_chat'): return
+            if path == '/api/chat/send' and not self.rate_limit('world_chat'): return
             if path in ('/api/auth/register','/api/auth/login'):
                 if path.endswith('/register'):
                     result = auth.register(data.get('username'), data.get('password'), data.get('character_name'),
@@ -761,6 +774,14 @@ class HTTPHandler(BaseHTTPRequestHandler):
                 return self.send(200, {'session': updated})
             if not self.require_auth():
                 return
+            if path == '/api/chat/send':
+                ctx = self.auth_context()
+                account = ctx['account']
+                return self.send(200, {
+                    'message': live_service.send_chat_message(
+                        account['uid'], account['server_id'],
+                        data.get('channel'), data.get('message'), data.get('recipient_uid', ''))
+                })
             if path == '/api/admin/check':
                 if not self.admin_authorized():
                     return self.send(403, {'error': 'QTV_KEY_INVALID'})
