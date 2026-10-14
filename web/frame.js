@@ -4,11 +4,12 @@
 (()=>{
  const ua=navigator.userAgent||'';
  const forceMobile=/GXB3-Android|Android|iPhone|iPod/i.test(ua);
+ const forceDesktop=!forceMobile&&new URLSearchParams(location.search).get('client')==='windows';
  const coarse=matchMedia('(pointer:coarse)').matches;
  const narrow=matchMedia('(max-width:900px)').matches;
 
  function mode(){
-   return forceMobile || narrow || (coarse && matchMedia('(max-width:900px)').matches) ? 'mobile' : 'desktop';
+   return forceMobile ? 'mobile' : (forceDesktop ? 'desktop' : (narrow || (coarse && matchMedia('(max-width:900px)').matches) ? 'mobile' : 'desktop'));
  }
 
  function fit(){

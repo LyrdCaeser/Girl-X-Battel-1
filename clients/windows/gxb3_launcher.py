@@ -52,7 +52,7 @@ def wake_and_open(window) -> None:
     deadline = time.monotonic() + 150
     while time.monotonic() < deadline:
         if server_ready():
-            window.load_url(GAME_URL)
+            window.load_url(GAME_URL + '/?client=windows')
             return
         time.sleep(3)
     window.load_html(ERROR_HTML)
@@ -67,16 +67,18 @@ def main() -> int:
             if server_ready():
                 break
             time.sleep(3)
-        webbrowser.open(GAME_URL)
+        webbrowser.open(GAME_URL + '/?client=windows')
         return 0
 
     try:
+        # Fullscreen native landscape PC window (Alt+F4 to exit).
         window = webview.create_window(
-            "Nữ Thần Chiến Đấu - GXB 3 · ALPHA RC7",
+            "Nữ Thần Chiến Đấu - GXB 3 · ALPHA RC7 · PC",
             html=LOADING_HTML,
-            width=1280,
-            height=800,
-            min_size=(960, 600),
+            width=1600,
+            height=900,
+            min_size=(1024, 640),
+            fullscreen=True,
             resizable=True,
             text_select=False,
             confirm_close=True,
@@ -88,7 +90,7 @@ def main() -> int:
         webview.start(on_started, gui="edgechromium", private_mode=False)
         return 0
     except Exception:
-        webbrowser.open(GAME_URL)
+        webbrowser.open(GAME_URL + '/?client=windows')
         return 0
 
 
