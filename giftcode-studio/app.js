@@ -9,7 +9,17 @@ const api=async(path,body,gm=false,unlock=false)=>{
  if(body!==undefined){options.method='POST';options.headers['Content-Type']='application/json';options.body=JSON.stringify(body);}
  if(gm)options.headers['X-GXB3-GM-Key']=$('gm-key').value;
  if(unlock)options.headers['X-GXB3-Giftcode-Access']=state.panelAccess;
- const r=await fetch(path,options),data=await r.json().catch(()=>({}));
+ // The Vercel deployment uses one static /api/bridge function. Avoid
+ // framework-dependent catch-all routing (which returned [object Object]).
+ let requestPath=path;
+ if(location.origin!=='https://180-93-111-99.sslip.io'){
+   const target=new URL(path,location.origin);
+   const bridgeUrl=new URL('/api/bridge',location.origin);
+   bridgeUrl.searchParams.set('route',target.pathname.replace(/^\\/api\\//,''));
+   for(const [k,v] of target.searchParams)bridgeUrl.searchParams.append(k,v);
+   requestPath=bridgeUrl.pathname+bridgeUrl.search;
+ }
+ const r=await fetch(requestPath,options),data=await r.json().catch(()=>({}));
  if(!r.ok){const err=data?.error;const detail=typeof err==='string'?err:(typeof err?.message==='string'?err.message:'Kết nối API thất bại (HTTP '+r.status+')');throw Error(detail);}
  return data;
 };

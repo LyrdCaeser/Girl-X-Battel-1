@@ -39,6 +39,7 @@ jobs:
           node --check web/i18n-vi.js
           node --check web/lobby-dialogue.js
           node --check giftcode-studio/app.js
+          node --check giftcode-studio/api/bridge.js
           node --check web/admin.js
           node --check web/online-hub.js
           node --check web/guild.js
