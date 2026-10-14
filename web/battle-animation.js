@@ -1,7 +1,7 @@
 /* Archived Spine 3.6 skeletons decoded without changing their animations. */
 const ChibiBattle=(()=>{
  let cataloguePromise;const dataCache=new Map();
- async function catalogue(){return cataloguePromise||(cataloguePromise=fetch('/assets/chibis/catalog.json?v=20261014-nephilim1').then(r=>{if(!r.ok)throw Error("Chibi catalog unavailable");return r.json();}));}
+ async function catalogue(){return cataloguePromise||(cataloguePromise=fetch('/assets/chibis/catalog.json?v=20261014-nephilim2').then(r=>{if(!r.ok)throw Error("Chibi catalog unavailable");return r.json();}));}
  async function load(name){if(dataCache.has(name))return dataCache.get(name);const promise=new Promise((resolve,reject)=>{const loader=new PIXI.Loader();loader.add(name,`/assets/chibis/${name}/model.json`,{metadata:{spineAtlasFile:`/assets/chibis/${name}/model.atlas`}});loader.onError.add(e=>reject(e));loader.load((_,resources)=>{const data=resources[name]?.spineData;if(data)resolve(data);else reject(Error("Could not read "+name));});});dataCache.set(name,promise);try{return await promise;}catch(e){dataCache.delete(name);throw e;}}
  // The archived Spine models use different native bone/attachment dimensions.
  // Fit BOTH axes into one 1080 x 1920 battle footprint, instead of sizing by
