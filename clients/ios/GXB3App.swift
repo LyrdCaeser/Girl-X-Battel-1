@@ -1,7 +1,7 @@
 import UIKit
 import WebKit
 
-// GXB 3 ALPHA RC6 — iOS WKWebView shell for the authenticated production VPS.
+// GXB 3 ALPHA RC7 — iOS WKWebView shell for the authenticated production VPS.
 // No cached or fabricated gameplay; the authoritative game remains on server.
 @main
 final class GXB3Application: UIResponder, UIApplicationDelegate {

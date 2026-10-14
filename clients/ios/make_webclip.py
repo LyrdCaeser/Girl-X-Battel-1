@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""iOS ALPHA RC6 Web Clip profile. No Apple signing needed for this Web Clip.
+"""iOS ALPHA RC7 Web Clip profile. No Apple signing needed for this Web Clip.
 
 This is a mobile Safari home-screen web application, not an installable IPA.
 On iPhone download profile in Safari; open Settings -> Profile Downloaded ->
@@ -10,7 +10,7 @@ import uuid
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[2]
-TARGET=ROOT / "GXB3-iOS-ALPHA-RC6.mobileconfig"
+TARGET=ROOT / "NuThanChienDau-GXB3-iOS-ALPHA-RC7.mobileconfig"
 URL="https://180-93-111-99.sslip.io/"
 uuid1=str(uuid.uuid4()).upper()
 uuid2=str(uuid.uuid4()).upper()
@@ -19,7 +19,7 @@ profile={
   "PayloadContent":[{
     "FullScreen":True,
     "IsRemovable":True,
-    "Label":"GXB 3 ALPHA RC6",
+    "Label":"GXB 3 ALPHA RC7",
     "PayloadDescription":"Mo GXB 3 tren may chu VPS",
     "PayloadDisplayName":"GXB 3",
     "PayloadIdentifier":"com.gxb3.alpha.webclip",
@@ -29,8 +29,8 @@ profile={
     "PayloadVersion":1,
     "URL":URL,
   }],
-  "PayloadDescription":"GXB 3 ALPHA RC6: bieu tuong trang chu iOS",
-  "PayloadDisplayName":"GXB 3 ALPHA RC6",
+  "PayloadDescription":"GXB 3 ALPHA RC7: bieu tuong trang chu iOS",
+  "PayloadDisplayName":"GXB 3 ALPHA RC7",
   "PayloadIdentifier":"com.gxb3.alpha.webclip.profile",
   "PayloadOrganization":"GXB 3 ALPHA",
   "PayloadRemovalDisallowed":False,
