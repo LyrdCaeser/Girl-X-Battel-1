@@ -24,6 +24,7 @@ jobs:
         run: python -m compileall -q gxb2 server.py tools
       - name: Check browser JavaScript syntax
         run: |
+          node --check web/battle-animation.js
           node --check web/app.js
           node --check web/story.js
           node --check web/home-menus.js
