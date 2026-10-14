@@ -118,7 +118,36 @@ async function testPvpResult() {
   console.log('PASS | PvP: server result renders without undefined timer');
 }
 
+function testBattleScale() {
+  const ctx = vm.createContext({});
+  vm.runInContext(fs.readFileSync(path.join(ROOT, 'web/battle-animation.js'), 'utf8'), ctx);
+  const fit = vm.runInContext('ChibiBattle.fitScaleForBounds', ctx);
+  for (const box of [
+    {width: 720, height: 320}, // wide character skin
+    {width: 280, height: 950}, // tall skin
+    {width: 110, height: 125}, // native small-scale chibi
+    {width: 350, height: 470},
+  ]) {
+    const scale = fit(box);
+    assert.ok(scale > 0 && Number.isFinite(scale), 'all Spine skin sizes need a finite scale');
+    assert.ok(box.width * scale <= 250.001, 'regular fighter cannot overflow formation width');
+    assert.ok(box.height * scale <= 285.001, 'regular fighter cannot overflow formation height');
+  }
+  assert.ok(fit({width: 110, height: 125}) > 1.15,
+    'small native models are sized consistently rather than stuck at the old 1.15 scale cap');
+  const boss = {width: 600, height: 1100};
+  const sBoss = fit(boss, {boss:true, bossScene:true, bossScale:2});
+  assert.ok(boss.width * sBoss <= 760.001 && boss.height * sBoss <= 850.001,
+    'boss keeps its special layout but cannot cover the portrait arena');
+  const css = fs.readFileSync(path.join(ROOT, 'web/mobile-layout.css'), 'utf8');
+  assert.match(css, /#arena:not\(\[hidden\]\) \.battlefield/);
+  assert.match(css, /#event-arena \.battlefield/);
+  assert.match(css, /aspect-ratio:9\/16!important/);
+  console.log('PASS | battle: portrait viewport and Spine fighter footprints are bounded');
+}
+
 (async () => {
+  testBattleScale();
   testLobby();
   await testPvpResult();
 })().catch(err => {console.error(err);process.exitCode = 1;});
