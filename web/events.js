@@ -159,7 +159,7 @@ const EventsHub=(()=>{
     contact.append(el('span','', 'Thanh toán: Zalo 0856848557'));
     const z=el('button','ev-native-pay','Liên hệ Zalo / Đặt gói');z.type='button';
     z.onclick=()=>window.GxbPayment?.open(packages[a.id]||'CUSTOM',
-      vi(a.title.replace(/\\n/g,' '))+' · Sự Kiện #'+a.id);
+      vi(a.title.replace(/\n/g,' '))+' · Sự Kiện #'+a.id);
     contact.append(z);c.append(contact);
   }else c.append(el('p','ev-note',"Sự kiện hiện chưa mở đầy đủ trên máy chủ."));
   parent.append(c);
