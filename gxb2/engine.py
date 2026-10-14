@@ -378,7 +378,10 @@ class Engine:
             self.db.execute('BEGIN IMMEDIATE')
             try:
                 state = self._load()
-                rewards = bag_use.open_in_state(state, item_id, count, reward_id)
+                try:
+                    rewards = bag_use.open_in_state(state, item_id, count, reward_id)
+                except ValueError as exc:
+                    raise GameError(str(exc)) from exc
                 self._save_profile(state)
                 self.db.commit()
             except Exception:
