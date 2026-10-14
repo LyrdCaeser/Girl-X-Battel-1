@@ -169,6 +169,17 @@ window.AdminPanel=(()=>{
       giftKey=key;status('Đã xác thực khóa QTV.');render();
     }catch(e){giftKey='';status(e.message,false);}
   }
+  // GM actions that move paid rewards or change a published package require the
+  // same volatile second factor as sending player mail (never localStorage).
+  async function gmAction(path,data){
+    if(!giftKey)throw Error('Chưa xác thực khóa QTV. Vào tab Gửi thư để xác thực trước khi duyệt đơn hoặc sửa gói nạp.');
+    const response=await fetch(path,{method:'POST',credentials:'same-origin',
+      headers:{'Content-Type':'application/json','X-GXB3-GM-Key':giftKey},
+      body:JSON.stringify(data)});
+    const result=await response.json();
+    if(!response.ok)throw Error(result.error||'Máy chủ từ chối thao tác QTV.');
+    return result;
+  }
   function renderMail(body){
     const c=card('Gửi quà qua Hòm Thư · xác nhận UID trước khi gửi');
     const key=field(c,'Khóa QTV (không lưu vào thiết bị)','gm-action-key','password');key.autocomplete='off';
@@ -222,6 +233,7 @@ window.AdminPanel=(()=>{
     finally{if(button)button.disabled=false;}
   }
   function renderOrders(body){
+    if(!giftKey){const gate=card('Xác thực bảo mật trước khi quản lý nạp');gate.append(el('p','admin-note','Duyệt đơn, từ chối đơn và thay đổi gói nạp cần khóa QTV riêng trên VPS. Khóa không lưu vào thiết bị.'),btn('Đến Gửi Thư để xác thực',()=>show('mail'),'primary'));body.append(gate);}
     const catalog=card('Gói nạp trên máy chủ');
     catalog.append(el('p','admin-note','Chọn gói và chỉnh từng trường. Không cần nhập mã JSON.'));
     const pkgSelect=document.createElement('select');pkgSelect.id='gm-topup-selection';
@@ -291,12 +303,12 @@ window.AdminPanel=(()=>{
       const packages=[...(topupCfg?.packages||[])];
       const pos=packages.findIndex(x=>x.id===packageEditId);
       if(pos>=0)packages[pos]={...packages[pos],...pack};else packages.push(pack);
-      topupCfg=await api('/api/admin/topup-packages',{action:'save',config:{...topupCfg,packages}});
+      topupCfg=await gmAction('/api/admin/topup-packages',{action:'save',config:{...topupCfg,packages}});
       status('Đã lưu gói '+pack.name+'.');render();
     }catch(e){status(e.message,false);}
   }
   async function resetTopupPackages(){
-    try{topupCfg=await api('/api/admin/topup-packages',{action:'reset'});
+    try{topupCfg=await gmAction('/api/admin/topup-packages',{action:'reset'});
       packageEditId='';packageRewards={};status('Đã khôi phục danh mục gói nạp.');render();
     }catch(e){status(e.message,false);}
   }
@@ -311,7 +323,7 @@ window.AdminPanel=(()=>{
         (action==='approve'?' · Xác nhận duyệt và gửi quà qua Hòm Thư?':' · Xác nhận từ chối?'),
         {title:'Xác nhận đơn nạp',ok:action==='approve'?'Duyệt':'Từ chối',danger:action!=='approve'});
       if(!okay)return;
-      await api('/api/admin/order/review',{order_id:order.id,action,reward});
+      await gmAction('/api/admin/order/review',{order_id:order.id,action,reward});
       if(action==='approve'&&manual)giftBasket={};
       status(action==='approve'?'Đã duyệt đơn và gửi thưởng qua thư.':'Đã từ chối đơn.');
       await refreshDashboard();render();
