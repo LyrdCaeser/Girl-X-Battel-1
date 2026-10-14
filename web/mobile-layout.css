@@ -127,3 +127,21 @@ html.gxb-mobile #app-frame .fantasy-book-view .fb-stage{
   html.gxb-mobile #app-frame .home-side button{height:clamp(33px,12dvh,62px)!important}
   html.gxb-mobile #app-frame .home-bottom{height:16%!important}
 }
+
+/* Mobile native BattleWindow: preserve the renderer's 1080:1920 coordinate
+   system.  Previously the whole canvas was stretched to the taller phone
+   viewport while sprites only had a height limit, so fighters overlapped. */
+html.gxb-mobile #app-frame #arena:not([hidden]) .battlefield,
+html.gxb-mobile #app-frame #event-arena .battlefield{
+ width:min(100%,56.25dvh)!important;
+ height:auto!important;
+ aspect-ratio:9/16!important;
+ max-width:100%!important;
+ max-height:100%!important;
+ min-height:0!important;
+ flex:0 1 auto!important;
+ align-self:center;
+ margin:auto!important;
+ padding:0!important;
+ background-position:center!important;
+}
