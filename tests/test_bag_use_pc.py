@@ -36,11 +36,15 @@ class BagUseTests(unittest.TestCase):
         choices={k:v for k,v in recipes.items() if v['kind']=='choice'}
         gifts={k:v for k,v in recipes.items() if v['kind']=='gift'}
         self.assertEqual(len(src['rows']),387)
-        self.assertEqual(len(choices),387)
+        self.assertEqual(len(choices),383)
         self.assertGreaterEqual(len(gifts),65)
         self.assertEqual(len(gifts),71)
-        self.assertEqual(len(recipes),458)
+        self.assertEqual(len(recipes),454)
         self.assertEqual(choices['133']['choices'],{'930187':50,'930188':50})
+        # Four legacy boxes have optional rows, but original item type=14
+        # and gift IDs make them guaranteed multi-item sets, not choices.
+        self.assertIn('4601013', gifts)
+        self.assertNotIn('4601013', choices)
         self.assertNotIn('4706001', recipes)
         self.assertIn('135',gifts)
         self.assertNotIn('17',gifts)

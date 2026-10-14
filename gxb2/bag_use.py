@@ -59,7 +59,7 @@ def recipes():
             continue
         item_id = int(spec[0])
         low = int(spec[1]); high = int(spec[2]) if len(spec) == 3 else low
-        if item_id <= 0 or low <= 0 or high < low or item_id not in items['rows']:
+        if item_id <= 0 or low <= 0 or high < low or str(item_id) not in items['rows']:
             continue
         pools.setdefault(group, []).append((item_id, low, high, weight))
 
