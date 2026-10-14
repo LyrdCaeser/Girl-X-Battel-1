@@ -3,15 +3,15 @@ plugins {
 }
 
 android {
-    namespace "com.gxb3.game"
+    namespace "com.quangho.goddess.battle"
     compileSdk 35
 
     defaultConfig {
-        applicationId "com.gxb3.game"
+        applicationId "com.quangho.goddess.battle"
         minSdk 26
         targetSdk 35
-        versionCode 100006
-        versionName "1.0.0-alpha-rc6"
+        versionCode 100007
+        versionName "1.0.0-alpha-rc7"
     }
 
     buildTypes {
