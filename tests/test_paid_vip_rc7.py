@@ -65,7 +65,7 @@ class PaidVipRC7Tests(unittest.TestCase):
     def test_original_recharge_event_is_real_storefront(self):
         events=(ROOT/'web/events.js').read_text(encoding='utf-8')
         home=(ROOT/'web/app.js').read_text(encoding='utf-8')
-        self.assertIn("selected===184",events)
+        self.assertIn("[2,3,6,24,39,40,184].includes(Number(selected))",events)
         self.assertIn("publicGemPacks.filter",events)
         self.assertIn("GxbPayment?.open(p.id,p.name)",events)
         self.assertIn("EventsHub.openOriginalEvent(184,'home')",home)
