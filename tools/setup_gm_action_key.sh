@@ -24,11 +24,10 @@ else
   key="$(python3 -c 'import secrets; print(secrets.token_urlsafe(48))')"
   ( umask 077; printf 'GXB3_GM_ACTION_KEY=%s\n' "$key" > "$file" )
   chmod 0600 "$file"
-  echo
-  echo "=== KHÓA GM MỚI: CHỈ HIỆN MỘT LẦN ==="
-  printf '%s\n' "$key"
-  echo "Lưu kín khóa này. Không chụp ảnh, không gửi vào ChatGPT hay người khác."
-  echo
+  # Never print secrets to shared terminal output or copied diagnostic logs.
+  # The owner can read the root-only file privately on the VPS when needed.
+  echo "Đã tạo khóa GM an toàn tại $file (không hiển thị giá trị)."
+  echo "Đọc khóa RIÊNG TƯ trên VPS khi cần; tuyệt đối không gửi nội dung file vào chat."
   unset key
 fi
 
