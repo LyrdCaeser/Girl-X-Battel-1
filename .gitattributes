@@ -18,3 +18,7 @@
 *.bin filter=lfs diff=lfs merge=lfs -text
 *.so filter=lfs diff=lfs merge=lfs -text
 *.dylib filter=lfs diff=lfs merge=lfs -text
+
+# Branded client icon is committed as a regular small JPEG (not an LFS pointer).
+# Prevent Git LFS from misidentifying it on customer/VPS checkouts.
+clients/icons/gxb3-icon.jpg -filter -diff -merge -text
