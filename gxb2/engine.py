@@ -350,7 +350,9 @@ class Engine:
                 # player-save cannot leave a paid/GM mail marked claimed.
                 attachments = live_service.claim_mail(str(mail_id), uid, server_id,
                     db=self.db if self.db.backend == 'postgres' else None)
-                for item_id, amount in attachments.items():
+                inventory = dict(attachments)
+                vip.claim_reward(state, inventory)
+                for item_id, amount in inventory.items():
                     state['items'][str(item_id)] = int(state['items'].get(str(item_id), 0)) + int(amount)
                 self._save_profile(state)
                 self.db.commit()
