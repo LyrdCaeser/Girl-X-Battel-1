@@ -1,4 +1,4 @@
-package com.gxb3.game;
+package com.quangho.goddess.battle;
 
 import android.app.Activity;
 import android.app.AlertDialog;
