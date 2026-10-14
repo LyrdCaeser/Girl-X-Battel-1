@@ -456,7 +456,7 @@ window.AdminPanel=(()=>{
   const val=id=>document.getElementById(id)?.value?.trim()||'';
   async function load(){try{ensure();[cfg,dash,topupCfg,giftCatalog]=await Promise.all([api('/api/admin/config'),api('/api/admin/dashboard'),api('/api/admin/topup-packages'),api('/api/admin/gift-catalog')]);show(active);status('Hệ Thống QTV đã sẵn sàng.');}catch(e){status(e.message,false);}}
   async function open(){ensure();root.hidden=false;await load();}
-  function close(){if(root)root.hidden=true;showView('home');}
+  function close(){giftKey='';giftBasket={};if(root)root.hidden=true;showView('home');}
   async function logout(){developerMode=false;adminKey='';sessionStorage.setItem('gxb2-developer','0');sessionStorage.removeItem('gxb2-admin-key');if(root)root.hidden=true;state=await api('/api/state');loadFormation();showView('home');renderGame();}
   return{open,close,load,logout};
 })();
