@@ -174,9 +174,9 @@ class NeonMailClaimTransactionTests(unittest.TestCase):
                 vip.VIP_EXP_REWARD_ID: 1500,
             }
 
-        with patch.object(database, "acquire_postgres", return_value=raw), \\
-             patch.object(database, "release_postgres") as release, \\
-             patch.object(live_service, "player", return_value={"status": "active"}), \\
+        with patch.object(database, "acquire_postgres", return_value=raw), \
+             patch.object(database, "release_postgres") as release, \
+             patch.object(live_service, "player", return_value={"status": "active"}), \
              patch.object(live_service, "claim_mail", side_effect=fake_claim):
             result = engine.claim_live_mail("MAIL-PAID-TEST")
             raw.execute.assert_any_call("BEGIN")
@@ -200,9 +200,9 @@ class NeonMailClaimTransactionTests(unittest.TestCase):
             self.assertIs(db._conn, raw)
             return {"2": 50, "999999991": 100}
 
-        with patch.object(database, "acquire_postgres", return_value=raw), \\
-             patch.object(database, "release_postgres") as release, \\
-             patch.object(live_service, "player", return_value={"status": "active"}), \\
+        with patch.object(database, "acquire_postgres", return_value=raw), \
+             patch.object(database, "release_postgres") as release, \
+             patch.object(live_service, "player", return_value={"status": "active"}), \
              patch.object(live_service, "claim_mail", side_effect=fake_claim):
             with self.assertRaisesRegex(RuntimeError, "simulated profile save failure"):
                 engine.claim_live_mail("MAIL-ROLLBACK-TEST")
