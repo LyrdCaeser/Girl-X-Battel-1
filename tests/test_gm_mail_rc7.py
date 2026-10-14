@@ -20,7 +20,7 @@ class GmMailRC7Tests(unittest.TestCase):
         self.provider.start()
         self.addCleanup(self.provider.stop)
         self.db=live_service._db()
-        self.db.execute("INSERT INTO worlds(server_id,name,status,created_at) VALUES(?,?,?,?)",
+        self.db.execute("INSERT INTO worlds(server_id,name,status,created_at) VALUES(?,?,?,?) ON CONFLICT(server_id) DO NOTHING",
                         ("S1","Test","online",1))
         self.db.commit();self.db.close()
         live_service.register_player("RC7-ADMIN","S1","Admin Test")
