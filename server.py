@@ -21,7 +21,7 @@ from gxb2.story import catalog as story_catalog
 from gxb2.dress import catalog as dress_catalog
 from gxb2.skins import catalog as skins_catalog
 from gxb2.souls import catalog as souls_catalog
-from gxb2 import protocol as p, local_promotion, local_config, world_live_config, topup, live_service, auth, database
+from gxb2 import protocol as p, local_promotion, local_config, world_live_config, topup, live_service, auth, database, gm_catalog
 from gxb2.player_engines import PlayerEnginePool
 from gxb2.battle import simulate as simulate_battle, ONLINE_BATTLE_ID, normalize_online_seed
 from gxb2.security import FixedWindowRateLimiter, DEFAULT_LIMITS, env_bool, validate_production_config
@@ -202,6 +202,15 @@ class HTTPHandler(BaseHTTPRequestHandler):
     def admin_authorized(self):
         # An old shared GM key alone must never grant account or developer privileges.
         return self.is_super_gm()
+
+    def gm_key_authorized(self):
+        """Second factor for value-moving GM commands, never a substitute for the owner session."""
+        if not self.is_super_gm():
+            return False
+        configured = os.environ.get('GXB3_GM_ACTION_KEY', '')
+        supplied = self.headers.get('X-GXB3-GM-Key', '')
+        return bool(len(configured) >= 24 and supplied and
+                    hmac.compare_digest(configured.encode(), supplied.encode()))
 
     def reject_unauthorized_admin_mode(self):
         if self.headers.get('X-GXB2-Mode') == 'developer' and not self.admin_authorized():
@@ -406,6 +415,10 @@ class HTTPHandler(BaseHTTPRequestHandler):
             if not self.admin_authorized():
                 return self.send(403, {'error': 'QTV_KEY_REQUIRED'})
             return self.send(200, topup.get())
+        if path == '/api/admin/gift-catalog':
+            if not self.admin_authorized():
+                return self.send(403, {'error': 'QTV_KEY_REQUIRED'})
+            return self.send(200, gm_catalog.catalog())
         if path == '/api/admin/dashboard':
             if not self.admin_authorized():
                 return self.send(403, {'error': 'QTV_KEY_REQUIRED'})
@@ -827,10 +840,21 @@ class HTTPHandler(BaseHTTPRequestHandler):
                 if action=='maintenance':
                     return self.send(200,live_service.maintenance_tick())
                 raise ValueError('Thao tác SUPER GM live-service không hợp lệ')
+            if path == '/api/admin/gm/verify-key':
+                if not self.admin_authorized():
+                    return self.send(403, {'error': 'QTV_KEY_REQUIRED'})
+                if not os.environ.get('GXB3_GM_ACTION_KEY'):
+                    return self.send(503, {'error': 'Khóa hành động QTV chưa được cấu hình trên VPS'})
+                if not self.gm_key_authorized():
+                    return self.send(403, {'error': 'Khóa QTV không chính xác'})
+                return self.send(200, {'verified': True})
             if path == '/api/admin/mail/send':
                 if not self.admin_authorized(): return self.send(403, {'error': 'QTV_KEY_REQUIRED'})
+                if not self.gm_key_authorized(): return self.send(403, {'error': 'Khóa QTV không chính xác hoặc chưa cấu hình trên VPS'})
+                # Item IDs and quantities are validated server-side; client icons or names grant no authority.
+                gift = gm_catalog.validate_gift(data.get('attachments') or {})
                 return self.send(200, live_service.send_mail(data.get('uid'), data.get('server_id'), data.get('character_name'),
-                    data.get('title'), data.get('body'), data.get('attachments') or {}, 'SUPER_GM'))
+                    data.get('title'), data.get('body'), gift, 'SUPER_GM'))
             if path == '/api/admin/order/review':
                 if not self.admin_authorized(): return self.send(403, {'error': 'QTV_KEY_REQUIRED'})
                 action = data.get('action')
