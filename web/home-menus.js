@@ -73,6 +73,14 @@ const HomeMenus=(()=>{
  }
 
  let chatRows=[],chatBusy=false,chatSending=false,chatLoadedKey='',chatRecipient='',chatTyped='',chatError='';
+ // Poll only while the authenticated user is looking at the chat screen.
+ // Messages are fetched from the real server; no synthetic players are generated.
+ if(typeof window!=='undefined'&&typeof window.setInterval==='function'){
+  window.setInterval(()=>{
+   if(root==='chat'&&view==='home-systems'&&document.visibilityState!=='hidden'
+      &&!chatBusy&&!chatSending)refreshRealChat(true);
+  },6000);
+ }
  const chatKey=()=>[state?.server_id||'',tab||'world',tab==='private'?chatRecipient:''].join(':');
  async function refreshRealChat(silent=false){
   if(chatBusy||root!=='chat'||view!=='home-systems')return;
