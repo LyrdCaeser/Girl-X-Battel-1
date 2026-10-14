@@ -44,6 +44,29 @@ class SuperGmSecurityTests(unittest.TestCase):
         self.impersonate({**self.owner, "email": "TrieuQuangHoLuxury@GMAIL.COM"})
         self.assertTrue(self.handler.admin_authorized())
 
+    def test_gm_key_requires_owner_session_and_exact_second_factor(self):
+        key = "test-GM-key-" + "x" * 40
+        with patch.dict(os.environ, {"GXB3_GM_ACTION_KEY": key}):
+            self.impersonate(self.owner)
+            self.handler.headers = {"X-GXB3-GM-Key": key}
+            self.assertTrue(self.handler.gm_key_authorized())
+            self.handler.headers = {"X-GXB3-GM-Key": key[:-1]}
+            self.assertFalse(self.handler.gm_key_authorized())
+            self.handler.headers = {"X-GXB3-GM-Key": key}
+            self.impersonate({**self.owner, "uid": "GXB3-00000003"})
+            self.assertFalse(self.handler.gm_key_authorized())
+
+    def test_value_moving_admin_routes_require_second_factor(self):
+        from pathlib import Path
+        source = (Path(__file__).resolve().parents[1] / "server.py").read_text()
+        for endpoint in ("/api/admin/mail/send", "/api/admin/order/review",
+                         "/api/admin/topup-packages"):
+            with self.subTest(endpoint=endpoint):
+                start = source.index("if path == '" + endpoint + "':")
+                route = source[start:source.index("            if path ==",start+5)]
+                self.assertIn("self.admin_authorized()", route)
+                self.assertIn("self.gm_key_authorized()", route)
+
     def test_legacy_secret_does_not_override_account_identity(self):
         self.impersonate({**self.owner, "uid": "GXB3-00000003"})
         self.handler.headers = {"X-GXB2-Admin-Key": "a" * 50}
