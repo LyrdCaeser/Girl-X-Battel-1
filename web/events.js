@@ -78,6 +78,16 @@ const EventsHub=(()=>{
   top.append(back,el('h1',undefined,"Sự Kiện"),money);root.append(top);
   if(!catalog||!hub()){root.append(el('p','ev-note',message||"Đang tải sự kiện…"));return;}
   const win=el('div','ev-window');root.append(win);const tabs=el('nav','ev-tabs');for(const [id,pos]of TABS){const b=el('button','ev-tab '+pos+(tab===id?' on':''),tabLabel(id));b.type='button';b.onclick=()=>{if(tab===id)return;tab=id;selected=null;pinnedId=null;message='';if(typeof GxbAudio!=='undefined')GxbAudio.sfx('ui_switch_page',.6);render();};if(catalog.activities.some(a=>inTab(a,id)&&claimable(a.id)))b.append(img(A('alert_icon'),'ev-tab-red'));tabs.append(b);}win.append(tabs);{const cb=el('button','ev-cal-btn','📅 Lịch');cb.type='button';cb.onclick=calendarWin;win.append(cb);}const panel=el('div','ev-panel');win.append(panel);
+  if([2,3,6,24,39,40].includes(Number(pinnedId||selected))){
+    const offers=el('nav','ev-native-pack-tabs');
+    for(const [id,label] of [[2,'Gói Tháng'],[3,'Gói Tuần'],[6,'Thẻ Tháng'],[24,'Thẻ Tuần']]){
+      const chip=el('button','ev-tab'+(id===selected?' on':''),label);
+      chip.type='button';
+      chip.onclick=()=>{pinnedId=id;selected=id;render();};
+      offers.append(chip);
+    }
+    panel.append(offers);
+  }
   const items=list();if(!items.some(a=>a.id===selected))selected=items[0]?.id??null;
   const strip=el('div','ev-strip');for(const a of items){const b=el('button','ev-title'+(a.id===selected?' on':''));b.type='button';b.title=vi(a.title.replace(/\n/g,' '));b.append(img(A(a.id===selected?'activity_icon_1_middle':'activity_icon_0_middle'),'ev-title-bg'),img(A('icon_'+a.icon),'ev-title-icon'),el('span','ev-title-label',vi(a.title)));if(slot(a.id))b.append(el('small','ev-title-left',leftText(slot(a.id).end)));if(claimable(a.id))b.append(img(A('person_icon_red_point'),'ev-title-red'));b.onclick=()=>{selected=a.id;message='';render();};strip.append(b);}panel.append(strip);
   requestAnimationFrame(()=>strip.querySelector('.on')?.scrollIntoView({block:'nearest',inline:'nearest'}));
