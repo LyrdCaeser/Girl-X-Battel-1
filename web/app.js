@@ -846,7 +846,7 @@ function renderProfile(){
  $('profile-info-page').hidden=profileTab!=='info';$('profile-settings-page').hidden=profileTab!=='settings';
  if(typeof ProfileSenpai!=='undefined')ProfileSenpai.render();
 }
-const VIP_SOURCES={campaign:"Chiến Dịch (ải)",level:"Cấp người chơi",tasks:"Nhiệm vụ và thành tựu",login:"Số ngày đã chơi",lab:"Phòng Nghiên Cứu Bang Hội",collection:"Bộ Sưu Tập Yume"};
+const VIP_SOURCES={paid:"Đơn nạp đã duyệt / VIP EXP nhận qua Hòm Thư"};
 function renderVip(){
  const v=state.vip_info;if(!v)return;
  $('vip-level').textContent=String(v.level);
