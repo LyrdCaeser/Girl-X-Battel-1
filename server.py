@@ -805,6 +805,10 @@ class HTTPHandler(BaseHTTPRequestHandler):
                 updated = auth.create_character(self.session_token(), data.get('server_id'), data.get('character_name'))
                 self._auth_context = updated
                 return self.send(200, {'session': updated})
+            if path == '/api/giftcode/sso/exchange':
+                token=studio_sso.exchange(data.get('ticket'),self.headers.get('User-Agent',''),self.client_ip())
+                cookie=f"gxb3_session={token}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age={auth.SESSION_TTL}"
+                return self.send(200,{'authenticated':True},headers={'Set-Cookie':cookie})
             if not self.require_auth():
                 return
             if path == '/api/chat/send':
@@ -815,10 +819,6 @@ class HTTPHandler(BaseHTTPRequestHandler):
                         account['uid'], account['server_id'],
                         data.get('channel'), data.get('message'), data.get('recipient_uid', ''))
                 })
-            if path == '/api/giftcode/sso/exchange':
-                token=studio_sso.exchange(data.get('ticket'),self.headers.get('User-Agent',''),self.client_ip())
-                cookie=f"gxb3_session={token}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age={auth.SESSION_TTL}"
-                return self.send(200,{'authenticated':True},headers={'Set-Cookie':cookie})
             if path == '/api/giftcode/admin/unlock':
                 if not self.admin_authorized(): return self.send(403,{'error':'Yêu cầu SUPER GM'})
                 return self.send(200,{'access':studio_sso.unlock(data.get('password'),self.session_token()),'expires_in':studio_sso.PANEL_TTL})
