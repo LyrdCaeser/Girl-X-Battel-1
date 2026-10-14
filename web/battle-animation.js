@@ -1,7 +1,7 @@
 /* Archived Spine 3.6 skeletons decoded without changing their animations. */
 const ChibiBattle=(()=>{
  let cataloguePromise;const dataCache=new Map();
- async function catalogue(){return cataloguePromise||(cataloguePromise=fetch('/assets/chibis/catalog.json?v=20261014-nephilim2').then(r=>{if(!r.ok)throw Error("Chibi catalog unavailable");return r.json();}));}
+ async function catalogue(){return cataloguePromise||(cataloguePromise=fetch('/assets/chibis/catalog.json?v=20261014-nephilim3').then(r=>{if(!r.ok)throw Error("Chibi catalog unavailable");return r.json();}));}
  async function load(name){if(dataCache.has(name))return dataCache.get(name);const promise=new Promise((resolve,reject)=>{const loader=new PIXI.Loader();loader.add(name,`/assets/chibis/${name}/model.json`,{metadata:{spineAtlasFile:`/assets/chibis/${name}/model.atlas`}});loader.onError.add(e=>reject(e));loader.load((_,resources)=>{const data=resources[name]?.spineData;if(data)resolve(data);else reject(Error("Could not read "+name));});});dataCache.set(name,promise);try{return await promise;}catch(e){dataCache.delete(name);throw e;}}
  // The archived Spine models use different native bone/attachment dimensions.
  // Fit BOTH axes into one 1080 x 1920 battle footprint, instead of sizing by
@@ -46,6 +46,13 @@ const ChibiBattle=(()=>{
   const right=bones.filter(b=>b.x>center+margin).length;
   return left>=2&&left>=right*2?-1:1;
  }
+ // Nephilim's base ultimate FX has a built-in negative-X parent bone
+ // (bone19.scaleX=-1). The awakened/advanced FX are native positive-X.
+ // Correct only that imported FX, not the entire fighter or hit effects.
+ function effectFlipForSide(resource,enemySide){
+  const nativeMirrored=resource==='spmijiale_hurt02_skill01';
+  return Boolean(enemySide)!==nativeMirrored;
+ }
  let fxTable=null;const fxCache=new Map();
  function fxSkills(){return fxTable||(fxTable=fetch('/assets/battle-fx/skills.json').then(r=>r.ok?r.json():{}).catch(()=>({})));}
  function fxLoad(res){if(fxCache.has(res))return fxCache.get(res);const p=new Promise((resolve,reject)=>{const loader=new PIXI.Loader();loader.add('fx_'+res,`/assets/battle-fx/${res}/model.json`,{metadata:{spineAtlasFile:`/assets/battle-fx/${res}/model.atlas`}});loader.onError.add(e=>reject(e));loader.load((_,r)=>{const d=r['fx_'+res]?.spineData;if(d)resolve(d);else reject(Error('fx '+res));});});fxCache.set(res,p);p.catch(()=>fxCache.delete(res));return p;}
@@ -74,13 +81,13 @@ const rigBounds=(cleanWidth>0&&cleanHeight>0)?{width:cleanWidth,height:cleanHeig
   let rate=1;const live=new Set();
   async function spawn(res,anim,scale,x,y,flip,z){try{const data=await fxLoad(res);if(cancelled)return;const f=new PIXI.spine.Spine(data);const name=data.animations.some(a=>a.name===anim)?anim:data.animations[0]?.name;if(!name)return;f.scale.set((flip?-1:1)*scale*1.5,scale*1.5);f.x=x;f.y=y;f.zIndex=z;f.state.timeScale=rate;f.state.setAnimation(0,name,false);const done=()=>{if(!live.has(f))return;live.delete(f);f.visible=false;requestAnimationFrame(()=>{try{if(!cancelled){app.stage.removeChild(f);f.destroy({children:true});}}catch{}});};f.state.addListener({complete:done});live.add(f);app.stage.addChild(f);setTimeout(done,4000);}catch{}}
   async function fx(skillId,caster,targets){const table=await fxSkills();const row=table[String(skillId)];if(!row||cancelled)return;const enemy=caster>6;
-   for(const [res,anim,scale,layer,x,y]of row.c||[])spawn(res,anim,scale,enemy?1080-x*1.5:x*1.5,1920-y*1.5,enemy,layer===1?-1:5000);
+   for(const [res,anim,scale,layer,x,y]of row.c||[])spawn(res,anim,scale,enemy?1080-x*1.5:x*1.5,1920-y*1.5,effectFlipForSide(res,enemy),layer===1?-1:5000);
    if(live.size>40)return;for(const pos of targets){const u=figures.get(pos);if(!u)continue;for(const [res,anim,scale,layer,position]of row.h||[])spawn(res,anim,scale,u.figure.x,u.figure.y-(position===1?0:90),pos>6,layer===1?u.figure.y-1:u.figure.y+1);}}
   function speed(value){rate=value;for(const {figure} of figures.values())figure.state.timeScale=value;for(const f of live)f.state.timeScale=value;}
   function destroy(){cancelled=true;app.destroy(true,{children:true,texture:false,baseTexture:false});}
   return {play,speed,destroy,fx,anchors,headAnchors,has:pos=>figures.has(pos),missing};
  }
- return {create,catalogue,fitScaleForBounds,fitScaleForModel,modelFacing};
+ return {create,catalogue,fitScaleForBounds,fitScaleForModel,modelFacing,effectFlipForSide};
 })();
 
 // BattleWindow + BaseFighter: 0/1 add, 2 work, 3/4 remove one matching name/sign.

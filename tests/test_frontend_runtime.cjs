@@ -179,9 +179,11 @@ function testNephilimBattleModels() {
   const scale = vm.runInContext('ChibiBattle.fitScaleForModel', ctx);
   const facing = vm.runInContext('ChibiBattle.modelFacing', ctx);
   for (const id of ids) {
-    assert.equal(catalogue[id]?.facing, 'left', `Nephilim ${id} has verified native-left orientation`);
+    const expectedFacing=id==='7125'?'left':'right';
+    assert.equal(catalogue[id]?.facing,expectedFacing,`Nephilim ${id} keeps its authored native attack direction`);
     assert.equal(catalogue[id]?.battleHeight, 260, `Nephilim ${id} must keep its readable height`);
-    assert.equal(facing({bones:[]},{},catalogue[id]),-1, 'Nephilim orientation follows model-specific metadata');
+    assert.equal(facing({bones:[]},{},catalogue[id]),id==='7125'?-1:1,
+      'Nephilim body orientation is independent from the FX direction');
   }
   const mapCtx=vm.createContext({});
   vm.runInContext(fs.readFileSync(path.join(ROOT,'web/campaign-map.js'),'utf8'),mapCtx);
@@ -189,13 +191,39 @@ function testNephilimBattleModels() {
   const mapFacing=vm.runInContext('CampaignMap.chibiFacing',mapCtx);
   for(const id of ids) {
     assert.equal(catalogue[id]?.mapHeight,300,'Nephilim campaign height is model-specific');
-    assert.equal(mapFacing(catalogue[id]),-1,'campaign orientation follows Spine metadata');
+    assert.equal(mapFacing(catalogue[id]),id==='7125'?-1:1,
+      'campaign orientation follows the corresponding rig');
   }
   const rig={height:344.65887451171875};
   assert.ok(Math.abs(mapScale(rig,catalogue['56006'])*rig.height-300)<0.1,
     'Nephilim stays legible in the separate 720x627 scene');
   assert.ok(Math.abs(mapScale(rig,{})*rig.height-190)<0.1,
     'unrelated chibis keep their previous 190-unit display height');
+  // Nephilim's idle attachment bounds include oversized spell particles:
+  // using those instead of the original 344.66-unit skeleton made it tiny.
+  const badVisibleBounds={x:-750,y:-1400,width:1600,height:2200};
+  const originalHeight=344.65887451171875;
+  const recovered=mapScale(badVisibleBounds,catalogue['56006'],originalHeight);
+  assert.ok(Math.abs(recovered*originalHeight-300)<0.1,
+    'campaign scale must ignore Nephilim FX attachment bounds');
+  const position=vm.runInContext('CampaignMap.chibiPosition',mapCtx);
+  const anchored=position(360,410,badVisibleBounds,recovered,1,
+    {worldX:0,worldY:0},catalogue['56006']);
+  assert.equal(anchored.x,360,'campaign chibi stays centered at its root foot');
+  assert.equal(anchored.y,410,'campaign chibi stays grounded despite FX bounds');
+  const legacy=position(360,410,{x:0,y:-190,width:90,height:190},1,1,null,{});
+  assert.equal(legacy.x,315,'unrelated chibis keep their legacy anchor');
+  assert.equal(legacy.y,410,'unrelated chibis keep their legacy foot position');
+  const effectFlip=vm.runInContext('ChibiBattle.effectFlipForSide',ctx);
+  assert.equal(effectFlip('spmijiale_hurt02_skill01',false),true,
+    'Nephilim normal ultimate FX must undo its negative-X parent on allied side');
+  assert.equal(effectFlip('spmijiale_hurt02_skill01',true),false,
+    'Nephilim normal ultimate FX must remain leftward on enemy side');
+  for(const fx of ['sp_mijiale_awaken_hurt02_skill01','sp_mijiale_10_hurt02_skill01',
+    'spmijiale_hurt02','unrelated_skill_fx']){
+    assert.equal(effectFlip(fx,false),false,`native-right FX ${fx} unchanged on allies`);
+    assert.equal(effectFlip(fx,true),true,`native-right FX ${fx} unchanged on enemies`);
+  }
   const rigs = [
     ['56006',554.1474609375,344.65887451171875],
     ['656016',346.0149841308594,379.0011901855469],
