@@ -360,11 +360,18 @@ class HTTPHandler(BaseHTTPRequestHandler):
             if not ctx: return
             ticket=studio_sso.start(self.session_token())
             from urllib.parse import quote
+            # HTTP/1.1 keep-alive redirects MUST have a finite body length.
+            # Without Content-Length (or closing the socket), Chrome can wait
+            # forever on a blank tab before following the Location header.
             self.send_response(303)
             self.send_header('Location',studio_sso.STUDIO_ORIGIN+'/?ticket='+quote(ticket,safe=''))
+            self.send_header('Content-Length','0')
+            self.send_header('Connection','close')
             self.send_header('Cache-Control','no-store')
             self.send_header('Referrer-Policy','no-referrer')
+            self.send_header('X-Content-Type-Options','nosniff')
             self.end_headers()
+            self.close_connection=True
             return
         if path in ('/giftcode-studio/app.js','/giftcode-studio/style.css'):
             file=ROOT/'giftcode-studio'/path.rsplit('/',1)[-1]
