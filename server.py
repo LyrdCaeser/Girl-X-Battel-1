@@ -1184,7 +1184,7 @@ class HTTPHandler(BaseHTTPRequestHandler):
         except (ValueError, KeyError) as exc: return self.send(400, {'error': str(exc)})
         except Exception as exc:
             print(f'Error local: {type(exc).__name__}: {exc}', flush=True)
-            return self.send(500, {'error': 'Error del motor local. Consulta la terminal.'})
+            return self.send(500, {'error': 'Máy chủ gặp lỗi xử lý. Vui lòng thử lại sau hoặc liên hệ QTV.'})
 
 def make_servers(engine, http_port=9080, tcp_port=9081, developer_engine=None, player_engines=None,
                  http_host='127.0.0.1', public_origin='', admin_key=None, trust_proxy=None):
