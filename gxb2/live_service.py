@@ -245,9 +245,19 @@ def review_order(order_id,approve,reward=None,reviewer="GM"):
             clean = {}
             if approve:
                 manual = bool(int(row["manual_reward"] or 0))
-                source = reward if manual else json.loads(row["reward"] or "{}")
+                preset = json.loads(row["reward"] or "{}")
+                source = dict(reward) if manual and isinstance(reward, dict) else (preset if not manual else {})
                 if not isinstance(source, dict):
                     source = {}
+                if manual:
+                    # Even a manually fulfilled original weekly/monthly card earns
+                    # its *configured, receipt-backed* VIP EXP on approval.
+                    # The GM still selects the card's other rewards explicitly.
+                    if not source:
+                        raise ValueError("Hãy chọn quà của Thẻ Tuần/Tháng trước khi duyệt đơn")
+                    from .vip import VIP_EXP_REWARD_ID
+                    if int(preset.get(VIP_EXP_REWARD_ID) or 0) > 0:
+                        source[VIP_EXP_REWARD_ID] = int(preset[VIP_EXP_REWARD_ID])
                 for k, v in source.items():
                     item = str(int(k))
                     amount = int(v)
