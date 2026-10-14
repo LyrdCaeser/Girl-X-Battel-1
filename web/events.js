@@ -48,7 +48,7 @@ const EventsHub=(()=>{
      publicGemPacks=[];
    }).finally(()=>{
      publicGemPacksLoading=false;
-     if(view==='events'&&selected===184)render();
+     if(view==='events'&&[2,3,6,24,39,40,184].includes(Number(selected)))render();
    });
  }
  const A=name=>'/assets/events/'+name+'.png';
@@ -154,7 +154,25 @@ const EventsHub=(()=>{
   const packages={2:'MONTHLY_GIFT',3:'WEEKLY_GIFT',6:'MONTHLY_CARD',24:'WEEKLY_CARD',39:'MONTHLY_GIFT',40:'WEEKLY_GIFT'};
   const paid=Boolean(packages[a.id]||a.type1===1||/giftbag|recharge|month_card|week_card/i.test(a.icon||''));
   if(paid){
-    c.append(el('p','ev-note','Đây là gói/sự kiện nguyên bản. Giá và thưởng chỉ theo gói đang được QTV công bố; không dùng giá cũ hoặc tạo vật phẩm giả.'));
+    // Gift windows remain the original events. Only show the package actually
+    // published by the server; never invent a price, reward, or VIP EXP.
+    const packageId=packages[a.id];
+    if(packageId&&publicGemPacks===null)loadPublicGemPacks();
+    const published=packageId&&publicGemPacks?.find(p=>p.id===packageId);
+    if(published){
+      const offer=el('article','ev-gems-offer');
+      offer.append(img(A('icon_'+a.icon),'ev-item',published.name));
+      const details=el('div','ev-gems-data');
+      details.append(el('b',undefined,published.name));
+      if(published.price_label)details.append(el('span',undefined,published.price_label));
+      if(published.vip_exp)details.append(el('span',undefined,fmt(published.vip_exp)+' EXP VIP khi nhận thư đã duyệt'));
+      if(published.instant_gems)details.append(el('span',undefined,fmt(published.instant_gems)+' Kim Cương'));
+      if(published.manual_reward)details.append(el('small',undefined,'Quà cụ thể do QTV xác nhận trước khi giao qua Hòm Thư.'));
+      offer.append(details);c.append(offer);
+    }else if(packageId){
+      c.append(el('p','ev-note',publicGemPacks===null?'Đang tải gói quà từ máy chủ…':'Gói này chưa được QTV công bố trên máy chủ.'));
+    }
+    c.append(el('p','ev-note','Thanh toán và quà tặng theo danh mục đang được QTV công bố; không dùng giá cũ hoặc tạo vật phẩm giả.'));
     const contact=el('div','ev-original-payment');
     contact.append(el('span','', 'Thanh toán: Zalo 0856848557'));
     const z=el('button','ev-native-pay','Liên hệ Zalo / Đặt gói');z.type='button';
