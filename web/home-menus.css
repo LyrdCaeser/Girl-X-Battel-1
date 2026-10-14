@@ -29,3 +29,12 @@
 .hm-chat-composer .hm-chat-send{flex:0 0 auto;min-width:88px}
 .hm-chat-tools{margin:7px 0}
 .hm-chat-error{padding:8px;color:#9a1a38;background:#fff2f5;border:1px solid #f1a1b8;border-radius:8px}
+
+/* Restore visual selection of archived weekly/monthly cards, not anonymous text-only packs. */
+.hm-original-offers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.hm-original-offers .hm-original-offer{min-width:0;margin:0;display:flex;align-items:center;flex-direction:column;text-align:center;gap:7px}
+.hm-original-offers .hm-original-offer>.hm-card-icon{width:62px;height:62px;max-width:100%;object-fit:contain;flex:0 0 auto}
+.hm-original-offers .hm-original-offer h3{font-size:clamp(13px,3.8vw,17px);margin:0}
+.hm-original-offers .hm-original-offer button{width:100%;min-height:37px;padding:6px;white-space:normal}
+.hm-original-offers .hm-original-offer .hm-note{font-size:12px}
+@media(max-width:370px){.hm-original-offers{grid-template-columns:1fr}}
