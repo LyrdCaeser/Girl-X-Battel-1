@@ -45,7 +45,7 @@ class NativeGameWindowTests(unittest.TestCase):
         self.assertIn('id="vip-packages-open"', self.index)
         self.assertNotIn('id="payment-open"', self.index)
         self.assertIn("api('/api/payment/packages')", self.home)
-        self.assertIn("GxbPayment?.open(pack.id)", self.home)
+        self.assertIn("GxbPayment?.open(o.id", self.home)
         self.assertIn("api('/api/order/create'", self.payment)
         self.assertIn("zalo.me/", self.payment)
         self.assertNotIn("GXB3-000001", self.payment)
