@@ -953,6 +953,126 @@ def update_world_guild(uid, server_id, notice=None):
     return guild_for_player(uid,server_id)
 
 
+
+# Authenticated persistent world chat. Neither simulated player rows nor
+# local browser drafts are treated as sent messages.
+CHAT_CHANNELS = frozenset(("world", "vietnamese", "english", "servers", "recruit", "private"))
+
+
+def _chat_channel(channel):
+    channel = str(channel or "").strip().lower()
+    if channel not in CHAT_CHANNELS:
+        raise ValueError("Kênh trò chuyện không hợp lệ")
+    return channel
+
+
+def chat_messages(uid, server_id, channel="world", recipient_uid="", limit=80):
+    channel = _chat_channel(channel)
+    uid = str(uid or "").strip()
+    server_id = str(server_id or "").strip().upper()
+    recipient_uid = str(recipient_uid or "").strip()
+    count = max(1, min(100, int(limit)))
+    with _lock:
+        db = _db()
+        try:
+            me = db.execute(
+                "SELECT status FROM players WHERE uid=? AND server_id=?", (uid,server_id)
+            ).fetchone()
+            if not me or me["status"] != "active":
+                raise ValueError("Tài khoản không có quyền trò chuyện")
+            if channel == "private":
+                if recipient_uid:
+                    other = db.execute(
+                        "SELECT 1 FROM players WHERE uid=? AND server_id=? AND status='active'",
+                        (recipient_uid,server_id)).fetchone()
+                    if not other:
+                        raise ValueError("UID người nhận không tồn tại trên máy chủ này")
+                    rows = db.execute(
+                        """SELECT id,server_id,channel,uid,character_name,recipient_uid,message,created_at
+                           FROM world_chat_messages WHERE server_id=? AND channel='private'
+                           AND ((uid=? AND recipient_uid=?) OR (uid=? AND recipient_uid=?))
+                           ORDER BY id DESC LIMIT ?""",
+                        (server_id,uid,recipient_uid,recipient_uid,uid,count)).fetchall()
+                else:
+                    rows = db.execute(
+                        """SELECT id,server_id,channel,uid,character_name,recipient_uid,message,created_at
+                           FROM world_chat_messages WHERE server_id=? AND channel='private'
+                           AND (uid=? OR recipient_uid=?)
+                           ORDER BY id DESC LIMIT ?""",
+                        (server_id,uid,uid,count)).fetchall()
+            else:
+                rows = db.execute(
+                    """SELECT id,server_id,channel,uid,character_name,recipient_uid,message,created_at
+                       FROM world_chat_messages WHERE server_id=? AND channel=?
+                       ORDER BY id DESC LIMIT ?""",
+                    (server_id,channel,count)).fetchall()
+            result = [dict(r) for r in rows]
+            result.reverse()
+            return result
+        finally:
+            db.close()
+
+
+def send_chat_message(uid, server_id, channel, message, recipient_uid=""):
+    channel = _chat_channel(channel)
+    uid = str(uid or "").strip()
+    server_id = str(server_id or "").strip().upper()
+    recipient_uid = str(recipient_uid or "").strip()
+    message = " ".join(str(message or "").split())
+    if not 1 <= len(message) <= 280:
+        raise ValueError("Tin nhắn phải dài từ 1 đến 280 ký tự")
+    if any(ord(ch) < 32 for ch in message):
+        raise ValueError("Tin nhắn chứa ký tự không hợp lệ")
+    if channel == "private":
+        if not recipient_uid or recipient_uid == uid:
+            raise ValueError("Vui lòng nhập UID người nhận hợp lệ")
+    elif recipient_uid:
+        raise ValueError("Chỉ tin nhắn riêng mới có người nhận")
+    now = int(time.time())
+    with _lock:
+        db = _db()
+        try:
+            db.execute("BEGIN IMMEDIATE")
+            me = db.execute(
+                "SELECT character_name,status FROM players WHERE uid=? AND server_id=?",
+                (uid,server_id)).fetchone()
+            if not me or me["status"] != "active":
+                raise ValueError("Tài khoản không có quyền gửi tin nhắn")
+            if channel == "private":
+                other = db.execute(
+                    "SELECT status FROM players WHERE uid=? AND server_id=?",
+                    (recipient_uid,server_id)).fetchone()
+                if not other or other["status"] != "active":
+                    raise ValueError("Không tìm thấy UID người nhận trên máy chủ này")
+            last = db.execute(
+                """SELECT created_at FROM world_chat_messages WHERE uid=? AND server_id=?
+                   ORDER BY id DESC LIMIT 1""", (uid,server_id)).fetchone()
+            if last and now - int(last["created_at"]) < 2:
+                raise ValueError("Gửi quá nhanh. Vui lòng chờ 2 giây.")
+            args = (server_id,channel,uid,me["character_name"],recipient_uid,message,now)
+            if db.backend == "postgres":
+                cur = db.execute(
+                    """INSERT INTO world_chat_messages
+                        (server_id,channel,uid,character_name,recipient_uid,message,created_at)
+                       VALUES(?,?,?,?,?,?,?) RETURNING id""",args)
+                mid = int(cur.fetchone()["id"])
+            else:
+                cur = db.execute(
+                    """INSERT INTO world_chat_messages
+                        (server_id,channel,uid,character_name,recipient_uid,message,created_at)
+                       VALUES(?,?,?,?,?,?,?)""",args)
+                mid = int(cur.lastrowid)
+            db.commit()
+            return dict(id=mid,server_id=server_id,channel=channel,uid=uid,
+                        character_name=me["character_name"],recipient_uid=recipient_uid,
+                        message=message,created_at=now)
+        except Exception:
+            db.rollback()
+            raise
+        finally:
+            db.close()
+
+
 def send_guild_chat(uid, server_id, character_name, message):
     message=" ".join(str(message or '').strip().split())
     if not 1<=len(message)<=280: raise ValueError("Tin nhắn phải dài 1–280 ký tự")
