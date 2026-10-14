@@ -71,7 +71,15 @@ def validate(raw):
 def get():
     base = _read(DEFAULT_PATH)
     override = _read(OVERRIDE_PATH)
-    return validate(override if override.get("packages") else base)
+    if not override.get("packages"):
+        return validate(base)
+    # Preserve every VPS-admin-configured package/reward/price without overwriting
+    # it, but also expose restored original card/gift identifiers introduced
+    # after the previous state override was saved.
+    custom = validate(override)
+    existing = {p["id"] for p in custom["packages"]}
+    restored = [p for p in validate(base)["packages"] if p["id"] not in existing]
+    return {"packages": custom["packages"] + restored}
 
 
 def save(raw):
