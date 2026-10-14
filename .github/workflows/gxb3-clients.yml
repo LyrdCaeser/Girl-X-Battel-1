@@ -27,12 +27,14 @@ jobs:
         run: |
           $r = Invoke-WebRequest -UseBasicParsing -Uri "https://180-93-111-99.sslip.io/readyz" -TimeoutSec 30
           if ($r.StatusCode -ne 200) { throw "Production temporarily unavailable" }
-      - name: Install Windows packager
-        run: python -m pip install -r clients/windows/requirements-build.txt
+      - name: Install Windows packager and icon converter
+        run: python -m pip install -r clients/windows/requirements-build.txt Pillow
+      - name: Generate branded Windows icon
+        run: python clients/tools/generate_icons.py
       - name: Build Windows x64 EXE
         shell: pwsh
         run: |
-          pyinstaller --noconfirm --clean --onefile --windowed --name NuThanChienDau-GXB3-ALPHA-RC7 --collect-all webview clients/windows/gxb3_launcher.py
+          pyinstaller --noconfirm --clean --onefile --windowed --name NuThanChienDau-GXB3-ALPHA-RC7 --icon clients/windows/gxb3.ico --collect-all webview clients/windows/gxb3_launcher.py
       - name: Verify native Windows EXE
         shell: pwsh
         run: |
@@ -72,6 +74,10 @@ jobs:
       - name: Check production URL (informational)
         continue-on-error: true
         run: curl --fail --retry 2 --retry-delay 3 --max-time 30 https://180-93-111-99.sslip.io/readyz
+      - name: Generate branded Android icon
+        run: |
+          python3 -m pip install --user --break-system-packages Pillow
+          python3 clients/tools/generate_icons.py
       - name: Build signed ALPHA RC7 APK
         run: gradle -p clients/android :app:assembleRelease --stacktrace --no-daemon
       - name: Verify package signature and size
@@ -100,12 +106,17 @@ jobs:
         run: |
           xcodebuild -version
           xcrun --sdk iphoneos --show-sdk-path
+      - name: Generate branded iOS icons
+        run: |
+          python3 -m pip install --user --break-system-packages Pillow
+          python3 clients/tools/generate_icons.py
       - name: Compile genuine iOS arm64 WKWebView application
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p build/Payload/GXB3.app
           cp clients/ios/Info.plist build/Payload/GXB3.app/Info.plist
+          cp clients/ios/AppIcon/*.png build/Payload/GXB3.app/
           xcrun swiftc \
             -parse-as-library \
             -target arm64-apple-ios15.0 \
