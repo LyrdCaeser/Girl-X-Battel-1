@@ -29,7 +29,7 @@ window.GxbPayment=(()=>{
     }catch(e){status.textContent=e.message;return null;}
   }
 
-  async function open(selectedPackageId=null){
+  async function open(selectedPackageId=null,originalOffer=''){
     close();
     const packages=await catalog();
     overlay=el('div','pay-overlay');
@@ -56,7 +56,9 @@ window.GxbPayment=(()=>{
       const o=el('option','',T('No top-up package is currently available'));o.value='';pkg.append(o);pkg.disabled=true;
     }
     const custom=document.createElement('input');custom.className='pay-input';custom.placeholder=T('Describe the package or amount you want');
+    if(originalOffer)custom.value=originalOffer;
     const note=document.createElement('textarea');note.className='pay-template';note.placeholder=T('Additional note (optional)');
+    if(originalOffer)note.value='Gói/Sự kiện gốc: '+originalOffer;
     const customLabel=el('label','pay-label',T('Custom request'));
     function syncCustom(){
       const current=packages.find(x=>x.id===pkg.value);
