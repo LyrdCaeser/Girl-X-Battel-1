@@ -67,8 +67,9 @@ def catalog() -> dict:
     return {"items": items, "shards": shards}
 
 def allowed_gift_ids() -> set[str]:
+    from .vip import VIP_EXP_REWARD_ID
     gift = catalog()
-    return {str(v["id"]) for v in (gift["items"] + gift["shards"])}
+    return {VIP_EXP_REWARD_ID, *(str(v["id"]) for v in (gift["items"] + gift["shards"]))}
 
 def validate_gift(attachments: dict) -> dict:
     if not isinstance(attachments, dict) or not attachments:
