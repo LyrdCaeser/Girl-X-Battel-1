@@ -367,6 +367,44 @@ class Engine:
                 raise
         return {'state': self.snapshot(), 'attachments': attachments}
 
+    def use_bag_item(self, item_id, reward_id, count=1):
+        """Use verified original selectable chests. Debit & shard grant commit together."""
+        recipes = {
+            133: (930187, 930188),       # Girls Chest: Kratos / Nephilim
+            4102003: (930187, 930188),   # Kratos or Nephilim Chest
+            207: (930195, 930194),       # Girls Customized: Izanami / Uriel
+        }
+        if isinstance(item_id, bool) or isinstance(reward_id, bool) or isinstance(count, bool):
+            raise GameError('Vật phẩm không hợp lệ')
+        try:
+            item_id, reward_id, count = int(item_id), int(reward_id), int(count)
+        except (TypeError, ValueError, OverflowError):
+            raise GameError('Vật phẩm không hợp lệ') from None
+        if item_id not in recipes:
+            raise GameError('Vật phẩm này chưa hỗ trợ sử dụng trực tiếp trên máy chủ')
+        if reward_id not in recipes[item_id]:
+            raise GameError('Phần thưởng chọn không thuộc rương này')
+        if not 1 <= count <= 50:
+            raise GameError('Mỗi lần chỉ được dùng từ 1 đến 50 rương')
+        with self.lock:
+            self.db.execute('BEGIN IMMEDIATE')
+            try:
+                state = self._load()
+                owned = int(state['items'].get(str(item_id), 0))
+                if owned < count:
+                    raise GameError('Không đủ rương trong Túi Đồ')
+                state['items'][str(item_id)] = owned - count
+                amount = 50 * count
+                state['items'][str(reward_id)] = int(state['items'].get(str(reward_id), 0)) + amount
+                self._save_profile(state)
+                self.db.commit()
+            except Exception:
+                self.db.rollback()
+                raise
+        return {'state': self.snapshot(),
+                'used': {'item_id': item_id, 'count': count},
+                'rewards': {str(reward_id): 50 * count}}
+
     def growth_diary_action(self, request):
         if not isinstance(request, dict): raise GameError('Datos inválidos')
         with self.lock:

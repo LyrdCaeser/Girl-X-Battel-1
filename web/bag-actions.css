@@ -1,0 +1,12 @@
+
+/* Original Bag popup action for selectable chests (ID 133 / 207 / 4102003). */
+.bag-detail:has(.bag-use-controls:not([hidden])){grid-template-columns:72px minmax(0,1fr)}
+.bag-use-controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px}
+.bag-use-controls select{flex:1 1 175px;min-width:0;border:1px solid #a8bcd5;border-radius:8px;background:#fff;color:#33465f;padding:9px}
+.bag-use-controls input{width:68px;min-height:36px;border:1px solid #a8bcd5;border-radius:8px;padding:6px;color:#33465f}
+.bag-use-controls button{min-height:38px;padding:7px 24px;border:2px solid #f8fcff;border-radius:9px;background:linear-gradient(#8ed2ff,#337ecc);color:#fff;font-weight:900;box-shadow:0 2px 4px #51668a88}
+.bag-use-controls button:disabled{opacity:.55}
+.bag-use-note{font-size:12px;color:#8d625b;line-height:1.4}
+.bag-use-controls [hidden]{display:none!important}
+.gxb-desktop .bag-detail{width:min(540px,calc(100vw - 40px));bottom:10%;grid-template-columns:82px minmax(0,1fr)}
+.gxb-desktop .bag-detail img{height:80px;width:80px}

@@ -434,12 +434,58 @@ function itemPicture(item){const icon=String(item?.icon||'');if(icon.startsWith(
  if(icon.startsWith('artfact_'))return '/assets/equipment/'+icon+'.png';if(icon.startsWith('soul_equip_'))return '/assets/souls/'+icon+'.png';return '';
 }
 
+const BAG_USE_CHOICES={
+  '133':[['Kratos · 50 mảnh 5★',930187],['Nephilim · 50 mảnh 5★',930188]],
+  '4102003':[['Kratos · 50 mảnh 5★',930187],['Nephilim · 50 mảnh 5★',930188]],
+  '207':[['Izanami · 50 mảnh 5★',930195],['Uriel · 50 mảnh 5★',930194]]
+};
+let currentBagUse=null;
+function showBagItem(item,count,src){
+ const panel=$('bag-detail');
+ $('bag-detail-name').textContent=item.name;
+ $('bag-detail-count').textContent='Số lượng: '+number(count);
+ $('bag-detail-description').textContent=item.description||'Vật phẩm trong Túi Đồ.';
+ const image=$('bag-detail-image');image.src=src||'/assets/ui/item_bg.png';image.alt=item.name;
+ const select=$('bag-use-choice'),qty=$('bag-use-count'),button=$('bag-detail-use'),note=$('bag-use-note');
+ select.replaceChildren();currentBagUse=null;
+ const options=BAG_USE_CHOICES[String(item.id)];
+ if(options&&count>0){
+   for(const [label,id] of options){const opt=document.createElement('option');opt.value=String(id);opt.textContent=label;select.append(opt);}
+   qty.max=String(Math.min(50,count));qty.value='1';select.hidden=false;qty.hidden=false;
+   button.hidden=false;button.disabled=false;note.hidden=true;
+   currentBagUse={id:item.id,name:item.name};
+ }else{
+   select.hidden=true;qty.hidden=true;button.hidden=true;
+   note.hidden=Number(item.type)!==14&&Number(item.type)!==27;
+   note.textContent='Vật phẩm này chưa có công thức sử dụng được xác thực trên máy chủ.';
+ }
+ panel.hidden=false;
+ if(typeof Equipment!=='undefined')Equipment.bagDetail(item.id);
+}
+async function useSelectedBagItem(){
+ if(!currentBagUse||busy)return;
+ const id=currentBagUse.id,option=$('bag-use-choice').value,count=Number($('bag-use-count').value);
+ if(!Number.isSafeInteger(count)||count<1||count>50||count>Number(state.items[String(id)]||0)){
+   error('Số lượng rương không hợp lệ');return;
+ }
+ const text=$('bag-use-choice').selectedOptions[0]?.textContent||'phần thưởng';
+ if(!confirm('Sử dụng '+count+' × '+currentBagUse.name+' để nhận '+text+' mỗi rương?'))return;
+ const button=$('bag-detail-use');button.disabled=true;busy=true;
+ try{
+   const result=await api('/api/inventory/use',{item_id:id,reward_id:Number(option),count});
+   state=result.state;
+   $('bag-detail').hidden=true;currentBagUse=null;
+   if(typeof GxbAudio!=='undefined')GxbAudio.sfx('gain_window_sound',.75);
+   render();error('');
+ }catch(e){error(e.message);}
+ finally{busy=false;button.disabled=false;}
+}
 function renderBag(){
  $('bag-gold').textContent=number(state.items['1']);$('bag-gems').textContent=number(state.items['2']);
  const tabs=$('bag-tabs');tabs.replaceChildren();for(const [id,label] of bagTabs){const b=node('button',bagTab===id?'active':'',label);b.setAttribute('aria-pressed',String(bagTab===id));b.addEventListener('click',()=>{bagTab=id;bagQuality=0;$('bag-detail').hidden=true;renderBag();});tabs.append(b);}
  const quality=$('bag-quality');quality.replaceChildren();for(let i=0;i<=6;i++){const b=node('button','bag-quality-button quality-'+i+(bagQuality===i?' active':''));b.title=i===0?"All qualities":'Calidad '+i;b.setAttribute('aria-label',b.title);b.setAttribute('aria-pressed',String(bagQuality===i));b.addEventListener('click',()=>{bagQuality=i;renderBag();});quality.append(b);}
  const rows=Object.entries(state.items).map(([id,count])=>({item:itemCatalog[id],count:Number(count)})).filter(({item,count})=>item&&count>0&&item.category===bagTab&&(!bagQuality||item.quality===bagQuality)).sort((a,b)=>b.item.quality-a.item.quality||a.item.id-b.item.id);
- const grid=$('bag-grid');grid.replaceChildren();for(const {item,count} of rows){const tile=node('button','bag-item');tile.type='button';tile.title=item.name+' · '+number(count);tile.setAttribute('aria-label',item.name+', '+number(count)+' unidades');tile.style.backgroundImage=`url('/assets/ui/quality_${Math.min(Math.max(item.quality,0),7)}.png')`;const src=itemPicture(item);if(src){const img=node('img','bag-item-image');img.src=src;img.alt='';img.loading='lazy';tile.append(img);}else tile.append(node('span','bag-item-fallback','✦'));if(bagTab===1&&item.quality>1){const stars=node('span','bag-item-stars','★'.repeat(Math.min(item.quality,6)));tile.append(stars);}tile.append(node('span','bag-item-count',number(count)));tile.addEventListener('click',()=>{const panel=$('bag-detail');$('bag-detail-name').textContent=item.name;$('bag-detail-count').textContent="Quantity: "+number(count);$('bag-detail-description').textContent=item.description||"Item from the local save.";const image=$('bag-detail-image');image.src=src||'/assets/ui/item_bg.png';image.alt=item.name;panel.hidden=false;if(typeof Equipment!=='undefined')Equipment.bagDetail(item.id);});grid.append(tile);}
+ const grid=$('bag-grid');grid.replaceChildren();for(const {item,count} of rows){const tile=node('button','bag-item');tile.type='button';tile.title=item.name+' · '+number(count);tile.setAttribute('aria-label',item.name+', '+number(count)+' unidades');tile.style.backgroundImage=`url('/assets/ui/quality_${Math.min(Math.max(item.quality,0),7)}.png')`;const src=itemPicture(item);if(src){const img=node('img','bag-item-image');img.src=src;img.alt='';img.loading='lazy';tile.append(img);}else tile.append(node('span','bag-item-fallback','✦'));if(bagTab===1&&item.quality>1){const stars=node('span','bag-item-stars','★'.repeat(Math.min(item.quality,6)));tile.append(stars);}tile.append(node('span','bag-item-count',number(count)));tile.addEventListener('click',()=>showBagItem(item,count,src));grid.append(tile);}
  const empty=$('bag-empty');empty.hidden=rows.length>0;empty.textContent=bagQuality?"You have no items of this quality in "+bagTabs.find(([id])=>id===bagTab)[1]+'.':"You have no items yet in "+bagTabs.find(([id])=>id===bagTab)[1]+'.';
  $('bag-forge').hidden=bagTab!==1;if(typeof Souls!=='undefined')Souls.bag();
 }
@@ -680,7 +726,8 @@ $('detail-grade-up').addEventListener('click',async()=>{
  await action('PARTNER_GRADEUP',{partner_id:hero.partner_id});
 });
 $('bag-detail-close').addEventListener('click',()=>{$('bag-detail').hidden=true;});
-$('bag-forge').addEventListener('click',()=>{const panel=$('bag-detail');$('bag-detail-name').textContent='Forge';$('bag-detail-count').textContent="Forge coming soon";$('bag-detail-description').textContent="The Bag already uses your actual items. Forge recipes and operations will be added when equipment tables are connected.";$('bag-detail-image').src='/assets/ui/quality_6.png';$('bag-detail-image').alt='';panel.hidden=false;});
+$('bag-detail-use').addEventListener('click',useSelectedBagItem);
+$('bag-forge').addEventListener('click',()=>{const panel=$('bag-detail');$('bag-detail-use').hidden=true;$('bag-use-choice').hidden=true;$('bag-use-count').hidden=true;$('bag-use-note').hidden=true;currentBagUse=null;$('bag-detail-name').textContent='Forge';$('bag-detail-count').textContent="Forge coming soon";$('bag-detail-description').textContent="The Bag already uses your actual items. Forge recipes and operations will be added when equipment tables are connected.";$('bag-detail-image').src='/assets/ui/quality_6.png';$('bag-detail-image').alt='';panel.hidden=false;});
 const comingRoutes={"Guild":'guild',"Menu":'settings',"Mail":'mail',"Gift Packs":'original-gifts',"Limited Gift":'original-limited-gift',"Events":'events',"Treasure":'treasure',"Friends":'friends',"Fantasy Book":'book','Servant':'servant',"Excursion":'expedition',"Store":'black-market'};
 document.querySelectorAll('[data-coming]').forEach(b=>b.addEventListener('click',()=>{const key=comingRoutes[b.dataset.coming];if(key){openMenu(key);return;}notice(b.dataset.coming);}));
 $('home-add-gold')?.addEventListener('click',()=>{if(typeof Midas!=='undefined')Midas.open();});
