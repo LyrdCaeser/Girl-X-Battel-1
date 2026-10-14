@@ -80,6 +80,24 @@ class GmMailRC7Tests(unittest.TestCase):
         with self.assertRaises(ValueError):
             live_service.claim_mail(pending[0]["id"],"RC7-USER","S1")
 
+    def test_failed_mail_insert_does_not_approve_paid_order(self):
+        from gxb2 import vip
+        pack={"id":"MONTHLY_CARD","name":"Thẻ Tháng","price_label":"QTV xác nhận",
+              "manual_reward":False,"reward":{vip.VIP_EXP_REWARD_ID:100},"enabled":True}
+        with patch.object(live_service.topup,"package",return_value=pack):
+            placed=live_service.create_order("RC7-USER","S1","User Test","MONTHLY_CARD")
+        db=live_service._db()
+        try:
+            db.execute("""CREATE TRIGGER reject_paid_mail BEFORE INSERT ON mail
+                          BEGIN SELECT RAISE(ABORT, 'simulated mail insert failure'); END""")
+            db.commit()
+        finally:
+            db.close()
+        with self.assertRaises(Exception):
+            live_service.review_order(placed["id"],True,reviewer="TEST_GM")
+        self.assertEqual(live_service.order(placed["id"])["status"],"pending")
+        self.assertEqual(live_service.mailbox("RC7-USER","S1"),[])
+
     def test_catalog_only_accepts_real_shards_and_items(self):
         catalog=gm_catalog.catalog()
         self.assertGreater(len(catalog["items"]),100)
