@@ -227,43 +227,59 @@ def orders(status=""):
 
 
 def review_order(order_id,approve,reward=None,reviewer="GM"):
-    reward=reward or {}
+    """Approve/reject a paid order; approval and delivery are one transaction.
+
+    A failed mail write leaves the order pending. On successful approval, VIP EXP
+    and other rewards wait in the exact UID/server inbox until single-use claim.
+    """
+    reward = reward or {}
     with _lock:
-        db=_db(); db.execute("BEGIN IMMEDIATE")
-        row=db.execute("SELECT * FROM orders WHERE id=?",(order_id,)).fetchone()
-        if not row: db.rollback();db.close();raise ValueError("Không tìm thấy đơn")
-        if row["status"]!="pending": db.rollback();db.close();raise ValueError("Đơn đã được xử lý")
-        clean={}
-        if approve:
-            manual=bool(int(row["manual_reward"] or 0))
-            source=reward if manual else json.loads(row["reward"] or "{}")
-            if not isinstance(source,dict): source={}
-            for k,v in source.items():
-                item=str(int(k)); amount=int(v)
-                if amount<0 or amount>2_000_000_000:
-                    db.rollback();db.close();raise ValueError("Số lượng vật phẩm không hợp lệ")
-                if amount: clean[item]=amount
-            if not clean:
-                db.rollback();db.close()
-                raise ValueError("Đơn duyệt phải có reward")
-        status="approved" if approve else "rejected"; now=int(time.time())
-        db.execute("UPDATE orders SET status=?,reward=?,reviewed_at=?,reviewer=? WHERE id=?",
-                   (status,json.dumps(clean),now,reviewer,order_id))
-        _audit(db,"order."+status,f"{row['server_id']}:{row['uid']}",
-               {"order_id":order_id,"package":row["package"],"reward":clean},reviewer)
-        if approve:
-            # Atomic: never mark a paid order approved unless its UID-bound
-            # mailbox delivery is committed in the very same transaction.
-            mid="MAIL-"+uuid.uuid4().hex[:16].upper()
+        db = _db()
+        try:
+            db.execute("BEGIN IMMEDIATE")
+            row = db.execute("SELECT * FROM orders WHERE id=?", (order_id,)).fetchone()
+            if not row:
+                raise ValueError("Không tìm thấy đơn")
+            if row["status"] != "pending":
+                raise ValueError("Đơn đã được xử lý")
+            clean = {}
+            if approve:
+                manual = bool(int(row["manual_reward"] or 0))
+                source = reward if manual else json.loads(row["reward"] or "{}")
+                if not isinstance(source, dict):
+                    source = {}
+                for k, v in source.items():
+                    item = str(int(k))
+                    amount = int(v)
+                    if amount < 0 or amount > 2_000_000_000:
+                        raise ValueError("Số lượng vật phẩm không hợp lệ")
+                    if amount:
+                        clean[item] = amount
+                if not clean:
+                    raise ValueError("Đơn duyệt phải có phần thưởng đã cấu hình")
+            status = "approved" if approve else "rejected"
+            now = int(time.time())
             db.execute(
-                """INSERT INTO mail(id,uid,server_id,character_name,title,body,attachments,status,created_at,operator)
-                   VALUES(?,?,?,?,?,?,?,'pending',?,?)""",
-                (mid,row["uid"],row["server_id"],row["character_name"],"Nạp thành công",
-                 f"Đơn {order_id} · {row['package_name'] or row['package']} đã được QTV duyệt.",
-                 json.dumps(clean),now,reviewer))
-            _audit(db,"mail.send",f"{row['server_id']}:{row['uid']}",
-                   {"mail_id":mid,"order_id":order_id,"attachments":clean},reviewer)
-        db.commit(); db.close()
+                "UPDATE orders SET status=?,reward=?,reviewed_at=?,reviewer=? WHERE id=?",
+                (status, json.dumps(clean), now, reviewer, order_id))
+            _audit(db, "order." + status, f"{row['server_id']}:{row['uid']}",
+                   {"order_id":order_id,"package":row["package"],"reward":clean}, reviewer)
+            if approve:
+                mid = "MAIL-" + uuid.uuid4().hex[:16].upper()
+                db.execute(
+                    """INSERT INTO mail(id,uid,server_id,character_name,title,body,attachments,status,created_at,operator)
+                       VALUES(?,?,?,?,?,?,?,'pending',?,?)""",
+                    (mid,row["uid"],row["server_id"],row["character_name"],"Nạp thành công",
+                     f"Đơn {order_id} · {row['package_name'] or row['package']} đã được QTV duyệt.",
+                     json.dumps(clean),now,reviewer))
+                _audit(db,"mail.send",f"{row['server_id']}:{row['uid']}",
+                       {"mail_id":mid,"order_id":order_id,"attachments":clean},reviewer)
+            db.commit()
+        except Exception:
+            db.rollback()
+            raise
+        finally:
+            db.close()
     return order(order_id)
 
 
