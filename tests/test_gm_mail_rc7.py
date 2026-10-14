@@ -3,9 +3,10 @@
 Local temporary SQLite only. Production Neon/accounts and player saves are untouched.
 """
 import tempfile
+import threading
 import unittest
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
 from gxb2 import database, gm_catalog, live_service
 
@@ -125,6 +126,97 @@ class GmMailRC7Tests(unittest.TestCase):
         for invalid in ({"999999999":1},{"2":-1},{"2":0},{"2":"nhiều"},{"2":2000001}):
             with self.subTest(invalid=invalid),self.assertRaises(ValueError):
                 gm_catalog.validate_gift(invalid)
+
+
+
+class NeonMailClaimTransactionTests(unittest.TestCase):
+    """Production claim path contract, with fake pooled connection (NO Neon writes)."""
+
+    def _engine_and_connection(self):
+        from gxb2.engine import Engine
+        from gxb2.player_state_db import ScopedPostgresPlayerDB
+
+        # Construct the adapter without opening a production database.
+        player_db = ScopedPostgresPlayerDB.__new__(ScopedPostgresPlayerDB)
+        player_db._tx = None
+        player_db.uid = "TEST-CLAIM"
+        player_db.server_id = "S1"
+
+        raw = MagicMock(name="fake_psycopg_connection")
+        engine = Engine.__new__(Engine)
+        engine.db = player_db
+        engine.lock = threading.RLock()
+        state = {
+            "uid": "TEST-CLAIM", "server_id": "S1", "name": "Mailbox Test",
+            "items": {"1": 0, "2": 0, "3": 0}, "vip_paid_exp": 0,
+        }
+        engine._load = lambda: state
+        engine._save_profile = MagicMock(name="save_player_profile")
+        engine.snapshot = lambda: {
+            "items": dict(state["items"]),
+            "vip_paid_exp": state.get("vip_paid_exp", 0),
+        }
+        return engine, player_db, raw, state
+
+    def test_mail_claim_uses_same_neon_transaction_for_inventory_and_vip(self):
+        from gxb2 import vip
+        engine, player_db, raw, state = self._engine_and_connection()
+
+        def fake_claim(mail_id, uid, server_id, db=None):
+            self.assertEqual((mail_id, uid, server_id), ("MAIL-PAID-TEST", "TEST-CLAIM", "S1"))
+            self.assertIsInstance(db, database.DBConnection)
+            self.assertEqual(db.backend, "postgres")
+            self.assertIs(db._conn, raw)
+            # SQL placeholder conversion is required by live_service.claim_mail.
+            db.execute("SELECT id FROM mail WHERE id=?", ("MAIL-PAID-TEST",))
+            return {
+                "1": 150000, "2": 15000, "3": 15000,
+                vip.VIP_EXP_REWARD_ID: 1500,
+            }
+
+        with patch.object(database, "acquire_postgres", return_value=raw), \\
+             patch.object(database, "release_postgres") as release, \\
+             patch.object(live_service, "player", return_value={"status": "active"}), \\
+             patch.object(live_service, "claim_mail", side_effect=fake_claim):
+            result = engine.claim_live_mail("MAIL-PAID-TEST")
+            raw.execute.assert_any_call("BEGIN")
+            raw.execute.assert_any_call("SELECT id FROM mail WHERE id=%s", ("MAIL-PAID-TEST",))
+            raw.commit.assert_called_once_with()
+            raw.rollback.assert_not_called()
+            release.assert_called_once_with(raw)
+
+        self.assertEqual(result["state"]["items"], {"1": 150000, "2": 15000, "3": 15000})
+        self.assertEqual(result["state"]["vip_paid_exp"], 1500)
+        self.assertNotIn(vip.VIP_EXP_REWARD_ID, state["items"])
+        self.assertEqual(result["attachments"][vip.VIP_EXP_REWARD_ID], 1500)
+        engine._save_profile.assert_called_once_with(state)
+        self.assertIsNone(player_db._tx)
+
+    def test_failed_player_save_rolls_back_claim_and_vip_in_same_transaction(self):
+        engine, player_db, raw, state = self._engine_and_connection()
+        engine._save_profile.side_effect = RuntimeError("simulated profile save failure")
+
+        def fake_claim(_mail_id, _uid, _server_id, db=None):
+            self.assertIs(db._conn, raw)
+            return {"2": 50, "999999991": 100}
+
+        with patch.object(database, "acquire_postgres", return_value=raw), \\
+             patch.object(database, "release_postgres") as release, \\
+             patch.object(live_service, "player", return_value={"status": "active"}), \\
+             patch.object(live_service, "claim_mail", side_effect=fake_claim):
+            with self.assertRaisesRegex(RuntimeError, "simulated profile save failure"):
+                engine.claim_live_mail("MAIL-ROLLBACK-TEST")
+            raw.rollback.assert_called_once_with()
+            raw.commit.assert_not_called()
+            release.assert_called_once_with(raw)
+        self.assertIsNone(player_db._tx)
+
+    def test_borrowed_mail_connection_requires_active_player_transaction(self):
+        from gxb2.player_state_db import ScopedPostgresPlayerDB
+        db = ScopedPostgresPlayerDB.__new__(ScopedPostgresPlayerDB)
+        db._tx = None
+        with self.assertRaisesRegex(RuntimeError, "giao dịch đang mở"):
+            db.borrowed_live_transaction()
 
 
 if __name__=="__main__":
