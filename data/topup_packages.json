@@ -1,6 +1,38 @@
 {
   "packages": [
     {
+      "id": "WEEKLY_CARD",
+      "name": "Thẻ Tuần",
+      "price_label": "Liên hệ Zalo để xác nhận giá",
+      "reward": {},
+      "manual_reward": true,
+      "enabled": true
+    },
+    {
+      "id": "MONTHLY_CARD",
+      "name": "Thẻ Tháng",
+      "price_label": "Liên hệ Zalo để xác nhận giá",
+      "reward": {},
+      "manual_reward": true,
+      "enabled": true
+    },
+    {
+      "id": "WEEKLY_GIFT",
+      "name": "Gói Quà Hằng Tuần",
+      "price_label": "Liên hệ Zalo để xác nhận giá",
+      "reward": {},
+      "manual_reward": true,
+      "enabled": true
+    },
+    {
+      "id": "MONTHLY_GIFT",
+      "name": "Gói Quà Hằng Tháng",
+      "price_label": "Liên hệ Zalo để xác nhận giá",
+      "reward": {},
+      "manual_reward": true,
+      "enabled": true
+    },
+    {
       "id": "CUSTOM",
       "name": "Gói tùy chọn",
       "price_label": "Liên hệ Zalo",
