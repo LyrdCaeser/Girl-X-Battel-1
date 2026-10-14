@@ -821,6 +821,7 @@ class HTTPHandler(BaseHTTPRequestHandler):
                 return self.send(200, live_service.set_ban(data.get('uid'), data.get('server_id'), action == 'ban', data.get('reason','')))
             if path == '/api/admin/topup-packages':
                 if not self.admin_authorized(): return self.send(403, {'error': 'QTV_KEY_REQUIRED'})
+                if not self.gm_key_authorized(): return self.send(403, {'error': 'Khóa QTV không chính xác hoặc chưa cấu hình trên VPS'})
                 action=str(data.get('action') or 'save')
                 if action=='reset':
                     cfg=topup.reset()
@@ -878,6 +879,7 @@ class HTTPHandler(BaseHTTPRequestHandler):
                     data.get('title'), data.get('body'), gift, 'SUPER_GM'))
             if path == '/api/admin/order/review':
                 if not self.admin_authorized(): return self.send(403, {'error': 'QTV_KEY_REQUIRED'})
+                if not self.gm_key_authorized(): return self.send(403, {'error': 'Khóa QTV không chính xác hoặc chưa cấu hình trên VPS'})
                 action = data.get('action')
                 if action not in ('approve','reject'): raise ValueError('Thao tác đơn hàng không hợp lệ')
                 return self.send(200, live_service.review_order(data.get('order_id'), action == 'approve', data.get('reward') or {}, 'SUPER_GM'))
