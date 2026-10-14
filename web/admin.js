@@ -1,6 +1,7 @@
 'use strict';
 window.AdminPanel=(()=>{
   let root=null,cfg=null,dash=null,worldCfg=null,topupCfg=null,active='overview';
+  let giftCatalog=null,giftBasket={},giftKey='',recipient=null,catalogSearch='',catalogPage=0;
   const el=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n;};
   const field=(parent,label,id,type='text',step=null)=>{const l=el('label','admin-field',label),i=document.createElement('input');i.id=id;i.type=type;if(step)i.step=step;l.append(i);parent.append(l);return i;};
   const textarea=(parent,label,id,placeholder='')=>{const l=el('label','admin-field',label),i=document.createElement('textarea');i.id=id;i.placeholder=placeholder;l.append(i);parent.append(l);return i;};
@@ -15,7 +16,7 @@ window.AdminPanel=(()=>{
     root.append(head);
 
     const nav=el('nav','admin-nav');
-    [['overview','Tổng quan'],['mail','Gửi thư'],['orders','Đơn nạp'],['players','Người chơi'],['worlds','Server'],['config','Cấu hình'],['tools','GM Tools'],['audit','Audit']].forEach(([id,label])=>{
+    [['overview','Tổng quan'],['players','Người chơi'],['mail','Gửi thư'],['currency','Tiền tệ'],['items','Vật phẩm'],['shards','Mảnh nhân vật'],['orders','Đơn nạp'],['worlds','Server'],['config','Cấu hình'],['audit','Audit']].forEach(([id,label])=>{
       const b=btn(label,()=>show(id),'admin-tab');b.dataset.tab=id;nav.append(b);
     });
     root.append(nav);
@@ -28,7 +29,7 @@ window.AdminPanel=(()=>{
   async function refreshDashboard(){dash=await api('/api/admin/dashboard');}
   function show(id){active=id;for(const b of root.querySelectorAll('.admin-tab'))b.classList.toggle('on',b.dataset.tab===id);render();}
   function render(){const body=document.getElementById('admin-body');if(!body)return;body.replaceChildren();
-    const fn={overview:renderOverview,mail:renderMail,orders:renderOrders,players:renderPlayers,worlds:renderWorlds,config:renderConfig,tools:renderTools,audit:renderAudit}[active]||renderOverview;fn(body);
+    const fn={overview:renderOverview,mail:renderMail,currency:renderCurrency,items:renderItems,shards:renderShards,orders:renderOrders,players:renderPlayers,worlds:renderWorlds,config:renderConfig,audit:renderAudit}[active]||renderOverview;fn(body);
   }
   function renderOverview(body){
     const grid=el('div','admin-grid');
@@ -58,18 +59,148 @@ window.AdminPanel=(()=>{
     log.style.whiteSpace='pre-wrap';
     tests.append(trigger,log);body.append(tests);
   }
-  function renderMail(body){
-    const c=card('GM Mail · gửi bất kỳ vật phẩm qua UID + Server + Tên Nhân Vật');
-    field(c,'UID','gm-mail-uid');field(c,'Server','gm-mail-server').value='S1';field(c,'Tên Nhân Vật','gm-mail-name');
-    field(c,'Tiêu đề','gm-mail-title').value='Quà từ GM';
-    textarea(c,'Nội dung','gm-mail-body','Thông báo gửi người chơi...');
-    textarea(c,'Vật phẩm JSON','gm-mail-items','{"2":1000,"1":500000}');
-    c.append(btn('Gửi thư ngay',sendMail,'primary'));body.append(c);
+  function amount(value) {
+    const n=Number(value);
+    if(!Number.isSafeInteger(n)||n<1||n>2000000)throw Error('Số lượng phải từ 1 đến 2.000.000');
+    return n;
   }
-  async function sendMail(){try{
-    const payload={uid:val('gm-mail-uid'),server_id:val('gm-mail-server'),character_name:val('gm-mail-name'),title:val('gm-mail-title'),body:val('gm-mail-body'),attachments:JSON.parse(val('gm-mail-items')||'{}')};
-    const r=await api('/api/admin/mail/send',payload);status('Đã gửi '+r.id);await refreshDashboard();
-  }catch(e){status(e.message,false);}}
+  function giftPic(src,name) {
+    const img=el('img','admin-gift-image');img.src=src;img.alt=name||'';
+    img.loading='lazy';return img;
+  }
+  function basketPanel(){
+    const panel=el('section','admin-basket');
+    panel.append(el('h3','','Quà đã chọn'));
+    const entries=Object.entries(giftBasket);
+    if(!entries.length)panel.append(el('p','admin-note','Chưa chọn vật phẩm nào.'));
+    for(const [id,quantity] of entries){
+      const item=[...(giftCatalog?.items||[]),...(giftCatalog?.shards||[])].find(x=>String(x.id)===id);
+      const entry=el('div','admin-basket-row');
+      if(item?.image)entry.append(giftPic(item.image,item.name));
+      entry.append(el('span','',(item?.name||'Vật phẩm')+' · ID '+id+' · ×'+quantity));
+      entry.append(btn('Bỏ',()=>{delete giftBasket[id];render();}));
+      panel.append(entry);
+    }
+    panel.append(btn('Xóa danh sách quà',()=>{giftBasket={};render();},'admin-secondary'));
+    panel.append(btn('Đến Gửi Thư',()=>show('mail'),'primary'));
+    return panel;
+  }
+  function addGift(row,quantity){
+    try{
+      const id=String(row.id),qty=amount(quantity);
+      const available=[...(giftCatalog?.items||[]),...(giftCatalog?.shards||[])];
+      if(!available.some(x=>String(x.id)===id))throw Error('Không tìm thấy vật phẩm trong danh mục thật');
+      const next=(giftBasket[id]||0)+qty;
+      if(next>2000000)throw Error('Giới hạn 2.000.000 mỗi loại quà');
+      giftBasket[id]=next;
+      status('Đã thêm '+qty+' × '+row.name+' vào thư.');
+      render();
+    }catch(e){status(e.message,false);}
+  }
+  function giftCards(body,kind){
+    const title=kind==='shards'?'Mảnh Nhân Vật':kind==='currency'?'Tiền Tệ':'Vật Phẩm';
+    const panel=card(title+' · chọn quà có ảnh gốc');
+    if(!giftCatalog){panel.append(el('p','admin-note','Chưa tải danh mục quà từ máy chủ.'));body.append(panel);return;}
+    const filter=el('input');filter.placeholder='Tìm theo tên hoặc ID';filter.type='search';filter.value=catalogSearch;
+    filter.oninput=()=>{catalogSearch=filter.value;catalogPage=0;draw();};panel.append(filter);
+    const grid=el('div','admin-gift-grid');panel.append(grid);
+    const pagination=el('div','admin-pagination');panel.append(pagination);
+    body.append(panel,basketPanel());
+    function draw(){
+      grid.replaceChildren();pagination.replaceChildren();
+      const search=catalogSearch.toLocaleLowerCase('vi-VN');
+      const all=(kind==='shards'?giftCatalog.shards:giftCatalog.items.filter(x=>kind==='currency'?Number(x.category)===0:Number(x.category)!==0));
+      const matched=all.filter(x=>!search||String(x.id).includes(search)||String(x.name).toLocaleLowerCase('vi-VN').includes(search));
+      const pageSize=24,pages=Math.max(1,Math.ceil(matched.length/pageSize));
+      catalogPage=Math.max(0,Math.min(catalogPage,pages-1));
+      const rows=matched.slice(catalogPage*pageSize,(catalogPage+1)*pageSize);
+      if(!rows.length)grid.append(el('p','admin-note','Không có vật phẩm phù hợp có ảnh gốc.'));
+      for(const row of rows){
+        const tile=el('article','admin-gift-card');
+        tile.append(giftPic(row.image,row.name));
+        const details=el('div','admin-gift-details');
+        details.append(el('b','',row.name),el('small','','ID '+row.id));
+        details.append(el('small','',kind==='shards'?'Sao gốc: '+row.stars+'★ · ID nhân vật: '+row.girl_id+' · '+row.required+' mảnh để ghép':'Phẩm chất '+row.quality));
+        tile.append(details);
+        const qty=document.createElement('input');qty.type='number';qty.min='1';qty.max='2000000';qty.step='1';
+        qty.value=kind==='shards'?'50':'1';qty.setAttribute('aria-label','Số lượng '+row.name);
+        tile.append(qty,btn('Thêm vào thư',()=>addGift(row,qty.value),'primary'));grid.append(tile);
+      }
+      pagination.append(btn('← Trước',()=>{catalogPage--;draw();},'admin-secondary'),
+        el('small','',String(catalogPage+1)+' / '+pages+' · '+matched.length+' mục'),
+        btn('Tiếp →',()=>{catalogPage++;draw();},'admin-secondary'));
+      pagination.firstElementChild.disabled=catalogPage===0;
+      pagination.lastElementChild.disabled=catalogPage>=pages-1;
+    }
+    draw();
+  }
+  const renderCurrency=body=>giftCards(body,'currency');
+  const renderItems=body=>giftCards(body,'items');
+  const renderShards=body=>giftCards(body,'shards');
+  async function verifyGiftKey(){
+    const input=document.getElementById('gm-action-key');
+    const key=input?.value||'';
+    if(!key){status('Vui lòng nhập khóa QTV.',false);return;}
+    try{
+      const r=await fetch('/api/admin/gm/verify-key',{method:'POST',credentials:'same-origin',
+        headers:{'Content-Type':'application/json','X-GXB3-GM-Key':key},body:'{}'});
+      const payload=await r.json();
+      if(!r.ok||!payload.verified)throw Error(payload.error||'Không xác thực được khóa QTV.');
+      giftKey=key;status('Đã xác thực khóa QTV.');render();
+    }catch(e){giftKey='';status(e.message,false);}
+  }
+  function renderMail(body){
+    const c=card('Gửi quà qua Hòm Thư · xác nhận UID trước khi gửi');
+    const key=field(c,'Khóa QTV (không lưu vào thiết bị)','gm-action-key','password');key.autocomplete='off';
+    if(giftKey)key.placeholder='Đã xác thực, để trống nếu không đổi khóa';
+    c.append(btn('Xác thực khóa QTV',verifyGiftKey,'primary'));
+    c.append(el('p','admin-note',giftKey?'Đã xác thực khóa QTV. Vẫn cần đúng UID và tên nhân vật.':'Cần khóa riêng trên VPS và phiên đăng nhập SUPER GM.'));
+    const uid=field(c,'UID người nhận','gm-mail-uid');
+    const sid=field(c,'Máy chủ','gm-mail-server');sid.value=recipient?.server_id||state?.server_id||'S1';
+    const name=field(c,'Tên nhân vật (đối chiếu UID)','gm-mail-name');
+    if(recipient){uid.value=recipient.uid;name.value=recipient.character_name;uid.readOnly=true;sid.readOnly=true;name.readOnly=true;}
+    const confirm=el('p','admin-note',recipient?'Đã chọn: '+recipient.character_name+' · '+recipient.uid+' · '+recipient.server_id:'Hãy chọn người nhận trong tab Người Chơi trước khi gửi.');
+    c.append(confirm);
+    field(c,'Tiêu đề','gm-mail-title').value='Quà từ GM';
+    textarea(c,'Nội dung','gm-mail-body','Lời nhắn gửi đến người chơi...');
+    c.append(basketPanel());
+    c.append(btn('Xem trước thư',previewMail,'admin-secondary'));
+    const send=btn('Gửi thư ngay',sendMail,'primary');send.id='gm-send-button';c.append(send);
+    body.append(c);
+  }
+  function previewMail(){
+    const matches=(dash?.players||[]).filter(p=>p.uid===val('gm-mail-uid')&&p.server_id===val('gm-mail-server'));
+    if(matches.length!==1||matches[0].character_name!==val('gm-mail-name')){
+      status('UID / Server / Tên Nhân Vật không khớp danh sách thật.',false);return;
+    }
+    const modal=el('div','admin-modal'),box=el('section','admin-modal-box');
+    box.append(el('h3','','Xác nhận gửi quà đến '+matches[0].character_name),
+      el('p','','UID '+matches[0].uid+' · '+matches[0].server_id),el('p','',val('gm-mail-title')),
+      el('p','',val('gm-mail-body')),basketPanel());
+    box.append(btn('Đóng',()=>modal.remove()));modal.append(box);document.body.append(modal);
+  }
+  async function sendMail(){
+    const uid=val('gm-mail-uid'),server_id=val('gm-mail-server'),character_name=val('gm-mail-name');
+    const target=(dash?.players||[]).find(x=>x.uid===uid&&x.server_id===server_id&&x.character_name===character_name);
+    if(!target){status('Không tìm thấy chính xác UID + Server + tên nhân vật trong máy chủ.',false);return;}
+    if(!giftKey){status('Chưa xác thực khóa QTV.',false);return;}
+    if(!Object.keys(giftBasket).length){status('Chưa chọn quà để gửi.',false);return;}
+    const button=document.querySelector('#gm-send-button');
+    if(button)button.disabled=true;
+    try{
+      const response=await fetch('/api/admin/mail/send',{
+        method:'POST',credentials:'same-origin',
+        headers:{'Content-Type':'application/json','X-GXB3-GM-Key':giftKey},
+        body:JSON.stringify({uid,server_id,character_name,title:val('gm-mail-title'),body:val('gm-mail-body'),attachments:giftBasket})
+      });
+      const result=await response.json();
+      if(!response.ok)throw Error(result.error||'Máy chủ từ chối gửi thư.');
+      giftBasket={};
+      status('Đã gửi thư '+result.id+' đến đúng '+result.uid+' / '+result.server_id+'.');
+      await refreshDashboard();render();
+    }catch(e){status('Gửi thất bại: '+e.message,false);}
+    finally{if(button)button.disabled=false;}
+  }
   function renderOrders(body){
     const catalog=card('Gói nạp · cấu hình server-side');
     const ta=textarea(catalog,'Package Catalog JSON','admin-topup-json','{"packages":[...]}');
@@ -125,7 +256,9 @@ window.AdminPanel=(()=>{
       const account=(dash?.accounts||[]).find(a=>a.uid===p.uid);
       if(account?.status==='banned')row.append(btn('Unban Account',()=>accountStatus(p,'unban'),'primary'));
       else row.append(btn('Ban Account',()=>accountStatus(p,'ban'),'danger'));
-      row.append(btn('Phiên',()=>viewSessions(p.uid)),btn('Thu hồi phiên',()=>revokeSessions(p.uid)));
+      row.append(btn('Gửi quà',()=>{recipient=p;catalogSearch='';show('currency');},'primary'),
+        btn('Gửi thư',()=>{recipient=p;show('mail');},'primary'),
+        btn('Phiên',()=>viewSessions(p.uid)),btn('Thu hồi phiên',()=>revokeSessions(p.uid)));
       holder.append(row);
     }
   }
@@ -255,7 +388,7 @@ window.AdminPanel=(()=>{
   function renderGame(){if(typeof window.render==='function')window.render();}
   function renderAudit(body){const c=card('Audit Log');const list=el('div','admin-list');for(const a of dash?.audit||[]){const row=el('article','admin-row');const info=el('div','admin-row-main');info.append(el('b','',a.action),el('span','',a.target),el('small','',new Date(a.at*1000).toLocaleString()+' · '+a.operator));row.append(info);list.append(row);}c.append(list);body.append(c);}
   const val=id=>document.getElementById(id)?.value?.trim()||'';
-  async function load(){try{ensure();[cfg,dash,topupCfg]=await Promise.all([api('/api/admin/config'),api('/api/admin/dashboard'),api('/api/admin/topup-packages')]);show(active);status('Hệ Thống QTV đã sẵn sàng.');}catch(e){status(e.message,false);}}
+  async function load(){try{ensure();[cfg,dash,topupCfg,giftCatalog]=await Promise.all([api('/api/admin/config'),api('/api/admin/dashboard'),api('/api/admin/topup-packages'),api('/api/admin/gift-catalog')]);show(active);status('Hệ Thống QTV đã sẵn sàng.');}catch(e){status(e.message,false);}}
   async function open(){ensure();root.hidden=false;await load();}
   function close(){if(root)root.hidden=true;showView('home');}
   async function logout(){developerMode=false;adminKey='';sessionStorage.setItem('gxb2-developer','0');sessionStorage.removeItem('gxb2-admin-key');if(root)root.hidden=true;state=await api('/api/state');loadFormation();showView('home');renderGame();}
