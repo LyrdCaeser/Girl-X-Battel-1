@@ -82,6 +82,7 @@ DEFAULT_LIMITS = {
     "recovery_rotate": (4, 3600),
     "order_create": (6, 600),
     "guild_chat": (30, 60),
+    "world_chat": (15, 60),
     "pvp_queue": (20, 60),
     "battle": (12, 60),
     "admin": (60, 60),
