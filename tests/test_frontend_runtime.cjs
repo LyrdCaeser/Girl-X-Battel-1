@@ -130,9 +130,29 @@ function testBattleScale() {
   ]) {
     const scale = fit(box);
     assert.ok(scale > 0 && Number.isFinite(scale), 'all Spine skin sizes need a finite scale');
-    assert.ok(box.width * scale <= 250.001, 'regular fighter cannot overflow formation width');
-    assert.ok(box.height * scale <= 285.001, 'regular fighter cannot overflow formation height');
+    assert.ok(box.width * scale <= 320.001, 'regular fighter cannot overflow formation width');
+    assert.ok(box.height * scale <= 330.001, 'regular fighter cannot overflow formation height');
   }
+  // Regression: wide archived rigs should no longer shrink to a 250px cap.
+  const oldWideSize = 250;
+  const wide = {width: 468, height: 380};
+  assert.ok(wide.width * fit(wide) > oldWideSize,
+    'wide models regain size while respecting portrait footprint');
+  const face = vm.runInContext('ChibiBattle.modelFacing', ctx);
+  const leftNative = {width: 240, bones: [
+    {name:'Pattack01', x:-110},{name:'Pattack02',x:-85},{name:'root',x:0},
+  ]};
+  const rightNative = {width: 240, bones: [
+    {name:'Pattack01', x:160},{name:'Pattack02',x:190},
+  ]};
+  assert.equal(face(leftNative,{x:-75,width:220}),-1,
+    'strongly leftward attack origins need native-left sprite orientation');
+  assert.equal(face(rightNative,{x:-75,width:220}),1,
+    'native-right models keep their original orientation');
+  assert.equal(face({width:240,bones:[{name:'Pattack01',x:-80}]},{x:-75,width:220}),1,
+    'one uncertain bone must not flip the entire character');
+  assert.equal(face(rightNative,{x:-75,width:220},{facing:'left'}),-1,
+    'asset-specific facing can override ambiguous skeletons');
   assert.ok(fit({width: 110, height: 125}) > 1.15,
     'small native models are sized consistently rather than stuck at the old 1.15 scale cap');
   const boss = {width: 600, height: 1100};
@@ -143,7 +163,7 @@ function testBattleScale() {
   assert.match(css, /#arena:not\(\[hidden\]\) \.battlefield/);
   assert.match(css, /#event-arena \.battlefield/);
   assert.match(css, /aspect-ratio:9\/16!important/);
-  console.log('PASS | battle: portrait viewport and Spine fighter footprints are bounded');
+  console.log('PASS | battle: native Spine bounds, facing and portrait viewport verified');
 }
 
 (async () => {
