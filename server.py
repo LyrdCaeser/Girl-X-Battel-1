@@ -21,7 +21,7 @@ from gxb2.story import catalog as story_catalog
 from gxb2.dress import catalog as dress_catalog
 from gxb2.skins import catalog as skins_catalog
 from gxb2.souls import catalog as souls_catalog
-from gxb2 import protocol as p, local_promotion, local_config, world_live_config, topup, live_service, auth, database, gm_catalog
+from gxb2 import protocol as p, local_promotion, local_config, world_live_config, topup, live_service, auth, database, gm_catalog, giftcodes
 from gxb2.player_engines import PlayerEnginePool
 from gxb2.battle import simulate as simulate_battle, ONLINE_BATTLE_ID, normalize_online_seed
 from gxb2.security import FixedWindowRateLimiter, DEFAULT_LIMITS, env_bool, validate_production_config
@@ -351,6 +351,12 @@ class HTTPHandler(BaseHTTPRequestHandler):
             ctx = self.require_auth()
             if not ctx: return
             return self.send(200, {'sessions': auth.sessions_for_token(self.session_token())})
+        if path in ('/giftcode-studio','/giftcode-studio/'):
+            return self.send(200,(ROOT/'giftcode-studio/index.html').read_bytes(),'text/html; charset=utf-8')
+        if path in ('/giftcode-studio/app.js','/giftcode-studio/style.css'):
+            file=ROOT/'giftcode-studio'/path.rsplit('/',1)[-1]
+            return self.send(200,file.read_bytes(),
+                'application/javascript; charset=utf-8' if file.suffix=='.js' else 'text/css; charset=utf-8')
         if path == '/api/payment/packages':
             return self.send(200, topup.public_catalog())
         if path.startswith('/api/') and not self.require_auth():
@@ -413,6 +419,16 @@ class HTTPHandler(BaseHTTPRequestHandler):
                 'season_reward': live_service.pvp_season_claim_status(account['uid'], account['server_id'], mode),
                 'history': live_service.pvp_history(account['uid'], 20),
             })
+        if path == '/api/giftcode/catalog':
+            if not self.admin_authorized(): return self.send(403,{'error':'Cần tài khoản SUPER GM'})
+            return self.send(200,{'catalog':gm_catalog.catalog(),'worlds':live_service.worlds()})
+        if path == '/api/giftcode/list':
+            if not self.admin_authorized(): return self.send(403,{'error':'Cần tài khoản SUPER GM'})
+            return self.send(200,{'codes':giftcodes.list_codes()})
+        if path == '/api/giftcode/redemptions':
+            if not self.admin_authorized(): return self.send(403,{'error':'Cần tài khoản SUPER GM'})
+            code=(parse_qs(parsed.query).get('code') or [''])[0]
+            return self.send(200,{'redemptions':giftcodes.redemptions(code)})
         if path == '/api/admin/config':
             if not self.admin_authorized():
                 return self.send(403, {'error': 'QTV_KEY_REQUIRED'})
@@ -725,6 +741,8 @@ class HTTPHandler(BaseHTTPRequestHandler):
             if path == '/api/pvp/queue' and not self.rate_limit('pvp_queue'): return
             if path in ('/api/pvp/match/battle','/api/guild-war/battle') and not self.rate_limit('battle'): return
             if path.startswith('/api/admin/') and not self.rate_limit('admin'): return
+            if path == '/api/giftcode/redeem' and not self.rate_limit('giftcode_redeem'): return
+            if path.startswith('/api/giftcode/admin/') and not self.rate_limit('admin'): return
             if path == '/api/world-guild/manage' and str(data.get('action') or '') == 'chat' and not self.rate_limit('guild_chat'): return
             if path == '/api/chat/send' and not self.rate_limit('world_chat'): return
             if path in ('/api/auth/register','/api/auth/login'):
@@ -782,6 +800,19 @@ class HTTPHandler(BaseHTTPRequestHandler):
                         account['uid'], account['server_id'],
                         data.get('channel'), data.get('message'), data.get('recipient_uid', ''))
                 })
+            if path == '/api/giftcode/redeem':
+                ctx=self.auth_context()
+                account=ctx['account']
+                return self.send(200,giftcodes.redeem(data.get('code'),account['uid'],account['server_id']))
+            if path.startswith('/api/giftcode/admin/'):
+                if not self.admin_authorized(): return self.send(403,{'error':'Chỉ SUPER GM được tạo mã'})
+                if not self.gm_key_authorized(): return self.send(403,{'error':'Khóa hành động QTV không hợp lệ'})
+                operator=self.auth_context()['account']['uid']
+                if path == '/api/giftcode/admin/create':
+                    return self.send(200,giftcodes.create(data,operator))
+                if path == '/api/giftcode/admin/revoke':
+                    return self.send(200,giftcodes.revoke(data.get('code'),operator))
+                return self.send(404,{'error':'Đường dẫn giftcode không tồn tại'})
             if path == '/api/admin/check':
                 if not self.admin_authorized():
                     return self.send(403, {'error': 'QTV_KEY_INVALID'})

@@ -86,4 +86,5 @@ DEFAULT_LIMITS = {
     "pvp_queue": (20, 60),
     "battle": (12, 60),
     "admin": (60, 60),
+    "giftcode_redeem": (6, 120),
 }
