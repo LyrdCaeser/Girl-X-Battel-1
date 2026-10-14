@@ -4,13 +4,13 @@
 <dict>
     <key>CFBundleDevelopmentRegion</key><string>vi</string>
     <key>CFBundleExecutable</key><string>GXB3</string>
-    <key>CFBundleIdentifier</key><string>com.gxb3.game.alpha</string>
+    <key>CFBundleIdentifier</key><string>com.quangho.goddess.battle</string>
     <key>CFBundleInfoDictionaryVersion</key><string>6.0</string>
-    <key>CFBundleName</key><string>GXB 3</string>
-    <key>CFBundleDisplayName</key><string>GXB 3 RC6</string>
+    <key>CFBundleName</key><string>Nữ Thần Chiến Đấu - GXB 3</string>
+    <key>CFBundleDisplayName</key><string>Nữ Thần Chiến Đấu - GXB 3</string>
     <key>CFBundlePackageType</key><string>APPL</string>
     <key>CFBundleShortVersionString</key><string>1.0.0</string>
-    <key>CFBundleVersion</key><string>100006</string>
+    <key>CFBundleVersion</key><string>100007</string>
     <key>LSRequiresIPhoneOS</key><true/>
     <key>MinimumOSVersion</key><string>15.0</string>
     <key>UIDeviceFamily</key><array><integer>1</integer><integer>2</integer></array>
