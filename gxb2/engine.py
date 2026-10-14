@@ -367,43 +367,26 @@ class Engine:
                 raise
         return {'state': self.snapshot(), 'attachments': attachments}
 
-    def use_bag_item(self, item_id, reward_id, count=1):
-        """Use verified original selectable chests. Debit & shard grant commit together."""
-        recipes = {
-            133: (930187, 930188),       # Girls Chest: Kratos / Nephilim
-            4102003: (930187, 930188),   # Kratos or Nephilim Chest
-            207: (930195, 930194),       # Girls Customized: Izanami / Uriel
-        }
-        if any(isinstance(value, (bool, float, dict, list)) for value in (item_id, reward_id, count)):
-            raise GameError('Vật phẩm không hợp lệ')
-        try:
-            item_id, reward_id, count = int(item_id), int(reward_id), int(count)
-        except (TypeError, ValueError, OverflowError):
-            raise GameError('Vật phẩm không hợp lệ') from None
-        if item_id not in recipes:
-            raise GameError('Vật phẩm này chưa hỗ trợ sử dụng trực tiếp trên máy chủ')
-        if reward_id not in recipes[item_id]:
-            raise GameError('Phần thưởng chọn không thuộc rương này')
-        if not 1 <= count <= 50:
-            raise GameError('Mỗi lần chỉ được dùng từ 1 đến 50 rương')
+    def bag_use_options(self, item_id):
+        from . import bag_use
+        return bag_use.describe(item_id)
+
+    def use_bag_item(self, item_id, reward_id=None, count=1):
+        """Server-authoritative original game reward rules; never trust client data."""
+        from . import bag_use
         with self.lock:
             self.db.execute('BEGIN IMMEDIATE')
             try:
                 state = self._load()
-                owned = int(state['items'].get(str(item_id), 0))
-                if owned < count:
-                    raise GameError('Không đủ rương trong Túi Đồ')
-                state['items'][str(item_id)] = owned - count
-                amount = 50 * count
-                state['items'][str(reward_id)] = int(state['items'].get(str(reward_id), 0)) + amount
+                rewards = bag_use.open_in_state(state, item_id, count, reward_id)
                 self._save_profile(state)
                 self.db.commit()
             except Exception:
                 self.db.rollback()
                 raise
         return {'state': self.snapshot(),
-                'used': {'item_id': item_id, 'count': count},
-                'rewards': {str(reward_id): 50 * count}}
+                'used': {'item_id': int(item_id), 'count': int(count)},
+                'rewards': rewards}
 
     def growth_diary_action(self, request):
         if not isinstance(request, dict): raise GameError('Datos inválidos')

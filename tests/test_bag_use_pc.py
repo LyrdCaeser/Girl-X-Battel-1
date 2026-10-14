@@ -28,6 +28,50 @@ class BagUseTests(unittest.TestCase):
         self.snap.start()
         self.addCleanup(self.snap.stop)
 
+    def test_original_table_is_the_only_source_for_all_available_chests(self):
+        from gxb2 import bag_use
+        src=bag_use._table('giftbox_optional')
+        source_gifts=bag_use._table('gift')
+        recipes=bag_use.recipes()
+        choices={k:v for k,v in recipes.items() if v['kind']=='choice'}
+        gifts={k:v for k,v in recipes.items() if v['kind']=='gift'}
+        self.assertEqual(len(src['rows']),387)
+        self.assertEqual(len(choices),387)
+        self.assertGreaterEqual(len(gifts),65)
+        self.assertEqual(len(gifts),71)
+        self.assertEqual(len(recipes),458)
+        self.assertEqual(choices['133']['choices'],{'930187':50,'930188':50})
+        self.assertNotIn('4706001', recipes)
+        self.assertIn('135',gifts)
+        self.assertNotIn('17',gifts)
+
+    def test_options_include_other_publisher_defined_choice_chests(self):
+        from gxb2 import bag_use
+        academy=bag_use.describe(125)
+        self.assertTrue(academy['usable'])
+        self.assertEqual(len(academy['choices']),8)
+        multi=bag_use.describe(4101001)
+        self.assertTrue(multi['usable'])
+        self.assertGreater(len(multi['choices']),20)
+        self.assertFalse(bag_use.describe(17)['usable'])
+
+    def test_fixed_gifts_and_random_original_dropbox(self):
+        state=self.engine._load()
+        state['items']['149']=1
+        state['items']['192']=1
+        self.engine._save_profile(state)
+        self.engine.db.commit()
+        got=self.engine.use_bag_item(149,None,1)
+        self.assertEqual(got['rewards'],{'1166':1,'2166':1,'3166':1,'4166':1})
+        self.assertEqual(got['state']['items']['149'],0)
+        got=self.engine.use_bag_item(192,None,1)
+        self.assertEqual(got['state']['items']['192'],0)
+        self.assertTrue(got['rewards'])
+        from gxb2 import bag_use
+        pool=bag_use.recipes()['192']['pools']
+        allowed={str(line[0]) for group in pool for line in group}
+        self.assertTrue(set(got['rewards']).issubset(allowed))
+
     def test_girls_chest_gives_selected_shards_and_consumes_exactly_one(self):
         r=self.engine.use_bag_item(133,930188,1)
         self.assertEqual(r['state']['items']['133'],2)
@@ -62,6 +106,19 @@ class BagUseTests(unittest.TestCase):
                 self.engine.use_bag_item(133,930188,1)
         self.assertEqual(self.engine._load()['items']['133'],3)
         self.assertEqual(self.engine._load()['items']['930188'],0)
+
+    def test_reject_manual_choice_for_random_or_fixed_chests(self):
+        state=self.engine._load()
+        state['items']['149']=1
+        state['items']['192']=1
+        self.engine._save_profile(state)
+        self.engine.db.commit()
+        with self.assertRaises(ValueError):
+            self.engine.use_bag_item(149,930187,1)
+        with self.assertRaises(ValueError):
+            self.engine.use_bag_item(192,930187,1)
+        self.assertEqual(self.engine._load()['items']['149'],1)
+        self.assertEqual(self.engine._load()['items']['192'],1)
 
     def test_native_client_use_button_and_real_pc_window(self):
         root=Path(__file__).resolve().parents[1]

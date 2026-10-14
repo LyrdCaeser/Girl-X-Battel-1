@@ -434,47 +434,68 @@ function itemPicture(item){const icon=String(item?.icon||'');if(icon.startsWith(
  if(icon.startsWith('artfact_'))return '/assets/equipment/'+icon+'.png';if(icon.startsWith('soul_equip_'))return '/assets/souls/'+icon+'.png';return '';
 }
 
-const BAG_USE_CHOICES={
-  '133':[['Kratos · 50 mảnh 5★',930187],['Nephilim · 50 mảnh 5★',930188]],
-  '4102003':[['Kratos · 50 mảnh 5★',930187],['Nephilim · 50 mảnh 5★',930188]],
-  '207':[['Izanami · 50 mảnh 5★',930195],['Uriel · 50 mảnh 5★',930194]]
-};
 let currentBagUse=null;
-function showBagItem(item,count,src){
+async function showBagItem(item,count,src){
  const panel=$('bag-detail');
  $('bag-detail-name').textContent=item.name;
  $('bag-detail-count').textContent='Số lượng: '+number(count);
  $('bag-detail-description').textContent=item.description||'Vật phẩm trong Túi Đồ.';
  const image=$('bag-detail-image');image.src=src||'/assets/ui/item_bg.png';image.alt=item.name;
  const select=$('bag-use-choice'),qty=$('bag-use-count'),button=$('bag-detail-use'),note=$('bag-use-note');
- select.replaceChildren();currentBagUse=null;
- const options=BAG_USE_CHOICES[String(item.id)];
- if(options&&count>0){
-   for(const [label,id] of options){const opt=document.createElement('option');opt.value=String(id);opt.textContent=label;select.append(opt);}
-   qty.max=String(Math.min(50,count));qty.value='1';select.hidden=false;qty.hidden=false;
-   button.hidden=false;button.disabled=false;note.hidden=true;
-   currentBagUse={id:item.id,name:item.name};
- }else{
-   select.hidden=true;qty.hidden=true;button.hidden=true;
-   note.hidden=Number(item.type)!==14&&Number(item.type)!==27;
-   note.textContent='Vật phẩm này chưa có công thức sử dụng được xác thực trên máy chủ.';
- }
+ select.replaceChildren();select.hidden=true;qty.hidden=true;button.hidden=true;
+ note.hidden=false;note.textContent='Đang kiểm tra chức năng gốc trên máy chủ...';
+ currentBagUse={id:item.id,name:item.name,loading:true};
  panel.hidden=false;
  if(typeof Equipment!=='undefined')Equipment.bagDetail(item.id);
+ try{
+   const original=await api('/api/inventory/options',{item_id:item.id});
+   if(!currentBagUse||String(currentBagUse.id)!==String(item.id)||panel.hidden)return;
+   if(!original.usable){
+     note.textContent=original.reason||'Vật phẩm này không có chức năng dùng trong dữ liệu gốc.';
+     return;
+   }
+   qty.max=String(Math.min(Number(original.max_per_use||50),count));
+   qty.value='1';
+   qty.hidden=false;
+   button.hidden=false;button.disabled=false;
+   if(original.kind==='choice'){
+     for(const option of original.choices||[]){
+       const el=document.createElement('option');el.value=String(option.id);
+       el.textContent=option.name+' ×'+number(option.amount);
+       select.append(el);
+     }
+     select.hidden=false;
+   }else{
+     select.hidden=true;
+   }
+   note.textContent=original.kind==='choice'?'Chọn phần thưởng theo bảng gốc.':
+     (original.random?'Rương ngẫu nhiên theo tỷ lệ gốc.':'Nhận toàn bộ quà theo bảng gốc.');
+   currentBagUse={id:item.id,name:item.name,kind:original.kind,options:original};
+ }catch(e){
+   note.textContent=e.message;
+   currentBagUse=null;
+ }
 }
 async function useSelectedBagItem(){
- if(!currentBagUse||busy)return;
- const id=currentBagUse.id,option=$('bag-use-choice').value,count=Number($('bag-use-count').value);
- if(!Number.isSafeInteger(count)||count<1||count>50||count>Number(state.items[String(id)]||0)){
-   error('Số lượng rương không hợp lệ');return;
+ const selected=currentBagUse;
+ if(!selected||selected.loading||busy)return;
+ const id=selected.id,count=Number($('bag-use-count').value);
+ const owned=Number(state.items[String(id)]||0);
+ if(!Number.isSafeInteger(count)||count<1||count>Math.min(owned,selected.options.max_per_use)){
+   error('Số lượng vật phẩm không hợp lệ');return;
  }
- const text=$('bag-use-choice').selectedOptions[0]?.textContent||'phần thưởng';
- if(!confirm('Sử dụng '+count+' × '+currentBagUse.name+' để nhận '+text+' mỗi rương?'))return;
+ const reward=selected.kind==='choice'?Number($('bag-use-choice').value):null;
+ if(selected.kind==='choice'&&!selected.options.choices.some(x=>Number(x.id)===reward)){
+   error('Hãy chọn phần thưởng hợp lệ');return;
+ }
+ const message=selected.kind==='choice'?
+   (' nhận '+$('bag-use-choice').selectedOptions[0]?.textContent+' mỗi lần'):
+   (selected.options.random?' nhận phần thưởng ngẫu nhiên gốc':' nhận quà theo bảng gốc');
+ if(!confirm('Dùng '+count+' × '+selected.name+' để'+message+'?'))return;
  const button=$('bag-detail-use');button.disabled=true;busy=true;
  try{
-   const result=await api('/api/inventory/use',{item_id:id,reward_id:Number(option),count});
-   state=result.state;
-   $('bag-detail').hidden=true;currentBagUse=null;
+   const result=await api('/api/inventory/use',{item_id:id,reward_id:reward,count});
+   state=result.state; $('bag-detail').hidden=true;currentBagUse=null;
    if(typeof GxbAudio!=='undefined')GxbAudio.sfx('gain_window_sound',.75);
    render();error('');
  }catch(e){error(e.message);}

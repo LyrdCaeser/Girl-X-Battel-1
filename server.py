@@ -829,6 +829,8 @@ class HTTPHandler(BaseHTTPRequestHandler):
             if path == '/api/giftcode/admin/unlock':
                 if not self.admin_authorized(): return self.send(403,{'error':'Yêu cầu SUPER GM'})
                 return self.send(200,{'access':studio_sso.unlock(data.get('password'),self.session_token()),'expires_in':studio_sso.PANEL_TTL})
+            if path == '/api/inventory/options':
+                return self.send(200, self.engine.bag_use_options(data.get('item_id')))
             if path == '/api/inventory/use':
                 return self.send(200, self.engine.use_bag_item(
                     data.get('item_id'), data.get('reward_id'), data.get('count', 1)))
