@@ -148,3 +148,47 @@ jobs:
             NuThanChienDau-GXB3-iOS-ALPHA-RC7.mobileconfig
           if-no-files-found: error
           retention-days: 30
+
+  full-package:
+    name: GXB3 Combined Android Windows iOS ALPHA RC7
+    needs: [windows-exe, android-apk, ios-beta]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - name: Download the three verified build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: NuThanChienDau-GXB3-*
+          merge-multiple: true
+          path: distribution
+      - name: Verify files and provide checksums
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd distribution
+          test -s NuThanChienDau-GXB3-ALPHA-RC7.exe
+          test -s NuThanChienDau-GXB3-Android-ALPHA-RC7.apk
+          test -s NuThanChienDau-GXB3-iOS-ALPHA-RC7-UNSIGNED.ipa
+          test -s NuThanChienDau-GXB3-iOS-ALPHA-RC7.mobileconfig
+          sha256sum *.exe *.apk *.ipa *.mobileconfig > SHA256SUMS.txt
+          cat > HUONG_DAN.txt <<'TXT'
+          GXB 3 - ALPHA RC7
+
+          Android 8+ : Cai APK tren dien thoai.
+          Windows x64: Chay EXE tren Windows, yeu cau WebView2.
+          iPhone: IPA CHUA KY Apple, khong cai truc tiep duoc.
+                  Co the su dung Safari -> Chia se -> Them vao man hinh chinh.
+                  Kem theo file .mobileconfig de su dung Web Clip.
+
+          Tat ca launcher can ket noi mang va may chu GXB 3.
+          Tien trinh game duoc luu tren server; khong phai ban offline.
+          APK RC duoc ky bang debug key. Khi nang cap co the can go ban cu.
+          TXT
+      - name: Upload the single complete package
+        uses: actions/upload-artifact@v4
+        with:
+          name: GXB3-TRON-BO-APK-EXE-IOS-ALPHA-RC7
+          path: distribution/
+          if-no-files-found: error
+          compression-level: 9
+          retention-days: 30
