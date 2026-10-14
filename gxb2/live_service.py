@@ -251,10 +251,19 @@ def review_order(order_id,approve,reward=None,reviewer="GM"):
                    (status,json.dumps(clean),now,reviewer,order_id))
         _audit(db,"order."+status,f"{row['server_id']}:{row['uid']}",
                {"order_id":order_id,"package":row["package"],"reward":clean},reviewer)
+        if approve:
+            # Atomic: never mark a paid order approved unless its UID-bound
+            # mailbox delivery is committed in the very same transaction.
+            mid="MAIL-"+uuid.uuid4().hex[:16].upper()
+            db.execute(
+                """INSERT INTO mail(id,uid,server_id,character_name,title,body,attachments,status,created_at,operator)
+                   VALUES(?,?,?,?,?,?,?,'pending',?,?)""",
+                (mid,row["uid"],row["server_id"],row["character_name"],"Nạp thành công",
+                 f"Đơn {order_id} · {row['package_name'] or row['package']} đã được QTV duyệt.",
+                 json.dumps(clean),now,reviewer))
+            _audit(db,"mail.send",f"{row['server_id']}:{row['uid']}",
+                   {"mail_id":mid,"order_id":order_id,"attachments":clean},reviewer)
         db.commit(); db.close()
-    if approve:
-        send_mail(row["uid"],row["server_id"],row["character_name"],"Nạp thành công",
-                  f"Đơn {order_id} · {row['package_name'] or row['package']} đã được QTV duyệt.",clean,reviewer)
     return order(order_id)
 
 
