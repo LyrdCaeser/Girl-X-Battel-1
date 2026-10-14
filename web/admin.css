@@ -16,3 +16,37 @@
 .admin-inline-json{min-width:220px}.admin-form-row{display:flex;gap:8px;align-items:end}.admin-form-row input{flex:1}.admin-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.admin-stat{background:#101325;border-radius:12px;padding:14px;text-align:center}.admin-stat b{display:block;font-size:24px}.admin-stat small{opacity:.65}.admin-card>.primary,.admin-card>.danger{margin-top:10px;margin-right:8px}.danger{background:#6f2a34!important;color:#fff!important}
 @media(max-width:650px){.admin-view{padding:10px}.admin-head{top:0}.admin-nav{top:62px}.admin-stats{grid-template-columns:repeat(2,1fr)}.admin-row{align-items:stretch;flex-direction:column}.admin-inline-json{width:100%;min-width:0}.admin-form-row{flex-direction:column;align-items:stretch}}
 .admin-check{display:inline-flex!important;flex-direction:row!important;align-items:center;gap:6px;margin:0!important;font-size:12px;white-space:nowrap}.admin-check input{width:auto!important}.admin-world-message{min-width:180px}.admin-world-row select{min-width:120px}@media(max-width:650px){.admin-world-message,.admin-world-row select{width:100%;min-width:0}.admin-check{width:100%}}.admin-modal{position:fixed;inset:0;z-index:360;background:rgba(4,5,12,.82);display:grid;place-items:center;padding:14px}.admin-modal-box{width:min(680px,95vw);max-height:84vh;overflow:auto;background:#15182d;color:#fff;border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:16px}.admin-modal-box h3{margin:0 0 12px}.admin-modal-box>button{margin-top:10px;margin-right:8px}
+/* ALPHA RC7 GM studio: original game icons, legible labels and touch-safe controls. */
+.admin-view{--gm-surface:#20253e;--gm-stroke:#4d638d;background:#101425;color:#f4f7ff;padding:clamp(10px,2vw,20px)}
+.admin-head{flex-wrap:wrap;border-bottom:1px solid #415077;padding-bottom:12px}
+.admin-title-wrap h1{color:#f3edca;line-height:1.25;font-size:clamp(16px,3.5vw,22px)}
+.admin-nav{top:0;gap:6px;scrollbar-width:thin}
+.admin-tab{border-radius:10px;background:#26304e;border-color:#4b6183;font-size:14px;min-height:42px}
+.admin-tab.on{background:#3d70cc;box-shadow:inset 0 0 0 1px #b5deff}
+.admin-card{background:linear-gradient(165deg,#283253,#192039);border:1px solid var(--gm-stroke);box-shadow:0 6px 22px #0003}
+.admin-card h2{font-size:17px;color:#f7e8b9}
+.admin-card input,.admin-card select,.admin-card textarea{min-height:46px;background:#11182d;border-color:#5a7198;color:#fff;font-size:15px;letter-spacing:normal}
+.admin-card textarea{min-height:116px;font-family:inherit}
+.admin-card button,.admin-tab,.admin-basket button{font-weight:700;cursor:pointer;border:1px solid #7295bd;border-radius:10px;min-height:43px;padding:9px 12px;color:#fff;background:#3a507a}
+.admin-card button.primary{background:linear-gradient(135deg,#3d8acb,#3a5bb6);border-color:#93c4e9;color:#fff}
+.admin-card button:disabled{opacity:.48;cursor:not-allowed}
+.admin-gift-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,215px),1fr));gap:12px;margin:12px 0}
+.admin-gift-card{display:grid;align-content:start;grid-template-columns:72px minmax(0,1fr);grid-template-rows:auto auto;gap:8px;min-width:0;border:1px solid #536890;border-radius:12px;background:#111c35;padding:10px}
+.admin-gift-image{width:70px;height:78px;object-fit:contain;align-self:start;justify-self:center;border-radius:8px;background:#202b43}
+.admin-gift-details{display:grid;align-content:start;gap:6px;min-width:0;overflow-wrap:anywhere}
+.admin-gift-details b{font-size:14px}
+.admin-gift-details small{font-size:11px;color:#c5d8ed;line-height:1.45}
+.admin-gift-card input{grid-column:1;min-width:0;width:100%;box-sizing:border-box}
+.admin-gift-card button{grid-column:2;font-size:13px}
+.admin-basket{padding:12px;border-radius:12px;background:#182540;border:1px solid #526a93;display:grid;gap:8px;margin:12px 0}
+.admin-basket h3{margin:0 0 4px;font-size:15px}
+.admin-basket-row{display:flex;align-items:center;gap:9px;min-width:0}
+.admin-basket-row img{width:36px;height:40px}
+.admin-basket-row span{overflow-wrap:anywhere;flex:1;font-size:13px}
+.admin-pagination{display:flex;justify-content:center;align-items:center;gap:14px;flex-wrap:wrap}
+.admin-config-resource{display:flex;align-items:center;gap:10px;padding:6px 0}
+.admin-config-resource img{width:46px;height:46px;object-fit:contain}
+.admin-config-resource label{flex:1}
+.admin-row{flex-wrap:wrap;gap:8px}
+.admin-row button{white-space:normal}
+@media(max-width:650px){.admin-view{padding:8px}.admin-nav{margin-left:-2px;margin-right:-2px}.admin-card{padding:12px}.admin-gift-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.admin-gift-card{display:flex;flex-direction:column;align-items:stretch}.admin-gift-image{width:100%;height:100px;object-fit:contain}.admin-gift-card input,.admin-gift-card button{width:100%;box-sizing:border-box}.admin-row{flex-direction:column;align-items:stretch}.admin-row>button{width:100%}}
