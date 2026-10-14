@@ -374,7 +374,7 @@ class Engine:
             4102003: (930187, 930188),   # Kratos or Nephilim Chest
             207: (930195, 930194),       # Girls Customized: Izanami / Uriel
         }
-        if isinstance(item_id, bool) or isinstance(reward_id, bool) or isinstance(count, bool):
+        if any(isinstance(value, (bool, float, dict, list)) for value in (item_id, reward_id, count)):
             raise GameError('Vật phẩm không hợp lệ')
         try:
             item_id, reward_id, count = int(item_id), int(reward_id), int(count)

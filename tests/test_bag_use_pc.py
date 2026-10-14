@@ -54,7 +54,7 @@ class BagUseTests(unittest.TestCase):
         self.assertEqual(self.engine._load()['items']['207'],2)
 
     def test_reject_overuse_invalid_types_and_rollback_failure(self):
-        for qty in (0,-1,4,51,True,'invalid'):
+        for qty in (0,-1,4,51,True,1.5,'1.5','invalid'):
             with self.subTest(qty=qty),self.assertRaises(GameError):
                 self.engine.use_bag_item(133,930187,qty)
         with patch.object(self.engine,'_save_profile',side_effect=RuntimeError('force rollback')):
