@@ -15,10 +15,12 @@ const ChibiBattle=(()=>{
    const requested=Number(bossScale);
    return Math.min(Number.isFinite(requested)&&requested>0?requested*1.5:1.5,760/width,850/height);
   }
-  // Normal girls have a 320 x 330 logical footprint; larger boss monsters get
-  // separate room.  This restores wide models that the old 250 x 285 cap shrank.
-  const maxWidth=boss?340:320,maxHeight=boss?365:330;
-  return Math.min(boss?2.25:2.6,maxWidth/width,maxHeight/height);
+  if(boss)return Math.min(2.25,310/width,365/height);
+  // Preserve actors that were already a readable size.  Only wide or unusually
+  // narrow rigs that collapsed under the 250 x 285 footprint get restored.
+  const original=Math.min(2.6,250/width,285/height);
+  if(width*original>=150&&height*original>=260)return original;
+  return Math.min(2.6,320/width,330/height);
  }
  function modelFacing(spineData,visualBounds,meta={}){
   // Optional asset-specific orientation overrides, never inferred from team.
