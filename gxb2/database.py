@@ -281,6 +281,11 @@ def _ensure_live_postgres(db):
         """CREATE TABLE IF NOT EXISTS audit(
             id BIGSERIAL PRIMARY KEY, at BIGINT NOT NULL, operator TEXT NOT NULL,
             action TEXT NOT NULL, target TEXT NOT NULL, detail TEXT NOT NULL)""",
+        """CREATE TABLE IF NOT EXISTS world_chat_messages(
+            id BIGSERIAL PRIMARY KEY, server_id TEXT NOT NULL, channel TEXT NOT NULL,
+            uid TEXT NOT NULL, character_name TEXT NOT NULL,
+            recipient_uid TEXT NOT NULL DEFAULT '', message TEXT NOT NULL,
+            created_at BIGINT NOT NULL)""",
         """CREATE TABLE IF NOT EXISTS presence(
             uid TEXT NOT NULL, server_id TEXT NOT NULL, character_name TEXT NOT NULL,
             last_seen BIGINT NOT NULL, PRIMARY KEY(uid,server_id))""",
@@ -374,6 +379,8 @@ def _ensure_live_postgres(db):
         "CREATE INDEX IF NOT EXISTS idx_world_guild_members_guild ON world_guild_members(guild_id,role,joined_at)",
         "CREATE INDEX IF NOT EXISTS idx_guild_app_pending ON world_guild_applications(guild_id,status,created_at)",
         "CREATE INDEX IF NOT EXISTS idx_guild_chat_recent ON world_guild_chat(guild_id,created_at DESC)",
+        "CREATE INDEX IF NOT EXISTS idx_world_chat_recent ON world_chat_messages(server_id,channel,id DESC)",
+        "CREATE INDEX IF NOT EXISTS idx_world_chat_dm ON world_chat_messages(server_id,recipient_uid,uid,id DESC)",
         "CREATE INDEX IF NOT EXISTS idx_guild_mail_recent ON world_guild_mail(guild_id,created_at DESC)",
         "CREATE INDEX IF NOT EXISTS idx_guild_war_server ON guild_wars(server_id,status,starts_at)",
         "CREATE INDEX IF NOT EXISTS idx_guild_war_battles ON guild_war_battles(war_id,created_at)",
@@ -412,6 +419,11 @@ def _ensure_live_sqlite(db):
         """CREATE TABLE IF NOT EXISTS audit(
             id INTEGER PRIMARY KEY AUTOINCREMENT, at INTEGER NOT NULL, operator TEXT NOT NULL,
             action TEXT NOT NULL, target TEXT NOT NULL, detail TEXT NOT NULL)""",
+        """CREATE TABLE IF NOT EXISTS world_chat_messages(
+            id INTEGER PRIMARY KEY AUTOINCREMENT, server_id TEXT NOT NULL, channel TEXT NOT NULL,
+            uid TEXT NOT NULL, character_name TEXT NOT NULL,
+            recipient_uid TEXT NOT NULL DEFAULT '', message TEXT NOT NULL,
+            created_at INTEGER NOT NULL)""",
         """CREATE TABLE IF NOT EXISTS presence(
             uid TEXT NOT NULL, server_id TEXT NOT NULL, character_name TEXT NOT NULL,
             last_seen INTEGER NOT NULL, PRIMARY KEY(uid,server_id))""",
@@ -526,6 +538,8 @@ def _ensure_live_sqlite(db):
         "CREATE INDEX IF NOT EXISTS idx_world_guild_members_guild ON world_guild_members(guild_id,role,joined_at)",
         "CREATE INDEX IF NOT EXISTS idx_guild_app_pending ON world_guild_applications(guild_id,status,created_at)",
         "CREATE INDEX IF NOT EXISTS idx_guild_chat_recent ON world_guild_chat(guild_id,created_at DESC)",
+        "CREATE INDEX IF NOT EXISTS idx_world_chat_recent ON world_chat_messages(server_id,channel,id DESC)",
+        "CREATE INDEX IF NOT EXISTS idx_world_chat_dm ON world_chat_messages(server_id,recipient_uid,uid,id DESC)",
         "CREATE INDEX IF NOT EXISTS idx_guild_mail_recent ON world_guild_mail(guild_id,created_at DESC)",
         "CREATE INDEX IF NOT EXISTS idx_guild_war_server ON guild_wars(server_id,status,starts_at)",
         "CREATE INDEX IF NOT EXISTS idx_guild_war_battles ON guild_war_battles(war_id,created_at)",
