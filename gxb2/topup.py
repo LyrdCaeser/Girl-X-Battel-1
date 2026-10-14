@@ -107,6 +107,8 @@ def public_catalog():
             "name": row["name"],
             "price_label": row["price_label"],
             "manual_reward": row["manual_reward"],
+            "vip_exp": int((row.get("reward") or {}).get("999999991", 0)),
+            "instant_gems": int((row.get("reward") or {}).get("2", 0)),
         })
     return {"packages": rows}
 
