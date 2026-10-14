@@ -179,10 +179,23 @@ function testNephilimBattleModels() {
   const scale = vm.runInContext('ChibiBattle.fitScaleForModel', ctx);
   const facing = vm.runInContext('ChibiBattle.modelFacing', ctx);
   for (const id of ids) {
-    assert.equal(catalogue[id]?.facing, 'right', `Nephilim ${id} must face the enemy`);
+    assert.equal(catalogue[id]?.facing, 'left', `Nephilim ${id} has verified native-left orientation`);
     assert.equal(catalogue[id]?.battleHeight, 260, `Nephilim ${id} must keep its readable height`);
-    assert.equal(facing({bones:[]},{},catalogue[id]),1, 'Nephilim orientation must not use attack-bone guesses');
+    assert.equal(facing({bones:[]},{},catalogue[id]),-1, 'Nephilim orientation follows model-specific metadata');
   }
+  const mapCtx=vm.createContext({});
+  vm.runInContext(fs.readFileSync(path.join(ROOT,'web/campaign-map.js'),'utf8'),mapCtx);
+  const mapScale=vm.runInContext('CampaignMap.chibiScale',mapCtx);
+  const mapFacing=vm.runInContext('CampaignMap.chibiFacing',mapCtx);
+  for(const id of ids) {
+    assert.equal(catalogue[id]?.mapHeight,300,'Nephilim campaign height is model-specific');
+    assert.equal(mapFacing(catalogue[id]),-1,'campaign orientation follows Spine metadata');
+  }
+  const rig={height:344.65887451171875};
+  assert.ok(Math.abs(mapScale(rig,catalogue['56006'])*rig.height-300)<0.1,
+    'Nephilim stays legible in the separate 720x627 scene');
+  assert.ok(Math.abs(mapScale(rig,{})*rig.height-190)<0.1,
+    'unrelated chibis keep their previous 190-unit display height');
   const rigs = [
     ['56006',554.1474609375,344.65887451171875],
     ['656016',346.0149841308594,379.0011901855469],
