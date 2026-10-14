@@ -202,45 +202,92 @@ window.AdminPanel=(()=>{
     finally{if(button)button.disabled=false;}
   }
   function renderOrders(body){
-    const catalog=card('Gói nạp · cấu hình server-side');
-    const ta=textarea(catalog,'Package Catalog JSON','admin-topup-json','{"packages":[...]}');
-    ta.value=JSON.stringify(topupCfg||{packages:[]},null,2);
-    catalog.append(btn('Lưu gói nạp',saveTopupPackages,'primary'),btn('Khôi phục mặc định',resetTopupPackages,'danger'));
+    const catalog=card('Gói nạp trên máy chủ');
+    catalog.append(el('p','admin-note','Chọn gói và chỉnh từng trường. Không cần nhập mã JSON.'));
+    const pkgSelect=document.createElement('select');pkgSelect.id='gm-topup-selection';
+    for(const pack of (topupCfg?.packages||[])){
+      const o=el('option','',pack.name+' · '+pack.id);o.value=pack.id;pkgSelect.append(o);
+    }
+    const form=el('div','admin-form-row');form.append(pkgSelect);
+    form.append(btn('Chỉnh sửa',()=>{
+      const p=(topupCfg?.packages||[]).find(x=>x.id===pkgSelect.value);
+      if(!p)return;
+      document.getElementById('gm-topup-id').value=p.id;
+      document.getElementById('gm-topup-name').value=p.name;
+      document.getElementById('gm-topup-price').value=p.price_label||'';
+      document.getElementById('gm-topup-manual').checked=!!p.manual_reward;
+      packageEditId=p.id;packageRewards={...(p.reward||{})};
+      status('Đã chọn gói '+p.name);
+    }));
+    catalog.append(form);
+    field(catalog,'Mã gói','gm-topup-id').placeholder='PACKAGE_ID';
+    field(catalog,'Tên gói','gm-topup-name').placeholder='Gói VIP';
+    field(catalog,'Giá hiển thị','gm-topup-price').placeholder='Liên hệ Zalo';
+    const label=el('label','admin-check');const checkbox=document.createElement('input');
+    checkbox.type='checkbox';checkbox.id='gm-topup-manual';
+    label.append(checkbox,document.createTextNode('Thưởng do QTV duyệt thủ công'));catalog.append(label);
+    catalog.append(btn('Dùng quà đã chọn làm phần thưởng gói',()=>{packageRewards={...giftBasket};status('Đã lấy '+Object.keys(packageRewards).length+' vật phẩm làm phần thưởng gói.');},'admin-secondary'));
+    catalog.append(btn('Lưu gói đã chọn',saveSelectedPackage,'primary'));
+    catalog.append(btn('Khôi phục danh mục mặc định',resetTopupPackages,'danger'));
     body.append(catalog);
-
-    const c=card('Duyệt đơn nạp');
+    const c=card('Duyệt đơn nạp thật');
     const list=el('div','admin-list');const orders=dash?.orders||[];
     if(!orders.length)list.append(el('p','admin-note','Chưa có đơn nạp.'));
-    for(const o of orders){const row=el('article','admin-row');const info=el('div','admin-row-main');
-      info.append(el('b','',o.id),el('span','',`${o.server_id} · ${o.uid} · ${o.character_name}`),
-        el('small','',`${o.package_name||o.package||'(chưa ghi gói)'}${o.price_label?' · '+o.price_label:''} · ${o.status}`));
+    for(const o of orders){
+      const row=el('article','admin-row');const info=el('div','admin-row-main');
+      info.append(el('b','',o.id),
+        el('span','',o.server_id+' · '+o.uid+' · '+o.character_name),
+        el('small','',(o.package_name||o.package||'Gói chưa đặt tên')+
+          (o.price_label?' · '+o.price_label:'')+' · '+o.status));
       row.append(info);
       if(o.status==='pending'){
         if(Number(o.manual_reward||0)){
-          const reward=document.createElement('input');reward.placeholder='Reward JSON, vd {"2":1000}';reward.className='admin-inline-json';
-          row.append(reward,btn('Duyệt',()=>reviewOrder(o.id,'approve',reward.value),'primary'),btn('Từ chối',()=>reviewOrder(o.id,'reject',''),'danger'));
-        }else{
-          row.append(el('code','admin-inline-json',JSON.stringify(o.reward||{})),btn('Duyệt đúng gói',()=>reviewOrder(o.id,'approve',''),'primary'),btn('Từ chối',()=>reviewOrder(o.id,'reject',''),'danger'));
-        }
-      }else row.append(el('small','',o.reviewed_at?'Đã xử lý':''));
+          row.append(el('p','admin-note','Gói tùy chỉnh: chọn quà ở tab Tiền Tệ / Vật Phẩm / Mảnh Nhân Vật trước khi duyệt.'));
+          row.append(btn('Duyệt với quà đã chọn',()=>reviewOrder(o,'approve'),'primary'));
+        }else row.append(btn('Duyệt đúng gói',()=>reviewOrder(o,'approve'),'primary'));
+        row.append(btn('Từ chối',()=>reviewOrder(o,'reject'),'danger'));
+      }
       list.append(row);
-    }c.append(list);body.append(c);
+    }
+    c.append(list);body.append(c);
   }
-  async function saveTopupPackages(){try{
-    const raw=JSON.parse(val('admin-topup-json')||'{}');
-    topupCfg=await api('/api/admin/topup-packages',{action:'save',config:raw});
-    status('Đã lưu catalog gói nạp.');
-    render();
-  }catch(e){status(e.message,false);}}
-  async function resetTopupPackages(){try{
-    topupCfg=await api('/api/admin/topup-packages',{action:'reset'});
-    status('Đã khôi phục catalog gói nạp mặc định.');
-    render();
-  }catch(e){status(e.message,false);}}
-  async function reviewOrder(id,action,rewardText){try{
-    const reward=action==='approve'&&rewardText?JSON.parse(rewardText):{};
-    await api('/api/admin/order/review',{order_id:id,action,reward});status(action==='approve'?'Đã duyệt đơn và gửi thưởng qua thư.':'Đã từ chối đơn.');await refreshDashboard();render();
-  }catch(e){status(e.message,false);}}
+  let packageEditId='',packageRewards={};
+  async function saveSelectedPackage(){
+    try{
+      const pack={id:val('gm-topup-id'),name:val('gm-topup-name'),
+        price_label:val('gm-topup-price'),
+        manual_reward:!!document.getElementById('gm-topup-manual')?.checked,
+        reward:packageRewards};
+      if(!pack.id||!pack.name)throw Error('Cần mã gói và tên gói');
+      const packages=[...(topupCfg?.packages||[])];
+      const pos=packages.findIndex(x=>x.id===packageEditId);
+      if(pos>=0)packages[pos]={...packages[pos],...pack};else packages.push(pack);
+      topupCfg=await api('/api/admin/topup-packages',{action:'save',config:{...topupCfg,packages}});
+      status('Đã lưu gói '+pack.name+'.');render();
+    }catch(e){status(e.message,false);}
+  }
+  async function resetTopupPackages(){
+    try{topupCfg=await api('/api/admin/topup-packages',{action:'reset'});
+      packageEditId='';packageRewards={};status('Đã khôi phục danh mục gói nạp.');render();
+    }catch(e){status(e.message,false);}
+  }
+  async function reviewOrder(order,action){
+    try{
+      const manual=Number(order.manual_reward||0)>0;
+      const reward=action==='approve'&&manual?{...giftBasket}:{};
+      if(action==='approve'&&manual&&!Object.keys(reward).length)
+        throw Error('Đơn tùy chỉnh chưa có quà đã chọn.');
+      const okay=await GirlUI.confirm(
+        'Đơn '+order.id+' / '+order.uid+' / '+order.server_id+
+        (action==='approve'?' · Xác nhận duyệt và gửi quà qua Hòm Thư?':' · Xác nhận từ chối?'),
+        {title:'Xác nhận đơn nạp',ok:action==='approve'?'Duyệt':'Từ chối',danger:action!=='approve'});
+      if(!okay)return;
+      await api('/api/admin/order/review',{order_id:order.id,action,reward});
+      if(action==='approve'&&manual)giftBasket={};
+      status(action==='approve'?'Đã duyệt đơn và gửi thưởng qua thư.':'Đã từ chối đơn.');
+      await refreshDashboard();render();
+    }catch(e){status(e.message,false);}
+  }
   function renderPlayers(body){
     const c=card('Quản lý tài khoản');
     const search=field(c,'Tìm UID / Server / Tên Nhân Vật','gm-player-search');search.oninput=()=>drawPlayers(c,search.value);
@@ -300,7 +347,17 @@ window.AdminPanel=(()=>{
   }catch(e){status(e.message,false);}}
   function renderConfig(body){
     const grid=el('div','admin-grid');
-    const res=card('Tài nguyên & Nữ Thần khởi đầu');const ta=textarea(res,'starting_resources (JSON)','admin-resources');ta.value=JSON.stringify(cfg.starting_resources,null,2);field(res,'Starter Girls (ID)','admin-starters').value=cfg.starter_girls.join(',');grid.append(res);
+    const res=card('Tài nguyên & Nữ Thần khởi đầu');const starter=cfg.starting_resources||{};
+    for(const [id,count] of Object.entries(starter)){
+      const it=giftCatalog?.items?.find(x=>String(x.id)===String(id));
+      const row=el('div','admin-config-resource');
+      if(it?.image)row.append(giftPic(it.image,it.name));
+      const label=el('label','admin-field',(it?.name||'Vật phẩm')+' · ID '+id);
+      const input=document.createElement('input');input.type='number';input.min=0;
+      input.value=String(count);input.dataset.starterItem=id;label.append(input);row.append(label);res.append(row);
+    }
+    field(res,'Nữ Thần khởi đầu (ID, phân cách dấu phẩy)','admin-starters').value=cfg.starter_girls.join(',');
+    grid.append(res);
     const summon=card('Tỷ lệ Triệu Hồi toàn game');for(const star of [1,2,3,4,5,6]){const i=field(summon,`${star}★ multiplier`,`admin-star-${star}`,'number','0.1');i.value=cfg.summon_rate.star_multiplier[String(star)]??1;}grid.append(summon);
     const economy=card('Kinh tế toàn game');field(economy,'Giá Shop ×','admin-shop','number','0.1').value=cfg.shop.price_multiplier;field(economy,'Phần thưởng ×','admin-reward','number','0.1').value=cfg.rewards.multiplier;field(economy,'Chi phí progression ×','admin-progress','number','0.1').value=cfg.progression.cost_multiplier;grid.append(economy);
     const actions=card('Áp dụng cấu hình toàn game');actions.append(btn('Lưu cấu hình',saveConfig,'primary'),btn('Khôi phục mặc định',resetConfig,'danger'));grid.append(actions);
@@ -351,40 +408,8 @@ window.AdminPanel=(()=>{
     const out=await api('/api/admin/world-config',{action:'reset',server_id});
     worldCfg=out.config;await loadWorldConfig(server_id);status('Đã reset World Live Config '+out.server_id+'.');
   }catch(e){status(e.message,false);}}
-  async function saveConfig(){try{const raw={starting_resources:JSON.parse(val('admin-resources')),starter_girls:val('admin-starters').split(',').map(x=>Number(x.trim())).filter(Boolean),summon_rate:{star_multiplier:Object.fromEntries([1,2,3,4,5,6].map(s=>[String(s),Number(val(`admin-star-${s}`))]))},shop:{price_multiplier:Number(val('admin-shop'))},rewards:{multiplier:Number(val('admin-reward'))},progression:{cost_multiplier:Number(val('admin-progress'))}};cfg=await api('/api/admin/config',raw);status('Đã lưu cấu hình.');}catch(e){status(e.message,false);}}
+  async function saveConfig(){try{const raw={starting_resources:Object.fromEntries([...document.querySelectorAll('[data-starter-item]')].map(el=>[el.dataset.starterItem,Math.max(0,Math.trunc(Number(el.value)||0))])),starter_girls:val('admin-starters').split(',').map(x=>Number(x.trim())).filter(Boolean),summon_rate:{star_multiplier:Object.fromEntries([1,2,3,4,5,6].map(s=>[String(s),Number(val(`admin-star-${s}`))]))},shop:{price_multiplier:Number(val('admin-shop'))},rewards:{multiplier:Number(val('admin-reward'))},progression:{cost_multiplier:Number(val('admin-progress'))}};cfg=await api('/api/admin/config',raw);status('Đã lưu cấu hình.');}catch(e){status(e.message,false);}}
   async function resetConfig(){try{cfg=await api('/api/admin/config',{action:'reset'});status('Đã khôi phục mặc định.');render();}catch(e){status(e.message,false);}}
-  function renderTools(body){
-    const tools=card('SUPER GM Tools');const grid=el('div','admin-tools');
-    const girl=el('div','admin-tool');const sel=document.createElement('select');sel.id='admin-girl';for(const g of girlsCatalog){const o=el('option','',`${g.name} · ${g.stars}★ · ${g.id}`);o.value=g.id;sel.append(o);}girl.append(sel);const count=field(girl,'Số lượng','admin-count','number','1');count.value=1;const level=field(girl,'Cấp','admin-level','number','1');level.value=80;girl.append(btn('Thêm Nữ Thần',()=>act('girl'),'primary'));grid.append(girl);
-    const misc=el('div','admin-tool');[['all_girls','Thêm toàn bộ Nữ Thần'],['max_stars','Nữ Thần đã chọn → 15★'],['levels','Áp cấp cho toàn bộ'],['campaign','Mở 30 ải']].forEach(([a,t])=>misc.append(btn(t,()=>act(a))));const floor=field(misc,'Tầng Tests','admin-floor','number','1');floor.value=1;misc.append(btn('Đặt tầng Tests',()=>act('tower')));grid.append(misc);
-
-    const live=el('div','admin-tool');
-    live.append(el('h3','','Live Service · Quyền tối thượng'));
-    field(live,'UID','admin-live-uid');
-    field(live,'Server','admin-live-server').value='S1';
-    const mode=document.createElement('select');mode.id='admin-live-mode';for(const m of ['arena','team','cross']){const o=el('option','',m);o.value=m;mode.append(o);}live.append(mode);
-    field(live,'PvP Rating','admin-live-rating','number','1').value=1000;
-    live.append(btn('Đặt PvP Rating',()=>liveServiceAct('pvp_rating'),'primary'));
-    field(live,'Guild EXP +','admin-live-guild-exp','number','1').value=0;
-    field(live,'Contribution +','admin-live-contribution','number','1').value=0;
-    live.append(btn('Cộng Guild Progress',()=>liveServiceAct('guild_progress'),'primary'));
-    field(live,'Guild War ID','admin-live-war');
-    live.append(btn('Force Settle Guild War',()=>liveServiceAct('force_settle_war'),'danger'));
-    live.append(btn('Chạy Maintenance ngay',()=>liveServiceAct('maintenance')));
-    grid.append(live);
-
-    tools.append(grid);body.append(tools);
-  }
-  async function act(action){try{const data=await api('/api/developer',{action,table_id:Number(val('admin-girl')),count:Number(val('admin-count')),level:Number(val('admin-level')),floor:Number(val('admin-floor'))});state=data.state;loadFormation();renderGame();status('Đã áp dụng vào save QTV.');}catch(e){status(e.message,false);}}
-  async function liveServiceAct(action){try{
-    const payload={action,uid:val('admin-live-uid'),server_id:val('admin-live-server')||'S1',
-      mode:val('admin-live-mode')||'arena',rating:Number(val('admin-live-rating')||0),
-      exp_gain:Number(val('admin-live-guild-exp')||0),contribution_gain:Number(val('admin-live-contribution')||0),
-      war_id:val('admin-live-war')};
-    const result=await api('/api/admin/live-service',payload);
-    status('SUPER GM đã áp dụng: '+action+'.');await refreshDashboard();
-    return result;
-  }catch(e){status(e.message,false);}}
   function renderGame(){if(typeof window.render==='function')window.render();}
   function renderAudit(body){const c=card('Audit Log');const list=el('div','admin-list');for(const a of dash?.audit||[]){const row=el('article','admin-row');const info=el('div','admin-row-main');info.append(el('b','',a.action),el('span','',a.target),el('small','',new Date(a.at*1000).toLocaleString()+' · '+a.operator));row.append(info);list.append(row);}c.append(list);body.append(c);}
   const val=id=>document.getElementById(id)?.value?.trim()||'';
