@@ -22,6 +22,14 @@ const ChibiBattle=(()=>{
   if(width*original>=150&&height*original>=260)return original;
   return Math.min(2.6,320/width,330/height);
  }
+ // Only characters with verified model metadata override the automatic
+ // dual-axis fit. Broad wing/FX bounds otherwise make their bodies tiny.
+ function fitScaleForModel(bounds,meta={},opts={}){
+  const standard=fitScaleForBounds(bounds,opts);
+  const height=Number(meta.battleHeight);
+  if(opts.boss||opts.bossScene||!Number.isFinite(height)||height<120||height>330)return standard;
+  return Math.min(2.6,height/Math.max(1,Number(bounds?.height)||1));
+ }
  function modelFacing(spineData,visualBounds,meta={}){
   // Optional asset-specific orientation overrides, never inferred from team.
   if(meta.facing==='left'||meta.facing===-1)return -1;
@@ -50,7 +58,7 @@ const ChibiBattle=(()=>{
 // Some exported skins contain attack VFX in their setup bounds. Do not let
 // these invisible attachments shrink the entire character.
 const cleanWidth=Number(data.width),cleanHeight=Number(data.height);
-const rigBounds=(cleanWidth>0&&cleanHeight>0)?{width:cleanWidth,height:cleanHeight}:bounds;let scale=fitScaleForBounds(rigBounds,{boss:!!u.boss,bossScene:!!u.boss&&bossScene,bossScale:u.boss?.scale});const facing=modelFacing(data,bounds,meta);let xy=positions[u.pos];let dx=0,dy=0;if(u.boss){/* Boss footprint is bounded separately; is_boss stands between pos and pos+1. */if(u.boss.center){const o=positions[u.pos%6===0?u.pos-1:u.pos+1];if(o)xy=[(xy[0]+o[0])/2,(xy[1]+o[1])/2];}dx=(u.boss.offset?.[0]||0)*1.5*(u.pos>6?1:-1)*.35;dy=-(u.boss.offset?.[1]||0)*1.5;}figure.scale.set((u.pos>6?-1:1)*facing*scale,scale);figure.x=xy[0]+dx;figure.y=1920-xy[1]+110+dy;anchors.set(u.pos,xy);if(u.boss&&bossScene){/* Layout of the reference capture (Sanctuary boss): feet near 80 % of the height, centred in its half. */const sx=(u.pos>6?-1:1)*facing*scale;figure.y=1920*.8-(bounds.y+bounds.height)*scale;figure.x=(u.pos>6?1080*.72:1080*.28)-(bounds.x+bounds.width/2)*sx;}figure.zIndex=figure.y;app.stage.addChild(figure);
+const rigBounds=(cleanWidth>0&&cleanHeight>0)?{width:cleanWidth,height:cleanHeight}:bounds;let scale=fitScaleForModel(rigBounds,meta,{boss:!!u.boss,bossScene:!!u.boss&&bossScene,bossScale:u.boss?.scale});const facing=modelFacing(data,bounds,meta);let xy=positions[u.pos];let dx=0,dy=0;if(u.boss){/* Boss footprint is bounded separately; is_boss stands between pos and pos+1. */if(u.boss.center){const o=positions[u.pos%6===0?u.pos-1:u.pos+1];if(o)xy=[(xy[0]+o[0])/2,(xy[1]+o[1])/2];}dx=(u.boss.offset?.[0]||0)*1.5*(u.pos>6?1:-1)*.35;dy=-(u.boss.offset?.[1]||0)*1.5;}figure.scale.set((u.pos>6?-1:1)*facing*scale,scale);figure.x=xy[0]+dx;figure.y=1920-xy[1]+110+dy;anchors.set(u.pos,xy);if(u.boss&&bossScene){/* Layout of the reference capture (Sanctuary boss): feet near 80 % of the height, centred in its half. */const sx=(u.pos>6?-1:1)*facing*scale;figure.y=1920*.8-(bounds.y+bounds.height)*scale;figure.x=(u.pos>6?1080*.72:1080*.28)-(bounds.x+bounds.width/2)*sx;}figure.zIndex=figure.y;app.stage.addChild(figure);
   // Derive UI health position from the actual rendered skeleton bounds,
   // not an empty formation slot or its foot coordinate.
   const worldBounds=figure.getBounds();
@@ -72,7 +80,7 @@ const rigBounds=(cleanWidth>0&&cleanHeight>0)?{width:cleanWidth,height:cleanHeig
   function destroy(){cancelled=true;app.destroy(true,{children:true,texture:false,baseTexture:false});}
   return {play,speed,destroy,fx,anchors,headAnchors,has:pos=>figures.has(pos),missing};
  }
- return {create,catalogue,fitScaleForBounds,modelFacing};
+ return {create,catalogue,fitScaleForBounds,fitScaleForModel,modelFacing};
 })();
 
 // BattleWindow + BaseFighter: 0/1 add, 2 work, 3/4 remove one matching name/sign.
