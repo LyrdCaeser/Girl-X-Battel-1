@@ -244,30 +244,35 @@ const HomeMenus=(()=>{
   });
  }
  function gifts(parent){
-  // Only server-published packages are orderable. Archived preview cards had
-  // prices from a different store and are not a valid purchasing interface.
-  const vip=state?.vip_info;
-  if(vip){
-    const progress=card(parent,'VIP '+vip.level);
-    paragraph(progress,'Điểm VIP: '+number(vip.exp||0)+(vip.next?' / '+number(vip.next):' · Đã đạt cấp tối đa'));
-    if(vip.perks){
-      const p=vip.perks;
-      paragraph(progress,'Thưởng treo máy +'+Math.round(Number(p.extra_output||0)*100)+'% · Midas '+(p.midas_buy_times||0)+' lượt/ngày · Thực tập '+(p.pub_mission_num||0)+' lượt/ngày');
-    }
+  // The original monthly/weekly cards and gift events own their artwork and
+  // item previews. This is merely the game's shortcut to those native events.
+  // Never render an invented generic payment catalog in their place.
+  const offers=[
+    {event:2,id:'MONTHLY_GIFT',name:'Gói Quà Hằng Tháng',icon:'monthly_giftbag'},
+    {event:3,id:'WEEKLY_GIFT',name:'Gói Quà Hằng Tuần',icon:'weekly_giftbag'},
+    {event:6,id:'MONTHLY_CARD',name:'Thẻ Tháng',icon:'activity_month_card'},
+    {event:24,id:'WEEKLY_CARD',name:'Thẻ Tuần',icon:'mana_week_card'}
+  ];
+  const container=el('section',undefined,'hm-original-offers');
+  for(const o of offers){
+    const tile=el('article',undefined,'hm-card hm-original-offer');
+    const picture=el('img',undefined,'hm-card-icon');
+    picture.src='/assets/events/icon_'+o.icon+'.png';picture.alt=o.name;
+    tile.append(picture,el('h3',o.name));
+    paragraph(tile,'Gói nguyên bản của game · giữ nguyên hình và sự kiện.');
+    button(tile,'Xem gói trong Sự Kiện',()=>{
+      if(typeof EventsHub!=='undefined')EventsHub.openOriginalEvent(o.event,'home-systems');
+    });
+    const p=(topupPackages||[]).find(pack=>pack.id===o.id);
+    if(p&&p.price_label)paragraph(tile,p.price_label);
+    button(tile,'Zalo 0856848557 · Đặt gói',()=>{
+      window.GxbPayment?.open(o.id,o.name+' · Sự Kiện #'+o.event);
+    },!window.GxbPayment);
+    container.append(tile);
   }
-  if(topupPackages===null){
-    paragraph(parent,'Đang tải gói nạp được máy chủ công bố…');
-    loadTopupPackages();
-  }else if(!topupPackages.length){
-    paragraph(parent,'Máy chủ chưa công bố gói nạp khả dụng.');
-  }else{
-    for(const pack of topupPackages){
-      const offer=card(parent,pack.name||pack.id);
-      if(pack.price_label)paragraph(offer,pack.price_label);
-      button(offer,'Thanh Toán Qua Zalo',()=>window.GxbPayment?.open(pack.id),!window.GxbPayment);
-    }
-  }
-  paragraph(parent,'Giá, quà tặng và trạng thái đơn do máy chủ xác nhận. Thưởng chỉ được gửi qua Hòm Thư sau khi đơn đã duyệt.');
+  parent.append(container);
+  if(topupPackages===null)loadTopupPackages();
+  paragraph(parent,'Không dùng giá cũ từ nhà phát hành. EXP VIP và vật phẩm chỉ được cấp khi đơn được QTV xác nhận và người chơi nhận thư.');
  }
  function openFriendsBoss(from){launch('friends',from);tab='coop';render();RemainingSystems.openFriendTab();}
  // Poll only while the player actually has the online chat window open.
