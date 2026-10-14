@@ -127,7 +127,18 @@ const EventsHub=(()=>{
  function archived(parent,a){
   const c=el('div','ev-archive');c.append(img(A('icon_'+a.icon),'ev-archive-icon'),el('h2',undefined,vi(a.title.replace(/\n/g,' '))));
   if(a.desc&&a.desc!=='-1')c.append(el('p',undefined,vi(a.desc)));
-  c.append(el('p','ev-note',"Sự kiện luân phiên tuần này. Nội dung đang được hoàn thiện; lịch đổi vào mỗi Thứ Hai."));parent.append(c);
+  const packages={2:'MONTHLY_GIFT',3:'WEEKLY_GIFT',6:'MONTHLY_CARD',24:'WEEKLY_CARD',39:'MONTHLY_GIFT',40:'WEEKLY_GIFT'};
+  const paid=Boolean(packages[a.id]||a.type1===1||/giftbag|recharge|month_card|week_card/i.test(a.icon||''));
+  if(paid){
+    c.append(el('p','ev-note','Đây là gói/sự kiện nguyên bản. Giá và thưởng chỉ theo gói đang được QTV công bố; không dùng giá cũ hoặc tạo vật phẩm giả.'));
+    const contact=el('div','ev-original-payment');
+    contact.append(el('span','', 'Thanh toán: Zalo 0856848557'));
+    const z=el('button','ev-native-pay','Liên hệ Zalo / Đặt gói');z.type='button';
+    z.onclick=()=>window.GxbPayment?.open(packages[a.id]||'CUSTOM',
+      vi(a.title.replace(/\\n/g,' '))+' · Sự Kiện #'+a.id);
+    contact.append(z);c.append(contact);
+  }else c.append(el('p','ev-note',"Sự kiện hiện chưa mở đầy đủ trên máy chủ."));
+  parent.append(c);
  }
  function openPoint(id,from){tab='ex';selected=id;pinnedId=id;open(from);}
  function openOriginalEvent(id,from){const entry={166:'ex',167:'ex',191:'ex',279:'ex'};tab=entry[id]||'ex';selected=id;pinnedId=id;open(from);}
