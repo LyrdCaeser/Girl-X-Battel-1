@@ -62,6 +62,14 @@ class PaidVipRC7Tests(unittest.TestCase):
         self.assertIn('vip_exp',public[0])
         self.assertIn('instant_gems',public[0])
 
+    def test_original_recharge_event_is_real_storefront(self):
+        events=(ROOT/'web/events.js').read_text(encoding='utf-8')
+        home=(ROOT/'web/app.js').read_text(encoding='utf-8')
+        self.assertIn("selected===184",events)
+        self.assertIn("publicGemPacks.filter",events)
+        self.assertIn("GxbPayment?.open(p.id,p.name)",events)
+        self.assertIn("EventsHub.openOriginalEvent(184,'home')",home)
+
     def test_real_original_store_and_mail_ui(self):
         home=(ROOT/'web/home-menus.js').read_text(encoding='utf-8')
         events=(ROOT/'web/events.js').read_text(encoding='utf-8')
