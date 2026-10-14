@@ -107,6 +107,7 @@ const EventsHub=(()=>{
   const body=el('div','ev-body');panel.append(body);
   const a=items.find(x=>x.id===selected);
   if(!a)body.append(el('p','ev-note',"Không có sự kiện trong mục này."));else if(a.id===1)checkIn(body);else if(a.id===116)sevenDay(body,a);else if(POINT[a.id])pointEvent(body,a);else if(a.id===64&&typeof Jackpot!=='undefined')Jackpot.render(body);else if(a.id===196&&typeof FireworkProject!=='undefined')FireworkProject.render(body);else if((a.id===37||a.id===189)&&typeof PuzzleEvents!=='undefined')PuzzleEvents.render(body,a.id);else if(a.id===338&&typeof BlindBox!=='undefined')BlindBox.render(body);else if(a.id===329&&typeof Pirate!=='undefined')Pirate.render(body);else if(a.id===330&&typeof Pirate!=='undefined')Pirate.vaults(body);else if(typeof ActKit!=='undefined'&&ActKit.has(a.id))ActKit.render(body,a);else if(a.id===309&&typeof SandHunt!=='undefined')SandHunt.render(body);else if(a.id===140&&typeof WishCapsule!=='undefined')WishCapsule.panel(body);else if(a.id===134&&typeof MagicCard!=='undefined')MagicCard.render(body);else if(a.id===331&&typeof MatchingPairs!=='undefined')MatchingPairs.render(body);else if(a.id===292&&typeof LostSpace!=='undefined')LostSpace.panel(body);else if(a.id===150&&typeof PumpkinPatch!=='undefined')PumpkinPatch.render(body);else archived(body,a);
+  if(a?.id===184)gemOffers(body);
   const status=el('p','ev-status',message);status.setAttribute('role','status');panel.append(status);
  }
 
@@ -162,7 +163,8 @@ const EventsHub=(()=>{
     contact.append(z);c.append(contact);
   }else c.append(el('p','ev-note',"Sự kiện hiện chưa mở đầy đủ trên máy chủ."));
   parent.append(c);
-  if(a.id===184){
+ }
+ function gemOffers(parent){
     const original=el('section','ev-original-gems');
     original.append(el('h3',undefined,'Các Gói Kim Cương Gốc'));
     if(publicGemPacks===null){
@@ -184,8 +186,8 @@ const EventsHub=(()=>{
       }
     }
     parent.append(original);
-  }
  }
+
  function openPoint(id,from){tab='ex';selected=id;pinnedId=id;open(from);}
  function openOriginalEvent(id,from){const entry={166:'ex',167:'ex',191:'ex',279:'ex'};tab=entry[id]||'ex';selected=id;pinnedId=id;open(from);}
  return {open,openPoint,openOriginalEvent,render};
