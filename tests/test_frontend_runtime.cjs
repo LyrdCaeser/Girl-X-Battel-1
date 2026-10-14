@@ -170,7 +170,40 @@ function testBattleScale() {
   console.log('PASS | battle: native Spine bounds, facing and portrait viewport verified');
 }
 
+function testNephilimBattleModels() {
+  const catalogue = JSON.parse(fs.readFileSync(path.join(ROOT, 'web/assets/chibis/catalog.json'), 'utf8'));
+  const ids = ['56006','656016','756006','110050','1000040','2000029',
+    '7119','7125','7133','7193','7209'];
+  const ctx = vm.createContext({});
+  vm.runInContext(fs.readFileSync(path.join(ROOT, 'web/battle-animation.js'), 'utf8'), ctx);
+  const scale = vm.runInContext('ChibiBattle.fitScaleForModel', ctx);
+  const facing = vm.runInContext('ChibiBattle.modelFacing', ctx);
+  for (const id of ids) {
+    assert.equal(catalogue[id]?.facing, 'right', `Nephilim ${id} must face the enemy`);
+    assert.equal(catalogue[id]?.battleHeight, 260, `Nephilim ${id} must keep its readable height`);
+    assert.equal(facing({bones:[]},{},catalogue[id]),1, 'Nephilim orientation must not use attack-bone guesses');
+  }
+  const rigs = [
+    ['56006',554.1474609375,344.65887451171875],
+    ['656016',346.0149841308594,379.0011901855469],
+    ['756006',345.9549255371094,358.03485107421875],
+    ['7125',914.1292724609375,464.1204833984375],
+  ];
+  for (const [id,width,height] of rigs) {
+    const factor=scale({width,height},catalogue[id]);
+    assert.ok(Math.abs(factor*height-260)<0.01,
+      `Nephilim skin ${id} must not be tiny because wide skill/cape bounds`);
+    const safeBoss=scale({width,height},catalogue[id],{boss:true,bossScene:true,bossScale:1});
+    assert.ok(safeBoss*height<=850.001,'original boss fitting stays protected');
+  }
+  assert.equal(scale({width:280,height:290},catalogue['56003']),
+    vm.runInContext('ChibiBattle.fitScaleForBounds',ctx)({width:280,height:290}),
+    'Michael and unrelated characters keep automatic fitting');
+  console.log('PASS | Nephilim: default, awakened, advanced and five skins keep facing and size');
+}
+
 (async () => {
+  testNephilimBattleModels();
   testBattleScale();
   testLobby();
   await testPvpResult();
