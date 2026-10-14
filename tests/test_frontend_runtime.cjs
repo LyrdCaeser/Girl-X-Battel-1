@@ -138,6 +138,10 @@ function testBattleScale() {
   const wide = {width: 468, height: 380};
   assert.ok(wide.width * fit(wide) > oldWideSize,
     'wide models regain size while respecting portrait footprint');
+  const alreadyGood = {width:193, height:289};
+  const unchanged = Math.min(2.6,250/alreadyGood.width,285/alreadyGood.height);
+  assert.ok(Math.abs(fit(alreadyGood)-unchanged)<1e-9,
+    'normal-sized fighters must keep their earlier size');
   const face = vm.runInContext('ChibiBattle.modelFacing', ctx);
   const leftNative = {width: 240, bones: [
     {name:'Pattack01', x:-110},{name:'Pattack02',x:-85},{name:'root',x:0},
