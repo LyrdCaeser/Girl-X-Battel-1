@@ -147,18 +147,32 @@ def mailbox(uid,server_id):
         db.close(); return out
 
 
-def claim_mail(mail_id,uid,server_id):
-    with _lock:
-        db=_db(); db.execute("BEGIN IMMEDIATE")
-        row=db.execute("SELECT * FROM mail WHERE id=? AND uid=? AND server_id=?",(mail_id,str(uid),str(server_id).upper())).fetchone()
-        if not row: db.rollback();db.close();raise ValueError("Không tìm thấy thư")
-        if row["status"]!="pending": db.rollback();db.close();raise ValueError("Thư đã được nhận")
-        attachments=json.loads(row["attachments"])
-        now=int(time.time())
-        db.execute("UPDATE mail SET status='claimed',claimed_at=? WHERE id=?",(now,mail_id))
+def claim_mail(mail_id,uid,server_id,db=None):
+    """Atomically claim one exact UID/server mail. Caller-owned Postgres transactions
+    can combine claiming with saving reward items in the same Neon transaction.
+    """
+    if db is not None:
+        row=db.execute("SELECT attachments,status FROM mail WHERE id=? AND uid=? AND server_id=?",
+                       (str(mail_id),str(uid),str(server_id).upper())).fetchone()
+        if not row: raise ValueError("Không tìm thấy thư thuộc UID/Server này")
+        if row["status"]!="pending": raise ValueError("Thư đã được nhận")
+        cur=db.execute("""UPDATE mail SET status='claimed',claimed_at=? WHERE id=? AND uid=? AND server_id=? AND status='pending'""",
+                       (int(time.time()),str(mail_id),str(uid),str(server_id).upper()))
+        if cur.rowcount!=1: raise ValueError("Thư đã được người khác xử lý")
         _audit(db,"mail.claim",f"{server_id}:{uid}",{"mail_id":mail_id})
-        db.commit(); db.close()
-        return attachments
+        return json.loads(row["attachments"])
+    with _lock:
+        txn=_db()
+        try:
+            txn.execute("BEGIN IMMEDIATE")
+            result=claim_mail(mail_id,uid,server_id,db=txn)
+            txn.commit()
+            return result
+        except Exception:
+            txn.rollback()
+            raise
+        finally:
+            txn.close()
 
 
 def create_order(uid,server_id,character_name,package,note=""):
