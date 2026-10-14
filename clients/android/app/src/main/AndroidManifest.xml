@@ -6,6 +6,7 @@
     <application
         android:allowBackup="false"
         android:usesCleartextTraffic="false"
+        android:icon="@mipmap/ic_launcher"
         android:label="Nữ Thần Chiến Đấu - GXB 3"
         android:theme="@android:style/Theme.Material.Light.NoActionBar">
         <activity
