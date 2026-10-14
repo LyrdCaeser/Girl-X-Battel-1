@@ -167,6 +167,18 @@ class ScopedPostgresPlayerDB:
 
         raise RuntimeError(f"Unsupported player persistence SQL: {raw}")
 
+    def borrowed_live_transaction(self):
+        """Bridge the current player transaction to the live-mail SQL interface.
+
+        Mail's pending->claimed transition, audit record, VIP EXP and player
+        inventory update must commit or roll back together on the SAME pooled
+        PostgreSQL connection. This wrapper is borrowed: its owner remains
+        ScopedPostgresPlayerDB.commit()/rollback(); callers must not close it.
+        """
+        if self._tx is None:
+            raise RuntimeError("Thao tác nhận thư yêu cầu giao dịch đang mở")
+        return database.DBConnection(self._tx, "postgres")
+
     def commit(self):
         if self._tx is None:
             return
