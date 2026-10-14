@@ -56,6 +56,30 @@ class GmMailRC7Tests(unittest.TestCase):
             db.close()
         self.assertEqual(live_service.mailbox("RC7-USER","S1")[0]["status"],"pending")
 
+    def test_approved_paid_package_issues_vip_exp_to_correct_mail_only_once(self):
+        from gxb2 import vip
+        official_pack={
+            "id":"MONTHLY_CARD", "name":"Thẻ Tháng",
+            "price_label":"QTV xác nhận giá", "manual_reward":False,
+            "reward":{vip.VIP_EXP_REWARD_ID:150}, "enabled":True,
+        }
+        with patch.object(live_service.topup,"package",return_value=official_pack):
+            created=live_service.create_order("RC7-USER","S1","User Test","MONTHLY_CARD")
+        self.assertEqual(live_service.mailbox("RC7-USER","S1"),[])
+        live_service.review_order(created["id"],True,reviewer="TEST_GM")
+        self.assertEqual(live_service.mailbox("RC7-ADMIN","S1"),[])
+        pending=live_service.mailbox("RC7-USER","S1")
+        self.assertEqual(len(pending),1)
+        with self.assertRaises(ValueError):
+            live_service.claim_mail(pending[0]["id"],"RC7-ADMIN","S1")
+        contents=live_service.claim_mail(pending[0]["id"],"RC7-USER","S1")
+        account={"items":{"1":0}}
+        self.assertEqual(vip.claim_reward(account,contents),150)
+        self.assertEqual(account["vip_paid_exp"],150)
+        self.assertNotIn(vip.VIP_EXP_REWARD_ID,contents)
+        with self.assertRaises(ValueError):
+            live_service.claim_mail(pending[0]["id"],"RC7-USER","S1")
+
     def test_catalog_only_accepts_real_shards_and_items(self):
         catalog=gm_catalog.catalog()
         self.assertGreater(len(catalog["items"]),100)
