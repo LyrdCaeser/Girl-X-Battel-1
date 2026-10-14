@@ -33,6 +33,44 @@ class GiftcodeSsoTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,"Phiên game"):
             studio_sso.exchange(ticket)
 
+    def test_redirect_finishes_http11_response_without_hanging(self):
+        """A Chrome tab must not wait for an unterminated 303 keep-alive body."""
+        import http.client
+        import threading
+        from http.server import ThreadingHTTPServer
+        from server import HTTPHandler
+
+        class TestHandler(HTTPHandler):
+            def reject_unauthorized_admin_mode(self):
+                return False
+            def require_auth(self):
+                return {'account': {'uid': 'TEST', 'server_id': 'S1'}}
+            def session_token(self):
+                return 'test-session'
+
+        server=ThreadingHTTPServer(('127.0.0.1', 0), TestHandler)
+        thread=threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        connection=http.client.HTTPConnection('127.0.0.1', server.server_port, timeout=3)
+        try:
+            with patch.object(studio_sso, 'start', return_value='example-single-use-ticket'):
+                connection.request('GET', '/api/giftcode/sso/start')
+                response=connection.getresponse()
+                self.assertEqual(response.status,303)
+                self.assertEqual(response.getheader('Content-Length'),'0')
+                self.assertEqual(response.getheader('Connection'),'close')
+                self.assertEqual(response.getheader('Cache-Control'),'no-store')
+                self.assertEqual(response.getheader('Referrer-Policy'),'no-referrer')
+                self.assertEqual(
+                    response.getheader('Location'),
+                    studio_sso.STUDIO_ORIGIN+'/?ticket=example-single-use-ticket')
+                self.assertEqual(response.read(),b'')
+        finally:
+            connection.close()
+            server.shutdown()
+            server.server_close()
+            thread.join(timeout=4)
+
     def test_panel_lock_requires_configured_secret_and_session(self):
         with patch.dict("os.environ",{"GXB3_GIFTCODE_PANEL_KEY":"ExamplePass123!","GXB3_GM_ACTION_KEY":"x"*40}):
             with self.assertRaisesRegex(ValueError,"không chính xác"):
