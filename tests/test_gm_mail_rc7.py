@@ -80,6 +80,21 @@ class GmMailRC7Tests(unittest.TestCase):
         with self.assertRaises(ValueError):
             live_service.claim_mail(pending[0]["id"],"RC7-USER","S1")
 
+    def test_manually_fulfilled_weekly_card_includes_original_vip_exp(self):
+        from gxb2 import vip
+        pack={"id":"WEEKLY_CARD","name":"Thẻ Tuần","price_label":"QTV xác nhận",
+              "manual_reward":True,"reward":{vip.VIP_EXP_REWARD_ID:50},"enabled":True}
+        with patch.object(live_service.topup,"package",return_value=pack):
+            placed=live_service.create_order("RC7-USER","S1","User Test","WEEKLY_CARD")
+        with self.assertRaises(ValueError):
+            live_service.review_order(placed["id"],True,{},reviewer="TEST_GM")
+        self.assertEqual(live_service.order(placed["id"])["status"],"pending")
+        live_service.review_order(placed["id"],True,{"2":120},reviewer="TEST_GM")
+        mails=live_service.mailbox("RC7-USER","S1")
+        self.assertEqual(len(mails),1)
+        self.assertEqual(mails[0]["attachments"],{"2":120,vip.VIP_EXP_REWARD_ID:50})
+        self.assertEqual(live_service.mailbox("RC7-ADMIN","S1"),[])
+
     def test_failed_mail_insert_does_not_approve_paid_order(self):
         from gxb2 import vip
         pack={"id":"MONTHLY_CARD","name":"Thẻ Tháng","price_label":"QTV xác nhận",
