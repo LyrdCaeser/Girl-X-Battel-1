@@ -576,7 +576,7 @@
     const vipPackages = document.getElementById('vip-packages-open');
     if (vipPackages && !vipPackages.dataset.boundPackages) {
       vipPackages.dataset.boundPackages = '1';
-      vipPackages.addEventListener('click', () => window.HomeMenus?.open('giftpacks', 'profile'));
+      vipPackages.addEventListener('click', () => window.EventsHub?.openOriginalEvent(2, 'profile'));
     }
     const lang = [...document.querySelectorAll('.profile-setting-row strong')]
       .find(x => x.textContent.trim() === 'Ngôn ngữ');
