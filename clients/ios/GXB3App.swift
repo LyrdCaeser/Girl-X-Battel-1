@@ -40,7 +40,7 @@ final class GXB3Controller: UIViewController, WKNavigationDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        loading.text = "GXB 3 · ALPHA RC6\nĐang kết nối máy chủ…"
+        loading.text = "Nữ Thần Chiến Đấu - GXB 3 · ALPHA RC7\nĐang kết nối máy chủ…"
         loading.numberOfLines = 0
         loading.textAlignment = .center
         loading.textColor = .white
