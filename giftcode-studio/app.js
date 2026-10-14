@@ -15,7 +15,7 @@ const api=async(path,body,gm=false,unlock=false)=>{
  if(location.origin!=='https://180-93-111-99.sslip.io'){
    const target=new URL(path,location.origin);
    const bridgeUrl=new URL('/api/bridge',location.origin);
-   bridgeUrl.searchParams.set('route',target.pathname.replace(/^\\/api\\//,''));
+   bridgeUrl.searchParams.set('route',target.pathname.startsWith('/api/')?target.pathname.slice(5):'');
    for(const [k,v] of target.searchParams)bridgeUrl.searchParams.append(k,v);
    requestPath=bridgeUrl.pathname+bridgeUrl.search;
  }
