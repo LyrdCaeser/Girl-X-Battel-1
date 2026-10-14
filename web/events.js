@@ -38,6 +38,19 @@ const EventsHub=(()=>{
   .replace(/\bLeft\b/g,'Còn lại').replace(/\bCompleted\b/g,'Đã hoàn thành');
  };
  let catalog=null,loading=null,tab='ex',selected=null,pinnedId=null,origin='home',pending=false,message='',visited=false;
+ let publicGemPacks=null,publicGemPacksLoading=false;
+ function loadPublicGemPacks(){
+   if(publicGemPacks!==null||publicGemPacksLoading)return;
+   publicGemPacksLoading=true;
+   api('/api/payment/packages').then(r=>{
+     publicGemPacks=Array.isArray(r?.packages)?r.packages:[];
+   }).catch(()=>{
+     publicGemPacks=[];
+   }).finally(()=>{
+     publicGemPacksLoading=false;
+     if(view==='events'&&selected===184)render();
+   });
+ }
  const A=name=>'/assets/events/'+name+'.png';
  const el=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=vi(text);return e;};
  const img=(src,cls,alt='')=>{const i=el('img',cls);i.src=src;i.alt=alt;i.draggable=false;return i;};
@@ -78,9 +91,9 @@ const EventsHub=(()=>{
   top.append(back,el('h1',undefined,"Sự Kiện"),money);root.append(top);
   if(!catalog||!hub()){root.append(el('p','ev-note',message||"Đang tải sự kiện…"));return;}
   const win=el('div','ev-window');root.append(win);const tabs=el('nav','ev-tabs');for(const [id,pos]of TABS){const b=el('button','ev-tab '+pos+(tab===id?' on':''),tabLabel(id));b.type='button';b.onclick=()=>{if(tab===id)return;tab=id;selected=null;pinnedId=null;message='';if(typeof GxbAudio!=='undefined')GxbAudio.sfx('ui_switch_page',.6);render();};if(catalog.activities.some(a=>inTab(a,id)&&claimable(a.id)))b.append(img(A('alert_icon'),'ev-tab-red'));tabs.append(b);}win.append(tabs);{const cb=el('button','ev-cal-btn','📅 Lịch');cb.type='button';cb.onclick=calendarWin;win.append(cb);}const panel=el('div','ev-panel');win.append(panel);
-  if([2,3,6,24,39,40].includes(Number(pinnedId||selected))){
+  if([2,3,6,24,39,40,184].includes(Number(pinnedId||selected))){
     const offers=el('nav','ev-native-pack-tabs');
-    for(const [id,label] of [[2,'Gói Tháng'],[3,'Gói Tuần'],[6,'Thẻ Tháng'],[24,'Thẻ Tuần']]){
+    for(const [id,label] of [[2,'Gói Tháng'],[3,'Gói Tuần'],[6,'Thẻ Tháng'],[24,'Thẻ Tuần'],[184,'Nạp Kim Cương']]){
       const chip=el('button','ev-tab'+(id===selected?' on':''),label);
       chip.type='button';
       chip.onclick=()=>{pinnedId=id;selected=id;render();};
@@ -149,6 +162,29 @@ const EventsHub=(()=>{
     contact.append(z);c.append(contact);
   }else c.append(el('p','ev-note',"Sự kiện hiện chưa mở đầy đủ trên máy chủ."));
   parent.append(c);
+  if(a.id===184){
+    const original=el('section','ev-original-gems');
+    original.append(el('h3',undefined,'Các Gói Kim Cương Gốc'));
+    if(publicGemPacks===null){
+      original.append(el('p','ev-note','Đang tải các gói nạp đã công bố…'));
+      loadPublicGemPacks();
+    }else{
+      for(const p of publicGemPacks.filter(p=>/^GEMS_(250|500|1000|2500|5000)$/.test(p.id))){
+        const offer=el('article','ev-gems-offer');
+        offer.append(img('/assets/currency/icon_2_small.png','ev-item','Kim Cương'));
+        const info=el('div','ev-gems-data');
+        info.append(el('b',undefined,p.name));
+        if(p.vip_exp)info.append(el('span',undefined,fmt(p.vip_exp)+' EXP VIP khi nhận thư nạp đã duyệt'));
+        if(p.instant_gems)info.append(el('span',undefined,fmt(p.instant_gems)+' Kim Cương'));
+        if(p.price_label)info.append(el('small',undefined,p.price_label));
+        offer.append(info);
+        const btn=el('button','ev-native-pay','Zalo · Đặt Gói');btn.type='button';
+        btn.onclick=()=>window.GxbPayment?.open(p.id,p.name);
+        offer.append(btn);original.append(offer);
+      }
+    }
+    parent.append(original);
+  }
  }
  function openPoint(id,from){tab='ex';selected=id;pinnedId=id;open(from);}
  function openOriginalEvent(id,from){const entry={166:'ex',167:'ex',191:'ex',279:'ex'};tab=entry[id]||'ex';selected=id;pinnedId=id;open(from);}
