@@ -684,7 +684,7 @@ $('bag-forge').addEventListener('click',()=>{const panel=$('bag-detail');$('bag-
 const comingRoutes={"Guild":'guild',"Menu":'settings',"Mail":'mail',"Gift Packs":'original-gifts',"Limited Gift":'original-limited-gift',"Events":'events',"Treasure":'treasure',"Friends":'friends',"Fantasy Book":'book','Servant':'servant',"Excursion":'expedition',"Store":'black-market'};
 document.querySelectorAll('[data-coming]').forEach(b=>b.addEventListener('click',()=>{const key=comingRoutes[b.dataset.coming];if(key){openMenu(key);return;}notice(b.dataset.coming);}));
 $('home-add-gold')?.addEventListener('click',()=>{if(typeof Midas!=='undefined')Midas.open();});
-$('home-add-gems')?.addEventListener('click',()=>{if(typeof HomeMenus!=='undefined')HomeMenus.open('giftpacks','home');});
+$('home-add-gems')?.addEventListener('click',()=>{if(typeof EventsHub!=='undefined')EventsHub.openOriginalEvent(184,'home');});
 $('home-profile').addEventListener('click',()=>{profileTab='info';$('profile-picker').hidden=true;showView('profile');});
 for(const [id,summon_id,times] of [['summon-free',3,1],['summon-one',1,1],['summon-ten',2,1],['summon-senior-free',8,1],['summon-senior-one',6,1],['summon-senior-ten',7,1],['summon-senior-gem-one',4,1],['summon-senior-gem-ten',5,1],['summon-bff-one',15,1],['summon-bff-ten',16,1],['summon-egg',9,1]])$(id).addEventListener('click',()=>action('SUMMON',{summon_id,times}));
 let servantAvatars={};api('/assets/servants.json').then(d=>{for(const [k,v]of Object.entries(d.pets||{}))servantAvatars[k]=v.avatar;}).catch(()=>{});
