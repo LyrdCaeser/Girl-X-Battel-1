@@ -108,7 +108,7 @@ window.GxbPayment=(()=>{
     if(vip&&!vip.dataset.boundPackages){
       vip.dataset.boundPackages='1';
       vip.addEventListener('click',()=>{
-        if(typeof HomeMenus!=='undefined')HomeMenus.open('giftpacks','profile');
+        if(typeof EventsHub!=='undefined'&&EventsHub.openOriginalEvent)EventsHub.openOriginalEvent(2,'profile');
       });
     }
   },{once:true});
