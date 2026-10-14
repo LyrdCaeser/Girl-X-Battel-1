@@ -74,7 +74,7 @@ window.AdminPanel=(()=>{
     const entries=Object.entries(giftBasket);
     if(!entries.length)panel.append(el('p','admin-note','Chưa chọn vật phẩm nào.'));
     for(const [id,quantity] of entries){
-      const item=[...(giftCatalog?.items||[]),...(giftCatalog?.shards||[])].find(x=>String(x.id)===id);
+      const item=id==='999999991'?{name:'VIP EXP (chỉ nhận qua thư)',image:'/assets/events/check_in_pop_up_vip_level_bg.png'}:[...(giftCatalog?.items||[]),...(giftCatalog?.shards||[])].find(x=>String(x.id)===id);
       const entry=el('div','admin-basket-row');
       if(item?.image)entry.append(giftPic(item.image,item.name));
       entry.append(el('span','',(item?.name||'Vật phẩm')+' · ID '+id+' · ×'+quantity));
@@ -134,7 +134,27 @@ window.AdminPanel=(()=>{
     }
     draw();
   }
-  const renderCurrency=body=>giftCards(body,'currency');
+  function renderCurrency(body){
+    // Reserved mail-only reward. This is not spendable inventory currency.
+    const vip=card('VIP EXP · chỉ cộng khi người nhận xác nhận Hòm Thư');
+    const tile=el('div','admin-gift-card');
+    tile.append(giftPic('/assets/events/check_in_pop_up_vip_level_bg.png','VIP'));
+    const desc=el('div','admin-gift-details');
+    desc.append(el('b','','Điểm VIP (EXP VIP)'),el('small','','Mã thưởng nội bộ: 999999991'),
+       el('small','','Được cộng đúng một lần cho UID/Server khi nhận thư. Không cộng từ nhiệm vụ.'));
+    tile.append(desc);
+    const q=document.createElement('input');q.type='number';q.step='1';q.min='1';q.max='2000000';q.value='100';
+    q.setAttribute('aria-label','Số VIP EXP');tile.append(q);
+    tile.append(btn('Thêm VIP EXP vào thư',()=>{
+      try{const count=amount(q.value);const id='999999991';
+        if((giftBasket[id]||0)+count>2000000)throw Error('VIP EXP vượt giới hạn');
+        giftBasket[id]=(giftBasket[id]||0)+count;
+        status('Đã chọn '+count+' VIP EXP. Chỉ gửi cho UID đã xác minh qua thư.');
+        render();
+      }catch(e){status(e.message,false);}
+    },'primary'));
+    vip.append(tile);body.append(vip);giftCards(body,'currency');
+  }
   const renderItems=body=>giftCards(body,'items');
   const renderShards=body=>giftCards(body,'shards');
   async function verifyGiftKey(){
