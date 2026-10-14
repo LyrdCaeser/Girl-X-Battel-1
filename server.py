@@ -21,7 +21,7 @@ from gxb2.story import catalog as story_catalog
 from gxb2.dress import catalog as dress_catalog
 from gxb2.skins import catalog as skins_catalog
 from gxb2.souls import catalog as souls_catalog
-from gxb2 import protocol as p, local_promotion, local_config, world_live_config, topup, live_service, auth, database, gm_catalog, giftcodes
+from gxb2 import protocol as p, local_promotion, local_config, world_live_config, topup, live_service, auth, database, gm_catalog, giftcodes, studio_sso
 from gxb2.player_engines import PlayerEnginePool
 from gxb2.battle import simulate as simulate_battle, ONLINE_BATTLE_ID, normalize_online_seed
 from gxb2.security import FixedWindowRateLimiter, DEFAULT_LIMITS, env_bool, validate_production_config
@@ -352,7 +352,20 @@ class HTTPHandler(BaseHTTPRequestHandler):
             if not ctx: return
             return self.send(200, {'sessions': auth.sessions_for_token(self.session_token())})
         if path in ('/giftcode-studio','/giftcode-studio/'):
-            return self.send(200,(ROOT/'giftcode-studio/index.html').read_bytes(),'text/html; charset=utf-8')
+            # Always use the dedicated Vercel Studio, preserving the game login
+            # through a short-lived one-time ticket rather than a shared cookie.
+            path='/api/giftcode/sso/start'
+        if path == '/api/giftcode/sso/start':
+            ctx = self.require_auth()
+            if not ctx: return
+            ticket=studio_sso.start(self.session_token())
+            from urllib.parse import quote
+            self.send_response(303)
+            self.send_header('Location',studio_sso.STUDIO_ORIGIN+'/?ticket='+quote(ticket,safe=''))
+            self.send_header('Cache-Control','no-store')
+            self.send_header('Referrer-Policy','no-referrer')
+            self.end_headers()
+            return
         if path in ('/giftcode-studio/app.js','/giftcode-studio/style.css'):
             file=ROOT/'giftcode-studio'/path.rsplit('/',1)[-1]
             return self.send(200,file.read_bytes(),
@@ -742,6 +755,8 @@ class HTTPHandler(BaseHTTPRequestHandler):
             if path in ('/api/pvp/match/battle','/api/guild-war/battle') and not self.rate_limit('battle'): return
             if path.startswith('/api/admin/') and not self.rate_limit('admin'): return
             if path == '/api/giftcode/redeem' and not self.rate_limit('giftcode_redeem'): return
+            if path == '/api/giftcode/sso/exchange' and not self.rate_limit('auth_login'): return
+            if path == '/api/giftcode/admin/unlock' and not self.rate_limit('giftcode_unlock'): return
             if path.startswith('/api/giftcode/admin/') and not self.rate_limit('admin'): return
             if path == '/api/world-guild/manage' and str(data.get('action') or '') == 'chat' and not self.rate_limit('guild_chat'): return
             if path == '/api/chat/send' and not self.rate_limit('world_chat'): return
@@ -800,12 +815,21 @@ class HTTPHandler(BaseHTTPRequestHandler):
                         account['uid'], account['server_id'],
                         data.get('channel'), data.get('message'), data.get('recipient_uid', ''))
                 })
+            if path == '/api/giftcode/sso/exchange':
+                token=studio_sso.exchange(data.get('ticket'),self.headers.get('User-Agent',''),self.client_ip())
+                cookie=f"gxb3_session={token}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age={auth.SESSION_TTL}"
+                return self.send(200,{'authenticated':True},headers={'Set-Cookie':cookie})
+            if path == '/api/giftcode/admin/unlock':
+                if not self.admin_authorized(): return self.send(403,{'error':'Yêu cầu SUPER GM'})
+                return self.send(200,{'access':studio_sso.unlock(data.get('password'),self.session_token()),'expires_in':studio_sso.PANEL_TTL})
             if path == '/api/giftcode/redeem':
                 ctx=self.auth_context()
                 account=ctx['account']
                 return self.send(200,giftcodes.redeem(data.get('code'),account['uid'],account['server_id']))
             if path.startswith('/api/giftcode/admin/'):
                 if not self.admin_authorized(): return self.send(403,{'error':'Chỉ SUPER GM được tạo mã'})
+                if not studio_sso.authorized(self.headers.get('X-GXB3-Giftcode-Access'),self.session_token()):
+                    return self.send(403,{'error':'Vui lòng mở khóa mục Tạo Giftcode'})
                 if not self.gm_key_authorized(): return self.send(403,{'error':'Khóa hành động QTV không hợp lệ'})
                 operator=self.auth_context()['account']['uid']
                 if path == '/api/giftcode/admin/create':

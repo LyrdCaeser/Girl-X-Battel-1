@@ -87,4 +87,5 @@ DEFAULT_LIMITS = {
     "battle": (12, 60),
     "admin": (60, 60),
     "giftcode_redeem": (6, 120),
+    "giftcode_unlock": (5, 600),
 }
