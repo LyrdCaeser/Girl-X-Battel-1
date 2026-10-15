@@ -220,7 +220,7 @@ function renderGirls(){
   const target=Number(String(item.partner_cost||'').split('#')[0]),targetGirl=groups.get(target),card=node('button','shard-card'+(item.can_compose?' ready':''));
   card.type='button';card.disabled=busy||!item.can_compose;card.title=item.name+' · '+number(item.count)+' / '+number(item.need||0)+(item.can_compose?" · Summon":'');
   card.setAttribute('aria-label',card.title);
-  const art=node('span','shard-card-art'+(targetGirl&&!state.roster.some(h=>h.table_id===target)?' silhouette':''));
+  const art=node('span','shard-card-art'); // A collected shard is owned, even if its Girl has not been summoned.
   const shardIcon=targetGirl?girlIconSource(target):itemPicture(itemCatalog[String(item.id)]||item);if(shardIcon){const im=node('img');im.src=shardIcon;im.alt='';art.append(im);}else art.append(node('span','shard-card-mystery','?'));
   const badge=node('span','shard-card-faction');if(item.group)badge.style.backgroundImage=`url('/assets/factions/${item.group}.png')`;badge.textContent=item.group?'':'✦';
   const rank=Number(item.stars||avatars[String(target)]?.stars||targetGirl?.stars||item.qlt)||1;const stars=node('span','shard-card-stars'+(rank>5?' red':''),(rank>5?rank+'★':'★'.repeat(rank)));stars.setAttribute('aria-label',rank+" stars");art.append(badge,node('span','shard-card-puzzle','🧩'),stars);if(typeof HeroGlow!=='undefined')HeroGlow.attach(art,rank,item.group);
@@ -445,6 +445,21 @@ async function showBagItem(item,count,src){
  const select=$('bag-use-choice'),qty=$('bag-use-count'),button=$('bag-detail-use'),note=$('bag-use-note');
  select.replaceChildren();select.hidden=true;qty.hidden=true;button.hidden=true;
  const nativeChoices=$('bag-use-native-choices');nativeChoices.replaceChildren();nativeChoices.hidden=true;
+ const summon=$('bag-detail-summon');
+ const shard=Array.isArray(state.debris)?state.debris.find(x=>String(x.id)===String(item.id)&&Number(x.count)>0):null;
+ summon.hidden=!shard?.can_compose;summon.disabled=busy||!shard?.can_compose;
+ if(shard?.can_compose){
+   summon.onclick=async()=>{
+     if(busy)return;
+     const current=Array.isArray(state.debris)?state.debris.find(x=>String(x.id)===String(item.id)):null;
+     if(!current?.can_compose||!Number.isSafeInteger(Number(current.summon_id)))return;
+     const msg='Dùng '+number(current.need)+' mảnh để triệu hồi Nữ Thần theo công thức gốc?';
+     const yes=typeof GirlUI!=='undefined'&&GirlUI.confirm?await GirlUI.confirm(msg,{title:'Xác nhận Triệu Hồi',ok:'Triệu Hồi',cancel:'Hủy'}):confirm(msg);
+     if(!yes)return;
+     panel.hidden=true;
+     await action('SUMMON',{summon_id:Number(current.summon_id),times:1});
+   };
+ }
  note.hidden=false;note.textContent='Đang kiểm tra chức năng gốc trên máy chủ...';
  currentBagUse={id:item.id,name:item.name,loading:true};
  panel.hidden=false;
@@ -453,7 +468,7 @@ async function showBagItem(item,count,src){
    const original=await api('/api/inventory/options',{item_id:item.id});
    if(!currentBagUse||String(currentBagUse.id)!==String(item.id)||panel.hidden)return;
    if(!original.usable){
-     note.textContent=original.reason||'Vật phẩm này không có chức năng dùng trong dữ liệu gốc.';
+     note.textContent=shard?(shard.can_compose?'Đã đủ mảnh để Triệu Hồi.':'Cần '+number(shard.need)+' mảnh để Triệu Hồi; hiện có '+number(shard.count)+'.'):(original.reason||'Vật phẩm này không có chức năng dùng trong dữ liệu gốc.');
      return;
    }
    qty.max=String(Math.min(Number(original.max_per_use||50),count));
