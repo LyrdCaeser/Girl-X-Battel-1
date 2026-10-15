@@ -56,6 +56,11 @@ def _db():
                         updated_at BIGINT NOT NULL,
                         updated_by TEXT NOT NULL
                     )""")
+                    db.execute("""CREATE TABLE IF NOT EXISTS skin_shop_bank_settings (
+                        skin_id INTEGER PRIMARY KEY,
+                        allow_bank INTEGER NOT NULL DEFAULT 0,
+                        price_vnd BIGINT NOT NULL DEFAULT 0
+                    )""")
                     db.commit()
                     _READY.add(key)
         return db
@@ -68,8 +73,11 @@ def _db():
 def _settings():
     db = _db()
     try:
-        return {int(row["skin_id"]): dict(row)
-                for row in db.execute("SELECT * FROM skin_shop_settings").fetchall()}
+        values = {int(row["skin_id"]): dict(row)
+                  for row in db.execute("SELECT * FROM skin_shop_settings").fetchall()}
+        for row in db.execute("SELECT * FROM skin_shop_bank_settings").fetchall():
+            values.setdefault(int(row["skin_id"]), {}).update(dict(row))
+        return values
     finally:
         db.close()
 
@@ -103,18 +111,20 @@ def offer(skin_id, *, settings=None, include_locked=False):
         "group": next((int(GIRLS[x].get("group") or 0) for x in row["partners"] if x in GIRLS), 0),
         "is_wedding": wedding,
         "is_saleable": saleable and not wedding,
-        "enabled": saleable and not wedding and bool(preset.get("enabled", bool(ticket_price))),
-        "allow_gold": not wedding and bool(preset.get("allow_gold", 0)),
+        "enabled": saleable and not wedding and bool(preset.get("enabled", False)),
+        "allow_bank": not wedding and bool(preset.get("allow_bank", 0)),
+        "allow_gold": False,  # retired: Gold must never grant paid costumes
         "allow_crystal": not wedding and bool(preset.get("allow_crystal", 0)),
-        "allow_ticket": not wedding and bool(preset.get("allow_ticket", bool(ticket_price))) and ticket_price > 0,
-        "price_gold": int(preset.get("price_gold", 0)),
+        "allow_ticket": False,  # storefront is bank transfer or Crystal only
+        "price_vnd": int(preset.get("price_vnd", 0)),
+        "price_gold": 0,
         "price_crystal": int(preset.get("price_crystal", 0)),
         "price_ticket": ticket_price,
         "updated_at": int(preset.get("updated_at", 0)),
     }
     # An enabled listing must have at least one valid server-side price.
-    if result["allow_gold"] and result["price_gold"] < 1:
-        result["allow_gold"] = False
+    if result["allow_bank"] and result["price_vnd"] < 1:
+        result["allow_bank"] = False
     if result["allow_crystal"] and result["price_crystal"] < 1:
         result["allow_crystal"] = False
     return result
@@ -125,8 +135,9 @@ def catalogue(*, admin=False):
     offers = [offer(sid, settings=settings, include_locked=admin) for sid in skins.SKINS]
     if not admin:
         offers = [o for o in offers if o and o["is_saleable"] and o["enabled"]
-                  and (o["allow_gold"] or o["allow_crystal"] or o["allow_ticket"])]
-    return {"offers": offers, "total": len(offers), "wedding_count": len(WEDDING_IDS) if admin else 0}
+                  and (o["allow_bank"] or o["allow_crystal"])]
+    return {"offers": offers, "total": len(offers), "wedding_count": len(WEDDING_IDS) if admin else 0,
+            "bank_zalo": "0856848557", "bank_note": "Liên hệ Zalo quản trị để nhận thông tin chuyển khoản; đơn cần được QTV xác nhận."}
 
 
 def update_configs(changes, operator):
@@ -149,51 +160,49 @@ def update_configs(changes, operator):
         if not str(skins.SKINS[sid].get("name") or "").strip() or not skins.SKINS[sid].get("partners"):
             raise ValueError("Skin này chưa có tên hoặc nhân vật gốc; không thể mở bán")
         seen.add(sid)
-        source = skins.SKINS[sid]
-        available_ticket = str(source.get("shop") or "").startswith("74#")
-        fields = ("enabled", "allow_gold", "allow_crystal", "allow_ticket")
+        fields = ("enabled", "allow_bank", "allow_crystal")
         if any(type(req.get(k)) is not bool for k in fields):
             raise ValueError("Trạng thái bán phải là true hoặc false")
+        if req.get("allow_gold") is True or req.get("allow_ticket") is True:
+            raise ValueError("Cửa hàng Skin chỉ cho phép thanh toán ngân hàng hoặc Crystal")
         def exact_price(raw):
-            # int(1.9) and int(True) silently change the owner's requested price.
-            # Accept only JSON integers or unsigned decimal strings.
             if type(raw) is int:
                 return raw
             if isinstance(raw, str) and re.fullmatch(r"[0-9]{1,10}", raw):
                 return int(raw)
             raise ValueError("Giá tiền phải là số nguyên")
-        gold = exact_price(req.get("price_gold", 0))
+        vnd = exact_price(req.get("price_vnd", 0))
         crystal = exact_price(req.get("price_crystal", 0))
-        if not 0 <= gold <= MAX_PRICE or not 0 <= crystal <= MAX_PRICE:
+        if not 0 <= vnd <= MAX_PRICE or not 0 <= crystal <= MAX_PRICE:
             raise ValueError("Giá phải từ 0 đến 2 tỷ")
-        if req["allow_ticket"] and not available_ticket:
-            raise ValueError("Skin này không có giá Vé Trang Phục gốc")
-        if req["enabled"] and not (
-            (req["allow_gold"] and gold > 0)
-            or (req["allow_crystal"] and crystal > 0)
-            or (req["allow_ticket"] and available_ticket)
-        ):
-            raise ValueError("Để bật bán, cần chọn phương thức thanh toán và giá hợp lệ")
-        if req["allow_gold"] and gold < 1 or req["allow_crystal"] and crystal < 1:
+        if req["enabled"] and not ((req["allow_bank"] and vnd > 0)
+                                   or (req["allow_crystal"] and crystal > 0)):
+            raise ValueError("Để bật bán, cần chọn thanh toán ngân hàng hoặc Crystal với giá hợp lệ")
+        if req["allow_bank"] and vnd < 1 or req["allow_crystal"] and crystal < 1:
             raise ValueError("Giá phương thức đang bật phải lớn hơn 0")
-        validated.append((sid, *(int(req[k]) for k in fields), gold, crystal))
+        validated.append((sid, int(req["enabled"]), int(req["allow_bank"]),
+                          int(req["allow_crystal"]), vnd, crystal))
     with _LOCK:
         db = _db()
         now = int(time.time())
         try:
-            for sid, enabled, gold_on, crystal_on, ticket_on, gp, cp in validated:
+            for sid, enabled, bank_on, crystal_on, vnd, cp in validated:
                 db.execute("""INSERT INTO skin_shop_settings (
                     skin_id,enabled,allow_gold,allow_crystal,allow_ticket,price_gold,price_crystal,updated_at,updated_by
-                ) VALUES (?,?,?,?,?,?,?,?,?)
+                ) VALUES (?,?,0,?,0,0,?,?,?)
                 ON CONFLICT(skin_id) DO UPDATE SET
-                    enabled=excluded.enabled, allow_gold=excluded.allow_gold,
-                    allow_crystal=excluded.allow_crystal, allow_ticket=excluded.allow_ticket,
-                    price_gold=excluded.price_gold, price_crystal=excluded.price_crystal,
-                    updated_at=excluded.updated_at,updated_by=excluded.updated_by
-                """,(sid,enabled,gold_on,crystal_on,ticket_on,gp,cp,now,str(operator)[:100]))
-                live_service._audit(db, "skin_shop.update", str(sid),
-                    {"enabled":bool(enabled),"allow_gold":bool(gold_on),"allow_crystal":bool(crystal_on),
-                     "allow_ticket":bool(ticket_on),"price_gold":gp,"price_crystal":cp}, str(operator))
+                    enabled=excluded.enabled, allow_gold=0,
+                    allow_crystal=excluded.allow_crystal, allow_ticket=0,
+                    price_gold=0, price_crystal=excluded.price_crystal,
+                    updated_at=excluded.updated_at, updated_by=excluded.updated_by
+                """,(sid,enabled,crystal_on,cp,now,str(operator)[:100]))
+                db.execute("""INSERT INTO skin_shop_bank_settings (skin_id,allow_bank,price_vnd)
+                    VALUES (?,?,?) ON CONFLICT(skin_id) DO UPDATE SET
+                    allow_bank=excluded.allow_bank,price_vnd=excluded.price_vnd
+                """,(sid,bank_on,vnd))
+                live_service._audit(db,"skin_shop.update",str(sid),
+                    {"enabled":bool(enabled),"allow_bank":bool(bank_on),
+                     "allow_crystal":bool(crystal_on),"price_vnd":vnd,"price_crystal":cp},str(operator))
             db.commit()
         except Exception:
             db.rollback()
@@ -214,11 +223,11 @@ def purchase(state, skin_id, payment):
     current = offer(sid)
     if not current or not current["is_saleable"] or not current["enabled"]:
         raise ValueError("Trang phục chưa được mở bán")
-    currencies = {"gold": ("1", "allow_gold", "price_gold"),
-                  "crystal": ("2", "allow_crystal", "price_crystal"),
-                  "ticket": ("74", "allow_ticket", "price_ticket")}
+    if payment == "bank":
+        raise ValueError("Chuyển khoản phải tạo đơn ngân hàng và chờ QTV duyệt, không được mở skin ngay")
+    currencies = {"crystal": ("2", "allow_crystal", "price_crystal")}
     if payment not in currencies:
-        raise ValueError("Phương thức thanh toán không hợp lệ")
+        raise ValueError("Phương thức thanh toán không hợp lệ; chỉ Crystal hoặc đơn ngân hàng")
     currency, allowed, price_key = currencies[payment]
     price = int(current[price_key])
     if not current[allowed] or price <= 0:
@@ -226,7 +235,7 @@ def purchase(state, skin_id, payment):
     items = state.setdefault("items", {})
     have = int(items.get(currency, 0))
     if have < price:
-        raise ValueError("Không đủ " + {"gold":"Vàng","crystal":"Crystal","ticket":"Vé Trang Phục"}[payment])
+        raise ValueError("Không đủ " + "Crystal")
     items[currency] = have - price
     items[str(sid)] = int(items.get(str(sid), 0)) + 1
     skins.collected(state)
@@ -238,10 +247,9 @@ def purchase(state, skin_id, payment):
         "price": price,
         "at": int(time.time()),
         "price_snapshot": {
-            "allow_gold": current["allow_gold"],
+            "allow_bank": current["allow_bank"],
             "allow_crystal": current["allow_crystal"],
-            "allow_ticket": current["allow_ticket"],
-            "price_gold": current["price_gold"],
+            "price_vnd": current["price_vnd"],
             "price_crystal": current["price_crystal"],
             "price_ticket": current["price_ticket"],
         },

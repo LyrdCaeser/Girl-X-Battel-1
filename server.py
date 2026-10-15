@@ -21,7 +21,7 @@ from gxb2.story import catalog as story_catalog
 from gxb2.dress import catalog as dress_catalog
 from gxb2.skins import catalog as skins_catalog
 from gxb2.souls import catalog as souls_catalog
-from gxb2 import protocol as p, local_promotion, local_config, world_live_config, topup, live_service, auth, database, gm_catalog, giftcodes, studio_sso, skin_store
+from gxb2 import protocol as p, local_promotion, local_config, world_live_config, topup, live_service, auth, database, gm_catalog, giftcodes, studio_sso, skin_store, skin_bank
 from gxb2.player_engines import PlayerEnginePool
 from gxb2.battle import simulate as simulate_battle, ONLINE_BATTLE_ID, normalize_online_seed
 from gxb2.security import FixedWindowRateLimiter, DEFAULT_LIMITS, env_bool, validate_production_config
@@ -444,6 +444,13 @@ class HTTPHandler(BaseHTTPRequestHandler):
         if path == '/api/skin-shop/admin/catalog':
             if not self.admin_authorized(): return self.send(403,{'error':'Yêu cầu SUPER GM'})
             return self.send(200,skin_store.catalogue(admin=True))
+        if path == '/api/skin-shop/bank/orders':
+            account=self.auth_context()['account']
+            return self.send(200,skin_bank.mine(account['uid'],account['server_id']))
+        if path == '/api/skin-shop/admin/bank/orders':
+            if not self.admin_authorized(): return self.send(403,{'error':'Yêu cầu SUPER GM'})
+            status=(parse_qs(parsed.query).get('status') or ['pending'])[0]
+            return self.send(200,skin_bank.admin_orders(status))
         if path == '/api/giftcode/check':
             if not self.admin_authorized(): return self.send(403,{'error':'Yêu cầu SUPER GM'})
             code=(parse_qs(parsed.query).get('code') or [''])[0]
@@ -774,6 +781,7 @@ class HTTPHandler(BaseHTTPRequestHandler):
             if path == '/api/giftcode/sso/exchange' and not self.rate_limit('auth_login'): return
             if path == '/api/giftcode/admin/unlock' and not self.rate_limit('giftcode_unlock'): return
             if path.startswith('/api/giftcode/admin/') and not self.rate_limit('admin'): return
+            if path == '/api/skin-shop/bank/create' and not self.rate_limit('order_create'): return
             if path.startswith('/api/skin-shop/admin/') and not self.rate_limit('admin'): return
             if path == '/api/world-guild/manage' and str(data.get('action') or '') == 'chat' and not self.rate_limit('guild_chat'): return
             if path == '/api/chat/send' and not self.rate_limit('world_chat'): return
@@ -848,6 +856,10 @@ class HTTPHandler(BaseHTTPRequestHandler):
             if path == '/api/inventory/use':
                 return self.send(200, self.engine.use_bag_item(
                     data.get('item_id'), data.get('reward_id'), data.get('count', 1)))
+            if path == '/api/skin-shop/bank/create':
+                account=self.auth_context()['account']
+                return self.send(200,skin_bank.create(account['uid'],account['server_id'],
+                    self.auth_context()['character_name'],data.get('skin_id')))
             if path == '/api/giftcode/redeem':
                 ctx=self.auth_context()
                 account=ctx['account']
@@ -859,6 +871,9 @@ class HTTPHandler(BaseHTTPRequestHandler):
                     return self.send(403,{'error':'Vui lòng mở khóa bảng quản trị'})
                 if not self.gm_key_authorized():
                     return self.send(403,{'error':'Khóa hành động QTV không hợp lệ'})
+                if path == '/api/skin-shop/admin/bank/review':
+                    return self.send(200,skin_bank.review(data.get('order_id'),data.get('approve'),
+                        self.auth_context()['account']['uid']))
                 if path == '/api/skin-shop/admin/update':
                     return self.send(200,skin_store.update_configs([data],self.auth_context()['account']['uid']))
                 if path == '/api/skin-shop/admin/bulk':
