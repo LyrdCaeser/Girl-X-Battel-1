@@ -26,7 +26,7 @@ class NativeRestore20261015Tests(unittest.TestCase):
         self.assertIn('/game-assistant.css?',html)
         self.assertIn('.ga2-stage>*{position:absolute;',css)
         self.assertIn('.ga2-scroll{z-index:8;',css)
-        self.assertIn('.ga2-btn{cursor:pointer;z-index:12;',css)
+        self.assertIn('.ga2-x,.ga2-help,.ga2-tab,.ga2-btn{cursor:pointer;',css)
         self.assertIn("'/api/assistant/run'",js)
 
     def test_live_guild_retries_instead_of_frozen_loading(self):
