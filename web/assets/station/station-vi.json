@@ -398,7 +398,7 @@
       }
     },
     "855002": {
-      "desc": "1. một nhân vật gây sát thương chủ lực có khả năng điều khiển trong Phe Ác Quỷ;\n2. Sau khi tỉnh dậy với 10-Sao, kỹ năng tích cực của Amelia nhắm vào tất cả kẻ thù và có cơ hội đánh cắp năng lượng từ họ. Cơ hội tấn công cơ bản của cô đi trước kẻ thù của cô tăng lên và kỹ năng thụ động của cô cho cô thêm tốc độ HP và Kỹ Năng Sát Thương làm cho cô hữu ích trong tất cả các loại tình huống;\n3. Vì các cô gái từ Quỷ Vương khá khó nâng cấp, bạn nên lên kế hoạch tài nguyên cẩn thận nếu muốn đánh thức cô ấy lên cấp sao cao hơn.",
+      "desc": "1. Amelia là nhân vật gây sát thương kiêm khống chế thuộc phe Ác Quỷ.\n2. Khi Thức Tỉnh lên 10 sao, kỹ năng chủ động của Amelia tấn công toàn bộ kẻ địch và có cơ hội đánh cắp Năng Lượng của chúng. Xác suất Hóa Đá từ đòn đánh thường tăng lên; kỹ năng bị động còn tăng Tốc Độ, HP và Sát Thương Kỹ Năng, giúp cô hữu ích trong nhiều tình huống.\n3. Nhân vật phe Ác Quỷ thường khó nâng cấp hơn; cần phân bổ tài nguyên hợp lý nếu muốn đưa Amelia lên cấp sao cao.",
       "skills": {
         "75500101": "Kỹ năng chủ động của Amelia có thể gây sát thương cho tất cả kẻ thù và có cơ hội hóa đá chúng và đánh cắp Năng lượng của chúng ngăn chặn chúng sử dụng kỹ năng của mình.",
         "75500102": "Kỹ năng hiệu ứng tăng cường cho phép các đòn tấn công cơ bản của cô để giảm năng lượng của kẻ thù và tạo cơ hội hóa đá chúng.",
@@ -407,7 +407,7 @@
       }
     },
     "855003": {
-      "desc": "1. Một người một nhân vật gây sát thương chủ lực có thể xử lý các vụ nổ mạnh của hư hại trong Phe Ác Quỷ;\n2. Bất cứ khi nào một cô gái đồng minh sử dụng Kỹ năng chủ động của họ, Ma Vương sẽ có được năng lượng thông qua kỹ năng thụ động của mình cho phép cô ta sử dụng Kỹ năng chủ động của mình thường xuyên hơn;\n3. Nếu kẻ thù có nhiều HP hơn cô ấy, cô ấy có thể xử lý thêm sát thương tương đương với một tỷ lệ nhất định của tổng số HP của kẻ thù (sát thương sẽ tối đa ở mức 1500% tấn công của cô ấy) làm cho cô ấy vô cùng hữu ích khi battling Bosses (Friend Boss Guild Boss...);\n4. Kỹ năng thụ động của cô cho cô cả Năng lượng và HP làm tăng khả năng sống sót của cô;\n5. Vì các cô gái từ Quỷ Vương khá khó nâng cấp, bạn nên lên kế hoạch tài nguyên cẩn thận nếu muốn đánh thức cô ấy lên cấp sao cao hơn.",
+      "desc": "1. Wraith là nhân vật gây sát thương bộc phát mạnh thuộc phe Ác Quỷ.\n2. Mỗi khi đồng minh dùng kỹ năng chủ động, kỹ năng bị động của Wraith cho cô thêm Năng Lượng để sử dụng kỹ năng chủ động thường xuyên hơn.\n3. Nếu HP của kẻ địch cao hơn Wraith, cô gây thêm sát thương dựa trên tỷ lệ HP tối đa của mục tiêu, tối đa bằng 1500% Tấn Công của bản thân. Vì vậy Wraith rất hữu ích khi đánh Boss, gồm Boss Bạn Bè và Boss Bang Hội.\n4. Kỹ năng bị động còn tăng Năng Lượng và HP, cải thiện khả năng sinh tồn của cô.\n5. Nhân vật phe Ác Quỷ khó nâng cấp, nên cần quản lý tài nguyên cẩn thận trước khi tăng sao.",
       "skills": {
         "75500401": "Kỹ năng chủ động của Wraith gây sát thương cho 1 kẻ địch ngẫu nhiên. Nếu mục tiêu có HP cao hơn Wraith, kỹ năng gây thêm sát thương tương ứng với một tỷ lệ HP tối đa của kẻ địch, đồng thời tăng Chí Mạng của Wraith.\nKỹ năng này đặc biệt hiệu quả trước các mục tiêu có HP cao. Khi đạt 10 sao, Wraith tấn công hai kẻ địch và gây sát thương mạnh hơn lên nhân vật hệ Tu Sĩ.",
         "75500402": "Kỹ năng hiệu ứng tăng cường cho phép Wraith có thêm năng lượng và HP khi các đồng minh sử dụng kỹ năng của họ;\nNếu có nhiều Wraith trong đội, họ sẽ có thể lấy lại năng lượng và HP của họ liên tục.",
@@ -416,7 +416,7 @@
       }
     },
     "855004": {
-      "desc": "1. Một chiến binh với khả năng hồi sinh trong Quỷ nhà;\n2. Gây ra sát thương đáng kể với hiệp Marks và có thể hóa đá kẻ thù của mình. Hơn nữa khả năng tự hồi máu và hồi sinh của cô đảm bảo sự sống còn của cô làm cho cô thích hợp để được đặt ở tiền tuyến để hấp thụ sát thương đến;\n3. Kỹ năng hồi sinh của cô khi kết hợp với các cô gái như Esau & Jacob (sát thương thêm cho tất cả kẻ thù) hoặc Thánh (tấn công thêm và kỹ năng tổn hại cho bản thân) sẽ nâng cao đáng kể khả năng của họ và đối phó với một số lượng lớn Gây sát thương cho kẻ thù;\n4. Vì các cô gái từ Quỷ Vương khá khó nâng cấp, bạn nên lên kế hoạch tài nguyên cẩn thận nếu muốn đánh thức cô ấy lên cấp sao cao hơn.",
+      "desc": "1. Scythe là Chiến Binh có khả năng hồi sinh thuộc phe Ác Quỷ.\n2. Cô gây sát thương lớn bằng “Dấu Ấn Hiệp” và có thể Hóa Đá kẻ địch. Khả năng tự Hồi Máu và hồi sinh giúp Scythe trụ ở hàng trước, chịu sát thương thay đồng minh.\n3. Khả năng hồi sinh phối hợp tốt với Esau & Jacob (gây thêm sát thương toàn địch) hoặc Saint (tăng Tấn Công và Sát Thương Kỹ Năng), từ đó khuếch đại sát thương của đội.\n4. Do nhân vật phe Ác Quỷ khó nâng cấp, nên cần lập kế hoạch tài nguyên trước khi tăng sao.",
       "skills": {
         "75500201": "Kỹ năng chủ động của Scythe gây sát thương cho kẻ thù ở hàng hậu phương và đánh dấu chúng bằng một Vòng Dấu Ấn, sau đó phát nổ một vòng sau đó gây thêm sát thương. Kỹ năng này cũng cung cấp một số khả năng sống sót (Giảm thiểu tổn thất) cho Scythe;\nSau khi đánh thức thành 10-Sao, kỹ năng này có cơ hội đánh dấu các mục tiêu bằng một dấu tròn bổ sung;\nKỹ năng này cho phép Scythe xử lý một số lượng lớn sát thương và giúp cô sống sót với việc giảm sát thương thêm.",
         "75500202": "Kỹ năng của hiệu ứng tăng cường đánh dấu mục tiêu bằng một dấu vòng khi cô ấy thực hiện một đòn tấn công cơ bản gây sát thương thêm trong vòng tiếp theo. Hơn nữa nó có cơ hội hóa đá mục tiêu.",
@@ -425,7 +425,7 @@
       }
     },
     "855005": {
-      "desc": "1. một nhân vật gây sát thương chủ lực chuyên về DoTs trong Phe Ác Quỷ;\n2. Bất cứ khi nào một đồng minh sử dụng Kỹ năng chủ động của mình, thì Lucifer sẽ có thêm năng lượng và Chánh Tổn, cho phép cô ta sử dụng Kỹ năng chủ động của mình thường xuyên hơn. Khi trận chiến kéo theo sự tổn hại về kỹ thuật của cô ấy sẽ dần dần tăng lên. Cùng với Thương tổn Chảy máu từ kỹ năng tích cực của mình, cô có thể gây ra sát thương đáng kinh ngạc;\n3. Lucifer khi kết hợp với các cô gái khác có thể sử dụng Kỹ năng chủ động của họ thường xuyên cũng sẽ có thể sử dụng Kỹ năng chủ động của mình nhiều lần trong trận chiến kết thúc nhanh chóng;\n4. Kỹ năng tích cực của cô chống lại Rangers khiến cô trở thành một lựa chọn tốt khi đối mặt với các đội chủ yếu bao gồm Rangers (như trong các cuộc thử nghiệm);\n5. Vì các cô gái từ Quỷ Vương khá khó nâng cấp, bạn nên lên kế hoạch tài nguyên cẩn thận nếu muốn đánh thức cô ấy lên cấp sao cao hơn.",
+      "desc": "1. Lucifer là nhân vật chuyên gây sát thương theo thời gian thuộc phe Ác Quỷ.\n2. Mỗi khi đồng minh dùng kỹ năng chủ động, Lucifer nhận thêm Năng Lượng và Sát Thương Kỹ Năng, giúp cô tung kỹ năng thường xuyên hơn. Sát Thương Kỹ Năng tăng dần khi trận đấu kéo dài; cộng với Chảy Máu từ kỹ năng chủ động, cô có thể gây sát thương rất lớn.\n3. Lucifer phát huy tốt khi ghép đội với nhân vật liên tục dùng kỹ năng chủ động, giúp cô kết thúc trận nhanh hơn.\n4. Kỹ năng chủ động khắc chế Xạ Thủ, phù hợp đối phó đội hình nhiều Xạ Thủ như trong Thử Thách.\n5. Nên cân nhắc tài nguyên vì nhân vật phe Ác Quỷ thường khó nâng cấp hơn.",
       "skills": {
         "75500301": "Kỹ năng chủ động của Lucifer nhắm vào tất cả kẻ thù và làm chúng chảy máu. sát thương của cô ấy chống lại Rangers sẽ được tăng cường;\nKỹ năng này làm cho Lucifer mạnh mẽ chống lại các đội chủ yếu bao gồm Rangers.",
         "75500302": "Kỹ năng hiệu ứng tăng cường làm tăng sát thương kỹ năng tấn công và HP của Lucifer.",
@@ -434,7 +434,7 @@
       }
     },
     "855006": {
-      "desc": "1. một nhân vật gây sát thương chủ lực trong Phe Ác Quỷ;\n2. Esau & Jacob có tốc độ đáng kinh ngạc. Được kết hợp với Kiểm soát giảm sát thương của họ Miễn dịch và giảm năng lượng, cặp song sinh hoạt động tốt trong tất cả các loại tình huống vừa gây sát thương vừa giúp đỡ nhóm;\n3. Cùng với các cô gái như Giana và Diva khi họ bị đánh bại kẻ thù sẽ phải chịu sát thương lớn;\n4. Vì các cô gái từ Quỷ Vương khá khó nâng cấp, bạn nên lên kế hoạch tài nguyên cẩn thận nếu muốn đánh thức cô ấy lên cấp sao cao hơn.",
+      "desc": "1. Esau & Jacob là cặp nhân vật gây sát thương thuộc phe Ác Quỷ.\n2. Hai người có Tốc Độ cao, cùng với Giảm Sát Thương, Kháng Khống Chế và khả năng rút Năng Lượng của địch. Nhờ vậy họ vừa gây sát thương vừa hỗ trợ đội trong nhiều chế độ.\n3. Khi phối hợp cùng Giana và Diva, hiệu ứng kích hoạt lúc các nhân vật đó tử trận có thể gây lượng sát thương lớn lên địch.\n4. Nhân vật phe Ác Quỷ khó nâng cấp; cần cân nhắc tài nguyên khi tăng sao.",
       "skills": {
         "75500501": "Kỹ năng chủ động của Esau & Jacob có thể gây sát thương lớn cho một kẻ thù. Nếu mục tiêu ở tiền tuyến, nó sẽ hạ bệ giáp của mục tiêu và hóa đá chúng. Nếu mục tiêu là ở hậu tuyến này sẽ giảm Tấn Công và tốc độ của họ;\nNhư Esau & Jacob có (hoặc nên có? ) một stat tốc độ cao họ sẽ có thể làm suy yếu kẻ thù cho phép đồng minh của họ để đối phó với nhiều sát thương hơn.",
         "75500502": "Kỹ năng hiệu ứng tăng cường làm tăng tốc độ giảm sát thương HP và miễn dịch điều khiển của Esau & Jacob cho phép chúng tồn tại lâu hơn trong trận chiến;\nSau khi Esau và Jacob đạt đến (hoặc nên đạt đến? ) 7-Sao, họ sẽ có được miễn trừ kiểm soát 100% và kẻ thù có thể kiểm soát họ không còn là mối đe dọa.",
@@ -443,7 +443,7 @@
       }
     },
     "856001": {
-      "desc": "1. Một toàn diện trong Phe Thiên Thần;\n2. Khi bị tấn công, Thiên Thần có thể tự hồi máu cho mình, đảm bảo sự sống còn của mình;\n3. Mỗi cuộc tấn công cơ bản sẽ cung cấp thêm Thánh tổn cho cô ấy để đối phó với nhiều sát thương hơn khi trận chiến kéo dài;\n4. Vì các cô gái trong Phe Thiên Thần tương đối khó nâng cấp, bạn nên lên kế hoạch tài nguyên cẩn thận nếu muốn đánh thức cô ấy lên cấp sao cao hơn.",
+      "desc": "1. Angel là nhân vật đa dụng thuộc phe Thiên Thần.\n2. Khi bị tấn công, Angel có thể tự Hồi Máu để duy trì khả năng sinh tồn.\n3. Mỗi đòn đánh thường tăng thêm Sát Thương Thánh, giúp cô gây sát thương mạnh hơn khi trận kéo dài.\n4. Nhân vật phe Thiên Thần khó nâng cấp hơn; nên lên kế hoạch dùng tài nguyên trước khi tăng sao.",
       "skills": {
         "75600101": "Kỹ năng chủ động của Thiên Thần có thể gây sát thương cho 4 kẻ thù, hồi máu 3 đồng minh và tăng sát thương thần thánh của chúng;\nVì Thiên Thần có thể gây sát thương hồi máu và tăng cường khả năng của đồng minh, cô có thể hữu ích trong mọi tình huống.",
         "75600102": "hiệu ứng tăng cường kỹ năng tấn công cơ bản tự hồi máu cho bản thân và cấp thêm sát thương Thánh làm tăng khả năng sống sót và khả năng gây sát thương của cô.",
@@ -452,7 +452,7 @@
       }
     },
     "856002": {
-      "desc": "1. một nhân vật gây sát thương chủ lực có thể gây ra sát thương cho đám đông trong Phe Thiên Thần;\n2. Cuộc tấn công cơ bản của cô nhắm vào kẻ thù ở tiền tuyến;\n3. Gabriel có khả năng sống sót cao; Một khi đã được huấn luyện đầy đủ, nó sẽ có thể hấp thụ một lượng sát thương đáng kể;\n4. Kỹ năng của Gabriel tập trung vào Critical Strikes: cô có thể gắn thẻ kẻ thù với Dấu Ấn tấn công quan trọng được kích hoạt bởi Critical Strikes và cô đạt được Chí Mạng cho mọi cuộc tấn công cơ bản;\n5. Vì các cô gái trong Phe Thiên Thần tương đối khó nâng cấp, bạn nên lên kế hoạch tài nguyên cẩn thận nếu muốn đánh thức cô ấy lên cấp sao cao hơn.",
+      "desc": "1. Gabriel là nhân vật gây sát thương diện rộng bộc phát thuộc phe Thiên Thần.\n2. Đòn đánh thường ưu tiên các kẻ địch ở hàng trước.\n3. Gabriel có sức chống chịu tốt và khi được đầu tư đầy đủ có thể hấp thụ lượng sát thương lớn.\n4. Bộ kỹ năng xoay quanh Chí Mạng: cô gắn Dấu Ấn Chí Mạng lên kẻ địch để kích hoạt khi đòn đánh chí mạng trúng mục tiêu; đồng thời tăng Chí Mạng sau mỗi đòn đánh thường.\n5. Nhân vật phe Thiên Thần khó nâng cấp hơn; cần phân bổ tài nguyên hợp lý.",
       "skills": {
         "75600201": "Kỹ năng chủ động của Gabriel gây sát thương cho tất cả kẻ thù và đánh dấu chúng bằng một đòn đánh dấu quan trọng. Bất cứ khi nào một mục tiêu bị tấn công bởi một cuộc tấn công quan trọng, dấu hiệu sẽ phát nổ gây ra sát thương lớn;\nTại 10-Sao kỹ năng có cơ hội để đánh dấu các mục tiêu với một dấu hiệu bổ sung.",
         "75600202": "Kỹ năng hiệu ứng tăng cường làm tăng kết quả đánh giá sát thương thần thánh HP và giảm sát thương của Gabriel.",
@@ -461,7 +461,7 @@
       }
     },
     "856003": {
-      "desc": "1. Một cô gái hỗ trợ với khả năng hồi sinh trong Phe Thiên Thần;\n2. Michael tỏa sáng trong mọi tình huống: ở 10-Sao, cô miễn nhiễm với tất cả các loại hiệu ứng kiểm soát; Kỹ năng tích cực của cô vừa gây sát thương vừa hồi máu các đồng minh của mình; Sau khi bị đánh bại, cô có thể trở lại cuộc sống với một thanh HP đầy đủ;\n3. Vì các cô gái trong Phe Thiên Thần tương đối khó nâng cấp, bạn nên lên kế hoạch tài nguyên cẩn thận nếu muốn đánh thức cô ấy lên cấp sao cao hơn.",
+      "desc": "1. Michael là nhân vật hỗ trợ có khả năng hồi sinh thuộc phe Thiên Thần.\n2. Michael hữu dụng ở nhiều chế độ: từ 10 sao cô miễn nhiễm mọi loại Khống Chế; kỹ năng chủ động vừa gây sát thương vừa Hồi Máu cho đồng minh; khi tử trận, cô có thể hồi sinh với đầy HP.\n3. Nhân vật phe Thiên Thần khó nâng cấp hơn; nên cân nhắc tài nguyên khi tăng sao.",
       "skills": {
         "75600301": "Kỹ năng chủ động của Michael có thể gây sát thương cho 3 kẻ thù ngẫu nhiên và có cơ hội làm choáng chúng. Hơn nữa nó có thể hồi máu cho đồng minh với HP thấp nhất;\nTại 10-Sao, số lượng hồi máu đạt 400% của Tấn Công của mình và cấp cho các đồng minh thêm Chí Mạng;\nKỹ năng này đảm bảo rằng các cô gái cần hồi máu sẽ nhận được nó cứu họ khỏi thất bại sắp xảy ra.",
         "75600302": "Kỹ năng hiệu ứng tăng cường làm tăng khả năng tấn công và tốc độ Holy Sát Thương Tấn Công và Tốc Độ của Michael.",
@@ -470,7 +470,7 @@
       }
     },
     "856004": {
-      "desc": "1. một nhân vật gây sát thương chủ lực ở Phe Thiên Thần;\n2. Với thuộc tính tốc độ cao của mình, cô sẽ có thể tấn công đầu tiên trong một trận chiến. Kỹ năng thụ động của cô đảm bảo rằng cô sẽ tấn công kẻ thù với HP thấp nhất và đạt được 100 Năng lượng và Tấn công thần thánh khi kẻ thù chết cho phép cô sử dụng Kỹ năng chủ động của mình khi đến lượt cô tấn công;\n3. Phoenix miễn nhiễm với Làm Choáng, giúp cô ấy hữu dụng trong nhiều tình huống;\n4. Vì các cô gái trong Phe Thiên Thần tương đối khó nâng cấp, bạn nên lên kế hoạch tài nguyên cẩn thận nếu muốn đánh thức cô ấy lên cấp sao cao hơn.",
+      "desc": "1. Phoenix là nhân vật gây sát thương thuộc phe Thiên Thần.\n2. Tốc Độ cao giúp cô thường được ra đòn trước. Kỹ năng bị động ưu tiên kẻ địch có HP thấp nhất; khi có địch tử trận, Phoenix nhận 100 Năng Lượng và thêm Sát Thương Thánh để sớm dùng kỹ năng chủ động.\n3. Phoenix miễn nhiễm Làm Choáng nên thích hợp với nhiều tình huống.\n4. Nhân vật phe Thiên Thần khó nâng cấp hơn; cần quản lý tài nguyên hợp lý.",
       "skills": {
         "75600401": "Kỹ năng chủ động của Chim lửa có thể gây sát thương cho một đối thủ ngẫu nhiên. Nếu kẻ thù có nhiều HP hơn cô ta, kĩ năng sẽ có cơ hội làm choáng chúng. Nếu kẻ thù có ít HP kỹ năng sẽ xử lý thêm sát thương;\nTại 6-Sao Phoenix có thể tấn công 2 kẻ thù ngẫu nhiên với kỹ năng này;\nTại 10-Sao, cơ hội để choáng trở thành 100%;\nMiễn là mục tiêu không có miễn trừ kiểm soát, Chim lửa sẽ có thể kiểm soát chúng gây sát thương đáng kể trong quá trình.",
         "75600402": "hiệu ứng tăng cường kỹ năng tấn công cơ bản nhắm vào kẻ thù với HP thấp nhất.",
@@ -479,7 +479,7 @@
       }
     },
     "856005": {
-      "desc": "1. Một cô gái hỗ trợ có thể tăng tốc độ và tấn công các đồng minh của mình trong Phe Thiên Thần;\n2. Raphael có khả năng xoay sở: cô có thể hồi máu cho các đồng minh của mình và tăng tốc độ cũng như khả năng tấn công của họ. Ngay cả khi bị đánh bại, cô ấy có thể hồi máu cho đồng minh của mình trong vài vòng;\n3. Raphael có khả năng sống sót tuyệt vời cho phép cô ấy giúp đỡ đồng đội của mình khi trận chiến kéo dài;\n4. Vì các cô gái trong Phe Thiên Thần tương đối khó nâng cấp, bạn nên lên kế hoạch tài nguyên cẩn thận nếu muốn đánh thức cô ấy lên cấp sao cao hơn.",
+      "desc": "1. Raphael là nhân vật hỗ trợ tăng Tốc Độ và Tấn Công cho đồng minh thuộc phe Thiên Thần.\n2. Cô vừa Hồi Máu vừa tăng Tốc Độ, Tấn Công cho đội. Ngay cả khi tử trận, Raphael vẫn có thể tiếp tục Hồi Máu cho đồng minh trong vài hiệp.\n3. Khả năng sinh tồn cao giúp Raphael hỗ trợ đội đặc biệt tốt trong các trận kéo dài.\n4. Nhân vật phe Thiên Thần khó nâng cấp hơn; nên phân bổ tài nguyên trước khi tăng sao.",
       "skills": {
         "75600501": "Kỹ năng chủ động của Raphael gây sát thương cho 4 kẻ thù ngẫu nhiên và tăng tốc độ tấn công và hiệu ứng chữa thương nhận được cho 4 đồng minh ngẫu nhiên;\nKỹ năng này làm tăng khả năng sống sót của các đồng minh của mình và đảm bảo rằng họ có thể tấn công đầu tiên trong một trận chiến.",
         "75600502": "Kỹ năng hiệu ứng tăng cường làm tăng miễn trừ tấn công và kiểm soát của Raphael.",
@@ -533,7 +533,7 @@
       }
     },
     "855007": {
-      "desc": "1. Một người toàn diện từ Phe Ác Quỷ;\n2. Mỗi kỹ năng của Kratos cung cấp cho cô cả khả năng tấn công và sinh tồn cô cũng rất tốt trong việc đối phó với kẻ thù có HP cao;\n3. Kỹ năng chủ động và kỹ năng thụ động \"Ý định giết người\" của Kratos sẽ áp dụng trạng thái \"khủng bố hoá\" kẻ thù một cách tình cờ. Làm cho cô ấy cực kỳ hiệu quả khi chống lại các cô gái mà giải quyết hầu hết các sát thương của họ bởi các cuộc tấn công cơ bản. Nó cũng ngăn chặn kẻ thù nhận được nhiều năng lượng hơn bằng cách áp dụng các cuộc tấn công cơ bản;\n4. Cô ấy sẽ cần những nhân vật sành điệu nhất và những ngôi sao cao cấp để có thể sử dụng hết sức mạnh của mình. Vì vậy, bạn cần quản lý nguồn lực dành cho cô ấy một cách hợp lý.",
+      "desc": "1. Kratos là nhân vật đa dụng thuộc phe Ác Quỷ.\n2. Mỗi kỹ năng của cô đều tăng khả năng tấn công lẫn sinh tồn; Kratos còn đối phó tốt với kẻ địch có HP cao.\n3. Kỹ năng chủ động và kỹ năng bị động “Killing Intent” có cơ hội gây “Terrorize”, đặc biệt hiệu quả trước kẻ địch phụ thuộc đòn đánh thường. Hiệu ứng này còn cản chúng nhận Năng Lượng từ đòn đánh thường.\n4. Muốn phát huy toàn bộ sức mạnh của Kratos, cần trang bị tốt và cấp sao cao; nên quản lý tài nguyên hợp lý.",
       "skills": {
         "75500601": "Kỹ năng chủ động của Kratos gây sát thương cho 4 kẻ thù ngẫu nhiên và gây thêm sát thương theo một tỷ lệ phần trăm nhất định của HP tối đa của mục tiêu. Kỹ năng có thể xử lý nhiều sát thương hơn và tự hồi máu nếu mục tiêu tình cờ ở mức HP thấp; Kĩ năng cũng có cơ hội khủng bố kẻ thù.",
         "75500602": "Kỹ năng hiệu ứng tăng cường làm tăng Chí Mạng Tấn Công HP và Phá giáp của Kratos làm tăng cả khả năng tấn công và khả năng sống sót.",
@@ -542,7 +542,7 @@
       }
     },
     "856006": {
-      "desc": "1. Một cô gái từ phe Thiên Thần có thể gây ra hàng tấn sát thương bằng nhiều cách;\n2. Nephilim có thuộc tính Tốc độ cơ bản cao với kỹ năng thụ động của cô: \"Sự đơn điệu\" cho phép cô kích hoạt Kỹ năng chủ động nhanh hơn những người khác, điều này có thể khiến Dấu hiệu Cân bằng của cô có hiệu quả hoàn toàn chống lại cô - Các đối thủ;\n3. Với sự giúp đỡ của Kỹ năng chủ động và kỹ năng thụ động \"Thuần khiết thiêng liêng\" cho phép cô ấy đối phó với nhiều sát thương hơn đối với các cô gái có HP cao hơn và kỹ năng thụ động khác \"Embrace of Darkness\" cho phép cô ấy đối phó với Một làn sóng sát thương bổ sung ở cuối mỗi vòng và quét sạch mối đe dọa của nó nhanh chóng;\n4. Là một cô gái từ Phe Thiên Thần, cô cũng cần nhiều nguồn lực hơn để được cung cấp. Hãy quản lý nguồn lực của bạn một cách hợp lý khi bạn muốn cô ấy tham gia vào đội của bạn.",
+      "desc": "1. Nephilim là nhân vật phe Thiên Thần có thể gây sát thương lớn bằng nhiều cách.\n2. Tốc Độ cơ bản cao kết hợp kỹ năng bị động “Duality” cho phép cô dùng kỹ năng chủ động sớm, giúp Dấu Ấn “Equilibrium” phát huy hiệu quả.\n3. Kỹ năng chủ động cùng “Sacred Purification” giúp Nephilim gây thêm sát thương lên nhân vật có HP cao. “Embrace of Darkness” tiếp tục gây một đợt sát thương vào cuối mỗi hiệp, giúp cô nhanh chóng hạ những mục tiêu nguy hiểm.\n4. Nephilim thuộc phe Thiên Thần nên cần nhiều tài nguyên để nâng cấp; hãy cân nhắc trước khi đưa cô vào đội.",
       "skills": {
         "75600601": "Kỹ năng chủ động của Nephilim gây sát thương Giáp-Ignoring chống lại 4 kẻ thù ngẫu nhiên và đánh dấu mỗi người trong số họ với một Dấu hiệu Cân bằng;\nDấu ấn có thể có hiệu lực gần như ngay lập tức với sự trợ giúp của thuộc tính tốc độ cao của Nephilim. Điều này có thể tạo ra sự kìm nén tuyệt vời cho những cô gái dựa nhiều hơn vào Kỹ năng chủ động để gây sát thương.",
         "75600602": "Kĩ năng hiệu ứng tăng cường làm tăng sự giảm và tốc độ sát thương HP Holy của Nephilim. Cung cấp cho Nephilim khả năng sống sót cao hơn và khả năng tấn công làm cho cô có thể tồn tại lâu hơn trên chiến trường trong khi gây ra hàng tấn sát thương.",
@@ -587,7 +587,7 @@
       }
     },
     "854013": {
-      "desc": "1. một nhân vật gây sát thương chủ lực từ Tiên nhà;\n2. Joan sẽ cần Remnants để sử dụng hết khả năng của mình. Cô có thể lấy tàn dư để tăng cường bản thân khi các đồng minh của mình tấn công hoặc bất kỳ cô gái nào bị đánh bại trong trận chiến. Khi diễn Kỹ năng chủ động của mình Joan sẽ tiêu thụ tất cả tàn dư của mình để đối phó với hàng tấn sát thương;\n3. Hiệu quả của kỹ năng \"Oath of Peach Garden\" Joan có thể giúp đỡ rất nhiều trong hầu hết các loại đội.",
+      "desc": "1. Joan là nhân vật gây sát thương thuộc phe Tiên.\n2. Joan cần cộng dồn “Remnants” để phát huy toàn bộ sức mạnh. Cô nhận cộng dồn này khi đồng minh tấn công hoặc có bất kỳ nhân vật nào tử trận. Khi dùng kỹ năng chủ động, Joan tiêu hao toàn bộ “Remnants” để gây sát thương lớn.\n3. Kỹ năng “Oath of Peach Garden” giúp Joan hỗ trợ hiệu quả trong nhiều kiểu đội hình.",
       "skills": {
         "75401301": "Kỹ năng chủ động của Joan gây sát thương cho 3 kẻ thù ngẫu nhiên và tiêu thụ tất cả tàn dư của nó, mỗi tàn dư được tiêu thụ sẽ cho phép nó gây sát thương bổ sung chống lại 1 kẻ thù ngẫu nhiên.\nPhế liệu sẽ giúp Joan giảm thiểu sát thương trước khi tiêu thụ.",
         "75401302": "Kỹ năng hiệu ứng tăng cường cung cấp cho Joan thêm sát thương Chí Mạng Tấn Công và Miễn dịch làm tăng đáng kể khả năng tấn công và sinh tồn của Joan.",
@@ -596,7 +596,7 @@
       }
     },
     "856007": {
-      "desc": "1. Một chiến binh với khả năng kiểm soát đám đông trong phe Thiên Thần;\n2. Kĩ năng Chủ động của Uriel có thể cung cấp thêm sát thương Thần thánh cho cô. Cô cũng có khả năng sinh tồn tốt vì kỹ năng thụ động của cô cung cấp cho cô một sự thúc đẩy cao về HP và Giảm sát thương. Với sự giúp đỡ của một thầy thuốc trong đội, Uriel có thể chịu được hàng tấn thương tích một cách dễ dàng;\n3. Uriel sẽ xếp \"Scars of Belinus\" cho kẻ thù 2 chồng \"Scars of Belinus\" sẽ biến thành \"Trial of Belinus\" và ngăn chặn các mục tiêu kích hoạt các kỹ năng thụ động của họ.\nMẹo: Chỉ các kỹ năng thụ động cần được kích hoạt sẽ bị ảnh hưởng bởi \"Trial of Belinus\".\nNếu \"Galaxy\" của Vivian đã được gắn thẻ \"Trial of Belinus\" sẽ không thể gây ảnh hưởng đến việc kích hoạt nhưng nó có thể ngăn Vivian lựa chọn mục tiêu \"Galaxy\" tiếp theo.",
+      "desc": "1. Uriel là Chiến Binh có khả năng khống chế diện rộng thuộc phe Thiên Thần.\n2. Kỹ năng chủ động tăng Sát Thương Thánh. Kỹ năng bị động tăng HP và Giảm Sát Thương, giúp Uriel chịu đòn tốt, đặc biệt khi có nhân vật Hồi Máu hỗ trợ.\n3. Uriel áp dụng “Scars of Belinus” lên kẻ địch. Khi có 2 cộng dồn, hiệu ứng chuyển thành “Trial of Belinus”, ngăn mục tiêu kích hoạt kỹ năng bị động.\nLưu ý: “Trial of Belinus” chỉ vô hiệu hóa các kỹ năng bị động cần điều kiện kích hoạt. Nếu Vivian đã áp dụng “Galaxy” trước đó, hiệu ứng ấy vẫn hoạt động, nhưng Vivian không thể chọn mục tiêu “Galaxy” tiếp theo khi đang chịu “Trial of Belinus”.",
       "skills": {
         "75600701": "Kỹ năng chủ động của Uriel gây ra nhiều sát thương đối với 1 kẻ thù ngẫu nhiên và gắn 1 chồng \"Vết sẹo của Belinus\" vào mục tiêu kỹ năng này cũng sẽ làm tăng sát thương Thánh của Uriel sau khi được kích hoạt;\nSau khi Uriel đạt đến 10 sao, kỹ năng này cũng có cơ hội để xếp thêm 1 \"Scars of Belinus\" cho kẻ thù đã có một trên họ.",
         "75600702": "Kỹ năng hiệu ứng tăng cường cung cấp cho Uriel thêm khả năng miễn dịch sát thương thần thánh và giảm sát thương làm tăng đáng kể khả năng tấn công và sinh tồn của Uriel.",
@@ -605,7 +605,7 @@
       }
     },
     "855008": {
-      "desc": "1. Một người ủng hộ có thể cung cấp sự bảo vệ cho các đồng minh của mình trong Phe Ác Quỷ;\n2. Kỹ năng chủ động của Izanami có thể cung cấp \"Lily Shield\" cho các đồng minh của mình, sẽ chuyển đổi sát thương tiếp theo gây ra bởi Tấn công cơ bản hoặc Kỹ năng chủ động thành chữa bệnh;\n3. Kỹ năng thụ động của Izanami có thể gắn \"Lời nguyền hồi máu\" cho mục tiêu chuyển đổi lần hồi máu tiếp theo mà họ nhận được thành sát thương.\n4. Lá chắn Lily và Lời nguyền chữa bệnh không thể được kích hoạt bởi nhau.",
+      "desc": "1. Izanami là nhân vật hỗ trợ bảo vệ đồng minh thuộc phe Ác Quỷ.\n2. Kỹ năng chủ động ban “Lily Shield” cho đồng minh, biến sát thương của đòn đánh thường hoặc kỹ năng chủ động tiếp theo mà họ phải nhận thành Hồi Máu.\n3. Kỹ năng bị động áp dụng “Lời Nguyền Hồi Phục” lên mục tiêu, biến lần Hồi Máu tiếp theo của mục tiêu thành sát thương.\n4. “Lily Shield” và “Lời Nguyền Hồi Phục” không thể kích hoạt lẫn nhau.",
       "skills": {
         "75500701": "Kỹ năng chủ động của Izanami gây sát thương chống lại kẻ thù ở tuyến đầu và có cơ hội hóa đá chúng;\nKỹ năng cũng sẽ gắn lá chắn Lily cho các đồng minh của Izanami và chính mình lá chắn có thể chuyển đổi sát thương tiếp theo được xử lý bởi Tấn công cơ bản hoặc Kỹ năng chủ động thành chữa bệnh;\nĐiều này thực sự có thể cung cấp nhiều sự bảo vệ cho đội hơn kỹ năng chữa bệnh truyền thống. Nhưng nó chỉ có thể được kích hoạt bởi kỹ năng tấn công cơ bản hoặc chủ động",
         "75500702": "Kỹ năng hiệu ứng tăng cường cung cấp giảm sát thương tấn công HP của Izanami, nó cũng làm giảm hiệu ứng Khống Chế mà Izanami thực hiện bằng 1 hiệp làm tăng đáng kể khả năng sống sót của cô.",
@@ -614,7 +614,7 @@
       }
     },
     "854014": {
-      "desc": "1. Một người ủng hộ có thể hàn gắn các đồng minh và làm suy yếu kẻ thù của mình trong Phe Tiên;\n2. Kỹ năng của Vera có thể giúp tất cả các loại đồng minh để cô ấy có thể phù hợp với hầu hết các loại đội hình;\n\"Giảm bớt\" có thể làm suy yếu đáng kể kẻ thù của Vera bằng cách tăng sát thương mà họ nhận và giảm sát thương mà họ đối phó.\n\"Lullaby\" có thể cung cấp khả năng hồi phục cho các đồng minh và gây sát thương cho kẻ thù.sát thương và số tiền hồi phục được tính theo thuộc tính Tấn công của đồng minh đã bị \"Lullaby\" đánh bóng.\n3. Kỹ năng thụ động thứ 3 của Vera cũng cho phép cô chuyển đổi thuộc tính Tốc độ (Tốc Độ Attribute) với một đối thủ ngẫu nhiên có Tốc độ cao hơn, giúp cô có thể di chuyển sớm hơn bắt đầu từ vòng thứ 2 của mỗi trận chiến.",
+      "desc": "1. Vera là nhân vật hỗ trợ thuộc phe Tiên, vừa Hồi Máu cho đồng minh vừa làm suy yếu kẻ địch.\n2. Các kỹ năng hỗ trợ đa dạng giúp Vera phù hợp hầu hết đội hình. “Diminish” khiến địch chịu thêm sát thương và giảm sát thương chúng gây ra. “Lullaby” hồi HP cho đồng minh và gây sát thương lên địch; lượng hồi và sát thương phụ thuộc chỉ số Tấn Công của đồng minh nhận “Lullaby”.\n3. Kỹ năng bị động thứ 3 còn cho phép Vera hoán đổi Tốc Độ với một kẻ địch ngẫu nhiên có Tốc Độ cao hơn, giúp cô hành động sớm hơn từ hiệp thứ 2 trở đi.",
       "skills": {
         "75401401": "Kỹ năng chủ động của Vera gây sát thương lên 1 kẻ địch ngẫu nhiên và áp dụng hiệu ứng Suy Yếu, khiến mục tiêu chịu thêm sát thương và gây ít sát thương hơn.\nKỹ năng cũng ban hiệu ứng bảo vệ Khúc Ru cho 3 đồng minh. Khi người được bảo vệ chịu Đòn Đánh Thường hoặc Kỹ Năng Chủ Động, Khúc Ru hồi HP cho họ và gây sát thương xuyên giáp lên kẻ tấn công.",
         "75401402": "Kỹ năng hiệu ứng tăng cường làm tăng tấn công và hồi máu HP của Vera nhận được làm tăng đáng kể khả năng sống sót của cô.",
@@ -623,7 +623,7 @@
       }
     },
     "855009": {
-      "desc": "1. Một tên một nhân vật gây sát thương chủ lực xuất sắc trong Phe Ác Quỷ;\n2. Kỹ năng chủ động của Apate có thể chống lại kẻ thù với năng lượng cao\n3. Cuộc tấn công cơ bản của cô có thể loại bỏ năng lượng của mục tiêu và gây thêm sát thương theo Năng Lượng bị loại bỏ\n4. Ngay cả sau khi thất bại, cô ấy vẫn có thể hồi sinh. Và Volo sẽ thay thế cô ấy để gây thêm sát thương cho đội trong thời gian cô ấy vắng mặt.",
+      "desc": "1. Apate là nhân vật gây sát thương mạnh thuộc phe Ác Quỷ.\n2. Kỹ năng chủ động đặc biệt khắc chế kẻ địch có Năng Lượng cao.\n3. Đòn đánh thường rút Năng Lượng mục tiêu và gây thêm sát thương dựa trên lượng Năng Lượng đã rút.\n4. Ngay cả khi Apate bị hạ gục, cô vẫn có thể hồi sinh; trong lúc cô vắng mặt, Volo xuất hiện thay thế để tiếp tục gây sát thương cho đội.",
       "skills": {
         "75500801": "Kỹ năng chủ động của Apate gây sát thương cho 4 kẻ thù ngẫu nhiên, các mục tiêu cũng sẽ nhận thêm sát thương \"Shockwave\" theo năng lượng còn lại của họ;\nCó cơ hội đánh dấu mục tiêu bằng dấu cộng hưởng.",
         "75500802": "Kỹ năng hiệu ứng tăng cường cung cấp miễn trừ tấn công và tốc độ bổ sung cho Apate. Cho phép cô có cơ hội để tránh các Kỹ năng chủ động và các cuộc tấn công cơ bản của kẻ thù của mình làm tăng đáng kể khả năng sống sót của Apate",
@@ -677,7 +677,7 @@
       }
     },
     "854015": {
-      "desc": "1. Một người ủng hộ từ Tiên nhà;\n2. Holly có thể làm giảm sự tấn công và hồi máu nhận được từ kẻ thù của cô bằng cách xếp Parasites lên chúng với kỹ năng của mình. Ký sinh trùng không thể loại bỏ;\n3. Holly sẽ có được Trật tự Tự nhiên để cho kẻ thù bắt buộc nhắm mục tiêu của mình nếu các cuộc tấn công Cơ bản Kỹ năng chủ động của họ hoặc Kỹ năng thụ động nhắm mục tiêu ngẫu nhiên kẻ thù ở đầu trận chiến. Để đồng minh của cô ta-- đặc biệt là những một nhân vật gây sát thương chủ lực sẽ không trở thành ưu tiên của kẻ thù để chúng có thời gian gây thêm sát thương. Nhưng nếu kẻ thù bị chế giễu, chúng sẽ tấn công cô gái đã chế giễu chúng trước.",
+      "desc": "1. Holly là nhân vật hỗ trợ thuộc phe Tiên.\n2. Bằng cách cộng dồn “Parasites”, Holly giảm Tấn Công và Lượng Hồi Máu Nhận của kẻ địch. Hiệu ứng “Parasites” không thể bị xóa.\n3. Đầu trận, “Natural Order” khiến kẻ địch có đòn đánh thường, kỹ năng chủ động hoặc kỹ năng bị động nhắm mục tiêu ngẫu nhiên phải ưu tiên tấn công Holly. Nhờ đó, các đồng minh, đặc biệt là chủ lực, có thêm thời gian gây sát thương. Tuy nhiên, kẻ địch đang bị Khiêu Khích vẫn ưu tiên tấn công nhân vật đã Khiêu Khích chúng.",
       "skills": {
         "75401501": "Kỹ năng chủ động của Holly gây sát thương cho 4 kẻ thù ngẫu nhiên và làm chúng chảy máu; Kỹ năng này cũng sẽ ngăn chặn ký sinh trùng tấn công mục tiêu.",
         "75401502": "Kỹ năng của hiệu ứng tăng cường làm tăng độ chính xác và giảm sát thương của Tấn Công HP của Holly. Kỹ năng này cũng cho phép Holly vô tình loại bỏ hiệu ứng kiểm soát khỏi cô ấy.",
@@ -695,7 +695,7 @@
       }
     },
     "855010": {
-      "desc": "1. một nhân vật gây sát thương chủ lực trong Phe Ác Quỷ;\n2. Frexie's đòn đánh thường nhắm vào kẻ thù có tỷ lệ HP thấp nhất trên chiến trường và gắn Dấu sao đen vào các mục tiêu. Nếu mục tiêu đã được gắn thẻ Dấu Ấn Sao Tối, nó sẽ bị sát thương dựa trên HP tối đa của nó kết thúc nó.\n3. Kỹ năng thụ động của cô \"Phew đã gần\" làm giảm sát thương giáp Giảm sát thương Giảm khối và cơ hội Né Tránh của kẻ thù với tỷ lệ HP thấp nhất khi bắt đầu trận chiến và kết thúc mỗi vòng Giúp đồng minh của cô ấy gây ra nhiều sát thương hơn.",
+      "desc": "1. Frexie là nhân vật gây sát thương thuộc phe Ác Quỷ.\n2. Đòn đánh thường nhắm vào kẻ địch có tỷ lệ HP hiện tại thấp nhất và gắn “Dấu Ấn Sao Tối” lên chúng. Nếu mục tiêu đã có Dấu Ấn này, nó sẽ chịu thêm sát thương theo HP tối đa, giúp Frexie kết liễu địch.\n3. Kỹ năng bị động “Phew that was close” giảm Giáp, Giảm Sát Thương, Tiêu Hao Sát Thương, tỷ lệ Chặn Đòn và Né Tránh của kẻ địch có tỷ lệ HP thấp nhất vào đầu trận và cuối mỗi hiệp, giúp đồng minh gây thêm sát thương.",
       "skills": {
         "75500901": "Kỹ năng chủ động của Frexie có tính sát thương và sát thương thêm dựa trên HP tối đa của mục tiêu cho 2 kẻ thù ngẫu nhiên gắn Dấu sao đen vào chúng cùng một lúc.",
         "75500902": "Kỹ năng hiệu ứng tăng cường cung cấp thêm miễn dịch và tốc độ kiểm soát sát thương Sát Thương Chí Mạng Kỹ Năng Sát Thương Khống Chế cho Frexie.",
@@ -704,7 +704,7 @@
       }
     },
     "856008": {
-      "desc": "1. một nhân vật gây sát thương chủ lực trong Phe Thiên Thần;\n2. Kỹ năng chủ động của Angelica có cơ chế \"Chuẩn bị\" độc đáo và nhắm vào tất cả kẻ thù với số lượng lớn sát thương. Điều này khiến cho Thánh tổn và Chánh tổn có lợi cho cô.\n3. Trong suốt trận chiến, Angelica có được các chồng Sun Slayer săn lùng kẻ thù với HP thấp nhất khi cô sử dụng Kỹ năng chủ động hoặc Tấn công cơ bản của mình để kết liễu nó.\n4. Hiệu ứng Dazed nhắm mục tiêu kẻ thù với HP thấp nhất buộc nó để nhắm mục tiêu một mục tiêu duy nhất thay vì nhiều mục tiêu với Kỹ năng chủ động thụ động kỹ năng và tấn công cơ bản cải thiện khả năng sống sót của toàn bộ ) Tôi không biết.",
+      "desc": "1. Angelica là nhân vật gây sát thương thuộc phe Thiên Thần.\n2. Kỹ năng chủ động có cơ chế “Preparation” đặc biệt và tấn công toàn bộ kẻ địch với sát thương lớn. Tăng Sát Thương Thánh và Sát Thương Kỹ Năng sẽ giúp cô mạnh hơn.\n3. Trong trận, Angelica cộng dồn “Sun Slayer”; khi dùng kỹ năng chủ động hoặc đòn đánh thường, cộng dồn này truy kích kẻ địch có HP thấp nhất để kết liễu.\n4. Hiệu ứng “Dazed” nhắm vào kẻ địch có HP thấp nhất, buộc các loại đòn đánh của mục tiêu chỉ đánh một đối tượng thay vì nhiều đối tượng, giúp đội giảm sát thương nhận vào.",
       "skills": {
         "75600801": "Khi Kỹ năng chủ động của Angelica được kích hoạt, cô sẽ bắt đầu giai đoạn chuẩn bị và đạt được sự giảm chấn và sát thương. Trong giai đoạn chuẩn bị, cô ấy miễn dịch với tất cả các Hiệu ứng kiểm soát và sẽ không có năng lượng tăng hoặc giảm. Trong vòng tiếp theo, cô sẽ gây ra một lượng lớn sát thương cho tất cả kẻ thù có được chồng Sun Slayer cùng một lúc.",
         "75600802": "Kỹ năng hiệu ứng tăng cường cung cấp thêm khả năng miễn dịch và tốc độ kiểm soát sát thương thần thánh cho Angelica.",
@@ -713,7 +713,7 @@
       }
     },
     "854016": {
-      "desc": "1. Một người ủng hộ trong Phe Tiên;\n2. Kỹ năng chủ động của Kassy và các cuộc tấn công cơ bản sẽ Chí Mạng khi mục tiêu của mình có HP thấp, cô cũng có thể đối phó thêm sát thương cho kẻ thù của mình và hồi máu cho mình theo tổng sát thương được xử lý;\n3. Kassy có thể cung cấp cho các đồng minh của mình \"Mắt mèo\" sau khi kích hoạt các Kỹ năng chủ động của mình để cho họ khả năng gây sát thương bổ sung và hồi máu từ tổng sát thương được xử lý;\n4. Kassy sẽ cung cấp một hiệu ứng tăng cường cho toàn bộ đội khi bắt đầu trận chiến và ở cuối mỗi vòng. Các cô gái từ lớp học Sát Thủ sẽ có được gấp đôi lợi ích từ hiệu ứng tăng cường. Màu da bò được cung cấp bởi Kassy (s) có thể được xếp chồng lên nhau.",
+      "desc": "1. Kassy là nhân vật hỗ trợ thuộc phe Tiên.\n2. Kỹ năng chủ động và đòn đánh thường của cô chắc chắn gây Chí Mạng lên mục tiêu có HP thấp; cô còn gây sát thương bổ sung và tự hồi HP theo tổng sát thương đã gây.\n3. Khi dùng kỹ năng chủ động, Kassy ban “Cat Eyes” cho đồng minh, giúp họ gây thêm sát thương và hồi HP theo lượng sát thương gây ra.\n4. Kassy tăng cường toàn đội khi bắt đầu trận và cuối mỗi hiệp. Nhân vật hệ Sát Thủ được hưởng gấp đôi hiệu quả; các hiệu ứng tăng cường từ nhiều Kassy có thể cộng dồn.",
       "skills": {
         "75401601": "Kỹ năng chủ động của Kassy đánh kẻ thù với HP thấp nhất hai lần nếu kẻ thù có thấp hơn 50% HP 2 lần đánh sẽ kích hoạt Chí Mạng;\nKỹ năng cũng sẽ xử lý thêm sát thương theo HP bị mất của mục tiêu và hồi máu Kassy theo tổng sát thương đã xử lý (2 lần truy cập + sát thương bổ sung);\nKassy cũng có thể cung cấp \"Mắt mèo\" cho các đồng minh của mình bằng cách kích hoạt kỹ năng này cho phép họ có khả năng gây sát thương bổ sung và hồi máu từ tổng sát thương được xử lý.",
         "75401602": "Kỹ năng tăng cường: Tăng Tấn Công, HP, Sát Thương Chí Mạng, Giảm Sát Thương và Tốc Độ của Kassy.",
@@ -749,7 +749,7 @@
       }
     },
     "854017": {
-      "desc": "1. Nàng tiên hâm mộ nhà.\n2. Khi có từ 2 đối thủ trở lên trên sân, Kỹ năng chủ động của cô sẽ gây sát thương mà sẽ bật lại từ kẻ thù nhắm vào 1 đối thủ ngẫu nhiên mỗi lần.\n3. sát thương đã xử lý và cơ hội để gây ra Hiệu ứng kiểm soát cho kẻ thù sẽ dần dần tăng lên khi cuộc tấn công bật lại khỏi kẻ thù.\n4. Sau khi mở khoá Kỹ Năng thụ động tương ứng, Tấn Công Cơ Bản của Aurora sẽ Đầu độc kẻ thù. Tuy nhiên, sát thương do hiệu ứng Độc sẽ không vượt quá 1500% của đòn tấn công của cô ta.\n5. Khi Aurora bị tấn công bởi các cuộc tấn công cơ bản hoặc các kỹ năng thụ động, nó sẽ khiến cho kẻ tấn công gây ra ít sát thương hơn trong trận chiến.\n6. Khi Aurora tấn công kẻ thù của mình, cô sẽ gây thêm sát thương nếu mục tiêu đã bị kết tinh.",
+      "desc": "1. Aurora là nhân vật hỗ trợ thuộc phe Tiên.\n2. Khi trên sân có từ 2 kẻ địch trở lên, kỹ năng chủ động của cô gây sát thương nảy giữa các mục tiêu, mỗi lần chọn 1 kẻ địch ngẫu nhiên.\n3. Số lần nảy càng nhiều, sát thương và xác suất gây khống chế càng tăng.\n4. Sau khi mở kỹ năng bị động tương ứng, đòn đánh thường của Aurora gây Trúng Độc. Sát thương Độc không thể vượt quá 1500% Tấn Công của cô.\n5. Khi chịu đòn đánh thường hoặc sát thương từ kỹ năng bị động, Aurora giảm sát thương mà kẻ tấn công gây ra trong trận.\n6. Aurora còn gây thêm sát thương lên kẻ địch đang chịu hiệu ứng Kết Tinh.",
       "skills": {
         "75401701": "Kỹ năng chủ động của Aurora tấn công 1 kẻ địch ngẫu nhiên, có cơ hội Hóa Tinh Thể mục tiêu và áp dụng hiệu ứng Nảy Bật.\nKhi Nảy Bật kích hoạt, đòn tấn công chuyển sang 1 kẻ địch ngẫu nhiên khác; sát thương và xác suất Hóa Tinh Thể tăng dần.\nKhông tấn công cùng một mục tiêu hai lần liên tiếp. Sát thương có thể nảy tối đa 5 lần; hiệu ứng kết thúc nếu trên sân còn ít hơn 2 kẻ địch hoặc đòn tấn công bị Né Tránh.",
         "75401702": "kỹ năng tăng cường làm tăng HP Tấn Công Chí Mạng và tốc độ của Aurora.",
@@ -767,7 +767,7 @@
       }
     },
     "856009": {
-      "desc": "1. Người phân phối sát thương từ Phe Thiên Thần;\n2. Gwen & Brigit có thể thực hiện nhiều hit theo số lượng chồng Gilded Butterfly trên các mục tiêu. Khi mục tiêu có 5 hoặc nhiều chồng Gilded Butterfly 1 sẽ vẫn còn trong khi phần còn lại sẽ được sử dụng để gây ra một lượng lớn sát thương bổ sung cho mục tiêu.\n3. Khi Girls thức dậy, Tấn công cơ bản của họ sẽ thay đổi để nhắm mục tiêu 3 kẻ thù với HP thấp nhất cho phép họ kết liễu những kẻ thù yếu hơn trước đó trong trận chiến.\n4. Gwen & Brigit có thể tự hồi máu và có thêm tốc độ khi đồng minh của họ kích hoạt Chí Mạng làm tăng khả năng sống sót của họ.\nKhi Gwen & Brigit bị tấn công bởi một kẻ thù xếp chồng lên nhau với Gilded Butterfly (Bươm bướm Vàng phải được xếp chồng lên nhau chính xác), các đồng minh của họ ở tiền tuyến có thể chịu một phần sát thương cho họ.",
+      "desc": "1. Gwen & Brigit là cặp nhân vật gây sát thương thuộc phe Thiên Thần.\n2. Họ tung nhiều đòn đánh dựa trên số cộng dồn “Gilded Butterfly” trên mục tiêu. Khi mục tiêu có từ 5 cộng dồn trở lên, giữ lại 1 cộng dồn và tiêu hao phần còn lại để gây lượng lớn sát thương bổ sung.\n3. Sau Thức Tỉnh, đòn đánh thường chuyển sang tấn công 3 kẻ địch có HP thấp nhất, giúp nhanh chóng kết liễu mục tiêu yếu.\n4. Khi đồng minh gây Chí Mạng, Gwen & Brigit được Hồi Máu và tăng Tốc Độ, cải thiện sức chống chịu.\nKhi bị kẻ địch mang “Gilded Butterfly” do chính họ áp dụng tấn công, đồng minh ở hàng trước có thể chịu thay một phần sát thương.",
       "skills": {
         "75600901": "Gwen & Brigit's Chủ Động kỹ năng gây sát thương chống lại 3 kẻ thù ngẫu nhiên (kẻ thù với nhiều chồng Gilded Butterfly sẽ được nhắm mục tiêu đầu tiên) và nhiều sát thương bổ sung sẽ được xử lý theo số lượng Con bướm mạ vàng đang đè lên kẻ thù.\nKhi mục tiêu có 5 hoặc nhiều chồng Gilded Butterfly 1 chồng sẽ vẫn còn trong khi phần còn lại sẽ được sử dụng trên mục tiêu và hit cuối cùng sẽ trở thành sát thương cố định của Tấn Công Girls còn lại (không thể được buffed từ các hiệu ứng khác và không thể kích hoạt Chí Mạng).",
         "75600902": "Kỹ năng hiệu ứng tăng cường làm tăng độ miễn dịch và tốc độ kiểm soát sát thương thần thánh của Chí Mạng Tấn Công.",
@@ -776,7 +776,7 @@
       }
     },
     "855011": {
-      "desc": "1. Một nhân vật toàn diện trong Phe-Ác Quỷ;\n2. Kỹ năng chủ động của Maia có thể gây sát thương cho 4 kẻ thù ngẫu nhiên và có cơ hội loại bỏ 1 hiệu ứng hiệu ứng tăng cường khỏi các mục tiêu.\n3. Khi Maia bị sát thương chết người, cô có thể bỏ qua sát thương và trở nên miễn dịch với sát thương cho đến khi kết thúc hiệp.\n4. Maia có thể hạ thấp HP tối đa của kẻ thù bằng cách xếp Chaos Scars lên trên HP tối đa của kẻ thù được hạ xuống bởi Chaos Scar không thể được phục hồi thông qua hiệu ứng hồi máu (hạn chế tối đa 40% HP có thể được hạ xuống bởi Chaos Scar).",
+      "desc": "1. Maia là nhân vật đa dụng thuộc phe Ác Quỷ.\n2. Kỹ năng chủ động gây sát thương lên 4 kẻ địch ngẫu nhiên, có cơ hội xóa 1 hiệu ứng tăng cường trên mỗi mục tiêu.\n3. Khi phải chịu sát thương chí tử, Maia có thể bỏ qua sát thương đó và miễn nhiễm mọi sát thương cho đến hết hiệp.\n4. Maia cộng dồn “Chaos Scars” để giảm HP tối đa của địch. Phần HP tối đa bị giảm không thể phục hồi bằng Hồi Máu; mức giảm tối đa là 40%.",
       "skills": {
         "75501001": "Kỹ năng chủ động của Maia gây sát thương cho 4 kẻ địch ngẫu nhiên và có cơ hội xóa 1 hiệu ứng tăng cường của mỗi mục tiêu. Kỹ năng còn gây hiệu ứng Lời Nguyền lên các mục tiêu.\nLời Nguyền kích hoạt khi mục tiêu nhận hiệu ứng tăng chỉ số. Khi kích hoạt, hiệu ứng sẽ xóa 1 cộng dồn tăng chỉ số vừa nhận và gây sát thương lên mục tiêu.",
         "75501002": "Kỹ năng hiệu ứng tăng cường làm tăng HP Tấn Công Hồi Máu nhận được Khống Chế miễn dịch và Tốc độ.",
@@ -821,7 +821,7 @@
       }
     },
     "854018": {
-      "desc": "1. K.M. Enlightened là một người hâm mộ của Phe Tiên.\n2. Kỹ năng chủ động của cô làm giảm thuộc tính Tấn công của kẻ thù và gây ra một hiệu ứng bất lợi gây sát thương sau đó trong trận chiến và có hiệu ứng kiểm soát đám đông.\n3. Trong trận chiến, cô tung một chiếc áo khoác lên các đồng minh của mình, tăng cường khả năng gây sát thương cho kẻ thù.",
+      "desc": "1. K.M. Enlightened là nhân vật hỗ trợ thuộc phe Tiên.\n2. Kỹ năng chủ động của cô giảm Tấn Công của kẻ địch và áp dụng hiệu ứng bất lợi gây sát thương về sau, đồng thời có tác dụng khống chế diện rộng.\n3. Trong trận, cô ban hiệu ứng tăng cường cho đồng minh, giúp họ gây sát thương mạnh hơn.",
       "skills": {
         "75401801": "K.M. Kỹ năng chủ động (Kỹ năng chủ động) của Enlightened có thể gây sát thương cho 4 đối thủ ngẫu nhiên và giảm thuộc tính Tấn công của họ.\nCô cũng gây ra một hiệu ứng bất lợi gây ra sau này trong trận chiến cho kẻ thù. Trò chơi này gây ra một lượng lớn sát thương cho kẻ thù và có cơ hội làm choáng chúng.\nCác hiệu ứng bất lợi kích hoạt khi kẻ thù bị ảnh hưởng với nó bị sát thương từ các cuộc tấn công cơ bản hoặc Kỹ năng chủ động và sẽ được gỡ bỏ sau khi nó được kích hoạt.\nNếu K.M. Giác ngộ bị đánh bại khi hiệu ứng bất lợi được kích hoạt, nó sẽ chỉ gây sát thương nhưng không làm choáng kẻ thù.",
         "75401802": "Kỹ năng tăng cường. Tăng KM. Enlightened's HP Tấn Công Khống Chế miễn trừ và tốc độ.",
@@ -830,7 +830,7 @@
       }
     },
     "857001": {
-      "desc": "1. Syrcotte là một nhân vật gây sát thương chủ lực từ phe Vũ Trụ.\n2. Syrcotte gây ra một lượng lớn sát thương bỏ qua Giáp cho kẻ thù có HP thấp với Kỹ năng chủ động của mình.\n3. Các cuộc tấn công cơ bản của cô cũng sẽ gây ra sát thương mà bỏ qua Giáp và ném Miasma đến các mục tiêu.\n4. Nó có thể giảm thiểu sát thương do đối phương gây ra với HP thấp nhất và cũng có thể phục hồi HP.\n5. Khi Syrcotte đạt đến năng lượng đầy đủ, cô sẽ loại bỏ hiệu ứng kiểm soát hiệu ứng đánh dấu và hiệu ứng sát thương theo thời gian khỏi bản thân và được tăng cường bởi Bùng Nổ Tinh Tú.",
+      "desc": "1. Syrcotte là nhân vật gây sát thương thuộc phe Vũ Trụ.\n2. Kỹ năng chủ động gây lượng lớn sát thương xuyên Giáp lên kẻ địch có HP thấp.\n3. Đòn đánh thường cũng bỏ qua Giáp và áp dụng “Miasma” lên mục tiêu.\n4. Syrcotte có thể giảm sát thương mà kẻ địch có HP thấp nhất gây ra và tự Hồi Máu.\n5. Khi đạt đầy Năng Lượng, cô xóa các hiệu ứng Khống Chế, Dấu Ấn và Sát Thương Theo Thời Gian trên bản thân, sau đó được tăng cường bằng “Bùng Nổ Tinh Tú”.",
       "skills": {
         "757001101": "Kỹ năng chủ động của Syrcotte gây sát thương bỏ qua Giáp cho 3 kẻ thù có HP thấp nhất và gây ra cho chúng Miasma. Nếu còn lại ít hơn 3 quái thú thì cô ta sẽ gây sát thương nhiều hơn tùy thuộc vào số lượng quái thú.\nNó cũng sẽ thực hiện các cuộc tấn công bổ sung vào các mục tiêu không được bảo vệ bởi Khiên Ma Thuật, mỗi loại gây ra một mức độ sát thương cố định nhất định.",
         "757001201": "Kỹ năng tăng cường. Tấn công cơ bản của Syrcotte sẽ gây sát thương Tấn công bỏ qua Giáp cho kẻ thù với HP thấp nhất.\nNếu mục tiêu bị ảnh hưởng bởi Miasma, nó sẽ tấn công thêm vào mục tiêu, mỗi lần gây ra một số lượng sát thương cố định nhất định.\nNếu mục tiêu không bị ảnh hưởng bởi Miasma, cô ấy sẽ ném Miasma vào mục tiêu.",
@@ -848,7 +848,7 @@
       }
     },
     "856010": {
-      "desc": "1. Cupid là nhân vật hỗ trợ của Phe Thiên Thần.\n2. Kỹ năng chủ động của cô làm giảm cuộc tấn công của kẻ thù của cô làm giảm sát thương do các đồng minh của cô gây ra và phục hồi HP của họ nhiều lần.\n3. Khi hiệu quả hồi máu của các kỹ năng của cô ấy khiến HP hiện tại của mục tiêu vượt quá HP tối đa của họ, quá trình hồi máu dư thừa sẽ được chuyển thành HP của một Rào cản Ma Thuật.\n4. Thần Cupid hồi máu nhiều lần dựa trên các chồng Nhịp tim cô ấy đã giúp các đồng minh của mình sống sót trên chiến trường.",
+      "desc": "1. Cupid là nhân vật hỗ trợ Hồi Máu thuộc phe Thiên Thần.\n2. Kỹ năng chủ động giảm Tấn Công của kẻ địch, giảm sát thương đồng minh phải chịu và hồi HP nhiều lần.\n3. Nếu lượng Hồi Máu từ kỹ năng vượt HP tối đa của mục tiêu, phần dư chuyển thành Điểm Khiên (BP) của Khiên Ma Thuật.\n4. Số lần Hồi Máu phụ thuộc cộng dồn “Heartbeat” của Cupid, giúp đồng minh sống sót lâu hơn.",
       "skills": {
         "75601001": "Kỹ năng chủ động của Cupid có thể giảm sát thương cho kẻ thù tuyến đầu, giảm đòn tấn công của 2 kẻ thù có thuộc tính tấn công cao nhất và giảm sát thương cho tất cả các đồng minh.\nCô cũng cấp một Rào cản Ma Thuật cho đồng minh có thuộc tính Tấn công cao nhất trước tiên sau đó hồi máu đồng minh với HP thấp nhất dựa trên số lượng Nhịp tim chồng Cupid có.",
         "75601002": "Kỹ năng tăng cường. Tăng số lượng miễn dịch và hồi máu sát thương tấn công HP của Cupid.",
@@ -857,7 +857,7 @@
       }
     },
     "855012": {
-      "desc": "1. Promethea là một Chiến Binh với khả năng điều khiển trong Phe Ác Quỷ.\n2. Hiệu ứng của cô ấy Sao Hoả làm tăng sát thương Suy giảm và có thể phản ánh một phần sát thương do chủ sở hữu của Hiệu ứng gây ra cho kẻ tấn công.\n3. Hiệu ứng Hellfire của cô ấy có thể làm giảm khối lượng và năng lượng hồi máu nhận được của kẻ thù.\n4. Khi HP của Promethea lần đầu tiên giảm xuống dưới 30% hoặc khi Vòng 5 bắt đầu, cô ấy sẽ ngay lập tức phục hồi HP và có khả năng được tăng cường đáng kể.",
+      "desc": "1. Promethea là Chiến Binh kiêm khống chế thuộc phe Ác Quỷ.\n2. Hiệu ứng “Starflare” tăng khả năng Tiêu Hao Sát Thương và phản lại một phần sát thương mà người mang hiệu ứng phải nhận lên kẻ tấn công.\n3. Hiệu ứng “Hellfire” làm giảm Lượng Hồi Máu Nhận, tỷ lệ Chặn Đòn và Năng Lượng nhận được của kẻ địch.\n4. Lần đầu HP của Promethea xuống dưới 30%, hoặc khi bắt đầu hiệp 5, cô lập tức hồi HP và được tăng cường sức mạnh đáng kể.",
       "skills": {
         "75501101": "Kĩ năng chủ động của Promethea có thể gây sát thương dựa trên đòn tấn công của mục tiêu vào 3 kẻ thù ngẫu nhiên, làm giảm năng lượng của chúng và có cơ hội để Khiêu Khích.\nCô cũng tiêu thụ một phần HP của mình để gây sát thương dựa trên HP tối đa của mình cho kẻ thù Hàng Trước và casts Starflare cấp cho Tiêu Hao Sát Thương và phản ánh sát thương cho các đồng minh Hàng Sau của mình.",
         "75501102": "Kỹ năng tăng cường: Tăng HP, Tấn Công, Chặn Đòn, Lượng Hồi Máu Nhận và Kháng Chí Mạng của Promethea.",
@@ -875,7 +875,7 @@
       }
     },
     "857002": {
-      "desc": "1. Elysia là một người điều khiển đám đông trong Phe Vũ Trụ.\n2. Kỹ năng chủ động của cô gây sát thương cho tất cả kẻ thù và săn chúng gây sát thương theo HP tối đa của mục tiêu. Cô cũng sẽ loại bỏ tất cả các màu nguyên thủy khỏi chúng và kích hoạt các chướng ngại khác nhau cho phù hợp.\n3. Cô có thể vẽ kẻ thù của mình với các Màu nguyên thuỷ khác nhau làm giảm Giáp tốc độ hoặc Tấn công của chúng.\n4. Elysia có cơ hội làm im lặng hoặc khủng bố kẻ thù của mình ở đầu mỗi vòng.\n5. Cô ấy Món quà của Song Ngư làm tăng tỷ lệ kiểm soát bổ sung và giảm sát thương Sát Thương Chí Mạng Mitigation. Khi cô ấy có 3 chồng Món quà của Song Ngư, đòn Tấn công Cơ bản tiếp theo của cô ấy sẽ tô màu cho mục tiêu của cô ấy với Màu Xanh Dương Tối thiểu.",
+      "desc": "1. Elysia là nhân vật khống chế diện rộng thuộc phe Vũ Trụ.\n2. Kỹ năng chủ động gây sát thương lên toàn bộ kẻ địch và truy kích dựa trên HP tối đa của mục tiêu. Cô đồng thời xóa tất cả “Primal Colors” trên chúng và kích hoạt các hiệu ứng bất lợi tương ứng.\n3. Elysia có thể tô các loại “Primal Colors” khác nhau lên kẻ địch để giảm Tốc Độ, Giáp hoặc Tấn Công.\n4. Đầu mỗi hiệp, cô có cơ hội Câm Lặng hoặc gây Khiếp Sợ lên kẻ địch.\n5. “Pisces' Gift” tăng Xác Suất Khống Chế Bổ Sung và Giảm Sát Thương Chí Mạng nhận vào. Khi có 3 cộng dồn, đòn đánh thường tiếp theo áp dụng “Primal Blue” lên mục tiêu.",
       "skills": {
         "757002101": "Kỹ năng chủ động của Elysia gây sát thương cho tất cả kẻ thù và săn lùng chúng gây sát thương theo HP tối đa của mục tiêu. Cô cũng sẽ loại bỏ tất cả các màu nguyên thủy khỏi chúng và kích hoạt các chướng ngại khác nhau cho phù hợp.\nCác màu lai khác nhau có các hiệu ứng tiêu cực khác nhau. Họ có thể tăng tất cả các sát thương do kẻ thù gây ra làm giảm điểm hàn gắn và rào chắn mà họ nhận được và giảm tất cả các sát thương do họ gây ra.",
         "757002201": "Kỹ năng tăng cường. Khi các đồng minh của Elysia đối phó với các cuộc tấn công cơ bản phát hành Kỹ năng chủ động hoặc bản thân Elysia thực hiện một đòn tấn công quan trọng, cô sẽ vẽ các mục tiêu hoặc kẻ tấn công của mình với các màu nguyên thủy khác nhau.",
@@ -902,7 +902,7 @@
       }
     },
     "857003": {
-      "desc": "1. Effy là một nhân vật gây sát thương chủ lực trong phe Vũ Trụ.\n2. Kỹ năng chủ động của cô đối phó với nhiều đợt sát thương cho kẻ thù của cô.\n3. Các cuộc tấn công cơ bản của cô có cơ hội gây ra Dư Ảnh cho kẻ thù của cô. Kẻ thù bị ảnh hưởng bởi Hiệu ứng có cơ hội bỏ lỡ khi đối phó với các cuộc tấn công cơ bản hoặc Kỹ năng chủ động.\n4. Effy sẽ giảm các Chí Mạng của cô ấy và tăng giới hạn tối đa của các Sát Thương Chí Mạng. sát thương từ Kỹ năng thụ động của cô ấy có thể trở thành những cuộc đình công nghiêm trọng.\n5. Trong trận chiến, bà đã ném Kasaus Australis cho kẻ thù của mình. Hiệu ứng kỹ năng trì hoãn hiệu ứng chữa bệnh mà chủ nhân của nó nhận được và khiến chủ nhân của nó phải chịu thêm sát thương cố định dựa trên HP tối đa của họ khi họ bị tấn công bởi các cuộc tấn công cơ bản và Kỹ năng chủ động.\n6. Kỹ năng chủ động của cô loại bỏ Kasas Australis khỏi kẻ thù của cô và đúc Alnasl cho họ khiến họ nhận một phần sát thương sau khi xử lý các cuộc tấn công cơ bản và Kỹ năng chủ động.",
+      "desc": "1. Effy là nhân vật gây sát thương thuộc phe Vũ Trụ.\n2. Kỹ năng chủ động gây nhiều đợt sát thương bộc phát lên kẻ địch.\n3. Đòn đánh thường có cơ hội gây “Afterimage”, khiến kẻ địch mang hiệu ứng dễ đánh trượt khi dùng đòn đánh thường hoặc kỹ năng chủ động.\n4. Effy giảm Chí Mạng bản thân nhưng tăng giới hạn tối đa của Sát Thương Chí Mạng; sát thương từ kỹ năng bị động vẫn có thể gây Chí Mạng.\n5. Cô áp dụng “Kaus Australis” lên địch, khiến hiệu ứng Hồi Máu của chúng bị trì hoãn và chịu thêm sát thương cố định dựa trên HP tối đa mỗi khi bị đòn đánh thường hoặc kỹ năng chủ động tấn công.\n6. Kỹ năng chủ động xóa “Kaus Australis” trên địch và thay bằng “Alnasl”, khiến chúng chịu một phần sát thương sau khi dùng đòn đánh thường hoặc kỹ năng chủ động.",
       "skills": {
         "757003101": "Kỹ năng chủ động của Effy gây sát thương cho tất cả các đối thủ và gây sát thương cố định cho các đối thủ bị ảnh hưởng bởi Hậu ảnh. Nếu bất kỳ kẻ thù nào bị ảnh hưởng bởi Kaus Australis bị đánh bại, nó sẽ gây sát thương cho tất cả kẻ thù một lần nữa.\nCô cũng sẽ loại bỏ tất cả Kasaus Australis Ảnh hưởng đến kẻ thù của mình và cast Alnasl cho họ.",
         "757003201": "Kỹ năng tăng cường. Các cuộc tấn công cơ bản của Effy sẽ gây thêm sát thương cho kẻ thù bị ảnh hưởng bởi Sauimage và có cơ hội tung Sauimage cho tất cả kẻ thù.\nCô ấy cũng sẽ giảm Chí Mạng của mình và tăng giới hạn tối đa của Sát Thương Chí Mạng. sát thương từ Kỹ năng thụ động của cô ấy có thể trở thành những cuộc đình công nghiêm trọng.",
@@ -911,7 +911,7 @@
       }
     },
     "856011": {
-      "desc": "1. Poseidia là một chiến binh trong Phe Thiên Thần.\n2. Kỹ năng chủ động của cô làm giảm Giáp của kẻ thù của cô gây sát thương nhiều lần và tăng Khối của tất cả các đồng minh.\n3. Cuộc tấn công cơ bản của cô hồi máu cho cô và làm tăng các đồng minh Chặn Đòn of Hàng Trước.\n4. Khi trận chiến bắt đầu, cô ấy có thể Khiêu Khích tất cả kẻ thù. Khi một đồng minh chặn một đòn tấn công, Poseidia sẽ có được 1 chồng Món quà của biển phục hồi HP và có cơ hội Kết tinh 2 kẻ thù ngẫu nhiên.",
+      "desc": "1. Poseidia là Chiến Binh thuộc phe Thiên Thần.\n2. Kỹ năng chủ động giảm Giáp địch, gây sát thương nhiều lần và tăng Chặn Đòn cho toàn bộ đồng minh.\n3. Đòn đánh thường giúp Poseidia tự Hồi Máu và tăng Chặn Đòn cho đồng minh hàng trước.\n4. Đầu trận, Poseidia có thể Khiêu Khích toàn bộ kẻ địch. Khi đồng minh Chặn Đòn thành công, cô nhận 1 cộng dồn “Gift of the Sea”, tự hồi HP và có cơ hội Kết Tinh 2 kẻ địch ngẫu nhiên.",
       "skills": {
         "75601101": "Kỹ năng chủ động của Poseidia giảm Giáp của 1 kẻ địch ngẫu nhiên, gây sát thương lên mục tiêu đó 3 lần và tăng Chặn Đòn cho toàn bộ đồng minh.",
         "75601102": "Kỹ năng tăng cường. Tăng miễn trừ kiểm soát khối tấn công HP của Poseidia và Kháng Chí Mạng.",
@@ -920,7 +920,7 @@
       }
     },
     "855013": {
-      "desc": "1. Hadea là một nhân vật gây sát thương chủ lực trong Phe Ác Quỷ.\n2. Kỹ năng chủ động của cô gây sát thương cho 2 đối thủ với HP thấp nhất và gây ra Cái chết không thể đảo ngược và Cuộc đổ bộ củaoom cho tất cả kẻ thù.\n3. Sự thất bại của Hadea hoặc đồng minh của cô sẽ kích hoạt các hiệu ứng tác động rất lớn đến trận chiến.\n4. Vào cuối mỗi vòng, cô sẽ gây sát thương cho tất cả kẻ thù tùy thuộc vào lượng HP mà họ còn lại.",
+      "desc": "1. Hadea là nhân vật gây sát thương thuộc phe Ác Quỷ.\n2. Kỹ năng chủ động tấn công 2 kẻ địch có HP thấp nhất và áp dụng “Irreversible Death” cùng “Doom's Arrival” lên toàn bộ kẻ địch.\n3. Khi Hadea hoặc đồng minh tử trận, những hiệu ứng liên quan có thể thay đổi đáng kể cục diện.\n4. Cuối mỗi hiệp, Hadea gây sát thương lên toàn bộ kẻ địch dựa trên lượng HP còn lại của chúng.",
       "skills": {
         "75501201": "Kỹ năng chủ động của Hadea gây sát thương dựa trên Tấn công và sát thương thêm dựa trên HP tối đa của mục tiêu cho 2 kẻ thù có HP thấp nhất và cast Cái chết không thể đảo ngược và Tấn công tất cả kẻ thù.",
         "75501202": "Kỹ năng tăng cường. Tăng Hadea's HP tấn công Sát Thương Chí Mạng Kỹ Năng Sát Thương and Tốc Độ.",
@@ -938,7 +938,7 @@
       }
     },
     "855014": {
-      "desc": "1. Apollis là một tên buôn bán ma quỷ trong nhà.\n2. Kỹ năng chủ động của cô đánh cắp Tấn công và Giáp từ kẻ thù và Tấn công cơ bản của cô đánh cắp Năng lượng.\n3. Cả Kỹ năng chủ động và Tấn công Cơ bản của cô đều thúc đẩy cơ hội của cô để Né Tránh.\n4. Các hiệu ứng đặc biệt sẽ được kích hoạt khi cô bị ảnh hưởng bởi Hiệu ứng Kiểm soát và các loại hiệu ứng bất lợi khác hoặc khi cô chịu sát thương thường xuyên và gây tử vong.",
+      "desc": "1. Apollis là nhân vật gây sát thương thuộc phe Ác Quỷ.\n2. Kỹ năng chủ động đánh cắp Tấn Công và Giáp của kẻ địch; đòn đánh thường đánh cắp Năng Lượng.\n3. Cả hai loại đòn đánh đều tăng xác suất Né Tránh của Apollis.\n4. Các hiệu ứng đặc biệt kích hoạt khi cô chịu Khống Chế, hiệu ứng bất lợi khác, sát thương thường hoặc sát thương chí tử.",
       "skills": {
         "75501301": "Kỹ năng chủ động của Apollis gây sát thương mà không tính đến Khiên Ma Thuật để kẻ thù đánh cắp Tấn công và Giáp và tăng cơ hội của cô để Né Tránh.",
         "75501302": "Kỹ năng tăng cường. Tăng Chí Mạng và Tốc Độ giảm sát thương tấn công HP của Apollis.",
