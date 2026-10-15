@@ -7,7 +7,7 @@ const Shops=(()=>{
  const el=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;};
  const img=(src,cls,alt='')=>{const i=el('img',cls);i.src=src;i.alt=alt;i.draggable=false;return i;};
  const load=()=>data?Promise.resolve(data):(loading||=api('/assets/shops.json').then(d=>data=d));
- const MAP=[['cafe',11,-165,340,338,305,'Cafe',-47,-138],['skin',0,200,320,307,240,'Skin Store',0,-138],['market',7,-135,50,349,262,'Market',-35,-108],['exchange',13,188,-23,356,339,'Lucky Store',0,-118],['artifact',17,-152,-246,323,290,'Antique Store',-20,-100],['unopen',0,215,-315,311,280,'Coming Soon',0,-115]];
+ const MAP=[['cafe',11,-165,340,338,305,'Cafe',-47,-138],['skin',0,200,320,307,240,'Skin Store',0,-138],['market',7,-135,50,349,262,'Chợ',-35,-108],['exchange',13,188,-23,356,339,'Lucky Store',0,-118],['artifact',17,-152,-246,323,290,'Cửa Hàng Cổ Vật',-20,-100],['unopen',0,215,-315,311,280,'Coming Soon',0,-115]];
  const TABS=[2,3,13,5,6,9];
  function root(){let r=$('shops-view');if(!r){r=el('section','shops-view');r.id='shops-view';r.hidden=true;$('home-systems-view').after(r);}return r;}
  function open(from,shop){origin=from||view;note='';page=0;group=0;if(shop){mode='shop';sid=shop;}else mode='map';load().then(()=>{showView('shops');render();});}
@@ -24,8 +24,8 @@ const Shops=(()=>{
  // ---- ShopMapWindow ----
  function map(r){clearGirl();const stage=el('div','sh-stage');const bg=center(img(A('shop_map_bg'),'sh-map-bg'),0,0,1280,1280);stage.append(bg);
   for(const [k,target,x,y,w,h,label,lx,ly]of MAP){const b=center(el('button','sh-building'),x,y,w,h);b.type='button';b.append(img(A('shop_'+k)));const l=el('span','sh-building-label',label);l.style.left=`calc(50% + ${lx} * var(--u))`;l.style.top=`calc(50% - ${ly} * var(--u))`;b.append(l);
-   b.onclick=()=>{if(k==='skin'&&typeof Skins!=='undefined'&&Skins.store){Skins.store();return;}if(!target){CampaignUI.popup('This Store is still under construction.',{});return;}mode='shop';sid=target;page=0;group=0;render();};stage.append(b);}
-  r.append(stage);top(r,['1','2']);r.querySelector('.sh-top').prepend(el('h1','','Shopping Street'));}
+   b.onclick=()=>{if(k==='skin'&&typeof Skins!=='undefined'&&Skins.store){Skins.store();return;}if(!target){CampaignUI.popup('Cửa hàng này chưa mở cửa.',{});return;}mode='shop';sid=target;page=0;group=0;render();};stage.append(b);}
+  r.append(stage);top(r,['1','2']);r.querySelector('.sh-top').prepend(el('h1','','Phố Mua Sắm'));}
 
  // ---- MarketWindow / ShopWindow ----
  function shop(r,keep){const cfg=data.shops[sid],info=state.shops_info?.[sid];const stage=el('div','sh-stage');const M=sid===7,CY=M?-217:-194,GY=CY+(M?-46:-50)+145;
@@ -37,7 +37,7 @@ const Shops=(()=>{
   if(!info){r.append(stage);top(r,['1','2']);return;}
   if(!info.open){stage.append(center(el('p','sh-locked',"Unlocks at level "+info.limit_level),0,CY,600,80));}
   let goods=info.goods.filter(g=>!group||g.group===group);
-  if(sid===11||sid===17){const groups=[...new Set(info.goods.map(g=>g.group))].sort((a,b)=>a-b);const gb=px(el('div','sh-groups'),20,tabs?190:118,680,70);const all=el('button','sh-group'+(group?'':' on'),'All');all.type='button';all.onclick=()=>{group=0;page=0;render();};gb.append(all);
+  if(sid===11||sid===17){const groups=[...new Set(info.goods.map(g=>g.group))].sort((a,b)=>a-b);const gb=px(el('div','sh-groups'),20,tabs?190:118,680,70);const all=el('button','sh-group'+(group?'':' on'),'Tất cả');all.type='button';all.onclick=()=>{group=0;page=0;render();};gb.append(all);
    for(const g of groups){const b=el('button','sh-group'+(group===g?' on':''));b.type='button';if(sid===11)b.append(img(A(`shop_group${g}_${group===g?2:1}`)));else b.textContent='Set '+g;b.onclick=()=>{group=g;page=0;render();};gb.append(b);}stage.append(gb);}
   const pages=Math.max(1,Math.ceil(goods.length/8));page=Math.min(page,pages-1);
   goods.slice(page*8,page*8+8).forEach((g,i)=>{const cx=-245+(i%4)*162,cy=GY-Math.floor(i/4)*240;cell(stage,g,cx,cy);});
@@ -46,12 +46,12 @@ const Shops=(()=>{
   if(info.refresh_at){const t=center(el('div','sh-timer'),M?180:235,CY+(M?260:290),260,70);t.append(el('small','','Làm Mới Sau'),el('b','sh-clock',clock(info.refresh_at)));stage.append(t);clearInterval(timer);timer=setInterval(()=>{const c=root().querySelector('.sh-clock');if(!c||view!=='shops'){clearInterval(timer);return;}c.textContent=clock(info.refresh_at);if(info.refresh_at*1000<=Date.now()){clearInterval(timer);api('/api/state').then(s=>{state=s;render();});}},1000);}
   const cfgR=data.shops[sid];if(Number(cfgR.is_refresh)&&cfgR.refresh_cost&&sid!==7){const [cid,cn]=String(cfgR.refresh_cost).split('#');const b=center(el('button','sh-refresh'),245,CY+225,200,60);b.type='button';b.style.backgroundImage=`url('${A('blue_btn_54_54')}')`;b.append(el('span','','Làm Mới'),img(icon(cid)),el('b','',number(cn)));b.onclick=async()=>{if(await GirlUI.confirm(`Dùng ${number(cn)} ${nameOf(cid)} để làm mới Cửa Hàng?`,{title:'Làm Mới Cửa Hàng',ok:'Làm Mới'}))act({action:'refresh',shop:sid});};stage.append(b);}
   if(note)stage.append(center(el('p','sh-note',note),0,-560,600,60));
-  r.append(stage);const cur=[...new Set(String(cfg.economy_show||'').split('|').filter(Boolean))];top(r,cur.length?cur:['1','2']);r.querySelector('.sh-top').prepend(el('h1','',cfg.name||'Store'));}
+  r.append(stage);const cur=[...new Set(String(cfg.economy_show||'').split('|').filter(Boolean))];top(r,cur.length?cur:['1','2']);r.querySelector('.sh-top').prepend(el('h1','',cfg.name||'Cửa hàng'));}
  function clock(at){const s=Math.max(0,at-Math.floor(Date.now()/1000));return [Math.floor(s/3600),Math.floor(s%3600/60),s%60].map(n=>String(n).padStart(2,'0')).join(':');}
  function cell(stage,g,cx,cy){const done=g.limit>=0&&g.bought>=g.limit;const bg=center(el('div','sh-cell'+(done?' done':'')),cx,cy-20,156,210);stage.append(bg);
   const it=center(el('button','sh-item'),cx,cy,108,108);it.type='button';it.style.backgroundImage=`url('${A('shop_icon_bg')}')`;it.append(img(icon(g.item[0])),el('b','',number(g.item[1])));it.title=nameOf(g.item[0])+(g.limit>0?` · limit ${g.bought}/${g.limit}`:'');it.onclick=()=>CampaignUI.popup(nameOf(g.item[0])+' ×'+number(g.item[1])+(g.limit>0?` — purchases ${g.bought}/${g.limit}`:''),{});if(done)it.append(img(A('purchased'),'sh-sold'));stage.append(it);
   const b=center(el('button','sh-buy'),cx,cy-87,120,54);b.type='button';b.style.backgroundImage=`url('${A(done?'white_btn_54_54':'blue_btn_54_54')}')`;
-  if(done){b.append(el('span','sh-bought','Purchased'));b.disabled=true;}else{const short=Number(state.items[g.cost[0]]||0)<g.cost[1];b.append(img(icon(g.cost[0])),el('b',short?'short':'',number(g.cost[1])));b.onclick=()=>act({action:'buy',shop:sid,index:g.index});}
+  if(done){b.append(el('span','sh-bought','Đã mua'));b.disabled=true;}else{const short=Number(state.items[g.cost[0]]||0)<g.cost[1];b.append(img(icon(g.cost[0])),el('b',short?'short':'',number(g.cost[1])));b.onclick=()=>act({action:'buy',shop:sid,index:g.index});}
   stage.append(b);if(g.limit>1){stage.append(center(el('small','sh-limit',`${g.bought}/${g.limit}`),cx,cy+62,120,22));}}
  async function mountGirl(host,cfg){const m=data.models[String(cfg.girls_model)];if(!m)return;const key=String(sid)+':'+cfg.girls_model;girlKey=key;
   try{const idle=m.idle||'idle';const g=await GxbSpine.mount(host,'/assets/spine/'+m.resource,{width:900,height:1400,scale:Number(cfg.scale)||1,origin:[.5,1300/1400],className:'sh-girl-canvas',sequence:[[idle,true]]});if(girlKey!==key||!host.isConnected){g.destroy();return;}girl=g;

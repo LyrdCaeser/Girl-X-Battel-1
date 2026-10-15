@@ -30,7 +30,7 @@
 .bag-use-controls .bag-native-choices{flex:0 0 100%}
 .bag-use-controls #bag-use-note{flex-basis:100%;line-height:1.4}
 @media(max-width:620px){
- .bag-grid{grid-template-columns:repeat(5,minmax(0,1fr));gap:10px 7px}
+ .bag-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:10px 7px}
  .bag-item{width:100%;max-width:100%;aspect-ratio:1}
  .bag-panel{padding:10px 7px 12px}
  .bag-detail{left:50%;top:49%;bottom:auto;transform:translate(-50%,-50%);width:min(420px,calc(100vw - 24px));max-height:calc(100dvh - 140px);padding:12px}
@@ -50,4 +50,11 @@
  #smithy-view .sm-grid .eq-icon{width:min(16vw,66px);height:min(16vw,66px)}
  #smithy-view .sm-actions{gap:10px;margin:12px 6px}
  #smithy-view .sm-btn{flex:1;min-width:0;width:auto;max-width:180px;height:54px;white-space:normal}
+}
+
+/* Bag icons: four original portrait columns, not stretched five across on phones. */
+@media (max-width:620px) {
+ .bag-panel .bag-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:8px 7px}
+ .bag-panel .bag-item{width:100%;aspect-ratio:1;max-height:100%;min-width:0}
+ .bag-panel .bag-item-image{inset:15% 10%;width:80%;height:70%;object-fit:contain}
 }

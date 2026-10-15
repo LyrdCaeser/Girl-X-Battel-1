@@ -124,6 +124,39 @@ class BagUseTests(unittest.TestCase):
         self.assertEqual(self.engine._load()['items']['149'],1)
         self.assertEqual(self.engine._load()['items']['192'],1)
 
+    def test_shards_original_tab_and_four_column_mobile_geometry(self):
+        root=Path(__file__).resolve().parents[1]
+        app=(root/'web/app.js').read_text(encoding='utf-8')
+        css=(root/'web/bag-actions.css').read_text(encoding='utf-8')
+        from json import loads
+        catalog=loads((root/'web/assets/items-catalog.json').read_text(encoding='utf-8'))
+        shards=[i for i in catalog.values() if i['category']==3]
+        self.assertEqual(len(shards),275)
+        self.assertIn("[3,'Mảnh Nữ Thần']",app)
+        self.assertIn("grid-template-columns:repeat(4,minmax(0,1fr))",css)
+        self.assertIn("item.category===bagTab",app)
+
+    def test_smithy_respects_all_original_ingredients_and_never_divides_zero(self):
+        root=Path(__file__).resolve().parents[1]
+        frontend=(root/'web/equipment.js').read_text(encoding='utf-8')
+        self.assertIn("cost(info,r.need_formula",frontend)
+        self.assertIn("Number(v)<=0",frontend)
+        self.assertNotIn("const [[src,per],gold]",frontend)
+
+    def test_market_original_amounts_are_not_adjusted_to_match_screenshots(self):
+        from gxb2 import shops
+        raw=shops.DATA
+        def sample(group):
+            return next(row for row in raw['dropbox'].values() if row['dropbox_id']==group)
+        self.assertEqual(sample(31031)['item'],'9#20000000')
+        self.assertEqual(sample(31031)['cost'],'2#3600')
+        # Market is authoritative: item amount and currency must come from
+        # the same original dropbox row (never an invented card price).
+        for offer in shops.goods(7):
+            row=raw['tables']['shop_black_new'][offer['index']-1]
+            pool=sample(row['dropbox_id'])
+            self.assertEqual(offer['item'],shops.pair(pool['item']))
+
     def test_native_client_use_button_and_real_pc_window(self):
         root=Path(__file__).resolve().parents[1]
         app=(root/'web/app.js').read_text(encoding='utf-8')
