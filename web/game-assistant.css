@@ -28,3 +28,7 @@
 .ga2-otitle{font-size:24px}
 .ga2-olist{display:grid;gap:7px}.ga2-res{border:1px solid #aac;padding:7px}.ga2-res.skip{opacity:.7}
 .ga2-items{display:flex;flex-wrap:wrap;gap:10px}.ga2-item{display:grid}.ga2-item img{width:40px;height:40px;object-fit:contain}
+
+/* Native touch scrolling remains inside the source assistant's inset. */
+.ga2-scroll{max-height:calc(610 * var(--u));overflow-y:auto;overflow-x:hidden;overscroll-behavior-y:contain;touch-action:pan-y;-webkit-overflow-scrolling:touch}
+.ga2-scroll button{touch-action:manipulation}
