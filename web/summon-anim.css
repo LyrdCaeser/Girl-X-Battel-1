@@ -16,3 +16,23 @@
 .sa-waiting-box b{font-size:20px}.sa-waiting-box small{color:#c9cce0}
 .sa-waiting-spin{width:42px;height:42px;border:4px solid #ffffff22;border-top-color:#a678ff;border-radius:50%;animation:saWaitingSpin .8s linear infinite}
 @keyframes saWaitingSpin{to{transform:rotate(360deg)}}
+
+/* Fill the device while preserving the 720x1280 Spine coordinate frame.
+   Previously the stage was vertically letterboxed and showed black bands. */
+.sa-overlay{background:#e8dfec;overflow:hidden}
+.sa-stage{inset:0;width:100%;height:100%;transform:none}
+.sa-bg{width:100%;height:100%;object-fit:cover;object-position:center}
+.sa-layer{left:50%;right:auto;width:min(100%,56.25dvh);height:100%;transform:translateX(-50%);overflow:visible}
+.sa-canvas{object-fit:contain}
+.sa-caption{bottom:calc(110 * var(--u))}
+.sa-caption b{max-width:86%;padding:calc(10 * var(--u)) calc(46 * var(--u));
+ background:linear-gradient(#fffffff2,#f4f8ffef);color:#355076;
+ border:calc(3 * var(--u)) solid #e1c6a1;border-radius:calc(7 * var(--u));
+ box-shadow:0 calc(4 * var(--u)) calc(12 * var(--u)) #0003;
+ text-shadow:0 1px #fff;font-size:calc(32 * var(--u));text-align:center}
+.sa-voice{position:absolute;left:calc(20 * var(--u));bottom:calc(28 * var(--u));
+ z-index:5;padding:calc(8 * var(--u)) calc(15 * var(--u));background:#ffffffea;
+ border:calc(2 * var(--u)) solid #b9d2f2;color:#324e79;
+ border-radius:calc(24 * var(--u));font-weight:800;font-size:calc(22 * var(--u));cursor:pointer}
+.sa-voice[hidden]{display:none!important}
+@media(prefers-reduced-motion:reduce){.sa-hint{animation:none}}
