@@ -195,9 +195,31 @@ def verify():
     return data
 
 
+def repair_existing(profiles, skills, digest):
+    """Refresh numeric token fidelity without rerunning the expensive translation model."""
+    if not DEST.exists():
+        raise RuntimeError("Run --apply first; translation overlay is missing")
+    doc = json.loads(DEST.read_text(encoding="utf-8"))
+    if doc.get("source_sha256") != digest:
+        raise RuntimeError("Source changed; a full --apply is required")
+    REVIEW_WARNINGS.clear()
+    for cid, original in profiles.items():
+        saved = doc["girls"][cid]["desc"]
+        doc["girls"][cid]["desc"] = render(original, {original: [("", [original])]}, {original: saved})
+    for (cid, sid), original in skills.items():
+        saved = doc["girls"][cid]["skills"][sid]
+        doc["girls"][cid]["skills"][sid] = render(original, {original: [("", [original])]}, {original: saved})
+    doc["review_warnings"] = REVIEW_WARNINGS
+    tmp = DEST.with_suffix(".tmp")
+    tmp.write_text(json.dumps(doc, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    tmp.replace(DEST)
+    print(f"Repaired existing translation overlay, {len(REVIEW_WARNINGS)} QA warnings", flush=True)
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--apply", action="store_true")
+    p.add_argument("--repair", action="store_true", help="validate and restore numeric tokens using the existing overlay")
     p.add_argument("--verify", action="store_true")
     p.add_argument("--batch-size", type=int, default=12)
     args = p.parse_args()
@@ -218,6 +240,8 @@ def main():
         tmp.replace(DEST)
         print(f"Created {DEST.relative_to(ROOT)} ({DEST.stat().st_size} bytes); "
               f"{len(REVIEW_WARNINGS)} items flagged for editorial review", flush=True)
+    if args.repair:
+        repair_existing(profiles, skills, digest)
     if args.verify:
         verify()
 
