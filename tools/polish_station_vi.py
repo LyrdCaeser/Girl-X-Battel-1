@@ -459,7 +459,7 @@ OVERRIDES.update({
 4. Kỹ năng bị động còn tăng Năng Lượng và HP, cải thiện khả năng sinh tồn của cô.
 5. Nhân vật phe Ác Quỷ khó nâng cấp, nên cần quản lý tài nguyên cẩn thận trước khi tăng sao.""",
  "profile/855004": """1. Scythe là Chiến Binh có khả năng hồi sinh thuộc phe Ác Quỷ.
-2. Cô gây sát thương lớn bằng “Round Marks” và có thể Hóa Đá kẻ địch. Khả năng tự Hồi Máu và hồi sinh giúp Scythe trụ ở hàng trước, chịu sát thương thay đồng minh.
+2. Cô gây sát thương lớn bằng “Dấu Ấn Hiệp” và có thể Hóa Đá kẻ địch. Khả năng tự Hồi Máu và hồi sinh giúp Scythe trụ ở hàng trước, chịu sát thương thay đồng minh.
 3. Khả năng hồi sinh phối hợp tốt với Esau & Jacob (gây thêm sát thương toàn địch) hoặc Saint (tăng Tấn Công và Sát Thương Kỹ Năng), từ đó khuếch đại sát thương của đội.
 4. Do nhân vật phe Ác Quỷ khó nâng cấp, nên cần lập kế hoạch tài nguyên trước khi tăng sao.""",
  "profile/855005": """1. Lucifer là nhân vật chuyên gây sát thương theo thời gian thuộc phe Ác Quỷ.
@@ -477,14 +477,14 @@ OVERRIDES.update({
 4. Muốn phát huy toàn bộ sức mạnh của Kratos, cần trang bị tốt và cấp sao cao; nên quản lý tài nguyên hợp lý.""",
  "profile/855008": """1. Izanami là nhân vật hỗ trợ bảo vệ đồng minh thuộc phe Ác Quỷ.
 2. Kỹ năng chủ động ban “Lily Shield” cho đồng minh, biến sát thương của đòn đánh thường hoặc kỹ năng chủ động tiếp theo mà họ phải nhận thành Hồi Máu.
-3. Kỹ năng bị động áp dụng “Healing Curse” lên mục tiêu, biến lần Hồi Máu tiếp theo của mục tiêu thành sát thương.
-4. “Lily Shield” và “Healing Curse” không thể kích hoạt lẫn nhau.""",
+3. Kỹ năng bị động áp dụng “Lời Nguyền Hồi Phục” lên mục tiêu, biến lần Hồi Máu tiếp theo của mục tiêu thành sát thương.
+4. “Lily Shield” và “Lời Nguyền Hồi Phục” không thể kích hoạt lẫn nhau.""",
  "profile/855009": """1. Apate là nhân vật gây sát thương mạnh thuộc phe Ác Quỷ.
 2. Kỹ năng chủ động đặc biệt khắc chế kẻ địch có Năng Lượng cao.
 3. Đòn đánh thường rút Năng Lượng mục tiêu và gây thêm sát thương dựa trên lượng Năng Lượng đã rút.
 4. Ngay cả khi Apate bị hạ gục, cô vẫn có thể hồi sinh; trong lúc cô vắng mặt, Volo xuất hiện thay thế để tiếp tục gây sát thương cho đội.""",
  "profile/855010": """1. Frexie là nhân vật gây sát thương thuộc phe Ác Quỷ.
-2. Đòn đánh thường nhắm vào kẻ địch có tỷ lệ HP hiện tại thấp nhất và gắn “Dark Star Mark” lên chúng. Nếu mục tiêu đã có Dấu Ấn này, nó sẽ chịu thêm sát thương theo HP tối đa, giúp Frexie kết liễu địch.
+2. Đòn đánh thường nhắm vào kẻ địch có tỷ lệ HP hiện tại thấp nhất và gắn “Dấu Ấn Sao Tối” lên chúng. Nếu mục tiêu đã có Dấu Ấn này, nó sẽ chịu thêm sát thương theo HP tối đa, giúp Frexie kết liễu địch.
 3. Kỹ năng bị động “Phew that was close” giảm Giáp, Giảm Sát Thương, Tiêu Hao Sát Thương, tỷ lệ Chặn Đòn và Né Tránh của kẻ địch có tỷ lệ HP thấp nhất vào đầu trận và cuối mỗi hiệp, giúp đồng minh gây thêm sát thương.""",
  "profile/855011": """1. Maia là nhân vật đa dụng thuộc phe Ác Quỷ.
 2. Kỹ năng chủ động gây sát thương lên 4 kẻ địch ngẫu nhiên, có cơ hội xóa 1 hiệu ứng tăng cường trên mỗi mục tiêu.
@@ -547,7 +547,7 @@ Khi bị kẻ địch mang “Gilded Butterfly” do chính họ áp dụng tấ
 2. Kỹ năng chủ động gây lượng lớn sát thương xuyên Giáp lên kẻ địch có HP thấp.
 3. Đòn đánh thường cũng bỏ qua Giáp và áp dụng “Miasma” lên mục tiêu.
 4. Syrcotte có thể giảm sát thương mà kẻ địch có HP thấp nhất gây ra và tự Hồi Máu.
-5. Khi đạt đầy Năng Lượng, cô xóa các hiệu ứng Khống Chế, Dấu Ấn và Sát Thương Theo Thời Gian trên bản thân, sau đó được tăng cường bằng “Starburst”.""",
+5. Khi đạt đầy Năng Lượng, cô xóa các hiệu ứng Khống Chế, Dấu Ấn và Sát Thương Theo Thời Gian trên bản thân, sau đó được tăng cường bằng “Bùng Nổ Tinh Tú”.""",
  "profile/857002": """1. Elysia là nhân vật khống chế diện rộng thuộc phe Vũ Trụ.
 2. Kỹ năng chủ động gây sát thương lên toàn bộ kẻ địch và truy kích dựa trên HP tối đa của mục tiêu. Cô đồng thời xóa tất cả “Primal Colors” trên chúng và kích hoạt các hiệu ứng bất lợi tương ứng.
 3. Elysia có thể tô các loại “Primal Colors” khác nhau lên kẻ địch để giảm Tốc Độ, Giáp hoặc Tấn Công.
@@ -561,6 +561,12 @@ Khi bị kẻ địch mang “Gilded Butterfly” do chính họ áp dụng tấ
 6. Kỹ năng chủ động xóa “Kaus Australis” trên địch và thay bằng “Alnasl”, khiến chúng chịu một phần sát thương sau khi dùng đòn đánh thường hoặc kỹ năng chủ động.""",
 })
 
+OVERRIDES.update({
+ "profile/855012": """1. Promethea là Chiến Binh kiêm khống chế thuộc phe Ác Quỷ.
+2. Hiệu ứng “Starflare” tăng khả năng Tiêu Hao Sát Thương và phản lại một phần sát thương mà người mang hiệu ứng phải nhận lên kẻ tấn công.
+3. Hiệu ứng “Hellfire” làm giảm Lượng Hồi Máu Nhận, tỷ lệ Chặn Đòn và Năng Lượng nhận được của kẻ địch.
+4. Lần đầu HP của Promethea xuống dưới 30%, hoặc khi bắt đầu hiệp 5, cô lập tức hồi HP và được tăng cường sức mạnh đáng kể.""",
+})
 EMPTY_SOURCE = "此處為填充文本"
 
 
@@ -635,9 +641,14 @@ def audit(src: str, text: str, item_id: str):
     original = strip_markup(src)
     if not text or MARKUP.search(text) or "[c]" in text or "[-]" in text or "[/c]" in text:
         problems.append({"id":item_id, "reason":"missing translation or raw markup"})
-    if UNTRANSLATED.search(text):
+    # Ignore quoted source-defined skill/effect titles and one proper character name,
+    # but keep catching untranslated combat mechanics in ordinary prose.
+    scan_text = re.sub(r'[“][^”]*[”]|"[^"]*"', "", text)
+    if item_id == "profile/856001":
+        scan_text = re.sub(r"\bAngel\b", "", scan_text)
+    if UNTRANSLATED.search(scan_text):
         problems.append({"id":item_id, "reason":"untranslated English combat term",
-                         "matched": sorted(set(x.lower() for x in UNTRANSLATED.findall(text)))})
+                         "matched": sorted(set(x.lower() for x in UNTRANSLATED.findall(scan_text)))})
     original_values = Counter(NUMBER.findall(original))
     new_values = Counter(NUMBER.findall(strip_markup(text)))
     if original_values != new_values:
