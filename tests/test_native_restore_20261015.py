@@ -56,6 +56,10 @@ class NativeRestore20261015Tests(unittest.TestCase):
         self.assertIn("cookie += f\"; Max-Age={auth.SESSION_TTL}\"",server)
         self.assertIn("HttpOnly; SameSite=Lax",server)
         self.assertIn("url('/assets/login/gxb3-wedding-promo.webp')",css)
+        promo=ROOT/'web/assets/login/gxb3-wedding-promo.webp'
+        self.assertTrue(promo.is_file(), 'Referenced login background must exist')
+        self.assertGreater(promo.stat().st_size,30000,'Preserve mobile-resolution original background')
+        self.assertEqual(promo.read_bytes()[:4],b'RIFF')
         self.assertIn("prefers-reduced-motion",css)
 
     def test_original_girl_voice_and_viewport(self):
