@@ -315,7 +315,88 @@ function testNativeBagAndEquipment() {
   console.log('PASS | native Girl Shards summon, long Bag scroll and equipment sheet');
 }
 
+
+async function testAudioSettingsAndCyclicVoice(){
+  const texts=new Map();
+  const listeners={}, winEvents=[];
+  const storage={getItem:k=>texts.get(k)||null,setItem:(k,v)=>texts.set(k,String(v))};
+  const clas={state:new Set(),toggle(name,on){if(on)this.state.add(name);else this.state.delete(name);}};
+  const created=[];
+  class MockAudio{
+    constructor(src=''){this.src=src;this.volume=1;this.paused=true;created.push(this);}
+    pause(){this.paused=true;}
+    play(){this.paused=false;return Promise.resolve();}
+    load(){}
+    addEventListener(){}
+  }
+  const doc={
+    documentElement:{classList:clas},
+    addEventListener:(kind,fn)=>{listeners[kind]=fn;},
+  };
+  const source=fs.readFileSync(path.join(ROOT,'web/settings-menu.js'),'utf8');
+  const ctx=vm.createContext({
+    document:doc,window:{dispatchEvent:e=>winEvents.push(e)},
+    localStorage:storage,Audio:MockAudio,
+    CustomEvent:class{constructor(type,options){this.type=type;this.detail=options.detail;}},
+    fetch:async url=>({ok:true,json:async()=>String(url).endsWith('skills.json')?{}:{tracks:['home_bg_music'],songs:[],ids:{}}}),
+  });
+  vm.runInContext(source,ctx);
+  const settings=vm.runInContext('GxbAudio',ctx);
+  await settings.ready;
+  assert.equal(settings.volume('music'),70);
+  assert.equal(settings.volume('effects'),80);
+  assert.equal(settings.volume('voice'),90);
+  settings.setVolume('music',35);
+  settings.setVolume('voice',40);
+  settings.setVolume('effects',0);
+  assert.equal(JSON.parse(texts.get('gxb3:audio-levels:v1')).music,35);
+  assert.equal(settings.volume('voice'),40);
+  settings.dots(true);
+  assert.ok(clas.state.has('gxb-hide-red-dots'),'badge toggle applies without changing task state');
+  assert.equal(texts.get('gxb3:hide-red-dots:v1'),'1');
+  listeners.pointerdown();
+  assert.equal(created[0].volume,.35,'music volume must affect real audio playback');
+  settings.setVolume('music',15);
+  assert.equal(created[0].volume,.15,'music slider immediately changes playing track');
+  assert.ok(winEvents.some(e=>e.detail.channel==='voice'&&e.detail.level===40));
+  assert.match(source,/Tắt dấu chấm đỏ thông báo/);
+  assert.match(source,/Âm Thanh/);
+  const dotsCSS=fs.readFileSync(path.join(ROOT,'web/settings-menu.css'),'utf8');
+  assert.match(dotsCSS,/\.ms-home-btn img/,'native mission corner dot must be suppressed');
+
+  const characterSounds=[];
+  const voiceChange={};
+  class VoiceAudio{
+    constructor(src){this.src=src;this.volume=0;characterSounds.push(this);}
+    pause(){}
+    play(){return Promise.resolve();}
+  }
+  const db={rules:{},dialogs:{
+    '41001':[{type:1,sound:'110010201',text:'line one'},
+             {type:2,sound:'110010202',text:'line two'},
+             {type:3,sound:'110010203',text:'line three'}]
+  }};
+  const voiceContext=vm.createContext({
+    window:{addEventListener:(event,fn)=>{voiceChange[event]=fn;}},
+    Audio:VoiceAudio,GxbAudio:settings,api:async()=>db,
+  });
+  vm.runInContext(fs.readFileSync(path.join(ROOT,'web/dates.js'),'utf8'),voiceContext);
+  const dates=vm.runInContext('Dates',voiceContext);
+  for(let n=0;n<4;n++)assert.equal(await dates.playGirlVoice(41001),true);
+  assert.deepEqual(characterSounds.map(v=>v.src),[
+    '/assets/voices/110010201.mp3',
+    '/assets/voices/110010202.mp3',
+    '/assets/voices/110010203.mp3',
+    '/assets/voices/110010201.mp3',
+  ],'tapping original Girl art cycles distinct source clips and wraps without random repeats');
+  assert.ok(characterSounds.every(v=>v.volume===.4));
+  voiceChange['gxb-audio-volume']({detail:{channel:'voice',level:23}});
+  assert.equal(characterSounds.at(-1).volume,.23,'voice slider changes currently playing clip');
+  console.log('PASS | Settings mixer persists volumes and badge choice; original Girl voice cycles sequentially');
+}
+
 (async () => {
+  await testAudioSettingsAndCyclicVoice();
   testNativeBagAndEquipment();
   await testNativeAssistantInteraction();
   testNephilimBattleModels();
