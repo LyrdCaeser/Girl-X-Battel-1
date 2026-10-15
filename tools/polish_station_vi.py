@@ -141,6 +141,35 @@ BAD_TRANSLATION_FIXES = {
     r"\bBảo vệ Canine\b": "Hộ Vệ Khuyển",
     r"\bChúa tể Dracula\b": "Lord Dracula",
     r"\bHậu quả\b": "Dư Ảnh",
+    # Generic machine-translation artefacts found in all character skill records.
+    r"\bKỹ năng (?:của )?hiệu ứng tăng cường\b": "Kỹ năng tăng cường",
+    r"\bhiệu ứng tăng cường kỹ năng\b": "Kỹ năng tăng cường",
+    r"\bKỹ năng(?:\s+của)?\s+hiệu ứng tăng cường\b": "Kỹ năng tăng cường",
+    r"\bKỹ năng tích cực\b": "Kỹ năng chủ động",
+    r"\bKỹ năng hoạt động\b": "Kỹ năng chủ động",
+    r"\bĐòn (?:Tấn Công|tấn công) Cơ Bản\b": "Đòn đánh thường",
+    r"\bTấn Công Cơ Bản\b": "Đòn đánh thường",
+    r"\bđông lạnh\b": "Đóng Băng",
+    r"\bFreeze\b": "Đóng Băng",
+    r"\bFrozen\b": "Đóng Băng",
+    r"\bPetrified\b": "Hóa Đá",
+    r"\bCrits\b": "gây Chí Mạng",
+    r"\bCrit Damage\b": "Sát Thương Chí Mạng",
+    r"\bkhả năng kiểm soát đám đông\b": "khả năng khống chế diện rộng",
+    r"\bngười ủng hộ\b": "nhân vật hỗ trợ",
+    r"\bthầy thuốc\b": "nhân vật Hồi Máu",
+    r"\btỷ lệ khối\b": "tỷ lệ Chặn Đòn",
+    r"\bBóng ma nhà\b": "Phe Linh Hồn",
+    r"\bNhà con người\b": "Phe Nhân Loại",
+    r"\bcơn ác mộng\b": "Ác Mộng",
+    r"\bHàng Tiền Tuyến\b": "hàng trước",
+    r"\bHậu Tuyến\b": "hàng sau",
+    r"\bTiền Tuyến\b": "hàng trước",
+    r"\bsự tấn công cơ bản\b": "đòn đánh thường",
+    r"\bđối phó với thiệt hại\b": "gây sát thương",
+    r"\bxử lý thiệt hại\b": "gây sát thương",
+    r"\bđánh bại kẻ thù\b": "hạ gục kẻ địch",
+
 }
 BAD_FIXES = [(re.compile(src, re.I), vi) for src, vi in BAD_TRANSLATION_FIXES.items()]
 # Carefully compared against the original source, including all numeric values and target rules.
@@ -669,6 +698,7 @@ def polish(source: str, translated: str, identifier: str) -> str:
         text = exp.sub(value, text)
     # Some model outputs mix original English terms into split colour tags.
     text = re.sub(r"\b(\w+)'\s+s\b", r"\1", text)
+    text = re.sub(r"(?<=[A-Za-z])['’]s\b", "", text)
     text = re.sub(r"\b10-Star\b", "10 sao", text, flags=re.I)
     text = re.sub(r"\b6-Star\b", "6 sao", text, flags=re.I)
     text = re.sub(r"\bPVE\b", "đấu với máy", text, flags=re.I)
