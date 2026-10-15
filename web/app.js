@@ -240,9 +240,10 @@ function renderGirlDetail(){
  let lockButton=$('detail-lock');const sheetScene=document.querySelector('#girl-detail-view .detail-scene');if(!lockButton){lockButton=node('button','gs-side lock');lockButton.id='detail-lock';lockButton.type='button';sheetScene.append(lockButton);
   /* partner_zoom_btn hides the sheet UI to look at the illustration; tapping the girl shows her line in the bubble */
   const zoom=node('button','gs-side zoom');zoom.type='button';zoom.title="View illustration";zoom.style.backgroundImage="url('/assets/detail/sheet/partner_zoom_btn.png')";zoom.onclick=()=>$('girl-detail-view').classList.toggle('gs-zoom');sheetScene.append(zoom);
-  sheetScene.querySelector('.detail-art-wrap').addEventListener('click',()=>{const q=$('detail-quote');if(!q.textContent)return;q.classList.add('show');clearTimeout(q._t);q._t=setTimeout(()=>q.classList.remove('show'),4000);});}
+  sheetScene.querySelector('.detail-art-wrap').addEventListener('click',()=>{const h=state.roster.find(x=>x.partner_id===selectedGirlPartnerId);if(h&&typeof Dates!=='undefined')void Dates.playGirlVoice(h.table_id);const q=$('detail-quote');if(!q.textContent)return;q.classList.add('show');clearTimeout(q._t);q._t=setTimeout(()=>q.classList.remove('show'),4000);});}
  const locked=Boolean(hero.flags?.[0]);lockButton.textContent='';lockButton.title=locked?"Unlock":'Bloquear';lockButton.style.backgroundImage=`url('/assets/detail/sheet/${locked?'partner_lock_btn':'partner_unlock_btn'}.png')`;lockButton.disabled=busy;lockButton.onclick=()=>action('LOCK_PARTNER',{partner_id:hero.partner_id,is_lock:locked?0:1});
  const meta=girlDetails[String(hero.table_id)]||{job:'',quote:'',stats:{},skills:[]};
+ const jobVi={Warrior:'Chiến Binh',Mage:'Pháp Sư',Ranger:'Xạ Thủ',Assassin:'Sát Thủ',Priest:'Linh Mục'};
  $('detail-gold').textContent=number(state.items['1']);$('detail-gems').textContent=number(state.items['2']);
  $('detail-name').textContent=hero.name;$('detail-stars').textContent='★'.repeat(Math.min(Number(hero.stars)||0,10));if(typeof GirlUI!=='undefined')$('detail-stars').replaceChildren(GirlUI.stars(hero.stars,'tag'));
  const faction=$('detail-faction');faction.src=girl.group?'/assets/factions/'+girl.group+'.png':'';faction.alt=factionNames[girl.group]||'';faction.hidden=!girl.group;
@@ -250,7 +251,7 @@ function renderGirlDetail(){
  const quote=$('detail-quote');quote.textContent=(typeof LobbyDialogue!=='undefined'?LobbyDialogue.translateQuote(hero.table_id,meta.quote):meta.quote)||'';quote.hidden=!meta.quote;
  document.querySelectorAll('[data-detail-tab]').forEach(button=>{button.classList.toggle('active',button.dataset.detailTab===detailTab);button.setAttribute('aria-selected',String(button.dataset.detailTab===detailTab));});
  for(const name of ['attribute','gear','skins','awake'])$('detail-'+name).hidden=detailTab!==name;{const as=$('detail-astral');if(as)as.hidden=detailTab!=='astral';}
- $('detail-level').textContent='Lv. '+hero.lv+' / '+hero.level_cap;$('detail-job').textContent=meta.job||"Girl";
+ $('detail-level').textContent='Cấp '+hero.lv+' / '+hero.level_cap;$('detail-job').textContent=jobVi[meta.job]||meta.job||'Nữ Thần';$('detail-power-label').textContent=Number.isFinite(Number(hero.power))&&Number(hero.power)>0?'Lực chiến '+number(hero.power):'Lực chiến';
  const pips=$('detail-grade-pips');pips.replaceChildren();for(let i=0;i<6;i++)pips.append(node('span',i<Number(hero.grade||0)?'filled':'','◆'));
  const cost=hero.next_cost||{},gold=Number(cost['1']||0),exp=Number(cost['9']||0),atCap=hero.lv>=hero.level_cap;
  $('detail-cost-text').textContent=atCap?'MAX':'🪙 '+number(gold)+'  ·  ✦ '+number(exp);
