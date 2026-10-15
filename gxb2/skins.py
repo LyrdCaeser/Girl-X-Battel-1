@@ -98,17 +98,9 @@ def action(state, request):
         partner['show_skin'] = 0 if int(partner.get('show_skin', 1) or 0) else 1
         return {}
     if kind == 'buy':
-        # Skin Store (SkinDetailBuyWindow, SHOP_SKIN): shop_skin rows sell one skin for Costume Tickets (item 74)
-        skin = int(request.get('skin', 0)); row = SKINS.get(skin)
-        if not row or not row.get('shop'):
-            raise ValueError('Esta skin no se vende en la Skin Store')
-        ck, cn = str(row['shop']).split('#')[:2]; cn = local_config.shop_cost(int(cn))
-        if int(items.get(ck, 0)) < cn:
-            raise ValueError('Not enough Costume Tickets')
-        items[ck] = int(items[ck]) - cn
-        items[str(skin)] = int(items.get(str(skin), 0)) + 1
-        collected(state)
-        return {'got': {str(skin): 1}}
+        # Server-owned live price and source wedding check, never client supplied price.
+        from . import skin_store
+        return skin_store.purchase(state, request.get('skin'), request.get('payment', 'ticket'))
     raise ValueError('Acción de skins no disponible')
 
 
@@ -125,5 +117,6 @@ def snapshot(state):
 
 
 def catalog():
-    return {'skins': {str(k): {f: v[f] for f in ('name', 'qlt', 'attrs', 'partners', 'shop', 'points', 'rarity')} for k, v in SKINS.items()},
+    from . import skin_store
+    return {'skins': {str(k): {**{f: v[f] for f in ('name', 'qlt', 'attrs', 'partners', 'shop', 'points', 'rarity')}, 'is_wedding': skin_store.is_wedding(k)} for k, v in SKINS.items()},
             'effects': DATA['effects'], 'themes': DATA['themes']}
