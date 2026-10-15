@@ -46,6 +46,17 @@ class SkinShopTests(unittest.TestCase):
                     skin_store.purchase({"items": {"1":99999,"2":99999,"74":99999},
                                          "partners":[]}, sid, kind)
 
+    def test_incomplete_publisher_skin_placeholders_are_not_sold(self):
+        all_rows = skin_store.catalogue(admin=True)["offers"]
+        placeholders = [r for r in all_rows if not r["is_saleable"] and not r["is_wedding"]]
+        self.assertEqual(len(placeholders), 12)
+        self.assertEqual(sum(r["is_saleable"] for r in all_rows), 279)
+        for row in placeholders:
+            with self.assertRaises(ValueError):
+                skin_store.update_configs([self.config(row["skin_id"])], "OWNER")
+            with self.assertRaises(ValueError):
+                skin_store.purchase({"items":{"1":1000},"partners":[]}, row["skin_id"], "gold")
+
     def test_gold_crystal_wallet_real_purchase_and_audit(self):
         skin_store.update_configs([self.config()], "OWNER")
         state = {"items": {"1":1000,"2":200,"74":10}, "partners":[]}
