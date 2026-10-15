@@ -348,7 +348,7 @@ function graduateSelection(recipe,forceAuto=false){
  let missing='';
  for(const [i,need] of recipe.material.entries()){
   const star=Math.floor(need/10000),group=need%10000===9999?0:Math.floor(need/1000)%10;
-  if(!forceAuto&&!$('graduate-auto').checked&&need%1000===999&&star===5){chosen[i+1]=0;missing="Choose 5★ materials manually or enable auto-selection.";continue;}
+  if(!forceAuto&&!$('graduate-auto').checked&&need%1000===999&&star===5){chosen[i+1]=0;missing="Chọn nguyên liệu 5★ hoặc bật tự chọn.";continue;}
   const valid=h=>need%1000===999?h.stars===star&&(!group||girlsCatalog.find(g=>g.id===h.table_id)?.group===group):h.table_id===need&&h.stars===(recipe.local?recipe.base_star:girlsCatalog.find(g=>g.id===need)?.stars);
   const hero=roster.find(h=>!used.has(h.partner_id)&&!h.flags?.some(Boolean)&&state.acquisition?.exchange?.partner_id!==h.partner_id&&valid(h));
   chosen[i+1]=hero?.partner_id||0;if(hero)used.add(hero.partner_id);else missing="Missing materials of "+star+'★'+(group?" of "+(factionNames[group]||group):'')+'.';
@@ -420,7 +420,7 @@ function renderGraduate(){
  const reset=node('button','',"Reset selection");reset.type='button';reset.disabled=busy;reset.onclick=()=>{delete graduateManualIds[recipe.key];renderGraduate();};picker.append(reset);const done=node('button','',"Ready");done.type='button';done.onclick=()=>{picker.open=false;picker.hidden=true;};picker.append(done);
  const cost=Object.entries(recipe.cost||{}).map(([id,n])=>number(n)+' × '+(itemCatalog[id]?.name||({1:"Gold",2:"Gems"}[id])||'recurso '+id)).join(' · ');
  const insufficient=Object.entries(recipe.cost||{}).some(([id,n])=>Number(state.items[id]||0)<n);
- $('graduate-status').textContent=missing||(insufficient?"Missing resources: "+cost:"All materials available. "+(cost?"Cost: "+cost+'. ':'')+"The base will become "+recipe.star+'★.');
+ $('graduate-status').textContent=missing||(insufficient?"Không đủ tài nguyên: "+cost:"Đã đủ nguyên liệu. "+(cost?"Chi phí: "+cost+'. ':'')+"Nữ Thần sẽ tiến hóa lên "+recipe.star+'★.');
  $('graduate-button').disabled=busy||!!missing||insufficient;
  let costRow=$('graduate-cost-row');if(!costRow){costRow=node('div','graduate-cost-row');costRow.id='graduate-cost-row';costRow.className='graduate-cost-row';$('graduate-materials').after(costRow);}costRow.replaceChildren();for(const [id,n] of Object.entries(recipe.cost||{}).length?Object.entries(recipe.cost):[['1',0]]){const c=node('span',Number(state.items[id]||0)<n?'short':'');const im=node('img');im.src=id==='1'||id==='2'?'/assets/currency/icon_'+id+'_small.png':(itemCatalog[id]&&itemIcons.has(itemCatalog[id].icon)?'/assets/item-icons/'+itemCatalog[id].icon+'.png':'/assets/ui/item_bg.png');im.alt='';c.append(im,node('b','',n?number(n):'---'));costRow.append(c);}
 }

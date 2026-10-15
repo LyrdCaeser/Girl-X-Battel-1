@@ -196,13 +196,18 @@ const Guild=(()=>{
   finally{onlineBusy=false;}
  }
  async function loadOnlineGuild(){
-  try{onlineData=await api('/api/world-guild');note='';}
-  catch(e){onlineData=null;note=e.message||'Bang Hội trực tuyến chưa sẵn sàng';}
+  let timer;
+  try{
+    const timeout=new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error('Máy chủ Bang Hội phản hồi quá lâu. Vui lòng tải lại.')),20000);});
+    onlineData=await Promise.race([api('/api/world-guild'),timeout]);
+    note='';
+  }catch(e){onlineData=null;note=e.message||'Bang Hội trực tuyến chưa sẵn sàng';}
+  finally{clearTimeout(timer);}
   renderOnlineGuild();
  }
  async function openOnline(_key,from){
   onlineMode=true;origin=(from&&from!=='guild')?from:view==='guild'?'home':view;
-  root();showView('guild');await loadOnlineGuild();
+  root();showView('guild');renderOnlineGuild();await loadOnlineGuild();
  }
  function onlineButton(parent,label,fn,disabled=false){
   parent.append(btn('gd-go',label,fn,disabled));return parent.lastElementChild;
@@ -211,7 +216,7 @@ const Guild=(()=>{
   if(!onlineMode||view!=='guild')return;
   const b=el('div','gd-body'),d=onlineData;
   onlineText(b,'h3','','Bang Hội Trực Tuyến');
-  if(!d){onlineText(b,'p','gd-help',note||'Đang tải Bang Hội từ máy chủ…');shell(b);return;}
+  if(!d){onlineText(b,'p','gd-help',note||'Đang tải Bang Hội từ máy chủ…');onlineButton(b,'Tải lại Bang Hội',()=>loadOnlineGuild());shell(b);return;}
   if(d.guild){
    const g=d.guild;
    const identity=el('div','gd-online-identity');

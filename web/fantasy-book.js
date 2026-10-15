@@ -26,6 +26,15 @@ const FantasyBook=(()=>{
  async function act(req,after){if(busy)return null;busy=true;note='';try{const r=await api('/api/fantasy-book/action',req);state=r.state;if(after)after(r);return r;}catch(e){note=e.message;return null;}finally{busy=false;render();}}
  function left(){const end=Number(info()?.end||0);if(!end)return 'Đang cập nhật';const s=Math.max(0,end-Math.floor(Date.now()/1000));return Math.floor(s/86400)+' ngày '+Math.floor(s%86400/3600)+' giờ còn lại';}
  function render(){const r=root();if(view!=='fantasy-book'){clearInterval(timer);return;}r.replaceChildren();if(!info()){clearInterval(timer);const box=el('div','fb-load-error');box.append(el('h2','','Sách Kỳ Ảo'),el('p','',note||'Đang tải dữ liệu Sách Kỳ Ảo…'));const retry=btn('gs-btn','Tải Lại',()=>{window.FB_LEVELS=null;open(origin);});const back=btn('gs-btn','Quay Lại',()=>showView(origin==='fantasy-book'?'home':origin));box.append(retry,back);r.append(box);return;}const st=el('div','fb-stage');r.append(st);
+  if(document.documentElement.classList.contains('gxb-mobile')){
+   const bounds=r.getBoundingClientRect(),w=Math.max(1,bounds.width||window.innerWidth),h=Math.max(1,bounds.height||window.innerHeight);
+   const scale=Math.min(w/720,h/1280);
+   st.style.setProperty('--u',scale+'px','important');
+   st.style.setProperty('width',720*scale+'px','important');
+   st.style.setProperty('height',1280*scale+'px','important');
+   st.style.setProperty('max-width','100%','important');
+   st.style.setProperty('max-height','100%','important');
+  }
   [progress,tasks,exchange,trophies][tab](st);
   // battle_pass_b_nav_1 with the four tabs (content y 16 + 522)
   const nav=at(el('div','fb-nav'),0,538,720,60);nav.style.backgroundImage=`url('${A('battle_pass_b_nav_1')}')`;

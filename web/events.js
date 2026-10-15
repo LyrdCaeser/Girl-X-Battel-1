@@ -78,7 +78,7 @@ const EventsHub=(()=>{
   sec('Đang diễn ra');for(const e of c.events)row((e.kind==='month'?'[Tháng] ':'[Tuần] ')+vi(e.title),'còn '+leftText(e.end));
   sec('Sắp diễn ra');for(const e of c.next)row((e.kind==='month'?'[Tháng] ':'[Tuần] ')+vi(e.title),'sau '+leftText(e.start));
   body.append(el('p','ev-cal-note',"Lịch game: tuần tính từ Thứ Hai đến Chủ Nhật, tháng bắt đầu từ ngày 1. Sự kiện tạm đóng vẫn giữ nguyên tiến độ cho lần mở tiếp theo."));}
- function list(){const all=catalog.activities.filter(a=>inTab(a,tab)&&!(a.id===116&&hub().sevenday.done));const rows=[...all.filter(a=>WORKING.has(a.id)&&openNow(a.id)),...rotation(all)];if(pinnedId){const original=catalog.activities.find(a=>a.id===pinnedId);if(original&&!rows.some(a=>a.id===pinnedId))rows.unshift(original);}return rows.sort((a,b)=>(a.id===pinnedId?1:0)-(b.id===pinnedId?1:0)?(b.id===pinnedId?1:0)-(a.id===pinnedId?1:0):(WORKING.has(b.id)-WORKING.has(a.id))||(b.rank-a.rank)||(b.id-a.id));}
+ function list(){const all=catalog.activities.filter(a=>inTab(a,tab)&&!(a.id===116&&hub().sevenday.done));const rows=[...all]; // Full original catalog visibility. Rewards still require server implementations.if(pinnedId){const original=catalog.activities.find(a=>a.id===pinnedId);if(original&&!rows.some(a=>a.id===pinnedId))rows.unshift(original);}return rows.sort((a,b)=>(a.id===pinnedId?1:0)-(b.id===pinnedId?1:0)?(b.id===pinnedId?1:0)-(a.id===pinnedId?1:0):(WORKING.has(b.id)-WORKING.has(a.id))||(b.rank-a.rank)||(b.id-a.id));}
  function listAll(){return catalog.activities.filter(a=>inTab(a,tab)&&!(a.id===116&&hub().sevenday.done)).sort((a,b)=>(WORKING.has(b.id)-WORKING.has(a.id))||(b.rank-a.rank)||(b.id-a.id));}
 
  function open(from){origin=from||'home';message='';showView('events');if(!catalog&&!loading)loading=Promise.all([api('/assets/events/catalog.json'),typeof ActKit!=='undefined'?ActKit.load():null]).then(([c])=>{catalog=c;if(typeof ActKit!=='undefined')ActKit.ids().forEach(i=>WORKING.add(i));render();}).catch(e=>{message=e.message;loading=null;render();});if(!visited){visited=true;send({action:'visit'},true);}}
@@ -179,7 +179,7 @@ const EventsHub=(()=>{
     z.onclick=()=>window.GxbPayment?.open(packages[a.id]||'CUSTOM',
       vi(a.title.replace(/\n/g,' '))+' · Sự Kiện #'+a.id);
     contact.append(z);c.append(contact);
-  }else c.append(el('p','ev-note',"Sự kiện hiện chưa mở đầy đủ trên máy chủ."));
+  }else c.append(el('p','ev-note',"Sự kiện có trong dữ liệu nhà phát triển. Chức năng nhận thưởng chưa được xác thực trên máy chủ."));
   parent.append(c);
  }
  function gemOffers(parent){
@@ -189,7 +189,7 @@ const EventsHub=(()=>{
       original.append(el('p','ev-note','Đang tải các gói nạp đã công bố…'));
       loadPublicGemPacks();
     }else{
-      for(const p of publicGemPacks.filter(p=>/^GEMS_(250|500|1000|2500|5000)$/.test(p.id))){
+      for(const p of publicGemPacks.filter(p=>/^GEMS_/.test(String(p.id)))){
         const offer=el('article','ev-gems-offer');
         offer.append(img('/assets/currency/icon_2_small.png','ev-item','Kim Cương'));
         const info=el('div','ev-gems-data');

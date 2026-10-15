@@ -2528,7 +2528,7 @@ class Engine:
             top, costs = (RESONATE['max'], RESONATE['cost']) if cosmic else (EXSKILL['max'], EXSKILL['cost'])
             if skills[index-1] >= top: raise GameError('Habilidad al máximo')
             cost = item_pairs(costs[str(skills[index-1] + 1)])
-            if any(int(state['items'].get(str(k), 0)) < n for k, n in cost.items()): raise GameError('Faltan materiales')
+            if any(int(state['items'].get(str(k), 0)) < n for k, n in cost.items()): raise GameError('Không đủ nguyên liệu')
             for k, n in cost.items(): state['items'][str(k)] = int(state['items'].get(str(k), 0)) - n
             skills[index-1] += 1; host['ex_skills'] = skills
             growth_diary.record(state,'growth_elite_skill')
