@@ -46,6 +46,7 @@ jobs:
           node --check web/events.js
           node --check web/settings-menu.js
           node --check web/game-assistant.js
+          node --check web/dates.js
           node --check web/payment.js
           node --check web/auth.js
       - name: Run browser-free JS regression tests
