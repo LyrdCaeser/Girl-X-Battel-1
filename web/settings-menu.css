@@ -85,3 +85,30 @@
 
 /* Replace original English NEW baked into the decorative graphic with a localized text layer. */
 .sm-newest span.sm-new{display:flex;align-items:center;justify-content:center;height:16%;width:72%;left:14%;right:14%;bottom:5%;border-radius:8px;background:linear-gradient(180deg,#ffdb83,#d98425);color:#653314;text-shadow:0 1px #ffeab2;font-weight:900;font-size:clamp(12px,2.4cqw,18px);letter-spacing:.14em}
+
+/* Original settings scene: additional accessible channel mixer, no replacement layout. */
+.sm-sound-entry{z-index:2}
+.sm-sound-entry .sm-btn-label{left:26%;right:0;font-size:calc(24 * var(--u))}
+.sm-sound-intro{color:#445d7b;font-size:14px;line-height:1.5;margin:6px 0 18px}
+.sm-sound-row{display:block;margin:16px 0 24px;color:#2f4565;touch-action:pan-y}
+.sm-sound-heading{display:flex;justify-content:space-between;align-items:center;gap:16px;font-size:15px;margin-bottom:10px}
+.sm-sound-heading output{font-variant-numeric:tabular-nums;font-weight:800;color:#3178c7}
+.sm-volume-slider{display:block;width:100%;height:32px;cursor:pointer;accent-color:#398be1;touch-action:pan-x}
+.sm-sound-toggle{display:flex;align-items:center;gap:12px;padding:14px 0;border-top:1px solid #d2dfef;font-size:14px;font-weight:700;color:#2f4565;cursor:pointer}
+.sm-sound-toggle input{width:22px;height:22px;flex-shrink:0;accent-color:#398be1}
+.sm-sound-foot{font-size:12px;color:#6b7e94;line-height:1.5}
+/* Hide UI reminder badges only. Underlying tasks and rewards remain unchanged. */
+html.gxb-hide-red-dots .notification-dot,
+html.gxb-hide-red-dots .red-dot,
+html.gxb-hide-red-dots .red-point,
+html.gxb-hide-red-dots .notify-dot,
+html.gxb-hide-red-dots .badge-dot,
+html.gxb-hide-red-dots .redpoint,
+html.gxb-hide-red-dots [data-red-dot],
+html.gxb-hide-red-dots [class*="red-dot"]{display:none!important}
+/* The original mission icon atlas includes a baked-in upper-right pink dot:
+   remove just that transparent corner region when the option is selected. */
+html.gxb-hide-red-dots .ms-home-btn img{
+ -webkit-mask-image:radial-gradient(circle at 90% 13%,transparent 0 11%,#000 13%);
+ mask-image:radial-gradient(circle at 90% 13%,transparent 0 11%,#000 13%);
+}
