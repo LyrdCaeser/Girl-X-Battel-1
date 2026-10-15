@@ -73,7 +73,7 @@ const Dates=(()=>{
   if(!idx)g.append(el('p','dt-empty',"This Girl has no voice lines in the data."));panel.append(g);}
  function attr(h){const rows=data.appointment;const lv=Math.floor((h.love_point||0)/1000);const cur=rows[Math.min(lv,rows.length-1)],next=rows[Math.min(lv+1,rows.length-1)];const fmt=b=>String(b||'—').split('|').map(p=>{const [k,v]=p.split('#');return k?(k==='atkP'?'Attack':k==='hpP'?'HP':k)+' +'+(Number(v)*100).toFixed(1)+'%':'—';}).join(' · ');
   CampaignUI.popup('Intimacy bonus',{});const box=document.querySelector('.cr-overlay .cr-box');const d=el('div','dt-attr');d.append(el('p','',"Level "+lv+': '+fmt(cur.bonus)),el('p','',"Next ("+next.point+'): '+fmt(next.bonus)),el('p','dt-small-note',"These bonuses apply in battle (original HeroAttr)."));box.querySelector('.cr-rewards')?.replaceWith(d);}
- function pledge(h){if(h.is_vowed){CampaignUI.popup(h.name+": Oath completed. Maximum Intimacy "+GROW()+'.',{});const l=allLines(h).find(x=>x.type===16);play(l?.sound,l?.text);return;}
+ async function pledge(h){if(h.is_vowed){CampaignUI.popup(h.name+": Oath completed. Maximum Intimacy "+GROW()+'.',{});const l=allLines(h).find(x=>x.type===16);play(l?.sound,l?.text);return;}
   if((h.love_point||0)<BASE()){CampaignUI.popup("Oath requires "+BASE()+" Intimacy ("+(h.love_point||0)+' ahora).',{});return;}
   if(!(await GirlUI.confirm("Lập lời thề với "+h.name+"? Sẽ tiêu hao 1 Nhẫn.",{title:'Xác Nhận Lời Thề',ok:'Lập Lời Thề'})))return;act({action:'vow',partner_id:h.partner_id}).then(r=>{if(r){const l=allLines(hero()).find(x=>x.type===16);play(l?.sound,l?.text||'♥');note="Oath completed!";render();}});}
  // PartnerNameTag (partner_name_tag prefab 282×80): partner_name_frame_bg, faction at -90,2, stars at 18,17, name at 18,-21.
