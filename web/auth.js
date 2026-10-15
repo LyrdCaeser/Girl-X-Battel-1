@@ -1,6 +1,20 @@
 'use strict';
 window.GxbAuth=(()=>{
   let overlay=null,session=null,worlds=[],isSuperGM=false;
+  const REMEMBER_KEY='gxb3:remember-login:v1';
+  function remembered(){
+    try {const saved=JSON.parse(localStorage.getItem(REMEMBER_KEY)||'null');
+      return saved&&saved.remember===true?{
+        username:String(saved.username||'').slice(0,24),
+        server_id:String(saved.server_id||'S1').slice(0,30)
+      }:null;
+    } catch {return null;}
+  }
+  function storeRemember(enabled,username,server_id){
+    try{if(enabled)localStorage.setItem(REMEMBER_KEY,JSON.stringify({remember:true,username,server_id}));
+      else localStorage.removeItem(REMEMBER_KEY);
+    }catch{}
+  }
   const el=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n;};
   async function request(url,body){
     const r=await fetch(url,{method:body===undefined?'GET':'POST',headers:body===undefined?{}:{'Content-Type':'application/json'},body:body===undefined?undefined:JSON.stringify(body),credentials:'same-origin'});
@@ -14,7 +28,7 @@ window.GxbAuth=(()=>{
     return s;
   }
   function field(parent,label,id,type='text',placeholder=''){
-    const l=el('label','auth-field',label),i=document.createElement('input');i.id=id;i.type=type;i.placeholder=placeholder;i.autocomplete=type==='password'?'current-password':'off';l.append(i);parent.append(l);return i;
+    const l=el('label','auth-field',label),i=document.createElement('input');i.id=id;i.type=type;i.placeholder=placeholder;i.autocomplete=type==='password'?'current-password':'username';i.addEventListener('input',()=>{l.classList.remove('typing');void l.offsetWidth;l.classList.add('typing');});l.append(i);parent.append(l);return i;
   }
   function remove(){overlay?.remove();overlay=null;document.documentElement.classList.remove('auth-locked');}
   function show(){
@@ -31,8 +45,15 @@ window.GxbAuth=(()=>{
       const user=field(body,'Tên đăng nhập','auth-login-user','text','Tên đăng nhập');
       const pass=field(body,'Mật khẩu','auth-login-pass','password','Mật khẩu');
       pass.autocomplete='current-password';
-      const wl=el('label','auth-field','Server');wl.append(worldSelect('auth-login-server'));body.append(wl);
-      const submit=el('button','auth-primary','Đăng nhập');submit.onclick=async()=>{submit.disabled=true;status.textContent='Đang đăng nhập…';try{await request('/api/auth/login',{username:user.value,password:pass.value,server_id:document.getElementById('auth-login-server').value});location.reload();}catch(e){status.textContent=e.message;submit.disabled=false;}};
+      const saved=remembered();if(saved)user.value=saved.username;
+      const wl=el('label','auth-field','Máy Chủ');const world=worldSelect('auth-login-server');
+      if(saved&&Array.from(world.options).some(x=>x.value===saved.server_id&&!x.disabled))world.value=saved.server_id;
+      wl.append(world);body.append(wl);
+      const saveLabel=el('label','auth-remember');const save=document.createElement('input');
+      save.id='auth-remember-login';save.type='checkbox';save.checked=!!saved;
+      saveLabel.append(save,el('span','','Lưu đăng nhập'));
+      body.append(saveLabel);
+      const submit=el('button','auth-primary','Đăng nhập');submit.onclick=async()=>{submit.disabled=true;status.textContent='Đang đăng nhập…';try{await request('/api/auth/login',{username:user.value,password:pass.value,server_id:world.value,remember_login:save.checked});storeRemember(save.checked,user.value,world.value);location.reload();}catch(e){status.textContent=e.message;submit.disabled=false;}};
       const forgot=el('button','auth-link','Quên mật khẩu?');forgot.onclick=renderRecovery;body.append(submit,forgot);
       pass.onkeydown=e=>{if(e.key==='Enter')submit.click();};
     }
