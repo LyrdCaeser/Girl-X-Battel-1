@@ -188,6 +188,131 @@ Dựa trên sát thương gây ra, cô nhận thêm Điểm Khiên cho Khiên Ma
 4. Khi có 12 cộng dồn Thần Tính, Zeusia thi triển Lôi Kích lên toàn bộ kẻ địch.""",
  "skill/856012/75601204": """Kỹ năng tăng cường: Mỗi khi đồng minh sử dụng kỹ năng chủ động, Zeusia nhận hiệu ứng Thần Tính. Khi đạt 12 cộng dồn Thần Tính, cô thi triển Lôi Kích lên toàn bộ kẻ địch.""",
 }
+# Editorially checked against original publisher descriptions (no gameplay values changed).
+# IDs are Station publisher keys, not hero names; reissues share their source record.
+OVERRIDES.update({
+ "profile/851001": """1. Sapphire là nhân vật hệ Tu Sĩ chuyên gây sát thương, thuộc phe Linh Hồn.
+2. Kỹ năng chủ động của cô có xác suất Hóa Đá kẻ địch ở hàng sau và tăng Độ Chính Xác cho đồng đội. Đòn đánh thường của Sapphire giảm tỷ lệ Chặn Đòn của mục tiêu, giúp cả đội gây sát thương ổn định hơn.
+3. Tốc Độ cơ bản của Sapphire khá thấp. Tăng Tốc Độ giúp cô ra đòn sớm hơn trong hiệp, phát huy tốt hơn ở Thử Thách và PvP.""",
+ "profile/851002": """1. Gambler là Sát Thủ thuộc phe Linh Hồn, có khả năng tự hồi máu và đặc biệt nguy hiểm khi tấn công mục tiêu đang chịu hiệu ứng Chảy Máu.
+2. Cô rất hữu ích trong các trận PvE.
+3. Gambler có khả năng sinh tồn kém, nên cần đồng đội hoặc trang bị tăng sức chống chịu.""",
+ "profile/851003": """1. Succuba là Chiến Binh phe Linh Hồn, thường được bố trí ở hàng trước.
+2. Chỉ số ban đầu của cô thấp hơn một số nhân vật khác, nhưng khi Thức Tỉnh lên 10 sao, Succuba được tăng cường mạnh và có thêm khả năng khống chế kẻ địch.""",
+ "profile/851004": """1. Dracula là nhân vật gây sát thương thuộc phe Linh Hồn.
+2. Kỹ năng chủ động của cô khắc chế nhân vật hệ Pháp Sư, phù hợp để đối phó đội hình có nhiều Pháp Sư.
+3. Dracula ưu tiên kẻ địch có HP thấp nhất, giúp đội tập trung hạ mục tiêu yếu và nhanh chóng tạo lợi thế quân số.""",
+ "profile/851005": """1. Wu Kong là nhân vật gây sát thương thuộc phe Linh Hồn.
+2. Kỹ năng chủ động của cô khắc chế Sát Thủ, đặc biệt hữu ích khi đối đầu đội hình có nhiều nhân vật hệ này.
+3. Tốc Độ cơ bản của Wu Kong khá thấp. Tăng Tốc Độ giúp cô hành động sớm hơn trong mỗi hiệp và chiến đấu hiệu quả hơn ở Thử Thách lẫn PvP.""",
+ "profile/851006": """1. Fencer là Chiến Binh phe Linh Hồn có khả năng khống chế bằng hiệu ứng Đóng Băng.
+2. Kỹ năng chủ động gây sát thương lên hàng trước của địch và có xác suất cao khiến chúng Đóng Băng.
+3. Khi bị tấn công, Fencer có cơ hội Đóng Băng kẻ tấn công. Cô còn có kỹ năng tăng HP và Giáp để nâng khả năng sinh tồn.
+4. Fencer không có giai đoạn sức mạnh suy giảm rõ rệt, nên phù hợp ở nhiều cấp sao.""",
+ "profile/851007": """1. Wildtress là nhân vật gây sát thương thuộc phe Linh Hồn.
+2. Cô có khả năng tấn công khá tốt. Kỹ năng chủ động còn làm giảm chỉ số Tấn Công của mục tiêu, giúp đồng đội sống sót lâu hơn.""",
+ "profile/851008": """1. Sakura là nhân vật khống chế thuộc phe Linh Hồn, có thể Hóa Đá kẻ địch và gây thêm sát thương lên chúng.
+2. Các kỹ năng giúp Sakura dễ Hóa Đá mục tiêu và giảm Giáp của chúng, khiến cô phù hợp với PvP.
+3. Sakura có chỉ số Giảm Sát Thương cao và miễn nhiễm Hóa Đá, nhờ vậy sở hữu khả năng sinh tồn tốt.""",
+ "profile/851009": """1. Giana là nhân vật gây sát thương thuộc phe Linh Hồn.
+2. Sức tấn công thông thường của cô không quá nổi bật, nhưng kỹ năng kích hoạt khi tử trận có thể gây lượng sát thương rất lớn.
+3. Giana phối hợp tốt với nhân vật hưởng lợi từ việc đồng đội tử trận, chẳng hạn Saint Esau & Jacob.""",
+ "profile/851010": """1. Ennmaya là Sát Thủ thuộc phe Linh Hồn.
+2. Đòn đánh thường của cô có thể Làm Choáng một kẻ địch ngẫu nhiên ở hàng sau.
+3. Các chỉ số tấn công cao biến Ennmaya thành nhân vật gây sát thương rất nguy hiểm.
+4. Từ 8 sao, đòn đánh thường của cô có xác suất Làm Choáng mục tiêu 100%, đặc biệt mạnh trong các trận đấu 1 chọi 1. Kỹ năng chủ động còn tăng Giảm Sát Thương để giúp cô trụ vững.""",
+ "profile/851011": """1. Valeera là nhân vật đa dụng thuộc phe Linh Hồn.
+2. Cô có Tấn Công khá cao; kỹ năng có thể gây Đóng Băng hoặc Hóa Đá mục tiêu.
+3. Khi chịu sát thương từ kỹ năng chủ động của địch, Valeera có cơ hội tự hồi một lượng HP lớn, tăng mạnh khả năng sinh tồn.
+4. Cô còn giảm Tấn Công của mục tiêu, nên phù hợp với nhiều đội hình.""",
+ "profile/851012": """1. Fenrir là Chiến Binh phe Linh Hồn có khả năng gây sát thương tốt và càng đánh càng mạnh.
+2. Kỹ năng chủ động của cô gây áp lực lên cả mục tiêu HP cao lẫn HP thấp. Sau khi Chặn Đòn thành công 3 lần, Fenrir có thể phản công một lần và hồi HP nhờ đòn phản công đó, phù hợp với vai trò bảo vệ đội.
+3. Fenrir mạnh dần theo thời gian giao tranh; cô phối hợp tốt với các nhân vật kéo dài trận đấu như Raphael hoặc CapsuGirl.""",
+ "profile/851013": """1. Vivian là nhân vật hỗ trợ thuộc phe Linh Hồn.
+2. Cô có thể Hồi Máu, xóa hiệu ứng bất lợi cho đồng minh; đồng thời xóa hiệu ứng tăng cường của kẻ địch và áp dụng hiệu ứng bất lợi lên chúng.
+3. Hiệu ứng “Galaxy” giúp Vivian tiếp tục hỗ trợ đội hiệu quả khi cô trụ vững lâu trên chiến trường.""",
+ "profile/851014": """1. Von Helsing là nhân vật gây sát thương thuộc phe Linh Hồn.
+2. Cô ưu tiên mục tiêu có Tấn Công cao nhất. Sát thương tăng theo số Dấu Ấn cộng dồn trên mục tiêu.
+3. Von Helsing có khả năng sinh tồn tốt: cô có thể chuyển hiệu ứng bất lợi trên bản thân thành Khát Máu và tự hồi HP khi kích hoạt kỹ năng chủ động.
+4. Chế độ “Feast” còn tăng mạnh sức chiến đấu của cô.""",
+ "profile/851015": """1. Blair là nhân vật gây sát thương thuộc phe Linh Hồn.
+2. Đòn đánh thường và kỹ năng chủ động cùng nhắm vào kẻ địch có HP thấp nhất.
+3. Khi tấn công, cô cũng gây sát thương tương đương lên các mục tiêu mang cộng dồn “Moon Dust” và khiến chúng Trúng Độc.
+4. Nếu đòn đánh gây Chí Mạng, Blair còn áp dụng Chảy Máu lên mục tiêu.
+5. Khi hạ gục kẻ địch, Blair được tăng Xuyên Giáp và đặt “Moon Dust” lên một mục tiêu ngẫu nhiên mới.""",
+ "profile/851016": """1. Diana là nhân vật gây sát thương thuộc phe Linh Hồn.
+2. Khi dùng kỹ năng chủ động hoặc đòn đánh thường, Diana gây thêm sát thương dựa trên chỉ số Tấn Công của mục tiêu.
+3. Kỹ năng chủ động cho phép cô đánh cắp Tấn Công của mục tiêu. Nếu mục tiêu có từ 90 Năng Lượng trở lên, kỹ năng có cơ hội gây Câm Lặng; nếu dưới 90 Năng Lượng, kỹ năng có cơ hội gây Khiếp Sợ.
+4. Kỹ năng bị động giúp đòn đánh thường nhắm vào kẻ địch có Tấn Công cao nhất. Cuối mỗi hiệp, nếu Tấn Công của kẻ địch mạnh nhất cao hơn Diana, cô có thể hoán đổi chỉ số Tấn Công với kẻ đó.
+5. Khi kẻ địch hạ gục Diana, cô áp dụng hiệu ứng “Malediction” lên kẻ đó để gây thêm sát thương.""",
+ "profile/851017": """1. Lord Dracula là nhân vật chủ lực gây sát thương thuộc phe Linh Hồn.
+2. Kỹ năng chủ động vừa gây sát thương vừa giảm Tấn Công của mục tiêu, đồng thời áp dụng “Bẫy Huyết Sắc” để gây sát thương theo thời gian và hồi máu cho bản thân.
+3. Khi Lord Dracula dùng đòn đánh thường hoặc bất kỳ nhân vật nào tử trận, cô có cơ hội nhận hiệu ứng tăng cường đặc biệt, khiến lần áp dụng “Bẫy Huyết Sắc” tiếp theo gây nhiều sát thương hơn.
+4. Khi Chặn Đòn thành công trước sát thương trực tiếp từ đòn đánh thường hoặc kỹ năng chủ động, Lord Dracula áp dụng “Bẫy Huyết Sắc” lên 2 kẻ địch ngẫu nhiên.""",
+ "profile/851018": """1. Chizuko là nhân vật hỗ trợ thuộc phe Linh Hồn.
+2. Cô áp dụng hiệu ứng bất lợi để giảm Tấn Công của kẻ địch và tăng sát thương chúng phải chịu.
+3. Chizuko có thể tăng cường bảo vệ đồng minh bằng cách vô hiệu hóa sát thương sắp nhận và chuyển thành Điểm Khiên (BP), rất phù hợp với vai trò phòng thủ.""",
+ "profile/851019": """1. Raenvya là Chiến Binh thuộc phe Linh Hồn.
+2. Cô có thể chịu sát thương thay cho đồng minh có Tấn Công cao nhất.
+3. Khi tử trận, Raenvya nhập vào đồng minh có Tấn Công cao nhất và tăng mạnh chỉ số cho họ. Mỗi khi đồng minh bị nhập dùng đòn đánh thường hoặc kỹ năng chủ động, Raenvya truy kích mục tiêu. Nếu hạ được kẻ địch nhờ hiệu ứng này, cô sẽ hồi sinh ở hiệp kế tiếp.""",
+ "profile/852001": """1. Hottie là nhân vật hỗ trợ thuộc phe Nhân Loại.
+2. Cô tăng mạnh Tốc Độ của đồng đội, giúp đội hình tối ưu thứ tự hành động trong hiệp.
+3. Ngoài việc tăng Tấn Công và Tốc Độ cho đồng đội, khi HP của Hottie xuống dưới một ngưỡng nhất định, cô còn tăng Tấn Công cho cả đội và giảm Giáp của toàn bộ kẻ địch (mỗi trận chỉ kích hoạt một lần).""",
+ "profile/852002": """1. Blowie là nhân vật hỗ trợ thuộc phe Nhân Loại, sở hữu khả năng Hồi Máu mạnh.
+2. Cô có Tốc Độ thấp hơn nhiều nhân vật khác, vì vậy nên tăng Tốc Độ để giúp Blowie hành động sớm hơn trong mỗi hiệp.""",
+ "profile/852003": """1. Chevalir là Chiến Binh thuộc phe Nhân Loại, thường đứng ở hàng trước.
+2. Khi HP giảm xuống dưới ngưỡng nhất định, cô có thể tăng Giáp cho toàn đội. Hiệu ứng này phối hợp tốt với nhân vật như Sonya.""",
+ "profile/852004": """1. Saint là một trong những nhân vật gây sát thương chủ lực của phe Nhân Loại.
+2. Các kỹ năng của Saint đều tăng mạnh khả năng tấn công. Cô càng tồn tại lâu trong trận thì sát thương tiềm năng càng lớn.
+3. Saint nhận hiệu ứng tăng cường khi có nhân vật tử trận, vì vậy cô phối hợp tốt với các nhân vật có kỹ năng kích hoạt khi bị hạ gục.""",
+ "profile/852005": """1. Javelin là nhân vật gây sát thương thuộc phe Nhân Loại.
+2. Cô vừa gây sát thương diện rộng lên toàn bộ kẻ địch vừa có cơ hội Đóng Băng chúng. Javelin gây thêm sát thương lên mục tiêu đang Đóng Băng, nên phối hợp tốt với nhân vật có kỹ năng khống chế Đóng Băng.
+3. Nếu được trang bị để tăng khả năng sinh tồn, Javelin có thể đứng ở hàng trước và giảm Tấn Công của kẻ địch khi chịu đòn.""",
+ "profile/852006": """1. Geisha là nhân vật khống chế thuộc phe Nhân Loại.
+2. Sau khi tử trận, Geisha gây sát thương lên toàn bộ kẻ địch ở hàng sau, nhờ vậy có thể hữu ích tại chế độ Thử Thách.
+3. Khi đạt 10 sao, đòn đánh thường của Geisha có xác suất cao Làm Choáng mục tiêu.""",
+ "profile/852007": """1. Sonya là một trong những nhân vật chủ lực gây sát thương của phe Nhân Loại.
+2. Sonya có Giáp cơ bản cao; khi chịu đòn từ kẻ địch có Giáp thấp hơn, cô sẽ phản công. Lợi thế này đặc biệt hữu ích trong PvP.
+3. Trong PvE, Sonya còn hỗ trợ đội bằng cách giảm Giáp của kẻ địch.
+4. Cô có thể sử dụng trong nhiều kiểu đội hình.""",
+ "profile/852008": """1. Caitlyn là nhân vật gây sát thương thuộc phe Nhân Loại.
+2. Cô ưu tiên tấn công kẻ địch có HP thấp nhất, giúp đội nhanh chóng giảm quân số đối phương.
+3. Cô còn gây lượng lớn sát thương theo thời gian (DoT) lên kẻ địch.""",
+ "profile/852009": """1. Guan Yin là nhân vật phe Nhân Loại nổi bật nhờ tỷ lệ Chặn Đòn cao.
+2. Cô có thể tăng tỷ lệ Chặn Đòn của bản thân thông qua tấn công, cải thiện khả năng sinh tồn.
+3. Sau khi Tiến Hóa lên 6 sao, đòn đánh thường của Guan Yin sẽ đánh trúng toàn bộ kẻ địch hàng trước, tạo sức ép lớn lên tuyến đầu đối phương.""",
+ "profile/852010": """1. Librarian là nhân vật gây sát thương thuộc phe Nhân Loại.
+2. Đòn tấn công của cô gây sát thương lên 3 kẻ địch ngẫu nhiên.
+3. Librarian khắc chế nhân vật hệ Tu Sĩ, nên hiệu quả trước đội hình có nhiều nhân vật hệ này.
+4. Cô còn có thể giảm Tấn Công của kẻ địch để đồng đội sống sót lâu hơn.""",
+ "profile/852011": """1. CapsuGirl là nhân vật khống chế thuộc phe Nhân Loại.
+2. Kỹ năng chủ động gây sát thương lên 4 kẻ địch ngẫu nhiên; trong đó 3 mục tiêu có thể bị Làm Choáng.
+3. Khi đồng minh kích hoạt kỹ năng chủ động, CapsuGirl có cơ hội hỗ trợ bằng hiệu ứng Làm Choáng.
+4. Chỉ số Giảm Sát Thương cao và miễn nhiễm Làm Choáng giúp cô có khả năng sinh tồn tốt.
+5. CapsuGirl đặc biệt hiệu quả trong PvP.""",
+ "profile/852012": """1. Ithil là Sát Thủ phe Nhân Loại, có khả năng kết thúc trận đấu nhanh.
+2. Ithil cộng dồn “Pursue” qua đòn đánh thường và những lần Chặn Đòn. Hiệu ứng này giúp cô gây sát thương lớn lên kẻ địch có HP thấp nhất. Cô còn tự hồi máu khi hạ gục thành công một mục tiêu.
+3. Tốc Độ cơ bản khá cao kết hợp với tỷ lệ Chặn Đòn từ kỹ năng bị động giúp Ithil trụ vững.""",
+ "profile/852013": """1. Empress Saint là nhân vật phe Nhân Loại có khả năng gây sát thương liên tục và ổn định.
+2. Bộ kỹ năng của cô xoay quanh Thiêu Đốt. Cô có cơ hội nhận hiệu ứng tăng cường khi áp dụng Thiêu Đốt; đồng thời có thể giảm thời gian Thiêu Đốt trên đồng minh và tăng thời gian Thiêu Đốt trên kẻ địch.
+3. Bản thân Empress Saint miễn nhiễm Thiêu Đốt và chịu ít sát thương hơn từ kẻ địch đang Thiêu Đốt.
+4. Nhờ các kỹ năng bị động, cô đặc biệt phù hợp với đội hình chuyên áp dụng Thiêu Đốt, chẳng hạn Mio và Sonya.""",
+ "profile/852014": """1. Rogue là nhân vật gây sát thương phe Nhân Loại, đồng thời có sức chống chịu tốt.
+2. Kỹ năng chủ động ưu tiên kẻ địch có HP cao nhất. Kết hợp “Additional Chips” và “Royal Flush”, cô có thể gây sức ép lên cả đội địch.
+3. Rogue áp dụng “Dauntless” để phản lại sát thương nhận vào và dùng “Disrespect” giúp bản thân miễn nhiễm hiệu ứng khống chế.""",
+ "profile/852015": """1. Mika là Chiến Binh phe Nhân Loại, thường đảm nhiệm vị trí hàng đầu.
+2. Cô có khả năng Khiêu Khích, thu hút đòn tấn công của đối phương.
+3. Mika có sức chống chịu và Giảm Sát Thương cao.
+4. Từ hiệp thứ 3, Mika được tăng cường mạnh: đòn đánh thường và kỹ năng chủ động gây sát thương Chí Mạng không thể bị Chặn Đòn.
+5. Khiêu Khích là một hiệu ứng khống chế, nên sẽ kém hiệu quả trước các nhân vật có Kháng Khống Chế cao như Michael và Esau & Jacob, đồng thời có thể bị hóa giải.""",
+ "profile/852016": """1. Teresa là nhân vật đa dụng thuộc phe Nhân Loại.
+2. Cô có thể giam kẻ địch trong “Blade Prison”, khiến chúng không thể hành động.
+3. Teresa tiêu hao “Righteous Might” để xóa Dấu Ấn và chuyển hiệu ứng khống chế sang kẻ địch.
+4. Khi HP thấp hơn 30%, Teresa có thể hoán đổi lượng HP với kẻ địch có HP hiện tại cao nhất để tự hồi phục, nhưng chỉ khi HP của cô thấp hơn mục tiêu.
+5. Các kỹ năng cần “Righteous Might” sẽ không kích hoạt nếu cô không đủ cộng dồn.
+“Blade Prison” không vô hiệu hóa hiệu ứng tăng cường từ kỹ năng bị động và không ngăn kỹ năng bị động kích hoạt khi nhân vật tử trận. Hiệu ứng “Galaxy” của Vivian vẫn hoạt động, nhưng “Blade Prison” có thể ngăn Vivian kích hoạt các kỹ năng khác khi đang bị giam.""",
+})
+
 EMPTY_SOURCE = "此處為填充文本"
 
 
