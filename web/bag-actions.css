@@ -68,3 +68,8 @@
 .bag-view .bag-actions{position:relative;bottom:auto;margin-bottom:0;z-index:7}
 .bag-use-controls #bag-detail-summon{min-height:38px;padding:7px 18px;border:2px solid #fff;border-radius:9px;background:linear-gradient(#94d7ff,#327bc9);color:white;font-weight:900}
 .bag-use-controls #bag-detail-summon[hidden]{display:none!important}
+
+/* Bulk shard summons: a single confirmed server transaction, capped by stock. */
+.bag-summon-label{display:inline-flex;align-items:center;gap:8px;color:#355779;font-weight:700;font-size:14px}
+.bag-summon-label[hidden]{display:none!important}
+.bag-summon-label input{box-sizing:border-box;width:72px;max-width:22vw;min-height:40px;border:1px solid #a7b9ca;border-radius:9px;text-align:center;font-size:17px;background:#fff;color:#30435e}

@@ -298,3 +298,7 @@
   background:#fff;color:#263f64;font-size:18px;font-weight:700;text-align:center}
 .gs-number .gs-btns{display:flex;justify-content:center;gap:10px;margin-top:16px}
 .gs-number .gs-btns>button{min-width:100px;min-height:40px}
+
+/* Keep the recovered Dates/Oath entrance visible above character artwork. */
+#girl-detail-view .gu-love{z-index:18;cursor:pointer;pointer-events:auto;filter:drop-shadow(0 2px 3px #224b82)}
+#girl-detail-view .gu-love:focus-visible{outline:2px solid #fff;border-radius:50%}

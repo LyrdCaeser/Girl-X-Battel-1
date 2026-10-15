@@ -2388,8 +2388,9 @@ class Engine:
             if summon_id not in (1, 2, 3, 4, 5, 6, 7, 8, 9, 15, 16) + wish.SUMMONS and not prophet and not fragment_summon: raise GameError('Tipo de invocación no disponible')
             if summon_id in wish.SUMMONS and not wish.data(state)['select']: raise GameError('Please choose your Wish Girl')
             config = TABLES['summon'][str(summon_id)]
-            times = integer(request.get('times', 1), 'times', 1, 10)
-            if times not in (1, 10): raise GameError('Cantidad de invocaciones inválida')
+            times = integer(request.get('times', 1), 'times', 1, 50 if fragment_summon else 10)
+            # Publisher summon data determines every per-draw cost and reward; bulk
+            # use changes only the number of identical original shard summons.
             if not fragment_summon and times != 1: raise GameError('Esta invocación usa un botón de cantidad propio')
             count = int(config['summon_num']) * (times if fragment_summon else 1)
             now = self.now()

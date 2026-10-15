@@ -12,3 +12,7 @@ All launchers connect to the online server. Gameplay, login, payments, PvP, guil
 **Android signature caveat:** The RC workflow currently uses the ephemeral CI debug signing identity. A later rebuild may use a different key and require uninstalling an earlier RC APK before installation. This does not remove server-side account progress but can remove device-local application data. For a permanent production Android release, use a private, persistent release keystore rather than the debug key.
 
 The ALPHA RC7 workflow writes download artifacts for Windows, Android and iOS, with 30-day retention. The build run's commit SHA identifies the source revision of each artifact.
+
+
+### 2026-10-15 client build
+All three platform launchers continue to open the production GXB 3 URL. Rebuild after publisher-shard image, bulk summon and original Dates/Oath interface recovery; no game items are shipped or generated inside the wrappers.

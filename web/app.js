@@ -426,10 +426,17 @@ function renderGraduate(){
 }
 const bagTabs=[[1,'Trang bị'],[2,'Vật phẩm'],[6,'Tiêu hao'],[3,'Mảnh Nữ Thần'],[4,'Cổ vật'],[7,'Trang bị Linh hồn']];
 function girlIconSource(id){
- const chain=hostChain(Number(id));for(const tid of chain){const src=avatars[String(tid)]?.src;if(src)return src;const icon='partner_avatar_'+tid;if(itemIcons.has(icon))return '/assets/item-icons/'+icon+'.png';}
+ const chain=hostChain(Number(id));for(const tid of chain){
+  // These two portraits exist in the recovered publisher assets, while
+  // the shard records reference truncated/placeholder image names.
+  if(tid===757001||tid===55014)return '/assets/original-ui/portraits/partner_avatar_'+tid+'.png';
+  const src=avatars[String(tid)]?.src;if(src)return src;const icon='partner_avatar_'+tid;if(itemIcons.has(icon))return '/assets/item-icons/'+icon+'.png';}
  return '';
 }
-function itemPicture(item){const icon=String(item?.icon||'');if(icon.startsWith('partner_avatar_')){const src=girlIconSource(Number(icon.slice('partner_avatar_'.length)));if(src)return src;}
+function itemPicture(item){
+ if(String(item?.id)==='930220')return girlIconSource(757001);
+ if(String(item?.id)==='930235')return girlIconSource(55014);
+ const icon=String(item?.icon||'');if(icon.startsWith('partner_avatar_')){const src=girlIconSource(Number(icon.slice('partner_avatar_'.length)));if(src)return src;}
  if(itemIcons.has(icon))return '/assets/item-icons/'+icon+'.png';
  if(icon.startsWith('artfact_'))return '/assets/equipment/'+icon+'.png';if(icon.startsWith('soul_equip_'))return '/assets/souls/'+icon+'.png';return '';
 }
@@ -445,19 +452,29 @@ async function showBagItem(item,count,src){
  const select=$('bag-use-choice'),qty=$('bag-use-count'),button=$('bag-detail-use'),note=$('bag-use-note');
  select.replaceChildren();select.hidden=true;qty.hidden=true;button.hidden=true;
  const nativeChoices=$('bag-use-native-choices');nativeChoices.replaceChildren();nativeChoices.hidden=true;
- const summon=$('bag-detail-summon');
+ const summon=$('bag-detail-summon'),summonLabel=$('bag-summon-label'),summonQty=$('bag-summon-count');
  const shard=Array.isArray(state.debris)?state.debris.find(x=>String(x.id)===String(item.id)&&Number(x.count)>0):null;
  summon.hidden=!shard?.can_compose;summon.disabled=busy||!shard?.can_compose;
+ summonLabel.hidden=!shard?.can_compose;
  if(shard?.can_compose){
+   const max=Math.max(1,Math.min(50,Math.floor(Number(shard.count)/Number(shard.need))));
+   summonQty.min='1';summonQty.max=String(max);summonQty.value='1';
    summon.onclick=async()=>{
      if(busy)return;
      const current=Array.isArray(state.debris)?state.debris.find(x=>String(x.id)===String(item.id)):null;
      if(!current?.can_compose||!Number.isSafeInteger(Number(current.summon_id)))return;
-     const msg='Dùng '+number(current.need)+' mảnh để triệu hồi Nữ Thần theo công thức gốc?';
+     const maxCurrent=Math.min(50,Math.floor(Number(current.count)/Number(current.need)));
+     const times=Number(summonQty.value);
+     if(!Number.isSafeInteger(times)||times<1||times>maxCurrent){
+       note.textContent='Chỉ có thể triệu hồi từ 1 đến '+number(maxCurrent)+' lần bằng số mảnh hiện có.';
+       return;
+     }
+     const spent=Number(current.need)*times;
+     const msg='Triệu hồi '+number(times)+' Nữ Thần và dùng '+number(spent)+' mảnh theo đúng bảng gốc?';
      const yes=typeof GirlUI!=='undefined'&&GirlUI.confirm?await GirlUI.confirm(msg,{title:'Xác nhận Triệu Hồi',ok:'Triệu Hồi',cancel:'Hủy'}):confirm(msg);
      if(!yes)return;
      panel.hidden=true;
-     await action('SUMMON',{summon_id:Number(current.summon_id),times:1});
+     await action('SUMMON',{summon_id:Number(current.summon_id),times});
    };
  }
  note.hidden=false;note.textContent='Đang kiểm tra chức năng gốc trên máy chủ...';

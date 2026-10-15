@@ -21,7 +21,7 @@ const Dates=(()=>{
  function top(r){const t=el('header','dt-top');for(const id of ['44','45']){const c=el('span','dt-cur');c.append(img(A('icon_'+id)),el('b','',number(state.items[id]||0)));c.title=itemCatalog?.[id]?.name||'';t.append(c);}const b=el('button','dt-back');b.type='button';b.append(img('/assets/ui/win_back_btn.png'));b.onclick=()=>{audio?.pause();if(mode==='date'&&!picked){mode='list';render();}else showView(origin==='dates'?'home':origin);};t.append(b);r.append(t);}
 
  // ---- DatesListWindow: girls sorted by intimacy ----
- function list(r){r.append(el('h2','dt-title','Dates'));const seen=new Set();const girls=[...state.roster].sort((a,b)=>(b.love_point||0)-(a.love_point||0)||b.stars-a.stars).filter(h=>{const k=h.table_id;if(seen.has(k))return false;seen.add(k);return true;});
+ function list(r){r.append(el('h2','dt-title','Hẹn Hò · Kết Duyên'));const seen=new Set();const girls=[...state.roster].sort((a,b)=>(b.love_point||0)-(a.love_point||0)||b.stars-a.stars).filter(h=>{const k=h.table_id;if(seen.has(k))return false;seen.add(k);return true;});
   const g=el('div','dt-grid');for(const h of girls){const c=el('button','dt-card');c.type='button';c.append(typeof portrait==='function'?portrait(h.table_id,76):el('span'),img(iconOf(h),'dt-card-love'),el('b','',h.name),el('small','',(h.love_point||0)+' / '+maxOf(h)));c.onclick=()=>{pid=h.partner_id;picked=null;mode='date';bubble='';render();};g.append(c);}r.append(g);}
 
  // ---- DatesWindow (dates_window.prefab on a 720×1280 canvas) ----
@@ -40,7 +40,7 @@ const Dates=(()=>{
   const help=at(el('button','dt-help'),60,535,52,52);help.type='button';help.append(img(A('help_2')));help.onclick=()=>CampaignUI.popup('Send gifts to raise intimacy: a gift she likes gives '+POINTS()[2]+', a normal one '+POINTS()[1]+' and one she dislikes '+POINTS()[0]+'. Every 2000 intimacy fills a heart and unlocks more voice lines. At '+BASE()+' you can form the Oath (1 Oath Ring) and the cap rises to '+GROW()+'. Make Gift turns 10 Gift Shards into the gift you choose; a Gift Box gives a random gift and 3-5 shards.',{});st.append(help);
   for(const [k,label,x,icon,icon2]of [['gift','Gift',168,'dates_icon07','dates_icon07_2'],['voice','Voice',290,'dates_icon12','dates_icon12_2']]){const b=at(el('button','dt-tab2'+(tab===k?' on':'')),x,537,122,61);b.type='button';b.style.backgroundImage=`url('${A(tab===k?'dates_icon06':'dates_icon05')}')`;b.append(img(A(tab===k?icon2:icon),'dt-tab-ic'),el('span','',label));b.onclick=()=>{tab=k;render();};st.append(b);}
   const panel=at(el('div','dt-side'),228,10,258,1000);panel.style.backgroundImage=`url('${A('dates_bg02')}')`;st.append(panel);
-  const love=at(el('button','dt-love2'),228,420,128,128);love.type='button';love.append(img(iconOf(h)),el('b','',String(h.love_point||0)));love.title='Oath';love.onclick=()=>oath(h);st.append(love);
+  const love=at(el('button','dt-love2'),228,420,128,128);love.type='button';love.append(img(iconOf(h)),el('b','',String(h.love_point||0)));love.title='Kết Duyên · Giấy Chứng Nhận';love.setAttribute('aria-label','Xem và lập lời thề với '+h.name);love.onclick=()=>oath(h);st.append(love);
   for(let i=0;i<5;i++){const w=at(el('span','dt-heart2'),148+40*i,340,40,40);w.append(img(A('dates_icon40')));if((h.love_point||0)>=(i+1)*2000)w.append(img(A('dates_icon39'),'fill'));st.append(w);}
   if(tab==='gift'){st.append(at(el('p','dt-tip','Tap to send gift'),228,300,220,24));const box=at(el('div','dt-giftbox'),228,-5,216,580);gifts(box,h);st.append(box);
    const bag=at(el('button','dt-bluebtn'),228,-343,191,60);bag.type='button';bag.append(img(A('icon_43')),el('small','',short(Number(state.items['43']||0))),el('span','','Open'));bag.onclick=async()=>{const n=Number(state.items['43']||0);if(!n){note='No giftboxes available';render();return;}const r=await act({action:'open_box',count:many?Math.min(n,10):1});if(r?.got)CampaignUI.popup('Gift Box',r.got);};st.append(bag);
@@ -126,12 +126,14 @@ const Dates=(()=>{
   const chip=P(el('span','dt-c-chip','Intimacy'),-217,246,102,32);chip.style.borderImageSource=`url('${A('dates_bg15')}')`;
   P(el('b','dt-c-num',Math.floor((h.love_point||0)/100)+'/'+Math.floor(maxOf(h)/100)),-120,249,100,28);P(el('i','dt-c-rule'),-118,231,100,2);
   P(el('b','dt-c-bonus','Bonus:'),-22,249,90,28);P(el('b','dt-c-num left',bonusText(data.appointment[Math.min(Math.floor((h.love_point||0)/1000),data.appointment.length-1)]?.bonus).replace(/ · /g,'  ')),150,249,260,28);P(el('i','dt-c-rule'),150,231,260,2);
-  const txt=P(el('div','dt-c-text'),0,-347,616,239);txt.style.borderImageSource=`url('${A('dates_bg11')}')`;txt.append(el('p','','From this day forward,\nyou shall not walk alone.\nMy heart will be your shelter,\nand my arms will be your home.'));
+  const txt=P(el('div','dt-c-text'),0,-347,616,239);txt.style.borderImageSource=`url('${A('dates_bg11')}')`;txt.append(el('p','','Từ hôm nay, đôi ta cùng sánh bước.\nNguyện luôn ở bên, cùng nhau vượt mọi thử thách.'));
   if(h.is_vowed){const d=new Date((h.wedding_date||Date.now()/1000)*1000);P(el('b','dt-c-date',d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()),95,-440,200,28);P(img(A('dates_icon42'),'dt-c-seal'),280,-438,130,124).onclick=()=>{const l=allLines(h).find(x=>x.type===16);play(l?.sound,l?.text);ov.remove();render();};}
-  else{const b=P(el('button','dt-c-vow'),242,-352,132,132);b.type='button';b.append(img(A('dates_icon41')),el('span','','Oath'));
-   const need=el('b','dt-c-need',(h.love_point||0)>=BASE()?'Oath Ring ×'+number(state.items['45']||0):'Intimacy '+Math.floor((h.love_point||0)/100)+'/'+Math.floor(BASE()/100));P(need,150,-440,260,28);
-   b.onclick=async()=>{if((h.love_point||0)<BASE()){GirlUI.toast('Intimacy '+Math.floor((h.love_point||0)/100)+' / '+Math.floor(BASE()/100));return;}if(!Number(state.items['45']||0)){GirlUI.toast('No Oath Rings');return;}
-    const r=await act({action:'vow',partner_id:h.partner_id});if(r){const nh=hero();const l=allLines(nh).find(x=>x.type===16);play(l?.sound,l?.text||'♥');note='Oath formed!';oath(nh);if(r.got)CampaignUI.popup('Wedding skin unlocked',r.got);}};}
+  else{const b=P(el('button','dt-c-vow'),242,-352,132,132);b.type='button';b.append(img(A('dates_icon41')),el('span','','Kết Duyên'));
+   const need=el('b','dt-c-need',(h.love_point||0)>=BASE()?'Nhẫn Lời Thề ×'+number(state.items['45']||0):'Thân Mật '+Math.floor((h.love_point||0)/100)+'/'+Math.floor(BASE()/100));P(need,150,-440,260,28);
+   b.onclick=async()=>{if((h.love_point||0)<BASE()){GirlUI.toast('Thân Mật '+Math.floor((h.love_point||0)/100)+' / '+Math.floor(BASE()/100));return;}if(!Number(state.items['45']||0)){GirlUI.toast('Không đủ Nhẫn Lời Thề');return;}
+    const accepted=await GirlUI.confirm('Kết duyên với '+h.name+'? Máy chủ sẽ tiêu hao 1 Nhẫn Lời Thề khi đủ điểm Thân Mật.',{title:'Xác nhận Kết Duyên',ok:'Kết Duyên',cancel:'Hủy'});
+    if(!accepted)return;
+    const r=await act({action:'vow',partner_id:h.partner_id});if(r){const nh=hero();const l=allLines(nh).find(x=>x.type===16);play(l?.sound,l?.text||'♥');note='Đã kết duyên!';oath(nh);if(r.got)CampaignUI.popup('Nhận trang phục cưới gốc',r.got);}};}
   root().append(ov);}
  return {open,render};
 })();
