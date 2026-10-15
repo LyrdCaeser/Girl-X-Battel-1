@@ -12,10 +12,13 @@ import time
 from pathlib import Path
 import json
 
-from . import live_service, skins
+from . import live_service, skins, local_config
 
 ROOT = Path(__file__).resolve().parents[1]
 PICS = json.loads((ROOT / "data/partner_pictures.json").read_text(encoding="utf-8"))
+GIRLS = {int(row["id"]): row for row in json.loads(
+    (ROOT / "web/assets/girls-catalog.json").read_text(encoding="utf-8")
+)}
 _WEDDING_NAMES = re.compile(r"\b(?:bride|bridal|wedding|marriage|bridegroom|groom)\b", re.I)
 WEDDING_IDS = frozenset(
     sid for sid, row in skins.SKINS.items()
@@ -89,12 +92,14 @@ def offer(skin_id, *, settings=None, include_locked=False):
         try:
             currency, price = str(raw_ticket).split("#")[:2]
             if currency == "74":
-                ticket_price = int(price)
+                ticket_price = local_config.shop_cost(int(price))
         except (ValueError, TypeError):
             ticket_price = 0
     result = {
         "skin_id": sid, "girl_ids": list(row["partners"]),
         "name": row["name"], "rarity": row.get("rarity", 0),
+        "girl_name": next((GIRLS[x]["name"] for x in row["partners"] if x in GIRLS), ""),
+        "group": next((int(GIRLS[x].get("group") or 0) for x in row["partners"] if x in GIRLS), 0),
         "is_wedding": wedding,
         "enabled": not wedding and bool(preset.get("enabled", bool(ticket_price))),
         "allow_gold": not wedding and bool(preset.get("allow_gold", 0)),
