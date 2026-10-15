@@ -280,6 +280,8 @@ for(const id of ['skin-search','skin-group','skin-state','skin-currency']){
 $('skin-refresh').onclick=()=>loadSkins().catch(e=>notice(e.message,false));
 $('skin-prev').onclick=()=>{state.skinPage--;renderSkins();};
 $('skin-next').onclick=()=>{state.skinPage++;renderSkins();};
+$('skin-save-visible').onclick=()=>saveSkinRows([...document.querySelectorAll('#skin-grid .skin-item:not(.is-wedding)')]);
+$('skin-verify-key').onclick=async()=>{try{await api('/api/admin/gm/verify-key',{},true);notice('Khóa hành động QTV hợp lệ.');}catch(e){notice(e.message,false);}};
 $('skin-preview-close').onclick=()=>$('skin-preview').close();
 
 async function start(){
