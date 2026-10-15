@@ -302,3 +302,44 @@
 /* Keep the recovered Dates/Oath entrance visible above character artwork. */
 #girl-detail-view .gu-love{z-index:18;cursor:pointer;pointer-events:auto;filter:drop-shadow(0 2px 3px #224b82)}
 #girl-detail-view .gu-love:focus-visible{outline:2px solid #fff;border-radius:50%}
+
+/* Native 720×1280 sheet: keep the publisher's original coordinate system.
+   An older mobile override constrained the scene to 540px and clipped the art. */
+html.gxb-mobile #app-frame #girl-detail-view:not([hidden]){
+ height:100dvh!important;min-height:0!important;
+ --u:min(calc(100cqw / 720),calc(100dvh / 1280));
+}
+html.gxb-mobile #app-frame #girl-detail-view>.detail-scene{
+ height:100%!important;min-height:0!important;inset:0!important;
+}
+html.gxb-mobile #app-frame #girl-detail-view .detail-art-wrap{
+ overflow:visible!important;max-width:none!important;
+}
+html.gxb-mobile #app-frame #girl-detail-view #detail-art.gu-native{
+ max-width:none!important;object-fit:contain;
+}
+html.gxb-mobile #app-frame #girl-detail-view #detail-art.full-art:not(.gu-native){
+ transform:none!important;object-fit:contain;object-position:center bottom;
+}
+#girl-detail-view .detail-art-wrap{cursor:pointer}
+/* Original star stack above a white nameplate, not a free-floating name. */
+#girl-detail-view .detail-identity>div{align-items:flex-start;gap:calc(4 * var(--u))}
+#girl-detail-view .detail-identity h2{
+ margin:0!important;min-width:calc(154 * var(--u));
+ padding:calc(4 * var(--u)) calc(16 * var(--u));
+ border-radius:calc(9 * var(--u));border:calc(2 * var(--u)) solid #a8bad4;
+ background:linear-gradient(#fff,#eef3ffed);box-shadow:0 calc(2 * var(--u)) calc(5 * var(--u)) #2035513d;
+ color:#3e5675;font:900 calc(26 * var(--u))/1.15 system-ui;
+ text-align:center;text-shadow:0 1px #fff;
+}
+/* Attribute panel: restore balanced native four-skill, stat and level spacing. */
+#girl-detail-view .detail-summary{display:flex;align-items:center;gap:calc(12 * var(--u))}
+#girl-detail-view .detail-summary strong{font-size:calc(26 * var(--u));min-width:0;white-space:nowrap}
+#girl-detail-view .detail-summary b{font-size:calc(25 * var(--u));white-space:nowrap}
+#girl-detail-view .detail-summary span{font-size:calc(22 * var(--u));white-space:nowrap}
+#girl-detail-view .detail-skills{
+ display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+ justify-items:center;gap:calc(12 * var(--u));margin-top:calc(12 * var(--u));
+}
+#girl-detail-view .detail-skill{min-width:0}
+#girl-detail-view .detail-skill img{max-width:100%;height:auto;object-fit:contain}
