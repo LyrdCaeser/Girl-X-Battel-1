@@ -145,3 +145,6 @@ html.gxb-mobile #app-frame #event-arena .battlefield{
  padding:0!important;
  background-position:center!important;
 }
+
+/* Restore original inventory item density: no oversized 4-column squares. */
+@media screen{html.gxb-mobile #app-frame .bag-grid{grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:10px 6px!important}html.gxb-mobile #app-frame .bag-panel{padding:10px 7px!important}html.gxb-mobile #app-frame .bag-item{aspect-ratio:1;max-width:100%}html.gxb-mobile #app-frame .bag-tabs{display:flex!important;overflow-x:auto!important;scrollbar-width:thin!important}html.gxb-mobile #app-frame .bag-tabs button{flex:0 0 auto!important;min-width:clamp(76px,23vw,114px)!important}}

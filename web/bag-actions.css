@@ -10,3 +10,44 @@
 .bag-use-controls [hidden]{display:none!important}
 .gxb-desktop .bag-detail{width:min(540px,calc(100vw - 40px));bottom:10%;grid-template-columns:82px minmax(0,1fr)}
 .gxb-desktop .bag-detail img{height:80px;width:80px}
+
+/* Inventory restoration: source item sprites, original-scale slots, image-choice box.
+   No inventory amounts, recipes, prices, or rewards are changed by CSS. */
+.bag-tabs{display:flex;overflow-x:auto;scrollbar-width:thin;scroll-snap-type:x proximity;gap:0;overscroll-behavior-x:contain}
+.bag-tabs button{flex:1 0 auto;min-width:80px;padding:9px 6px;scroll-snap-align:start}
+.bag-native-choices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:start;gap:7px;width:100%;max-height:min(33dvh,250px);overflow-y:auto;margin:8px 0;padding:4px;scrollbar-width:thin}
+.bag-native-choices[hidden]{display:none!important}
+.bag-native-choice{min-width:0;border:2px solid #acc5de;border-radius:8px;background:linear-gradient(#fff,#edf4fa);padding:6px 3px;display:grid;justify-items:center;gap:3px;color:#3b526e;cursor:pointer}
+.bag-native-choice.selected{border-color:#438cdb;box-shadow:0 0 0 2px #8dc7f7;background:#dff0ff}
+.bag-native-choice-art{width:clamp(42px,12vw,63px);aspect-ratio:1;display:grid;place-items:center;background-size:100% 100%;background-repeat:no-repeat}
+.bag-native-choice-art img{width:76%;height:76%;object-fit:contain}
+.bag-native-choice-name{width:100%;font-size:11px;font-weight:700;line-height:1.2;text-align:center;overflow-wrap:anywhere}
+.bag-native-choice-amount{font-size:12px;color:#185eab}
+.bag-detail{max-height:calc(100dvh - 140px);overflow-y:auto;grid-template-columns:clamp(48px,13vw,68px) minmax(0,1fr)}
+.bag-detail>div{min-width:0}
+.bag-detail>img{width:clamp(46px,13vw,68px);height:clamp(46px,13vw,68px)}
+.bag-use-controls{justify-content:flex-start}
+.bag-use-controls .bag-native-choices{flex:0 0 100%}
+.bag-use-controls #bag-use-note{flex-basis:100%;line-height:1.4}
+@media(max-width:620px){
+ .bag-grid{grid-template-columns:repeat(5,minmax(0,1fr));gap:10px 7px}
+ .bag-item{width:100%;max-width:100%;aspect-ratio:1}
+ .bag-panel{padding:10px 7px 12px}
+ .bag-detail{left:50%;top:49%;bottom:auto;transform:translate(-50%,-50%);width:min(420px,calc(100vw - 24px));max-height:calc(100dvh - 140px);padding:12px}
+ .bag-native-choices{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .bag-tabs button{font-size:clamp(11px,2.8vw,13px);min-height:45px}
+ /* Align the source icons, progress bar, arrow and selected forged item.
+    The old flex rows could overlap the 6/3 gauge and volleyball icon. */
+ #smithy-view .sm-top{display:grid;grid-template-columns:minmax(0,1fr) 58px minmax(0,1fr);align-items:center;justify-items:center;gap:4px;padding:10px 8px;height:clamp(175px,27dvh,210px);background-size:contain}
+ #smithy-view .sm-from{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:9px;min-width:0;width:100%}
+ #smithy-view .sm-top .eq-icon{display:inline-block;position:relative;flex:0 0 auto;width:clamp(58px,18vw,80px);height:clamp(58px,18vw,80px)}
+ #smithy-view .sm-top .sm-bar{position:relative;flex:none;width:min(110px,100%);height:22px;min-height:22px;margin:0}
+ #smithy-view .sm-top .sm-bar span{position:absolute;inset:0;line-height:20px;text-align:center}
+ #smithy-view .sm-top .sm-arrow{width:100%;max-width:58px;height:auto;object-fit:contain}
+ #smithy-view .sm-top .sm-result{transform:none}
+ #smithy-view .sm-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;margin:8px}
+ #smithy-view .sm-grid .sm-item{min-width:0;width:100%;padding:2px}
+ #smithy-view .sm-grid .eq-icon{width:min(16vw,66px);height:min(16vw,66px)}
+ #smithy-view .sm-actions{gap:10px;margin:12px 6px}
+ #smithy-view .sm-btn{flex:1;min-width:0;width:auto;max-width:180px;height:54px;white-space:normal}
+}
