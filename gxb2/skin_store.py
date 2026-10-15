@@ -220,7 +220,22 @@ def purchase(state, skin_id, payment):
     items[currency] = have - price
     items[str(sid)] = int(items.get(str(sid), 0)) + 1
     skins.collected(state)
-    receipt = {"skin_id":sid,"currency":payment,"price":price,"at":int(time.time())}
+    receipt = {
+        "uid": str(state.get("uid") or ""),
+        "server_id": str(state.get("server_id") or ""),
+        "skin_id": sid,
+        "currency": payment,
+        "price": price,
+        "at": int(time.time()),
+        "price_snapshot": {
+            "allow_gold": current["allow_gold"],
+            "allow_crystal": current["allow_crystal"],
+            "allow_ticket": current["allow_ticket"],
+            "price_gold": current["price_gold"],
+            "price_crystal": current["price_crystal"],
+            "price_ticket": current["price_ticket"],
+        },
+    }
     purchases = state.setdefault("skin_shop_purchases", [])
     purchases.append(receipt)
     # Bound growth of the player's save while preserving recent real receipts.
