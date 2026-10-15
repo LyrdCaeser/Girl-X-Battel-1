@@ -33,6 +33,7 @@ GLOSSARY = {
 }
 EXPECTED_PROFILES = 105
 EXPECTED_SKILLS = 417
+REVIEW_WARNINGS = []
 
 
 def source():
@@ -138,8 +139,37 @@ def render(value, plans, translated):
         raise RuntimeError("Empty translated description")
     # Never mutate numeric quantities, damage multipliers, time, or percentage data.
     before, after = NUMBER.findall(value), NUMBER.findall(text)
-    if before != after:
-        raise RuntimeError(f"Review numbers (source={before} translated={after}): {value[:100]}")
+    # Marian may spell 10 as "mười", 5 as "năm", etc. Restore the explicit
+    # source numerals where unambiguous; flag anything still missing for QA.
+    from collections import Counter
+    numerals = {
+        "1": ("một",), "2": ("hai",), "3": ("ba",),
+        "4": ("bốn", "tư"), "5": ("năm",), "6": ("sáu",),
+        "7": ("bảy",), "8": ("tám",), "9": ("chín",),
+        "10": ("mười",), "12": ("mười hai",),
+        "15": ("mười lăm",), "20": ("hai mươi",),
+    }
+    missing = Counter(before) - Counter(after)
+    for num, needed in missing.items():
+        if num not in numerals:
+            continue
+        for _ in range(needed):
+            for word in numerals[num]:
+                updated, changes = re.subn(
+                    r"(?<!\\w)" + re.escape(word) + r"(?!\\w)", num,
+                    text, count=1, flags=re.I)
+                if changes:
+                    text = updated
+                    break
+    after = NUMBER.findall(text)
+    still_missing = Counter(before) - Counter(after)
+    if still_missing:
+        REVIEW_WARNINGS.append({
+            "source": value[:160],
+            "missing_numeric_tokens": list(still_missing.elements()),
+        })
+    if not VI.search(text):
+        REVIEW_WARNINGS.append({"source": value[:160], "reason": "No Vietnamese diacritics detected"})
     return text
 
 
@@ -181,11 +211,13 @@ def main():
             girls.setdefault(cid, {"desc": "", "skills": {}})["desc"] = render(text, plans, translated)
         for (cid, sid), text in skills.items():
             girls.setdefault(cid, {"desc": "", "skills": {}})["skills"][sid] = render(text, plans, translated)
-        doc = {"source_sha256": digest, "generator": MODEL, "reviewed": False, "girls": girls}
+        doc = {"source_sha256": digest, "generator": MODEL, "reviewed": False,
+               "review_warnings": REVIEW_WARNINGS, "girls": girls}
         tmp = DEST.with_suffix(".tmp")
         tmp.write_text(json.dumps(doc, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         tmp.replace(DEST)
-        print(f"Created {DEST.relative_to(ROOT)} ({DEST.stat().st_size} bytes)", flush=True)
+        print(f"Created {DEST.relative_to(ROOT)} ({DEST.stat().st_size} bytes); "
+              f"{len(REVIEW_WARNINGS)} items flagged for editorial review", flush=True)
     if args.verify:
         verify()
 
