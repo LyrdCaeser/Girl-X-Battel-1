@@ -58,3 +58,13 @@
  .bag-panel .bag-item{width:100%;aspect-ratio:1;max-height:100%;min-width:0}
  .bag-panel .bag-item-image{inset:15% 10%;width:80%;height:70%;object-fit:contain}
 }
+
+/* Original item slots stay at their publisher size; long inventories scroll inside. */
+.bag-view{height:calc(100dvh - 90px);max-height:calc(100dvh - 90px);min-height:0;display:flex;flex-direction:column;overflow:hidden;padding-bottom:0}
+.bag-view[hidden]{display:none}
+.bag-view .bag-top,.bag-view .bag-tabs,.bag-view .bag-actions{flex-shrink:0}
+.bag-view .bag-panel{flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;touch-action:pan-y;overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch;scrollbar-width:thin;padding-bottom:22px}
+.bag-view .bag-grid{align-content:start}
+.bag-view .bag-actions{position:relative;bottom:auto;margin-bottom:0;z-index:7}
+.bag-use-controls #bag-detail-summon{min-height:38px;padding:7px 18px;border:2px solid #fff;border-radius:9px;background:linear-gradient(#94d7ff,#327bc9);color:white;font-weight:900}
+.bag-use-controls #bag-detail-summon[hidden]{display:none!important}
