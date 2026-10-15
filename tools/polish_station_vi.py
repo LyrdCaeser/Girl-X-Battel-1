@@ -703,6 +703,31 @@ Sau khi nâng cấp thành Kỹ Năng Tinh Anh, đòn đánh thường có cơ h
 Khi Angelica Thức Tỉnh lên 9 sao, cô tự Hồi Máu và nhận thêm cộng dồn “Sun Slayer” cuối mỗi hiệp.""",
 })
 
+OVERRIDES.update({
+ "skill/856009/75600901": """Kỹ năng chủ động của Gwen & Brigit gây sát thương lên 3 kẻ địch ngẫu nhiên, ưu tiên mục tiêu có nhiều cộng dồn “Gilded Butterfly”. Số cộng dồn càng nhiều thì mục tiêu càng nhận thêm nhiều đợt sát thương.
+Khi mục tiêu có từ 5 cộng dồn trở lên, chỉ giữ lại 1 cộng dồn và tiêu hao phần còn lại để gây sát thương bổ sung rất lớn. Đòn cuối gây sát thương cố định dựa trên Tấn Công còn lại của hai nhân vật, không nhận hiệu ứng tăng cường và không thể gây Chí Mạng.""",
+ "skill/856009/75600902": """Kỹ năng tăng cường: Tăng Tấn Công, Chí Mạng, Sát Thương Thánh, Kháng Khống Chế và Tốc Độ của Gwen & Brigit.""",
+ "skill/856009/75600903": """Kỹ năng tăng cường: Đòn đánh thường của Gwen & Brigit tấn công 3 kẻ địch có HP thấp nhất.
+Nếu mục tiêu đang có “Gilded Butterfly”, đòn đánh gây thêm sát thương.
+Đầu trận, họ đặt 1 cộng dồn “Gilded Butterfly” lên toàn bộ kẻ địch, giúp tiếp tục cộng dồn hiệu ứng dễ dàng hơn.""",
+ "skill/856009/75600904": """Kỹ năng tăng cường: Khi đồng minh gây Chí Mạng, Gwen & Brigit tự Hồi Máu và tăng Tốc Độ, giúp sống sót và ra đòn sớm hơn.
+Khi đồng minh dùng đòn đánh thường hoặc kỹ năng chủ động, Gwen & Brigit còn có cơ hội đặt “Gilded Butterfly” lên 2 kẻ địch có HP thấp nhất.""",
+ "skill/856010/75601001": """Kỹ năng chủ động của Cupid gây sát thương lên hàng trước, giảm Tấn Công của 2 kẻ địch có Tấn Công cao nhất và giảm sát thương mà toàn bộ đồng minh phải chịu.
+Cupid ưu tiên ban Khiên Ma Thuật cho đồng minh có Tấn Công cao nhất, sau đó Hồi Máu cho đồng minh có HP thấp nhất dựa trên số cộng dồn “Heartbeat” của mình.""",
+ "skill/856010/75601002": """Kỹ năng tăng cường: Tăng HP, Tấn Công, Giảm Sát Thương, Kháng Khống Chế và lượng Hồi Máu của Cupid.""",
+ "skill/856010/75601003": """Kỹ năng tăng cường: Đòn đánh thường giúp Cupid nhận 2 cộng dồn “Heartbeat” và có cơ hội nhận thêm 1 cộng dồn.
+Cô còn tăng sát thương của toàn đội và ban Khiên Ma Thuật cho đồng minh có Tấn Công cao nhất.""",
+ "skill/856010/75601004": """Kỹ năng tăng cường: Đầu trận, toàn đội nhận “Heartfelt” và Khiên Ma Thuật; Cupid cũng nhận thêm cộng dồn “Heartbeat”.
+Cuối mỗi hiệp, Cupid ban Khiên Ma Thuật cho toàn đội với Điểm Khiên (BP) dựa trên Tấn Công của cô và giảm sát thương đồng minh phải chịu. Những đồng minh có dưới 50% HP được ban thêm Khiên Ma Thuật; Cupid tiếp tục nhận “Heartbeat”.""",
+ "skill/856011/75601102": """Kỹ năng tăng cường: Tăng HP, Tấn Công, tỷ lệ Chặn Đòn, Kháng Khống Chế và Kháng Chí Mạng của Poseidia.""",
+ "skill/856011/75601103": """Kỹ năng tăng cường: Đòn đánh thường giúp Poseidia tự Hồi Máu dựa trên lượng HP đã mất, giảm Độ Chính Xác của toàn bộ kẻ địch và tăng Chặn Đòn cho đồng minh hàng trước.""",
+ "skill/856011/75601105": """Kỹ năng tăng cường: Mỗi khi đồng minh Chặn Đòn thành công, Poseidia nhận 1 cộng dồn “Gift of the Sea”, tự Hồi Máu dựa trên lượng HP đã mất và có cơ hội Kết Tinh 2 kẻ địch ngẫu nhiên trong 2 hiệp. Ngay khi bắt đầu trận, Poseidia có thể Khiêu Khích toàn bộ kẻ địch.""",
+ "skill/856012/75601201": """Kỹ năng chủ động của Zeusia gây sát thương lên toàn bộ kẻ địch, giảm Tấn Công của chúng và khiến chúng chịu thêm sát thương từ hiệu ứng Thiêu Đốt.
+Nếu mục tiêu đang chịu “Thunderbolt”, Zeusia kích hoạt hiệu ứng này ngay lập tức thêm một lần. Nếu mục tiêu chưa có “Thunderbolt”, Zeusia nhận hiệu ứng “Divinity”.""",
+ "skill/856012/75601202": """Kỹ năng tăng cường: Tăng HP, Tấn Công, Sát Thương Thánh, Giảm Sát Thương và Tốc Độ của Zeusia.""",
+ "skill/856012/75601203": """Kỹ năng tăng cường: Đòn đánh thường của Zeusia gây sát thương lên 3 kẻ địch ngẫu nhiên, khiến chúng chịu thêm sát thương từ Thiêu Đốt, đồng thời giảm Độ Chính Xác và Tấn Công của chúng. Zeusia còn nhận “Divinity”.""",
+})
+
 EMPTY_SOURCE = "此處為填充文本"
 
 
