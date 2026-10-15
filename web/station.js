@@ -4,7 +4,9 @@
 // Tests / Guild Boss popular line-ups from direct_array with their Popularity stars) and Review (Like, the player's
 // Tags and Comments — LOCAL-074: kept in the save, there is no online board). Coordinates: prefab units, y up, 720×1280.
 const Station=(()=>{
- const S='/assets/station/';let world={hot:[],likes:0},data=null,root=null,cid=null,tab=0,card=0,rec=null,note='',line=0,popup=null,host=null;
+ const S='/assets/station/';let world={hot:[],likes:0},data=null,translated=null,root=null,cid=null,tab=0,card=0,rec=null,note='',line=0,popup=null,host=null;
+ const localizedProfile=()=>translated?.girls?.[String(cid)]||null;
+ const localizedSkill=id=>localizedProfile()?.skills?.[String(id)]||null;
  const el=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=typeof GxbVi!=='undefined'?GxbVi.t(text):text;return e;};
  const img=(src,cls)=>{const i=el('img',cls);i.src=src;i.alt='';i.draggable=false;return i;};
  const at=(e,x,y,w,h)=>{e.style.left=`calc(${x-w/2+360} * var(--u))`;e.style.top=`calc(${640-y-(h||0)/2} * var(--u))`;e.style.width=`calc(${w} * var(--u))`;if(h!=null)e.style.height=`calc(${h} * var(--u))`;return e;};
@@ -14,7 +16,9 @@ const Station=(()=>{
  const LINES=['Dummy Test','Tests','Guild Boss','Junior Varsity'];
  function find(tid){const ids=typeof hostChain==='function'?hostChain(tid):[Number(tid)];for(const [k,g]of Object.entries(data.girls))if(g.ids.some(i=>ids.includes(i)||i%100000===Number(tid)%100000))return k;return null;}
  async function call(req){try{const r=await api('/api/relations/action',{...req,id:cid});if(r.state)state=r.state;rec=r.station;world={hot:r.hot||[],likes:r.likes||0};note='';return r;}catch(e){note=e.message;return null;}finally{render();}}
- async function open(tableId){data=data||await api('/assets/station/station.json');cid=find(tableId);if(!cid)return false;
+ async function open(tableId){data=data||await api('/assets/station/station.json');
+  if(!translated){try{translated=await api('/assets/station/station-vi.json');}catch{translated={girls:{}};}}
+  cid=find(tableId);if(!cid)return false;
   tab=0;card=Math.max(0,data.girls[cid].ids.indexOf(Number(tableId)));line=0;note='';popup=null;host=document.querySelector('.dates-view')||window.GxbFrame?.root()||document.body;
   rec={like:0,labels:[],comments:[]};render();await call({action:'station'});return true;}
  function close(){root?.remove();root=null;}
@@ -46,9 +50,9 @@ const Station=(()=>{
  function strategy(g){const sc=at(el('div','st-scroll'),6,-215,649,671);
   const tags=el('div','st-chips');g.labels.forEach(id=>tags.append(chip(id)));
   const rank=el('div','st-rank');for(const t of ['Patrol:','Junior Varsity:','Tests:','Guild Boss:'])rank.append(el('span','',t),el('b','','No Record'));
-  const skills=g.skills.map(s=>{const r=el('div','st-skill');const i=el('div','st-skill-icon');i.style.backgroundImage=`url('/assets/detail/skill_icon_bg.png')`;if(s.icon)i.append(img('/assets/skills/'+s.icon+'.png'));const t=el('div');t.append(el('b','',s.name),el('p','',s.desc));r.append(i,t);return r;});
+  const skills=g.skills.map(s=>{const r=el('div','st-skill');const i=el('div','st-skill-icon');i.style.backgroundImage=`url('/assets/detail/skill_icon_bg.png')`;if(s.icon)i.append(img('/assets/skills/'+s.icon+'.png'));const t=el('div');t.append(el('b','',s.name),el('p','',localizedSkill(s.id)||s.desc));r.append(i,t);return r;});
   const arts=g.artifacts.map(a=>{const r=el('div','st-skill');const i=el('div','st-skill-icon');const it=typeof itemCatalog!=='undefined'?itemCatalog?.[String(a.id)]:null;const src=it&&typeof itemPicture==='function'?itemPicture(it):'';if(src)i.append(img(src));const t=el('div');t.append(el('b','',a.name),el('p','',a.desc));r.append(i,t);return r;});
-  sc.append(section('Tags',tags),section('Description',el('p','st-desc',g.desc||'—')),section('Rank',rank),section('Skill Description',skills.length?skills:el('p','st-desc','—')),section('Recommended Antique',arts.length?arts:el('p','st-desc','—')));root.append(sc);}
+  sc.append(section('Tags',tags),section('Description',el('p','st-desc',localizedProfile()?.desc||g.desc||'—')),section('Rank',rank),section('Skill Description',skills.length?skills:el('p','st-desc','—')),section('Recommended Antique',arts.length?arts:el('p','st-desc','—')));root.append(sc);}
  function lineup(g){const bg=at(el('div','st-lbg'),0,-203,674,709);bg.style.borderImageSource=`url('${S}station_small_label_bg.png')`;root.append(bg);
   LINES.forEach((n,i)=>{const b=at(el('button','st-ltab'+(line===i?' on':''),n),[-230,-76,78,232][i],117,150,52);b.type='button';b.style.backgroundImage=`url('${S}station_small_label${line===i?'_click':''}.png')`;b.onclick=()=>{line=i;render();};root.append(b);});
   const panel=at(el('div','st-lpanel'),7.5,-223,621,551);panel.style.borderImageSource=`url('${S}station_bg.png')`;root.append(panel);
