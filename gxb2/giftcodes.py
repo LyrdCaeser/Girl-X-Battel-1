@@ -14,7 +14,7 @@ from . import gm_catalog, live_service
 
 _LOCK = threading.RLock()
 _READY = False
-CODE_PATTERN = re.compile(r"^[A-Z0-9][A-Z0-9-]{5,39}$")
+CODE_PATTERN = re.compile(r"^[A-Z0-9][A-Z0-9_-]{5,39}$")
 
 def _connection():
     global _READY
@@ -49,8 +49,18 @@ def _connection():
 def _normalize(code):
     code = str(code or '').strip().upper().replace(' ', '')
     if not CODE_PATTERN.fullmatch(code):
-        raise ValueError('Mã giftcode không hợp lệ (6–40 ký tự A-Z, số và dấu -)')
+        raise ValueError('Mã giftcode không hợp lệ (6–40 ký tự A-Z, số, _ và -)')
     return code
+
+def exists(code):
+    """Server-side uniqueness probe for the optional manually entered giftcode."""
+    code = _normalize(code)
+    db = _connection()
+    try:
+        return bool(db.execute("SELECT 1 FROM giftcodes WHERE code=?", (code,)).fetchone())
+    finally:
+        db.close()
+
 
 def _public(row):
     d = dict(row)
@@ -72,6 +82,8 @@ def create(payload, operator):
     if not isinstance(payload,dict):
         raise ValueError('Dữ liệu giftcode không hợp lệ')
     raw=str(payload.get('code') or '').strip()
+    if raw and len(raw) > 24:
+        raise ValueError('Mã tùy chọn phải từ 6 đến 24 ký tự')
     code=_normalize(raw if raw else 'GXB3-'+secrets.token_hex(8).upper())
     title=str(payload.get('title') or 'Quà Giftcode GXB 3').strip()[:100]
     message=str(payload.get('message') or 'Chúc bạn chơi game vui vẻ!').strip()[:1000]
