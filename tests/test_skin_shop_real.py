@@ -109,6 +109,18 @@ class SkinShopTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,"true hoặc false"):
             skin_store.update_configs([self.config(enabled="true")], "OWNER")
 
+    def test_admin_prices_require_exact_unsigned_integers(self):
+        # Cannot silently floor a decimal payment or accept bool as 1 Crystal.
+        for invalid in (1.1, True, False, -1, "10.5", "1e5", None, [], {}):
+            with self.subTest(price=repr(invalid)):
+                with self.assertRaisesRegex(ValueError, "Giá"):
+                    skin_store.update_configs(
+                        [self.config(price_crystal=invalid)], "OWNER")
+        skin_store.update_configs([self.config(price_gold="500", price_crystal="20")], "OWNER")
+        offer = skin_store.offer(self.normal)
+        self.assertEqual(offer["price_gold"], 500)
+        self.assertEqual(offer["price_crystal"], 20)
+
     def test_server_admin_checks_and_giftcode_uniqueness(self):
         import inspect
         from server import HTTPHandler
