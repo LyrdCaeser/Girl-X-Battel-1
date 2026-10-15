@@ -1,9 +1,11 @@
 'use strict';
 // Dates (DatesListWindow / DatesWindow / DatesPledgeWindow / DatesAttrWindow). Rules: gxb2/relations.py.
 // Layout from dates_window.prefab: full art, right panel dates_bg02 with the intimacy icon, 5 hearts and gifts,
-// Gift / Voice tabs, bottom buttons. Voices: partner_dialog → sound1/sound2 → /assets/voice/<id>.mp3.
+// Gift / Voice tabs, bottom buttons. Voices: partner_dialog → sound1/sound2 → /assets/voices/<id>.mp3.
 const Dates=(()=>{
  let data=null,loading=null,mode='list',pid=null,tab='gift',origin='home',bubble='',busyLocal=false,note='',many=false,audio=null,picked=null;
+ const voiceIndex=new Map();
+ window.addEventListener('gxb-audio-volume',e=>{if(e.detail?.channel==='voice'&&audio)audio.volume=e.detail.level/100;});
  const A=n=>'/assets/dates/'+n+'.png';
  const el=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;};
  const img=(src,cls,alt='')=>{const i=el('img',cls);i.src=src;i.alt=alt;i.draggable=false;return i;};
@@ -14,7 +16,7 @@ const Dates=(()=>{
  function hero(){return state.roster.find(h=>h.partner_id===pid);}
  function maxOf(h){return h?.is_vowed?GROW():BASE();}
  function iconOf(h){if(h?.is_vowed)return A('love_point_icon6');const row=data.appointment[Math.min(data.appointment.length-1,Math.floor((h?.love_point||0)/1000))];return A(row?.icon||'love_point_icon1');}
- function play(sound,text){if(text&&text!=='-1')bubble=text;try{audio?.pause();if(sound){audio=new Audio('/assets/voice/'+sound+'.mp3');audio.volume=.9;audio.play().catch(()=>{});}}catch{}}
+ function play(sound,text){if(text&&text!=='-1')bubble=text;try{audio?.pause();if(sound){audio=new Audio('/assets/voices/'+sound+'.mp3');audio.volume=typeof GxbAudio!=='undefined'?GxbAudio.volume('voice')/100:.9;audio.play().catch(()=>{});}}catch{}}
  function allLines(h){const base=[String(h.table_id),String(h.table_id%100000),String(h.table_id%10000+50000)];for(const k of base)if(data.dialogs[k])return data.dialogs[k];return [];}
  // One canonical sound mapping for both Girl detail and the original summon reveal.
  // Only source-defined voice clips are playable: never synthesize replacement dialogue.
@@ -24,7 +26,9 @@ const Dates=(()=>{
      const id=Number(tableId);
      const lines=allLines({table_id:id}).filter(x=>x.sound&&[1,2,3].includes(Number(x.type)));
      if(!lines.length)return false;
-     const chosen=lines[Math.floor(Math.random()*lines.length)];
+     const key=String(id),next=voiceIndex.get(key)||0;
+     const chosen=lines[next%lines.length];
+     voiceIndex.set(key,(next+1)%lines.length);
      play(chosen.sound,chosen.text);
      return true;
    }catch{return false;}
@@ -47,7 +51,7 @@ const Dates=(()=>{
   const art=el('div','dt-art');st.append(art);const key=h.partner_id+':'+h.table_id;
   if(artKey!==key||!artHandle){artHandle?.destroy?.();artHandle=null;artKey=key;if(typeof Wallpaper!=='undefined'&&Wallpaper.mountArt)Wallpaper.mountArt(art,h.table_id,'xy').then(v=>{if(artKey!==key||!art.isConnected){v?.destroy();return;}artHandle=v;if(!v){const src=(typeof detailImage==='function'&&detailImage(h.table_id))||'';if(src)art.append(img(src,'dt-art-fallback'));}});}
   else art.append(artHandle.layer);
-  art.onclick=()=>{const ls=allLines(h).filter(x=>x.type===1||x.type===2||x.type===3);const pick=ls[Math.floor(Math.random()*ls.length)];if(pick){play(pick.sound,pick.text);render();}};
+  art.onclick=()=>{void playGirlVoice(h.table_id).then(ok=>{if(ok&&view==='dates')render();});};
   st.append(at(nameTag(h),-207,588,282,80));
   {const cv=data.cv?.[String(h.table_id)]||(typeof hostChain==='function'?hostChain(h.table_id).map(x=>data.cv?.[String(x)]).find(Boolean):'');if(cv){const c=at(el('div','dt-cv2'),230,600,250,34);c.append(el('span','','CV: '+cv));st.append(c);}}
   const help=at(el('button','dt-help'),60,535,52,52);help.type='button';help.append(img(A('help_2')));help.onclick=()=>CampaignUI.popup('Send gifts to raise intimacy: a gift she likes gives '+POINTS()[2]+', a normal one '+POINTS()[1]+' and one she dislikes '+POINTS()[0]+'. Every 2000 intimacy fills a heart and unlocks more voice lines. At '+BASE()+' you can form the Oath (1 Oath Ring) and the cap rises to '+GROW()+'. Make Gift turns 10 Gift Shards into the gift you choose; a Gift Box gives a random gift and 3-5 shards.',{});st.append(help);
