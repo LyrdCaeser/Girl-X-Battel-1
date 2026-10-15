@@ -605,6 +605,44 @@ Kỹ năng có sát thương cao và đặc biệt khắc chế Sát Thủ.""",
  "skill/851006/75100904": """Kỹ năng Hồi Máu: Khi HP của Fencer xuống dưới ngưỡng nhất định, cô tự hồi một lượng HP lớn. Mỗi trận chỉ kích hoạt một lần.""",
 })
 
+OVERRIDES.update({
+ "skill/851007/75100301": """Kỹ năng chủ động của Wildtress ưu tiên kẻ địch có HP thấp nhất và giảm Tấn Công của mục tiêu.
+Khi Wildtress đạt 10 sao, kỹ năng còn có cơ hội gây thêm sát thương.""",
+ "skill/851007/75100302": """Kỹ năng tăng cường: Tăng HP và Xuyên Giáp của Wildtress.""",
+ "skill/851007/75100303": """Kỹ năng tăng cường: Mỗi đòn tấn công giúp Wildtress tăng Xuyên Giáp và Chí Mạng.""",
+ "skill/851007/75100304": """Kỹ năng tăng cường: Wildtress được tăng mạnh Tấn Công khi HP xuống dưới ngưỡng nhất định.""",
+ "skill/851008/75101001": """Kỹ năng chủ động của Sakura gây sát thương lên kẻ địch hàng sau, có cơ hội Hóa Đá và giảm Giáp của chúng.""",
+ "skill/851008/75101002": """Kỹ năng tăng cường: Tăng Tấn Công, HP và Giáp của Sakura, đồng thời giúp cô miễn nhiễm Hóa Đá.""",
+ "skill/851008/75101003": """Kỹ năng tăng cường: Đổi mục tiêu đòn đánh thường của Sakura thành kẻ địch hàng sau và tăng sát thương lên mục tiêu đang bị Hóa Đá.""",
+ "skill/851009/75100401": """Kỹ năng chủ động của Giana gây sát thương diện rộng lên toàn bộ kẻ địch và có cơ hội Câm Lặng các mục tiêu hệ Chiến Binh.
+Khi Giana đạt 10 sao, kỹ năng còn tăng Tấn Công cho bản thân.""",
+ "skill/851009/75100402": """Kỹ năng tăng cường: Sau khi bất kỳ đồng minh nào bị hạ gục, Giana được tăng Chí Mạng và Tấn Công.""",
+ "skill/851009/75100404": """Kỹ năng cốt lõi của Giana: Khi cô tử trận, kỹ năng kích hoạt và gây lượng lớn sát thương diện rộng lên toàn bộ kẻ địch.""",
+ "skill/851010/75100701": """Kỹ năng chủ động của Ennmaya gây sát thương lên một kẻ địch ngẫu nhiên ở hàng sau, khiến mục tiêu Trúng Độc và có cơ hội Làm Choáng.
+Sau khi Tiến Hóa lên 6 sao, số mục tiêu tăng thành 2.
+Khi đạt 10 sao, kỹ năng còn tăng Giảm Sát Thương cho Ennmaya.
+Kỹ năng phối hợp tốt với các đồng minh sử dụng hiệu ứng Trúng Độc.""",
+ "skill/851010/75100702": """Kỹ năng tăng cường: Tăng Xuyên Giáp, Tấn Công, HP và sát thương của Ennmaya lên các mục tiêu đang Trúng Độc.""",
+ "skill/851010/75100703": """Kỹ năng tăng cường: Các đòn đánh của Ennmaya có cơ hội Làm Choáng mục tiêu.""",
+ "skill/851010/75100704": """Kỹ năng tăng cường: Khi HP của Ennmaya xuống dưới ngưỡng, cô gây Trúng Độc lên 2 kẻ địch ngẫu nhiên ở hàng sau (mỗi trận một lần).
+Khi đạt 10 sao, hiệu ứng Trúng Độc sẽ tác động lên toàn bộ kẻ địch hàng sau.""",
+ "skill/851011/75101101": """Kỹ năng chủ động của Valeera gây sát thương lên 4 kẻ địch ngẫu nhiên, khiến chúng Trúng Độc và có cơ hội Đóng Băng hoặc Hóa Đá.""",
+ "skill/851011/75101102": """Kỹ năng tăng cường: Đòn đánh thường của Valeera chuyển sang tấn công 2 kẻ địch ngẫu nhiên và đánh cắp Tấn Công của chúng, gián tiếp giúp cả đội chịu đòn tốt hơn.""",
+ "skill/851011/75101103": """Kỹ năng tăng cường: Tăng Tấn Công, Chí Mạng và HP của Valeera.""",
+ "skill/851011/75101104": """Kỹ năng Hồi Máu: Mỗi khi kẻ địch bị Hóa Đá hoặc Đóng Băng, Valeera tự hồi HP và phục hồi Năng Lượng.
+Kỹ năng giúp cô vừa sinh tồn tốt hơn vừa dùng kỹ năng tấn công thường xuyên hơn.""",
+ "skill/851012/75101201": """Kỹ năng tấn công của Fenrir gây sát thương lên 3 kẻ địch ngẫu nhiên; sát thương bổ sung phụ thuộc vị trí của chúng và kỹ năng gây Chảy Máu.
+Khi Fenrir đạt 10 sao, tỷ lệ sát thương kỹ năng tăng lên 206%; Chảy Máu còn giúp cô phối hợp với nhân vật tăng sát thương hiệu ứng này.
+Đòn đánh chắc chắn Chí Mạng nếu trúng mục tiêu hàng sau, nhờ vậy Fenrir có thể uy hiếp cả các chủ lực được đồng đội bảo vệ.""",
+ "skill/851012/75101202": """Kỹ năng tăng cường: Tăng HP, Tấn Công, Xuyên Giáp và tỷ lệ Chặn Đòn cho Fenrir.
+Xuyên Giáp giúp cô gây thêm sát thương.
+Tỷ lệ Chặn Đòn cao giúp cô kích hoạt “Desperado” thường xuyên hơn.""",
+ "skill/851012/75101203": """Kỹ năng tăng cường: Mỗi lần kỹ năng chủ động được kích hoạt, Fenrir được cộng thêm Tấn Công và Sát Thương Chí Mạng.
+Các cộng dồn này không tự hết hạn trong trận, giúp Fenrir ngày càng mạnh khi giao tranh kéo dài.""",
+ "skill/851012/75101204": """Kỹ năng cốt lõi của Fenrir: Sau khi Chặn Đòn thành công 3 lần, cô xóa mọi hiệu ứng khống chế trên bản thân, phản công 3 kẻ địch ngẫu nhiên và tự Hồi Máu.
+Đây là kỹ năng quan trọng giúp Fenrir sống lâu hơn và gây nhiều sát thương lên mục tiêu có HP cao.""",
+})
+
 EMPTY_SOURCE = "此處為填充文本"
 
 
