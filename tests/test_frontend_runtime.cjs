@@ -243,7 +243,78 @@ function testNephilimBattleModels() {
   console.log('PASS | Nephilim: default, awakened, advanced and five skins keep facing and size');
 }
 
+
+async function testNativeAssistantInteraction() {
+  class UiElement extends Element {
+    constructor(tag){super(tag);this.style={};this.scrollTop=0;this.disabled=false;}
+  }
+  const root=new UiElement('div');
+  const document={
+    createElement:tag=>new UiElement(tag),
+    addEventListener:()=>{},
+    querySelector:()=>null,
+  };
+  const state={
+    midas_info:{times:6,buys:1},explore_info:{buy_limit:4,bought:0},
+    house_exam_info:{certs:3},items:{'1':10000,'2':50},
+    home_systems:{},missions_info:{},
+  };
+  const calls=[],popups=[];
+  const ctx=vm.createContext({
+    document,state,number:n=>String(n),itemCatalog:{},itemIcons:new Set(),
+    localStorage:{getItem:()=>null,setItem:()=>{}},
+    window:{GxbFrame:{root:()=>root}},
+    CampaignUI:{popup:s=>popups.push(s)},
+    api:async(route,body)=>{
+      calls.push({route,body});return {state,report:[]};
+    },
+  });
+  vm.runInContext(fs.readFileSync(path.join(ROOT,'web/game-assistant.js'),'utf8'),ctx);
+  const ui=vm.runInContext('GameAssistant',ctx);
+  ui.open();
+  let pane=root.querySelector('.ga2-scroll');
+  assert.ok(pane,'original assistant scroll area must render');
+  pane.scrollTop=184;
+  const radio=pane.querySelector('.ga2-radio');
+  assert.ok(radio&&typeof radio.onclick==='function','Yes/No must be tappable');
+  radio.onclick();
+  pane=root.querySelector('.ga2-scroll');
+  assert.equal(pane.scrollTop,184,'changing Yes/No must not jump to page top');
+  pane.scrollTop=221;
+  const plus=pane.descendants().find(n=>n.tagName==='button'&&n.textContent==='+');
+  assert.ok(plus&&typeof plus.onclick==='function','quantity + must be tappable');
+  plus.onclick();
+  assert.equal(root.querySelector('.ga2-scroll').scrollTop,221,
+    'changing a quantity must preserve scroll position');
+  const execute=root.descendants().find(n=>n.tagName==='button'&&n.textContent==='Thực Hiện Tất Cả');
+  assert.ok(execute&&execute.disabled===false,'source execute button must be active');
+  await execute.onclick();
+  assert.equal(calls.length,1,'assistant must submit a real server action exactly once');
+  assert.equal(calls[0].route,'/api/assistant/run');
+  assert.ok(Array.isArray(calls[0].body.steps));
+  assert.equal(popups.length,0,'assistant must not fail on supported test step');
+  console.log('PASS | Game Assistant radios, quantity buttons, scrolling and real action');
+}
+
+function testNativeBagAndEquipment() {
+  const html=fs.readFileSync(path.join(ROOT,'web/index.html'),'utf8');
+  const css=fs.readFileSync(path.join(ROOT,'web/bag-actions.css'),'utf8');
+  const equip=fs.readFileSync(path.join(ROOT,'web/equipment.css'),'utf8');
+  const app=fs.readFileSync(path.join(ROOT,'web/app.js'),'utf8');
+  assert.match(html,/id="bag-detail-summon"/);
+  assert.match(app,/action\('SUMMON',\{summon_id:Number\(current.summon_id\),times:1\}\)/);
+  assert.match(app,/current\?\.can_compose/);
+  assert.match(app,/const art=node\('span','shard-card-art'\)/);
+  assert.match(css,/\.bag-view \.bag-panel\{flex:1 1 auto;min-height:0;overflow-y:auto/);
+  assert.match(css,/touch-action:pan-y/);
+  assert.match(equip,/\.eq-board/);
+  assert.match(equip,/\.eq-slot/);
+  console.log('PASS | native Girl Shards summon, long Bag scroll and equipment sheet');
+}
+
 (async () => {
+  testNativeBagAndEquipment();
+  await testNativeAssistantInteraction();
   testNephilimBattleModels();
   testBattleScale();
   testLobby();
