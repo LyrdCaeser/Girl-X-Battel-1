@@ -77,9 +77,9 @@ const GirlUI=(()=>{
   const list=el('div','lb-choose-list');const paint=()=>{list.replaceChildren();opts.forEach((id,k)=>{const info=pots.skills[String(id)]||{};const b=el('button','lb-opt'+(sel===k+1?' on':''));b.type='button';
    if(info.icon)b.append(img('/assets/skills/'+info.icon+'.png'));const t=el('div');t.append(el('b','',info.name||('Potencial '+id)),rich('p','',info.desc||''));b.append(t);if((hero.potentials||[])[stage-1]===k+1)b.append(el('span','lb-active','Activo'));b.onclick=()=>{sel=k+1;paint();};list.append(b);});};
   paint();body.append(list);const a=el('div','gs-btns');const ok=el('button','gs-btn','Activate');ok.type='button';ok.onclick=async()=>{if(!sel)return;close();await action('CHOOSE_PARTNER_POTENTIAL',{partner_id:hero.partner_id,awake_index:stage,index:sel});};a.append(ok);body.append(a);}
- function awake(hero){const box=$('detail-awake-status');if(!box)return;box.replaceChildren();const tab=document.querySelector('[data-detail-tab=awake]');if(tab)tab.textContent=hero.stars>=10?'Limit-Break':'Awake';
-  if(hero.local_promotion&&hero.stars>=10){if(tab)tab.textContent='Awake';box.className='lb-low';box.append(el('p','gu-awake-head','10★'),el('p','detail-note',"Extended progression completed. Maximum level 250; original skills are preserved."));return;}
-  if(hero.stars<10){box.className='lb-low';box.append(el('p','gu-awake-head',hero.stars+'★'),el('p','detail-note',"Upgrade stars in Campus → Graduate. Girls with 1★–3★ have an extended progression to 10★."));return;}
+ function awake(hero){const box=$('detail-awake-status');if(!box)return;box.replaceChildren();const tab=document.querySelector('[data-detail-tab=awake]');if(tab)tab.textContent=hero.stars>=10?'Đột Phá Giới Hạn':'Thức Tỉnh';
+  if(hero.local_promotion&&hero.stars>=10){if(tab)tab.textContent='Thức Tỉnh';box.className='lb-low';box.append(el('p','gu-awake-head','10★'),el('p','detail-note',"Đã hoàn thành tiến trình mở rộng. Cấp tối đa 250; giữ nguyên kỹ năng gốc."));return;}
+  if(hero.stars<10){box.className='lb-low';box.append(el('p','gu-awake-head',hero.stars+'★'),el('p','detail-note',"Nâng sao tại Học Viện → Tiến Hóa. Nữ Thần từ 1★ đến 3★ có tiến trình mở rộng đến 10★."));return;}
   box.className='lb-tab';const r=hero.next_awake;
   const top=el('button','lb-banner');top.type='button';top.append(stars(hero.stars,'tag'));if(r&&pick(r,hero).every(Boolean)&&cost(el('span'),r.cost||{}))top.append(img(S+'alert_icon.png','lb-red'));top.onclick=()=>limitBreak(hero);top.title='Limit-Break';box.append(top);
   box.append(nodes(hero,'tab'));
