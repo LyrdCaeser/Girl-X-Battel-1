@@ -47,3 +47,11 @@
 @media(max-width:1120px){.skin-grid{grid-template-columns:1fr}}
 @media(max-width:770px){.skin-filters{grid-template-columns:repeat(2,minmax(0,1fr))}.skin-filters #skin-search{grid-column:1/-1}.skin-item-head>button{font-size:11px}}
 @media(max-width:430px){.skin-filters{grid-template-columns:1fr}.skin-filters #skin-search{grid-column:auto}.skin-item-head img{width:59px;height:76px}.skin-item{padding:10px}.skin-controls{grid-template-columns:1fr 1fr}}
+
+/* Bank transfer Skin orders: manual receipt review with owner key. */
+.skin-bank-admin{border-top:1px solid #304365;margin-top:25px;padding-top:20px}
+.skin-bank-admin h3{margin:6px 0;color:#eaf1ff}.skin-order-toolbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:10px 0}
+.skin-order-toolbar select{width:180px}.skin-order-grid{display:grid;gap:10px}
+.skin-order-item{display:flex;align-items:center;gap:9px;flex-wrap:wrap;padding:12px;border:1px solid #314267;background:#101c36;border-radius:12px}
+.skin-order-text{display:flex;flex:1 1 280px;flex-direction:column;gap:4px;min-width:0}
+.skin-order-text b{color:#f3f6ff}.skin-order-text small{color:#acbeda;overflow-wrap:anywhere}

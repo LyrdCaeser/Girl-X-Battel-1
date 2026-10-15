@@ -4,8 +4,8 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0b1023">
 <title>Giftcode Studio — Nữ Thần Chiến Đấu GXB 3</title>
-<link rel="stylesheet" href="./style.css?v=20261015-skinshop1">
-<script defer src="./app.js?v=20261015-skinshop-release2"></script>
+<link rel="stylesheet" href="./style.css?v=20261015-bank-orders1">
+<script defer src="./app.js?v=20261015-bank-orders1"></script>
 </head>
 <body>
 <div class="shell">
@@ -93,7 +93,7 @@
   <section id="skins-view" class="view panel" hidden>
     <div class="section-head"><div><span class="eyebrow">CỬA HÀNG SKIN / TRANG PHỤC</span><h2>Quản lý trang phục gốc</h2></div>
       <button class="ghost small" id="skin-refresh" type="button">↻ Làm mới</button></div>
-    <p class="muted">Chỉnh giá bằng <strong>Vàng</strong> (Coin) hoặc <strong>Crystal</strong> (Gem) của game. Các skin có giá Vé Trang Phục gốc vẫn có thể giữ hoặc tắt kênh bán đó. Mọi thay đổi được lưu trên PostgreSQL.</p>
+    <p class="muted">Chỉnh giá <strong>chuyển khoản ngân hàng (VNĐ)</strong> hoặc <strong>Crystal</strong>. Liên hệ Zalo quản trị <strong>0856848557</strong> để người chơi nhận thông tin chuyển khoản. Đơn ngân hàng chỉ được duyệt khi QTV xác nhận tiền thật đã về tài khoản; không tự động mở Skin. Crystal trừ trong game. Mọi thay đổi lưu trên PostgreSQL.</p>
     <p class="skin-wedding-warning">♡ Skin cưới là phần thưởng độc quyền kết duyên. Cả giao diện quản trị và máy chủ đều cấm bật bán, đặt giá hoặc mua bằng API.</p>
     <div class="skin-stats" id="skin-stats"></div>
     <div class="skin-filters">
@@ -103,7 +103,7 @@
         <option value="all">Tất cả trạng thái</option><option value="enabled">Đang bán</option><option value="disabled">Đã tắt bán</option><option value="wedding">Skin cưới (chỉ xem, bị khóa)</option><option value="incomplete">Bản ghi thiếu dữ liệu (khóa)</option>
       </select>
       <select id="skin-currency" aria-label="Lọc loại tiền">
-        <option value="all">Mọi loại tiền</option><option value="gold">Vàng</option><option value="crystal">Crystal</option><option value="ticket">Vé Trang Phục</option>
+        <option value="all">Mọi phương thức</option><option value="bank">Chuyển khoản ngân hàng</option><option value="crystal">Crystal</option>
       </select>
     </div>
     <div class="skin-toolbar">
@@ -117,6 +117,12 @@
       <label>Khóa hành động QTV <span class="hint">(chỉ trong phiên trang hiện tại)</span><input id="skin-gm-key" type="password" autocomplete="off" placeholder="Nhập khóa QTV để xác nhận thay đổi giá"></label>
       <button id="skin-verify-key" type="button" class="ghost small">Xác thực khóa QTV</button>
       <p class="muted mini">Cấu hình bán skin có hiệu lực ngay sau khi máy chủ xác nhận; không thay đổi dữ liệu skin gốc hay tài khoản đã mua.</p>
+    </div>
+    <div class="skin-bank-admin">
+      <div class="section-head"><div><span class="eyebrow">THANH TOÁN NGÂN HÀNG</span><h3>Đơn mua Skin chờ xác nhận</h3></div><button id="skin-order-refresh" type="button" class="ghost small">↻ Làm mới đơn</button></div>
+      <p class="muted">Zalo QTV: 0856848557. Chỉ bấm “Đã nhận tiền · Duyệt” sau khi đối chiếu giao dịch ngân hàng thật và mã đơn. Trang phục sẽ được gửi qua Hòm Thư game.</p>
+      <div class="skin-order-toolbar"><select id="skin-order-state" aria-label="Lọc đơn thanh toán"><option value="pending">Chờ duyệt</option><option value="approved">Đã duyệt</option><option value="rejected">Đã từ chối</option><option value="all">Tất cả</option></select><span id="skin-order-count" class="muted mini">Đang tải đơn...</span></div>
+      <div id="skin-bank-orders" class="skin-order-grid"></div>
     </div>
   </section>
   <dialog id="skin-preview" class="skin-preview"><button type="button" id="skin-preview-close" class="ghost">✕ Đóng</button><img id="skin-preview-image" alt="Xem trước trang phục" loading="lazy"><strong id="skin-preview-name"></strong></dialog>
