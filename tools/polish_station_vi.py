@@ -672,6 +672,37 @@ Các cộng dồn này không tự hết hạn trong trận, giúp Fenrir ngày 
 Đây là kỹ năng quan trọng giúp Fenrir sống lâu hơn và gây nhiều sát thương lên mục tiêu có HP cao.""",
 })
 
+# Senior-character skill review: publisher-specific triggers, not machine paraphrases.
+OVERRIDES.update({
+ "skill/855012/75501101": """Kỹ năng chủ động của Promethea gây sát thương dựa trên chỉ số Tấn Công của mục tiêu lên 3 kẻ địch ngẫu nhiên, giảm Năng Lượng của chúng và có cơ hội Khiêu Khích.
+Cô còn tiêu hao một phần HP bản thân để gây sát thương dựa trên HP tối đa của mình lên kẻ địch hàng trước, đồng thời ban hiệu ứng “Starflare” cho đồng minh hàng sau, giúp giảm sát thương nhận vào và phản sát thương.""",
+ "skill/855012/75501103": """Kỹ năng tăng cường: Đầu trận, Promethea đánh cắp Tốc Độ và Năng Lượng của một kẻ địch, đồng thời ban “Starflare” cho đồng minh hàng sau để giảm sát thương nhận vào và phản lại một phần sát thương.
+Đòn đánh thường của Promethea tiêu hao HP bản thân để ban Khiên Ma Thuật cho đồng minh hàng sau, đồng thời áp dụng “Hellfire” lên kẻ địch hàng trước, giảm Lượng Hồi Máu Nhận, tỷ lệ Chặn Đòn và lượng Năng Lượng chúng nhận được.""",
+ "skill/855012/75501104": """Kỹ năng tăng cường: Lần đầu HP của Promethea giảm xuống dưới 30% hoặc khi bắt đầu hiệp 5, cô lập tức hồi HP và được tăng cường:
+Đòn đánh thường và kỹ năng chủ động không còn tiêu hao HP; kỹ năng chủ động còn gây Thiêu Đốt lên kẻ địch hàng sau.
+Khi ban “Starflare”, Promethea tăng hiệu quả Tiêu Hao Sát Thương cho người sở hữu. Nếu Promethea đứng hàng trước, cô cũng có thể nhận hiệu ứng này và lượng sát thương được giảm sẽ gấp đôi.
+Khi áp dụng “Hellfire”, cô khiến mục tiêu chịu thêm sát thương.""",
+ "skill/856006/75600601": """Kỹ năng chủ động của Nephilim gây sát thương bỏ qua Giáp lên 4 kẻ địch ngẫu nhiên và đặt Dấu Ấn “Equilibrium” lên từng mục tiêu.
+Nhờ Tốc Độ cao, Dấu Ấn có thể phát huy hiệu quả gần như ngay lập tức, khắc chế những kẻ địch phụ thuộc vào kỹ năng chủ động để gây sát thương.""",
+ "skill/856006/75600602": """Kỹ năng tăng cường: Tăng HP, Sát Thương Thánh, Giảm Sát Thương và Tốc Độ cho Nephilim, giúp cô vừa sống sót lâu hơn vừa gây sát thương mạnh hơn.""",
+ "skill/856006/75600603": """Kỹ năng tăng cường: Đòn đánh thường của Nephilim nhắm vào kẻ địch có HP cao nhất, gây thêm sát thương dựa trên HP tối đa của chúng và tự Hồi Máu.
+Nhờ vậy, Nephilim khắc chế mục tiêu nhiều HP và duy trì khả năng sinh tồn khi tấn công.""",
+ "skill/856006/75600604": """Kỹ năng tăng cường: Nephilim gây lượng sát thương lớn lên các chủ lực gây sát thương của đối phương.
+Kỹ năng còn giảm hiệu quả Hồi Máu mà kẻ địch nhận được, giúp Nephilim chiếm lợi thế khi trận đấu kéo dài.
+Ngoài ra, hiệu ứng tự hồi HP tiếp tục tăng khả năng sinh tồn của cô.""",
+ "skill/856007/75600701": """Kỹ năng chủ động của Uriel gây sát thương nhiều lần lên 1 kẻ địch ngẫu nhiên và đặt 1 cộng dồn “Scars of Belinus” lên mục tiêu; sau khi kích hoạt, Sát Thương Thánh của Uriel tăng.
+Khi đạt 10 sao, kỹ năng còn có cơ hội đặt thêm 1 cộng dồn “Scars of Belinus” lên kẻ địch đã có hiệu ứng này.""",
+ "skill/856007/75600702": """Kỹ năng tăng cường: Tăng HP, Sát Thương Thánh, Kháng Khống Chế và Giảm Sát Thương của Uriel, giúp cô vừa chịu đòn tốt hơn vừa gây thêm sát thương.""",
+ "skill/856007/75600703": """Kỹ năng tăng cường: Đòn đánh thường của Uriel nhắm vào một kẻ địch ngẫu nhiên và đặt 1 cộng dồn “Scars of Belinus” lên mục tiêu.""",
+ "skill/856007/75600704": """Kỹ năng tăng cường: Mỗi khi Uriel sử dụng đòn đánh thường hoặc kỹ năng chủ động, cô gây sát thương diện rộng lên toàn bộ kẻ địch và có cơ hội đặt 1 cộng dồn “Scars of Belinus” lên chúng.""",
+ "skill/856008/75600801": """Khi kích hoạt kỹ năng chủ động, Angelica bước vào giai đoạn “Preparation”, được tăng Chí Mạng và Giảm Sát Thương. Trong giai đoạn này, cô miễn nhiễm Khống Chế, đồng thời Năng Lượng không thể tăng hay giảm. Ở hiệp kế tiếp, cô gây lượng sát thương lớn lên toàn bộ kẻ địch và nhận cộng dồn “Sun Slayer”.""",
+ "skill/856008/75600802": """Kỹ năng tăng cường: Tăng Tấn Công, Sát Thương Thánh, Sát Thương Chí Mạng, Kháng Khống Chế và Tốc Độ của Angelica.""",
+ "skill/856008/75600803": """Kỹ năng tăng cường: Mỗi khi Angelica dùng đòn đánh thường, cô nhận thêm cộng dồn “Sun Slayer”.
+Sau khi nâng cấp thành Kỹ Năng Tinh Anh, đòn đánh thường có cơ hội xóa 1 hiệu ứng Dấu Ấn ngẫu nhiên trên bản thân.""",
+ "skill/856008/75600804": """Kỹ năng tăng cường: Đầu trận và cuối mỗi hiệp, Angelica áp dụng “Dazed” lên kẻ địch có HP thấp nhất, buộc kỹ năng chủ động, đòn đánh thường hoặc kỹ năng bị động vốn đánh nhiều mục tiêu của kẻ đó chỉ được nhắm vào một mục tiêu ngẫu nhiên.
+Khi Angelica Thức Tỉnh lên 9 sao, cô tự Hồi Máu và nhận thêm cộng dồn “Sun Slayer” cuối mỗi hiệp.""",
+})
+
 EMPTY_SOURCE = "此處為填充文本"
 
 
