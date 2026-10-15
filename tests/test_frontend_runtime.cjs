@@ -302,7 +302,10 @@ function testNativeBagAndEquipment() {
   const equip=fs.readFileSync(path.join(ROOT,'web/equipment.css'),'utf8');
   const app=fs.readFileSync(path.join(ROOT,'web/app.js'),'utf8');
   assert.match(html,/id="bag-detail-summon"/);
-  assert.match(app,/action\('SUMMON',\{summon_id:Number\(current.summon_id\),times:1\}\)/);
+  assert.match(app,/action\('SUMMON',\{summon_id:Number\(current.summon_id\),times\}\)/);
+  assert.match(html,/id="bag-summon-count"/);
+  assert.match(app,/Math\.floor\(Number\(current.count\)\/Number\(current.need\)\)/);
+  assert.match(app,/times>maxCurrent/);
   assert.match(app,/current\?\.can_compose/);
   assert.match(app,/const art=node\('span','shard-card-art'\)/);
   assert.match(css,/\.bag-view \.bag-panel\{flex:1 1 auto;min-height:0;overflow-y:auto/);

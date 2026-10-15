@@ -16,3 +16,5 @@ The ALPHA RC7 workflow writes download artifacts for Windows, Android and iOS, w
 
 ### 2026-10-15 client build
 All three platform launchers continue to open the production GXB 3 URL. Rebuild after publisher-shard image, bulk summon and original Dates/Oath interface recovery; no game items are shipped or generated inside the wrappers.
+
+Shards now support a verified bulk quantity (maximum 50 uses per request) and original Dates/Oath routes remain server-authenticated. This README revision rebuilds all native clients from the final tested source.
