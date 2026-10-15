@@ -20,7 +20,18 @@ const api=async(path,body,gm=false,unlock=false)=>{
    requestPath=bridgeUrl.pathname+bridgeUrl.search;
  }
  const r=await fetch(requestPath,options),data=await r.json().catch(()=>({}));
- if(!r.ok){const err=data?.error;const detail=typeof err==='string'?err:(typeof err?.message==='string'?err.message:'Kết nối API thất bại (HTTP '+r.status+')');throw Error(detail);}
+ if(!r.ok){
+   const err=data?.error;
+   const detail=typeof err==='string'?err:(typeof err?.message==='string'?err.message:'Kết nối API thất bại (HTTP '+r.status+')');
+   // Admin unlock tokens expire server-side. Reopen the real unlock form
+   // instead of leaving an apparently active screen that can never save.
+   if(r.status===403&&state.panelUnlocked&&/mở khóa|unlock/i.test(detail)){
+     state.panelUnlocked=false;
+     state.panelAccess='';
+     switchView(state.view==='skins'?'skins':'create');
+   }
+   throw Error(detail);
+ }
  return data;
 };
 function notice(msg,ok=true){const el=$('global-status');el.textContent=msg;el.dataset.ok=ok?'1':'0';}
@@ -206,7 +217,7 @@ async function loadSkins(){
 function skinSettings(card){
  const value=k=>card.querySelector('[data-field="'+k+'"]');
  const id=Number(card.dataset.skinId);
- const price=k=>Number(value(k).value.trim());
+ const price=k=>{const raw=value(k).value.trim();if(!/^\d+$/.test(raw))throw Error('Giá phải là số nguyên không âm');return Number(raw);};
  for(const field of ['price_gold','price_crystal']){
    const el=value(field),num=price(field);
    if(!Number.isSafeInteger(num)||num<0||num>2000000000)throw Error('Giá phải là số nguyên từ 0 đến 2 tỷ');
