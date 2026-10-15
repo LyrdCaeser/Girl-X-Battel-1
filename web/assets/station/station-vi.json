@@ -61,46 +61,46 @@
     "851007": {
       "desc": "1. Wildtress là nhân vật gây sát thương thuộc phe Linh Hồn.\n2. Cô có khả năng tấn công khá tốt. Kỹ năng chủ động còn làm giảm chỉ số Tấn Công của mục tiêu, giúp đồng đội sống sót lâu hơn.",
       "skills": {
-        "75100301": "Kỹ năng tích cực của Wildtress nhắm mục tiêu kẻ thù với HP thấp nhất và giảm tấn công của mình;\nSau khi Wildtress đạt đến 10 sao, nó cũng có cơ hội để gây sát thương thêm.",
-        "75100302": "kỹ năng tăng cường làm tăng HP và Phá giáp của Wildtress.",
-        "75100303": "Kỹ năng hiệu ứng tăng cường cho phép Wildtress có thêm Phá giáp và Chí Mạng từ mỗi đòn tấn công của cô.",
-        "75100304": "kỹ năng tăng cường làm tăng đáng kể tấn công Wildtress một khi HP của cô ấy giảm xuống một mức nhất định."
+        "75100301": "Kỹ năng chủ động của Wildtress ưu tiên kẻ địch có HP thấp nhất và giảm Tấn Công của mục tiêu.\nKhi Wildtress đạt 10 sao, kỹ năng còn có cơ hội gây thêm sát thương.",
+        "75100302": "Kỹ năng tăng cường: Tăng HP và Xuyên Giáp của Wildtress.",
+        "75100303": "Kỹ năng tăng cường: Mỗi đòn tấn công giúp Wildtress tăng Xuyên Giáp và Chí Mạng.",
+        "75100304": "Kỹ năng tăng cường: Wildtress được tăng mạnh Tấn Công khi HP xuống dưới ngưỡng nhất định."
       }
     },
     "851008": {
       "desc": "1. Sakura là nhân vật khống chế thuộc phe Linh Hồn, có thể Hóa Đá kẻ địch và gây thêm sát thương lên chúng.\n2. Các kỹ năng giúp Sakura dễ Hóa Đá mục tiêu và giảm Giáp của chúng, khiến cô phù hợp với PvP.\n3. Sakura có chỉ số Giảm Sát Thương cao và miễn nhiễm Hóa Đá, nhờ vậy sở hữu khả năng sinh tồn tốt.",
       "skills": {
-        "75101001": "Kỹ năng chủ động của Sakura có thể gây sát thương đối với kẻ thù ở hậu tuyến và có cơ hội hóa đá chúng, nó cũng sẽ hạ thấp Giáp của mục tiêu.",
-        "75101002": "Kỹ năng của hiệu ứng tăng cường làm tăng sức mạnh tấn công của Sakura và Giáp làm cho cô miễn dịch với sự hóa đá.",
-        "75101003": "Kỹ năng hiệu ứng tăng cường thay đổi Tấn Công cơ bản của Sakura chống lại kẻ thù trong hàng sau và tăng sát thương của cô chống lại kẻ thù Petrified.",
+        "75101001": "Kỹ năng chủ động của Sakura gây sát thương lên kẻ địch hàng sau, có cơ hội Hóa Đá và giảm Giáp của chúng.",
+        "75101002": "Kỹ năng tăng cường: Tăng Tấn Công, HP và Giáp của Sakura, đồng thời giúp cô miễn nhiễm Hóa Đá.",
+        "75101003": "Kỹ năng tăng cường: Đổi mục tiêu đòn đánh thường của Sakura thành kẻ địch hàng sau và tăng sát thương lên mục tiêu đang bị Hóa Đá.",
         "75101004": "Kỹ năng tăng cường: Tăng Giảm Sát Thương của Sakura trong vài hiệp khi HP của cô giảm xuống dưới ngưỡng nhất định."
       }
     },
     "851009": {
       "desc": "1. Giana là nhân vật gây sát thương thuộc phe Linh Hồn.\n2. Sức tấn công thông thường của cô không quá nổi bật, nhưng kỹ năng kích hoạt khi tử trận có thể gây lượng sát thương rất lớn.\n3. Giana phối hợp tốt với nhân vật hưởng lợi từ việc đồng đội tử trận, chẳng hạn Saint Esau & Jacob.",
       "skills": {
-        "75100401": "Kỹ năng tích cực của Giana có thể gây sát thương cho tất cả kẻ thù của AoE và có cơ hội làm im lặng kẻ thù thuộc lớp Chiến binh;\nSau khi Giana đạt đến 10 sao, kỹ năng cũng sẽ làm tăng Tấn Công của cô ấy.",
-        "75100402": "Kĩ năng hiệu ứng tăng cường cho phép Giana có thêm Chí Mạng và Tấn Công sau khi bất cứ đồng đội nào của cô bị đánh bại.",
+        "75100401": "Kỹ năng chủ động của Giana gây sát thương diện rộng lên toàn bộ kẻ địch và có cơ hội Câm Lặng các mục tiêu hệ Chiến Binh.\nKhi Giana đạt 10 sao, kỹ năng còn tăng Tấn Công cho bản thân.",
+        "75100402": "Kỹ năng tăng cường: Sau khi bất kỳ đồng minh nào bị hạ gục, Giana được tăng Chí Mạng và Tấn Công.",
         "75100403": "Kỹ năng tăng cường: Tăng Giảm Sát Thương, HP và Tấn Công của Giana.",
-        "75100404": "Kỹ năng cốt lõi của Giana gây ra sát thương lớn cho AoE chống lại tất cả kẻ thù khi Giana bị đánh bại."
+        "75100404": "Kỹ năng cốt lõi của Giana: Khi cô tử trận, kỹ năng kích hoạt và gây lượng lớn sát thương diện rộng lên toàn bộ kẻ địch."
       }
     },
     "851010": {
       "desc": "1. Ennmaya là Sát Thủ thuộc phe Linh Hồn.\n2. Đòn đánh thường của cô có thể Làm Choáng một kẻ địch ngẫu nhiên ở hàng sau.\n3. Các chỉ số tấn công cao biến Ennmaya thành nhân vật gây sát thương rất nguy hiểm.\n4. Từ 8 sao, đòn đánh thường của cô có xác suất Làm Choáng mục tiêu 100%, đặc biệt mạnh trong các trận đấu 1 chọi 1. Kỹ năng chủ động còn tăng Giảm Sát Thương để giúp cô trụ vững.",
       "skills": {
-        "75100701": "Kỹ năng chủ động của Ennmaya sẽ gây sát thương cho một kẻ thù ngẫu nhiên ở hậu tuyến và đầu độc cô ấy, nó cũng có cơ hội làm choáng mục tiêu;\nSau khi Ennmaya tốt nghiệp 6 sao, mục tiêu cho kỹ năng sẽ được tăng lên 2;\nSau khi Ennmaya đạt 10 sao, nó cũng sẽ giúp giảm tổn thất Ennmaya;\nNó cũng có thể giúp Ennmaya hợp tác tốt hơn với các cô gái khác có kỹ năng liên quan đến Trúng Độc.",
-        "75100702": "hiệu ứng tăng cường kỹ năng tăng Ennmaya Phá giáp tấn công HP và sát thương của cô chống lại kẻ thù độc hại.",
-        "75100703": "Kỹ năng hiệu ứng tăng cường cho phép Ennmaya đánh ngất mục tiêu của mình một cách tình cờ.",
-        "75100704": "Kỹ năng hiệu ứng tăng cường đầu độc 2 kẻ thù ngẫu nhiên trong hậu tuyến (một lần mỗi trận chiến) khi HP của Ennmaya dưới một lượng nhất định;\nSau khi cô ta đạt đến 10 sao chất độc sẽ được áp dụng cho tất cả kẻ thù trong hàng sau."
+        "75100701": "Kỹ năng chủ động của Ennmaya gây sát thương lên một kẻ địch ngẫu nhiên ở hàng sau, khiến mục tiêu Trúng Độc và có cơ hội Làm Choáng.\nSau khi Tiến Hóa lên 6 sao, số mục tiêu tăng thành 2.\nKhi đạt 10 sao, kỹ năng còn tăng Giảm Sát Thương cho Ennmaya.\nKỹ năng phối hợp tốt với các đồng minh sử dụng hiệu ứng Trúng Độc.",
+        "75100702": "Kỹ năng tăng cường: Tăng Xuyên Giáp, Tấn Công, HP và sát thương của Ennmaya lên các mục tiêu đang Trúng Độc.",
+        "75100703": "Kỹ năng tăng cường: Các đòn đánh của Ennmaya có cơ hội Làm Choáng mục tiêu.",
+        "75100704": "Kỹ năng tăng cường: Khi HP của Ennmaya xuống dưới ngưỡng, cô gây Trúng Độc lên 2 kẻ địch ngẫu nhiên ở hàng sau (mỗi trận một lần).\nKhi đạt 10 sao, hiệu ứng Trúng Độc sẽ tác động lên toàn bộ kẻ địch hàng sau."
       }
     },
     "851011": {
       "desc": "1. Valeera là nhân vật đa dụng thuộc phe Linh Hồn.\n2. Cô có Tấn Công khá cao; kỹ năng có thể gây Đóng Băng hoặc Hóa Đá mục tiêu.\n3. Khi chịu sát thương từ kỹ năng chủ động của địch, Valeera có cơ hội tự hồi một lượng HP lớn, tăng mạnh khả năng sinh tồn.\n4. Cô còn giảm Tấn Công của mục tiêu, nên phù hợp với nhiều đội hình.",
       "skills": {
-        "75101101": "Kỹ năng tích cực của Valeera sẽ gây sát thương cho 4 kẻ thù ngẫu nhiên và đầu độc chúng, nó cũng có cơ hội để Đông lạnh hoặc hóa đá chúng.",
-        "75101102": "Kỹ năng của hiệu ứng tăng cường thay đổi Tấn Công Cơ Bản của Valeera để nhắm mục tiêu 2 kẻ thù ngẫu nhiên và đánh cắp Tấn Công của họ cũng sẽ gián tiếp tăng khả năng sống sót của đội của cô.",
-        "75101103": "Kỹ năng hiệu ứng tăng cường làm tăng Chí Mạng Tấn Công và HP của Valeera.",
-        "75101104": "Kỹ năng chữa bệnh cho phép Valeera tự hồi máu và phục hồi năng lượng một khi kẻ thù bị hóa đá hoặc đóng băng;\nKỹ năng này làm tăng đáng kể khả năng sinh tồn và khả năng tấn công của Valeera."
+        "75101101": "Kỹ năng chủ động của Valeera gây sát thương lên 4 kẻ địch ngẫu nhiên, khiến chúng Trúng Độc và có cơ hội Đóng Băng hoặc Hóa Đá.",
+        "75101102": "Kỹ năng tăng cường: Đòn đánh thường của Valeera chuyển sang tấn công 2 kẻ địch ngẫu nhiên và đánh cắp Tấn Công của chúng, gián tiếp giúp cả đội chịu đòn tốt hơn.",
+        "75101103": "Kỹ năng tăng cường: Tăng Tấn Công, Chí Mạng và HP của Valeera.",
+        "75101104": "Kỹ năng Hồi Máu: Mỗi khi kẻ địch bị Hóa Đá hoặc Đóng Băng, Valeera tự hồi HP và phục hồi Năng Lượng.\nKỹ năng giúp cô vừa sinh tồn tốt hơn vừa dùng kỹ năng tấn công thường xuyên hơn."
       }
     },
     "852001": {
@@ -517,10 +517,10 @@
     "851012": {
       "desc": "1. Fenrir là Chiến Binh phe Linh Hồn có khả năng gây sát thương tốt và càng đánh càng mạnh.\n2. Kỹ năng chủ động của cô gây áp lực lên cả mục tiêu HP cao lẫn HP thấp. Sau khi Chặn Đòn thành công 3 lần, Fenrir có thể phản công một lần và hồi HP nhờ đòn phản công đó, phù hợp với vai trò bảo vệ đội.\n3. Fenrir mạnh dần theo thời gian giao tranh; cô phối hợp tốt với các nhân vật kéo dài trận đấu như Raphael hoặc CapsuGirl.",
       "skills": {
-        "75101201": "Kỹ năng Atack của Fenrir gây sát thương với 3 kẻ thù ngẫu nhiên nó sẽ gây sát thương thêm theo vị trí của họ và chảy máu;\nSau khi Fenrir đạt đến 10-Sao, tỷ lệ sát thương của kỹ năng này sẽ tăng lên 206% và hiệu ứng chảy máu làm cho Fenrir có thể hợp tác với các cô gái có thể đánh bóng sát thương chảy máu;\nKỹ năng sẽ Chí Mạng nếu nó đánh kẻ thù ở hậu tuyến có nghĩa là Fenrir có thể là mối đe dọa cho tất cả kẻ thù của mình bất kể họ có được đồng đội bảo vệ hay không.",
-        "75101202": "Kỹ năng hiệu ứng tăng cường cung cấp Fenrir thêm bộ giáp tấn công HP Phá vỡ và tỷ lệ chặn đòn;\nGiáp gãy thêm sẽ cho phép cô ta gây sát thương nhiều hơn;\nTỷ lệ Chặn Đòn bổ sung sẽ giúp Fenrir dễ dàng kích hoạt kỹ năng \"Desperado\" của cô.",
-        "75101203": "Kỹ năng hiệu ứng tăng cường cho phép Fenrir đạt được thêm sát thương Tấn công và Chí Mạng từ mỗi Kỹ năng chủ động được kích hoạt;\nBộ lông mà cô có được từ kỹ năng này sẽ không hết hạn qua thời gian trong một trận chiến khiến cô trở thành một chiến binh tốt hơn trong các trận chiến dài.",
-        "75101204": "Kỹ năng cốt lõi của Fenrir cho phép Fenrir loại bỏ tất cả hiệu ứng kiểm soát khỏi cuộc phản công 3 kẻ thù ngẫu nhiên của cô và hồi máu từ kỹ năng này sau khi ngăn chặn thành công 3 cú đánh;\nĐây là kỹ năng quan trọng nhất đối với Fenrir cho phép cô ấy sống sót lâu hơn vầ đối phó với nhiều sát thương hơn cho các bé gái có HP cao hơn."
+        "75101201": "Kỹ năng tấn công của Fenrir gây sát thương lên 3 kẻ địch ngẫu nhiên; sát thương bổ sung phụ thuộc vị trí của chúng và kỹ năng gây Chảy Máu.\nKhi Fenrir đạt 10 sao, tỷ lệ sát thương kỹ năng tăng lên 206%; Chảy Máu còn giúp cô phối hợp với nhân vật tăng sát thương hiệu ứng này.\nĐòn đánh chắc chắn Chí Mạng nếu trúng mục tiêu hàng sau, nhờ vậy Fenrir có thể uy hiếp cả các chủ lực được đồng đội bảo vệ.",
+        "75101202": "Kỹ năng tăng cường: Tăng HP, Tấn Công, Xuyên Giáp và tỷ lệ Chặn Đòn cho Fenrir.\nXuyên Giáp giúp cô gây thêm sát thương.\nTỷ lệ Chặn Đòn cao giúp cô kích hoạt “Desperado” thường xuyên hơn.",
+        "75101203": "Kỹ năng tăng cường: Mỗi lần kỹ năng chủ động được kích hoạt, Fenrir được cộng thêm Tấn Công và Sát Thương Chí Mạng.\nCác cộng dồn này không tự hết hạn trong trận, giúp Fenrir ngày càng mạnh khi giao tranh kéo dài.",
+        "75101204": "Kỹ năng cốt lõi của Fenrir: Sau khi Chặn Đòn thành công 3 lần, cô xóa mọi hiệu ứng khống chế trên bản thân, phản công 3 kẻ địch ngẫu nhiên và tự Hồi Máu.\nĐây là kỹ năng quan trọng giúp Fenrir sống lâu hơn và gây nhiều sát thương lên mục tiêu có HP cao."
       }
     },
     "852013": {
