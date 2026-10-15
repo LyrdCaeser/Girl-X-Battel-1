@@ -4,8 +4,8 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0b1023">
 <title>Giftcode Studio — Nữ Thần Chiến Đấu GXB 3</title>
-<link rel="stylesheet" href="./style.css?v=3">
-<script defer src="./app.js?v=4"></script>
+<link rel="stylesheet" href="./style.css?v=20261015-skinshop1">
+<script defer src="./app.js?v=20261015-skinshop1"></script>
 </head>
 <body>
 <div class="shell">
@@ -16,6 +16,7 @@
     <button class="nav-btn active" data-view="create">✦ <span>Tạo giftcode</span></button>
     <button class="nav-btn" data-view="history">▤ <span>Mã đã phát hành</span></button>
     <button class="nav-btn" data-view="redeem">◈ <span>Đổi giftcode</span></button>
+    <button class="nav-btn" data-view="skins">✧ <span>Quản lý trang phục</span></button>
   </nav>
   <div class="side-bottom">
     <span class="server-dot"></span> Kết nối máy chủ GXB 3
@@ -38,8 +39,8 @@
   </section>
   <div id="restricted" class="panel" hidden><h2>Quản trị viên mới được truy cập</h2><p class="muted">Tài khoản đang đăng nhập không có quyền SUPER GM. Bạn vẫn có thể đổi giftcode tại mục “Đổi giftcode”.</p></div>
   <section id="create-lock" class="view panel login-card" hidden>
-    <span class="eyebrow">KHU VỰC BẢO VỆ</span><h2>Khóa mục Tạo Giftcode</h2>
-    <p class="muted">Chỉ SUPER GM được mở mục tạo mã. Hãy nhập khóa quản trị Giftcode Studio đã cấu hình trên VPS.</p>
+    <span class="eyebrow">KHU VỰC BẢO VỆ</span><h2>Khóa khu vực quản trị</h2>
+    <p class="muted">Chỉ SUPER GM được mở mục tạo giftcode và quản lý cửa hàng Skin. Hãy nhập khóa quản trị Giftcode Studio đã cấu hình trên VPS.</p>
     <form id="unlock-form" class="form-row">
       <label>Khóa Tạo Giftcode <input id="unlock-password" type="password" autocomplete="off" required></label>
       <button class="primary" type="submit">Mở khóa mục tạo mã</button>
@@ -55,7 +56,16 @@
     <div class="create-grid">
       <div class="panel">
         <div class="section-head"><div><span class="eyebrow">BƯỚC 01</span><h2>Thông tin Giftcode</h2></div><span class="tag">Máy chủ xác nhận</span></div>
-        <label>Nhập mã tùy chọn (để trống tạo ngẫu nhiên)<input id="code" maxlength="40" placeholder="VD: GXB3-TRUNGTHU2026" autocomplete="off"></label>
+        <div class="code-editor">
+          <label for="code">Mã Giftcode <span class="hint">(6–24 ký tự A–Z, số, dấu _ hoặc -; để trống để server tự sinh)</span>
+            <input id="code" maxlength="24" minlength="6" spellcheck="false" placeholder="Nhập mã giftcode, ví dụ: TANTHU2026" autocomplete="off" autocapitalize="characters">
+          </label>
+          <div class="code-actions">
+            <button id="random-code" type="button" class="ghost small">✧ Tạo ngẫu nhiên</button>
+            <button id="check-code" type="button" class="ghost small">Kiểm tra trùng</button>
+          </div>
+          <p id="code-check-status" class="mini" role="status" aria-live="polite">Mã tự chọn được xác nhận lại trên máy chủ khi phát hành.</p>
+        </div>
         <div class="form-pair">
           <label>Số lượt sử dụng tối đa<input id="max-uses" type="number" min="1" max="100000" value="100" required></label>
           <label>Máy chủ áp dụng<select id="world"><option value="ALL">Tất cả máy chủ</option></select></label>
@@ -80,6 +90,34 @@
       </div>
     </div>
   </section>
+  <section id="skins-view" class="view panel" hidden>
+    <div class="section-head"><div><span class="eyebrow">CỬA HÀNG SKIN / TRANG PHỤC</span><h2>Quản lý trang phục gốc</h2></div>
+      <button class="ghost small" id="skin-refresh" type="button">↻ Làm mới</button></div>
+    <p class="muted">Chỉnh giá bằng <strong>Vàng</strong> (Coin) hoặc <strong>Crystal</strong> (Gem) của game. Các skin có giá Vé Trang Phục gốc vẫn có thể giữ hoặc tắt kênh bán đó. Mọi thay đổi được lưu trên PostgreSQL.</p>
+    <p class="skin-wedding-warning">♡ Skin cưới là phần thưởng độc quyền kết duyên. Cả giao diện quản trị và máy chủ đều cấm bật bán, đặt giá hoặc mua bằng API.</p>
+    <div class="skin-stats" id="skin-stats"></div>
+    <div class="skin-filters">
+      <input id="skin-search" type="search" aria-label="Tìm trang phục" placeholder="Tìm nhân vật, trang phục hoặc ID...">
+      <select id="skin-group" aria-label="Lọc phe"><option value="all">Tất cả phe</option></select>
+      <select id="skin-state" aria-label="Lọc trạng thái">
+        <option value="all">Tất cả trạng thái</option><option value="enabled">Đang bán</option><option value="disabled">Đã tắt bán</option><option value="wedding">Skin cưới (chỉ xem, bị khóa)</option>
+      </select>
+      <select id="skin-currency" aria-label="Lọc loại tiền">
+        <option value="all">Mọi loại tiền</option><option value="gold">Vàng</option><option value="crystal">Crystal</option><option value="ticket">Vé Trang Phục</option>
+      </select>
+    </div>
+    <div class="skin-toolbar">
+      <span id="skin-page-count" class="muted mini">Đang tải trang phục...</span>
+      <div><button id="skin-prev" type="button" class="ghost small">← Trước</button>
+        <button id="skin-next" type="button" class="ghost small">Tiếp →</button></div>
+    </div>
+    <div id="skin-grid" class="skin-grid"></div>
+    <div class="skin-admin-key">
+      <label>Khóa hành động QTV <span class="hint">(chỉ trong phiên trang hiện tại)</span><input id="skin-gm-key" type="password" autocomplete="off" placeholder="Nhập khóa QTV để xác nhận thay đổi giá"></label>
+      <p class="muted mini">Cấu hình bán skin có hiệu lực ngay sau khi máy chủ xác nhận; không thay đổi dữ liệu skin gốc hay tài khoản đã mua.</p>
+    </div>
+  </section>
+  <dialog id="skin-preview" class="skin-preview"><button type="button" id="skin-preview-close" class="ghost">✕ Đóng</button><img id="skin-preview-image" alt="Xem trước trang phục" loading="lazy"><strong id="skin-preview-name"></strong></dialog>
   <section id="history-view" class="view panel" hidden>
     <div class="section-head"><div><span class="eyebrow">QUẢN LÝ</span><h2>Giftcode đã phát hành</h2></div><button class="ghost" id="refresh-history" type="button">↻ Làm mới</button></div>
     <p class="muted">Có thể khóa mã ngay. Những lượt đổi hợp lệ trước đó vẫn giữ nguyên lịch sử.</p>
