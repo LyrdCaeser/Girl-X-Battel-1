@@ -154,10 +154,16 @@ def update_configs(changes, operator):
         fields = ("enabled", "allow_gold", "allow_crystal", "allow_ticket")
         if any(type(req.get(k)) is not bool for k in fields):
             raise ValueError("Trạng thái bán phải là true hoặc false")
-        try:
-            gold, crystal = int(req.get("price_gold", 0)), int(req.get("price_crystal", 0))
-        except (ValueError, TypeError):
-            raise ValueError("Giá tiền phải là số nguyên") from None
+        def exact_price(raw):
+            # int(1.9) and int(True) silently change the owner's requested price.
+            # Accept only JSON integers or unsigned decimal strings.
+            if type(raw) is int:
+                return raw
+            if isinstance(raw, str) and re.fullmatch(r"[0-9]{1,10}", raw):
+                return int(raw)
+            raise ValueError("Giá tiền phải là số nguyên")
+        gold = exact_price(req.get("price_gold", 0))
+        crystal = exact_price(req.get("price_crystal", 0))
         if not 0 <= gold <= MAX_PRICE or not 0 <= crystal <= MAX_PRICE:
             raise ValueError("Giá phải từ 0 đến 2 tỷ")
         if req["allow_ticket"] and not available_ticket:
