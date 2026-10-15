@@ -567,6 +567,198 @@
     .replace(/Nê\s*-\s*phi\s*-\s*lim/gi,'Nephilim')
     .replace(/\u005c\u005cn/g,'\n');
 
+  // Verified publisher Station labels for every Girl, plus curated native text by content.
+  for (const [source,vietnamese] of [
+  [
+    "Tank",
+    "Đỡ Đòn"
+  ],
+  [
+    "Frontliner",
+    "Tiên Phong"
+  ],
+  [
+    "Damage Dealer",
+    "Sát Thương Chủ Lực"
+  ],
+  [
+    "Control",
+    "Khống Chế"
+  ],
+  [
+    "Support",
+    "Hỗ Trợ"
+  ],
+  [
+    "Healer",
+    "Hồi Phục"
+  ],
+  [
+    "Survive",
+    "Sinh Tồn"
+  ],
+  [
+    "Regenerate",
+    "Tái Tạo"
+  ],
+  [
+    "Surprise Attack",
+    "Đột Kích"
+  ],
+  [
+    "AoE",
+    "Diện Rộng"
+  ],
+  [
+    "Mark Stacker",
+    "Tích Dấu Ấn"
+  ],
+  [
+    "Core",
+    "Chủ Lực"
+  ],
+  [
+    "Team Leader",
+    "Thủ Lĩnh"
+  ],
+  [
+    "Self-Sacrifice",
+    "Hy Sinh"
+  ],
+  [
+    "Suicide-Bomb",
+    "Tự Bạo"
+  ],
+  [
+    "Enhancement",
+    "Cường Hóa"
+  ],
+  [
+    "Reliable",
+    "Đáng Tin Cậy"
+  ],
+  [
+    "Counter",
+    "Phản Đòn"
+  ],
+  [
+    "Speed",
+    "Tốc Độ"
+  ],
+  [
+    "Buff",
+    "Tăng Cường"
+  ],
+  [
+    "Counterstrike",
+    "Phản Kích"
+  ],
+  [
+    "Growth",
+    "Tăng Trưởng"
+  ],
+  [
+    "Reaper",
+    "Tử Thần"
+  ],
+  [
+    "Invincible",
+    "Bất Bại"
+  ],
+  [
+    "DoT",
+    "Sát Thương Theo Thời Gian"
+  ],
+  [
+    "Flexible",
+    "Linh Hoạt"
+  ],
+  [
+    "Revive",
+    "Hồi Sinh"
+  ],
+  [
+    "Nice Body",
+    "Vóc Dáng Đẹp"
+  ],
+  [
+    "Oppai!!!",
+    "Vòng Một Nổi Bật"
+  ],
+  [
+    "Cute",
+    "Đáng Yêu"
+  ],
+  [
+    "Unique",
+    "Độc Đáo"
+  ],
+  [
+    "Nice Voice",
+    "Giọng Nói Hay"
+  ],
+  [
+    "Sexy",
+    "Quyến Rũ"
+  ],
+  [
+    "My Wife!",
+    "Vợ Của Tôi!"
+  ],
+  [
+    "Taciturn",
+    "Ít Nói"
+  ],
+  [
+    "Gentle",
+    "Dịu Dàng"
+  ],
+  [
+    "My Queen!",
+    "Nữ Hoàng Của Tôi!"
+  ],
+  [
+    "Cuuute!!!",
+    "Cực Kỳ Đáng Yêu!"
+  ],
+  [
+    "1. A girl from House Angel who can deal tons of damage in many ways;\n2. Nephilim has a high basic Speed attribute with her passive skill: \"Duality\" which allows her to trigger her Active skill faster than others this can make her Equilibrium Marks take full effect against her enemies;\n3. With the help of her Active skill and the passive skill \"Sacred Purification\" allows her to deal more damage against the girls with higher Hp and the other passive skill \"Embrace of Darkness\" allows her to deal an additional wave of damage at the end of each round and wipe out her threat swiftly;\n4. As a girl from House Angel she also requires more resources to be powered up. Please properly manage your resource when you want her into your team.",
+    "1. Nữ Thần thuộc phe Thiên Sứ, có thể gây sát thương lớn bằng nhiều cách.\n2. Nephilim có tốc độ cơ bản cao. Kỹ năng bị động “Lưỡng Cực” giúp cô tung kỹ năng chủ động sớm hơn, khiến các Dấu Ấn Cân Bằng phát huy hiệu quả lên đối thủ.\n3. Kỹ năng chủ động kết hợp với “Thanh Tẩy Thần Thánh” gây thêm sát thương lên đối thủ có HP cao. “Vòng Tay Bóng Tối” tạo thêm một đợt sát thương cuối hiệp, giúp nhanh chóng loại bỏ mối đe dọa.\n4. Là Nữ Thần phe Thiên Sứ, Nephilim cần nhiều tài nguyên để bồi dưỡng. Hãy quản lý tài nguyên hợp lý khi đưa cô vào đội hình."
+  ],
+  [
+    "Nephilim's Active skill deals Armor-Ignoring damage against 4 random enemies and tags each of them with an Equilibrium Mark;\nThe mark can take effect almost immediately with the help of Nephilim's high Speed attribute. This can provide great suppression to the girls who rely more on their Active skills to deal damage.",
+    "Kỹ năng chủ động của Nephilim gây sát thương bỏ qua Giáp lên 4 kẻ địch ngẫu nhiên và gắn Dấu Ấn Cân Bằng lên từng mục tiêu.\nNhờ tốc độ cao của Nephilim, dấu ấn có thể kích hoạt gần như ngay lập tức, gây áp lực lớn lên những kẻ địch phụ thuộc vào kỹ năng chủ động."
+  ],
+  [
+    "Buff skill increases Nephilim's Hp Holy Damage Damage Reduction and Speed. Provides Nephilim higher survivability and offensive ability making her able to survive longer in the battlefield while dealing tons of damage.",
+    "Kỹ năng tăng cường giúp Nephilim tăng HP, sát thương Thánh, khả năng giảm sát thương và tốc độ. Nhờ đó, cô vừa sống sót lâu hơn vừa duy trì khả năng tấn công mạnh mẽ."
+  ],
+  [
+    "Buff skill enables Nephilim's basic attack to hit the enemies with the highest Hp dealing additional damage basing on their Maximum Hp and heals Nephilim herself;\nThis skill allows Nephilim to counter the enemies who have higher Hp and get decent recovery by attacking them.",
+    "Kỹ năng tăng cường khiến đòn đánh thường của Nephilim nhắm vào mục tiêu có HP cao nhất, gây thêm sát thương dựa trên HP tối đa của chúng và hồi HP cho bản thân.\nKỹ năng này giúp Nephilim khắc chế đối thủ nhiều HP và hồi phục khi tấn công."
+  ],
+  [
+    "Buff skill allows Nephilim to deal tons of damage against the damage dealers of her enemies;\nThe skill also lowers the effects of healing Nephilim's enemies receive allows Nephilim to gain more advantage if the battle goes further;\nThe Hp recovery effect this skill provides improves Nephilim's survivability even further.",
+    "Kỹ năng tăng cường giúp Nephilim gây sát thương lớn lên các chủ lực gây sát thương của đối phương.\nKỹ năng còn làm giảm hiệu quả hồi máu mà đối phương nhận được, giúp Nephilim có lợi thế trong những trận đấu kéo dài.\nKhả năng hồi HP của kỹ năng cũng gia tăng sức sống cho Nephilim."
+  ],
+  [
+    "Fusion Umbrella",
+    "Ô Hợp Nhất"
+  ],
+  [
+    "Provides Attack increases its owner's offensive ability;\nProvides Damage Reduction and Control Immunity enables its owner to take less damage from each attack and take fewer control skills.",
+    "Tăng Tấn Công cho người trang bị, cải thiện sức mạnh tấn công.\nTăng khả năng giảm sát thương và miễn nhiễm khống chế, giúp chịu ít sát thương và ít bị ảnh hưởng bởi kỹ năng khống chế."
+  ],
+  [
+    "Fate Crystal",
+    "Pha Lê Vận Mệnh"
+  ],
+  [
+    "Provides additional energy enables its owner to trigger her active skill in advance;\nProvides Attack increases its owner's offensive ability.",
+    "Cung cấp thêm năng lượng, giúp người trang bị sử dụng kỹ năng chủ động sớm hơn.\nĐồng thời tăng Tấn Công, cải thiện khả năng gây sát thương."
+  ]
+]) TEXT.set(source,vietnamese);
+
   const ATTRS = ['title','aria-label','placeholder'];
   const translateText = (s) => {
     const normalized = cleanMarkup(s);
