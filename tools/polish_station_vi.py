@@ -426,6 +426,141 @@ OVERRIDES.update({
 4. Khi mục tiêu bị Kết Tinh, Krystal còn có thể tự Hồi Máu, tăng Tấn Công và khiến mục tiêu Trúng Độc. Cô đặc biệt mạnh trong trận đấu kéo dài.""",
 })
 
+# Third editorial pass: higher-tier Fairy, Demon, Angel and Cosmos tactics.
+OVERRIDES.update({
+ "profile/854013": """1. Joan là nhân vật gây sát thương thuộc phe Tiên.
+2. Joan cần cộng dồn “Remnants” để phát huy toàn bộ sức mạnh. Cô nhận cộng dồn này khi đồng minh tấn công hoặc có bất kỳ nhân vật nào tử trận. Khi dùng kỹ năng chủ động, Joan tiêu hao toàn bộ “Remnants” để gây sát thương lớn.
+3. Kỹ năng “Oath of Peach Garden” giúp Joan hỗ trợ hiệu quả trong nhiều kiểu đội hình.""",
+ "profile/854014": """1. Vera là nhân vật hỗ trợ thuộc phe Tiên, vừa Hồi Máu cho đồng minh vừa làm suy yếu kẻ địch.
+2. Các kỹ năng hỗ trợ đa dạng giúp Vera phù hợp hầu hết đội hình. “Diminish” khiến địch chịu thêm sát thương và giảm sát thương chúng gây ra. “Lullaby” hồi HP cho đồng minh và gây sát thương lên địch; lượng hồi và sát thương phụ thuộc chỉ số Tấn Công của đồng minh nhận “Lullaby”.
+3. Kỹ năng bị động thứ 3 còn cho phép Vera hoán đổi Tốc Độ với một kẻ địch ngẫu nhiên có Tốc Độ cao hơn, giúp cô hành động sớm hơn từ hiệp thứ 2 trở đi.""",
+ "profile/854015": """1. Holly là nhân vật hỗ trợ thuộc phe Tiên.
+2. Bằng cách cộng dồn “Parasites”, Holly giảm Tấn Công và Lượng Hồi Máu Nhận của kẻ địch. Hiệu ứng “Parasites” không thể bị xóa.
+3. Đầu trận, “Natural Order” khiến kẻ địch có đòn đánh thường, kỹ năng chủ động hoặc kỹ năng bị động nhắm mục tiêu ngẫu nhiên phải ưu tiên tấn công Holly. Nhờ đó, các đồng minh, đặc biệt là chủ lực, có thêm thời gian gây sát thương. Tuy nhiên, kẻ địch đang bị Khiêu Khích vẫn ưu tiên tấn công nhân vật đã Khiêu Khích chúng.""",
+ "profile/854016": """1. Kassy là nhân vật hỗ trợ thuộc phe Tiên.
+2. Kỹ năng chủ động và đòn đánh thường của cô chắc chắn gây Chí Mạng lên mục tiêu có HP thấp; cô còn gây sát thương bổ sung và tự hồi HP theo tổng sát thương đã gây.
+3. Khi dùng kỹ năng chủ động, Kassy ban “Cat Eyes” cho đồng minh, giúp họ gây thêm sát thương và hồi HP theo lượng sát thương gây ra.
+4. Kassy tăng cường toàn đội khi bắt đầu trận và cuối mỗi hiệp. Nhân vật hệ Sát Thủ được hưởng gấp đôi hiệu quả; các hiệu ứng tăng cường từ nhiều Kassy có thể cộng dồn.""",
+ "profile/854017": """1. Aurora là nhân vật hỗ trợ thuộc phe Tiên.
+2. Khi trên sân có từ 2 kẻ địch trở lên, kỹ năng chủ động của cô gây sát thương nảy giữa các mục tiêu, mỗi lần chọn 1 kẻ địch ngẫu nhiên.
+3. Số lần nảy càng nhiều, sát thương và xác suất gây khống chế càng tăng.
+4. Sau khi mở kỹ năng bị động tương ứng, đòn đánh thường của Aurora gây Trúng Độc. Sát thương Độc không thể vượt quá 1500% Tấn Công của cô.
+5. Khi chịu đòn đánh thường hoặc sát thương từ kỹ năng bị động, Aurora giảm sát thương mà kẻ tấn công gây ra trong trận.
+6. Aurora còn gây thêm sát thương lên kẻ địch đang chịu hiệu ứng Kết Tinh.""",
+ "profile/854018": """1. K.M. Enlightened là nhân vật hỗ trợ thuộc phe Tiên.
+2. Kỹ năng chủ động của cô giảm Tấn Công của kẻ địch và áp dụng hiệu ứng bất lợi gây sát thương về sau, đồng thời có tác dụng khống chế diện rộng.
+3. Trong trận, cô ban hiệu ứng tăng cường cho đồng minh, giúp họ gây sát thương mạnh hơn.""",
+ "profile/855002": """1. Amelia là nhân vật gây sát thương kiêm khống chế thuộc phe Ác Quỷ.
+2. Khi Thức Tỉnh lên 10 sao, kỹ năng chủ động của Amelia tấn công toàn bộ kẻ địch và có cơ hội đánh cắp Năng Lượng của chúng. Xác suất Hóa Đá từ đòn đánh thường tăng lên; kỹ năng bị động còn tăng Tốc Độ, HP và Sát Thương Kỹ Năng, giúp cô hữu ích trong nhiều tình huống.
+3. Nhân vật phe Ác Quỷ thường khó nâng cấp hơn; cần phân bổ tài nguyên hợp lý nếu muốn đưa Amelia lên cấp sao cao.""",
+ "profile/855003": """1. Wraith là nhân vật gây sát thương bộc phát mạnh thuộc phe Ác Quỷ.
+2. Mỗi khi đồng minh dùng kỹ năng chủ động, kỹ năng bị động của Wraith cho cô thêm Năng Lượng để sử dụng kỹ năng chủ động thường xuyên hơn.
+3. Nếu HP của kẻ địch cao hơn Wraith, cô gây thêm sát thương dựa trên tỷ lệ HP tối đa của mục tiêu, tối đa bằng 1500% Tấn Công của bản thân. Vì vậy Wraith rất hữu ích khi đánh Boss, gồm Boss Bạn Bè và Boss Bang Hội.
+4. Kỹ năng bị động còn tăng Năng Lượng và HP, cải thiện khả năng sinh tồn của cô.
+5. Nhân vật phe Ác Quỷ khó nâng cấp, nên cần quản lý tài nguyên cẩn thận trước khi tăng sao.""",
+ "profile/855004": """1. Scythe là Chiến Binh có khả năng hồi sinh thuộc phe Ác Quỷ.
+2. Cô gây sát thương lớn bằng “Round Marks” và có thể Hóa Đá kẻ địch. Khả năng tự Hồi Máu và hồi sinh giúp Scythe trụ ở hàng trước, chịu sát thương thay đồng minh.
+3. Khả năng hồi sinh phối hợp tốt với Esau & Jacob (gây thêm sát thương toàn địch) hoặc Saint (tăng Tấn Công và Sát Thương Kỹ Năng), từ đó khuếch đại sát thương của đội.
+4. Do nhân vật phe Ác Quỷ khó nâng cấp, nên cần lập kế hoạch tài nguyên trước khi tăng sao.""",
+ "profile/855005": """1. Lucifer là nhân vật chuyên gây sát thương theo thời gian thuộc phe Ác Quỷ.
+2. Mỗi khi đồng minh dùng kỹ năng chủ động, Lucifer nhận thêm Năng Lượng và Sát Thương Kỹ Năng, giúp cô tung kỹ năng thường xuyên hơn. Sát Thương Kỹ Năng tăng dần khi trận đấu kéo dài; cộng với Chảy Máu từ kỹ năng chủ động, cô có thể gây sát thương rất lớn.
+3. Lucifer phát huy tốt khi ghép đội với nhân vật liên tục dùng kỹ năng chủ động, giúp cô kết thúc trận nhanh hơn.
+4. Kỹ năng chủ động khắc chế Xạ Thủ, phù hợp đối phó đội hình nhiều Xạ Thủ như trong Thử Thách.
+5. Nên cân nhắc tài nguyên vì nhân vật phe Ác Quỷ thường khó nâng cấp hơn.""",
+ "profile/855006": """1. Esau & Jacob là cặp nhân vật gây sát thương thuộc phe Ác Quỷ.
+2. Hai người có Tốc Độ cao, cùng với Giảm Sát Thương, Kháng Khống Chế và khả năng rút Năng Lượng của địch. Nhờ vậy họ vừa gây sát thương vừa hỗ trợ đội trong nhiều chế độ.
+3. Khi phối hợp cùng Giana và Diva, hiệu ứng kích hoạt lúc các nhân vật đó tử trận có thể gây lượng sát thương lớn lên địch.
+4. Nhân vật phe Ác Quỷ khó nâng cấp; cần cân nhắc tài nguyên khi tăng sao.""",
+ "profile/855007": """1. Kratos là nhân vật đa dụng thuộc phe Ác Quỷ.
+2. Mỗi kỹ năng của cô đều tăng khả năng tấn công lẫn sinh tồn; Kratos còn đối phó tốt với kẻ địch có HP cao.
+3. Kỹ năng chủ động và kỹ năng bị động “Killing Intent” có cơ hội gây “Terrorize”, đặc biệt hiệu quả trước kẻ địch phụ thuộc đòn đánh thường. Hiệu ứng này còn cản chúng nhận Năng Lượng từ đòn đánh thường.
+4. Muốn phát huy toàn bộ sức mạnh của Kratos, cần trang bị tốt và cấp sao cao; nên quản lý tài nguyên hợp lý.""",
+ "profile/855008": """1. Izanami là nhân vật hỗ trợ bảo vệ đồng minh thuộc phe Ác Quỷ.
+2. Kỹ năng chủ động ban “Lily Shield” cho đồng minh, biến sát thương của đòn đánh thường hoặc kỹ năng chủ động tiếp theo mà họ phải nhận thành Hồi Máu.
+3. Kỹ năng bị động áp dụng “Healing Curse” lên mục tiêu, biến lần Hồi Máu tiếp theo của mục tiêu thành sát thương.
+4. “Lily Shield” và “Healing Curse” không thể kích hoạt lẫn nhau.""",
+ "profile/855009": """1. Apate là nhân vật gây sát thương mạnh thuộc phe Ác Quỷ.
+2. Kỹ năng chủ động đặc biệt khắc chế kẻ địch có Năng Lượng cao.
+3. Đòn đánh thường rút Năng Lượng mục tiêu và gây thêm sát thương dựa trên lượng Năng Lượng đã rút.
+4. Ngay cả khi Apate bị hạ gục, cô vẫn có thể hồi sinh; trong lúc cô vắng mặt, Volo xuất hiện thay thế để tiếp tục gây sát thương cho đội.""",
+ "profile/855010": """1. Frexie là nhân vật gây sát thương thuộc phe Ác Quỷ.
+2. Đòn đánh thường nhắm vào kẻ địch có tỷ lệ HP hiện tại thấp nhất và gắn “Dark Star Mark” lên chúng. Nếu mục tiêu đã có Dấu Ấn này, nó sẽ chịu thêm sát thương theo HP tối đa, giúp Frexie kết liễu địch.
+3. Kỹ năng bị động “Phew that was close” giảm Giáp, Giảm Sát Thương, Tiêu Hao Sát Thương, tỷ lệ Chặn Đòn và Né Tránh của kẻ địch có tỷ lệ HP thấp nhất vào đầu trận và cuối mỗi hiệp, giúp đồng minh gây thêm sát thương.""",
+ "profile/855011": """1. Maia là nhân vật đa dụng thuộc phe Ác Quỷ.
+2. Kỹ năng chủ động gây sát thương lên 4 kẻ địch ngẫu nhiên, có cơ hội xóa 1 hiệu ứng tăng cường trên mỗi mục tiêu.
+3. Khi phải chịu sát thương chí tử, Maia có thể bỏ qua sát thương đó và miễn nhiễm mọi sát thương cho đến hết hiệp.
+4. Maia cộng dồn “Chaos Scars” để giảm HP tối đa của địch. Phần HP tối đa bị giảm không thể phục hồi bằng Hồi Máu; mức giảm tối đa là 40%.""",
+ "profile/855013": """1. Hadea là nhân vật gây sát thương thuộc phe Ác Quỷ.
+2. Kỹ năng chủ động tấn công 2 kẻ địch có HP thấp nhất và áp dụng “Irreversible Death” cùng “Doom's Arrival” lên toàn bộ kẻ địch.
+3. Khi Hadea hoặc đồng minh tử trận, những hiệu ứng liên quan có thể thay đổi đáng kể cục diện.
+4. Cuối mỗi hiệp, Hadea gây sát thương lên toàn bộ kẻ địch dựa trên lượng HP còn lại của chúng.""",
+ "profile/855014": """1. Apollis là nhân vật gây sát thương thuộc phe Ác Quỷ.
+2. Kỹ năng chủ động đánh cắp Tấn Công và Giáp của kẻ địch; đòn đánh thường đánh cắp Năng Lượng.
+3. Cả hai loại đòn đánh đều tăng xác suất Né Tránh của Apollis.
+4. Các hiệu ứng đặc biệt kích hoạt khi cô chịu Khống Chế, hiệu ứng bất lợi khác, sát thương thường hoặc sát thương chí tử.""",
+ "profile/856001": """1. Angel là nhân vật đa dụng thuộc phe Thiên Thần.
+2. Khi bị tấn công, Angel có thể tự Hồi Máu để duy trì khả năng sinh tồn.
+3. Mỗi đòn đánh thường tăng thêm Sát Thương Thánh, giúp cô gây sát thương mạnh hơn khi trận kéo dài.
+4. Nhân vật phe Thiên Thần khó nâng cấp hơn; nên lên kế hoạch dùng tài nguyên trước khi tăng sao.""",
+ "profile/856002": """1. Gabriel là nhân vật gây sát thương diện rộng bộc phát thuộc phe Thiên Thần.
+2. Đòn đánh thường ưu tiên các kẻ địch ở hàng trước.
+3. Gabriel có sức chống chịu tốt và khi được đầu tư đầy đủ có thể hấp thụ lượng sát thương lớn.
+4. Bộ kỹ năng xoay quanh Chí Mạng: cô gắn Dấu Ấn Chí Mạng lên kẻ địch để kích hoạt khi đòn đánh chí mạng trúng mục tiêu; đồng thời tăng Chí Mạng sau mỗi đòn đánh thường.
+5. Nhân vật phe Thiên Thần khó nâng cấp hơn; cần phân bổ tài nguyên hợp lý.""",
+ "profile/856003": """1. Michael là nhân vật hỗ trợ có khả năng hồi sinh thuộc phe Thiên Thần.
+2. Michael hữu dụng ở nhiều chế độ: từ 10 sao cô miễn nhiễm mọi loại Khống Chế; kỹ năng chủ động vừa gây sát thương vừa Hồi Máu cho đồng minh; khi tử trận, cô có thể hồi sinh với đầy HP.
+3. Nhân vật phe Thiên Thần khó nâng cấp hơn; nên cân nhắc tài nguyên khi tăng sao.""",
+ "profile/856004": """1. Phoenix là nhân vật gây sát thương thuộc phe Thiên Thần.
+2. Tốc Độ cao giúp cô thường được ra đòn trước. Kỹ năng bị động ưu tiên kẻ địch có HP thấp nhất; khi có địch tử trận, Phoenix nhận 100 Năng Lượng và thêm Sát Thương Thánh để sớm dùng kỹ năng chủ động.
+3. Phoenix miễn nhiễm Làm Choáng nên thích hợp với nhiều tình huống.
+4. Nhân vật phe Thiên Thần khó nâng cấp hơn; cần quản lý tài nguyên hợp lý.""",
+ "profile/856005": """1. Raphael là nhân vật hỗ trợ tăng Tốc Độ và Tấn Công cho đồng minh thuộc phe Thiên Thần.
+2. Cô vừa Hồi Máu vừa tăng Tốc Độ, Tấn Công cho đội. Ngay cả khi tử trận, Raphael vẫn có thể tiếp tục Hồi Máu cho đồng minh trong vài hiệp.
+3. Khả năng sinh tồn cao giúp Raphael hỗ trợ đội đặc biệt tốt trong các trận kéo dài.
+4. Nhân vật phe Thiên Thần khó nâng cấp hơn; nên phân bổ tài nguyên trước khi tăng sao.""",
+ "profile/856006": """1. Nephilim là nhân vật phe Thiên Thần có thể gây sát thương lớn bằng nhiều cách.
+2. Tốc Độ cơ bản cao kết hợp kỹ năng bị động “Duality” cho phép cô dùng kỹ năng chủ động sớm, giúp Dấu Ấn “Equilibrium” phát huy hiệu quả.
+3. Kỹ năng chủ động cùng “Sacred Purification” giúp Nephilim gây thêm sát thương lên nhân vật có HP cao. “Embrace of Darkness” tiếp tục gây một đợt sát thương vào cuối mỗi hiệp, giúp cô nhanh chóng hạ những mục tiêu nguy hiểm.
+4. Nephilim thuộc phe Thiên Thần nên cần nhiều tài nguyên để nâng cấp; hãy cân nhắc trước khi đưa cô vào đội.""",
+ "profile/856007": """1. Uriel là Chiến Binh có khả năng khống chế diện rộng thuộc phe Thiên Thần.
+2. Kỹ năng chủ động tăng Sát Thương Thánh. Kỹ năng bị động tăng HP và Giảm Sát Thương, giúp Uriel chịu đòn tốt, đặc biệt khi có nhân vật Hồi Máu hỗ trợ.
+3. Uriel áp dụng “Scars of Belinus” lên kẻ địch. Khi có 2 cộng dồn, hiệu ứng chuyển thành “Trial of Belinus”, ngăn mục tiêu kích hoạt kỹ năng bị động.
+Lưu ý: “Trial of Belinus” chỉ vô hiệu hóa các kỹ năng bị động cần điều kiện kích hoạt. Nếu Vivian đã áp dụng “Galaxy” trước đó, hiệu ứng ấy vẫn hoạt động, nhưng Vivian không thể chọn mục tiêu “Galaxy” tiếp theo khi đang chịu “Trial of Belinus”.""",
+ "profile/856008": """1. Angelica là nhân vật gây sát thương thuộc phe Thiên Thần.
+2. Kỹ năng chủ động có cơ chế “Preparation” đặc biệt và tấn công toàn bộ kẻ địch với sát thương lớn. Tăng Sát Thương Thánh và Sát Thương Kỹ Năng sẽ giúp cô mạnh hơn.
+3. Trong trận, Angelica cộng dồn “Sun Slayer”; khi dùng kỹ năng chủ động hoặc đòn đánh thường, cộng dồn này truy kích kẻ địch có HP thấp nhất để kết liễu.
+4. Hiệu ứng “Dazed” nhắm vào kẻ địch có HP thấp nhất, buộc các loại đòn đánh của mục tiêu chỉ đánh một đối tượng thay vì nhiều đối tượng, giúp đội giảm sát thương nhận vào.""",
+ "profile/856009": """1. Gwen & Brigit là cặp nhân vật gây sát thương thuộc phe Thiên Thần.
+2. Họ tung nhiều đòn đánh dựa trên số cộng dồn “Gilded Butterfly” trên mục tiêu. Khi mục tiêu có từ 5 cộng dồn trở lên, giữ lại 1 cộng dồn và tiêu hao phần còn lại để gây lượng lớn sát thương bổ sung.
+3. Sau Thức Tỉnh, đòn đánh thường chuyển sang tấn công 3 kẻ địch có HP thấp nhất, giúp nhanh chóng kết liễu mục tiêu yếu.
+4. Khi đồng minh gây Chí Mạng, Gwen & Brigit được Hồi Máu và tăng Tốc Độ, cải thiện sức chống chịu.
+Khi bị kẻ địch mang “Gilded Butterfly” do chính họ áp dụng tấn công, đồng minh ở hàng trước có thể chịu thay một phần sát thương.""",
+ "profile/856010": """1. Cupid là nhân vật hỗ trợ Hồi Máu thuộc phe Thiên Thần.
+2. Kỹ năng chủ động giảm Tấn Công của kẻ địch, giảm sát thương đồng minh phải chịu và hồi HP nhiều lần.
+3. Nếu lượng Hồi Máu từ kỹ năng vượt HP tối đa của mục tiêu, phần dư chuyển thành Điểm Khiên (BP) của Khiên Ma Thuật.
+4. Số lần Hồi Máu phụ thuộc cộng dồn “Heartbeat” của Cupid, giúp đồng minh sống sót lâu hơn.""",
+ "profile/856011": """1. Poseidia là Chiến Binh thuộc phe Thiên Thần.
+2. Kỹ năng chủ động giảm Giáp địch, gây sát thương nhiều lần và tăng Chặn Đòn cho toàn bộ đồng minh.
+3. Đòn đánh thường giúp Poseidia tự Hồi Máu và tăng Chặn Đòn cho đồng minh hàng trước.
+4. Đầu trận, Poseidia có thể Khiêu Khích toàn bộ kẻ địch. Khi đồng minh Chặn Đòn thành công, cô nhận 1 cộng dồn “Gift of the Sea”, tự hồi HP và có cơ hội Kết Tinh 2 kẻ địch ngẫu nhiên.""",
+ "profile/857001": """1. Syrcotte là nhân vật gây sát thương thuộc phe Vũ Trụ.
+2. Kỹ năng chủ động gây lượng lớn sát thương xuyên Giáp lên kẻ địch có HP thấp.
+3. Đòn đánh thường cũng bỏ qua Giáp và áp dụng “Miasma” lên mục tiêu.
+4. Syrcotte có thể giảm sát thương mà kẻ địch có HP thấp nhất gây ra và tự Hồi Máu.
+5. Khi đạt đầy Năng Lượng, cô xóa các hiệu ứng Khống Chế, Dấu Ấn và Sát Thương Theo Thời Gian trên bản thân, sau đó được tăng cường bằng “Starburst”.""",
+ "profile/857002": """1. Elysia là nhân vật khống chế diện rộng thuộc phe Vũ Trụ.
+2. Kỹ năng chủ động gây sát thương lên toàn bộ kẻ địch và truy kích dựa trên HP tối đa của mục tiêu. Cô đồng thời xóa tất cả “Primal Colors” trên chúng và kích hoạt các hiệu ứng bất lợi tương ứng.
+3. Elysia có thể tô các loại “Primal Colors” khác nhau lên kẻ địch để giảm Tốc Độ, Giáp hoặc Tấn Công.
+4. Đầu mỗi hiệp, cô có cơ hội Câm Lặng hoặc gây Khiếp Sợ lên kẻ địch.
+5. “Pisces' Gift” tăng Xác Suất Khống Chế Bổ Sung và Giảm Sát Thương Chí Mạng nhận vào. Khi có 3 cộng dồn, đòn đánh thường tiếp theo áp dụng “Primal Blue” lên mục tiêu.""",
+ "profile/857003": """1. Effy là nhân vật gây sát thương thuộc phe Vũ Trụ.
+2. Kỹ năng chủ động gây nhiều đợt sát thương bộc phát lên kẻ địch.
+3. Đòn đánh thường có cơ hội gây “Afterimage”, khiến kẻ địch mang hiệu ứng dễ đánh trượt khi dùng đòn đánh thường hoặc kỹ năng chủ động.
+4. Effy giảm Chí Mạng bản thân nhưng tăng giới hạn tối đa của Sát Thương Chí Mạng; sát thương từ kỹ năng bị động vẫn có thể gây Chí Mạng.
+5. Cô áp dụng “Kaus Australis” lên địch, khiến hiệu ứng Hồi Máu của chúng bị trì hoãn và chịu thêm sát thương cố định dựa trên HP tối đa mỗi khi bị đòn đánh thường hoặc kỹ năng chủ động tấn công.
+6. Kỹ năng chủ động xóa “Kaus Australis” trên địch và thay bằng “Alnasl”, khiến chúng chịu một phần sát thương sau khi dùng đòn đánh thường hoặc kỹ năng chủ động.""",
+})
+
 EMPTY_SOURCE = "此處為填充文本"
 
 
