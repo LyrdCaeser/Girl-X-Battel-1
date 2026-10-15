@@ -213,19 +213,19 @@ async function loadSkins(){
    $('skin-group').dataset.filled='1';
  }
  renderSkins();
+ await refreshBankOrders();
 }
 function skinSettings(card){
  const value=k=>card.querySelector('[data-field="'+k+'"]');
  const id=Number(card.dataset.skinId);
  const price=k=>{const raw=value(k).value.trim();if(!/^\d+$/.test(raw))throw Error('Giá phải là số nguyên không âm');return Number(raw);};
- for(const field of ['price_gold','price_crystal']){
+ for(const field of ['price_vnd','price_crystal']){
    const el=value(field),num=price(field);
    if(!Number.isSafeInteger(num)||num<0||num>2000000000)throw Error('Giá phải là số nguyên từ 0 đến 2 tỷ');
  }
  return {skin_id:id,enabled:value('enabled').checked,
-  allow_gold:value('allow_gold').checked,allow_crystal:value('allow_crystal').checked,
-  allow_ticket:value('allow_ticket').checked,
-  price_gold:price('price_gold'),price_crystal:price('price_crystal')};
+  allow_bank:value('allow_bank').checked,allow_crystal:value('allow_crystal').checked,
+  price_vnd:price('price_vnd'),price_crystal:price('price_crystal')};
 }
 async function saveSkinRows(cards){
  const changes=cards.map(skinSettings);
@@ -241,6 +241,36 @@ async function saveSkinRows(cards){
    notice('Máy chủ đã lưu cấu hình '+response.updated+' trang phục.');
    await loadSkins();
  }catch(e){notice(e.message,false);}finally{if(button)button.disabled=false;}
+}
+async function refreshBankOrders(){
+ const status=$('skin-order-state').value;
+ const response=await api('/api/skin-shop/admin/bank/orders?status='+encodeURIComponent(status));
+ const rows=response.orders||[];
+ $('skin-order-count').textContent=rows.length+' đơn ('+status+')';
+ const host=$('skin-bank-orders');host.replaceChildren();
+ if(!rows.length){host.append(txt('p','Không có đơn trong trạng thái này.','muted'));return;}
+ for(const order of rows){
+  const wrap=txt('article','','skin-order-item'),info=txt('div','','skin-order-text');
+  info.append(txt('b',order.skin_name+' · '+skinFmt(order.price_vnd)+' VNĐ'),
+    txt('small',order.id+' · '+order.uid+' / '+order.server_id+' · '+order.character_name),
+    txt('small',({pending:'Chờ xác nhận chuyển khoản',approved:'Đã duyệt, gửi Hòm Thư',rejected:'Đã từ chối'}[order.status]||order.status)));
+  wrap.append(info);
+  if(order.status==='pending'){
+    for(const [ok,label] of [[true,'Đã nhận tiền · Duyệt'],[false,'Từ chối']]){
+      const b=txt('button',label,ok?'primary small':'ghost small');b.type='button';
+      b.onclick=async()=>{
+        if(!$('skin-gm-key').value.trim()){notice('Nhập khóa hành động QTV trước khi duyệt đơn.',false);return;}
+        if(!confirm(ok?('Chỉ DUYỆT khi đã kiểm tra ngân hàng nhận đúng '+skinFmt(order.price_vnd)+' VNĐ cho đơn '+order.id+'. Xác nhận đã nhận tiền?'):
+          ('Từ chối đơn '+order.id+'?')))return;
+        b.disabled=true;
+        try{await api('/api/skin-shop/admin/bank/review',{order_id:order.id,approve:ok},true,true);
+          notice(ok?'Đã duyệt và gửi skin vào Hòm Thư người chơi.':'Đã từ chối đơn.');await refreshBankOrders();}
+        catch(e){notice(e.message,false);b.disabled=false;}
+      };wrap.append(b);
+    }
+  }
+  host.append(wrap);
+ }
 }
 function renderSkins(){
  const filtered=skinFiltered(), pages=Math.max(1,Math.ceil(filtered.length/SKIN_PAGE_SIZE));
@@ -274,13 +304,11 @@ function renderSkins(){
    };
    const controls=txt('div','','skin-controls');
    controls.append(label('enabled','Bật bán','checkbox',r.enabled),
-     label('allow_gold','Bán bằng Vàng','checkbox',r.allow_gold),
-     label('price_gold','Giá Vàng','number',r.price_gold),
+     label('allow_bank','Chuyển khoản ngân hàng','checkbox',r.allow_bank),
+     label('price_vnd','Giá chuyển khoản (VNĐ)','number',r.price_vnd),
      label('allow_crystal','Bán bằng Crystal','checkbox',r.allow_crystal),
      label('price_crystal','Giá Crystal','number',r.price_crystal));
-   const ticket=label('allow_ticket','Vé Trang Phục gốc: '+skinFmt(r.price_ticket),'checkbox',r.allow_ticket);
-   if(!r.price_ticket)ticket.querySelector('input').disabled=true;
-   controls.append(ticket);card.append(controls);
+   card.append(controls);
    const save=txt('button','Lưu trang phục này','primary small');save.type='button';save.onclick=()=>saveSkinRows([card]);
    card.append(save);grid.append(card);
  }
@@ -295,6 +323,8 @@ $('skin-next').onclick=()=>{state.skinPage++;renderSkins();};
 $('skin-save-visible').onclick=()=>saveSkinRows([...document.querySelectorAll('#skin-grid .skin-item:not(.is-wedding):not(.is-locked)')]);
 $('skin-verify-key').onclick=async()=>{try{await api('/api/admin/gm/verify-key',{},true);notice('Khóa hành động QTV hợp lệ.');}catch(e){notice(e.message,false);}};
 $('skin-preview-close').onclick=()=>$('skin-preview').close();
+$('skin-order-refresh').onclick=()=>refreshBankOrders().catch(e=>notice(e.message,false));
+$('skin-order-state').onchange=()=>refreshBankOrders().catch(e=>notice(e.message,false));
 
 async function start(){
  // Hide all privileged navigation until the server confirms SUPER GM ownership.
