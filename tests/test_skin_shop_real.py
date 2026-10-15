@@ -71,7 +71,7 @@ class SkinShopTests(unittest.TestCase):
         skin_store.update_configs([self.config()], "OWNER")
         with self.assertRaisesRegex(ValueError, "Không đủ"):
             skins.action(state, {"action":"buy","skin":self.normal,"payment":"gold"})
-        with self.assertRaisesRegex(ValueError, "phương thức"):
+        with self.assertRaisesRegex(ValueError, "Phương thức"):
             skins.action(state, {"action":"buy","skin":self.normal,"payment":"ticket"})
         self.assertEqual(state["items"], before)
 
