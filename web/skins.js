@@ -52,13 +52,25 @@ const Skins=(()=>{
   await load();
   liveOffers=(await api('/api/skin-shop/catalog',{})).offers||[];
   const {body,close}=GirlUI.win({title:'Cửa Hàng Trang Phục',cls:'sk-store-win',
-    help:'Vàng và Crystal là tiền trong game. Giá do quản trị viên đặt trên máy chủ. Skin cưới là phần thưởng độc quyền kết duyên và không được bán.'});
+    help:'Chuyển khoản ngân hàng (Zalo QTV 0856848557) hoặc Crystal. Đơn ngân hàng phải được quản trị viên đối chiếu và duyệt mới gửi Skin qua Hòm Thư. Skin cưới độc quyền kết duyên không bán.'});
   const tk=el('div','sk-store-top');
-  for(const [id,name] of [['1','Vàng'],['2','Crystal'],['74','Vé Trang Phục']]){
+  for(const [id,name] of [['2','Crystal']]){
     const chip=el('span','sk-store-tickets'),it=itemCatalog?.[id],src=it&&typeof itemPicture==='function'?itemPicture(it):'';
     if(src){const icon=el('img');icon.src=src;icon.alt='';chip.append(icon);}
     chip.append(el('b','',name+': '+number(state.items?.[id]||0)));tk.append(chip);
   }
+  tk.append(el('p','sk-bank-help','Chuyển khoản ngân hàng: liên hệ Zalo quản trị 0856848557 để nhận thông tin và gửi mã đơn. Chỉ nhận Skin khi QTV xác nhận tiền.'));
+  const ordersBtn=btn('sk-order-history','Đơn ngân hàng của tôi',async()=>{
+    try{
+      const result=await api('/api/skin-shop/bank/orders');
+      const {body:orderBody}=GirlUI.win({title:'Đơn Mua Trang Phục',cls:'sk-bank-orders'});
+      const orders=result.orders||[];
+      if(!orders.length)orderBody.append(el('p','','Chưa có đơn chuyển khoản.'));
+      for(const order of orders){orderBody.append(el('p','sk-bank-order',
+        order.id+' · '+order.skin_name+' · '+number(order.price_vnd)+' VNĐ · '+
+        ({pending:'Chờ QTV xác nhận',approved:'Đã duyệt — nhận qua Hòm Thư',rejected:'Đã từ chối'}[order.status]||order.status)));}
+    }catch(e){GirlUI.toast(e.message);}
+  });tk.append(ordersBtn);
   const f=el('div','sk-store-filter');
   [0,1,2,3,4,5,6,7].forEach(g=>{
    const b=btn('sk-store-f'+(storeGroup===g?' on':''),g?'':'Tất cả',()=>{storeGroup=g;close();store();});
@@ -76,23 +88,42 @@ const Skins=(()=>{
    const n=owned(r.skin_id);if(n)pic.append(el('span','sk-store-own','×'+n));
    c.append(pic,el('b','sk-store-name',r.name),el('small','sk-store-girl',r.girl_name||''));
    let methods=0;
-   for(const [kind,allowed,amount,key,label] of [['gold','allow_gold','price_gold','1','Vàng'],
-     ['crystal','allow_crystal','price_crystal','2','Crystal'],['ticket','allow_ticket','price_ticket','74','Vé Trang Phục']]){
-    if(!r[allowed]||!(Number(r[amount])>0))continue;
+   if(r.allow_bank&&Number(r.price_vnd)>0){
     methods++;
-    const cost=Number(r[amount]);
+    const bank=btn('sk-store-buy sk-bank-buy','🏦 '+number(r.price_vnd)+' VNĐ',async()=>{
+      if(!(await GirlUI.confirm('Tạo đơn '+r.name+' giá '+number(r.price_vnd)+' VNĐ? Liên hệ Zalo 0856848557 để nhận thông tin chuyển khoản, rồi chờ QTV xác nhận đã nhận tiền.',
+        {title:'Đơn Chuyển Khoản',ok:'Tạo Đơn'})))return;
+      bank.disabled=true;
+      try{
+        const order=await api('/api/skin-shop/bank/create',{skin_id:r.skin_id});
+        const {body:orderBody}=GirlUI.win({title:'Đơn Chuyển Khoản',cls:'sk-bank-order-win'});
+        orderBody.append(el('p','','Mã đơn: '+order.id),el('p','','Trang phục: '+order.skin_name),
+          el('p','','Số tiền: '+number(order.price_vnd)+' VNĐ'),
+          el('p','','Nội dung chuyển khoản: '+order.id),
+          el('p','','Liên hệ Zalo QTV 0856848557 để nhận thông tin tài khoản ngân hàng và gửi mã đơn.'),
+          el('p','','Đơn đang chờ. Skin sẽ được gửi qua Hòm Thư sau khi QTV xác minh đã nhận tiền.'));
+        const link=el('a','sk-bank-zalo','Mở Zalo quản trị');
+        link.href='https://zalo.me/0856848557';link.target='_blank';link.rel='noopener noreferrer';
+        orderBody.append(link);
+      }catch(e){GirlUI.toast(e.message);}finally{bank.disabled=false;}
+    });
+    c.append(bank);
+   }
+   if(r.allow_crystal&&Number(r.price_crystal)>0){
+    methods++;
+    const cost=Number(r.price_crystal);
     const buy=btn('sk-store-buy','',async()=>{
-      if(!(await GirlUI.confirm('Mua '+r.name+' với '+number(cost)+' '+label+'?',{title:'Xác Nhận Mua',ok:'Mua'})))return;
+      if(!(await GirlUI.confirm('Mua '+r.name+' với '+number(cost)+' Crystal?',{title:'Xác Nhận Mua',ok:'Mua'})))return;
       try{
         buy.disabled=true;
-        const res=await api('/api/skins/action',{action:'buy',skin:r.skin_id,payment:kind});
+        const res=await api('/api/skins/action',{action:'buy',skin:r.skin_id,payment:'crystal'});
         state=res.state;close();await store();CampaignUI.popup('Cửa Hàng Trang Phục',res.got);
       }catch(e){GirlUI.toast(e.message);buy.disabled=false;}
     });
-    const it=itemCatalog?.[key],src=it&&typeof itemPicture==='function'?itemPicture(it):'';
+    const it=itemCatalog?.['2'],src=it&&typeof itemPicture==='function'?itemPicture(it):'';
     if(src){const image=el('img');image.src=src;image.alt='';buy.append(image);}
     buy.append(el('span','',number(cost)));
-    buy.title='Mua bằng '+label;buy.disabled=Number(state.items?.[key]||0)<cost;
+    buy.title='Mua bằng Crystal';buy.disabled=Number(state.items?.['2']||0)<cost;
     c.append(buy);
    }
    if(methods)grid.append(c);
