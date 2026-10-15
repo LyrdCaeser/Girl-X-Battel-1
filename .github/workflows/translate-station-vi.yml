@@ -37,7 +37,12 @@ jobs:
           HF_HUB_DISABLE_TELEMETRY: "1"
           TOKENIZERS_PARALLELISM: "false"
         run: |
-          python tools/translate_station_vi.py --apply --batch-size 12
+          if test -s web/assets/station/station-vi.json; then
+            echo "Translation overlay exists: repair numeric fidelity without downloading the model"
+            python tools/translate_station_vi.py --repair
+          else
+            python tools/translate_station_vi.py --apply --batch-size 12
+          fi
           python tools/translate_station_vi.py --verify
       - name: Upload output for review and manual recovery
         uses: actions/upload-artifact@v4
