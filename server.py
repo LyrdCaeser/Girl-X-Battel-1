@@ -21,7 +21,7 @@ from gxb2.story import catalog as story_catalog
 from gxb2.dress import catalog as dress_catalog
 from gxb2.skins import catalog as skins_catalog
 from gxb2.souls import catalog as souls_catalog
-from gxb2 import protocol as p, local_promotion, local_config, world_live_config, topup, live_service, auth, database, gm_catalog, giftcodes, studio_sso
+from gxb2 import protocol as p, local_promotion, local_config, world_live_config, topup, live_service, auth, database, gm_catalog, giftcodes, studio_sso, skin_store
 from gxb2.player_engines import PlayerEnginePool
 from gxb2.battle import simulate as simulate_battle, ONLINE_BATTLE_ID, normalize_online_seed
 from gxb2.security import FixedWindowRateLimiter, DEFAULT_LIMITS, env_bool, validate_production_config
@@ -439,6 +439,15 @@ class HTTPHandler(BaseHTTPRequestHandler):
                 'season_reward': live_service.pvp_season_claim_status(account['uid'], account['server_id'], mode),
                 'history': live_service.pvp_history(account['uid'], 20),
             })
+        if path == '/api/skin-shop/catalog':
+            return self.send(200,skin_store.catalogue())
+        if path == '/api/skin-shop/admin/catalog':
+            if not self.admin_authorized(): return self.send(403,{'error':'Yêu cầu SUPER GM'})
+            return self.send(200,skin_store.catalogue(admin=True))
+        if path == '/api/giftcode/check':
+            if not self.admin_authorized(): return self.send(403,{'error':'Yêu cầu SUPER GM'})
+            code=(parse_qs(parsed.query).get('code') or [''])[0]
+            return self.send(200,{'code':code,'exists':giftcodes.exists(code)})
         if path == '/api/giftcode/catalog':
             if not self.admin_authorized(): return self.send(403,{'error':'Cần tài khoản SUPER GM'})
             return self.send(200,{'catalog':gm_catalog.catalog(),'worlds':live_service.worlds()})
@@ -765,6 +774,7 @@ class HTTPHandler(BaseHTTPRequestHandler):
             if path == '/api/giftcode/sso/exchange' and not self.rate_limit('auth_login'): return
             if path == '/api/giftcode/admin/unlock' and not self.rate_limit('giftcode_unlock'): return
             if path.startswith('/api/giftcode/admin/') and not self.rate_limit('admin'): return
+            if path.startswith('/api/skin-shop/admin/') and not self.rate_limit('admin'): return
             if path == '/api/world-guild/manage' and str(data.get('action') or '') == 'chat' and not self.rate_limit('guild_chat'): return
             if path == '/api/chat/send' and not self.rate_limit('world_chat'): return
             if path in ('/api/auth/register','/api/auth/login'):
@@ -842,6 +852,18 @@ class HTTPHandler(BaseHTTPRequestHandler):
                 ctx=self.auth_context()
                 account=ctx['account']
                 return self.send(200,giftcodes.redeem(data.get('code'),account['uid'],account['server_id']))
+            if path.startswith('/api/skin-shop/admin/'):
+                if not self.admin_authorized():
+                    return self.send(403,{'error':'Chỉ SUPER GM được chỉnh cửa hàng Skin'})
+                if not studio_sso.authorized(self.headers.get('X-GXB3-Giftcode-Access'),self.session_token()):
+                    return self.send(403,{'error':'Vui lòng mở khóa bảng quản trị'})
+                if not self.gm_key_authorized():
+                    return self.send(403,{'error':'Khóa hành động QTV không hợp lệ'})
+                if path == '/api/skin-shop/admin/update':
+                    return self.send(200,skin_store.update_configs([data],self.auth_context()['account']['uid']))
+                if path == '/api/skin-shop/admin/bulk':
+                    return self.send(200,skin_store.update_configs(data.get('changes'),self.auth_context()['account']['uid']))
+                return self.send(404,{'error':'Không tìm thấy thao tác quản lý skin'})
             if path.startswith('/api/giftcode/admin/'):
                 if not self.admin_authorized(): return self.send(403,{'error':'Chỉ SUPER GM được tạo mã'})
                 if not studio_sso.authorized(self.headers.get('X-GXB3-Giftcode-Access'),self.session_token()):
@@ -1185,6 +1207,8 @@ class HTTPHandler(BaseHTTPRequestHandler):
                 return self.send(200, self.engine.souls_action(data))
             if path == '/api/souls/catalog':
                 return self.send(200, souls_catalog())
+            if path == '/api/skin-shop/catalog':
+                return self.send(200,skin_store.catalogue())
             if path == '/api/skins/action':
                 return self.send(200, self.engine.skins_action(data))
             if path == '/api/graduate/preview':
