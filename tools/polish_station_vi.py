@@ -728,6 +728,29 @@ Nếu mục tiêu đang chịu “Thunderbolt”, Zeusia kích hoạt hiệu ứ
  "skill/856012/75601203": """Kỹ năng tăng cường: Đòn đánh thường của Zeusia gây sát thương lên 3 kẻ địch ngẫu nhiên, khiến chúng chịu thêm sát thương từ Thiêu Đốt, đồng thời giảm Độ Chính Xác và Tấn Công của chúng. Zeusia còn nhận “Divinity”.""",
 })
 
+OVERRIDES.update({
+ "skill/857001/757001101": """Kỹ năng chủ động của Syrcotte gây sát thương bỏ qua Giáp lên 3 kẻ địch có HP thấp nhất và áp dụng hiệu ứng “Miasma”. Khi số kẻ địch còn lại ít hơn 3, sát thương tăng tùy số lượng mục tiêu còn sống.
+Syrcotte còn thực hiện thêm các đòn tấn công lên mục tiêu không có Khiên Ma Thuật; mỗi đòn gây một lượng sát thương cố định.""",
+ "skill/857001/757001201": """Kỹ năng tăng cường: Đòn đánh thường của Syrcotte gây sát thương bỏ qua Giáp lên kẻ địch có HP thấp nhất.
+Nếu mục tiêu đang có “Miasma”, Syrcotte tấn công thêm nhiều lần, mỗi đòn gây sát thương cố định.
+Nếu mục tiêu chưa có “Miasma”, cô áp dụng hiệu ứng đó lên mục tiêu.""",
+ "skill/857001/757001301": """Kỹ năng tăng cường: Khi Syrcotte chịu sát thương từ đòn đánh thường hoặc kỹ năng chủ động của kẻ địch có HP thấp nhất, cô phản công dựa trên lượng HP mục tiêu đã mất, giảm Lượng Hồi Máu Nhận của mục tiêu và tự hồi HP theo sát thương gây ra.
+Cuối mỗi hiệp, Syrcotte còn giảm lượng Hồi Máu của toàn bộ nhân vật hệ Tu Sĩ bên địch.""",
+ "skill/857001/757001401": """Kỹ năng tăng cường: Cuối mỗi hiệp, Syrcotte xóa hiệu ứng Khống Chế, Dấu Ấn và Sát Thương Theo Thời Gian trên bản thân, đồng thời tăng sát thương gây ra.
+Khi đạt từ 100 Năng Lượng trở lên, cô lại xóa các hiệu ứng ấy và nhận Khiên Ma Thuật cùng “Bùng Nổ Tinh Tú”. Hiệu ứng này tăng mạnh sát thương, đồng thời giúp Syrcotte Né Tránh sát thương và hiệu ứng từ các đòn đánh hoặc kỹ năng nhắm mục tiêu ngẫu nhiên của địch.""",
+ "skill/857002/757002101": """Kỹ năng chủ động của Elysia gây sát thương lên toàn bộ kẻ địch và truy kích gây thêm sát thương dựa trên HP tối đa của từng mục tiêu. Cô xóa toàn bộ “Primal Colors” trên chúng để kích hoạt các hiệu ứng bất lợi tương ứng.
+Mỗi loại “Hybrid Colors” có tác dụng riêng: có thể khiến địch chịu thêm sát thương, giảm lượng Hồi Máu và Điểm Khiên nhận được, hoặc giảm sát thương chúng gây ra.""",
+ "skill/857002/757002201": """Kỹ năng tăng cường: Khi đồng minh sử dụng đòn đánh thường hoặc kỹ năng chủ động, hoặc khi chính Elysia chịu một đòn Chí Mạng, cô áp dụng các loại “Primal Colors” lên mục tiêu bị đánh hoặc kẻ tấn công mình.""",
+ "skill/857002/757002301": """Kỹ năng tăng cường: Đầu mỗi hiệp, Elysia gây thêm sát thương lên kẻ địch đang mang “Primal Colors” và có cơ hội Câm Lặng hoặc gây Khiếp Sợ chúng.""",
+ "skill/857003/757003101": """Kỹ năng chủ động của Effy gây sát thương toàn bộ kẻ địch và nhiều đợt sát thương cố định lên mục tiêu đang mang “Dư Ảnh”. Nếu kẻ địch mang “Kaus Australis” bị hạ gục, Effy gây thêm một đợt sát thương lên tất cả kẻ địch.
+Cô còn xóa toàn bộ “Kaus Australis” trên địch và thay bằng hiệu ứng “Alnasl”.""",
+ "skill/857003/757003201": """Kỹ năng tăng cường: Đòn đánh thường của Effy gây thêm sát thương lên mục tiêu đang có “Dư Ảnh” và có cơ hội áp dụng hiệu ứng này lên toàn bộ địch.
+Effy tự giảm Chí Mạng nhưng tăng giới hạn tối đa Sát Thương Chí Mạng; sát thương từ kỹ năng bị động của cô vẫn có thể gây Chí Mạng.""",
+ "skill/857003/757003301": """Kỹ năng tăng cường: Đầu mỗi hiệp, Effy áp dụng “Kaus Australis” lên 1 kẻ địch ngẫu nhiên và có cơ hội đặt “Dư Ảnh” lên 3 kẻ địch ngẫu nhiên.
+Cuối mỗi hiệp, cô gây sát thương lên 1 kẻ địch ngẫu nhiên và tất cả mục tiêu đang chịu “Kaus Australis”.""",
+ "skill/857003/757003401": """Kỹ năng tăng cường: Khi đồng minh bị đòn đánh thường hoặc kỹ năng chủ động của kẻ địch đang mang “Dư Ảnh” tấn công, đồng minh có Tấn Công cao nhất sẽ phản kích kẻ tấn công, đồng thời toàn bộ sát thương Effy gây ra được tăng lên.""",
+})
+
 EMPTY_SOURCE = "此處為填充文本"
 
 
