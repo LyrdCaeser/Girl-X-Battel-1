@@ -497,11 +497,88 @@
   };
   for(const [k,v] of Object.entries(MORE_VI))TEXT.set(k,v);
 
+  // Shared native Character / Dating / Station UI. Used for every girl ID.
+  const CHARACTER_VI = {
+    'Gift':'Quà Tặng','Voice':'Giọng Nói','Discuss':'Trò Chuyện','File':'Hồ Sơ',
+    'Date':'Hẹn Hò','Touch':'Chạm','Report':'Báo Cáo','Skill':'Kỹ Năng',
+    'Level Up':'Tăng Cấp','Strategy':'Chiến Thuật','Strategies':'Chiến Thuật',
+    'Lineup':'Đội Hình','Review':'Đánh Giá','Description':'Mô Tả',
+    'Skill Description':'Mô Tả Kỹ Năng','Damage Dealer':'Sát Thương Chủ Lực',
+    'AoE':'Sát Thương Diện Rộng','Control':'Khống Chế','HP':'HP',
+    'Armor':'Phòng Thủ','Speed':'Tốc Độ','Attack':'Tấn Công',
+    'Tags':'Đặc Điểm','Rank':'Xếp Hạng','Recommended Antique':'Cổ Vật Đề Xuất',
+    'No Record':'Chưa có thành tích','Patrol:':'Tuần Tra:',
+    'Junior Varsity:':'Đấu Trường Học Viện:','Tests:':'Thử Thách:',
+    'Guild Boss:':'Boss Bang Hội:','Like':'Thích',
+    'Heart Received!':'Đã nhận yêu thích!','Customize':'Tùy Chỉnh',
+    'Comment':'Bình Luận','Delete':'Xóa','Send':'Gửi',
+    "Let's send a message!":'Viết bình luận…','Choose up to 3 tags':'Chọn tối đa 3 đặc điểm',
+    'Popular Lineup':'Đội Hình Phổ Biến','Popularity':'Độ Phổ Biến',
+    'Dummy Test':'Thử Nghiệm Đội Hình','Tests':'Thử Thách',
+    'Guild Boss':'Boss Bang Hội','Junior Varsity':'Đấu Trường Học Viện',
+    'Details':'Chi Tiết','Front':'Hàng Trước','Back':'Hàng Sau','OK':'Xác Nhận',
+    'Change version':'Đổi phiên bản',
+    'No suitable Lineup now~':'Chưa có đội hình phù hợp.',
+    'Junior Varsity records came from other players online.':'Dữ liệu Đấu Trường Học Viện được tổng hợp từ những người chơi trực tuyến.',
+    'Make Gift':'Chế Tạo Quà','Gift Box':'Hộp Quà','Open':'Mở',
+    'Make':'Chế Tạo','Max':'Tối Đa','Food':'Đồ Ăn','Toy':'Đồ Chơi',
+    'Accessory':'Phụ Kiện','Variety':'Khác','Success':'Thành Công',
+    'Tap to send gift':'Chạm để tặng quà',
+    'No giftboxes available':'Không có Hộp Quà.',
+    'No gifts: open a Gift Box or Make one with Gift Shards.':'Chưa có quà. Hãy mở Hộp Quà hoặc chế tạo bằng Mảnh Quà.',
+    'This Girl has no voice lines in the data.':'Nhân vật này chưa có câu thoại trong dữ liệu gốc.',
+    'No file':'Chưa có hồ sơ',
+    'Intimacy bonus':'Thưởng Thân Mật',
+    'No Bonus':'Không có hiệu ứng cộng thêm',
+    'Oath completed!':'Đã lập lời thề!',
+    'These bonuses apply in battle (original HeroAttr).':'Các chỉ số cộng thêm được áp dụng trong trận chiến.',
+    'Replay':'Phát Lại','Consume':'Sử Dụng','Unlock':'Mở Khóa','Locked':'Chưa Mở Khóa',
+    'Mission':'Nhiệm Vụ','Story':'Câu Chuyện',
+    'Unlock by finishing the story':'Hoàn thành chương trước để mở khóa.',
+    'Finish this mission to unlock the story.':'Hoàn thành nhiệm vụ để mở khóa câu chuyện.',
+    'This Girl currently has no story':'Nhân vật này hiện chưa có câu chuyện.',
+    'Send gifts to raise intimacy':'Tặng quà để tăng độ thân mật',
+    'Ultimate Extermination':'Tuyệt Diệt Tối Thượng',
+    'Duality':'Lưỡng Cực','Sacred Purification':'Thanh Tẩy Thần Thánh',
+    'Embrace of Darkness':'Vòng Tay Bóng Tối',
+    'One hand holds Light and the other embraces Darkness.':'Một tay cầm ánh sáng, còn tay kia ôm lấy bóng tối.',
+    'One hand holds light and the other embraces darkness.':'Một tay cầm ánh sáng, còn tay kia ôm lấy bóng tối.',
+    '5-Star Nephilim':'Nephilim 5 sao',
+    'Critical Strike':'Đòn Chí Mạng','Active Skill':'Kỹ Năng Chủ Động',
+    'Active':'Chủ Động','Heal':'Hồi Máu','Silence':'Câm Lặng',
+    'Ghost Blast':'Bộc Phá Linh Hồn','Fox Fire':'Lửa Hồ Ly',
+    'Trick Shadow':'Bóng Ảo','Missing Tune':'Giai Điệu Thất Lạc',
+    'Life Drain':'Hút Sinh Mệnh','Blood Anger':'Cuồng Nộ Máu',
+    'Killing Heart':'Sát Tâm','Blood Absorb':'Hút Máu',
+    'Holy Light':'Ánh Sáng Thánh','Meteor Shower':'Mưa Sao Băng',
+    'Inner Peace':'Tâm Tĩnh','Solar Flare':'Bùng Nổ Mặt Trời',
+    'Rush':'Xung Phong','Counterstrike':'Phản Công',
+    'Charge Attack':'Đòn Tấn Công Tích Lực',
+    'Arrow of Eclipse':'Mũi Tên Nhật Thực',
+    'Ready, Aim, Fire!':'Sẵn Sàng, Ngắm, Bắn!',
+    'Star Murmurs':'Lời Thì Thầm Của Sao',
+    'Dream Dust':'Bụi Giấc Mơ','Tasty Poison':'Độc Dược Ngọt Ngào',
+    'Storm Rush':'Bão Tố Xung Kích'
+  };
+  for (const [k,v] of Object.entries(CHARACTER_VI)) TEXT.set(k,v);
+  // Publisher strings contain Cocos colour tags; clean rather than printing control syntax.
+  const cleanMarkup = value => String(value??'')
+    .replace(/\[c\]|\[\/c\]|\[-\]|\[(?:#?[\da-f]{6,8})\]/gi,'')
+    .replace(/Nê\s*-\s*phi\s*-\s*lim/gi,'Nephilim')
+    .replace(/\u005c\u005cn/g,'\n');
+
   const ATTRS = ['title','aria-label','placeholder'];
   const translateText = (s) => {
-    const trimmed = s.trim();
-    if (!trimmed) return s;
-    if (TEXT.has(trimmed)) return s.replace(trimmed, TEXT.get(trimmed));
+    const normalized = cleanMarkup(s);
+    const trimmed = normalized.trim();
+    if (!trimmed) return normalized;
+    if (TEXT.has(trimmed)) return normalized.replace(trimmed, TEXT.get(trimmed));
+    if (/^Touch\s+(\d+)$/i.test(trimmed)) return normalized.replace(trimmed,trimmed.replace(/^Touch\s+(\d+)$/i,'Chạm $1'));
+    if (/^Level Up\s+(\d+)$/i.test(trimmed)) return normalized.replace(trimmed,trimmed.replace(/^Level Up\s+(\d+)$/i,'Tăng Cấp $1'));
+    if (/^Story\s+(\d+)$/i.test(trimmed)) return normalized.replace(trimmed,trimmed.replace(/^Story\s+(\d+)$/i,'Câu Chuyện $1'));
+    if (/^Unlock at\s+(\d+)\s+Intimacy$/i.test(trimmed)) return normalized.replace(trimmed,trimmed.replace(/^Unlock at\s+(\d+)\s+Intimacy$/i,'Mở khóa ở $1 điểm thân mật'));
+    if (/^(.+):\s*One hand holds Light and the other embraces Darkness\.$/i.test(trimmed)) return normalized.replace(trimmed, trimmed.replace(/^(.+):\s*One hand holds Light and the other embraces Darkness\.$/i,'$1: Một tay cầm ánh sáng, còn tay kia ôm lấy bóng tối.'));
+
     const rules = [
       [/^Unlocks at level (\d+)$/i, 'Mở khóa ở cấp $1'],
       [/^Ending in:\s*(.+)$/i, 'Kết thúc sau: $1'],
@@ -531,7 +608,7 @@
       [/^Unlock after acquiring\s+(\d+) Collection Points$/i, 'Mở khóa khi đạt $1 Điểm Bộ Sưu Tập']
     ];
     for (const [re, out] of rules) if (re.test(trimmed)) return s.replace(trimmed, trimmed.replace(re, out));
-    return s;
+    return normalized;
   };
 
   function translateNode(root) {
@@ -562,7 +639,7 @@
     }
   }
 
-  window.GxbVi = {t: (value) => {
+  window.GxbVi = {clean: cleanMarkup, t: (value) => {
     if (value === undefined || value === null) return value;
     return translateText(String(value)).trim();
   }};
