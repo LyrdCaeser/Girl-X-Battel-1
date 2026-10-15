@@ -2,13 +2,13 @@
 // Girl skins: the "Skins" tab of the girl detail (capture 2026-09-29-g/01 — carousel of skin cards with rarity,
 // "Amount: N" and name, "Method:", wear / take off, show skin, chibi preview). Rules: gxb2/skins.py.
 const Skins=(()=>{
- let cat=null,sel=null,note='',chibiView=null;
+ let cat=null,liveOffers=null,sel=null,note='',chibiView=null;
  const el=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;};
  const btn=(cls,text,fn)=>{const b=el('button',cls,text);b.type='button';b.onclick=fn;return b;};
  const NAMES={hpP:'HP',atkP:'Attack',decDmg:'DMG Red.',crit:'Crit',critTime:'Crit DMG',hit:'Precision',miss:'Block',spd:'Speed',sklP:'Skill DMG',free:'CC Immune',unfree:'Control Rate',brk:'Armor Brk',unCrit:'Crit Resist',trueAtk:'Holy Dmg',allHarmDec:'DMG Dep.',hp:'HP',atk:'Attack'};
  // hpP/atkP are fractions (0.03 = 3%), spd/hp/atk flat, the rest per mille (crit#40 = 4%, sklP#100 = 10%)
  function attr(text){const [k,v]=String(text).split('#');const n=Number(v);return (NAMES[k]||k)+' +'+(n<1?Math.round(n*1000)/10+'%':['spd','hp','atk'].includes(k)?n:Math.round(n)/10+'%');}
- async function load(){if(!cat){try{cat=await api('/api/skins/catalog',{});}catch{cat={skins:{}};}}return cat;}
+ async function load(){if(!cat){try{cat=await api('/api/skins/catalog',{});}catch{cat={skins:{}};}}if(!liveOffers){try{liveOffers=(await api('/api/skin-shop/catalog',{})).offers||[];}catch{liveOffers=[];}}return cat;}
  async function act(req){note='';try{const r=await api('/api/skins/action',req);state=r.state;}catch(e){note=e.message;}if(typeof renderGirlDetail==='function')renderGirlDetail();}
  // PartnerCard:setSkinCard / setDefaultSkinCard (prefab partner_card, 160×240): card art partner_card_<model>, faction
  // img_group<n> top-left, worn check skin_icon01 top-right, "Amount:N", rarity ribbon collection_dress_new_bg_<qlt>
@@ -35,7 +35,7 @@ const Skins=(()=>{
   if(s){const have=owned(s.id);
    if(worn===s.id)mid.append(btn('sk-btn red','Take off',()=>act({action:'unequip',partner_id:hero.partner_id})));
    else if(have)mid.append(btn('sk-btn blue','Put on',()=>act({action:'equip',partner_id:hero.partner_id,skin:s.id})));
-   else if(s.shop)mid.append(btn('sk-btn blue','Skin Shop',()=>openMenu('skin-shop','detail')));
+   else if(!s.is_wedding&&liveOffers?.some(r=>r.skin_id===s.id))mid.append(btn('sk-btn blue','Cửa Hàng Trang Phục',()=>openMenu('skin-shop','detail')));
    else mid.append(el('span','sk-method','Method: Exclusives'));
    const info=el('p','sk-attrs',s.attrs.map(attr).join(' · '));mid.prepend(info);}
   else if(worn)mid.append(btn('sk-btn blue','Put on',()=>act({action:'unequip',partner_id:hero.partner_id})));
@@ -46,18 +46,59 @@ const Skins=(()=>{
   if(note)host.append(el('p','sk-err',note));}
  async function preview(id){const catc=await api('/assets/chibis/catalog.json');const meta=catc[String(id)];if(!meta)return;const ov=el('div','sk-overlay');ov.onclick=()=>{chibiView?.destroy();chibiView=null;ov.remove();};const box=el('div','sk-chibi');ov.append(box);document.body.append(ov);
   try{chibiView=await GxbSpine.mount(box,'/assets/chibis/'+meta.model,{width:420,height:420,fit:.8,y:.6,sequence:[['idle',true]]});}catch{ov.remove();}}
- // Skin Store (SkinDetailBuyWindow, shop type SHOP_SKIN): shop_skin sells 130 skins for Costume Tickets (74); faction filter,
- // owned amount, whose skin it is; buying adds one copy to the bag (then Wear it from the girl's Skins tab).
+ // Live server-backed Skin Store. Wedding costumes are excluded on both sides.
  let storeGroup=0;
- async function store(){await load();const {body,close}=GirlUI.win({title:'Skin Store',cls:'sk-store-win',help:'Skins cost Costume Tickets. A bought skin goes to your bag: wear it from the Skins tab of the girl it belongs to. Each skin gives its Collection points once.'});
-  const tk=el('div','sk-store-top');const it=itemCatalog?.['74'];const tsrc=it&&typeof itemPicture==='function'?itemPicture(it):'';const chip=el('span','sk-store-tickets');if(tsrc){const i=el('img');i.src=tsrc;i.alt='';chip.append(i);}chip.append(el('b','',number(state.items?.['74']||0)));chip.title='Costume Ticket';tk.append(chip);
-  const f=el('div','sk-store-filter');[0,1,2,3,4,5,6,7].forEach(g=>{const b=btn('sk-store-f'+(storeGroup===g?' on':''),g?'':'All',()=>{storeGroup=g;close();store();});if(g){const i=el('img');i.src='/assets/factions/'+g+'.png';i.alt='';b.append(i);}f.append(b);});tk.append(f);body.append(tk);
-  const grid=el('div','sk-store-grid');const owned=id=>Number(state.items?.[String(id)]||0)+(state.roster||[]).filter(h=>Number(h.equips?.[6]||0)===id).length;
-  const rows=Object.entries(cat.skins).filter(([,v])=>v.shop).map(([id,v])=>({id:Number(id),...v,girl:girlsCatalog.find(g=>v.partners.includes(g.id))})).filter(r=>!storeGroup||r.girl?.group===storeGroup).sort((a,b)=>b.id-a.id);
-  for(const r of rows){const c=el('div','sk-store-card');const pic=el('div','sk-store-pic');pic.style.backgroundImage=`url('/assets/skins/cards/${r.id}.webp')`;const rr=Number(r.rarity||0);if(rr){const q=el('span','sk-rarity',RARITY[rr]);q.style.backgroundImage=`url('${U}collection_dress_new_bg_${rr}.png')`;pic.append(q);}
-   const n=owned(r.id);if(n)pic.append(el('span','sk-store-own','×'+n));c.append(pic,el('b','sk-store-name',r.name),el('small','sk-store-girl',r.girl?.name||''));
-   const [ck,cn]=String(r.shop).split('#');const buy=btn('sk-store-buy','',async()=>{if(!(await GirlUI.confirm(`Mua ${r.name} với ${cn} Vé Trang Phục?`,{title:'Xác Nhận Mua',ok:'Mua'})))return;try{const res=await api('/api/skins/action',{action:'buy',skin:r.id});state=res.state;close();await store();CampaignUI.popup('Skin Store',res.got);}catch(e){GirlUI.toast(e.message);}});
-   if(tsrc){const i=el('img');i.src=tsrc;i.alt='';buy.append(i);}buy.append(el('span','',number(Number(cn))));buy.disabled=Number(state.items?.[ck]||0)<Number(cn);c.append(buy);grid.append(c);}
-  body.append(grid);}
+ async function store(){
+  await load();
+  liveOffers=(await api('/api/skin-shop/catalog',{})).offers||[];
+  const {body,close}=GirlUI.win({title:'Cửa Hàng Trang Phục',cls:'sk-store-win',
+    help:'Vàng và Crystal là tiền trong game. Giá do quản trị viên đặt trên máy chủ. Skin cưới là phần thưởng độc quyền kết duyên và không được bán.'});
+  const tk=el('div','sk-store-top');
+  for(const [id,name] of [['1','Vàng'],['2','Crystal'],['74','Vé Trang Phục']]){
+    const chip=el('span','sk-store-tickets'),it=itemCatalog?.[id],src=it&&typeof itemPicture==='function'?itemPicture(it):'';
+    if(src){const icon=el('img');icon.src=src;icon.alt='';chip.append(icon);}
+    chip.append(el('b','',name+': '+number(state.items?.[id]||0)));tk.append(chip);
+  }
+  const f=el('div','sk-store-filter');
+  [0,1,2,3,4,5,6,7].forEach(g=>{
+   const b=btn('sk-store-f'+(storeGroup===g?' on':''),g?'':'Tất cả',()=>{storeGroup=g;close();store();});
+   if(g){const i=el('img');i.src='/assets/factions/'+g+'.png';i.alt='';b.append(i);}f.append(b);
+  });tk.append(f);body.append(tk);
+  const grid=el('div','sk-store-grid');
+  const owned=id=>Number(state.items?.[String(id)]||0)+(state.roster||[]).filter(h=>Number(h.equips?.[6]||0)===id).length;
+  const rows=liveOffers.filter(o=>!o.is_wedding&&o.enabled)
+   .filter(o=>!storeGroup||o.group===storeGroup).sort((a,b)=>b.skin_id-a.skin_id);
+  for(const r of rows){
+   const c=el('div','sk-store-card'),pic=el('div','sk-store-pic');
+   pic.style.backgroundImage="url('/assets/skins/cards/"+r.skin_id+".webp')";
+   const rarity=Number(r.rarity||0);
+   if(rarity){const q=el('span','sk-rarity',RARITY[rarity]);q.style.backgroundImage="url('"+U+"collection_dress_new_bg_"+rarity+".png')";pic.append(q);}
+   const n=owned(r.skin_id);if(n)pic.append(el('span','sk-store-own','×'+n));
+   c.append(pic,el('b','sk-store-name',r.name),el('small','sk-store-girl',r.girl_name||''));
+   let methods=0;
+   for(const [kind,allowed,amount,key,label] of [['gold','allow_gold','price_gold','1','Vàng'],
+     ['crystal','allow_crystal','price_crystal','2','Crystal'],['ticket','allow_ticket','price_ticket','74','Vé Trang Phục']]){
+    if(!r[allowed]||!(Number(r[amount])>0))continue;
+    methods++;
+    const cost=Number(r[amount]);
+    const buy=btn('sk-store-buy','',async()=>{
+      if(!(await GirlUI.confirm('Mua '+r.name+' với '+number(cost)+' '+label+'?',{title:'Xác Nhận Mua',ok:'Mua'})))return;
+      try{
+        buy.disabled=true;
+        const res=await api('/api/skins/action',{action:'buy',skin:r.skin_id,payment:kind});
+        state=res.state;close();await store();CampaignUI.popup('Cửa Hàng Trang Phục',res.got);
+      }catch(e){GirlUI.toast(e.message);buy.disabled=false;}
+    });
+    const it=itemCatalog?.[key],src=it&&typeof itemPicture==='function'?itemPicture(it):'';
+    if(src){const image=el('img');image.src=src;image.alt='';buy.append(image);}
+    buy.append(el('span','',number(cost)));
+    buy.title='Mua bằng '+label;buy.disabled=Number(state.items?.[key]||0)<cost;
+    c.append(buy);
+   }
+   if(methods)grid.append(c);
+  }
+  if(!grid.children.length)grid.append(el('p','sk-store-empty','Chưa có trang phục được mở bán ở phe này.'));
+  body.append(grid);
+ }
  return {detail,store};
 })();
