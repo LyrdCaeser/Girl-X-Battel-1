@@ -258,8 +258,9 @@ OVERRIDES.update({
  "profile/852001": """1. Hottie là nhân vật hỗ trợ thuộc phe Nhân Loại.
 2. Cô tăng mạnh Tốc Độ của đồng đội, giúp đội hình tối ưu thứ tự hành động trong hiệp.
 3. Ngoài việc tăng Tấn Công và Tốc Độ cho đồng đội, khi HP của Hottie xuống dưới một ngưỡng nhất định, cô còn tăng Tấn Công cho cả đội và giảm Giáp của toàn bộ kẻ địch (mỗi trận chỉ kích hoạt một lần).""",
- "profile/852002": """1. Blowie là nhân vật hỗ trợ thuộc phe Nhân Loại, sở hữu khả năng Hồi Máu mạnh.
-2. Cô có Tốc Độ thấp hơn nhiều nhân vật khác, vì vậy nên tăng Tốc Độ để giúp Blowie hành động sớm hơn trong mỗi hiệp.""",
+ "profile/852002": """1. Blowie là nhân vật hỗ trợ thuộc phe Nhân Loại.
+2. Cô sở hữu khả năng Hồi Máu mạnh, giúp đồng minh trụ vững trong chiến đấu.
+3. Tốc Độ của Blowie thấp hơn nhiều nhân vật khác; nên tăng chỉ số này để cô hành động sớm hơn trong mỗi hiệp.""",
  "profile/852003": """1. Chevalir là Chiến Binh thuộc phe Nhân Loại, thường đứng ở hàng trước.
 2. Khi HP giảm xuống dưới ngưỡng nhất định, cô có thể tăng Giáp cho toàn đội. Hiệu ứng này phối hợp tốt với nhân vật như Sonya.""",
  "profile/852004": """1. Saint là một trong những nhân vật gây sát thương chủ lực của phe Nhân Loại.
@@ -311,6 +312,118 @@ OVERRIDES.update({
 4. Khi HP thấp hơn 30%, Teresa có thể hoán đổi lượng HP với kẻ địch có HP hiện tại cao nhất để tự hồi phục, nhưng chỉ khi HP của cô thấp hơn mục tiêu.
 5. Các kỹ năng cần “Righteous Might” sẽ không kích hoạt nếu cô không đủ cộng dồn.
 “Blade Prison” không vô hiệu hóa hiệu ứng tăng cường từ kỹ năng bị động và không ngăn kỹ năng bị động kích hoạt khi nhân vật tử trận. Hiệu ứng “Galaxy” của Vivian vẫn hoạt động, nhưng “Blade Prison” có thể ngăn Vivian kích hoạt các kỹ năng khác khi đang bị giam.""",
+})
+
+# Second editorial pass: source-specific tactics, conditions and target priority.
+OVERRIDES.update({
+ "profile/852017": """1. Monica là nhân vật hỗ trợ thuộc phe Nhân Loại.
+2. Cô tăng mạnh sức chống chịu và khả năng tấn công cho đồng minh. Monica ưu tiên hỗ trợ đồng minh đứng ngay sau vị trí của mình trong đội hình.
+3. Khi đồng minh sắp nhận sát thương chí tử, Monica có thể bảo vệ để người đó bỏ qua cả sát thương chí tử lẫn mọi sát thương còn lại trong hiệp. Mỗi đồng minh chỉ được hiệu ứng này cứu một lần trong mỗi trận.""",
+ "profile/852019": """1. Eve là nhân vật hỗ trợ thuộc phe Nhân Loại.
+2. Cô bảo vệ đồng đội bằng hiệu ứng Khiên Ma Thuật, đồng thời dùng “Hộ Vệ Khuyển” để hồi HP cho họ theo HP tối đa.
+3. Khi Eve sử dụng đòn đánh thường, cô có cơ hội xóa một hiệu ứng khống chế khỏi đồng minh.""",
+ "profile/852020": """1. Azucena là nhân vật gây sát thương thuộc phe Nhân Loại.
+2. Khi chịu sát thương từ đòn đánh thường hoặc kỹ năng chủ động của kẻ địch đang mang “Lông Công”, cô được giảm sát thương nhận vào và chuyển một phần sát thương đó thành Khiên Ma Thuật có lượng Điểm Khiên (BP) tương ứng.
+3. Azucena có thể gây “Mê Hoặc”: mục tiêu chịu sát thương ngay khi bị áp dụng và vào đầu mỗi hiệp. Kẻ địch bị Mê Hoặc còn chịu nhiều sát thương hơn từ các hiệu ứng sát thương theo thời gian.""",
+ "profile/853001": """1. Priestess là một trong những nhân vật gây sát thương chủ lực của phe Quái Vật.
+2. Đòn đánh thường của cô tấn công toàn bộ kẻ địch.
+3. Trong PvE, các Dấu Ấn mà Priestess áp dụng lên mục tiêu có thể cộng dồn, khiến sát thương do cô gây ra tăng dần.
+4. Cách nhanh nhất để tích Dấu Ấn là xếp thêm một Priestess cùng đội.
+5. Priestess không miễn nhiễm khống chế nên cần nhân vật hỗ trợ để bảo đảm kỹ năng được kích hoạt.""",
+ "profile/853002": """1. Alice là Chiến Binh phe Quái Vật, thường đứng ở hàng trước.
+2. Kỹ năng chủ động của Alice đặc biệt khắc chế Chiến Binh, phù hợp đối đầu đội hình có nhiều nhân vật hệ này.
+3. Cô tự hồi HP sau khi chịu đòn; các kỹ năng khác của Alice cũng bổ trợ cho khả năng hồi phục ấy.""",
+ "profile/853003": """1. Nia là nhân vật gây sát thương thuộc phe Quái Vật.
+2. Cô có thể khiến kẻ địch Trúng Độc bằng nhiều cách.
+3. Nia phối hợp tốt với các nhân vật có kỹ năng liên quan đến Trúng Độc để tăng hiệu quả cả đội.""",
+ "profile/853004": """1. Muppet là nhân vật gây sát thương thuộc phe Quái Vật, sở hữu Giáp cơ bản cao.
+2. Kỹ năng chủ động gây sát thương dựa trên HP tối đa của mục tiêu, đồng thời tăng Tấn Công và Xuyên Giáp cho Muppet. Đòn đánh thường còn có thể đánh cắp Giáp của kẻ địch, nên cô rất hữu ích trong PvE.
+3. Sau một vài hiệp, Muppet được tăng Chí Mạng và Sát Thương Chí Mạng. Cần giúp cô tồn tại đủ lâu để phát huy toàn bộ sức mạnh.""",
+ "profile/853005": """1. Nobunaga là nhân vật gây sát thương phe Quái Vật với tỷ lệ Chí Mạng cao.
+2. Cô giảm Chí Mạng và Sát Thương Chí Mạng của kẻ địch, đồng thời tăng Sát Thương Chí Mạng của bản thân, nhờ vậy hoạt động tốt trong nhiều chế độ.
+3. Nobunaga dễ bị khống chế; đội hình nên có nhân vật giúp cô chống hoặc giải hiệu ứng khống chế.""",
+ "profile/853006": """1. Silvia là Chiến Binh phe Quái Vật, có HP rất cao và thường đứng hàng trước.
+2. Cô khó bị hạ gục trong một hiệp, còn kỹ năng chủ động có thể hỗ trợ đồng minh.
+3. Silvia là lựa chọn đáng tin cậy khi đội cần nhân vật chịu sát thương thay cho đồng đội.""",
+ "profile/853007": """1. Turin là Chiến Binh phe Quái Vật, thường đứng hàng trước và có thể phản công toàn bộ kẻ địch cùng lúc.
+2. Khi bị tấn công, Turin phản công tất cả kẻ địch, tạo tiềm năng gây sát thương lớn. Cô còn có xác suất miễn nhiễm khống chế để bảo đảm đòn phản công được kích hoạt.
+3. Bộ kỹ năng giúp Turin hữu ích cả trong PvP lẫn PvE.""",
+ "profile/853008": """1. Toyo là nhân vật gây sát thương thuộc phe Quái Vật.
+2. Cô có nhiều cách áp dụng hiệu ứng Thiêu Đốt lên kẻ địch.
+3. Lượng HP cao giúp Toyo đủ sức trụ vững để phát huy bộ kỹ năng của mình.""",
+ "profile/853009": """1. Masamune là Chiến Binh phe Quái Vật, thường được xếp hàng trước.
+2. Kỹ năng chủ động có xác suất Làm Choáng mục tiêu, giúp đội chiếm lợi thế.
+3. Cô còn có thể phản công sau khi chịu sát thương Chí Mạng.""",
+ "profile/853010": """1. Hexa là nhân vật gây sát thương bộc phát thuộc phe Quái Vật.
+2. Khi Tiến Hóa lên 6 sao, kỹ năng chủ động của cô nhắm vào hàng sau, còn đòn đánh thường ưu tiên kẻ địch có HP thấp nhất. Nhờ đó Hexa gây áp lực lớn lên các chủ lực sát thương của đối phương.
+3. Từ 9 sao, Hexa còn tự hồi HP khi tấn công kẻ địch, nâng cao khả năng sinh tồn.""",
+ "profile/853011": """1. Psychic là nhân vật hỗ trợ phổ biến của phe Quái Vật.
+2. Cô làm suy yếu kẻ địch và cung cấp thêm Năng Lượng cho đồng minh, giúp đội sử dụng kỹ năng gây sát thương hiệu quả hơn trong PvE.
+3. Khi HP giảm xuống 50%, Psychic có thể khống chế diện rộng toàn bộ đội địch (mỗi trận một lần), tạo lợi thế lớn trong PvP.""",
+ "profile/853012": """1. N-Gen Iron Fist là nhân vật gây sát thương, sức mạnh tăng mạnh khi có kẻ địch bị Làm Choáng.
+2. Khi một nhân vật bị Làm Choáng, cô được tăng Tấn Công và tự hồi HP. Nếu phải chịu sát thương vượt quá 50% HP tối đa từ 1 đòn đánh, cô cũng có thể Làm Choáng kẻ tấn công.
+3. Nên trang bị Cổ Vật tăng Năng Lượng hoặc ghép đội cùng các nhân vật gây Làm Choáng để phát huy sức mạnh.""",
+ "profile/853013": """1. Trinity là nhân vật chủ lực gây sát thương mạnh thuộc phe Quái Vật.
+2. Đòn đánh thường ưu tiên kẻ địch có HP thấp nhất.
+3. Kỹ năng của cô áp dụng Chảy Máu và Dấu Ấn “Disintegration” lên kẻ địch, giúp Trinity tự gây sát thương lớn mà không phụ thuộc nhiều vào hỗ trợ, đồng thời tăng sát thương cho đồng minh.""",
+ "profile/853014": """1. Skye là nhân vật hỗ trợ thuộc phe Quái Vật.
+2. Kỹ năng chủ động gây thêm sát thương dựa trên chênh lệch Tốc Độ giữa Skye và mục tiêu; đồng thời cộng dồn Dấu Ấn “Anoxia” để giảm Tốc Độ của mục tiêu.
+3. Đòn đánh thường ưu tiên kẻ địch có Tốc Độ cao nhất và làm chậm chúng.
+4. Skye còn tăng Tốc Độ cho cả đội và nhận thêm hiệu ứng bảo vệ khi HP thấp.""",
+ "profile/853015": """1. Estel là nhân vật gây sát thương thuộc phe Quái Vật.
+2. Khi phối hợp cùng nhân vật có khả năng cộng dồn hiệu ứng bất lợi, Estel gây thêm sát thương và có cơ hội kéo dài số hiệp duy trì hiệu ứng đó.
+3. Cô có thể sao chép hiệu ứng Sát Thương Theo Thời Gian và Giảm Chỉ Số từ kẻ địch sang các mục tiêu khác.""",
+ "profile/853016": """1. Sivney là nhân vật hỗ trợ thuộc phe Quái Vật.
+2. Cô hy sinh một phần HP bản thân để Hồi Máu cho đồng minh, giúp họ sống sót lâu hơn.
+3. Sivney áp dụng hiệu ứng bất lợi khiến kẻ địch chịu thêm sát thương.
+4. Khi Sivney tử trận, một đồng minh đứng cạnh cô được hồi HP và Năng Lượng, có thể giúp đảo ngược cục diện.""",
+ "profile/853017": """1. Robbie là Chiến Binh phe Quái Vật, thường đứng hàng trước.
+2. Khi HP giảm, cô tăng khả năng tấn công và sinh tồn.
+3. Nếu HP xuống dưới 30%, Robbie có thể tự hồi một lượng HP lớn (mỗi trận chỉ một lần).
+4. Khi dùng kỹ năng chủ động, Robbie tiêu hao các cộng dồn “Laser Charge”. Mỗi cộng dồn bị tiêu hao khiến hiệu ứng kỹ năng lặp lại một lần lên mục tiêu ngẫu nhiên mới, ngoại trừ việc tiêu hao và hồi HP.
+5. Mỗi cộng dồn “Laser Charge” còn tăng Kháng Giảm Năng Lượng, giúp Robbie chống lại kỹ năng rút Năng Lượng của đối phương.""",
+ "profile/853018": """1. Cygmar là nhân vật khống chế thuộc phe Quái Vật.
+2. Cô có xác suất cao Làm Choáng nhiều kẻ địch.
+3. Cygmar có thể tự Hồi Máu và nhận Khiên Ma Thuật để tăng khả năng sống sót.
+4. Cô còn tăng Kháng Khống Chế và Độ Chính Xác cho đồng minh, giúp đội gây sát thương hiệu quả hơn.""",
+ "profile/853019": """1. Nymphaea là nhân vật gây sát thương thuộc phe Quái Vật.
+2. Hiệu ứng “Untainted” hồi HP cho người sở hữu dựa trên lượng HP đã mất và tăng Tấn Công khi họ chịu sát thương từ đòn đánh thường hoặc kỹ năng chủ động của kẻ địch đang bị Chảy Máu.
+3. Hiệu ứng “Full Bloom” khiến kẻ địch chịu thêm sát thương dựa trên HP tối đa khi chúng bị áp dụng Chảy Máu.""",
+ "profile/854001": """1. Amazon là nhân vật gây sát thương kiêm khống chế thuộc phe Tiên.
+2. Đòn đánh thường tấn công 3 kẻ địch ngẫu nhiên.
+3. Tốc Độ cơ bản cao giúp Amazon hành động sớm hơn trong hiệp.
+4. Kỹ năng có cơ hội Câm Lặng mọi mục tiêu bị đánh trúng; cô còn tăng Giảm Sát Thương và Kháng Khống Chế để tấn công an toàn hơn.""",
+ "profile/854002": """1. Bud Elf là Chiến Binh có sức chống chịu tốt thuộc phe Tiên, thường đứng hàng trước.
+2. Lượng HP lớn giúp cô chịu nhiều sát thương. Bud Elf còn tự hồi HP nhờ những đòn Chí Mạng của đồng minh, phù hợp vai trò đỡ đòn.
+3. Cô áp dụng Thiêu Đốt lên kẻ địch khi dùng kỹ năng chủ động hoặc chịu đòn, qua đó bổ sung sát thương cho đội.""",
+ "profile/854003": """1. Himoto là nhân vật gây sát thương bộc phát thuộc phe Tiên.
+2. Các kỹ năng bị động tăng Chí Mạng và Sát Thương Chí Mạng cho Himoto. Đòn đánh thường ưu tiên kẻ địch có HP thấp nhất, đe dọa mạnh các mục tiêu ít chống chịu.
+3. Kỹ năng chủ động còn gây Chảy Máu lên các mục tiêu hệ Pháp Sư.""",
+ "profile/854004": """1. Nani là nhân vật hỗ trợ linh hoạt của phe Tiên, phù hợp nhiều đội hình.
+2. Cô tăng Tấn Công và Giáp cho đồng minh, đồng thời giảm hai chỉ số này của kẻ địch.
+3. Dù đa dụng, Nani vẫn là nhân vật hỗ trợ và cần phối hợp với các chủ lực mạnh.""",
+ "profile/854005": """1. Lavia là nhân vật gây sát thương bộc phát thuộc phe Tiên.
+2. Tấn Công cơ bản khá tốt; kỹ năng của cô còn bổ sung khả năng sinh tồn và khống chế.""",
+ "profile/854006": """1. Susan là Chiến Binh có khả năng chịu đòn tốt của phe Tiên, thường đứng hàng trước.
+2. Giảm Sát Thương và HP cao giúp cô sống sót tốt.
+3. Sau khi chịu đòn, Susan có thể phản công và giảm Chí Mạng của kẻ địch. Kỹ năng chủ động còn đánh cắp Giáp của mục tiêu và Hồi Máu cho bản thân, nâng khả năng chống chịu.""",
+ "profile/854007": """1. Aquaris là nhân vật linh hoạt thuộc phe Tiên.
+2. Cô được tăng những chỉ số khác nhau tùy vị trí trong đội hình: đứng hàng sau giúp tăng khả năng tấn công, còn đứng hàng trước giúp tăng sức chống chịu. Khi HP xuống dưới ngưỡng nhất định, cô còn tăng Tấn Công và Chí Mạng cho bản thân.""",
+ "profile/854008": """1. KongMing là nhân vật Hồi Máu xuất sắc thuộc phe Tiên, đồng thời có thể gây sát thương tốt.
+2. Cô Hồi Máu cho toàn bộ đồng minh và tăng Tấn Công, Chí Mạng, HP bản thân. Trang bị tăng Tấn Công sẽ đồng thời cải thiện lượng Hồi Máu và sát thương.
+3. Khi đạt 9 sao, nếu HP dưới 50%, KongMing có xác suất 100% Câm Lặng toàn bộ kẻ địch (mỗi trận một lần).
+4. Cô phù hợp nhiều đội hình và chế độ.""",
+ "profile/854009": """1. Pandaria là nhân vật gây sát thương thuộc phe Tiên.
+2. Đòn đánh thường tấn công 3 kẻ địch ngẫu nhiên.
+3. Pandaria có nhiều cách áp dụng Trúng Độc.
+4. Cô gây thêm sát thương lên kẻ địch đang Trúng Độc, phối hợp tốt với các đồng minh dùng kỹ năng hệ Độc.""",
+ "profile/854010": """1. Linky là nhân vật hỗ trợ thuộc phe Tiên, tăng sát thương cho đồng đội bằng cách gắn Dấu Ấn lên kẻ địch.
+2. Mục tiêu mang Dấu Ấn của Linky sẽ chịu nhiều sát thương hơn từ mỗi đòn đánh; mọi đồng minh đều hưởng lợi từ hiệu ứng này.
+3. Linky có thể tự Hồi Máu sau khi gây một đòn Chí Mạng.""",
+ "profile/854012": """1. Krystal là nhân vật gây sát thương kiêm khống chế thuộc phe Tiên.
+2. Hiệu ứng Kết Tinh kích hoạt chậm giúp hiệu ứng khống chế của cô tác động trọn vẹn lên mục tiêu.
+3. Kỹ năng “Mighty Prayer” gần như chắc chắn khống chế mục tiêu của đòn đánh thường nếu mục tiêu không có Kháng Khống Chế cao.
+4. Khi mục tiêu bị Kết Tinh, Krystal còn có thể tự Hồi Máu, tăng Tấn Công và khiến mục tiêu Trúng Độc. Cô đặc biệt mạnh trong trận đấu kéo dài.""",
 })
 
 EMPTY_SOURCE = "此處為填充文本"
