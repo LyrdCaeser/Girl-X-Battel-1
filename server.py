@@ -776,7 +776,11 @@ class HTTPHandler(BaseHTTPRequestHandler):
                     result = auth.login(data.get('username'), data.get('password'), data.get('server_id','S1'),
                                         self.client_ip(), self.headers.get('User-Agent',''))
                 secure = self.request_is_https()
-                cookie = f"gxb3_session={result['token']}; Path=/; HttpOnly; SameSite=Lax; Max-Age={auth.SESSION_TTL}"
+                cookie = f"gxb3_session={result['token']}; Path=/; HttpOnly; SameSite=Lax"
+                # "Lưu đăng nhập" persists an opaque HttpOnly cookie only when selected.
+                # Otherwise it is a browser-session cookie; the password is never stored.
+                if path.endswith('/login') and data.get('remember_login') is True:
+                    cookie += f"; Max-Age={auth.SESSION_TTL}"
                 if secure: cookie += '; Secure'
                 body = {'account': result['account'], 'character_name': result['character_name'], 'session_id': result.get('session_id')}
                 if result.get('recovery_code'): body['recovery_code'] = result['recovery_code']
