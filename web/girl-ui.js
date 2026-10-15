@@ -4,7 +4,7 @@
 // grade hexagons + grade up (PARTNER_GRADEUP), Awake tab for 6–15★ (AWAKE_PARTNER) and unique skills (UPGRADE_PARTNER_EX_SKILL).
 const GirlUI=(()=>{
  let pictures=null,lihui=null,loading=null,pots={skills:{},lv_cap:[260,270,290,310,330],attr_up:[0.14,0.1]},mounted={key:'',view:null},awakeSel={};
- const el=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;};
+ const el=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=typeof GxbVi!=='undefined'?GxbVi.t(text):text;return e;};
  const img=(src,cls,alt='')=>{const i=el('img',cls);i.src=src;i.alt=alt;return i;};
  let pics=new Set();
  function load(){return loading||=Promise.all([api('/assets/partner-pictures.json'),api('/assets/lihui.json').catch(()=>[]),api('/assets/pictures.json').catch(()=>[]),api('/assets/potentials.json').catch(()=>null)]).then(([p,l,q,t])=>{pictures=p;lihui=new Set(l);pics=new Set(q);if(t)pots=t;});}
