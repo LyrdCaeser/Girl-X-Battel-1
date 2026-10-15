@@ -16,6 +16,19 @@ const Dates=(()=>{
  function iconOf(h){if(h?.is_vowed)return A('love_point_icon6');const row=data.appointment[Math.min(data.appointment.length-1,Math.floor((h?.love_point||0)/1000))];return A(row?.icon||'love_point_icon1');}
  function play(sound,text){if(text&&text!=='-1')bubble=text;try{audio?.pause();if(sound){audio=new Audio('/assets/voice/'+sound+'.mp3');audio.volume=.9;audio.play().catch(()=>{});}}catch{}}
  function allLines(h){const base=[String(h.table_id),String(h.table_id%100000),String(h.table_id%10000+50000)];for(const k of base)if(data.dialogs[k])return data.dialogs[k];return [];}
+ // One canonical sound mapping for both Girl detail and the original summon reveal.
+ // Only source-defined voice clips are playable: never synthesize replacement dialogue.
+ async function playGirlVoice(tableId){
+   try{
+     await load();
+     const id=Number(tableId);
+     const lines=allLines({table_id:id}).filter(x=>x.sound&&[1,2,3].includes(Number(x.type)));
+     if(!lines.length)return false;
+     const chosen=lines[Math.floor(Math.random()*lines.length)];
+     play(chosen.sound,chosen.text);
+     return true;
+   }catch{return false;}
+ }
  async function act(request){if(busyLocal)return null;busyLocal=true;note='';try{const r=await api('/api/relations/action',request);state=r.state;return r;}catch(e){note=e.message;return null;}finally{busyLocal=false;render();}}
  function render(){const r=root();if(view!=='dates')return;if(!data){load().then(render);return;}r.replaceChildren();top(r);if(mode==='date'&&hero())date(r);else{artHandle?.destroy?.();artHandle=null;artKey='';list(r);}}
  function top(r){const t=el('header','dt-top');for(const id of ['44','45']){const c=el('span','dt-cur');c.append(img(A('icon_'+id)),el('b','',number(state.items[id]||0)));c.title=itemCatalog?.[id]?.name||'';t.append(c);}const b=el('button','dt-back');b.type='button';b.append(img('/assets/ui/win_back_btn.png'));b.onclick=()=>{audio?.pause();if(mode==='date'&&!picked){mode='list';render();}else showView(origin==='dates'?'home':origin);};t.append(b);r.append(t);}
@@ -135,5 +148,5 @@ const Dates=(()=>{
     if(!accepted)return;
     const r=await act({action:'vow',partner_id:h.partner_id});if(r){const nh=hero();const l=allLines(nh).find(x=>x.type===16);play(l?.sound,l?.text||'♥');note='Đã kết duyên!';oath(nh);if(r.got)CampaignUI.popup('Nhận trang phục cưới gốc',r.got);}};}
   root().append(ov);}
- return {open,render};
+ return {open,render,playGirlVoice};
 })();
