@@ -7,55 +7,55 @@
     "851001": {
       "desc": "1. Sapphire là nhân vật hệ Tu Sĩ chuyên gây sát thương, thuộc phe Linh Hồn.\n2. Kỹ năng chủ động của cô có xác suất Hóa Đá kẻ địch ở hàng sau và tăng Độ Chính Xác cho đồng đội. Đòn đánh thường của Sapphire giảm tỷ lệ Chặn Đòn của mục tiêu, giúp cả đội gây sát thương ổn định hơn.\n3. Tốc Độ cơ bản của Sapphire khá thấp. Tăng Tốc Độ giúp cô ra đòn sớm hơn trong hiệp, phát huy tốt hơn ở Thử Thách và PvP.",
       "skills": {
-        "75100501": "Kỹ năng chủ động của Sapphire có thể gây sát thương cho kẻ thù ở hậu tuyến và có cơ hội hóa đá chúng;\nSapphire có thuộc tính Tấn công cơ bản cao nên kỹ năng sẽ được cải thiện nếu được kích hoạt sớm hơn.",
-        "75100502": "Kỹ năng hiệu ứng tăng cường cho phép Sapphire's đòn đánh thường đánh tất cả kẻ thù ở tiền tuyến, nó sẽ làm suy yếu đáng kể các cô gái với tỷ lệ Chặn Đòn cao (như Guan Yin Javelin và Nobunaga).",
-        "75100503": "Kỹ năng của hiệu ứng tăng cường làm tăng độ chính xác và khả năng tấn công của Sapphire.",
-        "75100504": "Kĩ năng hiệu ứng tăng cường (kỹ năng tăng cường): Tăng đáng kể Công của Sapphire trong 3 lượt (mỗi lượt) khi HP của cô ấy xuống dưới một mức nhất định."
+        "75100501": "Kỹ năng chủ động của Sapphire gây sát thương lên kẻ địch hàng sau và có cơ hội Hóa Đá chúng.\nSapphire có Tấn Công cơ bản cao; dùng kỹ năng càng sớm càng phát huy lợi thế.",
+        "75100502": "Kỹ năng tăng cường cho phép đòn đánh thường của Sapphire tấn công toàn bộ kẻ địch hàng trước, đặc biệt làm suy yếu các nhân vật có tỷ lệ Chặn Đòn cao như Guan Yin, Javelin và Nobunaga.",
+        "75100503": "Kỹ năng tăng cường: Tăng Độ Chính Xác và Tấn Công của Sapphire.",
+        "75100504": "Kỹ năng tăng cường: Khi HP xuống dưới ngưỡng nhất định, Sapphire được tăng mạnh Tấn Công trong 3 hiệp. Hiệu ứng chỉ kích hoạt một lần mỗi trận."
       }
     },
     "851002": {
       "desc": "1. Gambler là Sát Thủ thuộc phe Linh Hồn, có khả năng tự hồi máu và đặc biệt nguy hiểm khi tấn công mục tiêu đang chịu hiệu ứng Chảy Máu.\n2. Cô rất hữu ích trong các trận PvE.\n3. Gambler có khả năng sinh tồn kém, nên cần đồng đội hoặc trang bị tăng sức chống chịu.",
       "skills": {
-        "75100801": "Kỹ năng chủ động của Gambler gây sát thương cho 2 kẻ thù ngẫu nhiên và hút máu chúng và sát thương chảy máu sẽ được tăng lên nếu mục tiêu tình cờ là một Xạ Thủ;\nSau khi Gambler tốt nghiệp 6 sao kỹ năng sẽ nhắm mục tiêu 3 kẻ thù ngẫu nhiên;\nSau khi Gambler lên 10 sao, cô ta có thể tăng HP từ kỹ năng.",
-        "75100802": "hiệu ứng tăng cường kỹ năng của mỗi đòn tấn công từ Gambler sẽ làm tăng khả năng phá giáp và làm đổ máu mục tiêu của nó.",
-        "75100803": "Kỹ năng hiệu ứng tăng cường đảm bảo các đòn tấn công của Gambler sẽ bị bỏ lỡ ít thường xuyên hơn và tăng khả năng tấn công của nó.",
-        "75100804": "Kỹ năng chữa bệnh cho phép Gambler đạt được HP một khi kẻ thù bị đánh bại, số lượng chữa bệnh dựa trên Tấn Công của cô."
+        "75100801": "Kỹ năng chủ động của Gambler gây sát thương lên 2 kẻ địch ngẫu nhiên và áp dụng Chảy Máu. Nếu mục tiêu là Xạ Thủ, sát thương Chảy Máu được tăng thêm.\nSau khi Gambler Tiến Hóa lên 6 sao, kỹ năng tấn công 3 kẻ địch ngẫu nhiên.\nKhi đạt 10 sao, cô còn có thể hồi HP từ kỹ năng này.",
+        "75100802": "Kỹ năng tăng cường: Mỗi đòn đánh của Gambler giúp cô tăng Xuyên Giáp và gây Chảy Máu lên mục tiêu.",
+        "75100803": "Kỹ năng tăng cường: Tăng Độ Chính Xác, giúp các đòn đánh của Gambler ít trượt hơn, đồng thời tăng khả năng gây sát thương.",
+        "75100804": "Kỹ năng Hồi Máu: Khi một kẻ địch bị hạ gục, Gambler hồi HP dựa trên chỉ số Tấn Công của bản thân."
       }
     },
     "851003": {
       "desc": "1. Succuba là Chiến Binh phe Linh Hồn, thường được bố trí ở hàng trước.\n2. Chỉ số ban đầu của cô thấp hơn một số nhân vật khác, nhưng khi Thức Tỉnh lên 10 sao, Succuba được tăng cường mạnh và có thêm khả năng khống chế kẻ địch.",
       "skills": {
-        "75100101": "Kỹ năng chủ động của Succuba sẽ gây sát thương chống lại kẻ thù trong hậu tuyến và hồi máu Succuba;\nSau khi Succuba đạt 10 sao, kỹ năng cũng sẽ có cơ hội để đông lạnh các mục tiêu;\nSố lượng hồi máu của kỹ năng dựa trên Tấn công của Succuba và tốc độ hồi máu sẽ được tăng cường rất nhiều sau khi Succuba đạt 10 sao.",
-        "75100102": "kỹ năng tăng cường làm tăng độ chính xác và HP của Succuba.",
-        "75100103": "Kỹ năng chữa bệnh cho phép Succuba tự hồi máu nếu kẻ thù chặn một cuộc tấn công.",
-        "75100104": "Kỹ năng hồi máu cho phép Succuba tự hồi máu mình từ mỗi cuộc tấn công của mình, tốc độ hồi máu sẽ được tăng cường sau khi Succuba đạt 9 sao."
+        "75100101": "Kỹ năng chủ động của Succuba gây sát thương lên kẻ địch hàng sau và Hồi Máu cho chính cô.\nKhi đạt 10 sao, kỹ năng còn có cơ hội Đóng Băng mục tiêu.\nLượng Hồi Máu dựa trên Tấn Công của Succuba và được tăng đáng kể khi cô đạt 10 sao.",
+        "75100102": "Kỹ năng tăng cường: Tăng Độ Chính Xác và HP của Succuba.",
+        "75100103": "Kỹ năng Hồi Máu: Succuba tự hồi HP mỗi khi kẻ địch Chặn Đòn thành công trước một đòn tấn công.",
+        "75100104": "Kỹ năng Hồi Máu: Succuba hồi HP sau mỗi lần bản thân tấn công; hiệu quả hồi phục tăng khi cô đạt 9 sao."
       }
     },
     "851004": {
       "desc": "1. Dracula là nhân vật gây sát thương thuộc phe Linh Hồn.\n2. Kỹ năng chủ động của cô khắc chế nhân vật hệ Pháp Sư, phù hợp để đối phó đội hình có nhiều Pháp Sư.\n3. Dracula ưu tiên kẻ địch có HP thấp nhất, giúp đội tập trung hạ mục tiêu yếu và nhanh chóng tạo lợi thế quân số.",
       "skills": {
-        "75100201": "Kỹ năng chủ động của Dracula là gây sát thương cho 3 kẻ thù ngẫu nhiên và có cơ hội gây choáng nếu mục tiêu là một pháp sư;\nSau khi Dracula tốt nghiệp 6 sao, kỹ năng sẽ nhắm mục tiêu 4 kẻ thù ngẫu nhiên;\nSau khi Dracula đạt đến 10 sao, mục tiêu của lớp Pháp Sư sẽ bị sát thương thêm.",
-        "75100202": "Kỹ năng hiệu ứng tăng cường làm tăng tấn công giáp phá vỡ của Dracula và HP.",
-        "75100203": "Kĩ năng của hiệu ứng tăng cường cải thiện khả năng tấn công cơ bản của Dracula và cho phép nó nhắm mục tiêu vào kẻ thù với HP thấp nhất.",
-        "75100204": "Kỹ năng của hiệu ứng tăng cường làm tăng đáng kể khả năng phá giáp của Dracula và tự hồi máu cho mình trong 5 vòng (một lần mỗi trận chiến) khi HP của cô ấy dưới một số lượng nhất định."
+        "75100201": "Kỹ năng chủ động của Dracula gây sát thương lên 3 kẻ địch ngẫu nhiên và có cơ hội Làm Choáng nếu mục tiêu là Pháp Sư.\nSau khi Tiến Hóa lên 6 sao, kỹ năng tấn công 4 mục tiêu ngẫu nhiên.\nKhi đạt 10 sao, kỹ năng gây thêm sát thương lên các mục tiêu hệ Pháp Sư.",
+        "75100202": "Kỹ năng tăng cường: Tăng Xuyên Giáp, Tấn Công và HP cho Dracula.",
+        "75100203": "Kỹ năng tăng cường: Cải thiện đòn đánh thường của Dracula, giúp cô ưu tiên kẻ địch có HP thấp nhất.",
+        "75100204": "Kỹ năng tăng cường: Khi HP của Dracula xuống dưới ngưỡng nhất định, cô được tăng mạnh Xuyên Giáp và tự Hồi Máu trong 5 hiệp. Hiệu ứng chỉ kích hoạt một lần mỗi trận."
       }
     },
     "851005": {
       "desc": "1. Wu Kong là nhân vật gây sát thương thuộc phe Linh Hồn.\n2. Kỹ năng chủ động của cô khắc chế Sát Thủ, đặc biệt hữu ích khi đối đầu đội hình có nhiều nhân vật hệ này.\n3. Tốc Độ cơ bản của Wu Kong khá thấp. Tăng Tốc Độ giúp cô hành động sớm hơn trong mỗi hiệp và chiến đấu hiệu quả hơn ở Thử Thách lẫn PvP.",
       "skills": {
-        "75100601": "Kỹ năng chủ động của Wu Kong gây sát thương cho 3 kẻ thù ngẫu nhiên nếu mục tiêu tình cờ là một Sát thủ, nó cũng sẽ có cơ hội làm choáng mục tiêu;\nSau khi Wu Kong tốt nghiệp 6 sao, mục tiêu cho kỹ năng sẽ được tăng lên 4;\nSau khi Wu Kong đạt 10 sao, kỹ năng cũng sẽ đầu độc kẻ thù Sát Thủ;\nKỹ năng này có tỷ lệ sát thương cao và chống lại rất nhiều kẻ thù Sát Thủ.",
-        "75100602": "Kỹ năng kiểm soát cho phép các kỹ năng/tấn công của Wu Kong đôi khi làm choáng mục tiêu.",
-        "75100603": "Kỹ năng hiệu ứng tăng cường cho phép Wu Kong xử lý thêm sát thương chống lại các mục tiêu choáng váng.",
-        "75100604": "Kỹ năng của hiệu ứng tăng cường sẽ làm tăng sức mạnh giáp của Wu Kong và tấn công."
+        "75100601": "Kỹ năng chủ động của Wu Kong gây sát thương lên 3 kẻ địch ngẫu nhiên. Nếu mục tiêu là Sát Thủ, kỹ năng còn có cơ hội Làm Choáng.\nSau khi Tiến Hóa lên 6 sao, số mục tiêu tăng thành 4.\nKhi đạt 10 sao, kỹ năng còn gây Trúng Độc lên các mục tiêu hệ Sát Thủ.\nKỹ năng có sát thương cao và đặc biệt khắc chế Sát Thủ.",
+        "75100602": "Kỹ năng khống chế: Các đòn đánh và kỹ năng của Wu Kong có cơ hội Làm Choáng mục tiêu.",
+        "75100603": "Kỹ năng tăng cường: Wu Kong gây thêm sát thương lên mục tiêu đang bị Làm Choáng.",
+        "75100604": "Kỹ năng tăng cường: Tăng Xuyên Giáp và Tấn Công của Wu Kong."
       }
     },
     "851006": {
       "desc": "1. Fencer là Chiến Binh phe Linh Hồn có khả năng khống chế bằng hiệu ứng Đóng Băng.\n2. Kỹ năng chủ động gây sát thương lên hàng trước của địch và có xác suất cao khiến chúng Đóng Băng.\n3. Khi bị tấn công, Fencer có cơ hội Đóng Băng kẻ tấn công. Cô còn có kỹ năng tăng HP và Giáp để nâng khả năng sinh tồn.\n4. Fencer không có giai đoạn sức mạnh suy giảm rõ rệt, nên phù hợp ở nhiều cấp sao.",
       "skills": {
-        "75100901": "Kỹ năng chủ động của Fencer có thể gây sát thương đối với kẻ thù ở Tiền tuyến và có cơ hội để đông lạnh chúng, kỹ năng này cũng sẽ hồi máu cho chính Fencer.",
-        "75100902": "Kỹ năng kiểm soát Fencer sẽ có cơ hội đóng băng kẻ thù của mình khi cô ấy chịu sát thương từ họ và cơ hội sẽ được tăng lên nếu kẻ thù tình cờ là một Chiến Binh.",
-        "75100903": "Kỹ năng hiệu ứng tăng cường làm tăng Tấn Công của Fencer và HP và Giáp làm cho cô ta miễn dịch với Freeze.",
-        "75100904": "Kỹ năng hồi máu cho phép Fencer tự hồi máu bản thân với số lượng lớn (một lần mỗi trận chiến) khi HP của cô ấy dưới một mức nhất định."
+        "75100901": "Kỹ năng chủ động của Fencer gây sát thương lên kẻ địch hàng trước và có cơ hội Đóng Băng chúng, đồng thời Hồi Máu cho bản thân.",
+        "75100902": "Kỹ năng khống chế: Khi Fencer chịu sát thương, cô có cơ hội Đóng Băng kẻ tấn công; xác suất càng cao nếu đối phương là Chiến Binh.",
+        "75100903": "Kỹ năng tăng cường: Tăng Tấn Công, HP và Giáp của Fencer, đồng thời giúp cô miễn nhiễm Đóng Băng.",
+        "75100904": "Kỹ năng Hồi Máu: Khi HP của Fencer xuống dưới ngưỡng nhất định, cô tự hồi một lượng HP lớn. Mỗi trận chỉ kích hoạt một lần."
       }
     },
     "851007": {
