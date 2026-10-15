@@ -12,7 +12,7 @@ const GameAssistant=(()=>{
  const HOUSES=['Trí Tuệ','Dũng Cảm','Huyền Bí','Phong','U Linh','Thiên Thần'];
  // page → parts → groups → rows: [key, kind ('yn' | 'step'), label, illustration]
  const PAGES=[
-  [['Alchemy',[['Dùng lượt miễn phí',['midas','yn','','djs1']],['Mua bằng Kim Cương',['midas_buy','step','Giới hạn lượt mua','djs12']]]],
+  [['Luyện Kim',[['Dùng lượt miễn phí',['midas','yn','','djs1']],['Mua bằng Kim Cương',['midas_buy','step','Giới hạn lượt mua','djs12']]]],
    ['Nhận thưởng Chiến Dịch',[[null,['campaign','yn','','gj']]]],
    ['Nhận tài nguyên Ký Túc Xá',[[null,['dorm','yn','','ss']]]],
    ['Câu Hỏi Hằng Ngày',[['Dùng lượt miễn phí',['quiz','yn','','djs1']]]],
@@ -64,7 +64,7 @@ const GameAssistant=(()=>{
  // GameAssistantResultWindow: "Overview · Completed", one titled block per step with its rewards
  function overview(report){const w=el('div','ga2-wrap');const box=el('div','ga2-over');w.append(box);box.append(el('b','ga2-otitle','Tổng Kết'),el('p','ga2-done','⌛ Hoàn tất'));const list=el('div','ga2-olist');
   for(const s of report){const b=el('div','ga2-res'+(s.ok?'':' skip'));b.append(el('b','',s.label));
-   if(s.ok){const g=el('div','ga2-items');for(const [k,v]of Object.entries(s.got||{})){if(k==='battles'||k==='orders'){g.append(el('small','',v+(k==='battles'?' battle(s)':' order(s)')));continue;}const c=el('span','ga2-item');const ic=icon(k);if(ic)c.append(img(ic));c.append(el('small','',number(v)));c.title=itemCatalog?.[k]?.name||k;g.append(c);}if(!g.childElementCount)g.append(el('small','','Hoàn tất'));b.append(g);}
+   if(s.ok){const g=el('div','ga2-items');for(const [k,v]of Object.entries(s.got||{})){if(k==='battles'||k==='orders'){g.append(el('small','',v+(k==='battles'?' trận':' đơn hàng')));continue;}const c=el('span','ga2-item');const ic=icon(k);if(ic)c.append(img(ic));c.append(el('small','',number(v)));c.title=itemCatalog?.[k]?.name||k;g.append(c);}if(!g.childElementCount)g.append(el('small','','Hoàn tất'));b.append(g);}
    else b.append(el('small','ga2-skip',s.error||'Đã bỏ qua'));list.append(b);}
   box.append(list);const ok=el('button','ga2-btn blue','Xác Nhận');ok.type='button';ok.style.backgroundImage=`url('${A('blue_btn70_70')}')`;ok.onclick=()=>w.remove();box.append(ok);(window.GxbFrame?.root()||document.body).append(w);}
  document.addEventListener('DOMContentLoaded',()=>{const side=document.querySelector('#home-view .home-stage');if(side&&!$('ga-open')){const b=el('button','ga-open');b.id='ga-open';b.type='button';b.title='Trợ Lý Trò Chơi';b.setAttribute('aria-label','Trợ Lý Trò Chơi');b.append(img('/assets/assistant/gameAssistant_icon_yxzs.png'),el('small','','Trợ Lý'));b.onclick=open;side.append(b);}});
