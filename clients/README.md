@@ -18,3 +18,6 @@ The ALPHA RC7 workflow writes download artifacts for Windows, Android and iOS, w
 All three platform launchers continue to open the production GXB 3 URL. Rebuild after publisher-shard image, bulk summon and original Dates/Oath interface recovery; no game items are shipped or generated inside the wrappers.
 
 Shards now support a verified bulk quantity (maximum 50 uses per request) and original Dates/Oath routes remain server-authenticated. This README revision rebuilds all native clients from the final tested source.
+
+### Hotfix packaging refresh — 2026-10-15
+Native launcher artifacts are rebuilt after GXB 3 server commit `5bafac0bf6784a2feca38adee40802f10c39c8ae` (Dates/Oath syntax fix). Windows, Android and iOS wrappers all connect to the same live production server; no game state is embedded in these packages. The unsigned iOS developer IPA still requires Apple signing before device installation.
