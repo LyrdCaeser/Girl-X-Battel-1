@@ -769,10 +769,10 @@
     "856009": {
       "desc": "1. Gwen & Brigit là cặp nhân vật gây sát thương thuộc phe Thiên Thần.\n2. Họ tung nhiều đòn đánh dựa trên số cộng dồn “Gilded Butterfly” trên mục tiêu. Khi mục tiêu có từ 5 cộng dồn trở lên, giữ lại 1 cộng dồn và tiêu hao phần còn lại để gây lượng lớn sát thương bổ sung.\n3. Sau Thức Tỉnh, đòn đánh thường chuyển sang tấn công 3 kẻ địch có HP thấp nhất, giúp nhanh chóng kết liễu mục tiêu yếu.\n4. Khi đồng minh gây Chí Mạng, Gwen & Brigit được Hồi Máu và tăng Tốc Độ, cải thiện sức chống chịu.\nKhi bị kẻ địch mang “Gilded Butterfly” do chính họ áp dụng tấn công, đồng minh ở hàng trước có thể chịu thay một phần sát thương.",
       "skills": {
-        "75600901": "Gwen & Brigit Chủ Động kỹ năng gây sát thương chống lại 3 kẻ thù ngẫu nhiên (kẻ thù với nhiều chồng Gilded Butterfly sẽ được nhắm mục tiêu đầu tiên) và nhiều sát thương bổ sung sẽ được xử lý theo số lượng Con bướm mạ vàng đang đè lên kẻ thù.\nKhi mục tiêu có 5 hoặc nhiều chồng Gilded Butterfly 1 chồng sẽ vẫn còn trong khi phần còn lại sẽ được sử dụng trên mục tiêu và hit cuối cùng sẽ trở thành sát thương cố định của Tấn Công Girls còn lại (không thể được buffed từ các hiệu ứng khác và không thể kích hoạt Chí Mạng).",
-        "75600902": "Kỹ năng tăng cường làm tăng độ miễn dịch và tốc độ kiểm soát sát thương thần thánh của Chí Mạng Tấn Công.",
-        "75600903": "Kỹ năng tăng cường thay đổi Đòn đánh thường của Gwen & Brigit nhằm vào 3 kẻ thù có HP thấp nhất.\nNếu một mục tiêu được xếp chồng lên với Gilded Butterfly mục tiêu sẽ bị sát thương thêm.\nKỹ năng này cũng cho phép Gwen & Brigit xếp 1 chồng Gild Butterfly cho tất cả kẻ thù khi bắt đầu trận chiến giúp Gwen & Brigit dễ dàng xếp thêm Gild Butterfly lên kẻ thù của họ.",
-        "75600904": "Kỹ năng tăng cường cho phép Gwen & Brigit tự hồi máu và có thêm Tốc độ khi các đồng minh Chí Mạng tăng khả năng sống sót của họ và cơ hội di chuyển sớm hơn trong mỗi vòng.\nKỹ năng này cũng cho phép Gwen & Brigit xếp chồng Gilded Butterfly lên 2 kẻ thù có HP thấp nhất một cách tình cờ khi các đồng minh của họ đối phó với các cuộc Đòn đánh thường hoặc Kỹ năng chủ động."
+        "75600901": "Kỹ năng chủ động của Gwen & Brigit gây sát thương lên 3 kẻ địch ngẫu nhiên, ưu tiên mục tiêu có nhiều cộng dồn “Gilded Butterfly”. Số cộng dồn càng nhiều thì mục tiêu càng nhận thêm nhiều đợt sát thương.\nKhi mục tiêu có từ 5 cộng dồn trở lên, chỉ giữ lại 1 cộng dồn và tiêu hao phần còn lại để gây sát thương bổ sung rất lớn. Đòn cuối gây sát thương cố định dựa trên Tấn Công còn lại của hai nhân vật, không nhận hiệu ứng tăng cường và không thể gây Chí Mạng.",
+        "75600902": "Kỹ năng tăng cường: Tăng Tấn Công, Chí Mạng, Sát Thương Thánh, Kháng Khống Chế và Tốc Độ của Gwen & Brigit.",
+        "75600903": "Kỹ năng tăng cường: Đòn đánh thường của Gwen & Brigit tấn công 3 kẻ địch có HP thấp nhất.\nNếu mục tiêu đang có “Gilded Butterfly”, đòn đánh gây thêm sát thương.\nĐầu trận, họ đặt 1 cộng dồn “Gilded Butterfly” lên toàn bộ kẻ địch, giúp tiếp tục cộng dồn hiệu ứng dễ dàng hơn.",
+        "75600904": "Kỹ năng tăng cường: Khi đồng minh gây Chí Mạng, Gwen & Brigit tự Hồi Máu và tăng Tốc Độ, giúp sống sót và ra đòn sớm hơn.\nKhi đồng minh dùng đòn đánh thường hoặc kỹ năng chủ động, Gwen & Brigit còn có cơ hội đặt “Gilded Butterfly” lên 2 kẻ địch có HP thấp nhất."
       }
     },
     "855011": {
@@ -850,10 +850,10 @@
     "856010": {
       "desc": "1. Cupid là nhân vật hỗ trợ Hồi Máu thuộc phe Thiên Thần.\n2. Kỹ năng chủ động giảm Tấn Công của kẻ địch, giảm sát thương đồng minh phải chịu và hồi HP nhiều lần.\n3. Nếu lượng Hồi Máu từ kỹ năng vượt HP tối đa của mục tiêu, phần dư chuyển thành Điểm Khiên (BP) của Khiên Ma Thuật.\n4. Số lần Hồi Máu phụ thuộc cộng dồn “Heartbeat” của Cupid, giúp đồng minh sống sót lâu hơn.",
       "skills": {
-        "75601001": "Kỹ năng chủ động của Cupid có thể giảm sát thương cho kẻ thù tuyến đầu, giảm đòn tấn công của 2 kẻ thù có thuộc tính tấn công cao nhất và giảm sát thương cho tất cả các đồng minh.\nCô cũng cấp một Rào cản Ma Thuật cho đồng minh có thuộc tính Tấn công cao nhất trước tiên sau đó hồi máu đồng minh với HP thấp nhất dựa trên số lượng Nhịp tim chồng Cupid có.",
-        "75601002": "Kỹ năng tăng cường. Tăng số lượng miễn dịch và hồi máu sát thương tấn công HP của Cupid.",
-        "75601003": "Kỹ năng tăng cường. Cupid đòn đánh thường cho cô 2 chồng Heartbeat và có cơ hội cho thêm 1 chồng nữa.\nCô cũng làm tăng sát thương do tất cả các đồng minh xử lý và cấp một Rào cản Ma Thuật cho đồng minh có thuộc tính Tấn công cao nhất.",
-        "75601004": "Kỹ năng tăng cường. Khi bắt đầu trận chiến, tất cả các đồng minh đều giành được Heartfelt và một Rào chắn Ma Thuật. Cupid cũng có thêm một chồng Nhịp tim.\nVào cuối hiệp Cupid cấp cho tất cả các đồng minh một Rào cản Ma Thuật với BP dựa trên Tấn công của Cupid làm giảm sát thương mà họ nhận được Rào cản Ma Thuật cho các đồng minh có ít hơn 50% HP và đạt Nhịp tim."
+        "75601001": "Kỹ năng chủ động của Cupid gây sát thương lên hàng trước, giảm Tấn Công của 2 kẻ địch có Tấn Công cao nhất và giảm sát thương mà toàn bộ đồng minh phải chịu.\nCupid ưu tiên ban Khiên Ma Thuật cho đồng minh có Tấn Công cao nhất, sau đó Hồi Máu cho đồng minh có HP thấp nhất dựa trên số cộng dồn “Heartbeat” của mình.",
+        "75601002": "Kỹ năng tăng cường: Tăng HP, Tấn Công, Giảm Sát Thương, Kháng Khống Chế và lượng Hồi Máu của Cupid.",
+        "75601003": "Kỹ năng tăng cường: Đòn đánh thường giúp Cupid nhận 2 cộng dồn “Heartbeat” và có cơ hội nhận thêm 1 cộng dồn.\nCô còn tăng sát thương của toàn đội và ban Khiên Ma Thuật cho đồng minh có Tấn Công cao nhất.",
+        "75601004": "Kỹ năng tăng cường: Đầu trận, toàn đội nhận “Heartfelt” và Khiên Ma Thuật; Cupid cũng nhận thêm cộng dồn “Heartbeat”.\nCuối mỗi hiệp, Cupid ban Khiên Ma Thuật cho toàn đội với Điểm Khiên (BP) dựa trên Tấn Công của cô và giảm sát thương đồng minh phải chịu. Những đồng minh có dưới 50% HP được ban thêm Khiên Ma Thuật; Cupid tiếp tục nhận “Heartbeat”."
       }
     },
     "855012": {
@@ -914,9 +914,9 @@
       "desc": "1. Poseidia là Chiến Binh thuộc phe Thiên Thần.\n2. Kỹ năng chủ động giảm Giáp địch, gây sát thương nhiều lần và tăng Chặn Đòn cho toàn bộ đồng minh.\n3. Đòn đánh thường giúp Poseidia tự Hồi Máu và tăng Chặn Đòn cho đồng minh hàng trước.\n4. Đầu trận, Poseidia có thể Khiêu Khích toàn bộ kẻ địch. Khi đồng minh Chặn Đòn thành công, cô nhận 1 cộng dồn “Gift of the Sea”, tự hồi HP và có cơ hội Kết Tinh 2 kẻ địch ngẫu nhiên.",
       "skills": {
         "75601101": "Kỹ năng chủ động của Poseidia giảm Giáp của 1 kẻ địch ngẫu nhiên, gây sát thương lên mục tiêu đó 3 lần và tăng Chặn Đòn cho toàn bộ đồng minh.",
-        "75601102": "Kỹ năng tăng cường. Tăng miễn trừ kiểm soát khối tấn công HP của Poseidia và Kháng Chí Mạng.",
-        "75601103": "Kỹ năng tăng cường. Cuộc Đòn đánh thường của Poseidia hồi máu cho cô dựa trên số lượng HP mà cô đã mất làm giảm độ chính xác của tất cả các kẻ thù và tăng khối của các đồng minh Hàng Trước của cô.",
-        "75601105": "Kỹ năng tăng cường. Bất cứ khi nào một đồng minh ngăn chặn một cuộc tấn công, Poseidia sẽ có được 1 chồng Món quà của biển phục hồi HP dựa trên lượng HP mà cô ấy đã mất và có cơ hội Kết tinh 2 ngẫu nhiên kẻ thù trong 2 vòng. Khi trận chiến bắt đầu, cô ấy có thể Khiêu Khích tất cả kẻ thù."
+        "75601102": "Kỹ năng tăng cường: Tăng HP, Tấn Công, tỷ lệ Chặn Đòn, Kháng Khống Chế và Kháng Chí Mạng của Poseidia.",
+        "75601103": "Kỹ năng tăng cường: Đòn đánh thường giúp Poseidia tự Hồi Máu dựa trên lượng HP đã mất, giảm Độ Chính Xác của toàn bộ kẻ địch và tăng Chặn Đòn cho đồng minh hàng trước.",
+        "75601105": "Kỹ năng tăng cường: Mỗi khi đồng minh Chặn Đòn thành công, Poseidia nhận 1 cộng dồn “Gift of the Sea”, tự Hồi Máu dựa trên lượng HP đã mất và có cơ hội Kết Tinh 2 kẻ địch ngẫu nhiên trong 2 hiệp. Ngay khi bắt đầu trận, Poseidia có thể Khiêu Khích toàn bộ kẻ địch."
       }
     },
     "855013": {
@@ -931,9 +931,9 @@
     "856012": {
       "desc": "1. Zeusia là nhân vật chủ lực gây sát thương thuộc phe Thiên Thần.\n2. Kỹ năng chủ động của cô gây sát thương lên toàn bộ kẻ địch, giảm Tấn Công của chúng và tăng sát thương chúng phải chịu từ hiệu ứng Thiêu Đốt.\n3. Khi Zeusia dùng kỹ năng chủ động lên mục tiêu đang chịu hiệu ứng Lôi Kích, hiệu ứng đó được kích hoạt thêm một lần ngay lập tức. Nếu mục tiêu không có Lôi Kích, Zeusia nhận hiệu ứng Thần Tính.\n4. Khi có 12 cộng dồn Thần Tính, Zeusia thi triển Lôi Kích lên toàn bộ kẻ địch.",
       "skills": {
-        "75601201": "Kĩ năng chủ động của Zeusia có thể giảm sát thương cho tất cả đối thủ, làm giảm đòn tấn công và tăng sát thương mà họ nhận được từ hiệu ứng Thiêu Đốt. Khi thần Zeusia giải phóng Kĩ năng hoạt động của mình nếu kẻ thù bị ảnh hưởng bởi Sấm Sét tác dụng của nó sẽ được kích hoạt ngay lập tức; Nếu kẻ thù không bị ảnh hưởng bởi Sấm sét Zeusia sẽ đạt được Tính phân chia.",
-        "75601202": "Kỹ năng tăng cường. Tăng Zeusia của HP tấn công sát thương Thánh giảm và tốc độ.",
-        "75601203": "Kỹ năng tăng cường. Đòn đánh thường của Zeusia gây sát thương cho 3 kẻ thù ngẫu nhiên làm tăng sát thương mà chúng nhận được từ các hiệu ứng Thiêu Đốt và làm giảm độ chính xác và tấn công của chúng. Cô ấy cũng sẽ đạt được Divinity.",
+        "75601201": "Kỹ năng chủ động của Zeusia gây sát thương lên toàn bộ kẻ địch, giảm Tấn Công của chúng và khiến chúng chịu thêm sát thương từ hiệu ứng Thiêu Đốt.\nNếu mục tiêu đang chịu “Thunderbolt”, Zeusia kích hoạt hiệu ứng này ngay lập tức thêm một lần. Nếu mục tiêu chưa có “Thunderbolt”, Zeusia nhận hiệu ứng “Divinity”.",
+        "75601202": "Kỹ năng tăng cường: Tăng HP, Tấn Công, Sát Thương Thánh, Giảm Sát Thương và Tốc Độ của Zeusia.",
+        "75601203": "Kỹ năng tăng cường: Đòn đánh thường của Zeusia gây sát thương lên 3 kẻ địch ngẫu nhiên, khiến chúng chịu thêm sát thương từ Thiêu Đốt, đồng thời giảm Độ Chính Xác và Tấn Công của chúng. Zeusia còn nhận “Divinity”.",
         "75601204": "Kỹ năng tăng cường: Mỗi khi đồng minh sử dụng kỹ năng chủ động, Zeusia nhận hiệu ứng Thần Tính. Khi đạt 12 cộng dồn Thần Tính, cô thi triển Lôi Kích lên toàn bộ kẻ địch."
       }
     },
