@@ -156,7 +156,7 @@ def render(value, plans, translated):
         for _ in range(needed):
             for word in numerals[num]:
                 updated, changes = re.subn(
-                    r"(?<!\\w)" + re.escape(word) + r"(?!\\w)", num,
+                    r"(?<!\w)" + re.escape(word) + r"(?!\w)", num,
                     text, count=1, flags=re.I)
                 if changes:
                     text = updated
