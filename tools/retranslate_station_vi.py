@@ -88,9 +88,43 @@ def translate(chunks, size):
     return result
 
 
+def polish_terms(text):
+    """Conservative terminology corrections; do not claim semantic review."""
+    replacements = [
+        (r"\bHouse Ghost\b", "Phe Linh Hồn"),
+        (r"\bHouse Human\b", "Phe Nhân Loại"),
+        (r"\bHouse Demon\b", "Phe Ác Quỷ"),
+        (r"\bHouse Angel\b", "Phe Thiên Thần"),
+        (r"\bHouse Monster\b", "Phe Quái Vật"),
+        (r"\bHouse Fairy\b", "Phe Tiên"),
+        (r"\bHouse Cosmos\b", "Phe Vũ Trụ"),
+        (r"\bDamage Dealer\b", "Tướng gây sát thương"),
+        (r"\bArmor Break\b", "Phá giáp"),
+        (r"\bBack.line\b", "hàng sau"),
+        (r"\bFront.line\b", "hàng trước"),
+        (r"\bActive Skill\b", "kỹ năng chủ động"),
+        (r"\bBasic Attack\b", "đòn đánh thường"),
+        (r"\bBuff Skill\b", "kỹ năng tăng cường"),
+        (r"\bDebuff\b", "hiệu ứng bất lợi"),
+        (r"\bPetrify\b", "hóa đá"),
+        (r"\bPriest\b", "Hỗ Trợ"),
+        (r"\bWarrior\b", "Chiến Binh"),
+        (r"\bRanger\b", "Xạ Thủ"),
+        (r"\bMage\b", "Pháp Sư"),
+        (r"\bAssassin\b", "Sát Thủ"),
+        (r"\bBuff\b", "hiệu ứng tăng cường"),
+        (r"\bPVE\b", "PvE"),
+        (r"\bPVP\b", "PvP"),
+        (r"\bHP\b", "HP"),
+    ]
+    for pattern, replacement in replacements:
+        text = re.sub(pattern, replacement, text, flags=re.I)
+    return text
+
+
 def assemble(src, plan, outputs, warnings, context):
-    translated = "\n".join(prefix + " ".join(outputs[c] for c in parts)
-                           for prefix, parts in plan)
+    translated = polish_terms("\n".join(prefix + " ".join(outputs[c] for c in parts)
+                           for prefix, parts in plan))
     for old, new in (("Nhà Ghost", "Nhà Linh Hồn"), ("Nhà Human", "Nhà Nhân Loại"),
                      ("Nhà Monster", "Nhà Quái Vật"), ("Nhà Fairy", "Nhà Tiên"),
                      ("Nhà Demon", "Nhà Ác Quỷ"), ("Nhà Angel", "Nhà Thiên Thần")):
