@@ -844,6 +844,11 @@
     if (!trimmed) return normalized;
     if (TEXT.has(trimmed)) return normalized.replace(trimmed, TEXT.get(trimmed));
     if (/^Touch\s+(\d+)$/i.test(trimmed)) return normalized.replace(trimmed,trimmed.replace(/^Touch\s+(\d+)$/i,'Chạm $1'));
+    if (/^Level\s+(\d+):\s*(.+)$/i.test(trimmed)) return normalized.replace(trimmed,trimmed.replace(/^Level\s+(\d+):\s*(.+)$/i,(_,n,rest)=>'Cấp '+n+': '+translateText(rest)));
+    if (/^Next\s*\((\d+)\):\s*(.+)$/i.test(trimmed)) return normalized.replace(trimmed,trimmed.replace(/^Next\s*\((\d+)\):\s*(.+)$/i,(_,n,rest)=>'Tiếp theo ('+n+'): '+translateText(rest)));
+    if (/^Story\s+(\d+)\s*·\s*(.*)$/i.test(trimmed)) return normalized.replace(trimmed,trimmed.replace(/^Story\s+(\d+)\s*·\s*(.*)$/i,'Câu chuyện $1 · $2'));
+    if (/^Unlocks at Limit-Break Stage\s+(\d+)$/i.test(trimmed)) return normalized.replace(trimmed,trimmed.replace(/^Unlocks at Limit-Break Stage\s+(\d+)$/i,'Mở khóa ở Đột Phá Giới Hạn giai đoạn $1'));
+
     if (/^Level Up\s+(\d+)$/i.test(trimmed)) return normalized.replace(trimmed,trimmed.replace(/^Level Up\s+(\d+)$/i,'Tăng Cấp $1'));
     if (/^Story\s+(\d+)$/i.test(trimmed)) return normalized.replace(trimmed,trimmed.replace(/^Story\s+(\d+)$/i,'Câu Chuyện $1'));
     if (/^Unlock at\s+(\d+)\s+Intimacy$/i.test(trimmed)) return normalized.replace(trimmed,trimmed.replace(/^Unlock at\s+(\d+)\s+Intimacy$/i,'Mở khóa ở $1 điểm thân mật'));
@@ -892,7 +897,7 @@
     if (root.nodeType === Node.ELEMENT_NODE) {
       for (const a of ATTRS) {
         const v = root.getAttribute(a);
-        if (v && TEXT.has(v)) root.setAttribute(a, TEXT.get(v));
+        if (v) { const localized=translateText(v); if (localized!==v) root.setAttribute(a,localized); }
       }
     }
     const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
@@ -903,7 +908,7 @@
       for (const el of root.querySelectorAll('[title],[aria-label],[placeholder]')) {
         for (const a of ATTRS) {
           const v = el.getAttribute(a);
-          if (v && TEXT.has(v)) el.setAttribute(a, TEXT.get(v));
+          if (v) { const localized=translateText(v); if (localized!==v) el.setAttribute(a,localized); }
         }
       }
     }
