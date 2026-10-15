@@ -83,6 +83,7 @@ def offer(skin_id, *, settings=None, include_locked=False):
     if not row:
         return None
     wedding = is_wedding(sid)
+    saleable = bool(str(row.get("name") or "").strip() and row.get("partners"))
     if wedding and not include_locked:
         return None
     preset = (settings if settings is not None else _settings()).get(sid) or {}
@@ -101,7 +102,8 @@ def offer(skin_id, *, settings=None, include_locked=False):
         "girl_name": next((GIRLS[x]["name"] for x in row["partners"] if x in GIRLS), ""),
         "group": next((int(GIRLS[x].get("group") or 0) for x in row["partners"] if x in GIRLS), 0),
         "is_wedding": wedding,
-        "enabled": not wedding and bool(preset.get("enabled", bool(ticket_price))),
+        "is_saleable": saleable and not wedding,
+        "enabled": saleable and not wedding and bool(preset.get("enabled", bool(ticket_price))),
         "allow_gold": not wedding and bool(preset.get("allow_gold", 0)),
         "allow_crystal": not wedding and bool(preset.get("allow_crystal", 0)),
         "allow_ticket": not wedding and bool(preset.get("allow_ticket", bool(ticket_price))) and ticket_price > 0,
@@ -122,7 +124,7 @@ def catalogue(*, admin=False):
     settings = _settings()
     offers = [offer(sid, settings=settings, include_locked=admin) for sid in skins.SKINS]
     if not admin:
-        offers = [o for o in offers if o and o["enabled"]
+        offers = [o for o in offers if o and o["is_saleable"] and o["enabled"]
                   and (o["allow_gold"] or o["allow_crystal"] or o["allow_ticket"])]
     return {"offers": offers, "total": len(offers), "wedding_count": len(WEDDING_IDS) if admin else 0}
 
@@ -144,6 +146,8 @@ def update_configs(changes, operator):
             raise ValueError("Trang phục không tồn tại hoặc bị lặp")
         if is_wedding(sid):
             raise ValueError("Trang phục cưới độc quyền đám cưới, tuyệt đối không thể bán")
+        if not str(skins.SKINS[sid].get("name") or "").strip() or not skins.SKINS[sid].get("partners"):
+            raise ValueError("Skin này chưa có tên hoặc nhân vật gốc; không thể mở bán")
         seen.add(sid)
         source = skins.SKINS[sid]
         available_ticket = str(source.get("shop") or "").startswith("74#")
@@ -202,7 +206,7 @@ def purchase(state, skin_id, payment):
     if is_wedding(sid):
         raise ValueError("Trang phục cưới độc quyền đám cưới, không được phép bán")
     current = offer(sid)
-    if not current or not current["enabled"]:
+    if not current or not current["is_saleable"] or not current["enabled"]:
         raise ValueError("Trang phục chưa được mở bán")
     currencies = {"gold": ("1", "allow_gold", "price_gold"),
                   "crystal": ("2", "allow_crystal", "price_crystal"),
