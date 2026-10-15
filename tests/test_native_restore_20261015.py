@@ -44,5 +44,34 @@ class NativeRestore20261015Tests(unittest.TestCase):
         self.assertIn('Đã đủ nguyên liệu.',app)
         self.assertIn("GameError('Không đủ nguyên liệu')",engine)
 
+    def test_login_remember_and_safeguards(self):
+        auth=self.read('web/auth.js')
+        server=self.read('server.py')
+        css=self.read('web/auth.css')
+        self.assertIn("Lưu đăng nhập",auth)
+        self.assertIn("remember_login:save.checked",auth)
+        self.assertIn("localStorage.setItem(REMEMBER_KEY",auth)
+        self.assertNotIn("password:pass.value",auth.split("localStorage.setItem(REMEMBER_KEY")[1].split("localStorage.removeItem")[0])
+        self.assertIn("data.get('remember_login') is True",server)
+        self.assertIn("cookie += f\"; Max-Age={auth.SESSION_TTL}\"",server)
+        self.assertIn("HttpOnly; SameSite=Lax",server)
+        self.assertIn("url('/assets/login/gxb3-wedding-promo.webp')",css)
+        self.assertIn("prefers-reduced-motion",css)
+
+    def test_original_girl_voice_and_viewport(self):
+        app=self.read('web/app.js')
+        girls=self.read('web/girl-ui.css')
+        dates=self.read('web/dates.js')
+        summon=self.read('web/summon-anim.js')
+        summon_css=self.read('web/summon-anim.css')
+        self.assertIn("Dates.playGirlVoice(h.table_id)",app)
+        self.assertIn("async function playGirlVoice(tableId)",dates)
+        self.assertIn("allLines({table_id:id})",dates)
+        self.assertIn("'/assets/voice/'+sound+'.mp3'",dates)
+        self.assertIn("Dates.playGirlVoice(p.table_id)",summon)
+        self.assertIn("max-width:none!important;object-fit:contain;",girls)
+        self.assertIn("background:linear-gradient(#fff,#eef3ffed)",girls)
+        self.assertIn(".sa-stage{inset:0;width:100%;height:100%;transform:none}",summon_css)
+
 if __name__=='__main__':
     unittest.main()
