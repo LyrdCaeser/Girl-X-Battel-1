@@ -395,7 +395,56 @@ async function testAudioSettingsAndCyclicVoice(){
   console.log('PASS | Settings mixer persists volumes and badge choice; original Girl voice cycles sequentially');
 }
 
+function testCharacterVietnameseAcrossRoster() {
+  const html=fs.readFileSync(path.join(ROOT,'web/index.html'),'utf8');
+  assert.match(html,/i18n-vi\.js\?v=20261015-character-vi1/,
+    'game must actually load its character translation dictionary');
+  const noop=()=>{};
+  class FakeObserver { observe(){} }
+  const locale={current:()=> 'vi'};
+  const doc={readyState:'loading',documentElement:{},addEventListener:noop};
+  const context=vm.createContext({
+    window:{GxbLocale:locale},GxbLocale:locale,document:doc,
+    MutationObserver:FakeObserver,Node:{TEXT_NODE:3,ELEMENT_NODE:1,DOCUMENT_FRAGMENT_NODE:11},
+  });
+  vm.runInContext(fs.readFileSync(path.join(ROOT,'web/i18n-vi.js'),'utf8'),context);
+  const local=context.window.GxbVi;
+  assert.equal(typeof local?.clean,'function');
+  const raw='[c][d2a300]Nê - phi - lim: [-][/c]Một tay cầm ánh sáng, còn tay kia ôm lấy bóng tối.';
+  assert.equal(local.t(raw),'Nephilim: Một tay cầm ánh sáng, còn tay kia ôm lấy bóng tối.');
+  for(const [from,to] of [
+    ['Gift','Quà Tặng'],['Voice','Giọng Nói'],['Discuss','Trò Chuyện'],
+    ['File','Hồ Sơ'],['Touch 5','Chạm 5'],['Report','Báo Cáo'],
+    ['Strategy','Chiến Thuật'],['Review','Đánh Giá'],
+    ['Skill Description','Mô Tả Kỹ Năng'],['Level Up','Tăng Cấp'],
+    ['Promote','Nâng Bậc'],['Elite Skills','Kỹ Năng Tinh Anh']
+  ]) assert.equal(local.t(from),to,from);
+  const station=JSON.parse(fs.readFileSync(path.join(ROOT,'web/assets/station/station.json'),'utf8'));
+  for(const label of Object.values(station.labels))
+    assert.notEqual(local.t(label.text),label.text,'missing native tag translation: '+label.text);
+  const neph=Object.values(station.girls).find(g=>g.name==='Nephilim');
+  assert.ok(neph&&neph.skills.length===4);
+  assert.match(local.t(neph.desc),/Tốc Độ|tốc độ/i);
+  for(const skill of neph.skills){
+    assert.notEqual(local.t(skill.name),skill.name,'Nephilim skill name '+skill.id);
+    assert.match(local.t(skill.desc),/[À-ỹ]/,'Nephilim skill description '+skill.id);
+  }
+  const girls=JSON.parse(fs.readFileSync(path.join(ROOT,'web/assets/girl-details.json'),'utf8'));
+  assert.ok(Object.keys(girls).length>=500);
+  for(const girl of Object.values(girls)){
+    if(!girl.quote)continue;
+    assert.doesNotMatch(local.t(girl.quote),/\[c\]|\[\/c\]|\[-\]|\[[a-f0-9]{6,8}\]/i,
+      'publisher markup leaks in girl quote');
+  }
+  const src=fs.readFileSync(path.join(ROOT,'web/station.js'),'utf8');
+  assert.match(src,/GxbVi\.t\(text\)/,'station must translate labels and skill descriptions across the roster');
+  const dates=fs.readFileSync(path.join(ROOT,'web/dates.js'),'utf8');
+  assert.match(dates,/GxbVi\.t\(text\)/,'dates must translate native voice text');
+  console.log('PASS | all 38 Station tags, universal character UI, and original quote markup are localized');
+}
+
 (async () => {
+  testCharacterVietnameseAcrossRoster();
   await testAudioSettingsAndCyclicVoice();
   testNativeBagAndEquipment();
   await testNativeAssistantInteraction();
