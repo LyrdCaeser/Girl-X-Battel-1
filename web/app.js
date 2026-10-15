@@ -424,7 +424,7 @@ function renderGraduate(){
  $('graduate-button').disabled=busy||!!missing||insufficient;
  let costRow=$('graduate-cost-row');if(!costRow){costRow=node('div','graduate-cost-row');costRow.id='graduate-cost-row';costRow.className='graduate-cost-row';$('graduate-materials').after(costRow);}costRow.replaceChildren();for(const [id,n] of Object.entries(recipe.cost||{}).length?Object.entries(recipe.cost):[['1',0]]){const c=node('span',Number(state.items[id]||0)<n?'short':'');const im=node('img');im.src=id==='1'||id==='2'?'/assets/currency/icon_'+id+'_small.png':(itemCatalog[id]&&itemIcons.has(itemCatalog[id].icon)?'/assets/item-icons/'+itemCatalog[id].icon+'.png':'/assets/ui/item_bg.png');im.alt='';c.append(im,node('b','',n?number(n):'---'));costRow.append(c);}
 }
-const bagTabs=[[1,'Gear'],[2,'Items'],[6,'Consumable'],[4,'Antiques'],[7,'Anima Gear']];
+const bagTabs=[[1,'Trang bị'],[2,'Vật phẩm'],[6,'Tiêu hao'],[3,'Mảnh Nữ Thần'],[4,'Cổ vật'],[7,'Trang bị Linh hồn']];
 function girlIconSource(id){
  const chain=hostChain(Number(id));for(const tid of chain){const src=avatars[String(tid)]?.src;if(src)return src;const icon='partner_avatar_'+tid;if(itemIcons.has(icon))return '/assets/item-icons/'+icon+'.png';}
  return '';
@@ -435,14 +435,16 @@ function itemPicture(item){const icon=String(item?.icon||'');if(icon.startsWith(
 }
 
 let currentBagUse=null;
+const bagVi=word=>window.GxbBagVi?GxbBagVi.t(word):(window.GxbVi?GxbVi.t(word):String(word||''));
 async function showBagItem(item,count,src){
  const panel=$('bag-detail');
- $('bag-detail-name').textContent=item.name;
+ $('bag-detail-name').textContent=bagVi(item.name);
  $('bag-detail-count').textContent='Số lượng: '+number(count);
- $('bag-detail-description').textContent=item.description||'Vật phẩm trong Túi Đồ.';
+ $('bag-detail-description').textContent=bagVi(item.description||'Vật phẩm trong Túi Đồ.');
  const image=$('bag-detail-image');image.src=src||'/assets/ui/item_bg.png';image.alt=item.name;
  const select=$('bag-use-choice'),qty=$('bag-use-count'),button=$('bag-detail-use'),note=$('bag-use-note');
  select.replaceChildren();select.hidden=true;qty.hidden=true;button.hidden=true;
+ const nativeChoices=$('bag-use-native-choices');nativeChoices.replaceChildren();nativeChoices.hidden=true;
  note.hidden=false;note.textContent='Đang kiểm tra chức năng gốc trên máy chủ...';
  currentBagUse={id:item.id,name:item.name,loading:true};
  panel.hidden=false;
@@ -459,14 +461,33 @@ async function showBagItem(item,count,src){
    qty.hidden=false;
    button.hidden=false;button.disabled=false;
    if(original.kind==='choice'){
-     for(const option of original.choices||[]){
-       const el=document.createElement('option');el.value=String(option.id);
-       el.textContent=option.name+' ×'+number(option.amount);
-       select.append(el);
+     const choices=original.choices||[];
+     if(!choices.length){note.textContent='Không có phần thưởng hợp lệ trong bảng gốc.';button.hidden=true;qty.hidden=true;return;}
+     const native=$('bag-use-native-choices');
+     const choose=id=>{
+       select.value=String(id);
+       for(const el of native.children){
+         const active=el.dataset.rewardId===String(id);
+         el.classList.toggle('selected',active);el.setAttribute('aria-pressed',String(active));
+       }
+     };
+     for(const option of choices){
+       const legacy=document.createElement('option');legacy.value=String(option.id);
+       legacy.textContent=bagVi(option.name)+' ×'+number(option.amount);
+       select.append(legacy);
+       const reward=itemCatalog[String(option.id)];
+       const tile=node('button','bag-native-choice');tile.type='button';tile.dataset.rewardId=String(option.id);
+       tile.setAttribute('aria-label',bagVi(option.name)+' ×'+number(option.amount));
+       const art=node('span','bag-native-choice-art');
+       art.style.backgroundImage="url('/assets/ui/quality_"+Math.min(7,Math.max(1,Number(reward?.quality)||1))+".png')";
+       const picture=reward&&itemPicture(reward);
+       if(picture){const image=node('img');image.src=picture;image.alt='';image.loading='lazy';art.append(image);}
+       tile.append(art,node('span','bag-native-choice-name',bagVi(option.name)),node('b','bag-native-choice-amount','×'+number(option.amount)));
+       tile.onclick=()=>choose(option.id);native.append(tile);
      }
-     select.hidden=false;
+     native.hidden=false;select.hidden=true;choose(choices[0].id);
    }else{
-     select.hidden=true;
+     select.hidden=true;$('bag-use-native-choices').hidden=true;
    }
    note.textContent=original.kind==='choice'?'Chọn phần thưởng theo bảng gốc.':
      (original.random?'Rương ngẫu nhiên theo tỷ lệ gốc.':'Nhận toàn bộ quà theo bảng gốc.');
@@ -491,7 +512,10 @@ async function useSelectedBagItem(){
  const message=selected.kind==='choice'?
    (' nhận '+$('bag-use-choice').selectedOptions[0]?.textContent+' mỗi lần'):
    (selected.options.random?' nhận phần thưởng ngẫu nhiên gốc':' nhận quà theo bảng gốc');
- if(!confirm('Dùng '+count+' × '+selected.name+' để'+message+'?'))return;
+ const confirmed=typeof GirlUI!=='undefined'&&GirlUI.confirm
+   ? await GirlUI.confirm('Dùng '+count+' × '+bagVi(selected.name)+' để'+message+'?',{title:'Xác nhận sử dụng',ok:'Dùng',cancel:'Hủy'})
+   : confirm('Dùng '+count+' × '+bagVi(selected.name)+' để'+message+'?');
+ if(!confirmed)return;
  const button=$('bag-detail-use');button.disabled=true;busy=true;
  try{
    const result=await api('/api/inventory/use',{item_id:id,reward_id:reward,count});
@@ -504,10 +528,10 @@ async function useSelectedBagItem(){
 function renderBag(){
  $('bag-gold').textContent=number(state.items['1']);$('bag-gems').textContent=number(state.items['2']);
  const tabs=$('bag-tabs');tabs.replaceChildren();for(const [id,label] of bagTabs){const b=node('button',bagTab===id?'active':'',label);b.setAttribute('aria-pressed',String(bagTab===id));b.addEventListener('click',()=>{bagTab=id;bagQuality=0;$('bag-detail').hidden=true;renderBag();});tabs.append(b);}
- const quality=$('bag-quality');quality.replaceChildren();for(let i=0;i<=6;i++){const b=node('button','bag-quality-button quality-'+i+(bagQuality===i?' active':''));b.title=i===0?"All qualities":'Calidad '+i;b.setAttribute('aria-label',b.title);b.setAttribute('aria-pressed',String(bagQuality===i));b.addEventListener('click',()=>{bagQuality=i;renderBag();});quality.append(b);}
+ const quality=$('bag-quality');quality.replaceChildren();for(let i=0;i<=6;i++){const b=node('button','bag-quality-button quality-'+i+(bagQuality===i?' active':''));b.title=i===0?"Tất cả phẩm chất":'Phẩm chất '+i;b.setAttribute('aria-label',b.title);b.setAttribute('aria-pressed',String(bagQuality===i));b.addEventListener('click',()=>{bagQuality=i;renderBag();});quality.append(b);}
  const rows=Object.entries(state.items).map(([id,count])=>({item:itemCatalog[id],count:Number(count)})).filter(({item,count})=>item&&count>0&&item.category===bagTab&&(!bagQuality||item.quality===bagQuality)).sort((a,b)=>b.item.quality-a.item.quality||a.item.id-b.item.id);
- const grid=$('bag-grid');grid.replaceChildren();for(const {item,count} of rows){const tile=node('button','bag-item');tile.type='button';tile.title=item.name+' · '+number(count);tile.setAttribute('aria-label',item.name+', '+number(count)+' unidades');tile.style.backgroundImage=`url('/assets/ui/quality_${Math.min(Math.max(item.quality,0),7)}.png')`;const src=itemPicture(item);if(src){const img=node('img','bag-item-image');img.src=src;img.alt='';img.loading='lazy';tile.append(img);}else tile.append(node('span','bag-item-fallback','✦'));if(bagTab===1&&item.quality>1){const stars=node('span','bag-item-stars','★'.repeat(Math.min(item.quality,6)));tile.append(stars);}tile.append(node('span','bag-item-count',number(count)));tile.addEventListener('click',()=>showBagItem(item,count,src));grid.append(tile);}
- const empty=$('bag-empty');empty.hidden=rows.length>0;empty.textContent=bagQuality?"You have no items of this quality in "+bagTabs.find(([id])=>id===bagTab)[1]+'.':"You have no items yet in "+bagTabs.find(([id])=>id===bagTab)[1]+'.';
+ const grid=$('bag-grid');grid.replaceChildren();for(const {item,count} of rows){const tile=node('button','bag-item');tile.type='button';tile.title=bagVi(item.name)+' · '+number(count);tile.setAttribute('aria-label',bagVi(item.name)+', '+number(count)+' vật phẩm');tile.style.backgroundImage=`url('/assets/ui/quality_${Math.min(Math.max(item.quality,0),7)}.png')`;const src=itemPicture(item);if(src){const img=node('img','bag-item-image');img.src=src;img.alt='';img.loading='lazy';tile.append(img);}else tile.append(node('span','bag-item-fallback','✦'));if(bagTab===1&&item.quality>1){const stars=node('span','bag-item-stars','★'.repeat(Math.min(item.quality,6)));tile.append(stars);}tile.append(node('span','bag-item-count',number(count)));tile.addEventListener('click',()=>showBagItem(item,count,src));grid.append(tile);}
+ const empty=$('bag-empty');empty.hidden=rows.length>0;empty.textContent=bagQuality?'Không có vật phẩm đạt phẩm chất này.':'Chưa có vật phẩm trong mục '+bagTabs.find(([id])=>id===bagTab)[1]+'.';
  $('bag-forge').hidden=bagTab!==1;if(typeof Souls!=='undefined')Souls.bag();
 }
 function appendGalleryBatch(){
