@@ -567,6 +567,44 @@ OVERRIDES.update({
 3. Hiệu ứng “Hellfire” làm giảm Lượng Hồi Máu Nhận, tỷ lệ Chặn Đòn và Năng Lượng nhận được của kẻ địch.
 4. Lần đầu HP của Promethea xuống dưới 30%, hoặc khi bắt đầu hiệp 5, cô lập tức hồi HP và được tăng cường sức mạnh đáng kể.""",
 })
+# Source-verified early Ghost skill descriptions; preserve exact target and trigger.
+OVERRIDES.update({
+ "skill/851001/75100501": """Kỹ năng chủ động của Sapphire gây sát thương lên kẻ địch hàng sau và có cơ hội Hóa Đá chúng.
+Sapphire có Tấn Công cơ bản cao; dùng kỹ năng càng sớm càng phát huy lợi thế.""",
+ "skill/851001/75100502": """Kỹ năng tăng cường cho phép đòn đánh thường của Sapphire tấn công toàn bộ kẻ địch hàng trước, đặc biệt làm suy yếu các nhân vật có tỷ lệ Chặn Đòn cao như Guan Yin, Javelin và Nobunaga.""",
+ "skill/851001/75100503": """Kỹ năng tăng cường: Tăng Độ Chính Xác và Tấn Công của Sapphire.""",
+ "skill/851001/75100504": """Kỹ năng tăng cường: Khi HP xuống dưới ngưỡng nhất định, Sapphire được tăng mạnh Tấn Công trong 3 hiệp. Hiệu ứng chỉ kích hoạt một lần mỗi trận.""",
+ "skill/851002/75100801": """Kỹ năng chủ động của Gambler gây sát thương lên 2 kẻ địch ngẫu nhiên và áp dụng Chảy Máu. Nếu mục tiêu là Xạ Thủ, sát thương Chảy Máu được tăng thêm.
+Sau khi Gambler Tiến Hóa lên 6 sao, kỹ năng tấn công 3 kẻ địch ngẫu nhiên.
+Khi đạt 10 sao, cô còn có thể hồi HP từ kỹ năng này.""",
+ "skill/851002/75100802": """Kỹ năng tăng cường: Mỗi đòn đánh của Gambler giúp cô tăng Xuyên Giáp và gây Chảy Máu lên mục tiêu.""",
+ "skill/851002/75100803": """Kỹ năng tăng cường: Tăng Độ Chính Xác, giúp các đòn đánh của Gambler ít trượt hơn, đồng thời tăng khả năng gây sát thương.""",
+ "skill/851002/75100804": """Kỹ năng Hồi Máu: Khi một kẻ địch bị hạ gục, Gambler hồi HP dựa trên chỉ số Tấn Công của bản thân.""",
+ "skill/851003/75100101": """Kỹ năng chủ động của Succuba gây sát thương lên kẻ địch hàng sau và Hồi Máu cho chính cô.
+Khi đạt 10 sao, kỹ năng còn có cơ hội Đóng Băng mục tiêu.
+Lượng Hồi Máu dựa trên Tấn Công của Succuba và được tăng đáng kể khi cô đạt 10 sao.""",
+ "skill/851003/75100102": """Kỹ năng tăng cường: Tăng Độ Chính Xác và HP của Succuba.""",
+ "skill/851003/75100103": """Kỹ năng Hồi Máu: Succuba tự hồi HP mỗi khi kẻ địch Chặn Đòn thành công trước một đòn tấn công.""",
+ "skill/851003/75100104": """Kỹ năng Hồi Máu: Succuba hồi HP sau mỗi lần bản thân tấn công; hiệu quả hồi phục tăng khi cô đạt 9 sao.""",
+ "skill/851004/75100201": """Kỹ năng chủ động của Dracula gây sát thương lên 3 kẻ địch ngẫu nhiên và có cơ hội Làm Choáng nếu mục tiêu là Pháp Sư.
+Sau khi Tiến Hóa lên 6 sao, kỹ năng tấn công 4 mục tiêu ngẫu nhiên.
+Khi đạt 10 sao, kỹ năng gây thêm sát thương lên các mục tiêu hệ Pháp Sư.""",
+ "skill/851004/75100202": """Kỹ năng tăng cường: Tăng Xuyên Giáp, Tấn Công và HP cho Dracula.""",
+ "skill/851004/75100203": """Kỹ năng tăng cường: Cải thiện đòn đánh thường của Dracula, giúp cô ưu tiên kẻ địch có HP thấp nhất.""",
+ "skill/851004/75100204": """Kỹ năng tăng cường: Khi HP của Dracula xuống dưới ngưỡng nhất định, cô được tăng mạnh Xuyên Giáp và tự Hồi Máu trong 5 hiệp. Hiệu ứng chỉ kích hoạt một lần mỗi trận.""",
+ "skill/851005/75100601": """Kỹ năng chủ động của Wu Kong gây sát thương lên 3 kẻ địch ngẫu nhiên. Nếu mục tiêu là Sát Thủ, kỹ năng còn có cơ hội Làm Choáng.
+Sau khi Tiến Hóa lên 6 sao, số mục tiêu tăng thành 4.
+Khi đạt 10 sao, kỹ năng còn gây Trúng Độc lên các mục tiêu hệ Sát Thủ.
+Kỹ năng có sát thương cao và đặc biệt khắc chế Sát Thủ.""",
+ "skill/851005/75100602": """Kỹ năng khống chế: Các đòn đánh và kỹ năng của Wu Kong có cơ hội Làm Choáng mục tiêu.""",
+ "skill/851005/75100603": """Kỹ năng tăng cường: Wu Kong gây thêm sát thương lên mục tiêu đang bị Làm Choáng.""",
+ "skill/851005/75100604": """Kỹ năng tăng cường: Tăng Xuyên Giáp và Tấn Công của Wu Kong.""",
+ "skill/851006/75100901": """Kỹ năng chủ động của Fencer gây sát thương lên kẻ địch hàng trước và có cơ hội Đóng Băng chúng, đồng thời Hồi Máu cho bản thân.""",
+ "skill/851006/75100902": """Kỹ năng khống chế: Khi Fencer chịu sát thương, cô có cơ hội Đóng Băng kẻ tấn công; xác suất càng cao nếu đối phương là Chiến Binh.""",
+ "skill/851006/75100903": """Kỹ năng tăng cường: Tăng Tấn Công, HP và Giáp của Fencer, đồng thời giúp cô miễn nhiễm Đóng Băng.""",
+ "skill/851006/75100904": """Kỹ năng Hồi Máu: Khi HP của Fencer xuống dưới ngưỡng nhất định, cô tự hồi một lượng HP lớn. Mỗi trận chỉ kích hoạt một lần.""",
+})
+
 EMPTY_SOURCE = "此處為填充文本"
 
 
