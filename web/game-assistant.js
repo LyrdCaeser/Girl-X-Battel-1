@@ -27,13 +27,13 @@ const GameAssistant=(()=>{
  let cfg;try{cfg=JSON.parse(localStorage.getItem('gxb2.assistant2')||'null');}catch{}
  if(!cfg){let old=null;try{old=JSON.parse(localStorage.getItem('gxb2.assistant')||'null');}catch{}cfg={on:Object.fromEntries(KEYS.flat().map(k=>[k,old?old.includes(k):!k.startsWith('guild')&&k!=='exam'])),opts:{midas_buy:0,house:1,house_raids:0,bread:0}};}
  const save=()=>{try{localStorage.setItem('gxb2.assistant2',JSON.stringify(cfg));}catch{}};
- let tab=0,wrap=null,busy=false;
+ let tab=0,wrap=null,busy=false,lastRenderedTab=-1;
  function icon(id){const it=itemCatalog?.[id];if(id==='1'||id==='2')return '/assets/currency/icon_'+id+'_small.png';if(it&&typeof itemPicture==='function'){const p=itemPicture(it);if(p)return p;}return it&&itemIcons.has(it.icon)?'/assets/item-icons/'+it.icon+'.png':'';}
  const at=(e,x,y,w,h)=>{e.style.left=`calc(${360+x-w/2} * var(--u))`;e.style.top=`calc(${640-y-h/2} * var(--u))`;e.style.width=`calc(${w} * var(--u))`;if(h!=null)e.style.height=`calc(${h} * var(--u))`;return e;};
  function limits(){const m=state.midas_info||{},x=state.explore_info||{},h=state.house_exam_info||{};return {midas_buy:Math.max(0,(m.times||0)-(m.buys||0)),house_raids:h.certs||0,bread:Math.max(0,(x.buy_limit||0)-(x.bought||0))};}
- function open(){tab=0;render();}
+ function open(){tab=0;lastRenderedTab=-1;render();}
  function close(){wrap?.remove();wrap=null;}
- function render(){wrap?.remove();wrap=el('div','ga2-wrap');wrap.onclick=e=>{if(e.target===wrap)close();};const st=el('div','ga2-stage');wrap.append(st);
+ function render(){const y=(tab===lastRenderedTab?wrap?.querySelector('.ga2-scroll')?.scrollTop:0)||0;lastRenderedTab=tab;wrap?.remove();wrap=el('div','ga2-wrap');wrap.onclick=e=>{if(e.target===wrap)close();};const st=el('div','ga2-stage');wrap.append(st);
   st.append(at(el('div','ga2-bg'),0,0,680,1127));
   const title=at(el('b','ga2-title','Trợ Lý Trò Chơi'),0,457,350,40);const x=at(el('button','ga2-x'),307,456,40,40);x.type='button';x.setAttribute('aria-label',"Đóng Trợ Lý Trò Chơi");x.style.backgroundImage=`url('${A('close_btn_2')}')`;x.onclick=close;
   const help=at(el('button','ga2-help'),-306,456,42,42);help.type='button';help.setAttribute('aria-label',"Hướng Dẫn Trợ Lý Trò Chơi");help.style.backgroundImage=`url('${A('btn_tips')}')`;help.onclick=()=>CampaignUI.popup("Trợ Lý Trò Chơi\n\nHằng ngày: Luyện Kim, nhận thưởng Chiến Dịch, Câu Hỏi Hằng Ngày, Triệu Hồi, Đấu Trường, Thực Tập, Hòm Thư và Nhiệm Vụ.\nThử Thách: Khảo Thí Học Viện bằng Giấy Chứng Nhận (quét ải cao nhất đã vượt).\nPhát Triển: nhận tài nguyên Thám Hiểm và mua Bánh Mì.\nBang Hội: điểm danh và nhận nhiệm vụ Nhà Ăn khi hệ thống hỗ trợ.\n\nMỗi bước gửi yêu cầu thật tới máy chủ. Thao tác chưa hỗ trợ sẽ được ghi rõ là bỏ qua.",{});
@@ -46,7 +46,7 @@ const GameAssistant=(()=>{
   st.append(sc);
   const cur=at(el('button','ga2-btn white','Thực Hiện Trang Này'),-124,-497,211,65);cur.type='button';cur.style.backgroundImage=`url('${A('white_btn70_70')}')`;cur.onclick=()=>run(KEYS[tab]);
   const all=at(el('button','ga2-btn blue','Thực Hiện Tất Cả'),149,-497,211,65);all.type='button';all.style.backgroundImage=`url('${A('blue_btn70_70')}')`;all.onclick=()=>run(KEYS.flat());
-  cur.disabled=all.disabled=busy;st.append(cur,all);(window.GxbFrame?.root()||document.body).append(wrap);}
+  cur.disabled=all.disabled=busy;st.append(cur,all);(window.GxbFrame?.root()||document.body).append(wrap);sc.scrollTop=y;}
  function rowOf([key,kind,label,pic],lim){const r=el('div','ga2-row'+(kind==='step'?' tall':''));
   if(pic)r.append(img(A('gameAssistant_bg_'+(pic.includes('_')&&!pic.startsWith('rc')?pic:'rc_'+pic)),'ga2-pic'));
   if(kind==='yn'){for(const [v,t,x]of [[true,label||'CÓ',0],[false,'KHÔNG',1]]){const b=el('button','ga2-radio'+(Boolean(cfg.on[key])===v?' on':''));b.type='button';b.append(img(A(Boolean(cfg.on[key])===v?'setting_up_lan1':'setting_up_lan2')),el('span','',t));b.onclick=()=>{cfg.on[key]=v;save();render();};r.append(b);}}
