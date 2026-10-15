@@ -184,7 +184,8 @@ function skinFiltered(){
  const status=$('skin-state').value,currency=$('skin-currency').value;
  return state.skins.filter(r=>{
    if(status==='wedding'){if(!r.is_wedding)return false;}
-   else {if(r.is_wedding)return false;
+   else if(status==='incomplete'){if(r.is_saleable||r.is_wedding)return false;}
+   else {if(r.is_wedding||!r.is_saleable)return false;
      if(status==='enabled'&&!r.enabled||status==='disabled'&&r.enabled)return false;}
    if(group!=='all'&&String(r.group)!==group)return false;
    if(currency!=='all'&&!r['allow_'+currency])return false;
@@ -233,26 +234,26 @@ async function saveSkinRows(cards){
 function renderSkins(){
  const filtered=skinFiltered(), pages=Math.max(1,Math.ceil(filtered.length/SKIN_PAGE_SIZE));
  state.skinPage=Math.max(0,Math.min(state.skinPage,pages-1));
- const canSell=state.skins.filter(x=>!x.is_wedding).length;
+ const canSell=state.skins.filter(x=>x.is_saleable).length;
  const wedding=state.skins.filter(x=>x.is_wedding).length;
- $('skin-stats').textContent=canSell+' skin thường · '+wedding+' skin cưới khóa cứng · '+state.skins.filter(x=>x.enabled&&!x.is_wedding).length+' đang bán';
+ $('skin-stats').textContent=canSell+' skin thường đủ dữ liệu · '+wedding+' skin cưới khóa cứng · '+state.skins.filter(x=>!x.is_saleable&&!x.is_wedding).length+' bản ghi kỹ thuật bị khóa · '+state.skins.filter(x=>x.enabled&&x.is_saleable).length+' đang bán';
  $('skin-page-count').textContent=(state.skinPage+1)+' / '+pages+' · '+filtered.length+' trang phục';
  $('skin-prev').disabled=state.skinPage===0;
  $('skin-next').disabled=state.skinPage>=pages-1;
  const grid=$('skin-grid');grid.replaceChildren();
  for(const r of filtered.slice(state.skinPage*SKIN_PAGE_SIZE,(state.skinPage+1)*SKIN_PAGE_SIZE)){
-   const card=txt('article','','skin-item'+(r.is_wedding?' is-wedding':''));
+   const card=txt('article','','skin-item'+(r.is_wedding?' is-wedding':!r.is_saleable?' is-locked':''));
    card.dataset.skinId=r.skin_id;
    const head=txt('div','','skin-item-head');
    const pic=document.createElement('img');pic.src='/assets/skins/cards/'+r.skin_id+'.webp';pic.alt=r.name;pic.loading='lazy';
    pic.onerror=()=>{pic.hidden=true;};
    const title=txt('div','','skin-head-title');
    title.append(txt('b',r.name),txt('small',(r.girl_name||'Nữ Thần')+' · #'+r.skin_id+' · Phe '+r.group));
-   title.append(txt('small',r.is_wedding?'♡ Độc quyền đám cưới · CẤM BÁN':r.enabled?'● Đang mở bán':'○ Chưa mở bán'));
+   title.append(txt('small',r.is_wedding?'♡ Độc quyền đám cưới · CẤM BÁN':!r.is_saleable?'⚠ Bản ghi kỹ thuật không bán':r.enabled?'● Đang mở bán':'○ Chưa mở bán'));
    const preview=txt('button','Xem trước','ghost small');preview.type='button';
    preview.onclick=()=>{$('skin-preview-image').src=pic.src;$('skin-preview-name').textContent=(r.girl_name||'')+' — '+r.name;$('skin-preview').showModal();};
    head.append(pic,title,preview);card.append(head);
-   if(r.is_wedding){card.append(txt('p','Skin này chỉ mở qua hệ thống kết duyên. Không có công cụ sửa giá hoặc mở bán.','muted mini'));grid.append(card);continue;}
+   if(r.is_wedding||!r.is_saleable){card.append(txt('p',r.is_wedding?'Skin này chỉ mở qua hệ thống kết duyên, không thể bán.':'Dữ liệu gốc chưa có tên hoặc không gắn nhân vật. Không thể tạo đơn bán.','muted mini'));grid.append(card);continue;}
    const label=(field,name,kind='checkbox',val=false)=>{
      const wrapper=txt('label','','skin-control'),input=document.createElement('input');
      input.type=kind;input.dataset.field=field;
@@ -280,7 +281,7 @@ for(const id of ['skin-search','skin-group','skin-state','skin-currency']){
 $('skin-refresh').onclick=()=>loadSkins().catch(e=>notice(e.message,false));
 $('skin-prev').onclick=()=>{state.skinPage--;renderSkins();};
 $('skin-next').onclick=()=>{state.skinPage++;renderSkins();};
-$('skin-save-visible').onclick=()=>saveSkinRows([...document.querySelectorAll('#skin-grid .skin-item:not(.is-wedding)')]);
+$('skin-save-visible').onclick=()=>saveSkinRows([...document.querySelectorAll('#skin-grid .skin-item:not(.is-wedding):not(.is-locked)')]);
 $('skin-verify-key').onclick=async()=>{try{await api('/api/admin/gm/verify-key',{},true);notice('Khóa hành động QTV hợp lệ.');}catch(e){notice(e.message,false);}};
 $('skin-preview-close').onclick=()=>$('skin-preview').close();
 
