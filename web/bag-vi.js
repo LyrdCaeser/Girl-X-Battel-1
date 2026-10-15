@@ -52,6 +52,12 @@ window.GxbBagVi=(()=>{
   'Elite Skill Promotion Chest':'Rương Tăng Cấp Kỹ Năng Tinh Anh',
   'Advanced Resource Chest':'Rương Tài Nguyên Cao Cấp',
   'Christmas limited Chest':'Rương Giáng Sinh giới hạn',
+  'Gold':'Vàng','Servant Cookie':'Bánh Quy Người Hầu','Spirit Cookie':'Bánh Quy Linh Hồn',
+  'Servant Crystal':'Pha Lê Người Hầu','Standard File':'Hồ Sơ Thường',
+  'Exclusive File':'Hồ Sơ Độc Quyền','Tarnished Sphere':'Cầu Xỉn Màu',
+  'Brilliant Sphere':'Cầu Rực Rỡ','Fantasy Dust':'Bụi Kỳ Ảo',
+  'Fantasy Talisman':'Bùa Kỳ Ảo','Soul Gem':'Ngọc Linh Hồn',
+  'Soul Essence':'Tinh Hoa Linh Hồn','Afterglow':'Dư Quang',
   'Slot Ticket':'Vé Máy Quay',
   'Guild Coin':'Xu Bang Hội',
   'Guild EXP':'EXP Bang Hội',
@@ -104,6 +110,21 @@ window.GxbBagVi=(()=>{
   const s=String(value??'').trim();
   if(!s)return s;
   if(Object.prototype.hasOwnProperty.call(exact,s))return exact[s];
+
+  // Descriptions from the original optional reward table include label*amount
+  // lists. Keep quantities verbatim while localizing only display labels.
+  const prefix='You can choose one of the rewards after opening this chest';
+  if(s.startsWith(prefix)&&s.length>prefix.length){
+    const rest=s.slice(prefix.length).replace(/^[.:\s：]+/,'').replace(/^[「\[]/,'').replace(/[」\].]+$/,'');
+    if(rest){
+      const pieces=rest.split(/,\s*/).map(piece=>{
+        const match=piece.trim().match(/^(.+?)\s*\*\s*([\d.]+)$/);
+        return match?t(match[1].trim())+' ×'+match[2]:t(piece.trim());
+      });
+      return 'Mở rương để chọn một phần thưởng gốc: '+pieces.join(', ')+'.';
+    }
+  }
+
   const fromExisting=window.GxbVi?.t(s);
   if(fromExisting&&fromExisting!==s)return fromExisting;
   for(const [pattern,convert] of phrases){
