@@ -51,6 +51,7 @@ GLOSSARY = {
     "Assassin-class": "hệ Sát Thủ", "Mage-class": "hệ Pháp Sư",
     "Priest-class": "hệ Tu Sĩ",
     "Damage Dealer": "chủ lực gây sát thương",
+    "Basic": "Cơ Bản", "Active": "Chủ Động", "Star": "Sao", "House": "Phe",
     "Armor Break": "Xuyên Giáp", "Armor Ignoring": "Xuyên Giáp",
     "Damage Reduction": "Giảm Sát Thương",
     "Damage Depletion": "Tiêu Hao Sát Thương",
@@ -158,13 +159,34 @@ OVERRIDES = {
 Lời Nguyền kích hoạt khi mục tiêu nhận hiệu ứng tăng chỉ số. Khi kích hoạt, hiệu ứng sẽ xóa 1 cộng dồn tăng chỉ số vừa nhận và gây sát thương lên mục tiêu.""",
  "skill/857002/757002401": """Kỹ năng tăng cường: Khi bắt đầu trận, Elysia phủ cả ba loại Sắc Màu Nguyên Sơ lên 2 kẻ địch ngẫu nhiên.
 Cuối mỗi hiệp, Elysia nhận 1 cộng dồn Quà Tặng Song Ngư. Khi đạt 3 cộng dồn, cô tiêu hao 2 cộng dồn để phủ 1 cộng dồn Sắc Lam Nguyên Sơ lên 2 kẻ địch ngẫu nhiên.""",
- "skill/853015/75301504": """Kỹ năng tăng cường: Sao chép hiệu ứng Sát Thương Theo Thời Gian hoặc Giảm Chỉ Số đang có trên 1 kẻ địch ngẫu nhiên sang 2 kẻ địch khác.""",
+ "skill/853015/75301504": """Kỹ năng tăng cường: Sao chép hiệu ứng Sát Thương Theo Thời Gian hoặc Giảm Chỉ Số trên một kẻ địch ngẫu nhiên sang 2 kẻ địch khác.""",
  "skill/855012/75501102": """Kỹ năng tăng cường: Tăng HP, Tấn Công, Chặn Đòn, Lượng Hồi Máu Nhận và Kháng Chí Mạng của Promethea.""",
  "skill/854016/75401602": """Kỹ năng tăng cường: Tăng Tấn Công, HP, Sát Thương Chí Mạng, Giảm Sát Thương và Tốc Độ của Kassy.""",
  "skill/854016/75401604": """Kỹ năng tăng cường: Khi bắt đầu trận, Kassy tăng Tốc Độ và Sát Thương Chí Mạng cho toàn đội. Cuối mỗi hiệp, cô tăng Tấn Công và Chí Mạng cho toàn đội. Các nhân vật hệ Sát Thủ nhận hiệu quả tăng cường gấp đôi.""",
  "skill/851019/75101902": """Kỹ năng tăng cường: Tăng HP, Tấn Công, Chí Mạng, Xuyên Giáp và Giảm Sát Thương của Raenvya.""",
  "skill/851008/75101004": """Kỹ năng tăng cường: Tăng Giảm Sát Thương của Sakura trong vài hiệp khi HP của cô giảm xuống dưới ngưỡng nhất định.""",
  "skill/851009/75100403": """Kỹ năng tăng cường: Tăng Giảm Sát Thương, HP và Tấn Công của Giana.""",
+ "skill/855003/75500401": """Kỹ năng chủ động của Wraith gây sát thương cho 1 kẻ địch ngẫu nhiên. Nếu mục tiêu có HP cao hơn Wraith, kỹ năng gây thêm sát thương tương ứng với một tỷ lệ HP tối đa của kẻ địch, đồng thời tăng Chí Mạng của Wraith.
+Kỹ năng này đặc biệt hiệu quả trước các mục tiêu có HP cao. Khi đạt 10 sao, Wraith tấn công hai kẻ địch và gây sát thương mạnh hơn lên nhân vật hệ Tu Sĩ.""",
+ "skill/854014/75401401": """Kỹ năng chủ động của Vera gây sát thương lên 1 kẻ địch ngẫu nhiên và áp dụng hiệu ứng Suy Yếu, khiến mục tiêu chịu thêm sát thương và gây ít sát thương hơn.
+Kỹ năng cũng ban hiệu ứng bảo vệ Khúc Ru cho 3 đồng minh. Khi người được bảo vệ chịu Đòn Đánh Thường hoặc Kỹ Năng Chủ Động, Khúc Ru hồi HP cho họ và gây sát thương xuyên giáp lên kẻ tấn công.""",
+ "skill/851014/75101401": """Kỹ năng chủ động của Von Helsing gây sát thương nhiều lần lên mục tiêu; mỗi lần gây sát thương sẽ tích 1 cộng dồn Dấu Ấn Thợ Săn.
+Kỹ năng cho phép cô tiêu hao hiệu ứng Khát Máu để giảm HP của mục tiêu và hồi HP cho bản thân.
+Có cơ hội gây thêm sát thương dựa trên HP tối đa của mục tiêu.""",
+ "skill/851014/75101403": """Kỹ năng tăng cường cho phép Von Helsing nhắm vào kẻ địch có chỉ số Tấn Công cao nhất.
+Đòn Đánh Thường của cô có thể gây sát thương hai lần, đồng thời tích 1 cộng dồn Dấu Ấn Thợ Săn cho mỗi lần gây sát thương.""",
+ "skill/854017/75401701": """Kỹ năng chủ động của Aurora tấn công 1 kẻ địch ngẫu nhiên, có cơ hội Hóa Tinh Thể mục tiêu và áp dụng hiệu ứng Nảy Bật.
+Khi Nảy Bật kích hoạt, đòn tấn công chuyển sang 1 kẻ địch ngẫu nhiên khác; sát thương và xác suất Hóa Tinh Thể tăng dần.
+Không tấn công cùng một mục tiêu hai lần liên tiếp. Sát thương có thể nảy tối đa 5 lần; hiệu ứng kết thúc nếu trên sân còn ít hơn 2 kẻ địch hoặc đòn tấn công bị Né Tránh.""",
+ "skill/852018/75201804": """Kỹ năng tăng cường của Hermes gây sát thương cho 1 kẻ địch ngẫu nhiên rồi gây thêm sát thương cho kẻ địch có HP thấp nhất.
+Dựa trên sát thương gây ra, cô nhận thêm Điểm Khiên cho Khiên Ma Thuật. Nếu chưa có Khiên Ma Thuật, cô sẽ nhận một Khiên Ma Thuật mới.""",
+ "skill/851018/75101803": """Kỹ năng tăng cường cho phép Chizuko hồi HP cho đồng minh có HP thấp nhất, ban Khiên Ma Thuật cho đồng minh này và loại bỏ 1 hiệu ứng bất lợi ngẫu nhiên trên họ.""",
+ "skill/856011/75601101": """Kỹ năng chủ động của Poseidia giảm Giáp của 1 kẻ địch ngẫu nhiên, gây sát thương lên mục tiêu đó 3 lần và tăng Chặn Đòn cho toàn bộ đồng minh.""",
+ "profile/856012": """1. Zeusia là nhân vật chủ lực gây sát thương thuộc phe Thiên Thần.
+2. Kỹ năng chủ động của cô gây sát thương lên toàn bộ kẻ địch, giảm Tấn Công của chúng và tăng sát thương chúng phải chịu từ hiệu ứng Thiêu Đốt.
+3. Khi Zeusia dùng kỹ năng chủ động lên mục tiêu đang chịu hiệu ứng Lôi Kích, hiệu ứng đó được kích hoạt thêm một lần ngay lập tức. Nếu mục tiêu không có Lôi Kích, Zeusia nhận hiệu ứng Thần Tính.
+4. Khi có 12 cộng dồn Thần Tính, Zeusia thi triển Lôi Kích lên toàn bộ kẻ địch.""",
+ "skill/856012/75601204": """Kỹ năng tăng cường: Mỗi khi đồng minh sử dụng kỹ năng chủ động, Zeusia nhận hiệu ứng Thần Tính. Khi đạt 12 cộng dồn Thần Tính, cô thi triển Lôi Kích lên toàn bộ kẻ địch.""",
 }
 EMPTY_SOURCE = "此處為填充文本"
 
@@ -172,6 +194,8 @@ EMPTY_SOURCE = "此處為填充文本"
 def strip_markup(s: str) -> str:
     s = MARKUP.sub("", str(s))
     s = re.sub(r"\(\s*-\s*\]|\[\s*/c\)|\(\s*/c\)", "", s, flags=re.I)
+    # The neural translator sometimes turns [c][e28002] into (c) (e 28002).
+    s = re.sub(r"\(\s*(?:c|/c|-|[0-9a-f][0-9a-f ]{4,15})\s*\)", "", s, flags=re.I)
     return re.sub(r"[ \t]{2,}", " ", s).strip()
 
 
