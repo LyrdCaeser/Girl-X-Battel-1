@@ -41,11 +41,18 @@ assert.deepEqual(JSON.parse(JSON.stringify(read)),{
   skin_id:7193,enabled:true,allow_bank:true,allow_crystal:false,
   price_vnd:299000,price_crystal:0
 });
+const match=fromFunction('matchesSavedSkin','async function saveSkinRows(');
+assert.equal(match({...read},read),true,'Saved catalog agrees with edited card');
+assert.equal(match({...read,enabled:false},read),false,'Unsaved toggle must be detected');
+assert.equal(match({...read,price_vnd:299},read),false,'Incorrect VND price must be detected');
+assert.equal(match({...read,price_crystal:25},read),false,'Incorrect Crystal price must be detected');
 assert.throws(()=>settings(fake({...good,price_vnd:'299.00'})),/số nguyên/);
 assert.throws(()=>settings(fake({...good,enabled:true,allow_bank:false})),/bật bán/);
 assert.ok(app.includes("cache:'no-store'"),'Always request fresh saved data');
 assert.ok(app.includes("await api('/api/skin-shop/admin/catalog')"),'Require fresh read after saving');
 assert.ok(app.includes('function matchesSavedSkin('),'Require exact field checks');
 assert.ok(app.includes('skin-save-result'),'Show per-card save outcomes');
+assert.ok(app.includes('markPending'),'Unsaved edits must show before F5');
+assert.ok(app.includes('skin-state-label'),'Saved sales badge must update without reload');
 assert.ok(html.includes('id="account-sync"'),'Expose GXB3 account sync on Studio');
 console.log('PASS | Studio VNĐ 299.000 => 299000, valid Skin config, server read-back, and SSO entry');
