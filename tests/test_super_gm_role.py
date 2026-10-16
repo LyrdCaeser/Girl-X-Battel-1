@@ -46,7 +46,9 @@ class SuperGmSecurityTests(unittest.TestCase):
 
     def test_gm_key_requires_owner_session_and_exact_second_factor(self):
         key = "test-GM-key-" + "x" * 40
-        with patch.dict(os.environ, {"GXB3_GM_ACTION_KEY": key}):
+        with patch.dict(os.environ, {"GXB3_GM_ACTION_KEY": key,
+                                  "GXB3_ADMIN_KEY": "TestAdminKey123",
+                                  "GXB3_GIFTCODE_PANEL_KEY": "TestPanelKey123"}):
             self.impersonate(self.owner)
             self.handler.headers = {"X-GXB3-GM-Key": key}
             self.assertTrue(self.handler.gm_key_authorized())
