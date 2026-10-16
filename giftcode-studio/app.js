@@ -1,7 +1,7 @@
 'use strict';
 (()=>{
 const $=id=>document.getElementById(id);
-const state={me:null,admin:false,panelUnlocked:false,panelAccess:'',unlockDestination:'create',skins:[],skinPage:0,catalog:[],basket:{},worlds:[],codes:[],page:0,view:'redeem'};
+const state={me:null,admin:false,panelUnlocked:false,panelAccess:'',accountIdentity:'',unlockDestination:'create',skins:[],skinPage:0,catalog:[],basket:{},worlds:[],codes:[],page:0,view:'redeem'};
 const limit=16;
 const txt=(tag,text,cls)=>{const x=document.createElement(tag);if(cls)x.className=cls;x.textContent=String(text??'');return x;};
 const api=async(path,body,gm=false,unlock=false)=>{
@@ -53,12 +53,21 @@ function updateStats(){
  $('stat-used').textContent=state.codes.reduce((n,c)=>n+Number(c.used_count||0),0).toLocaleString('vi-VN');
 }
 async function bootstrap(){
- const m=await api('/api/auth/me');state.me=m.authenticated?m.session:null;state.admin=Boolean(m.is_super_gm);
+ const m=await api('/api/auth/me');
+ const next=m.authenticated?m.session:null;
+ const nextIdentity=next?[String(next.account?.uid||''),String(next.account?.server_id||'')].join(':'):'';
+ // The owner unlock must not survive a change of player identity or server.
+ if(nextIdentity!==state.accountIdentity){state.panelUnlocked=false;state.panelAccess='';state.skins=[];}
+ state.accountIdentity=nextIdentity;
+ state.me=next;state.admin=Boolean(next&&m.is_super_gm);
  if(!state.admin){state.panelUnlocked=false;state.panelAccess='';state.skins=[];}
  $('login-panel').hidden=Boolean(state.me);
  $('restricted').hidden=!state.me||state.admin;
  $('account-label').textContent=state.me?(state.me.account?.username||state.me.account?.uid||'Đã đăng nhập'):'Chưa đăng nhập';
- $('server-status').textContent='● Máy chủ online · '+(state.me?.account?.server_id||'GXB 3');
+ $('account-character').textContent=state.me
+   ?[(state.me.character_name||'Chưa chọn nhân vật'),state.me.account?.server_id||''].filter(Boolean).join(' · ')
+   :'Nhấn Đồng bộ để dùng đúng tài khoản đang chơi';
+ $('server-status').textContent=state.me?'● GXB 3 · Đã xác thực phiên':'○ Chưa liên kết tài khoản GXB 3';
  const select=$('login-form').elements.server_id;
  for(const w of m.worlds||[]){if(select.querySelector('[value="'+w.server_id+'"]'))continue;const option=document.createElement('option');option.value=w.server_id;option.textContent=w.name+' · '+w.server_id;select.append(option);}
  if(!state.me){switchView('redeem');return;}
@@ -331,13 +340,21 @@ async function start(){
  for(const el of document.querySelectorAll('.nav-btn'))el.hidden=true;
  for(const name of ['create','history','redeem','skins'])$(name+'-view').hidden=true;
  const ticket=new URLSearchParams(location.search).get('ticket');
+ let ssoFailure='';
  if(ticket){
-   // Drop bearer ticket from address bar before making any other request.
+   // Drop the one-use bearer ticket from browser history immediately.
    history.replaceState(null,'',location.pathname);
-   try{await api('/api/giftcode/sso/exchange',{ticket});notice('Đã liên kết đăng nhập từ GXB 3.');}
-   catch(e){notice('Liên kết đăng nhập: '+e.message,false);}
+   try{await api('/api/giftcode/sso/exchange',{ticket});}
+   catch(e){ssoFailure=e.message||'Vé đăng nhập đã hết hạn';}
  }
- try{await bootstrap();}
+ try{await bootstrap();
+   if(ssoFailure){
+     // An old Studio session must never appear to have been synced successfully.
+     state.panelUnlocked=false;state.panelAccess='';
+     notice('Không thể đồng bộ GXB 3: '+ssoFailure+'. Bấm “Đồng bộ với GXB 3” để thử lại.',false);
+     if(state.me)switchView('redeem');
+   }else if(ticket&&state.me){notice('Đã đồng bộ tài khoản GXB 3: '+$('account-label').textContent+'.');}
+ }
  catch(err){
    $('server-status').textContent='Chưa kết nối máy chủ';
    $('login-panel').hidden=false;
