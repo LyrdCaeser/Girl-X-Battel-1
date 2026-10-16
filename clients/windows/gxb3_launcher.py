@@ -73,7 +73,7 @@ def main() -> int:
     try:
         # Fullscreen native landscape PC window (Alt+F4 to exit).
         window = webview.create_window(
-            "Nữ Thần Chiến Đấu - GXB 3 · ALPHA RC7 · PC",
+            "Nữ Thần Chiến Đấu - GXB 3 · ALPHA RC8 · PC",
             html=LOADING_HTML,
             width=1600,
             height=900,
