@@ -9,7 +9,7 @@ import secrets
 import time
 from . import auth
 
-STUDIO_ORIGIN = "https://gxb3-giftcode-studio.vercel.app"
+STUDIO_ORIGIN = "https://goddessbattle-3.vercel.app"
 TICKET_TTL = 75
 PANEL_TTL = 600
 _PANEL_HEADER = 'gxb3-giftcode-panel-v1'
