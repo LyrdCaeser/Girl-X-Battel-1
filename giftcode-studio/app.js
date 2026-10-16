@@ -22,7 +22,7 @@ const api=async(path,body,gm=false,unlock=false)=>{
  const r=await fetch(requestPath,options),data=await r.json().catch(()=>({}));
  if(!r.ok){
    const err=data?.error;
-   const detail=typeof err==='string'?err:(typeof err?.message==='string'?err.message:'Kết nối API thất bại (HTTP '+r.status+')');
+   const detail=r.status===429 ? 'Đã thử quá nhiều lần; vui lòng đợi '+Math.max(1,Number(data.retry_after||60))+' giây.' : (typeof err==='string'?err:(typeof err?.message==='string'?err.message:'Kết nối API thất bại (HTTP '+r.status+')'));
    // Admin unlock tokens expire server-side. Reopen the real unlock form
    // instead of leaving an apparently active screen that can never save.
    if(r.status===403&&state.panelUnlocked&&/mở khóa|unlock/i.test(detail)){
