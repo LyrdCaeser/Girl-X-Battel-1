@@ -236,20 +236,53 @@ function skinSettings(card){
   allow_bank:value('allow_bank').checked,allow_crystal:value('allow_crystal').checked,
   price_vnd:price('price_vnd'),price_crystal:price('price_crystal')};
 }
-async function saveSkinRows(cards){
- const changes=cards.map(skinSettings);
- if(!changes.length)return;
- if(!$('skin-gm-key').value.trim()){notice('Nhập Khóa hành động QTV bên dưới danh sách trước khi lưu.',false);$('skin-gm-key').focus();return;}
+function skinSaveStatus(card,message,ok){
+ const p=card.querySelector('.skin-save-result');
+ if(p){p.textContent=message;p.dataset.ok=ok?'1':'0';}
+}
+function matchesSavedSkin(saved,requested){
+ return saved&&Number(saved.skin_id)===requested.skin_id&&
+   saved.enabled===requested.enabled&&saved.allow_bank===requested.allow_bank&&
+   saved.allow_crystal===requested.allow_crystal&&
+   Number(saved.price_vnd)===requested.price_vnd&&
+   Number(saved.price_crystal)===requested.price_crystal;
+}
+async function saveSkinRows(cards,button){
+ if(!cards.length)return;
+ let changes;
+ try{changes=cards.map(skinSettings);}
+ catch(e){cards.forEach(c=>skinSaveStatus(c,e.message,false));notice(e.message,false);return;}
+ if(!$('skin-gm-key').value.trim()){
+   const message='Cần nhập Khóa hành động QTV ở cuối danh sách trước khi lưu.';
+   cards.forEach(c=>skinSaveStatus(c,message,false));
+   notice(message,false);$('skin-gm-key').focus();return;
+ }
  if(changes.length>1&&!confirm('Lưu thay đổi '+changes.length+' trang phục?'))return;
- const button=document.activeElement;
  if(button)button.disabled=true;
+ cards.forEach(c=>skinSaveStatus(c,'Đang ghi lên máy chủ và xác minh dữ liệu…',true));
  try{
    const endpoint=changes.length===1?'/api/skin-shop/admin/update':'/api/skin-shop/admin/bulk';
    const payload=changes.length===1?changes[0]:{changes};
    const response=await api(endpoint,payload,true,true);
-   notice('Máy chủ đã lưu cấu hình '+response.updated+' trang phục.');
-   await loadSkins();
- }catch(e){notice(e.message,false);}finally{if(button)button.disabled=false;}
+   if(Number(response.updated)!==changes.length)throw Error('Máy chủ chưa xác nhận đủ '+changes.length+' cấu hình');
+   // Read back from a fresh API response; a successful POST alone is insufficient.
+   const confirmed=await api('/api/skin-shop/admin/catalog');
+   const rows=confirmed.offers||[];
+   const mismatched=changes.filter(req=>!matchesSavedSkin(rows.find(r=>Number(r.skin_id)===req.skin_id),req));
+   if(mismatched.length){
+     const ids=new Set(mismatched.map(r=>r.skin_id));
+     cards.forEach(c=>skinSaveStatus(c,ids.has(Number(c.dataset.skinId))?'Máy chủ chưa lưu đúng cấu hình này. Giữ nguyên thông tin để thử lại.':'Đã xác nhận lưu trên máy chủ.',!ids.has(Number(c.dataset.skinId))));
+     throw Error('Lưu chưa đồng bộ với máy chủ: Skin #'+mismatched.map(x=>x.skin_id).join(', #')+'. Dữ liệu trong form được giữ nguyên để thử lại.');
+   }
+   state.skins=rows;
+   cards.forEach(c=>skinSaveStatus(c,'Đã xác minh lưu thành công. Tải lại trang sẽ giữ nguyên cấu hình.',true));
+   notice('Đã xác minh '+changes.length+' trang phục được lưu bền trên máy chủ.');
+   // Do not repaint cards here; keep success visible and leave input data intact.
+ }catch(e){
+   const message=e.message||'Không lưu được cấu hình';
+   cards.forEach(c=>{const result=c.querySelector('.skin-save-result');if(result&&(!result.textContent||result.textContent.startsWith('Đang ')))skinSaveStatus(c,'Chưa lưu: '+message,false);});
+   notice('Lỗi lưu Skin: '+message,false);
+ }finally{if(button)button.disabled=false;}
 }
 async function refreshBankOrders(){
  const status=$('skin-order-state').value;
@@ -318,8 +351,9 @@ function renderSkins(){
      label('allow_crystal','Bán bằng Crystal','checkbox',r.allow_crystal),
      label('price_crystal','Giá Crystal','number',r.price_crystal));
    card.append(controls);
-   const save=txt('button','Lưu trang phục này','primary small');save.type='button';save.onclick=()=>saveSkinRows([card]);
-   card.append(save);grid.append(card);
+   const status=txt('p','','skin-save-result');status.setAttribute('role','status');status.setAttribute('aria-live','polite');
+   const save=txt('button','Lưu trang phục này','primary small');save.type='button';save.onclick=()=>saveSkinRows([card],save);
+   card.append(status,save);grid.append(card);
  }
  if(!filtered.length)grid.append(txt('p','Không tìm thấy trang phục phù hợp.','muted'));
 }
@@ -329,7 +363,7 @@ for(const id of ['skin-search','skin-group','skin-state','skin-currency']){
 $('skin-refresh').onclick=()=>loadSkins().catch(e=>notice(e.message,false));
 $('skin-prev').onclick=()=>{state.skinPage--;renderSkins();};
 $('skin-next').onclick=()=>{state.skinPage++;renderSkins();};
-$('skin-save-visible').onclick=()=>saveSkinRows([...document.querySelectorAll('#skin-grid .skin-item:not(.is-wedding):not(.is-locked)')]);
+$('skin-save-visible').onclick=()=>saveSkinRows([...document.querySelectorAll('#skin-grid .skin-item:not(.is-wedding):not(.is-locked)')],$('skin-save-visible'));
 $('skin-verify-key').onclick=async()=>{try{await api('/api/admin/gm/verify-key',{},true);notice('Khóa hành động QTV hợp lệ.');}catch(e){notice(e.message,false);}};
 $('skin-preview-close').onclick=()=>$('skin-preview').close();
 $('skin-order-refresh').onclick=()=>refreshBankOrders().catch(e=>notice(e.message,false));
