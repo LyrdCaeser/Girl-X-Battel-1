@@ -89,17 +89,28 @@ def exchange(ticket,user_agent='',remote_addr=''):
             db.close()
 
 
-def unlock(password,game_session):
-    """UI lock is intentionally separate from the 24+ character money-moving GM key."""
-    key=os.environ.get('GXB3_GIFTCODE_PANEL_KEY','')
-    if len(key)<12:
-        raise RuntimeError("Chưa cấu hình khóa Giftcode Studio trên VPS")
-    supplied=str(password or '')
-    if not hmac.compare_digest(key.encode(),supplied.encode()):
-        raise ValueError("Khóa mở Tạo Giftcode không chính xác")
-    gm=os.environ.get('GXB3_GM_ACTION_KEY','')
-    if len(gm)<24 or not game_session:
+def unlock(password, game_session, admin_key=None, gm_key=None):
+    """Require all three configured owner keys to unlock either privileged Studio tab.
+
+    The authenticated SUPER GM session remains mandatory at the HTTP route.
+    Keys are checked server-side, never embedded in the frontend or access token.
+    """
+    panel = os.environ.get('GXB3_GIFTCODE_PANEL_KEY', '')
+    admin = os.environ.get('GXB3_ADMIN_KEY', '')
+    gm = os.environ.get('GXB3_GM_ACTION_KEY', '')
+    if len(panel) < 12 or len(admin) < 12 or len(gm) < 24:
+        raise RuntimeError("VPS chưa cấu hình đủ ba khóa quản trị Studio")
+    if not game_session or not auth.session(game_session):
         raise ValueError("Phiên SUPER GM không hợp lệ")
+    fields = ((panel, password), (admin, admin_key), (gm, gm_key))
+    # Reject all invalid combinations identically; do not reveal which secret matches.
+    valid = True
+    for configured, supplied in fields:
+        entry = str(supplied or '')
+        if len(entry) > 1024 or not hmac.compare_digest(configured.encode(), entry.encode()):
+            valid = False
+    if not valid:
+        raise ValueError("Một hoặc nhiều khóa QTV không chính xác")
     expiry=int(time.time())+PANEL_TTL
     message=f"{_PANEL_HEADER}:{auth._token_hash(game_session)}:{expiry}".encode()
     sig=hmac.new(gm.encode(),message,hashlib.sha256).hexdigest()
