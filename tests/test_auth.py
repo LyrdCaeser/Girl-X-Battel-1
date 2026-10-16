@@ -22,7 +22,8 @@ class AuthTests(unittest.TestCase):
         registered = auth.register("Player_01", "StrongPass123", "Waifu", "S1", "p@example.com", "UA", "127.0.0.1")
         self.assertTrue(registered["token"])
         self.assertTrue(registered["recovery_code"])
-        self.assertEqual(registered["account"]["uid"], "GXB3-00000001")
+        self.assertRegex(registered["account"]["uid"], r"^GB3-[1-9][0-9]{8}$")
+        self.assertEqual(registered["account"]["display_uid"], registered["account"]["uid"])
         current = auth.session(registered["token"])
         self.assertEqual(current["character_name"], "Waifu")
 
@@ -30,11 +31,31 @@ class AuthTests(unittest.TestCase):
         self.assertIsNone(auth.session(registered["token"]))
 
         logged = auth.login("player_01", "StrongPass123", "S1", "127.0.0.1", "UA2")
-        self.assertEqual(logged["account"]["uid"], "GXB3-00000001")
+        self.assertEqual(logged["account"]["uid"], registered["account"]["uid"])
+        self.assertEqual(logged["account"]["display_uid"], registered["account"]["display_uid"])
         sessions = auth.sessions_for_token(logged["token"])
         self.assertEqual(len(sessions), 1)
         self.assertTrue(sessions[0]["current"])
         self.assertEqual(sessions[0]["user_agent"], "UA2")
+
+    def test_public_uid_validates_recipient_without_changing_player_identity(self):
+        sender = auth.register("Giver_01", "StrongPass123", "Người tặng", "S1")
+        recipient = auth.register("Receiver_01", "StrongPass123", "Người nhận", "S1")
+        public_uid = recipient["account"]["display_uid"]
+        actual_uid = recipient["account"]["uid"]
+        verified = auth.verify_gift_recipient(
+            public_uid, "Người nhận", "s1", sender["account"]["uid"])
+        self.assertTrue(verified["verified"])
+        self.assertEqual(verified["uid"], actual_uid)
+        self.assertEqual(verified["display_uid"], public_uid)
+        self.assertEqual(verified["server_id"], "S1")
+        self.assertEqual(auth.session(recipient["token"])["account"]["uid"], actual_uid)
+        with self.assertRaisesRegex(ValueError, "tự tặng"):
+            auth.verify_gift_recipient(public_uid, "Người nhận", "S1", actual_uid)
+        with self.assertRaisesRegex(ValueError, "không khớp"):
+            auth.verify_gift_recipient(public_uid, "Sai tên", "S1", sender["account"]["uid"])
+        with self.assertRaisesRegex(ValueError, "không khớp"):
+            auth.verify_gift_recipient(public_uid, "Người nhận", "S2", sender["account"]["uid"])
 
     def test_password_is_hashed_and_duplicate_username_rejected(self):
         auth.register("Player_02", "AnotherPass123", "Heroine", "S1")
