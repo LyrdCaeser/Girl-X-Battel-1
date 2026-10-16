@@ -9,10 +9,16 @@ const app=fs.readFileSync(path.join(root,'giftcode-studio/app.js'),'utf8');
 const html=fs.readFileSync(path.join(root,'giftcode-studio/index.html'),'utf8');
 const bridge=fs.readFileSync(path.join(root,'giftcode-studio/api/bridge.js'),'utf8');
 const back=fs.readFileSync(path.join(root,'gxb2/skin_store.py'),'utf8');
+const priceStart=app.indexOf('function parseSkinPrice(raw){');
+const priceEnd=app.indexOf('\nfunction skinSettings(card){',priceStart);
 const start=app.indexOf('function skinSettings(card){');
-const end=app.indexOf('\nasync function saveSkinRows(cards){',start);
+const end=app.indexOf('\nfunction skinSaveStatus(',start);
+assert(priceStart>=0&&priceEnd>priceStart,'VNĐ prices must use a localized integer parser');
 assert(start>=0&&end>start,'Skin settings form implementation must exist');
-const serialize=vm.runInNewContext('('+app.slice(start,end)+')');
+const parsePrice=vm.runInNewContext('('+app.slice(priceStart,priceEnd)+')');
+const serialize=vm.runInNewContext('('+app.slice(start,end)+')',{parseSkinPrice:parsePrice});
+assert.equal(parsePrice('299.000'),299000);
+assert.equal(parsePrice('1.299.000'),1299000);
 const makeCard=(enabled,bank,crystal,vnd='59999',crystals='200')=>{
  const fields={
    enabled:{checked:enabled},allow_bank:{checked:bank},allow_crystal:{checked:crystal},
