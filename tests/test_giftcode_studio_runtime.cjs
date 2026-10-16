@@ -1,0 +1,49 @@
+// Giftcode Studio UI regression, no network/browser or player data.
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const vm=require('node:vm');
+const root=path.resolve(__dirname,'..');
+const app=fs.readFileSync(path.join(root,'giftcode-studio/app.js'),'utf8');
+const html=fs.readFileSync(path.join(root,'giftcode-studio/index.html'),'utf8');
+const bridge=fs.readFileSync(path.join(root,'giftcode-studio/api/bridge.js'),'utf8');
+const back=fs.readFileSync(path.join(root,'gxb2/skin_store.py'),'utf8');
+const start=app.indexOf('function skinSettings(card){');
+const end=app.indexOf('\nasync function saveSkinRows(cards){',start);
+assert(start>=0&&end>start,'Skin settings form implementation must exist');
+const serialize=vm.runInNewContext('('+app.slice(start,end)+')');
+const makeCard=(enabled,bank,crystal,vnd='59999',crystals='200')=>{
+ const fields={
+   enabled:{checked:enabled},allow_bank:{checked:bank},allow_crystal:{checked:crystal},
+   price_vnd:{value:vnd},price_crystal:{value:crystals}
+ };
+ return {dataset:{skinId:'7280'},querySelector(q){const m=/^\[data-field="([a-z_]+)"\]$/.exec(q);return m?fields[m[1]]:null;}};
+};
+for(const choice of [[true,true,false],[false,false,false],[true,false,true]]){
+ const payload=serialize(makeCard(...choice));
+ assert.equal(typeof payload.enabled,'boolean');
+ assert.equal(typeof payload.allow_bank,'boolean');
+ assert.equal(typeof payload.allow_crystal,'boolean');
+ assert.equal(payload.enabled,choice[0]);
+ assert.equal(payload.allow_bank,choice[1]);
+ assert.equal(payload.allow_crystal,choice[2]);
+ assert.equal(typeof payload.price_vnd,'number');
+ assert.equal(typeof payload.price_crystal,'number');
+ assert.deepEqual(
+   [typeof JSON.parse(JSON.stringify(payload)).enabled,
+    typeof JSON.parse(JSON.stringify(payload)).allow_bank],
+   ['boolean','boolean']);
+}
+assert.throws(()=>serialize(makeCard(true,true,false,'10.5','100')),/số nguyên/);
+assert.throws(()=>serialize(makeCard(true,true,false,'-1','100')),/số nguyên/);
+assert(/type\(req\.get\(k\)\) is not bool/.test(back),'server must validate real JSON booleans');
+assert(/Chuyển khoản ngân hàng/.test(app),'Studio must use bank payment instead of old Gold');
+assert(!/Bán bằng Vàng/.test(app),'obsolete Gold controls must never return');
+assert(/id="account-sync"[\s\S]*?giftcode\/sso\/start/.test(html),'GXB3 sync action must be visible in the header');
+assert(/id="account-character"/.test(html),'Studio must show selected game character and server');
+assert(/giftcode\/sso\/exchange/.test(app),'SSO ticket must be consumed by Studio');
+assert(/accountIdentity/.test(app)&&/panelAccess='';state\.skins=\[\]/.test(app),'owner unlock must be cleared when switching account');
+assert(/giftcode\\\/sso\\\/exchange/.test(bridge),'Vercel bridge must allow game SSO endpoint');
+console.log('PASS | Studio SSO account identity is explicit and synced by one-use GXB3 ticket');
+console.log('PASS | Studio Skin checkbox fields serialize as JSON booleans, VNĐ/Crystal only');
