@@ -125,10 +125,12 @@ def unlock(password, game_session, admin_key=None, gm_key=None):
     """
     if not game_session or not auth.session(game_session):
         raise ValueError("Phiên SUPER GM không hợp lệ")
+    version=owner_recovery.key_version()
     if not owner_recovery.verify_all(admin_key,password,gm_key):
         raise ValueError("Một hoặc nhiều khóa QTV không chính xác")
+    if owner_recovery.key_version()!=version:
+        raise ValueError("Bộ khóa quản trị đã thay đổi; hãy dùng bộ mới")
     expiry=int(time.time())+PANEL_TTL
-    version=owner_recovery.key_version()
     message=f"{_PANEL_HEADER}:{auth._token_hash(game_session)}:{expiry}:{version}".encode()
     sig=hmac.new(owner_recovery.signing_key(),message,hashlib.sha256).hexdigest()
     return f"{expiry}.{sig}"
