@@ -1,7 +1,7 @@
 import UIKit
 import WebKit
 
-// GXB 3 ALPHA RC7 — iOS WKWebView shell for the authenticated production VPS.
+// GXB 3 ALPHA RC8 — iOS WKWebView shell for the authenticated production VPS.
 // No cached or fabricated gameplay; the authoritative game remains on server.
 @main
 final class GXB3Application: UIResponder, UIApplicationDelegate {
@@ -40,7 +40,7 @@ final class GXB3Controller: UIViewController, WKNavigationDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        loading.text = "Nữ Thần Chiến Đấu - GXB 3 · ALPHA RC7\nĐang kết nối máy chủ…"
+        loading.text = "Nữ Thần Chiến Đấu - GXB 3 · ALPHA RC8\nĐang kết nối máy chủ…"
         loading.numberOfLines = 0
         loading.textAlignment = .center
         loading.textColor = .white
