@@ -1,13 +1,13 @@
 'use strict';
 (()=>{
 const $=id=>document.getElementById(id);
-const state={me:null,admin:false,panelUnlocked:false,panelAccess:'',accountIdentity:'',unlockDestination:'create',skins:[],skinPage:0,catalog:[],basket:{},worlds:[],codes:[],page:0,view:'redeem'};
+const state={me:null,admin:false,panelUnlocked:false,panelAccess:'',gmActionKey:'',accountIdentity:'',unlockDestination:'create',skins:[],skinPage:0,catalog:[],basket:{},worlds:[],codes:[],page:0,view:'redeem'};
 const limit=16;
 const txt=(tag,text,cls)=>{const x=document.createElement(tag);if(cls)x.className=cls;x.textContent=String(text??'');return x;};
 const api=async(path,body,gm=false,unlock=false)=>{
  const options={credentials:'same-origin',cache:'no-store',headers:{'Accept':'application/json'}};
  if(body!==undefined){options.method='POST';options.headers['Content-Type']='application/json';options.body=JSON.stringify(body);}
- if(gm)options.headers['X-GXB3-GM-Key']=state.view==='skins'?($('skin-gm-key')?.value||''):$('gm-key').value;
+ if(gm)options.headers['X-GXB3-GM-Key']=state.gmActionKey || (state.view==='skins'?($('skin-gm-key')?.value||''):$('gm-key').value);
  if(unlock)options.headers['X-GXB3-Giftcode-Access']=state.panelAccess;
  // The Vercel deployment uses one static /api/bridge function. Avoid
  // framework-dependent catch-all routing (which returned [object Object]).
@@ -27,8 +27,8 @@ const api=async(path,body,gm=false,unlock=false)=>{
    // instead of leaving an apparently active screen that can never save.
    if(r.status===403&&state.panelUnlocked&&/mở khóa|unlock/i.test(detail)){
      state.panelUnlocked=false;
-     state.panelAccess='';
-     switchView(state.view==='skins'?'skins':'create');
+     state.panelAccess='';state.gmActionKey='';
+    switchView(state.view==='skins'?'skins':'create');
    }
    throw Error(detail);
  }
@@ -40,11 +40,11 @@ function switchView(view){
  state.view=view;
  const titles={create:'Tạo Giftcode',history:'Giftcode đã phát hành',redeem:'Đổi Giftcode',skins:'Quản lý Trang Phục'};
  $('page-title').textContent=titles[view];
- for(const el of document.querySelectorAll('.nav-btn')){el.classList.toggle('active',el.dataset.view===view);el.hidden=!state.admin&&el.dataset.view!=='redeem';}
- for(const name of ['create','history','redeem','skins'])$(name+'-view').hidden=view!==name||!state.me||((name==='create'||name==='skins')&&!state.panelUnlocked);
- $('create-lock').hidden=!state.me||!state.admin||(view!=='create'&&view!=='skins')||state.panelUnlocked;
+ for(const el of document.querySelectorAll('.nav-btn')){el.classList.toggle('active',state.panelUnlocked&&el.dataset.view===view);el.hidden=el.dataset.view!=='redeem'&&!(state.admin&&state.panelUnlocked);}
+ for(const name of ['create','history','redeem','skins'])$(name+'-view').hidden=view!==name||!state.me||(name!=='redeem'&&!state.panelUnlocked);
+ $('create-lock').hidden=!state.me||!state.admin||view==='redeem'||state.panelUnlocked;
  if((view==='create'||view==='skins')&&!state.panelUnlocked)state.unlockDestination=view;
- if(view==='history'&&state.admin)refreshCodes().catch(e=>notice(e.message,false));
+ if(view==='history'&&state.admin&&state.panelUnlocked)refreshCodes().catch(e=>notice(e.message,false));
  if(view==='skins'&&state.admin&&state.panelUnlocked)loadSkins().catch(e=>notice(e.message,false));
 }
 function updateStats(){
@@ -57,10 +57,10 @@ async function bootstrap(){
  const next=m.authenticated?m.session:null;
  const nextIdentity=next?[String(next.account?.uid||''),String(next.account?.server_id||'')].join(':'):'';
  // The owner unlock must not survive a change of player identity or server.
- if(nextIdentity!==state.accountIdentity){state.panelUnlocked=false;state.panelAccess='';state.skins=[];}
+ if(nextIdentity!==state.accountIdentity){state.panelUnlocked=false;state.panelAccess='';state.gmActionKey='';state.skins=[];}
  state.accountIdentity=nextIdentity;
  state.me=next;state.admin=Boolean(next&&m.is_super_gm);
- if(!state.admin){state.panelUnlocked=false;state.panelAccess='';state.skins=[];}
+ if(!state.admin){state.panelUnlocked=false;state.panelAccess='';state.gmActionKey='';state.skins=[];}
  $('login-panel').hidden=Boolean(state.me);
  $('restricted').hidden=!state.me||state.admin;
  $('account-label').textContent=state.me?(state.me.account?.username||state.me.account?.uid||'Đã đăng nhập'):'Chưa đăng nhập';
@@ -71,7 +71,7 @@ async function bootstrap(){
  const select=$('login-form').elements.server_id;
  for(const w of m.worlds||[]){if(select.querySelector('[value="'+w.server_id+'"]'))continue;const option=document.createElement('option');option.value=w.server_id;option.textContent=w.name+' · '+w.server_id;select.append(option);}
  if(!state.me){switchView('redeem');return;}
- if(state.admin){
+ if(state.admin&&state.panelUnlocked){
   const cat=await api('/api/giftcode/catalog');
   state.worlds=cat.worlds||[];
   state.catalog=[...(cat.catalog?.items||[]).map(x=>({...x,kind:'items'})),...(cat.catalog?.shards||[]).map(x=>({...x,kind:'shards'}))];
@@ -151,10 +151,22 @@ $('refresh-history').onclick=()=>refreshCodes().catch(e=>notice(e.message,false)
 $('unlock-form').onsubmit=async event=>{
  event.preventDefault();
  const button=event.currentTarget.querySelector('button');button.disabled=true;
- try{const result=await api('/api/giftcode/admin/unlock',{password:$('unlock-password').value});
-   state.panelAccess=result.access;state.panelUnlocked=true;
-   $('unlock-password').value='';switchView(state.unlockDestination||'create');notice('Đã mở khóa khu vực quản trị.');
- }catch(e){notice(e.message,false);}finally{button.disabled=false;}
+ try{
+   const actionKey=$('unlock-gm-key').value;
+   const result=await api('/api/giftcode/admin/unlock',{
+     admin_key:$('unlock-admin-key').value,password:$('unlock-password').value,gm_key:actionKey
+   });
+   state.panelAccess=result.access;state.gmActionKey=actionKey;state.panelUnlocked=true;
+   $('unlock-form').reset();
+   const cat=await api('/api/giftcode/catalog');
+   state.worlds=cat.worlds||[];
+   state.catalog=[...(cat.catalog?.items||[]).map(x=>({...x,kind:'items'})),...(cat.catalog?.shards||[]).map(x=>({...x,kind:'shards'}))];
+   state.catalog.unshift({id:999999991,name:'EXP VIP',image:'/assets/events/check_in_pop_up_vip_level_bg.png',kind:'items'});
+   for(const w of state.worlds){if(!$('world').querySelector('[value="'+w.server_id+'"]')){const o=document.createElement('option');o.value=w.server_id;o.textContent=w.name+' · '+w.server_id;$('world').append(o);}}
+   renderCatalog();renderBasket();await refreshCodes();
+   switchView(state.unlockDestination||'create');
+   notice('Đã xác thực đủ 3 khóa và mở khu vực quản trị.');
+ }catch(e){state.panelUnlocked=false;state.panelAccess='';state.gmActionKey='';notice(e.message,false);}finally{button.disabled=false;}
 };
 $('verify-key').onclick=async()=>{try{await api('/api/admin/gm/verify-key',{},true);notice('Khóa QTV hợp lệ.');}catch(e){notice(e.message,false);}};
 const CODE_PATTERN=/^[A-Z0-9][A-Z0-9_-]{5,23}$/;
@@ -266,7 +278,7 @@ async function saveSkinRows(cards,button){
  let changes;
  try{changes=cards.map(skinSettings);}
  catch(e){cards.forEach(c=>skinSaveStatus(c,e.message,false));notice(e.message,false);return;}
- if(!$('skin-gm-key').value.trim()){
+ if(!(state.gmActionKey||$('skin-gm-key').value.trim())){
    const message='Cần nhập Khóa hành động QTV ở cuối danh sách trước khi lưu.';
    cards.forEach(c=>skinSaveStatus(c,message,false));
    notice(message,false);$('skin-gm-key').focus();return;
@@ -324,7 +336,7 @@ async function refreshBankOrders(){
     for(const [ok,label] of [[true,'Đã nhận tiền · Duyệt'],[false,'Từ chối']]){
       const b=txt('button',label,ok?'primary small':'ghost small');b.type='button';
       b.onclick=async()=>{
-        if(!$('skin-gm-key').value.trim()){notice('Nhập khóa hành động QTV trước khi duyệt đơn.',false);return;}
+        if(!(state.gmActionKey||$('skin-gm-key').value.trim())){notice('Nhập khóa hành động QTV trước khi duyệt đơn.',false);return;}
         if(!confirm(ok?('Chỉ DUYỆT khi đã kiểm tra ngân hàng nhận đúng '+skinFmt(order.price_vnd)+' VNĐ cho đơn '+order.id+'. Xác nhận đã nhận tiền?'):
           ('Từ chối đơn '+order.id+'?')))return;
         b.disabled=true;
@@ -420,7 +432,7 @@ async function start(){
  try{await bootstrap();
    if(ssoFailure){
      // An old Studio session must never appear to have been synced successfully.
-     state.panelUnlocked=false;state.panelAccess='';
+     state.panelUnlocked=false;state.panelAccess='';state.gmActionKey='';
      notice('Không thể đồng bộ GXB 3: '+ssoFailure+'. Bấm “Đồng bộ với GXB 3” để thử lại.',false);
      if(state.me)switchView('redeem');
    }else if(ticket&&state.me){notice('Đã đồng bộ tài khoản GXB 3: '+$('account-label').textContent+'.');}
