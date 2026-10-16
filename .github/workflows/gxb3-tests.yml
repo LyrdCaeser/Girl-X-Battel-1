@@ -56,6 +56,7 @@ jobs:
         run: |
           node tests/test_frontend_runtime.cjs
           node tests/test_giftcode_studio_runtime.cjs
+          node tests/test_giftcode_studio_prices.cjs
       - name: Audit Vietnamese dialogue coverage (read-only)
         run: python tools/translate_vi_dialogue.py
       - name: Run unit tests
