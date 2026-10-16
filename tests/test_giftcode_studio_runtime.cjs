@@ -49,7 +49,13 @@ assert(!/Bán bằng Vàng/.test(app),'obsolete Gold controls must never return'
 assert(/id="account-sync"[\s\S]*?giftcode\/sso\/start/.test(html),'GXB3 sync action must be visible in the header');
 assert(/id="account-character"/.test(html),'Studio must show selected game character and server');
 assert(/giftcode\/sso\/exchange/.test(app),'SSO ticket must be consumed by Studio');
-assert(/accountIdentity/.test(app)&&/panelAccess='';state\.skins=\[\]/.test(app),'owner unlock must be cleared when switching account');
+assert(/accountIdentity/.test(app)&&/panelAccess='';state\.gmActionKey='';state\.skins=\[\]/.test(app),'owner unlock and GM key must be cleared when switching account');
+for(const id of ['unlock-admin-key','unlock-password','unlock-gm-key']){
+ assert(html.includes('id="'+id+'"'),'Owner gate must include '+id);
+}
+assert(/el\.hidden=el\.dataset\.view!=='redeem'&&\!\(state\.admin&&state\.panelUnlocked\)/.test(app),
+ 'Privileged nav must be absent before all three server checks');
+assert(/admin_key:\$\('unlock-admin-key'\)\.value/.test(app),'Gate must send admin key only on explicit unlock');
 assert(bridge.includes('sso\\/exchange')&&bridge.includes('giftcode\\/'),'Vercel bridge must allow game SSO endpoint');
 console.log('PASS | Studio SSO account identity is explicit and synced by one-use GXB3 ticket');
 console.log('PASS | Studio Skin checkbox fields serialize as JSON booleans, VNĐ/Crystal only');
