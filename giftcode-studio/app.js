@@ -36,16 +36,17 @@ const api=async(path,body,gm=false,unlock=false)=>{
 };
 function notice(msg,ok=true){const el=$('global-status');el.textContent=msg;el.dataset.ok=ok?'1':'0';}
 function switchView(view){
- if(!state.admin&&view!=='redeem')view='redeem';
+ if(!state.admin&&!['redeem','shop'].includes(view))view='redeem';
  state.view=view;
- const titles={create:'Tạo Giftcode',history:'Giftcode đã phát hành',redeem:'Đổi Giftcode',skins:'Quản lý Trang Phục'};
+ const titles={create:'Tạo Giftcode',history:'Giftcode đã phát hành',redeem:'Đổi Giftcode',skins:'Quản lý Trang Phục',shop:'Cửa Hàng Trang Phục'};
  $('page-title').textContent=titles[view];
- for(const el of document.querySelectorAll('.nav-btn')){el.classList.toggle('active',state.panelUnlocked&&el.dataset.view===view);el.hidden=el.dataset.view!=='redeem'&&!(state.admin&&state.panelUnlocked);}
- for(const name of ['create','history','redeem','skins'])$(name+'-view').hidden=view!==name||!state.me||(name!=='redeem'&&!state.panelUnlocked);
+ for(const el of document.querySelectorAll('.nav-btn')){el.classList.toggle('active',el.dataset.view===view);el.hidden=!['redeem','shop'].includes(el.dataset.view)&&!(state.admin&&state.panelUnlocked);}
+ for(const name of ['create','history','redeem','skins','shop'])$(name+'-view').hidden=view!==name||(name!=='shop'&&!state.me)||(name!=='redeem'&&name!=='shop'&&!state.panelUnlocked);
  $('create-lock').hidden=!state.me||!state.admin||view==='redeem'||state.panelUnlocked;
  if((view==='create'||view==='skins')&&!state.panelUnlocked)state.unlockDestination=view;
  if(view==='history'&&state.admin&&state.panelUnlocked)refreshCodes().catch(e=>notice(e.message,false));
  if(view==='skins'&&state.admin&&state.panelUnlocked)loadSkins().catch(e=>notice(e.message,false));
+ if(view==='shop')loadPlayerShop().catch(e=>notice(e.message,false));
 }
 function updateStats(){
  $('stat-total').textContent=state.codes.length.toLocaleString('vi-VN');
@@ -417,10 +418,44 @@ $('skin-preview-close').onclick=()=>$('skin-preview').close();
 $('skin-order-refresh').onclick=()=>refreshBankOrders().catch(e=>notice(e.message,false));
 $('skin-order-state').onchange=()=>refreshBankOrders().catch(e=>notice(e.message,false));
 
+// Player storefront is independent of privileged Studio administration.
+const SHOP_PAGE_SIZE=16;
+let shopOffers=[],shopPage=0;
+async function loadPlayerShop(){
+ const result=await api('/api/skin-shop/catalog');
+ shopOffers=(result.offers||[]).filter(x=>x.enabled&&!x.is_wedding&&x.is_saleable!==false);
+ shopPage=0;renderPlayerShop();
+}
+function renderPlayerShop(){
+ const grid=$('shop-grid');if(!grid)return;
+ const search=($('shop-search')?.value||'').trim().toLocaleLowerCase('vi-VN');
+ const rows=shopOffers.filter(x=>[x.name,x.girl_name,x.skin_id].some(v=>String(v||'').toLocaleLowerCase('vi-VN').includes(search)));
+ const pages=Math.max(1,Math.ceil(rows.length/SHOP_PAGE_SIZE));
+ shopPage=Math.min(shopPage,pages-1);
+ grid.replaceChildren();
+ for(const item of rows.slice(shopPage*SHOP_PAGE_SIZE,(shopPage+1)*SHOP_PAGE_SIZE)){
+  const card=txt('article','','skin-item');
+  const img=document.createElement('img');img.loading='lazy';img.alt='';img.src=item.image||item.preview||'';
+  card.append(img,txt('h3',(item.girl_name||'')+' · '+(item.name||'Trang phục')));
+  if(item.allow_crystal)card.append(txt('p',Number(item.price_crystal||0).toLocaleString('vi-VN')+' Crystal'));
+  if(item.allow_bank)card.append(txt('p',Number(item.price_vnd||0).toLocaleString('vi-VN')+' VNĐ'));
+  const link=txt('a','Mở cửa hàng trong game để mua','ghost small');
+  link.href='https://180-93-111-99.sslip.io/?open=skin-shop';
+  card.append(link);grid.append(card);
+ }
+ if(!rows.length)grid.append(txt('p','Hiện chưa có trang phục phù hợp.','muted'));
+ if($('shop-count'))$('shop-count').textContent=rows.length+' trang phục · Trang '+(shopPage+1)+'/'+pages;
+ if($('shop-prev'))$('shop-prev').disabled=shopPage===0;
+ if($('shop-next'))$('shop-next').disabled=shopPage>=pages-1;
+}
+$('shop-refresh').onclick=()=>loadPlayerShop().catch(e=>notice(e.message,false));
+$('shop-search').oninput=()=>{shopPage=0;renderPlayerShop();};
+if($('shop-prev'))$('shop-prev').onclick=()=>{shopPage--;renderPlayerShop();};
+if($('shop-next'))$('shop-next').onclick=()=>{shopPage++;renderPlayerShop();};
 async function start(){
  // Hide all privileged navigation until the server confirms SUPER GM ownership.
- for(const el of document.querySelectorAll('.nav-btn'))el.hidden=true;
- for(const name of ['create','history','redeem','skins'])$(name+'-view').hidden=true;
+ for(const el of document.querySelectorAll('.nav-btn'))el.hidden=!['redeem','shop'].includes(el.dataset.view);
+ for(const name of ['create','history','redeem','skins','shop'])$(name+'-view').hidden=true;
  const ticket=new URLSearchParams(location.search).get('ticket');
  let ssoFailure='';
  if(ticket){
