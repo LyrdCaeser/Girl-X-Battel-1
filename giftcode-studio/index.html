@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0b1023">
 <title>Giftcode Studio — Nữ Thần Chiến Đấu GXB 3</title>
-<link rel="stylesheet" href="./style.css?v=20261016-skin-save-v4">
+<link rel="stylesheet" href="./style.css?v=20261016-three-key-store-pc-v1">
 <script defer src="./app.js?v=20261016-skin-save-v4"></script>
 </head>
 <body>
@@ -13,10 +13,10 @@
   <a class="brand" href="/"><span class="logo">✦</span><span><b>Giftcode Studio</b><small>NỮ THẦN CHIẾN ĐẤU · GXB 3</small></span></a>
   <div class="side-section">QUẢN LÝ PHÁT HÀNH</div>
   <nav class="nav" aria-label="Danh mục">
-    <button class="nav-btn active" data-view="create">✦ <span>Tạo giftcode</span></button>
-    <button class="nav-btn" data-view="history">▤ <span>Mã đã phát hành</span></button>
+    <button class="nav-btn" data-view="create" hidden>✦ <span>Tạo giftcode</span></button>
+    <button class="nav-btn" data-view="history" hidden>▤ <span>Mã đã phát hành</span></button>
     <button class="nav-btn" data-view="redeem">◈ <span>Đổi giftcode</span></button>
-    <button class="nav-btn" data-view="skins">✧ <span>Quản lý trang phục</span></button>
+    <button class="nav-btn" data-view="skins" hidden>✧ <span>Quản lý trang phục</span></button>
   </nav>
   <div class="side-bottom">
     <span class="server-dot"></span> Kết nối máy chủ GXB 3
@@ -40,12 +40,14 @@
   <div id="restricted" class="panel" hidden><h2>Quản trị viên mới được truy cập</h2><p class="muted">Tài khoản đang đăng nhập không có quyền SUPER GM. Bạn vẫn có thể đổi giftcode tại mục “Đổi giftcode”.</p></div>
   <section id="create-lock" class="view panel login-card" hidden>
     <span class="eyebrow">KHU VỰC BẢO VỆ</span><h2>Khóa khu vực quản trị</h2>
-    <p class="muted">Chỉ SUPER GM được mở mục tạo giftcode và quản lý cửa hàng Skin. Hãy nhập khóa quản trị Giftcode Studio đã cấu hình trên VPS.</p>
-    <form id="unlock-form" class="form-row">
-      <label>Khóa truy cập quản trị <input id="unlock-password" type="password" autocomplete="off" required></label>
-      <button class="primary" type="submit">Mở khóa khu vực quản trị</button>
+    <p class="muted">Chỉ tài khoản SUPER GM đã đồng bộ với game được nhập ba loại khóa. Xác thực đủ cả ba mới hiển thị Tạo Giftcode, Mã đã phát hành và Quản lý Trang Phục.</p>
+    <form id="unlock-form" class="studio-admin-unlock" autocomplete="off">
+      <label>Khóa quản trị GXB 3<input id="unlock-admin-key" type="password" autocomplete="off" minlength="12" required placeholder="GXB3_ADMIN_KEY"></label>
+      <label>Khóa bảo vệ Giftcode Studio<input id="unlock-password" type="password" autocomplete="off" minlength="12" required placeholder="GXB3_GIFTCODE_PANEL_KEY"></label>
+      <label>Khóa hành động QTV<input id="unlock-gm-key" type="password" autocomplete="off" minlength="24" required placeholder="GXB3_GM_ACTION_KEY"></label>
+      <button class="primary" type="submit">Xác thực 3 khóa · Mở quản trị</button>
     </form>
-    <p class="muted mini">Khóa mở giao diện không thay thế khóa hành động QTV bảo vệ cấp vật phẩm.</p>
+    <p class="muted mini">Không lưu khóa trong trình duyệt. Quyền mở bảng chỉ tồn tại trong phiên và hết hạn tự động. Không chia sẻ khóa cho người chơi.</p>
   </section>
   <section id="create-view" class="view" hidden>
     <div class="stats">
