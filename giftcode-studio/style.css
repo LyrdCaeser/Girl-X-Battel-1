@@ -55,3 +55,11 @@
 .skin-order-item{display:flex;align-items:center;gap:9px;flex-wrap:wrap;padding:12px;border:1px solid #314267;background:#101c36;border-radius:12px}
 .skin-order-text{display:flex;flex:1 1 280px;flex-direction:column;gap:4px;min-width:0}
 .skin-order-text b{color:#f3f6ff}.skin-order-text small{color:#acbeda;overflow-wrap:anywhere}
+
+
+/* GXB 3 ⇄ Studio SSO: always-visible account correction, desktop and mobile. */
+.account #account-label{font-size:13px;color:#fff;font-weight:800}
+.account #account-character{font-size:11px;color:#aebfe4;max-width:280px;text-align:right;overflow-wrap:anywhere}
+.account .account-sync{display:inline-flex;align-items:center;justify-content:center;margin-top:3px;padding:9px 13px;border-radius:10px;border:1px solid #6079c2;background:#243864;color:#edf4ff;font-weight:750;font-size:12px;transition:background .15s ease}
+.account .account-sync:hover,.account .account-sync:focus-visible{background:#39559a;text-decoration:none;outline:2px solid #96a8ff;outline-offset:2px}
+@media(max-width:750px){.topbar{align-items:flex-start;gap:12px}.account{min-width:136px;max-width:52%;align-items:flex-end}.account #account-character{font-size:10px}.account .account-sync{font-size:11px;min-height:36px;padding:7px 10px;text-align:center}}
