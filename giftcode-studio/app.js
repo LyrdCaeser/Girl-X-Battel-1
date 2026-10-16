@@ -487,7 +487,7 @@ function renderPlayerShop(){
        if(!confirm('Tạo đơn '+item.name+' giá '+Number(item.price_vnd).toLocaleString('vi-VN')+' VNĐ? Phải chờ QTV xác nhận đã nhận tiền.'))return;
        buy.disabled=true;
        try{const result=await api('/api/skin-shop/bank/create',{skin_id:item.skin_id});
-         notice('Đã tạo đơn '+result.order?.id+' chờ duyệt. Chưa giao trang phục.');await refreshShopOrders();}
+         notice('Đã tạo đơn '+result.id+' chờ duyệt. Chưa giao trang phục.');await refreshShopOrders();}
        catch(e){notice(e.message,false);}finally{buy.disabled=false;}
      };actions.append(buy);
    }
