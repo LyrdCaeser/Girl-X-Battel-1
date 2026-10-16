@@ -43,7 +43,7 @@ def _master():
     """
     values = [os.environ.get(ENV_KEYS[k], "") for k in KEY_FIELDS]
     if any(len(v) < MIN_LENGTH[k] for k, v in zip(KEY_FIELDS, values)):
-        raise RuntimeError("VPS phải cấu hình đủ ba khóa quản trị gốc")
+        raise RuntimeError("VPS chưa cấu hình đủ ba khóa quản trị gốc")
     return hashlib.sha256(("\x00".join(values) + "\x00gxb3-recovery-v1").encode()).digest()
 
 
