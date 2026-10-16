@@ -53,8 +53,14 @@ assert(/accountIdentity/.test(app)&&/panelAccess='';state\.gmActionKey='';state\
 for(const id of ['unlock-admin-key','unlock-password','unlock-gm-key']){
  assert(html.includes('id="'+id+'"'),'Owner gate must include '+id);
 }
-assert(/el\.hidden=el\.dataset\.view!=='redeem'&&\!\(state\.admin&&state\.panelUnlocked\)/.test(app),
- 'Privileged nav must be absent before all three server checks');
+assert(app.includes("el.hidden=!['redeem','shop','gift'].includes(el.dataset.view)&&!(state.admin&&state.panelUnlocked)"),
+ 'Privileged navigation must remain locked while Shop and GiftSkin are public');
+assert(html.includes('data-view="gift"')&&html.includes('id="gift-view"'),
+ 'GiftSkin must be visible to players and separate from the admin settings');
+assert(html.includes('id="account-switch"')&&app.includes("api('/api/auth/logout'"),
+ 'Studio must allow changing only its own signed-in account');
+assert(app.includes("api('/api/giftskin/verify'")&&app.includes("api('/api/giftskin/crystal'"),
+ 'Public GiftSkin requires recipient verification and atomic Crystal endpoint');
 assert(/admin_key:\$\('unlock-admin-key'\)\.value/.test(app),'Gate must send admin key only on explicit unlock');
 assert(bridge.includes('sso\\/exchange')&&bridge.includes('giftcode\\/'),'Vercel bridge must allow game SSO endpoint');
 console.log('PASS | Studio SSO account identity is explicit and synced by one-use GXB3 ticket');

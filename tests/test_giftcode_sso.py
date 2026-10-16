@@ -53,8 +53,8 @@ class GiftcodeSsoTests(unittest.TestCase):
         thread.start()
         connection=http.client.HTTPConnection('127.0.0.1', server.server_port, timeout=3)
         try:
-            with patch.object(studio_sso, 'start', return_value='example-single-use-ticket'):
-                connection.request('GET', '/api/giftcode/sso/start')
+            with patch.object(studio_sso, 'start', return_value='example-single-use-ticket'), patch.object(studio_sso, 'require_confirmation'):
+                connection.request('GET', '/api/giftcode/sso/start?confirm=example-valid-proof')
                 response=connection.getresponse()
                 self.assertEqual(response.status,303)
                 self.assertEqual(response.getheader('Content-Length'),'0')

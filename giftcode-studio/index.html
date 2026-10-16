@@ -2,21 +2,22 @@
 <html lang="vi">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0b1023">
-<title>Giftcode Studio — Nữ Thần Chiến Đấu GXB 3</title>
-<link rel="stylesheet" href="./style.css?v=20261016-player-shop-visible-v3">
+<meta name="theme-color" content="#0b1023"><link rel="icon" type="image/jpeg" href="./favicon.jpg">
+<title>Goddess Battle 3 - Trang Chủ Chính Thức</title>
+<link rel="stylesheet" href="./style.css?v=20261016-giftskin-auth-r1">
 <script defer src="./app.js?v=20261016-player-shop-visible-v3"></script>
 </head>
 <body>
 <div class="shell">
 <aside class="sidebar">
-  <a class="brand" href="/"><span class="logo">✦</span><span><b>Giftcode Studio</b><small>NỮ THẦN CHIẾN ĐẤU · GXB 3</small></span></a>
-  <div class="side-section">QUẢN LÝ PHÁT HÀNH</div>
+  <a class="brand" href="/"><img class="brand-avatar" src="./favicon.jpg" alt="Goddess Battle 3"><span><b>Goddess Battle 3</b><small>TRANG CHỦ CHÍNH THỨC</small></span></a>
+  <div class="side-section">GODDESS BATTLE 3</div>
   <nav class="nav" aria-label="Danh mục">
     <button class="nav-btn" data-view="create" hidden>✦ <span>Tạo giftcode</span></button>
     <button class="nav-btn" data-view="history" hidden>▤ <span>Mã đã phát hành</span></button>
     <button class="nav-btn" data-view="redeem">◈ <span>Đổi giftcode</span></button>
     <button class="nav-btn" data-view="shop">✧ <span>Cửa Hàng Trang Phục</span></button>
+    <button class="nav-btn" data-view="gift">♡ <span>GiftSkin · Tặng Trang Phục</span></button>
     <button class="nav-btn" data-view="skins" hidden>✧ <span>Quản lý trang phục</span></button>
   </nav>
   <div class="side-bottom">
@@ -127,6 +128,7 @@
       <div class="skin-order-toolbar"><select id="skin-order-state" aria-label="Lọc đơn thanh toán"><option value="pending">Chờ duyệt</option><option value="approved">Đã duyệt</option><option value="rejected">Đã từ chối</option><option value="all">Tất cả</option></select><span id="skin-order-count" class="muted mini">Đang tải đơn...</span></div>
       <div id="skin-bank-orders" class="skin-order-grid"></div>
     </div>
+  <div class="skin-bank-admin"><div class="section-head"><h3>GiftSkin · Đơn tặng chờ duyệt</h3><button id="gift-admin-refresh" type="button" class="ghost small">↻ Làm mới</button></div><p class="muted mini">Chỉ SUPER GM được xác nhận đã nhận tiền. Quà chỉ gửi đến UID và server đã xác minh.</p><div id="gift-admin-orders"></div></div>
   </section>
   <dialog id="skin-preview" class="skin-preview"><button type="button" id="skin-preview-close" class="ghost">✕ Đóng</button><img id="skin-preview-image" alt="Xem trước trang phục" loading="lazy"><strong id="skin-preview-name"></strong></dialog>
   <section id="history-view" class="view panel" hidden>
@@ -147,12 +149,29 @@
     <p class="muted mini" id="shop-account-note">Đang kiểm tra phiên đăng nhập…</p>
     <div class="player-shop-tools"><input id="shop-search" type="search" placeholder="Tên nữ thần, trang phục hoặc ID..." aria-label="Tìm trang phục đang bán"><select id="shop-group" aria-label="Lọc phe"><option value="all">Tất cả phe</option></select></div>
     <p id="shop-count" class="muted mini" aria-live="polite">Đang tải danh mục...</p>
-    <div id="shop-grid" class="player-shop-grid" aria-live="polite"></div>
+    <div id="shop-grid" class="player-shop-grid" aria-live="polite"></div><div class="row-actions"><button id="shop-prev" type="button" class="ghost">← Trước</button><button id="shop-next" type="button" class="ghost">Tiếp →</button></div>
     <div class="player-shop-orders">
       <div class="section-head"><h3>Đơn trang phục của tôi</h3><button id="shop-orders-refresh" type="button" class="ghost small">↻ Làm mới đơn</button></div>
       <p class="muted mini">Đơn chuyển khoản được lưu trên máy chủ, không lưu trình duyệt. Liên hệ Zalo quản trị <a href="https://zalo.me/0856848557" target="_blank" rel="noopener noreferrer">0856848557</a> để xác nhận hướng dẫn thanh toán. Chỉ chuyển tiền khi đã đối chiếu thông tin.</p>
       <div id="shop-orders" class="player-shop-order-list"></div>
     </div>
+  </section>
+  <section id="gift-view" class="view panel gift-page" hidden>
+    <div class="section-head"><div><span class="eyebrow">QUÀ TẶNG GIỮA NGƯỜI CHƠI</span><h2>♡ GiftSkin — Tặng Trang Phục</h2></div></div>
+    <p class="muted">Mọi người chơi đều có thể tặng trang phục đang bán cho nhân vật khác. Xác minh <strong>UID GB3-9 số, tên nhân vật và server</strong> trước khi thanh toán. Người nhận phải vào <strong>Hòm Thư game</strong> để nhận quà.</p>
+    <div class="gift-fields">
+      <label>UID người nhận<input id="gift-recipient-uid" placeholder="GB3-123456789" maxlength="13" autocomplete="off"></label>
+      <label>Tên nhân vật nhận quà<input id="gift-recipient-name" placeholder="Tên nhân vật chính xác" maxlength="40" autocomplete="off"></label>
+      <label>Máy chủ người nhận<select id="gift-server"><option value="S1">S1</option></select></label>
+      <label>Trang phục muốn tặng<select id="gift-skin"><option value="">Chọn trang phục đang bán</option></select></label>
+      <label>Thanh toán bằng<select id="gift-payment"><option value="crystal">Crystal của tôi</option><option value="bank">VNĐ · Chuyển khoản của tôi</option></select></label>
+    </div>
+    <p id="gift-price" class="gift-price">Hãy chọn trang phục</p>
+    <p id="gift-verified" class="muted mini" role="status">Chưa xác minh UID + tên nhân vật + server.</p>
+    <div class="row-actions"><button id="gift-verify" type="button" class="ghost">✓ Xác minh người nhận</button><button id="gift-send" type="button" class="primary">♡ Tặng trang phục</button></div>
+    <p class="muted mini">Crystal: trừ tiền người tặng và ghi thư người nhận cùng giao dịch Neon. VNĐ: tạo đơn, chỉ phát quà khi SUPER GM xác nhận tiền thật. Skin kết duyên không được bán hoặc tặng.</p>
+    <div class="section-head"><h3>Đơn tặng qua chuyển khoản của tôi</h3><button id="gift-orders-refresh" class="ghost small" type="button">↻ Làm mới</button></div>
+    <div id="gift-orders" class="player-shop-order-list"></div>
   </section>
   <p id="global-status" role="status" aria-live="polite"></p>
 </main>

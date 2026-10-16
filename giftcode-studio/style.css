@@ -84,3 +84,16 @@
 .studio-admin-unlock button{grid-column:1/-1;width:100%;min-height:48px}
 .nav-btn[hidden],.view[hidden],#create-lock[hidden]{display:none!important}
 @media(max-width:850px){.studio-admin-unlock{grid-template-columns:1fr}}
+
+/* Public GXB3 storefront / GiftSkin */
+.brand-avatar{width:43px;height:43px;min-width:43px;object-fit:cover;border-radius:13px;border:1px solid #5867bd}
+.player-shop-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(225px,1fr));gap:15px;margin:18px 0}
+.player-shop-card,.player-order{display:flex;flex-direction:column;gap:11px;padding:16px;border:1px solid #35466d;border-radius:15px;background:#111c35;min-width:0}
+.player-shop-img{width:100%;height:180px;object-fit:contain;background:#0d1428;border-radius:10px}
+.player-shop-card strong{line-height:1.45}.player-shop-actions{display:flex;flex-wrap:wrap;gap:8px}
+.player-shop-card button{flex:1;min-width:124px}.player-shop-order-list,#gift-admin-orders{display:grid;gap:11px}
+.gift-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:18px 0}
+.gift-fields label{min-width:0}.gift-fields input,.gift-fields select{width:100%;margin-top:7px}
+.gift-price{font-size:21px;font-weight:800;color:#e5dcff}
+.gift-page .row-actions{margin:16px 0 25px}
+@media(max-width:720px){.gift-fields{grid-template-columns:1fr}.player-shop-grid{grid-template-columns:repeat(auto-fill,minmax(165px,1fr))}.player-shop-img{height:140px}}

@@ -36,17 +36,18 @@ const api=async(path,body,gm=false,unlock=false)=>{
 };
 function notice(msg,ok=true){const el=$('global-status');el.textContent=msg;el.dataset.ok=ok?'1':'0';}
 function switchView(view){
- if(!state.admin&&!['redeem','shop'].includes(view))view='redeem';
+ if(!state.admin&&!['redeem','shop','gift'].includes(view))view='redeem';
  state.view=view;
- const titles={create:'Tạo Giftcode',history:'Giftcode đã phát hành',redeem:'Đổi Giftcode',skins:'Quản lý Trang Phục',shop:'Cửa Hàng Trang Phục'};
+ const titles={create:'Tạo Giftcode',history:'Giftcode đã phát hành',redeem:'Đổi Giftcode',skins:'Quản lý Trang Phục',shop:'Cửa Hàng Trang Phục',gift:'GiftSkin · Tặng Trang Phục'};
  $('page-title').textContent=titles[view];
- for(const el of document.querySelectorAll('.nav-btn')){el.classList.toggle('active',el.dataset.view===view);el.hidden=!['redeem','shop'].includes(el.dataset.view)&&!(state.admin&&state.panelUnlocked);}
- for(const name of ['create','history','redeem','skins','shop'])$(name+'-view').hidden=view!==name||(name!=='shop'&&!state.me)||(name!=='redeem'&&name!=='shop'&&!state.panelUnlocked);
- $('create-lock').hidden=!state.me||!state.admin||view==='redeem'||state.panelUnlocked;
+ for(const el of document.querySelectorAll('.nav-btn')){el.classList.toggle('active',el.dataset.view===view);el.hidden=!['redeem','shop','gift'].includes(el.dataset.view)&&!(state.admin&&state.panelUnlocked);}
+ for(const name of ['create','history','redeem','skins','shop','gift'])$(name+'-view').hidden=view!==name||(!['shop','gift'].includes(name)&&!state.me)||(!['redeem','shop','gift'].includes(name)&&!state.panelUnlocked);
+ $('create-lock').hidden=!state.me||!state.admin||['redeem','shop','gift'].includes(view)||state.panelUnlocked;
  if((view==='create'||view==='skins')&&!state.panelUnlocked)state.unlockDestination=view;
  if(view==='history'&&state.admin&&state.panelUnlocked)refreshCodes().catch(e=>notice(e.message,false));
  if(view==='skins'&&state.admin&&state.panelUnlocked)loadSkins().catch(e=>notice(e.message,false));
  if(view==='shop')loadPlayerShop().catch(e=>notice(e.message,false));
+ if(view==='gift')loadGiftSkin().catch(e=>notice(e.message,false));
 }
 function updateStats(){
  $('stat-total').textContent=state.codes.length.toLocaleString('vi-VN');
@@ -63,6 +64,8 @@ async function bootstrap(){
  state.me=next;state.admin=Boolean(next&&m.is_super_gm);
  if(!state.admin){state.panelUnlocked=false;state.panelAccess='';state.gmActionKey='';state.skins=[];}
  $('login-panel').hidden=Boolean(state.me);
+ $('account-switch').hidden=!state.me;
+ $('shop-account-note').textContent=state.me?'Đang sử dụng tài khoản '+(state.me.account?.username||'')+' · '+(state.me.account?.server_id||'')+' để mua.':'Bạn có thể xem giá; vui lòng đăng nhập để đặt mua.';
  $('restricted').hidden=!state.me||state.admin;
  $('account-label').textContent=state.me?(state.me.account?.username||state.me.account?.display_uid||'Đã đăng nhập'):'Chưa đăng nhập';
  $('account-character').textContent=state.me
@@ -70,7 +73,7 @@ async function bootstrap(){
    :'Nhấn Đồng bộ để dùng đúng tài khoản đang chơi';
  $('server-status').textContent=state.me?'● GXB 3 · Đã xác thực phiên':'○ Chưa liên kết tài khoản GXB 3';
  const select=$('login-form').elements.server_id;
- for(const w of m.worlds||[]){if(select.querySelector('[value="'+w.server_id+'"]'))continue;const option=document.createElement('option');option.value=w.server_id;option.textContent=w.name+' · '+w.server_id;select.append(option);}
+ for(const w of m.worlds||[]){if(!select.querySelector('[value="'+w.server_id+'"]')){const option=document.createElement('option');option.value=w.server_id;option.textContent=w.name+' · '+w.server_id;select.append(option);}const g=$('gift-server');if(g&&!g.querySelector('[value="'+w.server_id+'"]')){const option=document.createElement('option');option.value=w.server_id;option.textContent=w.name+' · '+w.server_id;g.append(option);}}
  if(!state.me){switchView('redeem');return;}
  if(state.admin&&state.panelUnlocked){
   const cat=await api('/api/giftcode/catalog');
@@ -80,7 +83,7 @@ async function bootstrap(){
   for(const w of state.worlds){const option=document.createElement('option');option.value=w.server_id;option.textContent=w.name+' · '+w.server_id;$('world').append(option);}
   renderCatalog();renderBasket();await refreshCodes();
  }
- switchView(state.admin?'create':'redeem');
+ switchView(['shop','gift'].includes(state.view)?state.view:(state.admin?'create':'redeem'));
 }
 async function refreshCodes(){const res=await api('/api/giftcode/list');state.codes=res.codes||[];updateStats();renderCodes();}
 function renderCatalog(){
@@ -236,6 +239,7 @@ async function loadSkins(){
  }
  renderSkins();
  await refreshBankOrders();
+ await refreshGiftAdminOrders();
 }
 // Use Vietnamese thousands notation without interpreting 299.000 VNĐ as 299.
 function parseSkinPrice(raw){
@@ -419,43 +423,216 @@ $('skin-order-refresh').onclick=()=>refreshBankOrders().catch(e=>notice(e.messag
 $('skin-order-state').onchange=()=>refreshBankOrders().catch(e=>notice(e.message,false));
 
 // Player storefront is independent of privileged Studio administration.
+
+const GAME_ORIGIN='https://180-93-111-99.sslip.io';
 const SHOP_PAGE_SIZE=16;
-let shopOffers=[],shopPage=0;
+let shopOffers=[],shopPage=0,giftVerified=null,giftRequestId='';
+const giftFields=()=>({
+ recipient_uid:$('gift-recipient-uid').value.trim().toUpperCase(),
+ recipient_name:$('gift-recipient-name').value.trim(),
+ recipient_server:$('gift-server').value,
+ skin_id:Number($('gift-skin').value),
+ payment:$('gift-payment').value
+});
+const giftSignature=data=>JSON.stringify([data.recipient_uid,data.recipient_name,data.recipient_server,data.skin_id,data.payment]);
+function requireShopLogin(){
+ if(state.me)return true;
+ notice('Hãy đăng nhập tài khoản GXB 3 của chính bạn để mua hoặc tặng trang phục.',false);
+ $('login-panel').hidden=false;
+ $('login-panel').scrollIntoView({behavior:'smooth',block:'center'});
+ return false;
+}
 async function loadPlayerShop(){
- const result=await api('/api/skin-shop/catalog');
- shopOffers=(result.offers||[]).filter(x=>x.enabled&&!x.is_wedding&&x.is_saleable!==false);
- shopPage=0;renderPlayerShop();
+ const response=await api('/api/skin-shop/catalog');
+ shopOffers=(response.offers||[]).filter(x=>x.enabled&&!x.is_wedding&&x.is_saleable!==false&&(x.allow_crystal||x.allow_bank));
+ const faction=$('shop-group'),old=faction.value;
+ faction.replaceChildren(new Option('Tất cả phe','all'));
+ for(const g of [...new Set(shopOffers.map(x=>String(x.group||0)))].sort()){
+   faction.append(new Option('Phe '+g,g));
+ }
+ faction.value=[...faction.options].some(x=>x.value===old)?old:'all';
+ renderPlayerShop();
+ if(state.me)refreshShopOrders().catch(e=>notice(e.message,false));
+ else $('shop-orders').replaceChildren(txt('p','Đăng nhập để xem đơn của bạn.','muted'));
 }
 function renderPlayerShop(){
- const grid=$('shop-grid');if(!grid)return;
- const search=($('shop-search')?.value||'').trim().toLocaleLowerCase('vi-VN');
- const rows=shopOffers.filter(x=>[x.name,x.girl_name,x.skin_id].some(v=>String(v||'').toLocaleLowerCase('vi-VN').includes(search)));
+ const grid=$('shop-grid');grid.replaceChildren();
+ const q=$('shop-search').value.trim().toLocaleLowerCase('vi-VN'),group=$('shop-group').value;
+ const rows=shopOffers.filter(x=>(group==='all'||String(x.group||0)===group)&&[x.name,x.girl_name,x.skin_id].some(v=>String(v||'').toLocaleLowerCase('vi-VN').includes(q)));
  const pages=Math.max(1,Math.ceil(rows.length/SHOP_PAGE_SIZE));
- shopPage=Math.min(shopPage,pages-1);
- grid.replaceChildren();
+ shopPage=Math.max(0,Math.min(shopPage,pages-1));
  for(const item of rows.slice(shopPage*SHOP_PAGE_SIZE,(shopPage+1)*SHOP_PAGE_SIZE)){
-  const card=txt('article','','skin-item');
-  const img=document.createElement('img');img.loading='lazy';img.alt='';img.src=item.image||item.preview||'';
-  card.append(img,txt('h3',(item.girl_name||'')+' · '+(item.name||'Trang phục')));
-  if(item.allow_crystal)card.append(txt('p',Number(item.price_crystal||0).toLocaleString('vi-VN')+' Crystal'));
-  if(item.allow_bank)card.append(txt('p',Number(item.price_vnd||0).toLocaleString('vi-VN')+' VNĐ'));
-  const link=txt('a','Mở cửa hàng trong game để mua','ghost small');
-  link.href='https://180-93-111-99.sslip.io/?open=skin-shop';
-  card.append(link);grid.append(card);
+   const card=txt('article','','player-shop-card');
+   const img=document.createElement('img');img.className='player-shop-img';img.loading='lazy';img.alt=item.name;
+   img.src=GAME_ORIGIN+'/assets/skins/cards/'+Number(item.skin_id)+'.webp';
+   img.onerror=()=>{img.hidden=true;};
+   card.append(img,txt('strong',(item.girl_name||'Nữ thần')+' · '+item.name));
+   card.append(txt('small','#'+item.skin_id+' · Phe '+(item.group||0),'muted'));
+   const actions=txt('div','','player-shop-actions');
+   if(item.allow_crystal){
+     const buy=txt('button','Mua '+Number(item.price_crystal).toLocaleString('vi-VN')+' Crystal','primary small');buy.type='button';
+     buy.onclick=async()=>{
+       if(!requireShopLogin())return;
+       if(!confirm('Mua '+item.name+' bằng '+Number(item.price_crystal).toLocaleString('vi-VN')+' Crystal của tài khoản '+state.me.account.username+'? Trang phục sẽ gửi Hòm Thư.'))return;
+       buy.disabled=true;
+       try{const result=await api('/api/skins/action',{action:'buy',skin:item.skin_id,payment:'crystal'});
+         notice('Mua thành công, trang phục đã vào Hòm Thư ('+(result.mail_id||'đã xác nhận')+').');}
+       catch(e){notice(e.message,false);}finally{buy.disabled=false;}
+     };actions.append(buy);
+   }
+   if(item.allow_bank){
+     const buy=txt('button','Đặt đơn '+Number(item.price_vnd).toLocaleString('vi-VN')+' VNĐ','ghost small');buy.type='button';
+     buy.onclick=async()=>{
+       if(!requireShopLogin())return;
+       if(!confirm('Tạo đơn '+item.name+' giá '+Number(item.price_vnd).toLocaleString('vi-VN')+' VNĐ? Phải chờ QTV xác nhận đã nhận tiền.'))return;
+       buy.disabled=true;
+       try{const result=await api('/api/skin-shop/bank/create',{skin_id:item.skin_id});
+         notice('Đã tạo đơn '+result.order?.id+' chờ duyệt. Chưa giao trang phục.');await refreshShopOrders();}
+       catch(e){notice(e.message,false);}finally{buy.disabled=false;}
+     };actions.append(buy);
+   }
+   const give=txt('button','✧ GiftSkin · Tặng','ghost small');give.type='button';
+   give.onclick=async()=>{switchView('gift');await loadGiftSkin();$('gift-skin').value=String(item.skin_id);updateGiftPrice();};
+   actions.append(give);card.append(actions);grid.append(card);
  }
- if(!rows.length)grid.append(txt('p','Hiện chưa có trang phục phù hợp.','muted'));
- if($('shop-count'))$('shop-count').textContent=rows.length+' trang phục · Trang '+(shopPage+1)+'/'+pages;
- if($('shop-prev'))$('shop-prev').disabled=shopPage===0;
- if($('shop-next'))$('shop-next').disabled=shopPage>=pages-1;
+ if(!rows.length)grid.append(txt('p','Không tìm thấy trang phục đang bán.','muted'));
+ $('shop-count').textContent=rows.length+' trang phục · Trang '+(shopPage+1)+'/'+pages;
+ $('shop-prev').disabled=shopPage===0;$('shop-next').disabled=shopPage>=pages-1;
 }
+async function refreshShopOrders(){
+ if(!state.me)return;
+ const result=await api('/api/skin-shop/bank/orders');
+ const root=$('shop-orders');root.replaceChildren();
+ for(const order of result.orders||[]){
+   const card=txt('article','','player-order');
+   card.append(txt('strong',order.skin_name+' · '+Number(order.price_vnd).toLocaleString('vi-VN')+' VNĐ'));
+   card.append(txt('small',order.id+' · '+({pending:'Chờ QTV duyệt',approved:'Đã duyệt · Nhận qua thư',rejected:'Từ chối'}[order.status]||order.status),'muted'));
+   root.append(card);
+ }
+ if(!root.children.length)root.append(txt('p','Bạn chưa có đơn chuyển khoản.','muted'));
+}
+async function loadGiftSkin(){
+ if(!shopOffers.length){
+   const res=await api('/api/skin-shop/catalog');
+   shopOffers=(res.offers||[]).filter(x=>x.enabled&&!x.is_wedding&&(x.allow_crystal||x.allow_bank));
+ }
+ const current=$('gift-skin').value;
+ $('gift-skin').replaceChildren(new Option('Chọn trang phục đang bán',''));
+ for(const item of shopOffers){
+   $('gift-skin').append(new Option((item.girl_name||'Nữ thần')+' · '+item.name+' (#'+item.skin_id+')',String(item.skin_id)));
+ }
+ $('gift-skin').value=shopOffers.some(x=>String(x.skin_id)===current)?current:'';
+ updateGiftPrice();
+ if(state.me)refreshGiftOrders().catch(e=>notice(e.message,false));
+ else $('gift-orders').replaceChildren(txt('p','Đăng nhập để xem lịch sử tặng trang phục.','muted'));
+}
+function updateGiftPrice(){
+ const item=shopOffers.find(x=>String(x.skin_id)===$('gift-skin').value);
+ const method=$('gift-payment').value;
+ $('gift-price').textContent=!item?'Hãy chọn trang phục':method==='crystal'
+   ?(item.allow_crystal?Number(item.price_crystal).toLocaleString('vi-VN')+' Crystal':'Không bán bằng Crystal')
+   :(item.allow_bank?Number(item.price_vnd).toLocaleString('vi-VN')+' VNĐ · QTV duyệt':'Không nhận chuyển khoản');
+ giftVerified=null;giftRequestId='';$('gift-verified').textContent='Chưa xác minh UID + tên nhân vật + server.';
+}
+for(const id of ['gift-recipient-uid','gift-recipient-name','gift-server','gift-skin','gift-payment']){
+ $(id).addEventListener('input',updateGiftPrice);$(id).addEventListener('change',updateGiftPrice);
+}
+$('gift-verify').onclick=async()=>{
+ if(!requireShopLogin())return;
+ const data=giftFields();
+ if(!/^GB3-[1-9][0-9]{8}$/.test(data.recipient_uid)){notice('UID nhận phải có dạng GB3-123456789.',false);return;}
+ const button=$('gift-verify');button.disabled=true;
+ try{const target=await api('/api/giftskin/verify',data);
+   giftVerified=giftSignature(data);$('gift-verified').textContent='✓ Đã xác minh '+target.display_uid+' · '+target.character_name+' · '+target.server_id;
+   notice('Người nhận hợp lệ; chỉ giao GiftSkin đến UID vừa xác minh.');}
+ catch(e){giftVerified=null;$('gift-verified').textContent='Không xác minh được người nhận.';notice(e.message,false);}
+ finally{button.disabled=false;}
+};
+$('gift-send').onclick=async()=>{
+ if(!requireShopLogin())return;
+ const d=giftFields();
+ const item=shopOffers.find(x=>x.skin_id===d.skin_id);
+ if(!item){notice('Hãy chọn trang phục đang bán.',false);return;}
+ if(!giftVerified||giftVerified!==giftSignature(d)){notice('Hãy xác minh lại UID, tên nhân vật và server người nhận.',false);return;}
+ if((d.payment==='crystal'&&!item.allow_crystal)||(d.payment==='bank'&&!item.allow_bank)){notice('Phương thức này chưa được mở cho trang phục.',false);return;}
+ const price=d.payment==='crystal'?Number(item.price_crystal):Number(item.price_vnd);
+ const payName=d.payment==='crystal'?'Crystal':'VNĐ';
+ if(!confirm('Tặng '+item.name+' cho '+d.recipient_name+' · '+d.recipient_uid+' · '+d.recipient_server+' bằng '+price.toLocaleString('vi-VN')+' '+payName+' của BẠN?\n'+(d.payment==='bank'?'Đơn chờ QTV xác nhận chuyển khoản.':'Crystal bị trừ và quà gửi qua Hòm Thư.')))return;
+ const button=$('gift-send');button.disabled=true;
+ try{
+   let result;
+   if(d.payment==='crystal'){
+     if(!giftRequestId)giftRequestId='GSK-'+crypto.randomUUID().replace(/-/g,'');
+     result=await api('/api/giftskin/crystal',{...d,request_id:giftRequestId});
+     notice('Tặng Crystal thành công! Quà đang ở Hòm Thư người nhận. Mã thư: '+result.mail_id);
+     giftRequestId='';
+   }else{
+     result=await api('/api/giftskin/bank/create',d);
+     notice('Đã tạo đơn GiftSkin '+result.id+' chờ QTV xác nhận tiền. Chưa giao quà.');
+   }
+   await refreshGiftOrders();
+ }catch(e){notice('GiftSkin chưa hoàn tất: '+e.message,false);}
+ finally{button.disabled=false;}
+};
+async function refreshGiftOrders(){
+ if(!state.me)return;
+ const data=await api('/api/giftskin/orders');
+ const root=$('gift-orders');root.replaceChildren();
+ for(const o of data.orders||[]){
+   const card=txt('article','','player-order');
+   card.append(txt('strong',o.skin_name+' → '+o.recipient_name+' ('+o.recipient_public_uid+')'));
+   card.append(txt('small',o.id+' · '+Number(o.price_vnd).toLocaleString('vi-VN')+' VNĐ · '+({pending:'Chờ duyệt',approved:'Đã gửi thư',rejected:'Đã từ chối'}[o.status]||o.status),'muted'));
+   root.append(card);
+ }
+ if(!root.children.length)root.append(txt('p','Chưa có đơn GiftSkin chuyển khoản.','muted'));
+}
+async function refreshGiftAdminOrders(){
+ if(!state.admin||!state.panelUnlocked)return;
+ const response=await api('/api/giftskin/admin/orders?status=pending');
+ const root=$('gift-admin-orders');root.replaceChildren();
+ for(const o of response.orders||[]){
+   const card=txt('article','','player-order');
+   card.append(txt('strong',o.skin_name+' · '+Number(o.price_vnd).toLocaleString('vi-VN')+' VNĐ'));
+   card.append(txt('small',o.id+' · Người tặng '+o.sender_uid+' · Người nhận '+o.recipient_public_uid+' / '+o.recipient_server+' · '+o.recipient_name,'muted'));
+   for(const [approve,label] of [[true,'Đã nhận tiền · Duyệt'],[false,'Từ chối']]){
+     const button=txt('button',label,approve?'primary small':'ghost small');
+     button.onclick=async()=>{
+       if(!confirm(approve?'Xác nhận đã nhận ĐỦ '+Number(o.price_vnd).toLocaleString('vi-VN')+' VNĐ cho đơn '+o.id+' trước khi gửi quà?':'Từ chối đơn '+o.id+'?'))return;
+       button.disabled=true;
+       try{await api('/api/giftskin/admin/review',{order_id:o.id,approve},true,true);
+         notice(approve?'Đã duyệt GiftSkin, gửi thư đúng người nhận.':'Đã từ chối đơn GiftSkin.');
+         await refreshGiftAdminOrders();}
+       catch(e){notice(e.message,false);button.disabled=false;}
+     };card.append(button);
+   }
+   root.append(card);
+ }
+ if(!root.children.length)root.append(txt('p','Không có đơn GiftSkin chờ duyệt.','muted'));
+}
+$('gift-orders-refresh').onclick=()=>refreshGiftOrders().catch(e=>notice(e.message,false));
+$('gift-admin-refresh').onclick=()=>refreshGiftAdminOrders().catch(e=>notice(e.message,false));
 $('shop-refresh').onclick=()=>loadPlayerShop().catch(e=>notice(e.message,false));
+$('shop-orders-refresh').onclick=()=>refreshShopOrders().catch(e=>notice(e.message,false));
 $('shop-search').oninput=()=>{shopPage=0;renderPlayerShop();};
-if($('shop-prev'))$('shop-prev').onclick=()=>{shopPage--;renderPlayerShop();};
-if($('shop-next'))$('shop-next').onclick=()=>{shopPage++;renderPlayerShop();};
+$('shop-group').onchange=()=>{shopPage=0;renderPlayerShop();};
+$('shop-prev').onclick=()=>{shopPage--;renderPlayerShop();};
+$('shop-next').onclick=()=>{shopPage++;renderPlayerShop();};
+$('account-switch').onclick=async()=>{
+ if(!confirm('Đăng xuất CHỈ GiftSkin/Giftcode trên website này? Tài khoản game và dữ liệu Neon không thay đổi.'))return;
+ try{
+   await api('/api/auth/logout',{});
+   state.me=null;state.admin=false;state.panelUnlocked=false;state.panelAccess='';state.gmActionKey='';state.accountIdentity='';
+   giftVerified=null;giftRequestId='';
+   await bootstrap();
+   switchView('redeem');
+   notice('Đã ngắt tài khoản Studio. Đăng nhập tài khoản đúng bên dưới.');
+ }catch(e){notice('Không thể đổi tài khoản: '+e.message,false);}
+};
+
 async function start(){
  // Hide all privileged navigation until the server confirms SUPER GM ownership.
- for(const el of document.querySelectorAll('.nav-btn'))el.hidden=!['redeem','shop'].includes(el.dataset.view);
- for(const name of ['create','history','redeem','skins','shop'])$(name+'-view').hidden=true;
+ for(const el of document.querySelectorAll('.nav-btn'))el.hidden=!['redeem','shop','gift'].includes(el.dataset.view);
+ for(const name of ['create','history','redeem','skins','shop','gift'])$(name+'-view').hidden=true;
  const ticket=new URLSearchParams(location.search).get('ticket');
  let ssoFailure='';
  if(ticket){
