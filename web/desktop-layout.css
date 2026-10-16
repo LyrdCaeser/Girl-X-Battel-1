@@ -79,3 +79,4 @@ html.gxb-desktop #app-frame .home-skin-store img.home-store-icon{display:block;w
  html.gxb-desktop #app-frame .sk-store-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
  html.gxb-desktop #app-frame .bag-view .bag-grid{grid-template-columns:repeat(8,minmax(0,1fr))}
 }
+\nhtml.gxb-desktop #app-frame #game-root>footer{display:none!important}\n
