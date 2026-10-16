@@ -1833,6 +1833,42 @@ class Engine:
             try:
                 state = self._load()
                 result = skins.action(state, request)
+                # For the production Neon player database, keep Crystal debit,
+                # mail award and the player-save inside one Postgres transaction.
+                # Never deliver directly AND via mail (would duplicate paid skins).
+                if (request.get('action') == 'buy' and request.get('payment') == 'crystal'
+                        and isinstance(self.db, ScopedPostgresPlayerDB)):
+                    import uuid
+                    sid = int(request['skin'])
+                    inventory = state.setdefault('items', {})
+                    inventory[str(sid)] = int(inventory.get(str(sid), 0)) - 1
+                    if inventory[str(sid)] < 0:
+                        raise GameError('Không thể xác nhận trang phục vừa mua')
+                    from . import skin_store
+                    if skin_store.is_wedding(sid):
+                        raise GameError('Không thể mua trang phục cưới độc quyền')
+                    live_db = self.db.borrowed_live_transaction()
+                    if live_db is None:
+                        raise GameError('Chưa sẵn sàng giao dịch Hòm Thư')
+                    mail_id = 'MAIL-' + uuid.uuid4().hex[:16].upper()
+                    uid = str(state.get('uid') or '')
+                    world = str(state.get('server_id') or '').upper()
+                    if not uid or not world:
+                        raise GameError('Phiên nhân vật không hợp lệ')
+                    name = str(state.get('name') or '')
+                    now = int(time.time())
+                    live_db.execute("""INSERT INTO mail
+                      (id,uid,server_id,character_name,title,body,attachments,status,created_at,operator)
+                      VALUES (?,?,?,?,?,?,?,'pending',?,?)""",
+                      (mail_id,uid,world,name,'Trang phục mua bằng Crystal',
+                       'Đã thanh toán Crystal thành công. Vào Hòm Thư để nhận trang phục.',
+                       json.dumps({str(sid):1}),now,'SKIN_SHOP'))
+                    live_service._audit(live_db,'skin_shop.crystal_mail',f'{world}:{uid}',
+                        {'mail_id':mail_id,'skin_id':sid,'crystal':result.get('purchase',{}).get('price',0)},
+                        'SKIN_SHOP')
+                    result['mail_id'] = mail_id
+                    result['delivery'] = 'mail'
+                    result['got'] = {}
                 self._save_profile(state)
                 self.db.commit()
             except Exception:
