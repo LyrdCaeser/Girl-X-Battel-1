@@ -53,8 +53,14 @@ assert(/accountIdentity/.test(app)&&/panelAccess='';state\.gmActionKey='';state\
 for(const id of ['unlock-admin-key','unlock-password','unlock-gm-key']){
  assert(html.includes('id="'+id+'"'),'Owner gate must include '+id);
 }
-assert(app.includes("el.hidden=!['redeem','shop','gift'].includes(el.dataset.view)&&!(state.admin&&state.panelUnlocked)"),
- 'Privileged navigation must remain locked while Shop and GiftSkin are public');
+assert(app.includes("el.hidden=!['redeem','shop','gift'].includes(el.dataset.view)&&!((el.dataset.view==='recover'&&state.admin)||(state.admin&&state.panelUnlocked))"),
+ 'Privileged navigation must remain locked; recovery is visible only to SUPER GM');
+assert(html.includes('id="recover-view"')&&html.includes('id="recovery-reset-form"'),
+ 'Only owner should have dedicated recovery interface');
+assert(app.includes("api('/api/owner-security/keys/reset'")&&app.includes("api('/api/owner-security/enroll/start'"),
+ 'Recovery must run through protected server endpoints');
+assert(bridge.includes('owner-security\\/'),
+ 'Authenticator endpoints must use strict Vercel proxy allowlist');
 assert(html.includes('data-view="gift"')&&html.includes('id="gift-view"'),
  'GiftSkin must be visible to players and separate from the admin settings');
 assert(html.includes('id="account-switch"')&&app.includes("api('/api/auth/logout'"),
