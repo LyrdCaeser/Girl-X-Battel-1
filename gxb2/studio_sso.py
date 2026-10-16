@@ -7,7 +7,7 @@ import hmac
 import os
 import secrets
 import time
-from . import auth
+from . import auth, owner_recovery
 
 STUDIO_ORIGIN = "https://goddessbattle-3.vercel.app"
 TICKET_TTL = 75
@@ -118,30 +118,19 @@ def exchange(ticket,user_agent='',remote_addr=''):
 
 
 def unlock(password, game_session, admin_key=None, gm_key=None):
-    """Require all three configured owner keys to unlock either privileged Studio tab.
+    """Three real credentials plus authenticated canonical SUPER GM session.
 
-    The authenticated SUPER GM session remains mandatory at the HTTP route.
-    Keys are checked server-side, never embedded in the frontend or access token.
+    Current keys are read from hashed Neon overrides when owner reset them.
+    Old VPS environment secrets cease to authenticate after a reset.
     """
-    panel = os.environ.get('GXB3_GIFTCODE_PANEL_KEY', '')
-    admin = os.environ.get('GXB3_ADMIN_KEY', '')
-    gm = os.environ.get('GXB3_GM_ACTION_KEY', '')
-    if len(panel) < 12 or len(admin) < 12 or len(gm) < 24:
-        raise RuntimeError("VPS chưa cấu hình đủ ba khóa quản trị Studio")
     if not game_session or not auth.session(game_session):
         raise ValueError("Phiên SUPER GM không hợp lệ")
-    fields = ((panel, password), (admin, admin_key), (gm, gm_key))
-    # Reject all invalid combinations identically; do not reveal which secret matches.
-    valid = True
-    for configured, supplied in fields:
-        entry = str(supplied or '')
-        if len(entry) > 1024 or not hmac.compare_digest(configured.encode(), entry.encode()):
-            valid = False
-    if not valid:
+    if not owner_recovery.verify_all(admin_key,password,gm_key):
         raise ValueError("Một hoặc nhiều khóa QTV không chính xác")
     expiry=int(time.time())+PANEL_TTL
-    message=f"{_PANEL_HEADER}:{auth._token_hash(game_session)}:{expiry}".encode()
-    sig=hmac.new(gm.encode(),message,hashlib.sha256).hexdigest()
+    version=owner_recovery.key_version()
+    message=f"{_PANEL_HEADER}:{auth._token_hash(game_session)}:{expiry}:{version}".encode()
+    sig=hmac.new(owner_recovery.signing_key(),message,hashlib.sha256).hexdigest()
     return f"{expiry}.{sig}"
 
 
@@ -153,11 +142,9 @@ def authorized(token,game_session):
             return False
         if not game_session:
             return False
-        gm=os.environ.get('GXB3_GM_ACTION_KEY','')
-        if len(gm)<24:
-            return False
-        message=f"{_PANEL_HEADER}:{auth._token_hash(game_session)}:{expiry}".encode()
-        expected=hmac.new(gm.encode(),message,hashlib.sha256).hexdigest()
+        version=owner_recovery.key_version()
+        message=f"{_PANEL_HEADER}:{auth._token_hash(game_session)}:{expiry}:{version}".encode()
+        expected=hmac.new(owner_recovery.signing_key(),message,hashlib.sha256).hexdigest()
         return hmac.compare_digest(expected,sig)
-    except (ValueError,TypeError,AttributeError):
+    except (ValueError,TypeError,AttributeError,RuntimeError):
         return False
