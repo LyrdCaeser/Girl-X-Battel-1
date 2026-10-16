@@ -170,6 +170,10 @@ def _ensure_auth(db):
         )""")
         db.execute("CREATE UNIQUE INDEX IF NOT EXISTS idx_accounts_username_ci ON accounts((lower(username)))")
         db.execute("CREATE UNIQUE INDEX IF NOT EXISTS idx_accounts_email_ci ON accounts((lower(email))) WHERE email <> ''")
+        db.execute("""CREATE TABLE IF NOT EXISTS account_public_uids (
+            account_id BIGINT PRIMARY KEY REFERENCES accounts(id) ON DELETE CASCADE,
+            public_uid TEXT NOT NULL UNIQUE
+        )""")
         db.execute("""CREATE TABLE IF NOT EXISTS sessions(
             token_hash TEXT PRIMARY KEY,
             account_id BIGINT NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,
@@ -212,6 +216,10 @@ def _ensure_auth(db):
         db.execute("ALTER TABLE accounts ADD COLUMN ban_reason TEXT NOT NULL DEFAULT ''")
     db.execute("""CREATE UNIQUE INDEX IF NOT EXISTS idx_accounts_email
                   ON accounts(email COLLATE NOCASE) WHERE email <> ''""")
+    db.execute("""CREATE TABLE IF NOT EXISTS account_public_uids (
+        account_id INTEGER PRIMARY KEY REFERENCES accounts(id) ON DELETE CASCADE,
+        public_uid TEXT NOT NULL UNIQUE
+    )""")
     db.execute("""CREATE TABLE IF NOT EXISTS sessions(
         token_hash TEXT PRIMARY KEY,
         account_id INTEGER NOT NULL,

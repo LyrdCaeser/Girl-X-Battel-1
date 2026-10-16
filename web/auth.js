@@ -109,7 +109,7 @@ window.GxbAuth=(()=>{
       gm.onclick=async()=>{try{await window.AdminPanel?.open();}catch(e){window.GirlUI?.notice?.(e.message,{title:'Quản trị'});}};
       infoPage.append(gm);
     }
-    const row=el('div','profile-setting-row auth-account-row');const div=el('div');div.append(el('strong','','Tài khoản'),el('small','',session?.account?`${session.account.username} · ${session.account.uid}`:''));
+    const row=el('div','profile-setting-row auth-account-row');const div=el('div');div.append(el('strong','','Tài khoản'),el('small','',session?.account?`${session.account.username} · ${session.account.display_uid||session.account.uid}`:''));
     const sessionsBtn=el('button','auth-small-btn','Thiết bị');sessionsBtn.onclick=openSessions;
     const recoveryBtn=el('button','auth-small-btn','Mã khôi phục');recoveryBtn.onclick=rotateRecovery;
     const out=el('button','auth-small-btn','Đăng xuất');out.onclick=async()=>{try{await request('/api/auth/logout',{});}finally{location.reload();}};row.append(div,sessionsBtn,recoveryBtn,out);settings.append(row);

@@ -71,10 +71,77 @@ def _clean_email(value):
     return value
 
 
+PUBLIC_UID_RE = re.compile(r"^GB3-[1-9][0-9]{8}$")
+
+
+def _ensure_public_uid(db, account_id):
+    """Issue a persistent, collision-checked public 9-digit UID."""
+    row = db.execute("SELECT public_uid FROM account_public_uids WHERE account_id=?",
+                     (int(account_id),)).fetchone()
+    if row:
+        return str(row["public_uid"])
+    for _ in range(40):
+        candidate = f"GB3-{secrets.randbelow(900_000_000)+100_000_000:09d}"
+        db.execute("""INSERT INTO account_public_uids(account_id,public_uid)
+                   VALUES(?,?) ON CONFLICT DO NOTHING""",(int(account_id),candidate))
+        row = db.execute("SELECT public_uid FROM account_public_uids WHERE account_id=?",
+                         (int(account_id),)).fetchone()
+        if row:
+            return str(row["public_uid"])
+    raise RuntimeError("Không thể cấp UID công khai duy nhất")
+
+
+def display_uid(internal_uid):
+    """Never rewrite legacy gameplay identity, which owns guild/mail/payment data."""
+    with _lock:
+        db = _db()
+        try:
+            row = db.execute("SELECT id FROM accounts WHERE uid=?",
+                             (str(internal_uid),)).fetchone()
+            if not row:
+                return str(internal_uid)
+            result = _ensure_public_uid(db, int(row["id"]))
+            db.commit()
+            return result
+        except Exception:
+            db.rollback()
+            raise
+        finally:
+            db.close()
+
+
+def verify_gift_recipient(public_uid, character_name, server_id, sender_uid=""):
+    """Verify the exact public UID + character on a real server before gifting."""
+    public_uid = str(public_uid or "").strip().upper()
+    character_name = str(character_name or "").strip()
+    server_id = str(server_id or "").strip().upper()
+    if not PUBLIC_UID_RE.fullmatch(public_uid) or not character_name or len(character_name)>40:
+        raise ValueError("Nhập đúng UID GB3-9 số và tên nhân vật nhận quà")
+    with _lock:
+        db = _db()
+        try:
+            account = db.execute("""SELECT a.id,a.uid,a.status
+                FROM account_public_uids p JOIN accounts a ON a.id=p.account_id
+                WHERE p.public_uid=?""",(public_uid,)).fetchone()
+        finally:
+            db.close()
+    if not account or account["status"] != "active":
+        raise ValueError("UID hoặc tên nhân vật không khớp")
+    canonical = str(account["uid"])
+    if canonical == str(sender_uid or ""):
+        raise ValueError("Không thể tự tặng trang phục cho chính mình")
+    player = live_service.player(canonical, server_id)
+    if not player or player.get("status") != "active" or player["character_name"].strip().casefold()!=character_name.casefold():
+        raise ValueError("UID hoặc tên nhân vật không khớp tại server đã chọn")
+    return {"uid":canonical, "display_uid":public_uid, "character_name":player["character_name"],
+            "server_id":server_id, "verified":True}
+
+
 def _public_account(row, server_id=None):
     return {
         "id": int(row["id"]),
         "uid": row["uid"],
+        "display_uid": display_uid(row["uid"]),
         "username": row["username"],
         "email": row["email"],
         "status": row["status"],
@@ -159,7 +226,7 @@ def register(username, password, character_name, server_id="S1", email="", user_
                                     VALUES(NULL,?,?,?,?,'active',?,?)""",
                                  (username, email, pwh, salt.hex(), now, now))
                 account_id = int(cur.lastrowid)
-            uid = f"GXB3-{account_id:08d}"
+            uid = _ensure_public_uid(db, account_id)
             db.execute("UPDATE accounts SET uid=? WHERE id=?", (uid, account_id))
             recovery_code = _new_recovery_code()
             _save_recovery(db, account_id, _recovery_hash(recovery_code), now, 0)

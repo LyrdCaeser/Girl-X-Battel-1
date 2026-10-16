@@ -63,9 +63,9 @@ async function bootstrap(){
  if(!state.admin){state.panelUnlocked=false;state.panelAccess='';state.gmActionKey='';state.skins=[];}
  $('login-panel').hidden=Boolean(state.me);
  $('restricted').hidden=!state.me||state.admin;
- $('account-label').textContent=state.me?(state.me.account?.username||state.me.account?.uid||'Đã đăng nhập'):'Chưa đăng nhập';
+ $('account-label').textContent=state.me?(state.me.account?.username||state.me.account?.display_uid||'Đã đăng nhập'):'Chưa đăng nhập';
  $('account-character').textContent=state.me
-   ?[(state.me.character_name||'Chưa chọn nhân vật'),state.me.account?.server_id||''].filter(Boolean).join(' · ')
+   ?[(state.me.character_name||'Chưa chọn nhân vật'),state.me.account?.server_id||'',state.me.account?.display_uid||''].filter(Boolean).join(' · ')
    :'Nhấn Đồng bộ để dùng đúng tài khoản đang chơi';
  $('server-status').textContent=state.me?'● GXB 3 · Đã xác thực phiên':'○ Chưa liên kết tài khoản GXB 3';
  const select=$('login-form').elements.server_id;
