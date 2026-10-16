@@ -63,5 +63,7 @@ assert(app.includes("api('/api/giftskin/verify'")&&app.includes("api('/api/gifts
  'Public GiftSkin requires recipient verification and atomic Crystal endpoint');
 assert(/admin_key:\$\('unlock-admin-key'\)\.value/.test(app),'Gate must send admin key only on explicit unlock');
 assert(bridge.includes('sso\\/exchange')&&bridge.includes('giftcode\\/'),'Vercel bridge must allow game SSO endpoint');
+assert(bridge.includes('me|login|logout'),'Account switching must revoke only the Studio cookie through Vercel bridge');
+assert(bridge.includes('giftskin\\/'),'GiftSkin must use allowlisted API paths on the bridge');
 console.log('PASS | Studio SSO account identity is explicit and synced by one-use GXB3 ticket');
 console.log('PASS | Studio Skin checkbox fields serialize as JSON booleans, VNĐ/Crystal only');

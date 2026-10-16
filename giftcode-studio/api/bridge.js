@@ -3,7 +3,7 @@
  * checks the authenticated session and the separate GM key on every mutation.
  */
 const UPSTREAM='https://180-93-111-99.sslip.io';
-const allowed=(p)=>/^\/api\/(auth\/(?:me|login)|giftcode\/(?:catalog|list|redemptions|redeem|check|sso\/exchange|admin\/(?:create|revoke|unlock))|giftskin\/(?:verify|crystal|orders|bank\/create|admin\/(?:orders|review))|skins\/action|skin-shop\/(?:catalog|bank\/(?:create|orders)|admin\/(?:catalog|update|bulk|bank\/(?:orders|review)))|admin\/gm\/verify-key)$/.test(p);
+const allowed=(p)=>/^\/api\/(auth\/(?:me|login|logout)|giftcode\/(?:catalog|list|redemptions|redeem|check|sso\/exchange|admin\/(?:create|revoke|unlock))|giftskin\/(?:verify|crystal|orders|bank\/create|admin\/(?:orders|review))|skins\/action|skin-shop\/(?:catalog|bank\/(?:create|orders)|admin\/(?:catalog|update|bulk|bank\/(?:orders|review)))|admin\/gm\/verify-key)$/.test(p);
 export default async function handler(req,res){
   const host=String(req.headers.host||'').toLowerCase();
   const origin='https://'+host;
