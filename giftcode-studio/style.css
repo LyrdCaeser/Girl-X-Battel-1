@@ -97,3 +97,17 @@
 .gift-price{font-size:21px;font-weight:800;color:#e5dcff}
 .gift-page .row-actions{margin:16px 0 25px}
 @media(max-width:720px){.gift-fields{grid-template-columns:1fr}.player-shop-grid{grid-template-columns:repeat(auto-fill,minmax(165px,1fr))}.player-shop-img{height:140px}}
+
+/* SUPER GM recovery, independent of the public storefront */
+.recovery-page{max-width:980px;margin:0 auto}.recovery-page h3{margin:23px 0 10px}
+.recovery-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:15px 0}
+.recovery-form label{display:flex;flex-direction:column;gap:8px;color:#b9c9f1;font-size:13px;font-weight:600}
+.recovery-form input,.recovery-pairing input{width:100%;min-width:0;padding:13px 14px;background:#0e1830;border:1px solid #334667;border-radius:10px;color:#fff}
+.recovery-form button{grid-column:1/-1}.recovery-status-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:22px 0;padding:14px;background:#101c36;border:1px solid #344868;border-radius:11px}
+.recovery-pairing,.recovery-backups,.recovery-backup-rotate{border:1px solid #425385;border-radius:14px;background:#111b36;margin:18px 0;padding:18px}
+.recovery-seed{display:flex;align-items:center;flex-wrap:wrap;gap:10px;padding:13px 15px;background:#090f22;border-radius:11px;overflow-wrap:anywhere}
+.recovery-seed code{font-size:15px;letter-spacing:1px;color:#d9e6ff;flex:1}
+.recovery-backups pre{white-space:pre-wrap;overflow-wrap:anywhere;letter-spacing:1px;line-height:1.8;color:#d4e1ff}
+#recovery-feedback[data-ok="0"]{color:#ffc6c6}
+#recovery-feedback[data-ok="1"]{color:#a7edca}
+@media(max-width:740px){.recovery-form{grid-template-columns:1fr}.recovery-status-row{flex-direction:column;align-items:stretch}}

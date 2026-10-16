@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0b1023"><link rel="icon" type="image/jpeg" href="./favicon.jpg">
 <title>Goddess Battle 3 - Trang Chủ Chính Thức</title>
-<link rel="stylesheet" href="./style.css?v=20261016-giftskin-auth-r1">
+<link rel="stylesheet" href="./style.css?v=20261016-authenticator-recovery-v1">
 <script defer src="./app.js?v=20261016-player-shop-visible-v3"></script>
 </head>
 <body>
@@ -18,6 +18,7 @@
     <button class="nav-btn" data-view="redeem">◈ <span>Đổi giftcode</span></button>
     <button class="nav-btn" data-view="shop">✧ <span>Cửa Hàng Trang Phục</span></button>
     <button class="nav-btn" data-view="gift">♡ <span>GiftSkin · Tặng Trang Phục</span></button>
+    <button class="nav-btn" data-view="recover" hidden>⌑ <span>Khôi Phục 3 Khóa QTV</span></button>
     <button class="nav-btn" data-view="skins" hidden>✧ <span>Quản lý trang phục</span></button>
   </nav>
   <div class="side-bottom">
@@ -27,7 +28,7 @@
   </div>
 </aside>
 <main class="main">
-  <header class="topbar"><div><span class="eyebrow">GXB 3 / HỆ THỐNG QUÀ TẶNG</span><h1 id="page-title">Tạo Giftcode</h1></div><div class="account"><span id="server-status">Đang kết nối...</span><span id="account-label">Chưa đăng nhập</span><span id="account-character" aria-live="polite">Đồng bộ với tài khoản game</span><a id="account-sync" class="account-sync" href="https://180-93-111-99.sslip.io/api/giftcode/sso/start" title="Xem đúng tài khoản và server bên game trước khi xác nhận đồng bộ">↻ Đồng bộ với GXB 3</a><button id="account-switch" class="account-sync" type="button" title="Đăng xuất riêng Goddess Battle 3 - Trang Chủ Chính Thức mà không xóa tài khoản và tiến trình game" hidden>Đổi tài khoản trang chủ</button></div></header>
+  <header class="topbar"><div><span class="eyebrow">GXB 3 / HỆ THỐNG QUÀ TẶNG</span><h1 id="page-title">Tạo Giftcode</h1></div><div class="account"><span id="server-status">Đang kết nối...</span><span id="account-label">Chưa đăng nhập</span><span id="account-character" aria-live="polite">Đồng bộ với tài khoản game</span><a id="account-sync" class="account-sync" href="https://180-93-111-99.sslip.io/api/giftcode/sso/start" title="Xem đúng tài khoản và server bên game trước khi xác nhận đồng bộ">↻ Đồng bộ với GXB 3</a><button id="account-recovery" class="account-sync" type="button" hidden>⌑ Khôi phục 3 khóa</button><button id="account-switch" class="account-sync" type="button" title="Đăng xuất riêng Goddess Battle 3 - Trang Chủ Chính Thức mà không xóa tài khoản và tiến trình game" hidden>Đổi tài khoản trang chủ</button></div></header>
   <section id="login-panel" class="panel login-card" hidden>
     <h2>Đăng nhập tài khoản GXB 3</h2><p class="muted">Đăng nhập game để sử dụng Goddess Battle 3 - Trang Chủ Chính Thức. Chỉ tài khoản SUPER GM có thể tạo và khóa mã.</p>
     <a id="game-sso" class="game-sso" href="https://180-93-111-99.sslip.io/api/giftcode/sso/start">↗ Liên kết đăng nhập trực tiếp từ game GXB 3</a>
@@ -50,6 +51,7 @@
       <button class="primary" type="submit">Xác thực 3 khóa · Mở quản trị</button>
     </form>
     <p class="muted mini">Không lưu khóa trong trình duyệt. Quyền mở bảng chỉ tồn tại trong phiên và hết hạn tự động. Không chia sẻ khóa cho người chơi.</p>
+    <button id="open-recovery" class="ghost" type="button">Quên 3 khóa? Khôi phục bằng Google Authenticator →</button>
   </section>
   <section id="create-view" class="view" hidden>
     <div class="stats">
@@ -172,6 +174,62 @@
     <p class="muted mini">Crystal: trừ tiền người tặng và ghi thư người nhận cùng giao dịch Neon. VNĐ: tạo đơn, chỉ phát quà khi SUPER GM xác nhận tiền thật. Skin kết duyên không được bán hoặc tặng.</p>
     <div class="section-head"><h3>Đơn tặng qua chuyển khoản của tôi</h3><button id="gift-orders-refresh" class="ghost small" type="button">↻ Làm mới</button></div>
     <div id="gift-orders" class="player-shop-order-list"></div>
+  </section>
+
+  <section id="recover-view" class="view panel recovery-page" hidden>
+    <span class="eyebrow">BẢO MẬT DÀNH RIÊNG SUPER GM</span>
+    <h2>⌑ Khôi Phục 3 Khóa Quản Trị</h2>
+    <p class="muted">Sử dụng <strong>mã Google Authenticator 6 số</strong> hoặc <strong>mã dự phòng một lần</strong> để thay cả ba khóa. Chỉ SUPER GM đang đăng nhập mới được thực hiện. Không cần thay đổi hoặc xóa dữ liệu game trong Neon.</p>
+    <p class="muted mini">Nếu chưa liên kết Google Authenticator, lần đầu bắt buộc phải nhập đúng cả 3 khóa hiện tại. Google Authenticator không tự cấp mã dự phòng cho GXB 3; website sẽ tạo mã dự phòng riêng sau khi liên kết thành công.</p>
+    <div class="recovery-status-row"><strong id="recovery-state">Đang kiểm tra trạng thái bảo mật…</strong><button id="recovery-refresh" class="ghost small" type="button">↻ Kiểm tra</button></div>
+    <div id="recovery-setup" hidden>
+      <h3>1. Liên kết Google Authenticator (một lần)</h3>
+      <p class="muted mini">Nhập bộ khóa quản trị <strong>hiện tại</strong> để xác nhận chủ sở hữu, rồi thêm khóa thiết lập vào Google Authenticator → Nhập khóa thiết lập.</p>
+      <form id="recovery-setup-form" class="recovery-form" autocomplete="off">
+        <label>Khóa quản trị GXB 3 hiện tại<input name="admin_key" type="password" required minlength="12" autocomplete="off"></label>
+        <label>Khóa bảo vệ trang chủ hiện tại<input name="panel_key" type="password" required minlength="12" autocomplete="off"></label>
+        <label>Khóa hành động QTV hiện tại<input name="gm_key" type="password" required minlength="24" autocomplete="off"></label>
+        <button class="primary" type="submit">Tạo mã liên kết Authenticator</button>
+      </form>
+      <div id="recovery-pairing" class="recovery-pairing" hidden>
+        <p class="muted">Trong Google Authenticator, chọn <strong>Thêm mã (+) → Nhập khóa thiết lập</strong>, sau đó nhập tên <strong>Goddess Battle 3</strong> và khóa bên dưới.</p>
+        <div class="recovery-seed"><code id="recovery-seed-value"></code><button id="recovery-seed-copy" type="button" class="ghost small">Sao chép khóa</button></div>
+        <form id="recovery-confirm-form" class="recovery-form" autocomplete="off">
+          <label>Mã 6 số đang hiện trong Google Authenticator<input name="code" type="text" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code" required></label>
+          <button type="submit" class="primary">Xác nhận liên kết và tạo mã dự phòng</button>
+        </form>
+      </div>
+    </div>
+    <div id="recovery-reset" hidden>
+      <h3>Thay thế bộ 3 khóa đã quên</h3>
+      <p class="muted mini">Mã Google Authenticator chỉ dùng một lần trong khung 30 giây; mã dự phòng GXB 3 chỉ dùng một lần. Khóa mới sẽ thay thế khóa cũ ngay sau khi server xác nhận.</p>
+      <form id="recovery-reset-form" class="recovery-form" autocomplete="off">
+        <label>Mã Authenticator (6 số) hoặc mã dự phòng<input name="code" type="text" maxlength="28" autocomplete="one-time-code" placeholder="123456 hoặc GXB3-XXXX-XXXX-XXXX-XXXX" required></label>
+        <label>Khóa quản trị GXB 3 mới<input name="admin_key" type="password" minlength="12" autocomplete="new-password" required></label>
+        <label>Nhập lại khóa quản trị mới<input name="admin_confirm" type="password" minlength="12" autocomplete="off" required></label>
+        <label>Khóa bảo vệ trang chủ mới<input name="panel_key" type="password" minlength="12" autocomplete="new-password" required></label>
+        <label>Nhập lại khóa bảo vệ mới<input name="panel_confirm" type="password" minlength="12" autocomplete="off" required></label>
+        <label>Khóa hành động QTV mới<input name="gm_key" type="password" minlength="24" autocomplete="new-password" required></label>
+        <label>Nhập lại khóa hành động mới<input name="gm_confirm" type="password" minlength="24" autocomplete="off" required></label>
+        <button type="submit" class="primary recovery-submit">Xác nhận reset cả 3 khóa</button>
+      </form>
+      <div class="recovery-backup-rotate">
+        <h3>Cấp lại mã khôi phục dự phòng</h3>
+        <p class="muted mini">Nhập mã 6 số Authenticator để cấp lại 8 mã mới. <strong>Tất cả mã dự phòng cũ sẽ bị vô hiệu hóa.</strong></p>
+        <form id="recovery-rotate-form" class="form-row" autocomplete="off">
+          <input name="code" type="text" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code" placeholder="Mã Authenticator 6 số" required>
+          <button class="ghost" type="submit">Cấp lại mã dự phòng</button>
+        </form>
+      </div>
+    </div>
+    <div id="recovery-backups" class="recovery-backups" hidden>
+      <h3>8 mã dự phòng GXB 3 — chỉ hiển thị lần này</h3>
+      <p class="muted">Lưu các mã ở nơi riêng tư, không chụp gửi người khác. Nếu mất điện thoại, bé có thể sử dụng <strong>một mã chưa dùng</strong> để khôi phục bộ 3 khóa.</p>
+      <pre id="recovery-backup-list" aria-label="Các mã dự phòng"></pre>
+      <button id="recovery-copy-backups" class="ghost" type="button">Sao chép toàn bộ mã dự phòng</button>
+      <button id="recovery-dismiss-backups" class="ghost" type="button">Tôi đã lưu an toàn</button>
+    </div>
+    <p id="recovery-feedback" class="muted" role="status" aria-live="polite"></p>
   </section>
   <p id="global-status" role="status" aria-live="polite"></p>
 </main>

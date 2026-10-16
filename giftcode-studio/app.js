@@ -38,16 +38,17 @@ function notice(msg,ok=true){const el=$('global-status');el.textContent=msg;el.d
 function switchView(view){
  if(!state.admin&&!['redeem','shop','gift'].includes(view))view='redeem';
  state.view=view;
- const titles={create:'Tạo Giftcode',history:'Giftcode đã phát hành',redeem:'Đổi Giftcode',skins:'Quản lý Trang Phục',shop:'Cửa Hàng Trang Phục',gift:'GiftSkin · Tặng Trang Phục'};
+ const titles={create:'Tạo Giftcode',history:'Giftcode đã phát hành',redeem:'Đổi Giftcode',skins:'Quản lý Trang Phục',shop:'Cửa Hàng Trang Phục',gift:'GiftSkin · Tặng Trang Phục',recover:'Khôi Phục 3 Khóa QTV'};
  $('page-title').textContent=titles[view];
- for(const el of document.querySelectorAll('.nav-btn')){el.classList.toggle('active',el.dataset.view===view);el.hidden=!['redeem','shop','gift'].includes(el.dataset.view)&&!(state.admin&&state.panelUnlocked);}
- for(const name of ['create','history','redeem','skins','shop','gift'])$(name+'-view').hidden=view!==name||(!['shop','gift'].includes(name)&&!state.me)||(!['redeem','shop','gift'].includes(name)&&!state.panelUnlocked);
- $('create-lock').hidden=!state.me||!state.admin||['redeem','shop','gift'].includes(view)||state.panelUnlocked;
+ for(const el of document.querySelectorAll('.nav-btn')){el.classList.toggle('active',el.dataset.view===view);el.hidden=!['redeem','shop','gift'].includes(el.dataset.view)&&!((el.dataset.view==='recover'&&state.admin)||(state.admin&&state.panelUnlocked));}
+ for(const name of ['create','history','redeem','skins','shop','gift','recover'])$(name+'-view').hidden=view!==name||(!['shop','gift'].includes(name)&&!state.me)||(!['redeem','shop','gift','recover'].includes(name)&&!state.panelUnlocked);
+ $('create-lock').hidden=!state.me||!state.admin||['redeem','shop','gift','recover'].includes(view)||state.panelUnlocked;
  if((view==='create'||view==='skins')&&!state.panelUnlocked)state.unlockDestination=view;
  if(view==='history'&&state.admin&&state.panelUnlocked)refreshCodes().catch(e=>notice(e.message,false));
  if(view==='skins'&&state.admin&&state.panelUnlocked)loadSkins().catch(e=>notice(e.message,false));
  if(view==='shop')loadPlayerShop().catch(e=>notice(e.message,false));
  if(view==='gift')loadGiftSkin().catch(e=>notice(e.message,false));
+ if(view==='recover'&&state.admin)loadRecoveryStatus().catch(e=>recoveryMessage(e.message,false));
 }
 function updateStats(){
  $('stat-total').textContent=state.codes.length.toLocaleString('vi-VN');
@@ -65,6 +66,7 @@ async function bootstrap(){
  if(!state.admin){state.panelUnlocked=false;state.panelAccess='';state.gmActionKey='';state.skins=[];}
  $('login-panel').hidden=Boolean(state.me);
  $('account-switch').hidden=!state.me;
+ $('account-recovery').hidden=!state.admin;
  $('shop-account-note').textContent=state.me?'Đang sử dụng tài khoản '+(state.me.account?.username||'')+' · '+(state.me.account?.server_id||'')+' để mua.':'Bạn có thể xem giá; vui lòng đăng nhập để đặt mua.';
  $('restricted').hidden=!state.me||state.admin;
  $('account-label').textContent=state.me?(state.me.account?.username||state.me.account?.display_uid||'Đã đăng nhập'):'Chưa đăng nhập';
@@ -629,10 +631,119 @@ $('account-switch').onclick=async()=>{
  }catch(e){notice('Không thể đổi tài khoản: '+e.message,false);}
 };
 
+
+let recoveryCodes=[];
+function recoveryMessage(message,good=true){
+ $('recovery-feedback').textContent=message;
+ $('recovery-feedback').dataset.ok=good?'1':'0';
+ notice(message,good);
+}
+async function loadRecoveryStatus(){
+ if(!state.admin)throw Error('Chỉ SUPER GM mới được sử dụng khôi phục');
+ const result=await api('/api/owner-security/status');
+ $('recovery-setup').hidden=result.enrolled;
+ $('recovery-reset').hidden=!result.enrolled;
+ $('recovery-state').textContent=result.enrolled
+   ?'✓ Google Authenticator đã liên kết · Còn '+result.backup_remaining+' mã dự phòng'
+   :'Chưa liên kết Google Authenticator — cần 3 khóa hiện tại để thiết lập';
+ return result;
+}
+function showRecoveryCodes(codes){
+ recoveryCodes=[...codes];
+ $('recovery-backup-list').textContent=recoveryCodes.join('\n');
+ $('recovery-backups').hidden=false;
+ $('recovery-backups').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+$('account-recovery').onclick=()=>switchView('recover');
+$('open-recovery').onclick=()=>switchView('recover');
+$('recovery-refresh').onclick=()=>loadRecoveryStatus().catch(e=>recoveryMessage(e.message,false));
+$('recovery-setup-form').onsubmit=async e=>{
+ e.preventDefault();
+ const form=e.currentTarget,button=form.querySelector('button[type="submit"]');
+ button.disabled=true;
+ try{
+   const fields=form.elements;
+   const result=await api('/api/owner-security/enroll/start',{
+     admin_key:fields.admin_key.value,panel_key:fields.panel_key.value,
+     gm_key:fields.gm_key.value
+   });
+   form.reset();
+   $('recovery-seed-value').textContent=result.secret;
+   $('recovery-pairing').hidden=false;
+   recoveryMessage('Đã tạo khóa thiết lập. Mở Google Authenticator và nhập khóa, sau đó xác nhận bằng mã 6 số.');
+ }catch(err){recoveryMessage(err.message,false);}
+ finally{button.disabled=false;}
+};
+$('recovery-seed-copy').onclick=async()=>{
+ try{await navigator.clipboard.writeText($('recovery-seed-value').textContent);recoveryMessage('Đã sao chép khóa thiết lập; đừng chia sẻ với người khác.');}
+ catch{recoveryMessage('Không thể sao chép tự động. Hãy nhập khóa thủ công.',false);}
+};
+$('recovery-confirm-form').onsubmit=async e=>{
+ e.preventDefault();
+ const form=e.currentTarget,button=form.querySelector('button');
+ button.disabled=true;
+ try{
+   const result=await api('/api/owner-security/enroll/confirm',{code:form.elements.code.value.trim()});
+   $('recovery-seed-value').textContent='';
+   $('recovery-pairing').hidden=true;
+   form.reset();
+   showRecoveryCodes(result.backup_codes||[]);
+   await loadRecoveryStatus();
+   recoveryMessage('Đã liên kết Google Authenticator. Hãy lưu 8 mã dự phòng trước khi đóng.');
+ }catch(err){recoveryMessage(err.message,false);}
+ finally{button.disabled=false;}
+};
+$('recovery-copy-backups').onclick=async()=>{
+ try{await navigator.clipboard.writeText(recoveryCodes.join('\n'));recoveryMessage('Đã sao chép các mã dự phòng. Hãy lưu ở nơi an toàn.');}
+ catch{recoveryMessage('Không thể sao chép tự động.',false);}
+};
+$('recovery-dismiss-backups').onclick=()=>{
+ recoveryCodes=[];
+ $('recovery-backup-list').textContent='';
+ $('recovery-backups').hidden=true;
+ recoveryMessage('Đã ẩn mã dự phòng khỏi trang. Các mã sẽ không được hiển thị lại.');
+};
+$('recovery-reset-form').onsubmit=async e=>{
+ e.preventDefault();
+ const form=e.currentTarget,el=form.elements,button=form.querySelector('button[type="submit"]');
+ for(const k of ['admin','panel','gm'])if(el[k+'_key'].value!==el[k+'_confirm'].value){
+   recoveryMessage('Khóa '+k+' nhập lại không khớp.',false);return;
+ }
+ if(!confirm('RESET CẢ 3 KHÓA QUẢN TRỊ? Khóa cũ và tất cả phiên mở bảng quản trị cũ sẽ hết hiệu lực. Dữ liệu game không thay đổi.'))return;
+ button.disabled=true;
+ try{
+   await api('/api/owner-security/keys/reset',{
+     code:el.code.value.trim(),admin_key:el.admin_key.value,
+     panel_key:el.panel_key.value,gm_key:el.gm_key.value
+   });
+   form.reset();
+   state.panelUnlocked=false;state.panelAccess='';state.gmActionKey='';
+   $('unlock-form').reset();
+   if($('gm-key'))$('gm-key').value='';
+   if($('skin-gm-key'))$('skin-gm-key').value='';
+   recoveryMessage('Thành công! 3 khóa mới có hiệu lực. Hãy dùng khóa mới để mở khu vực quản trị.');
+   await loadRecoveryStatus();
+   switchView('create');
+ }catch(err){recoveryMessage(err.message,false);}
+ finally{button.disabled=false;}
+};
+$('recovery-rotate-form').onsubmit=async e=>{
+ e.preventDefault();
+ const form=e.currentTarget,button=form.querySelector('button');
+ if(!confirm('Cấp lại 8 mã dự phòng? Các mã cũ sẽ bị hủy ngay lập tức.'))return;
+ button.disabled=true;
+ try{
+   const data=await api('/api/owner-security/backups/rotate',{code:form.elements.code.value.trim()});
+   form.reset();showRecoveryCodes(data.backup_codes||[]);
+   await loadRecoveryStatus();
+   recoveryMessage('Đã cấp lại 8 mã. Hãy lưu chúng ngay.');
+ }catch(err){recoveryMessage(err.message,false);}
+ finally{button.disabled=false;}
+};
 async function start(){
  // Hide all privileged navigation until the server confirms SUPER GM ownership.
  for(const el of document.querySelectorAll('.nav-btn'))el.hidden=!['redeem','shop','gift'].includes(el.dataset.view);
- for(const name of ['create','history','redeem','skins','shop','gift'])$(name+'-view').hidden=true;
+ for(const name of ['create','history','redeem','skins','shop','gift','recover'])$(name+'-view').hidden=true;
  const ticket=new URLSearchParams(location.search).get('ticket');
  let ssoFailure='';
  if(ticket){
