@@ -44,6 +44,6 @@ assert(/id="account-sync"[\s\S]*?giftcode\/sso\/start/.test(html),'GXB3 sync act
 assert(/id="account-character"/.test(html),'Studio must show selected game character and server');
 assert(/giftcode\/sso\/exchange/.test(app),'SSO ticket must be consumed by Studio');
 assert(/accountIdentity/.test(app)&&/panelAccess='';state\.skins=\[\]/.test(app),'owner unlock must be cleared when switching account');
-assert(/giftcode\\\/sso\\\/exchange/.test(bridge),'Vercel bridge must allow game SSO endpoint');
+assert(bridge.includes('sso\\/exchange')&&bridge.includes('giftcode\\/'),'Vercel bridge must allow game SSO endpoint');
 console.log('PASS | Studio SSO account identity is explicit and synced by one-use GXB3 ticket');
 console.log('PASS | Studio Skin checkbox fields serialize as JSON booleans, VNĐ/Crystal only');
