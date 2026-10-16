@@ -21,7 +21,7 @@ from gxb2.story import catalog as story_catalog
 from gxb2.dress import catalog as dress_catalog
 from gxb2.skins import catalog as skins_catalog
 from gxb2.souls import catalog as souls_catalog
-from gxb2 import protocol as p, local_promotion, local_config, world_live_config, topup, live_service, auth, database, gm_catalog, giftcodes, studio_sso, skin_store, skin_bank, skin_gifts
+from gxb2 import protocol as p, local_promotion, local_config, world_live_config, topup, live_service, auth, database, gm_catalog, giftcodes, studio_sso, skin_store, skin_bank, skin_gifts, owner_recovery
 from gxb2.player_engines import PlayerEnginePool
 from gxb2.battle import simulate as simulate_battle, ONLINE_BATTLE_ID, normalize_online_seed
 from gxb2.security import FixedWindowRateLimiter, DEFAULT_LIMITS, env_bool, validate_production_config
@@ -207,10 +207,8 @@ class HTTPHandler(BaseHTTPRequestHandler):
         """Second factor for value-moving GM commands, never a substitute for the owner session."""
         if not self.is_super_gm():
             return False
-        configured = os.environ.get('GXB3_GM_ACTION_KEY', '')
         supplied = self.headers.get('X-GXB3-GM-Key', '')
-        return bool(len(configured) >= 24 and supplied and
-                    hmac.compare_digest(configured.encode(), supplied.encode()))
+        return owner_recovery.verify_key('gm', supplied)
 
     def reject_unauthorized_admin_mode(self):
         if self.headers.get('X-GXB2-Mode') == 'developer' and not self.admin_authorized():
@@ -483,6 +481,10 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
         if path == '/api/skin-shop/admin/catalog':
             if not self.admin_authorized(): return self.send(403,{'error':'Yêu cầu SUPER GM'})
             return self.send(200,skin_store.catalogue(admin=True))
+        if path == '/api/owner-security/status':
+            if not self.is_super_gm():
+                return self.send(403, {'error':'Chỉ chủ tài khoản SUPER GM được quản lý khôi phục'})
+            return self.send(200,owner_recovery.status(self.session_token()))
         if path == '/api/giftskin/orders':
             return self.send(200,skin_gifts.mine(self.auth_context()['account']['uid']))
         if path == '/api/giftskin/admin/orders':
@@ -825,6 +827,7 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
             if path == '/api/giftcode/redeem' and not self.rate_limit('giftcode_redeem'): return
             if path == '/api/giftcode/sso/exchange' and not self.rate_limit('auth_login'): return
             if path == '/api/giftcode/admin/unlock' and not self.rate_limit('giftcode_unlock'): return
+            if path.startswith('/api/owner-security/') and not self.rate_limit('giftcode_unlock'): return
             if path.startswith('/api/giftcode/admin/') and not self.rate_limit('admin'): return
             if path == '/api/skin-shop/bank/create' and not self.rate_limit('order_create'): return
             if path in ('/api/giftskin/verify','/api/giftskin/crystal','/api/giftskin/bank/create') and not self.rate_limit('order_create'): return
@@ -895,6 +898,23 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                         account['uid'], account['server_id'],
                         data.get('channel'), data.get('message'), data.get('recipient_uid', ''))
                 })
+            if path.startswith('/api/owner-security/'):
+                if not self.is_super_gm():
+                    return self.send(403,{'error':'Chỉ chủ tài khoản SUPER GM được khôi phục khóa'})
+                token = self.session_token()
+                if path == '/api/owner-security/enroll/start':
+                    return self.send(200,owner_recovery.enrollment_start(token,{
+                        'admin':data.get('admin_key'),'panel':data.get('panel_key'),
+                        'gm':data.get('gm_key')}))
+                if path == '/api/owner-security/enroll/confirm':
+                    return self.send(200,owner_recovery.enrollment_confirm(token,data.get('code')))
+                if path == '/api/owner-security/keys/reset':
+                    return self.send(200,owner_recovery.reset_keys(token,data.get('code'),{
+                        'admin':data.get('admin_key'),'panel':data.get('panel_key'),
+                        'gm':data.get('gm_key')}))
+                if path == '/api/owner-security/backups/rotate':
+                    return self.send(200,owner_recovery.rotate_backups(token,data.get('code')))
+                return self.send(404,{'error':'API khôi phục không tồn tại'})
             if path == '/api/giftcode/admin/unlock':
                 if not self.admin_authorized(): return self.send(403,{'error':'Yêu cầu SUPER GM'})
                 return self.send(200,{'access':studio_sso.unlock(data.get('password'),self.session_token(),data.get('admin_key'),data.get('gm_key')),'expires_in':studio_sso.PANEL_TTL})
