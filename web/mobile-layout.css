@@ -148,3 +148,18 @@ html.gxb-mobile #app-frame #event-arena .battlefield{
 
 /* Restore original inventory item density: no oversized 4-column squares. */
 @media screen{html.gxb-mobile #app-frame .bag-grid{grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:10px 6px!important}html.gxb-mobile #app-frame .bag-panel{padding:10px 7px!important}html.gxb-mobile #app-frame .bag-item{aspect-ratio:1;max-width:100%}html.gxb-mobile #app-frame .bag-tabs{display:flex!important;overflow-x:auto!important;scrollbar-width:thin!important}html.gxb-mobile #app-frame .bag-tabs button{flex:0 0 auto!important;min-width:clamp(76px,23vw,114px)!important}}
+
+/* True Android/iPhone store layout. Never inherits Windows storefront sizing. */
+html.gxb-mobile #app-frame .home-side .home-store-icon{width:clamp(25px,7vw,44px);height:clamp(25px,7vw,44px);object-fit:contain;display:block;margin:auto}
+html.gxb-mobile #app-frame .home-side .home-skin-store{min-height:0!important;display:flex;align-items:center;justify-content:center;flex-direction:column}
+html.gxb-mobile #app-frame .home-side .home-skin-store small{font-size:clamp(8px,2.3vw,11px);line-height:1.05}
+html.gxb-mobile #app-frame .gs-overlay>.sk-store-win{width:calc(100vw - 12px)!important;max-height:calc(100dvh - 18px)!important}
+html.gxb-mobile #app-frame .sk-store-win .gs-win-body{max-height:calc(100dvh - 110px);overflow:auto}
+html.gxb-mobile #app-frame .sk-store-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+html.gxb-mobile #app-frame .sk-store-card{min-width:0;padding:5px}
+html.gxb-mobile #app-frame .sk-store-name{white-space:normal;word-break:break-word}
+html.gxb-mobile #app-frame .sk-store-buy{font-size:11px;min-height:39px}
+html.gxb-mobile #app-frame .sk-store-top{flex-wrap:wrap}
+@media(max-width:360px){
+ html.gxb-mobile #app-frame .sk-store-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
