@@ -1825,6 +1825,79 @@ class Engine:
                 raise
             return {'state': self.snapshot(), **result}
 
+
+    def gift_skin_crystal(self, request):
+        """One Neon transaction: debit sender Crystal, mail recipient, save receipt."""
+        import uuid
+        from . import skin_gifts, live_service
+        if not isinstance(request, dict):
+            raise GameError("Dữ liệu GiftSkin không hợp lệ")
+        if not isinstance(self.db, ScopedPostgresPlayerDB):
+            raise GameError("GiftSkin Crystal yêu cầu lưu trữ Neon PostgreSQL")
+        request_id = str(request.get("request_id") or "")
+        if not skin_gifts.REQUEST_RE.fullmatch(request_id):
+            raise GameError("Mã giao dịch GiftSkin không hợp lệ")
+        with self.lock:
+            self.db.execute("BEGIN IMMEDIATE")
+            try:
+                state = self._load()
+                sender = str(state.get("uid") or "")
+                world = str(state.get("server_id") or "").upper()
+                if sender != self.db.uid or world != self.db.server_id:
+                    raise GameError("Phiên người tặng không hợp lệ")
+                live_db = self.db.borrowed_live_transaction()
+                if live_db is None:
+                    raise GameError("Giao dịch Neon chưa sẵn sàng")
+                skin_gifts.ensure_crystal_receipts(live_db)
+                existing = live_db.execute(
+                    "SELECT * FROM skin_gift_crystal_receipts WHERE request_id=?",
+                    (request_id,)).fetchone()
+                if existing:
+                    if (existing["sender_uid"] != sender or existing["sender_server"] != world
+                        or existing["recipient_public_uid"] != str(request.get("recipient_uid") or "").strip().upper()
+                        or existing["recipient_server"] != str(request.get("recipient_server") or "").strip().upper()
+                        or existing["recipient_name"].casefold() != str(request.get("recipient_name") or "").strip().casefold()
+                        or str(existing["skin_id"]) != str(request.get("skin_id"))):
+                        raise GameError("Mã giao dịch đã được sử dụng cho đơn khác")
+                    receipt = {"request_id":request_id,"mail_id":existing["mail_id"],
+                        "price_crystal":int(existing["price_crystal"]),"delivery":"mail","replayed":True}
+                    self.db.commit()
+                    return {"state":self.snapshot(), **receipt}
+                recipient = skin_gifts.verify(sender,request.get("recipient_uid"),
+                    request.get("recipient_name"),request.get("recipient_server"))
+                item, price = skin_gifts.listing_for(request.get("skin_id"),"crystal")
+                items = state.setdefault("items",{})
+                if int(items.get("2",0)) < price:
+                    raise GameError("Không đủ Crystal để tặng trang phục")
+                items["2"] = int(items.get("2",0)) - price
+                sid = int(item["skin_id"])
+                now = int(time.time())
+                mail_id = "MAIL-" + uuid.uuid4().hex[:16].upper()
+                live_db.execute("""INSERT INTO mail
+                    (id,uid,server_id,character_name,title,body,attachments,status,created_at,operator)
+                    VALUES(?,?,?,?,?,?,?,'pending',?,?)""",
+                    (mail_id,recipient["uid"],recipient["server_id"],recipient["character_name"],
+                    "Quà GiftSkin từ người chơi",
+                    "Một người chơi đã tặng trang phục bằng Crystal. Nhận quà qua Hòm Thư.",
+                    json.dumps({str(sid):1}),now,"GIFTSKIN_CRYSTAL"))
+                live_db.execute("""INSERT INTO skin_gift_crystal_receipts
+                    (request_id,sender_uid,sender_server,recipient_uid,recipient_server,
+                     recipient_public_uid,recipient_name,skin_id,price_crystal,mail_id,created_at)
+                    VALUES(?,?,?,?,?,?,?,?,?,?,?)""",
+                    (request_id,sender,world,recipient["uid"],recipient["server_id"],
+                     recipient["display_uid"],recipient["character_name"],sid,price,mail_id,now))
+                live_service._audit(live_db,"giftskin.crystal",f"{world}:{sender}",
+                    {"request_id":request_id,"recipient_uid":recipient["display_uid"],
+                     "recipient_server":recipient["server_id"],"skin_id":sid,
+                     "price_crystal":price,"mail_id":mail_id},"PLAYER")
+                self._save_profile(state)
+                self.db.commit()
+            except Exception:
+                self.db.rollback()
+                raise
+        return {"state":self.snapshot(),"request_id":request_id,"mail_id":mail_id,
+                "price_crystal":price,"delivery":"mail","replayed":False}
+
     def skins_action(self, request):
         """Girl skins (gxb2/skins.py): wear / take off (equipments[7]) and show_skin."""
         if not isinstance(request, dict): raise GameError('Datos inválidos')
