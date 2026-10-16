@@ -63,3 +63,10 @@
 .account .account-sync{display:inline-flex;align-items:center;justify-content:center;margin-top:3px;padding:9px 13px;border-radius:10px;border:1px solid #6079c2;background:#243864;color:#edf4ff;font-weight:750;font-size:12px;transition:background .15s ease}
 .account .account-sync:hover,.account .account-sync:focus-visible{background:#39559a;text-decoration:none;outline:2px solid #96a8ff;outline-offset:2px}
 @media(max-width:750px){.topbar{align-items:flex-start;gap:12px}.account{min-width:136px;max-width:52%;align-items:flex-end}.account #account-character{font-size:10px}.account .account-sync{font-size:11px;min-height:36px;padding:7px 10px;text-align:center}}
+
+/* Skin settings must show a durable, item-specific server save result. */
+.skin-save-result{margin:0;min-height:0;font-size:12px;line-height:1.5;color:#b9caf0;white-space:normal;overflow-wrap:anywhere}
+.skin-save-result:empty{display:none}
+.skin-save-result[data-ok="1"]{color:#8df3c3}
+.skin-save-result[data-ok="0"]{color:#ffc0c8}
+.skin-item:has(.skin-save-result[data-ok="0"]){border-color:#b66c85}
