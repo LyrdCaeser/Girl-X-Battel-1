@@ -26,6 +26,34 @@ def _ensure(db):
         expires_at BIGINT NOT NULL)""")
 
 
+def confirmation_proof(token):
+    """A short-lived signed approval bound to the current first-party game session."""
+    if not auth.session(token):
+        raise ValueError("Bạn cần đăng nhập GXB 3 trước khi đồng bộ")
+    expires = int(time.time()) + 120
+    payload = f"gxb3-studio-confirm:{expires}".encode("ascii")
+    signature = hmac.new(token.encode("ascii"), payload, hashlib.sha256).hexdigest()
+    return f"{expires}.{signature}"
+
+
+def require_confirmation(token, proof):
+    """Deny silent account transfer and expired/forged account approvals."""
+    try:
+        expires_text, supplied = str(proof or "").split(".", 1)
+        if not expires_text.isascii() or not expires_text.isdecimal():
+            raise ValueError()
+        expires = int(expires_text)
+        now = int(time.time())
+        if not token or not (now < expires <= now + 120):
+            raise ValueError()
+        payload = f"gxb3-studio-confirm:{expires}".encode("ascii")
+        signature = hmac.new(token.encode("ascii"), payload, hashlib.sha256).hexdigest()
+        if not hmac.compare_digest(signature, supplied):
+            raise ValueError()
+    except (ValueError, TypeError, UnicodeError, OverflowError):
+        raise ValueError("Xác nhận đồng bộ hết hạn hoặc không hợp lệ. Hãy kiểm tra tài khoản rồi thử lại.") from None
+
+
 def start(token):
     """Validate the existing first-party cookie, create a single-use, short TTL ticket."""
     ctx = auth.session(token)
