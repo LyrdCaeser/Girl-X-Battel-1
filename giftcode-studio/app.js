@@ -5,7 +5,7 @@ const state={me:null,admin:false,panelUnlocked:false,panelAccess:'',accountIdent
 const limit=16;
 const txt=(tag,text,cls)=>{const x=document.createElement(tag);if(cls)x.className=cls;x.textContent=String(text??'');return x;};
 const api=async(path,body,gm=false,unlock=false)=>{
- const options={credentials:'same-origin',headers:{'Accept':'application/json'}};
+ const options={credentials:'same-origin',cache:'no-store',headers:{'Accept':'application/json'}};
  if(body!==undefined){options.method='POST';options.headers['Content-Type']='application/json';options.body=JSON.stringify(body);}
  if(gm)options.headers['X-GXB3-GM-Key']=state.view==='skins'?($('skin-gm-key')?.value||''):$('gm-key').value;
  if(unlock)options.headers['X-GXB3-Giftcode-Access']=state.panelAccess;
@@ -224,17 +224,31 @@ async function loadSkins(){
  renderSkins();
  await refreshBankOrders();
 }
+// Use Vietnamese thousands notation without interpreting 299.000 VNĐ as 299.
+function parseSkinPrice(raw){
+ const text=String(raw??'').trim();
+ if(/^(?:0|[1-9][0-9]*)$/.test(text))return Number(text);
+ if(/^[1-9][0-9]{0,2}(?:[.,\s][0-9]{3})+$/.test(text))
+   return Number(text.replace(/[.,\s]/g,''));
+ throw Error('Giá phải là số nguyên; dùng 299000 hoặc 299.000 (không nhập số thập phân).');
+}
 function skinSettings(card){
- const value=k=>card.querySelector('[data-field="'+k+'"]');
+ const field=k=>card.querySelector('[data-field="'+k+'"]');
  const id=Number(card.dataset.skinId);
- const price=k=>{const raw=value(k).value.trim();if(!/^\d+$/.test(raw))throw Error('Giá phải là số nguyên không âm');return Number(raw);};
- for(const field of ['price_vnd','price_crystal']){
-   const el=value(field),num=price(field);
-   if(!Number.isSafeInteger(num)||num<0||num>2000000000)throw Error('Giá phải là số nguyên từ 0 đến 2 tỷ');
- }
- return {skin_id:id,enabled:value('enabled').checked,
-  allow_bank:value('allow_bank').checked,allow_crystal:value('allow_crystal').checked,
-  price_vnd:price('price_vnd'),price_crystal:price('price_crystal')};
+ const price=k=>{
+   const n=parseSkinPrice(field(k).value);
+   if(!Number.isSafeInteger(n)||n<0||n>2000000000)
+     throw Error('Giá phải là số nguyên từ 0 đến 2 tỷ');
+   return n;
+ };
+ const enabled=field('enabled').checked,allow_bank=field('allow_bank').checked;
+ const allow_crystal=field('allow_crystal').checked,price_vnd=price('price_vnd');
+ const price_crystal=price('price_crystal');
+ if(allow_bank&&price_vnd<=0)throw Error('Giá chuyển khoản phải lớn hơn 0 khi bật phương thức ngân hàng');
+ if(allow_crystal&&price_crystal<=0)throw Error('Giá Crystal phải lớn hơn 0 khi bật phương thức Crystal');
+ if(enabled&&!((allow_bank&&price_vnd>0)||(allow_crystal&&price_crystal>0)))
+   throw Error('Để bật bán, hãy chọn ngân hàng hoặc Crystal và nhập giá lớn hơn 0');
+ return {skin_id:id,enabled,allow_bank,allow_crystal,price_vnd,price_crystal};
 }
 function skinSaveStatus(card,message,ok){
  const p=card.querySelector('.skin-save-result');
@@ -341,7 +355,17 @@ function renderSkins(){
      const wrapper=txt('label','','skin-control'),input=document.createElement('input');
      input.type=kind;input.dataset.field=field;
      if(kind==='checkbox')input.checked=Boolean(val);
-     else{input.min='0';input.max='2000000000';input.step='1';input.value=String(val);}
+     else{
+       // HTML number controls treat "299.000" as 299; use an explicit
+       // localized integer field for Vietnamese Dong and Crystal pricing.
+       input.type='text';input.inputMode='decimal';input.autocomplete='off';
+       input.placeholder='Ví dụ: 299.000';
+       input.value=Number(val||0).toLocaleString('vi-VN');
+       input.addEventListener('blur',()=>{
+         try{const parsed=parseSkinPrice(input.value);input.value=parsed.toLocaleString('vi-VN');}
+         catch{ /* Keep invalid input visible for explicit validation on Save. */ }
+       });
+     }
      wrapper.append(input,txt('span',name));return wrapper;
    };
    const controls=txt('div','','skin-controls');
