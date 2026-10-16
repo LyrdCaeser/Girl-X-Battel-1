@@ -58,3 +58,24 @@
  .gxb-desktop #app-frame .bag-grid{grid-template-columns:repeat(7,minmax(0,1fr))}
  .gxb-desktop #app-frame .girls-grid{grid-template-columns:repeat(5,minmax(0,1fr))}
 }
+
+/* 2026-10-16 native PC release: each scene owns its landscape geometry.
+   No transformed/scaled phone canvas; separate CSS for home, battles, inventory
+   and player Skin Store. Mobile-only styles remain in mobile-layout.css. */
+html.gxb-desktop #app-frame{width:100vw!important;height:100dvh!important;transform:none!important}
+html.gxb-desktop #app-frame #game-root{width:100vw!important;max-width:none!important;min-height:100dvh!important}
+html.gxb-desktop #app-frame #home-view{width:100%!important;max-width:none!important;margin:0 auto!important}
+html.gxb-desktop #app-frame #home-view .home-stage{width:100%!important;height:calc(100dvh - 84px)!important;min-height:550px!important;aspect-ratio:auto!important}
+html.gxb-desktop #app-frame #game-root.campaign-mode .campaign{width:100%!important;min-width:0!important}
+html.gxb-desktop #app-frame .gs-overlay>.sk-store-win{width:min(1460px,calc(100vw - 72px));max-width:calc(100vw - 72px)}
+html.gxb-desktop #app-frame .sk-store-win .gs-win-body{max-height:min(76dvh,920px);overflow:auto}
+html.gxb-desktop #app-frame .sk-store-grid{grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}
+html.gxb-desktop #app-frame .sk-store-card{padding:10px}
+html.gxb-desktop #app-frame .sk-store-buy{min-height:38px}
+html.gxb-desktop #app-frame .girls-view .girls-grid{grid-template-columns:repeat(7,minmax(0,1fr))}
+html.gxb-desktop #app-frame .bag-view .bag-grid{grid-template-columns:repeat(10,minmax(0,1fr))}
+html.gxb-desktop #app-frame .home-skin-store img.home-store-icon{display:block;width:48px;height:48px;object-fit:contain;margin:auto}
+@media (max-width:1350px){
+ html.gxb-desktop #app-frame .sk-store-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+ html.gxb-desktop #app-frame .bag-view .bag-grid{grid-template-columns:repeat(8,minmax(0,1fr))}
+}
