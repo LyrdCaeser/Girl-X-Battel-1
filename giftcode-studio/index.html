@@ -27,9 +27,9 @@
   </div>
 </aside>
 <main class="main">
-  <header class="topbar"><div><span class="eyebrow">GXB 3 / HỆ THỐNG QUÀ TẶNG</span><h1 id="page-title">Tạo Giftcode</h1></div><div class="account"><span id="server-status">Đang kết nối...</span><span id="account-label">Chưa đăng nhập</span><span id="account-character" aria-live="polite">Đồng bộ với tài khoản game</span><a id="account-sync" class="account-sync" href="https://180-93-111-99.sslip.io/api/giftcode/sso/start" title="Xem đúng tài khoản và server bên game trước khi xác nhận đồng bộ">↻ Đồng bộ với GXB 3</a><button id="account-switch" class="account-sync" type="button" title="Đăng xuất riêng Giftcode Studio mà không xóa tài khoản và tiến trình game" hidden>Đổi tài khoản Studio</button></div></header>
+  <header class="topbar"><div><span class="eyebrow">GXB 3 / HỆ THỐNG QUÀ TẶNG</span><h1 id="page-title">Tạo Giftcode</h1></div><div class="account"><span id="server-status">Đang kết nối...</span><span id="account-label">Chưa đăng nhập</span><span id="account-character" aria-live="polite">Đồng bộ với tài khoản game</span><a id="account-sync" class="account-sync" href="https://180-93-111-99.sslip.io/api/giftcode/sso/start" title="Xem đúng tài khoản và server bên game trước khi xác nhận đồng bộ">↻ Đồng bộ với GXB 3</a><button id="account-switch" class="account-sync" type="button" title="Đăng xuất riêng Goddess Battle 3 - Trang Chủ Chính Thức mà không xóa tài khoản và tiến trình game" hidden>Đổi tài khoản trang chủ</button></div></header>
   <section id="login-panel" class="panel login-card" hidden>
-    <h2>Đăng nhập tài khoản GXB 3</h2><p class="muted">Đăng nhập game để sử dụng Giftcode Studio. Chỉ tài khoản SUPER GM có thể tạo và khóa mã.</p>
+    <h2>Đăng nhập tài khoản GXB 3</h2><p class="muted">Đăng nhập game để sử dụng Goddess Battle 3 - Trang Chủ Chính Thức. Chỉ tài khoản SUPER GM có thể tạo và khóa mã.</p>
     <a id="game-sso" class="game-sso" href="https://180-93-111-99.sslip.io/api/giftcode/sso/start">↗ Liên kết đăng nhập trực tiếp từ game GXB 3</a>
     <p class="muted mini">Trước khi đồng bộ, game sẽ hiển thị UID, tên nhân vật, server và quyền của tài khoản đang đăng nhập để bạn xác nhận. Bạn cũng có thể đăng nhập thủ công bằng tài khoản đúng bên dưới.</p>
     <form id="login-form" class="form-row">
@@ -39,13 +39,13 @@
       <button class="primary" type="submit">Đăng nhập</button>
     </form><p id="login-status" role="status"></p>
   </section>
-  <div id="restricted" class="panel" hidden><h2>Quản trị viên mới được truy cập</h2><p class="muted">Tài khoản hiện tại không có quyền SUPER GM. Bạn vẫn có thể đổi giftcode và mua trang phục tại Cửa Hàng Trang Phục. Nếu không đúng tài khoản mong muốn, bấm “Đổi tài khoản Studio”.</p></div>
+  <div id="restricted" class="panel" hidden><h2>Quản trị viên mới được truy cập</h2><p class="muted">Tài khoản hiện tại không có quyền SUPER GM. Bạn vẫn có thể đổi giftcode và mua trang phục tại Cửa Hàng Trang Phục. Nếu không đúng tài khoản mong muốn, bấm “Đổi tài khoản trang chủ”.</p></div>
   <section id="create-lock" class="view panel login-card" hidden>
     <span class="eyebrow">KHU VỰC BẢO VỆ</span><h2>Khóa khu vực quản trị</h2>
     <p class="muted">Chỉ tài khoản SUPER GM đã đồng bộ với game được nhập ba loại khóa. Xác thực đủ cả ba mới hiển thị Tạo Giftcode, Mã đã phát hành và Quản lý Trang Phục.</p>
     <form id="unlock-form" class="studio-admin-unlock" autocomplete="off">
       <label>Khóa quản trị GXB 3<input id="unlock-admin-key" type="password" autocomplete="off" minlength="12" required placeholder="GXB3_ADMIN_KEY"></label>
-      <label>Khóa bảo vệ Giftcode Studio<input id="unlock-password" type="password" autocomplete="off" minlength="12" required placeholder="GXB3_GIFTCODE_PANEL_KEY"></label>
+      <label>Khóa bảo vệ Goddess Battle 3 - Trang Chủ Chính Thức<input id="unlock-password" type="password" autocomplete="off" minlength="12" required placeholder="GXB3_GIFTCODE_PANEL_KEY"></label>
       <label>Khóa hành động QTV<input id="unlock-gm-key" type="password" autocomplete="off" minlength="24" required placeholder="GXB3_GM_ACTION_KEY"></label>
       <button class="primary" type="submit">Xác thực 3 khóa · Mở quản trị</button>
     </form>

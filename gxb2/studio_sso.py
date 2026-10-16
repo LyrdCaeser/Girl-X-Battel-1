@@ -1,4 +1,4 @@
-"""One-time GXB 3 -> Giftcode Studio SSO, plus owner-only UI unlock."""
+"""One-time GXB 3 -> Goddess Battle 3 - Trang Chủ Chính Thức SSO, plus owner-only UI unlock."""
 from __future__ import annotations
 
 import base64
