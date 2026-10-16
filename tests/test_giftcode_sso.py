@@ -72,14 +72,24 @@ class GiftcodeSsoTests(unittest.TestCase):
             thread.join(timeout=4)
 
     def test_panel_lock_requires_configured_secret_and_session(self):
-        with patch.dict("os.environ",{"GXB3_GIFTCODE_PANEL_KEY":"ExamplePass123!","GXB3_GM_ACTION_KEY":"x"*40}):
+        keys = {"GXB3_ADMIN_KEY":"OwnerAccess123!", "GXB3_GIFTCODE_PANEL_KEY":"ExamplePass123!",
+                "GXB3_GM_ACTION_KEY":"x"*40}
+        with patch.dict("os.environ", keys):
             with self.assertRaisesRegex(ValueError,"không chính xác"):
-                studio_sso.unlock("bad",self.token)
-            access=studio_sso.unlock("ExamplePass123!",self.token)
+                studio_sso.unlock("bad", self.token, keys["GXB3_ADMIN_KEY"], keys["GXB3_GM_ACTION_KEY"])
+            for omitted in ("admin", "panel", "gm"):
+                with self.assertRaisesRegex(ValueError,"không chính xác"):
+                    studio_sso.unlock(
+                        "bad" if omitted=="panel" else keys["GXB3_GIFTCODE_PANEL_KEY"],
+                        self.token,
+                        "bad" if omitted=="admin" else keys["GXB3_ADMIN_KEY"],
+                        "bad" if omitted=="gm" else keys["GXB3_GM_ACTION_KEY"])
+            access=studio_sso.unlock(keys["GXB3_GIFTCODE_PANEL_KEY"], self.token,
+                keys["GXB3_ADMIN_KEY"], keys["GXB3_GM_ACTION_KEY"])
             self.assertTrue(studio_sso.authorized(access,self.token))
             self.assertFalse(studio_sso.authorized(access,'another-session'))
         with patch.dict("os.environ",{"GXB3_GIFTCODE_PANEL_KEY":""}):
-            with self.assertRaisesRegex(RuntimeError,"Chưa cấu hình"):
+            with self.assertRaisesRegex(RuntimeError,"chưa cấu hình"):
                 studio_sso.unlock("ExamplePass123!",self.token)
 
 if __name__=="__main__":
