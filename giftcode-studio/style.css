@@ -69,4 +69,5 @@
 .skin-save-result:empty{display:none}
 .skin-save-result[data-ok="1"]{color:#8df3c3}
 .skin-save-result[data-ok="0"]{color:#ffc0c8}
+.skin-save-result[data-ok="pending"]{color:#ffd99b}
 .skin-item:has(.skin-save-result[data-ok="0"]){border-color:#b66c85}
