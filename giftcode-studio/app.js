@@ -252,7 +252,7 @@ function skinSettings(card){
 }
 function skinSaveStatus(card,message,ok){
  const p=card.querySelector('.skin-save-result');
- if(p){p.textContent=message;p.dataset.ok=ok?'1':'0';}
+ if(p){p.textContent=message;p.dataset.ok=ok===null?'pending':ok?'1':'0';}
 }
 function matchesSavedSkin(saved,requested){
  return saved&&Number(saved.skin_id)===requested.skin_id&&
@@ -289,7 +289,16 @@ async function saveSkinRows(cards,button){
      throw Error('Lưu chưa đồng bộ với máy chủ: Skin #'+mismatched.map(x=>x.skin_id).join(', #')+'. Dữ liệu trong form được giữ nguyên để thử lại.');
    }
    state.skins=rows;
-   cards.forEach(c=>skinSaveStatus(c,'Đã xác minh lưu thành công. Tải lại trang sẽ giữ nguyên cấu hình.',true));
+   cards.forEach(c=>{
+     const saved=rows.find(x=>Number(x.skin_id)===Number(c.dataset.skinId));
+     const heading=c.querySelector('.skin-state-label');
+     if(heading&&saved)heading.textContent=saved.enabled?'● Đang mở bán':'○ Chưa mở bán';
+     skinSaveStatus(c,'Đã xác minh lưu thành công. Tải lại trang sẽ giữ nguyên cấu hình.',true);
+   });
+   $('skin-stats').textContent=state.skins.filter(x=>x.is_saleable).length+' skin thường đủ dữ liệu · '+
+     state.skins.filter(x=>x.is_wedding).length+' skin cưới khóa cứng · '+
+     state.skins.filter(x=>!x.is_saleable&&!x.is_wedding).length+' bản ghi kỹ thuật bị khóa · '+
+     state.skins.filter(x=>x.enabled&&x.is_saleable).length+' đang bán';
    notice('Đã xác minh '+changes.length+' trang phục được lưu bền trên máy chủ.');
    // Do not repaint cards here; keep success visible and leave input data intact.
  }catch(e){
@@ -346,7 +355,7 @@ function renderSkins(){
    pic.onerror=()=>{pic.hidden=true;};
    const title=txt('div','','skin-head-title');
    title.append(txt('b',r.name),txt('small',(r.girl_name||'Nữ Thần')+' · #'+r.skin_id+' · Phe '+r.group));
-   title.append(txt('small',r.is_wedding?'♡ Độc quyền đám cưới · CẤM BÁN':!r.is_saleable?'⚠ Bản ghi kỹ thuật không bán':r.enabled?'● Đang mở bán':'○ Chưa mở bán'));
+   title.append(txt('small',r.is_wedding?'♡ Độc quyền đám cưới · CẤM BÁN':!r.is_saleable?'⚠ Bản ghi kỹ thuật không bán':r.enabled?'● Đang mở bán':'○ Chưa mở bán','skin-state-label'));
    const preview=txt('button','Xem trước','ghost small');preview.type='button';
    preview.onclick=()=>{$('skin-preview-image').src=pic.src;$('skin-preview-name').textContent=(r.girl_name||'')+' — '+r.name;$('skin-preview').showModal();};
    head.append(pic,title,preview);card.append(head);
@@ -375,6 +384,9 @@ function renderSkins(){
      label('allow_crystal','Bán bằng Crystal','checkbox',r.allow_crystal),
      label('price_crystal','Giá Crystal','number',r.price_crystal));
    card.append(controls);
+   const markPending=()=>skinSaveStatus(card,'Có thay đổi chưa lưu. Nhấn “Lưu trang phục này” hoặc “Lưu tất cả trang hiện tại”.',null);
+   controls.addEventListener('input',markPending);
+   controls.addEventListener('change',markPending);
    const status=txt('p','','skin-save-result');status.setAttribute('role','status');status.setAttribute('aria-live','polite');
    const save=txt('button','Lưu trang phục này','primary small');save.type='button';save.onclick=()=>saveSkinRows([card],save);
    card.append(status,save);grid.append(card);
