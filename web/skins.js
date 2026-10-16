@@ -117,7 +117,7 @@ const Skins=(()=>{
       try{
         buy.disabled=true;
         const res=await api('/api/skins/action',{action:'buy',skin:r.skin_id,payment:'crystal'});
-        state=res.state;close();await store();CampaignUI.popup('Cửa Hàng Trang Phục',res.got);
+        state=res.state;close();await store();if(res.delivery==='mail')GirlUI.toast('Đã mua bằng Crystal. Trang phục đã gửi tới Hòm Thư của game; hãy vào Thư để nhận.');else GirlUI.toast('Mua trang phục thành công.');
       }catch(e){GirlUI.toast(e.message);buy.disabled=false;}
     });
     const it=itemCatalog?.['2'],src=it&&typeof itemPicture==='function'?itemPicture(it):'';
