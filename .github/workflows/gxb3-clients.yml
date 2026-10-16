@@ -1,4 +1,4 @@
-name: GXB 3 ALPHA RC7 client packages
+name: GXB 3 ALPHA RC8 client packages
 
 on:
   workflow_dispatch:
@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   windows-exe:
-    name: Windows EXE ALPHA RC7
+    name: Windows EXE ALPHA RC8
     runs-on: windows-2022
     timeout-minutes: 35
     steps:
@@ -38,24 +38,24 @@ jobs:
       - name: Build Windows x64 EXE
         shell: pwsh
         run: |
-          pyinstaller --noconfirm --clean --onefile --windowed --name NuThanChienDau-GXB3-ALPHA-RC7 --icon clients/windows/gxb3.ico --collect-all webview clients/windows/gxb3_launcher.py
+          pyinstaller --noconfirm --clean --onefile --windowed --name NuThanChienDau-GXB3-ALPHA-RC8 --icon clients/windows/gxb3.ico --collect-all webview clients/windows/gxb3_launcher.py
       - name: Verify native Windows EXE
         shell: pwsh
         run: |
-          $target = "dist/NuThanChienDau-GXB3-ALPHA-RC7.exe"
+          $target = "dist/NuThanChienDau-GXB3-ALPHA-RC8.exe"
           if (!(Test-Path $target)) { throw "EXE was not built" }
           if ((Get-Item $target).Length -lt 1000000) { throw "EXE unexpectedly small" }
           Get-Item $target | Select-Object Name,Length
       - uses: actions/upload-artifact@v4
         with:
-          name: NuThanChienDau-GXB3-Windows-ALPHA-RC7
-          path: dist/NuThanChienDau-GXB3-ALPHA-RC7.exe
+          name: NuThanChienDau-GXB3-Windows-ALPHA-RC8
+          path: dist/NuThanChienDau-GXB3-ALPHA-RC8.exe
           if-no-files-found: error
           compression-level: 9
           retention-days: 30
 
   android-apk:
-    name: Android APK ALPHA RC7
+    name: Android APK ALPHA RC8
     runs-on: ubuntu-24.04
     timeout-minutes: 35
     steps:
@@ -82,7 +82,7 @@ jobs:
         run: |
           python3 -m pip install --user --break-system-packages Pillow
           python3 clients/tools/generate_icons.py
-      - name: Build signed ALPHA RC7 APK
+      - name: Build signed ALPHA RC8 APK
         run: gradle -p clients/android :app:assembleRelease --stacktrace --no-daemon
       - name: Verify package signature and size
         shell: bash
@@ -91,17 +91,17 @@ jobs:
           src="clients/android/app/build/outputs/apk/release/app-release.apk"
           test -s "$src"
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose "$src"
-          cp "$src" NuThanChienDau-GXB3-Android-ALPHA-RC7.apk
-          ls -lh NuThanChienDau-GXB3-Android-ALPHA-RC7.apk
+          cp "$src" NuThanChienDau-GXB3-Android-ALPHA-RC8.apk
+          ls -lh NuThanChienDau-GXB3-Android-ALPHA-RC8.apk
       - uses: actions/upload-artifact@v4
         with:
-          name: NuThanChienDau-GXB3-Android-ALPHA-RC7
-          path: NuThanChienDau-GXB3-Android-ALPHA-RC7.apk
+          name: NuThanChienDau-GXB3-Android-ALPHA-RC8
+          path: NuThanChienDau-GXB3-Android-ALPHA-RC8.apk
           if-no-files-found: error
           retention-days: 30
 
   ios-beta:
-    name: iOS ALPHA RC7 developer IPA and Web Clip
+    name: iOS ALPHA RC8 developer IPA and Web Clip
     runs-on: macos-15
     timeout-minutes: 25
     steps:
@@ -134,23 +134,23 @@ jobs:
         shell: bash
         run: |
           cd build
-          zip -qry ../NuThanChienDau-GXB3-iOS-ALPHA-RC7-UNSIGNED.ipa Payload
+          zip -qry ../NuThanChienDau-GXB3-iOS-ALPHA-RC8-UNSIGNED.ipa Payload
           cd ..
-          test -s NuThanChienDau-GXB3-iOS-ALPHA-RC7-UNSIGNED.ipa
-          unzip -t NuThanChienDau-GXB3-iOS-ALPHA-RC7-UNSIGNED.ipa | tail -1
+          test -s NuThanChienDau-GXB3-iOS-ALPHA-RC8-UNSIGNED.ipa
+          unzip -t NuThanChienDau-GXB3-iOS-ALPHA-RC8-UNSIGNED.ipa | tail -1
       - name: Create installable Safari Web Clip alternative
         run: python3 clients/ios/make_webclip.py
       - uses: actions/upload-artifact@v4
         with:
-          name: NuThanChienDau-GXB3-iOS-ALPHA-RC7
+          name: NuThanChienDau-GXB3-iOS-ALPHA-RC8
           path: |
-            NuThanChienDau-GXB3-iOS-ALPHA-RC7-UNSIGNED.ipa
-            NuThanChienDau-GXB3-iOS-ALPHA-RC7.mobileconfig
+            NuThanChienDau-GXB3-iOS-ALPHA-RC8-UNSIGNED.ipa
+            NuThanChienDau-GXB3-iOS-ALPHA-RC8.mobileconfig
           if-no-files-found: error
           retention-days: 30
 
   full-package:
-    name: GXB3 Combined Android Windows iOS ALPHA RC7
+    name: GXB3 Combined Android Windows iOS ALPHA RC8
     needs: [windows-exe, android-apk, ios-beta]
     runs-on: ubuntu-24.04
     timeout-minutes: 12
@@ -166,13 +166,13 @@ jobs:
         run: |
           set -euo pipefail
           cd distribution
-          test -s NuThanChienDau-GXB3-ALPHA-RC7.exe
-          test -s NuThanChienDau-GXB3-Android-ALPHA-RC7.apk
-          test -s NuThanChienDau-GXB3-iOS-ALPHA-RC7-UNSIGNED.ipa
-          test -s NuThanChienDau-GXB3-iOS-ALPHA-RC7.mobileconfig
+          test -s NuThanChienDau-GXB3-ALPHA-RC8.exe
+          test -s NuThanChienDau-GXB3-Android-ALPHA-RC8.apk
+          test -s NuThanChienDau-GXB3-iOS-ALPHA-RC8-UNSIGNED.ipa
+          test -s NuThanChienDau-GXB3-iOS-ALPHA-RC8.mobileconfig
           sha256sum *.exe *.apk *.ipa *.mobileconfig > SHA256SUMS.txt
           cat > HUONG_DAN.txt <<'TXT'
-          GXB 3 - ALPHA RC7
+          GXB 3 - ALPHA RC8
 
           Android 8+ : Cai APK tren dien thoai.
           Windows x64: Chay EXE tren Windows, yeu cau WebView2.
@@ -187,7 +187,7 @@ jobs:
       - name: Upload the single complete package
         uses: actions/upload-artifact@v4
         with:
-          name: GXB3-TRON-BO-APK-EXE-IOS-ALPHA-RC7
+          name: GXB3-TRON-BO-APK-EXE-IOS-ALPHA-RC8
           path: distribution/
           if-no-files-found: error
           compression-level: 9
