@@ -358,20 +358,58 @@ class HTTPHandler(BaseHTTPRequestHandler):
         if path == '/api/giftcode/sso/start':
             ctx = self.require_auth()
             if not ctx: return
-            ticket=studio_sso.start(self.session_token())
+            from html import escape
             from urllib.parse import quote
-            # HTTP/1.1 keep-alive redirects MUST have a finite body length.
-            # Without Content-Length (or closing the socket), Chrome can wait
-            # forever on a blank tab before following the Location header.
+            confirmation = (parse_qs(parsed.query).get('confirm') or [''])[0]
+            if not confirmation:
+                # The game, not Vercel, shows the authenticated identity before
+                # offering to transfer the session. Do not silently sync players.
+                proof = studio_sso.confirmation_proof(self.session_token())
+                account = ctx['account']
+                def safe(value):
+                    return escape(str(value or ''), quote=True)
+                name = safe(account.get('username'))
+                uid = safe(account.get('display_uid') or account.get('uid'))
+                character = safe(ctx.get('character_name'))
+                world = safe(account.get('server_id'))
+                privilege = 'SUPER GM' if self.is_super_gm() else 'Người chơi (không có quyền SUPER GM)'
+                href = '/api/giftcode/sso/start?confirm=' + quote(proof, safe='')
+                page = f"""<!doctype html><html lang="vi"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Xác nhận tài khoản GXB 3 — Giftcode Studio</title>
+<style>
+*{{box-sizing:border-box}}body{{margin:0;min-height:100dvh;display:grid;place-items:center;background:#0b1023;color:#eaf1ff;font-family:system-ui,'Segoe UI',sans-serif;padding:18px}}
+article{{width:min(100%,570px);padding:28px;background:#151e37;border:1px solid #35466d;border-radius:20px;box-shadow:0 15px 50px #0006}}
+small{{color:#acbce2}}h1{{font-size:25px;margin:13px 0}}p{{line-height:1.7;color:#bcc9e7}}
+dl{{display:grid;grid-template-columns:minmax(110px,160px) 1fr;gap:13px;padding:17px;background:#0c152b;border-radius:12px;overflow-wrap:anywhere}}
+dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:white}}.cta{{display:block;text-align:center;background:#675cdb;border-radius:11px;padding:15px;margin-top:20px;font-weight:800}}
+.back{{display:block;color:#b7c9ff;text-align:center;padding:16px 4px}}.warning{{font-size:13px;color:#ffd6ab}}
+</style></head><body><article><small>GXB 3 · BẢO VỆ TÀI KHOẢN</small>
+<h1>Xác nhận tài khoản trước khi đồng bộ</h1>
+<p>Giftcode Studio sẽ đăng nhập bằng <strong>chính phiên game hiện tại</strong>. Kiểm tra kỹ thông tin, đặc biệt khi bạn quản lý nhiều tài khoản.</p>
+<dl><dt>Tài khoản</dt><dd>{name}</dd><dt>UID</dt><dd>{uid}</dd>
+<dt>Nhân vật</dt><dd>{character}</dd><dt>Máy chủ</dt><dd>{world}</dd>
+<dt>Quyền</dt><dd>{privilege}</dd></dl>
+<a class="cta" href="{href}">Đúng tài khoản này · Xác nhận đồng bộ</a>
+<a class="back" href="/">Không đúng? Quay lại game và đổi tài khoản</a>
+<p class="warning">Nếu muốn đăng nhập tài khoản khác chỉ tại Studio, hãy chọn “Đổi tài khoản Studio” trên trang Studio. Không cần xóa dữ liệu game.</p>
+</article></body></html>"""
+                return self.send(200, page, 'text/html; charset=utf-8', headers={
+                    'Referrer-Policy': 'no-referrer',
+                    'Content-Security-Policy': "default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"
+                })
+            studio_sso.require_confirmation(self.session_token(), confirmation)
+            ticket = studio_sso.start(self.session_token())
+            # Finite HTTP/1.1 redirect avoids a hanging Chrome tab.
             self.send_response(303)
-            self.send_header('Location',studio_sso.STUDIO_ORIGIN+'/?ticket='+quote(ticket,safe=''))
-            self.send_header('Content-Length','0')
-            self.send_header('Connection','close')
-            self.send_header('Cache-Control','no-store')
-            self.send_header('Referrer-Policy','no-referrer')
-            self.send_header('X-Content-Type-Options','nosniff')
+            self.send_header('Location', studio_sso.STUDIO_ORIGIN + '/?ticket=' + quote(ticket, safe=''))
+            self.send_header('Content-Length', '0')
+            self.send_header('Connection', 'close')
+            self.send_header('Cache-Control', 'no-store')
+            self.send_header('Referrer-Policy', 'no-referrer')
+            self.send_header('X-Content-Type-Options', 'nosniff')
             self.end_headers()
-            self.close_connection=True
+            self.close_connection = True
             return
         if path in ('/giftcode-studio/app.js','/giftcode-studio/style.css'):
             file=ROOT/'giftcode-studio'/path.rsplit('/',1)[-1]
@@ -379,6 +417,9 @@ class HTTPHandler(BaseHTTPRequestHandler):
                 'application/javascript; charset=utf-8' if file.suffix=='.js' else 'text/css; charset=utf-8')
         if path == '/api/payment/packages':
             return self.send(200, topup.public_catalog())
+        if path == '/api/skin-shop/catalog':
+            # Safe for anonymous browsing; all purchases require player login.
+            return self.send(200, skin_store.catalogue())
         if path.startswith('/api/') and not self.require_auth():
             return
         if path == '/api/events/stream':
@@ -439,8 +480,6 @@ class HTTPHandler(BaseHTTPRequestHandler):
                 'season_reward': live_service.pvp_season_claim_status(account['uid'], account['server_id'], mode),
                 'history': live_service.pvp_history(account['uid'], 20),
             })
-        if path == '/api/skin-shop/catalog':
-            return self.send(200,skin_store.catalogue())
         if path == '/api/skin-shop/admin/catalog':
             if not self.admin_authorized(): return self.send(403,{'error':'Yêu cầu SUPER GM'})
             return self.send(200,skin_store.catalogue(admin=True))
