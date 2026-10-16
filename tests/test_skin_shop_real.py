@@ -116,6 +116,33 @@ class SkinShopTests(unittest.TestCase):
         self.assertEqual(skin_bank.review(reject["id"],False,"OWNER")["status"],"rejected")
         self.assertIsNone(skin_bank.admin_orders("rejected")["orders"][0]["mail_id"])
 
+    def test_enabled_skin_persists_through_fresh_catalog_and_connection(self):
+        """The admin Save -> F5 path must return identical PostgreSQL/SQLite values."""
+        sid = self.normal
+        expected = self.config(sid, enabled=True, allow_bank=True, allow_crystal=True,
+                               price_vnd=299000, price_crystal=49999)
+        result = skin_store.update_configs([expected], "OWNER")
+        self.assertEqual(result["updated"], 1)
+        self.assertEqual(result["offers"][0]["price_vnd"], 299000)
+        # Discard schema/setup cache; every read below creates fresh DB connections.
+        skin_store._READY.clear()
+        listing = skin_store.catalogue(admin=True)["offers"]
+        saved = next(item for item in listing if item["skin_id"] == sid)
+        for key in ("enabled", "allow_bank", "allow_crystal", "price_vnd", "price_crystal"):
+            self.assertEqual(saved[key], expected[key], key)
+        public = skin_store.catalogue(admin=False)["offers"]
+        self.assertTrue(any(item["skin_id"] == sid and item["enabled"] for item in public))
+        # Turning it off also survives across fresh connections.
+        off = self.config(sid, enabled=False, allow_bank=False, allow_crystal=False,
+                          price_vnd=0, price_crystal=0)
+        self.assertEqual(skin_store.update_configs([off], "OWNER")["updated"], 1)
+        skin_store._READY.clear()
+        reloaded = next(item for item in skin_store.catalogue(admin=True)["offers"]
+                        if item["skin_id"] == sid)
+        self.assertFalse(reloaded["enabled"])
+        self.assertFalse(reloaded["allow_bank"])
+        self.assertFalse(reloaded["allow_crystal"])
+
     def test_prices_disabled_and_atomic_admin_update(self):
         initial=skin_store.offer(self.normal)
         with self.assertRaisesRegex(ValueError,"cưới"):
