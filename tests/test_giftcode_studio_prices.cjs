@@ -10,11 +10,11 @@ const root=path.resolve(__dirname,'..');
 const app=fs.readFileSync(path.join(root,'giftcode-studio/app.js'),'utf8');
 const html=fs.readFileSync(path.join(root,'giftcode-studio/index.html'),'utf8');
 
-function fromFunction(name,next){
+function fromFunction(name,next,bindings={}){
   const from=app.indexOf('function '+name+'(');
   const to=app.indexOf(next,from);
   assert.ok(from>=0&&to>from,'Cannot locate '+name);
-  return vm.runInNewContext('('+app.slice(from,to).trim()+')');
+  return vm.runInNewContext('('+app.slice(from,to).trim()+')',bindings);
 }
 const parse=fromFunction('parseSkinPrice','function skinSettings(');
 for(const [raw,want] of [
@@ -23,9 +23,9 @@ for(const [raw,want] of [
   ['49.999',49999],['2000000000',2000000000]
 ]) assert.equal(parse(raw),want,'Wrong price for '+raw);
 for(const raw of ['', '-1', '1.5', '299.00', '2e5','299.000,50','abc']) {
-  assert.throws(()=>parse(raw),Error,'Should reject '+raw);
+  assert.throws(()=>parse(raw),/Giá phải/,'Should reject '+raw);
 }
-const settings=fromFunction('skinSettings','function skinSaveStatus(');
+const settings=fromFunction('skinSettings','function skinSaveStatus(',{parseSkinPrice:parse});
 const fake=(data)=>({
   dataset:{skinId:'7193'},
   querySelector(selector){
