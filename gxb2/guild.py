@@ -244,14 +244,19 @@ def action(state, request, now, rng=secrets.randbelow, fight=None, player_level=
         orders.pop(i); g['orders']['list'] = new_orders(g, rng, orders)
         return {'got': got}
     if act == 'boss_fight':
+        if not callable(fight): raise GuildError('Battle engine chưa sẵn sàng; không thể xử lý Guild Boss')
         bid = int(request.get('boss', 0)); b = g['boss']
         if bid not in BOSS or bid > min(int(M['guild_boss_max_id']) - 1, max(BOSS)): raise GuildError('Thủ lĩnh chưa khả dụng')
         if bid > b['current']: raise GuildError('Hãy đánh bại thủ lĩnh trước đó')
         cost, fights = boss_cost(g, now)
         if cost is None: raise GuildError('Đã hết lượt chiến đấu, hãy chờ hồi lượt')
-        take(state, cost)
+        if any(int(state['items'].get(k, 0)) < n for k, n in cost.items()): raise GuildError('Không đủ tài nguyên')
         row = BOSS[bid]
-        win, report = fight(row) if fight else (True, None)
+        outcome = fight(row)
+        if not isinstance(outcome, tuple) or len(outcome) != 2 or type(outcome[0]) is not bool:
+            raise GuildError('Kết quả Guild Boss không hợp lệ; không cấp thưởng')
+        win, report = outcome
+        take(state, cost)
         got = pairs(row['battle_awards'])
         b['fights'] = fights + 1; b['fight_time'] = now
         if win:

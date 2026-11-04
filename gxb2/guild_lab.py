@@ -9,7 +9,12 @@ def checked(v,name,low=1,high=2147483647):
     return v
 
 def pairs(text):
-    return {str(k):int(n) for k,n in (v.split('#') for v in str(text).split('|') if '#' in v)}
+    result={}
+    for part in str(text).split('|'):
+        if '#' not in part:continue
+        key,value=part.split('#',1);key=str(key)
+        result[key]=result.get(key,0)+int(value)
+    return result
 
 def saved(state):return state.setdefault('guild_lab',{'levels':{},'reset_times':{}})
 def level(state,sid):return int(saved(state)['levels'].get(str(sid),0))

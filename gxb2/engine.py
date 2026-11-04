@@ -91,7 +91,8 @@ def item_pairs(text):
     result = {}
     for part in str(text).split('|'):
         key, value = part.split('#')
-        result[int(key)] = int(value)
+        item_id = int(key)
+        result[item_id] = result.get(item_id, 0) + int(value)
     return result
 
 def quiz_reward_pairs(text):
