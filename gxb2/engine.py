@@ -2,6 +2,7 @@ from __future__ import annotations
 import copy
 import math
 import json
+from contextvars import ContextVar
 import secrets
 from pathlib import Path
 import sqlite3
@@ -33,16 +34,16 @@ RETURN = json.loads((ROOT / 'data/partner_return.json').read_text())
 ASTRAL = json.loads((ROOT / 'data/astral.json').read_text())  # Astral Core (star_origin*)  # Reverse / 10★ Exchange  # Skill-Synchronize of the Cosmic girls (skill_resonate_*)
 DAILY_QUIZ = json.loads((ROOT / 'data/daily_quiz.json').read_text())
 TOWER = json.loads((ROOT / 'data/tower.json').read_text())
-SHOW_FUNC = [0]  # function id of the mode being fought (Outfit Showcase buffs, dress_show.battle_skills)
+SHOW_FUNC = ContextVar('gxb2_show_func', default=0)  # request-local mode for Outfit Showcase battle buffs
 
 
 def show_mode(func):
     """Mark an action's battles as mode `func` (15 Tests, 19 Patrol, 35 House Exams, 39 Old Campus) for the Showcase buffs."""
     def wrap(fn):
         def run(self, *a, **k):
-            SHOW_FUNC[0] = func
+            token = SHOW_FUNC.set(func)
             try: return fn(self, *a, **k)
-            finally: SHOW_FUNC[0] = 0
+            finally: SHOW_FUNC.reset(token)
         run.__name__, run.__doc__ = fn.__name__, fn.__doc__
         return run
     return wrap
@@ -294,8 +295,9 @@ class Engine:
     def _simulate(state, *args, **kwargs):
         """Run the original battle with this save's Tree of Chimes (and the Outfit Showcase buffs of the current mode)."""
         kwargs.setdefault('chime_bonus_a', chimes.bonus(state))
-        if SHOW_FUNC[0]:
-            extra = dress_show.battle_skills(state, SHOW_FUNC[0])
+        show_func = SHOW_FUNC.get()
+        if show_func:
+            extra = dress_show.battle_skills(state, show_func)
             if extra: kwargs['god_skills'] = list(kwargs.get('god_skills') or []) + extra
         return simulate(*args, **kwargs)
 
