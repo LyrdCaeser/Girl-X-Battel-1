@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.RippleDrawable;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
@@ -31,6 +33,7 @@ import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
@@ -54,10 +57,10 @@ import java.util.Set;
 public final class MainActivity extends ComponentActivity {
     private static final String GAME_ORIGIN = "https://180-93-111-99.sslip.io";
     private static final String GAME_HOST = "180-93-111-99.sslip.io";
-    private static final int BG = Color.rgb(9, 11, 18);
+    private static final int BG = Color.rgb(11, 12, 39);
     private static final int FG = Color.rgb(245, 246, 250);
     private static final int MUTED = Color.rgb(184, 192, 212);
-    private static final int PURPLE = Color.rgb(143, 92, 255);
+    private static final int PURPLE = Color.rgb(139, 79, 246);
 
     private FrameLayout root;
     private WebView webView;
@@ -163,99 +166,130 @@ public final class MainActivity extends ComponentActivity {
         onlinePageVisible = false;
         localPageVisible = false;
         if (webView != null) webView.setVisibility(View.GONE);
+
         ScrollView scroll = new ScrollView(this);
         scroll.setFillViewport(true);
+        scroll.setVerticalScrollBarEnabled(false);
         LinearLayout page = new LinearLayout(this);
         page.setOrientation(LinearLayout.VERTICAL);
         page.setGravity(Gravity.CENTER_HORIZONTAL);
-        page.setPadding(dp(26), dp(38), dp(26), dp(28));
+        page.setPadding(dp(22), dp(6), dp(22), dp(20));
         page.setBackgroundColor(BG);
 
-        TextView brand = text("GXB 3", 32, FG, true);
-        brand.setLetterSpacing(0.12f);
-        page.addView(brand, matchWrap());
-        TextView heading = text("Tài nguyên trò chơi", 21, FG, true);
-        heading.setGravity(Gravity.CENTER);
-        LinearLayout.LayoutParams headingParams = matchWrap();
-        headingParams.topMargin = dp(30);
-        page.addView(heading, headingParams);
-        TextView intro = text("Tải gói tài nguyên qua Internet một lần; các file đã cài được giữ trong bộ nhớ riêng của ứng dụng.", 15, MUTED, false);
+        FrameLayout hero = new FrameLayout(this);
+        LinearLayout.LayoutParams heroParams = matchWrap();
+        heroParams.height = dp(380);
+        heroParams.setMargins(-dp(22), 0, -dp(22), 0);
+        page.addView(hero, heroParams);
+
+        ImageView artwork = new ImageView(this);
+        artwork.setImageResource(R.drawable.offline_hero);
+        artwork.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        artwork.setBackgroundColor(Color.rgb(19, 18, 47));
+        artwork.setContentDescription("Nhân vật trong GxB3");
+        hero.addView(artwork, new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+        View lowerFade = new View(this);
+        lowerFade.setBackground(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
+                new int[] {0x000b0c27, 0x550b0c27, BG}));
+        hero.addView(lowerFade, new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+        TextView brand = text("G    W    B", 12, Color.rgb(187, 190, 218), true);
+        brand.setGravity(Gravity.CENTER);
+        brand.setLetterSpacing(0.28f);
+        FrameLayout.LayoutParams brandParams = new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT,
+                Gravity.TOP | Gravity.CENTER_HORIZONTAL);
+        brandParams.topMargin = dp(24);
+        hero.addView(brand, brandParams);
+
+        LinearLayout heroCaption = new LinearLayout(this);
+        heroCaption.setOrientation(LinearLayout.VERTICAL);
+        heroCaption.setGravity(Gravity.CENTER_HORIZONTAL);
+        TextView gameTitle = text("GxB3", 38, FG, true);
+        gameTitle.setGravity(Gravity.CENTER);
+        gameTitle.setShadowLayer(dp(5), 0f, dp(2), Color.BLACK);
+        heroCaption.addView(gameTitle, matchWrap());
+        TextView tagline = text("Cánh cửa định mệnh mở ra", 17, FG, true);
+        tagline.setGravity(Gravity.CENTER);
+        tagline.setShadowLayer(dp(4), 0f, dp(1), Color.BLACK);
+        heroCaption.addView(tagline, matchWrap());
+        FrameLayout.LayoutParams captionParams = new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.BOTTOM);
+        captionParams.bottomMargin = dp(10);
+        hero.addView(heroCaption, captionParams);
+
+        TextView intro = text("Cùng các nữ thần viết nên chương đầu tiên của bạn.", 17, FG, false);
         intro.setGravity(Gravity.CENTER);
-        intro.setLineSpacing(dp(3), 1f);
+        intro.setLineSpacing(dp(2), 1f);
         LinearLayout.LayoutParams introParams = matchWrap();
-        introParams.topMargin = dp(10);
+        introParams.topMargin = dp(7);
         page.addView(intro, introParams);
 
-        LinearLayout statusCard = new LinearLayout(this);
-        statusCard.setOrientation(LinearLayout.VERTICAL);
-        statusCard.setPadding(dp(16), dp(15), dp(16), dp(15));
-        statusCard.setBackgroundColor(Color.rgb(20, 24, 37));
-        LinearLayout.LayoutParams cardParams = matchWrap();
-        cardParams.topMargin = dp(28);
-        page.addView(statusCard, cardParams);
-        statusCard.addView(text("Trạng thái tài nguyên", 14, FG, true), matchWrap());
-        resourceStatus = text("Đang kiểm tra bộ nhớ cục bộ…", 14, MUTED, false);
+        resourceStatus = text("Chưa có dữ liệu trò chơi. Hãy tải để bắt đầu cuộc phiêu lưu.", 14, MUTED, false);
+        resourceStatus.setGravity(Gravity.CENTER);
         resourceStatus.setLineSpacing(dp(3), 1f);
         LinearLayout.LayoutParams statusParams = matchWrap();
-        statusParams.topMargin = dp(8);
-        statusCard.addView(resourceStatus, statusParams);
+        statusParams.topMargin = dp(10);
+        page.addView(resourceStatus, statusParams);
+
         progressBar = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
         progressBar.setMax(100);
         progressBar.setProgress(0);
         progressBar.setIndeterminate(false);
+        progressBar.setProgressTintList(ColorStateList.valueOf(PURPLE));
+        progressBar.setVisibility(View.GONE);
         LinearLayout.LayoutParams barParams = matchWrap();
-        barParams.topMargin = dp(16);
-        statusCard.addView(progressBar, barParams);
-        progressText = text("Chưa có tác vụ tải", 13, MUTED, false);
-        LinearLayout.LayoutParams progressParams = matchWrap();
-        progressParams.topMargin = dp(6);
-        statusCard.addView(progressText, progressParams);
+        barParams.topMargin = dp(8);
+        page.addView(progressBar, barParams);
+        progressText = text("", 12, MUTED, false);
+        progressText.setGravity(Gravity.CENTER);
+        progressText.setVisibility(View.GONE);
+        page.addView(progressText, matchWrap());
 
-        downloadButton = button("Tải / cập nhật tài nguyên", true);
+        Button startButton = button("Bắt đầu hành trình", true);
+        LinearLayout.LayoutParams startParams = matchWrap();
+        startParams.topMargin = dp(16);
+        page.addView(startButton, startParams);
+        startButton.setOnClickListener(view -> startOfflineJourney());
+
+        downloadButton = button("Tải dữ liệu trò chơi", false);
         LinearLayout.LayoutParams downloadParams = matchWrap();
-        downloadParams.topMargin = dp(24);
+        downloadParams.topMargin = dp(8);
         page.addView(downloadButton, downloadParams);
         downloadButton.setOnClickListener(view -> confirmAndStartInstall());
 
-        localPreviewButton = button("Xem Web shell local (thử nghiệm)", false);
-        localPreviewButton.setEnabled(false);
-        LinearLayout.LayoutParams previewParams = matchWrap();
-        previewParams.topMargin = dp(10);
-        page.addView(localPreviewButton, previewParams);
-        localPreviewButton.setOnClickListener(view -> openLocalShellPreview());
-
         cancelButton = button("Hủy tải", false);
         cancelButton.setEnabled(false);
+        cancelButton.setVisibility(View.GONE);
         LinearLayout.LayoutParams cancelParams = matchWrap();
-        cancelParams.topMargin = dp(10);
+        cancelParams.topMargin = dp(8);
         page.addView(cancelButton, cancelParams);
         cancelButton.setOnClickListener(view -> cancelInstall());
 
-        Button onlineButton = button("Chơi trực tuyến", false);
+        Button onlineButton = button("Chơi với kết nối mạng", false);
         LinearLayout.LayoutParams onlineParams = matchWrap();
-        onlineParams.topMargin = dp(22);
+        onlineParams.topMargin = dp(8);
         page.addView(onlineButton, onlineParams);
         onlineButton.setOnClickListener(view -> startOnlineGame());
 
-        TextView disclaimer = text(
-                "Lưu ý: Web shell local chỉ là preview asset; API/gameplay và save local chưa được tích hợp nên đây chưa phải game offline. Nút Chơi trực tuyến vẫn mở bản online.",
-                13, MUTED, false);
-        disclaimer.setGravity(Gravity.CENTER);
-        disclaimer.setLineSpacing(dp(3), 1f);
-        LinearLayout.LayoutParams disclaimerParams = matchWrap();
-        disclaimerParams.topMargin = dp(18);
-        page.addView(disclaimer, disclaimerParams);
+        TextView footer = text("Chế độ chơi ngoại tuyến đầy đủ vẫn đang được hoàn thiện.", 12, MUTED, false);
+        footer.setGravity(Gravity.CENTER);
+        footer.setLineSpacing(dp(2), 1f);
+        LinearLayout.LayoutParams footerParams = matchWrap();
+        footerParams.topMargin = dp(12);
+        page.addView(footer, footerParams);
 
-        TextView config = text("Nguồn manifest được cấu hình lúc build; ứng dụng không chứa token CDN.", 12, MUTED, false);
-        config.setGravity(Gravity.CENTER);
-        LinearLayout.LayoutParams configParams = matchWrap();
-        configParams.topMargin = dp(12);
-        page.addView(config, configParams);
-
-        scroll.addView(page, new ScrollView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        localPreviewButton = null;
+        scroll.addView(page, new ScrollView.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         root.removeAllViews();
-        root.addView(scroll, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        if (webView != null) root.addView(webView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        root.addView(scroll, new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        if (webView != null) root.addView(webView, new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         updateDownloaderAvailability();
     }
 
@@ -264,12 +298,16 @@ public final class MainActivity extends ComponentActivity {
         boolean busy = installBusy;
         boolean ready = downloaderConfigured() && resourceManager != null;
         downloadButton.setEnabled(ready && !busy);
+        downloadButton.setAlpha(ready && !busy ? 1f : 0.62f);
+        if (progressBar != null) progressBar.setVisibility(busy ? View.VISIBLE : View.GONE);
+        if (progressText != null) progressText.setVisibility(busy ? View.VISIBLE : View.GONE);
+        if (cancelButton != null) cancelButton.setVisibility(busy ? View.VISIBLE : View.GONE);
         if (localPreviewButton != null) localPreviewButton.setEnabled(localShellAvailable && !busy);
     }
 
     private void refreshInstalledResourceStatus() {
         if (resourceManager == null) {
-            if (resourceStatus != null) resourceStatus.setText("Không mở được kho tài nguyên cục bộ. Hãy kiểm tra bộ nhớ ứng dụng rồi thử lại.");
+            if (resourceStatus != null) resourceStatus.setText("Chưa thể mở kho dữ liệu trên thiết bị này.");
             updateDownloaderAvailability();
             return;
         }
@@ -293,16 +331,16 @@ public final class MainActivity extends ComponentActivity {
                 if (resourceStatus == null || isFinishing()) return;
                 localShellAvailable = shellAvailable;
                 if (problem != null) {
-                    resourceStatus.setText("Không đọc được trạng thái kho tài nguyên: " + problem);
+                    resourceStatus.setText("Không đọc được trạng thái dữ liệu: " + problem);
                 } else if (foundVersion == null) {
-                    resourceStatus.setText("Chưa cài resource release nào. Có thể tải khi manifest/pack được phát hành.");
+                    resourceStatus.setText("Chưa có dữ liệu trò chơi. Hãy tải để bắt đầu cuộc phiêu lưu.");
                 } else if (isInstalled) {
-                    resourceStatus.setText("Đã cài release " + foundVersion + " và các file có mặt. Điều này xác nhận asset, không xác nhận gameplay offline.");
+                    resourceStatus.setText("Đã cài dữ liệu " + foundVersion + ". Gameplay ngoại tuyến vẫn đang hoàn thiện.");
                 } else {
-                    resourceStatus.setText("Release " + foundVersion + " thiếu file hoặc chưa đầy đủ. Có thể cần mạng để sửa/cập nhật.");
+                    resourceStatus.setText("Dữ liệu trò chơi chưa đầy đủ. Hãy tải lại khi tính năng tải sẵn sàng.");
                 }
                 if (!downloaderConfigured()) {
-                    resourceStatus.append("\n\nTải chưa bật: cần URL manifest HTTPS hợp lệ và allowlist host tương ứng trong build.");
+                    resourceStatus.append("\nTính năng tải dữ liệu hiện chưa sẵn sàng.");
                 }
                 updateDownloaderAvailability();
             });
@@ -325,7 +363,7 @@ public final class MainActivity extends ComponentActivity {
         }
         new AlertDialog.Builder(this)
                 .setTitle("Tải tài nguyên trò chơi")
-                .setMessage("Ứng dụng chỉ nhận manifest có chữ ký Ed25519 đúng public key đã pin trong APK, rồi tải gói HTTPS và lưu trong bộ nhớ riêng. Nên dùng Wi-Fi và bảo đảm đủ dung lượng. Tải asset chưa bật gameplay offline.")
+                .setMessage("Ứng dụng sẽ xác minh gói dữ liệu trước khi cài vào bộ nhớ riêng. Nên dùng Wi-Fi và bảo đảm đủ dung lượng.")
                 .setNegativeButton("Để sau", (dialog, which) -> { })
                 .setPositiveButton("Bắt đầu tải", (dialog, which) -> startInstall())
                 .show();
@@ -335,10 +373,13 @@ public final class MainActivity extends ComponentActivity {
         if (!downloaderConfigured() || resourceManager == null || installBusy) return;
         downloadButton.setEnabled(false);
         cancelButton.setEnabled(true);
+        cancelButton.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.VISIBLE);
+        progressText.setVisibility(View.VISIBLE);
         progressBar.setIndeterminate(true);
         progressBar.setProgress(0);
         progressText.setText("Đang kết nối nguồn manifest…");
-        resourceStatus.setText("Đang tải nền và xác minh chữ ký. Đóng màn hình không hủy tác vụ; release đang dùng chỉ đổi sau khi cài đặt thành công.");
+        resourceStatus.setText("Đang tải và xác minh dữ liệu trò chơi…");
         try {
             Data input = new Data.Builder()
                     .putString(OfflineResourceDownloadWorker.KEY_MANIFEST_URL, BuildConfig.OFFLINE_RESOURCE_MANIFEST_URL.trim())
@@ -351,6 +392,7 @@ public final class MainActivity extends ComponentActivity {
             installBusy = true;
             WorkManager.getInstance(this).enqueueUniqueWork(
                     OfflineResourceDownloadWorker.UNIQUE_WORK_NAME, ExistingWorkPolicy.REPLACE, request);
+            updateDownloaderAvailability();
         } catch (Exception error) {
             installBusy = false;
             progressBar.setIndeterminate(false);
@@ -379,7 +421,7 @@ public final class MainActivity extends ComponentActivity {
                         progressBar.setIndeterminate(false);
                         progressBar.setProgress(100);
                         progressText.setText("Hoàn tất · " + packs + " gói · " + files + " file");
-                        resourceStatus.setText("Đã cài resource release " + version + ". Asset đã lưu local; gameplay offline chưa được tích hợp.");
+                        resourceStatus.setText("Đã cài dữ liệu " + version + ". Gameplay ngoại tuyến vẫn đang hoàn thiện.");
                         cancelButton.setEnabled(false);
                         localShellAvailable = false;
                         if (localPreviewButton != null) localPreviewButton.setEnabled(false);
@@ -393,6 +435,7 @@ public final class MainActivity extends ComponentActivity {
                     } else if (state == WorkInfo.State.CANCELLED) {
                         progressBar.setIndeterminate(false);
                         progressText.setText("Đã hủy · phần tải dở được giữ để tiếp tục");
+                        resourceStatus.setText("Đã hủy tải dữ liệu. Bạn có thể tiếp tục lại sau.");
                         cancelButton.setEnabled(false);
                     }
                     updateDownloaderAvailability();
@@ -476,6 +519,28 @@ public final class MainActivity extends ComponentActivity {
         webView.setVisibility(View.VISIBLE);
         webView.bringToFront();
         webView.loadUrl("https://gxb3.local/");
+    }
+
+    private void startOfflineJourney() {
+        if (localShellAvailable && resourceManager != null && localAssetLoader != null) {
+            new AlertDialog.Builder(this)
+                    .setTitle("Chế độ ngoại tuyến")
+                    .setMessage("Dữ liệu giao diện local đã có, nhưng API trận đấu và lưu tiến trình offline chưa được tích hợp trong bản này.")
+                    .setNegativeButton("Để sau", (dialog, which) -> { })
+                    .setPositiveButton("Xem thử giao diện", (dialog, which) -> openLocalShellPreview())
+                    .show();
+            return;
+        }
+        if (downloaderConfigured() && resourceManager != null) {
+            confirmAndStartInstall();
+            return;
+        }
+        new AlertDialog.Builder(this)
+                .setTitle("Chưa có dữ liệu trò chơi")
+                .setMessage("Tính năng tải dữ liệu hiện chưa sẵn sàng. Bạn vẫn có thể vào bản chơi trực tuyến.")
+                .setNegativeButton("Để sau", (dialog, which) -> { })
+                .setPositiveButton("Chơi trực tuyến", (dialog, which) -> startOnlineGame())
+                .show();
     }
 
     /** Switches to the installed local release without falling back to production. */
@@ -669,9 +734,14 @@ public final class MainActivity extends ComponentActivity {
         Button view = new Button(this);
         view.setText(label);
         view.setAllCaps(false);
-        view.setTextSize(15);
+        view.setTextSize(16);
         view.setTextColor(FG);
-        view.setBackgroundTintList(ColorStateList.valueOf(primary ? PURPLE : Color.rgb(42, 48, 67)));
+        view.setPadding(dp(16), 0, dp(16), 0);
+        view.setMinimumHeight(dp(52));
+        GradientDrawable shape = new GradientDrawable();
+        shape.setColor(primary ? PURPLE : Color.rgb(39, 45, 68));
+        shape.setCornerRadius(dp(4));
+        view.setBackground(new RippleDrawable(ColorStateList.valueOf(0x33ffffff), shape, null));
         return view;
     }
 

@@ -10,7 +10,7 @@
         android:allowBackup="false"
         android:usesCleartextTraffic="false"
         android:icon="@mipmap/ic_launcher"
-        android:label="Nữ Thần Chiến Đấu - GXB 3"
+        android:label="Nữ Thần Chiến Đấu Offline"
         android:theme="@android:style/Theme.Material.Light.NoActionBar">
         <service
             android:name="androidx.work.impl.foreground.SystemForegroundService"
