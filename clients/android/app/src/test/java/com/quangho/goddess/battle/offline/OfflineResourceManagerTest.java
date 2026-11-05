@@ -1,5 +1,8 @@
 package com.quangho.goddess.battle.offline;
 
+import org.bouncycastle.crypto.params.Ed25519PrivateKeyParameters;
+import org.bouncycastle.crypto.signers.Ed25519Signer;
+import org.json.JSONObject;
 import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
@@ -8,6 +11,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.MessageDigest;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -46,6 +50,45 @@ public final class OfflineResourceManagerTest {
         assertEquals(1, parsed.filesByPath.size());
         assertEquals(7L, parsed.totalFileBytes);
         assertEquals(FILE_HASH, parsed.filesByPath.get("web/index.html").sha256);
+    }
+
+    @Test public void verifiesSignedEnvelopeAndRejectsTamperingOrWrongKey() throws Exception {
+        String payload = manifest("web/index.html", "https://cdn.example.com/packs/core.zip");
+        byte[] seed = new byte[Ed25519PrivateKeyParameters.KEY_SIZE];
+        for (int i = 0; i < seed.length; i++) seed[i] = (byte) (i + 1);
+        Ed25519PrivateKeyParameters privateKey = new Ed25519PrivateKeyParameters(seed, 0);
+        byte[] publicKey = privateKey.generatePublicKey().getEncoded();
+        String publicKeyB64 = Base64.getEncoder().encodeToString(publicKey);
+        String signatureB64 = sign(payload.getBytes(StandardCharsets.UTF_8), privateKey);
+        String envelope = new JSONObject().put("payload_b64", Base64.getEncoder().encodeToString(payload.getBytes(StandardCharsets.UTF_8)))
+                .put("signature_b64", signatureB64).toString();
+
+        OfflineResourceManager.Manifest verified = OfflineResourceManager.parseSignedManifest(envelope,
+                hosts("cdn.example.com"), publicKeyB64);
+        assertEquals("test.1", verified.resourceVersion);
+        assertEquals(1, verified.packs.size());
+
+        String changedPayload = payload.replace("test.1", "test.2");
+        String tampered = new JSONObject().put("payload_b64", Base64.getEncoder().encodeToString(changedPayload.getBytes(StandardCharsets.UTF_8)))
+                .put("signature_b64", signatureB64).toString();
+        assertSignedInvalid(tampered, publicKeyB64);
+
+        byte[] wrongSeed = new byte[Ed25519PrivateKeyParameters.KEY_SIZE];
+        wrongSeed[0] = 99;
+        String wrongPublicKey = Base64.getEncoder().encodeToString(
+                new Ed25519PrivateKeyParameters(wrongSeed, 0).generatePublicKey().getEncoded());
+        assertSignedInvalid(envelope, wrongPublicKey);
+    }
+
+    @Test public void rejectsUnsignedManifestForRemoteInstall() throws Exception {
+        try {
+            OfflineResourceManager.parseSignedManifest(
+                    manifest("web/index.html", "https://cdn.example.com/packs/core.zip"),
+                    hosts("cdn.example.com"), Base64.getEncoder().encodeToString(new byte[32]));
+            fail("Expected unsigned manifest rejection");
+        } catch (IOException expected) {
+            assertTrue(expected.getMessage().length() > 0);
+        }
     }
 
     @Test public void rejectsTraversalAndNonCanonicalPaths() throws Exception {
@@ -185,6 +228,22 @@ public final class OfflineResourceManagerTest {
         StringBuilder result = new StringBuilder(hash.length * 2);
         for (byte value : hash) result.append(String.format(java.util.Locale.ROOT, "%02x", value & 0xff));
         return result.toString();
+    }
+
+    private static String sign(byte[] message, Ed25519PrivateKeyParameters privateKey) {
+        Ed25519Signer signer = new Ed25519Signer();
+        signer.init(true, privateKey);
+        signer.update(message, 0, message.length);
+        return Base64.getEncoder().encodeToString(signer.generateSignature());
+    }
+
+    private static void assertSignedInvalid(String envelope, String publicKey) throws Exception {
+        try {
+            OfflineResourceManager.parseSignedManifest(envelope, hosts("cdn.example.com"), publicKey);
+            fail("Expected signed-manifest rejection");
+        } catch (IOException expected) {
+            assertTrue(expected.getMessage().length() > 0);
+        }
     }
 
     private static void assertInvalid(String json) throws Exception {

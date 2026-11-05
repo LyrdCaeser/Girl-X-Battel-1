@@ -1,10 +1,19 @@
 plugins {
     id "com.android.application"
 }
+def offlineManifestUrl = (project.findProperty("gxbOfflineManifestUrl") ?: "").toString()
+def offlineTrustedHosts = (project.findProperty("gxbOfflineTrustedHosts") ?: "").toString()
+def offlineManifestPublicKey = (project.findProperty("gxbOfflineManifestPublicKeyB64") ?: "").toString()
+def asBuildConfigString = { String value ->
+    '"' + value.replace('\\', '\\\\').replace('"', '\\"').replace('\n', '\\n').replace('\r', '\\r') + '"'
+}
 
 android {
     namespace "com.quangho.goddess.battle"
     compileSdk 35
+    buildFeatures {
+        buildConfig true
+    }
 
     defaultConfig {
         applicationId "com.quangho.goddess.battle"
@@ -12,6 +21,9 @@ android {
         targetSdk 35
         versionCode 100009
         versionName "1.0.2-alpha-rc8"
+        buildConfigField "String", "OFFLINE_RESOURCE_MANIFEST_URL", asBuildConfigString(offlineManifestUrl)
+        buildConfigField "String", "OFFLINE_RESOURCE_TRUSTED_HOSTS", asBuildConfigString(offlineTrustedHosts)
+        buildConfigField "String", "OFFLINE_RESOURCE_PUBLIC_KEY_B64", asBuildConfigString(offlineManifestPublicKey)
     }
 
     buildTypes {
@@ -26,6 +38,10 @@ android {
 }
 
 dependencies {
+    implementation "androidx.activity:activity:1.9.3"
+    implementation "androidx.webkit:webkit:1.12.1"
+    implementation "androidx.work:work-runtime:2.9.1"
+    implementation "org.bouncycastle:bcprov-jdk18on:1.80"
     testImplementation "junit:junit:4.13.2"
     testImplementation "org.json:json:20240303"
 }

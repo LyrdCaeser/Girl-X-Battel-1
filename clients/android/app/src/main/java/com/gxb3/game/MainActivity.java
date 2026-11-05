@@ -1,11 +1,15 @@
 package com.quangho.goddess.battle;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.CookieManager;
 import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
@@ -14,42 +18,434 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.webkit.WebResourceResponse;
+import androidx.activity.ComponentActivity;
+import androidx.webkit.WebViewAssetLoader;
+import androidx.work.Data;
+import androidx.work.ExistingWorkPolicy;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkInfo;
+import androidx.work.WorkManager;
+import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.ScrollView;
+import android.widget.TextView;
+
+import com.quangho.goddess.battle.offline.OfflineResourceManager;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
 
-public final class MainActivity extends Activity {
+/** Android launcher with an explicit resource-download screen and separate online entry. */
+public final class MainActivity extends ComponentActivity {
     private static final String GAME_ORIGIN = "https://180-93-111-99.sslip.io";
-    private static final String READY_URL = GAME_ORIGIN + "/readyz";
+    private static final String GAME_HOST = "180-93-111-99.sslip.io";
+    private static final int BG = Color.rgb(9, 11, 18);
+    private static final int FG = Color.rgb(245, 246, 250);
+    private static final int MUTED = Color.rgb(184, 192, 212);
+    private static final int PURPLE = Color.rgb(143, 92, 255);
+
+    private FrameLayout root;
     private WebView webView;
+    private OfflineResourceManager resourceManager;
+    private WebViewAssetLoader localAssetLoader;
+    private Set<String> trustedHosts;
+    private TextView resourceStatus;
+    private TextView progressText;
+    private ProgressBar progressBar;
+    private Button downloadButton;
+    private Button cancelButton;
+    private Button localPreviewButton;
+    private boolean installBusy;
+    private boolean onlinePageVisible;
+    private volatile boolean localPageVisible;
+    private volatile boolean localShellAvailable;
 
-    private static final String LOADING_HTML =
-        "<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>"
-        + "<style>html,body{margin:0;width:100%;height:100%;background:#090b12;color:#fff;font-family:sans-serif}"
-        + ".w{height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:18px}"
-        + ".l{font-size:38px;font-weight:800;letter-spacing:3px}.s{color:#b9c1d9;font-size:14px;text-align:center;padding:0 24px}"
-        + ".p{width:42px;height:42px;border:4px solid #252b3d;border-top-color:#8f5cff;border-radius:50%;animation:r 1s linear infinite}"
-        + "@keyframes r{to{transform:rotate(360deg)}}</style></head><body><div class='w'>"
-        + "<div class='l'>GXB 3</div><div class='p'></div><div class='s'>Đang khởi động máy chủ và chuẩn bị trò chơi...</div>"
-        + "</div></body></html>";
-
-    private static final String ERROR_HTML =
-        "<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>"
-        + "<style>html,body{margin:0;width:100%;height:100%;background:#090b12;color:#fff;font-family:sans-serif}"
-        + ".w{height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:24px;box-sizing:border-box}"
-        + "p{color:#b9c1d9;line-height:1.6}</style></head><body><div class='w'><h1>GXB 3</h1>"
-        + "<p>Không thể kết nối máy chủ.<br>Kiểm tra mạng rồi mở lại trò chơi.</p></div></body></html>";
-
-    @Override
-    protected void onCreate(Bundle state) {
+    @Override protected void onCreate(Bundle state) {
         super.onCreate(state);
+        getWindow().setStatusBarColor(BG);
+        getWindow().setNavigationBarColor(Color.BLACK);
+        root = new FrameLayout(this);
+        root.setBackgroundColor(BG);
+        setContentView(root);
+        createResourceManager();
+        showResourceHome();
+        refreshInstalledResourceStatus();
+        observeDownloadWork();
+    }
 
+    private void createResourceManager() {
+        trustedHosts = parseTrustedHosts(BuildConfig.OFFLINE_RESOURCE_TRUSTED_HOSTS);
+        if (trustedHosts.isEmpty()) trustedHosts = Collections.singleton(GAME_HOST);
+        File appFiles = getExternalFilesDir(null);
+        if (appFiles == null) appFiles = getFilesDir();
+        try {
+            resourceManager = new OfflineResourceManager(appFiles, trustedHosts, BuildConfig.OFFLINE_RESOURCE_PUBLIC_KEY_B64);
+            localAssetLoader = new WebViewAssetLoader.Builder()
+                    .setDomain("gxb3.local")
+                    .addPathHandler("/", new com.quangho.goddess.battle.offline.OfflineWebViewPathHandler(resourceManager))
+                    .build();
+        } catch (Exception ignored) {
+            resourceManager = null;
+            localAssetLoader = null;
+        }
+    }
+
+    private static Set<String> parseTrustedHosts(String raw) {
+        HashSet<String> hosts = new HashSet<>();
+        if (raw != null) {
+            for (String host : raw.split(",")) {
+                String normalized = host.trim().toLowerCase(Locale.ROOT);
+                if (!normalized.isEmpty()) hosts.add(normalized);
+            }
+        }
+        return hosts;
+    }
+
+    private boolean downloaderConfigured() {
+        String manifestUrl = BuildConfig.OFFLINE_RESOURCE_MANIFEST_URL;
+        if (manifestUrl == null || manifestUrl.trim().isEmpty()
+                || BuildConfig.OFFLINE_RESOURCE_TRUSTED_HOSTS == null
+                || BuildConfig.OFFLINE_RESOURCE_TRUSTED_HOSTS.trim().isEmpty()
+                || BuildConfig.OFFLINE_RESOURCE_PUBLIC_KEY_B64 == null
+                || BuildConfig.OFFLINE_RESOURCE_PUBLIC_KEY_B64.trim().isEmpty()) return false;
+        Uri uri = Uri.parse(manifestUrl.trim());
+        return "https".equalsIgnoreCase(uri.getScheme())
+                && uri.getHost() != null
+                && trustedHosts.contains(uri.getHost().toLowerCase(Locale.ROOT));
+    }
+
+    private void showResourceHome() {
+        onlinePageVisible = false;
+        localPageVisible = false;
+        if (webView != null) webView.setVisibility(View.GONE);
+        ScrollView scroll = new ScrollView(this);
+        scroll.setFillViewport(true);
+        LinearLayout page = new LinearLayout(this);
+        page.setOrientation(LinearLayout.VERTICAL);
+        page.setGravity(Gravity.CENTER_HORIZONTAL);
+        page.setPadding(dp(26), dp(38), dp(26), dp(28));
+        page.setBackgroundColor(BG);
+
+        TextView brand = text("GXB 3", 32, FG, true);
+        brand.setLetterSpacing(0.12f);
+        page.addView(brand, matchWrap());
+        TextView heading = text("Tài nguyên trò chơi", 21, FG, true);
+        heading.setGravity(Gravity.CENTER);
+        LinearLayout.LayoutParams headingParams = matchWrap();
+        headingParams.topMargin = dp(30);
+        page.addView(heading, headingParams);
+        TextView intro = text("Tải gói tài nguyên qua Internet một lần; các file đã cài được giữ trong bộ nhớ riêng của ứng dụng.", 15, MUTED, false);
+        intro.setGravity(Gravity.CENTER);
+        intro.setLineSpacing(dp(3), 1f);
+        LinearLayout.LayoutParams introParams = matchWrap();
+        introParams.topMargin = dp(10);
+        page.addView(intro, introParams);
+
+        LinearLayout statusCard = new LinearLayout(this);
+        statusCard.setOrientation(LinearLayout.VERTICAL);
+        statusCard.setPadding(dp(16), dp(15), dp(16), dp(15));
+        statusCard.setBackgroundColor(Color.rgb(20, 24, 37));
+        LinearLayout.LayoutParams cardParams = matchWrap();
+        cardParams.topMargin = dp(28);
+        page.addView(statusCard, cardParams);
+        statusCard.addView(text("Trạng thái tài nguyên", 14, FG, true), matchWrap());
+        resourceStatus = text("Đang kiểm tra bộ nhớ cục bộ…", 14, MUTED, false);
+        resourceStatus.setLineSpacing(dp(3), 1f);
+        LinearLayout.LayoutParams statusParams = matchWrap();
+        statusParams.topMargin = dp(8);
+        statusCard.addView(resourceStatus, statusParams);
+        progressBar = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
+        progressBar.setMax(100);
+        progressBar.setProgress(0);
+        progressBar.setIndeterminate(false);
+        LinearLayout.LayoutParams barParams = matchWrap();
+        barParams.topMargin = dp(16);
+        statusCard.addView(progressBar, barParams);
+        progressText = text("Chưa có tác vụ tải", 13, MUTED, false);
+        LinearLayout.LayoutParams progressParams = matchWrap();
+        progressParams.topMargin = dp(6);
+        statusCard.addView(progressText, progressParams);
+
+        downloadButton = button("Tải / cập nhật tài nguyên", true);
+        LinearLayout.LayoutParams downloadParams = matchWrap();
+        downloadParams.topMargin = dp(24);
+        page.addView(downloadButton, downloadParams);
+        downloadButton.setOnClickListener(view -> confirmAndStartInstall());
+
+        localPreviewButton = button("Xem Web shell local (thử nghiệm)", false);
+        localPreviewButton.setEnabled(false);
+        LinearLayout.LayoutParams previewParams = matchWrap();
+        previewParams.topMargin = dp(10);
+        page.addView(localPreviewButton, previewParams);
+        localPreviewButton.setOnClickListener(view -> openLocalShellPreview());
+
+        cancelButton = button("Hủy tải", false);
+        cancelButton.setEnabled(false);
+        LinearLayout.LayoutParams cancelParams = matchWrap();
+        cancelParams.topMargin = dp(10);
+        page.addView(cancelButton, cancelParams);
+        cancelButton.setOnClickListener(view -> cancelInstall());
+
+        Button onlineButton = button("Chơi trực tuyến", false);
+        LinearLayout.LayoutParams onlineParams = matchWrap();
+        onlineParams.topMargin = dp(22);
+        page.addView(onlineButton, onlineParams);
+        onlineButton.setOnClickListener(view -> startOnlineGame());
+
+        TextView disclaimer = text(
+                "Lưu ý: Web shell local chỉ là preview asset; API/gameplay và save local chưa được tích hợp nên đây chưa phải game offline. Nút Chơi trực tuyến vẫn mở bản online.",
+                13, MUTED, false);
+        disclaimer.setGravity(Gravity.CENTER);
+        disclaimer.setLineSpacing(dp(3), 1f);
+        LinearLayout.LayoutParams disclaimerParams = matchWrap();
+        disclaimerParams.topMargin = dp(18);
+        page.addView(disclaimer, disclaimerParams);
+
+        TextView config = text("Nguồn manifest được cấu hình lúc build; ứng dụng không chứa token CDN.", 12, MUTED, false);
+        config.setGravity(Gravity.CENTER);
+        LinearLayout.LayoutParams configParams = matchWrap();
+        configParams.topMargin = dp(12);
+        page.addView(config, configParams);
+
+        scroll.addView(page, new ScrollView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        root.removeAllViews();
+        root.addView(scroll, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        if (webView != null) root.addView(webView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        updateDownloaderAvailability();
+    }
+
+    private void updateDownloaderAvailability() {
+        if (downloadButton == null) return;
+        boolean busy = installBusy;
+        boolean ready = downloaderConfigured() && resourceManager != null;
+        downloadButton.setEnabled(ready && !busy);
+        if (localPreviewButton != null) localPreviewButton.setEnabled(localShellAvailable && !busy);
+    }
+
+    private void refreshInstalledResourceStatus() {
+        if (resourceManager == null) {
+            if (resourceStatus != null) resourceStatus.setText("Không mở được kho tài nguyên cục bộ. Hãy kiểm tra bộ nhớ ứng dụng rồi thử lại.");
+            updateDownloaderAvailability();
+            return;
+        }
+        new Thread(() -> {
+            String version = null;
+            boolean installed = false;
+            boolean hasEntrypoint = false;
+            String issue = null;
+            try {
+                version = resourceManager.activeVersion();
+                installed = version != null && resourceManager.isVersionInstalled(version);
+                if (installed) hasEntrypoint = hasLocalEntrypoint();
+            } catch (Exception error) {
+                issue = error.getMessage();
+            }
+            final String foundVersion = version;
+            final boolean isInstalled = installed;
+            final boolean shellAvailable = hasEntrypoint;
+            final String problem = issue;
+            runOnUiThread(() -> {
+                if (resourceStatus == null || isFinishing()) return;
+                localShellAvailable = shellAvailable;
+                if (problem != null) {
+                    resourceStatus.setText("Không đọc được trạng thái kho tài nguyên: " + problem);
+                } else if (foundVersion == null) {
+                    resourceStatus.setText("Chưa cài resource release nào. Có thể tải khi manifest/pack được phát hành.");
+                } else if (isInstalled) {
+                    resourceStatus.setText("Đã cài release " + foundVersion + " và các file có mặt. Điều này xác nhận asset, không xác nhận gameplay offline.");
+                } else {
+                    resourceStatus.setText("Release " + foundVersion + " thiếu file hoặc chưa đầy đủ. Có thể cần mạng để sửa/cập nhật.");
+                }
+                if (!downloaderConfigured()) {
+                    resourceStatus.append("\n\nTải chưa bật: cần URL manifest HTTPS hợp lệ và allowlist host tương ứng trong build.");
+                }
+                updateDownloaderAvailability();
+            });
+        }, "gxb3-resource-status").start();
+    }
+
+    private boolean hasLocalEntrypoint() {
+        try {
+            OfflineResourceManager.Manifest manifest = resourceManager.activeManifest();
+            return manifest != null && manifest.filesByPath.containsKey("web/index.html");
+        } catch (Exception ignored) {
+            return false;
+        }
+    }
+
+    private void confirmAndStartInstall() {
+        if (!downloaderConfigured() || resourceManager == null) {
+            updateDownloaderAvailability();
+            return;
+        }
+        new AlertDialog.Builder(this)
+                .setTitle("Tải tài nguyên trò chơi")
+                .setMessage("Ứng dụng chỉ nhận manifest có chữ ký Ed25519 đúng public key đã pin trong APK, rồi tải gói HTTPS và lưu trong bộ nhớ riêng. Nên dùng Wi-Fi và bảo đảm đủ dung lượng. Tải asset chưa bật gameplay offline.")
+                .setNegativeButton("Để sau", (dialog, which) -> { })
+                .setPositiveButton("Bắt đầu tải", (dialog, which) -> startInstall())
+                .show();
+    }
+
+    private void startInstall() {
+        if (!downloaderConfigured() || resourceManager == null || installBusy) return;
+        downloadButton.setEnabled(false);
+        cancelButton.setEnabled(true);
+        progressBar.setIndeterminate(true);
+        progressBar.setProgress(0);
+        progressText.setText("Đang kết nối nguồn manifest…");
+        resourceStatus.setText("Đang tải nền và xác minh chữ ký. Đóng màn hình không hủy tác vụ; release đang dùng chỉ đổi sau khi cài đặt thành công.");
+        try {
+            Data input = new Data.Builder()
+                    .putString(OfflineResourceDownloadWorker.KEY_MANIFEST_URL, BuildConfig.OFFLINE_RESOURCE_MANIFEST_URL.trim())
+                    .putString(OfflineResourceDownloadWorker.KEY_TRUSTED_HOSTS, BuildConfig.OFFLINE_RESOURCE_TRUSTED_HOSTS)
+                    .putString(OfflineResourceDownloadWorker.KEY_PUBLIC_KEY, BuildConfig.OFFLINE_RESOURCE_PUBLIC_KEY_B64)
+                    .build();
+            OneTimeWorkRequest request = new OneTimeWorkRequest.Builder(OfflineResourceDownloadWorker.class)
+                    .setInputData(input)
+                    .build();
+            installBusy = true;
+            WorkManager.getInstance(this).enqueueUniqueWork(
+                    OfflineResourceDownloadWorker.UNIQUE_WORK_NAME, ExistingWorkPolicy.REPLACE, request);
+        } catch (Exception error) {
+            installBusy = false;
+            progressBar.setIndeterminate(false);
+            cancelButton.setEnabled(false);
+            progressText.setText("Không thể bắt đầu tác vụ");
+            resourceStatus.setText("Lỗi: " + safeMessage(error));
+            updateDownloaderAvailability();
+        }
+    }
+
+    private void observeDownloadWork() {
+        WorkManager.getInstance(this).getWorkInfosForUniqueWorkLiveData(OfflineResourceDownloadWorker.UNIQUE_WORK_NAME)
+                .observe(this, workInfos -> {
+                    if (workInfos == null || workInfos.isEmpty() || isFinishing()) return;
+                    WorkInfo info = workInfos.get(workInfos.size() - 1);
+                    WorkInfo.State state = info.getState();
+                    installBusy = state == WorkInfo.State.ENQUEUED || state == WorkInfo.State.RUNNING || state == WorkInfo.State.BLOCKED;
+                    if (installBusy) {
+                        cancelButton.setEnabled(true);
+                        renderWorkProgress(info.getProgress());
+                    } else if (state == WorkInfo.State.SUCCEEDED) {
+                        Data result = info.getOutputData();
+                        String version = result.getString(OfflineResourceDownloadWorker.KEY_VERSION);
+                        int packs = result.getInt(OfflineResourceDownloadWorker.KEY_PACK_COUNT, 0);
+                        int files = result.getInt(OfflineResourceDownloadWorker.KEY_FILE_COUNT, 0);
+                        progressBar.setIndeterminate(false);
+                        progressBar.setProgress(100);
+                        progressText.setText("Hoàn tất · " + packs + " gói · " + files + " file");
+                        resourceStatus.setText("Đã cài resource release " + version + ". Asset đã lưu local; gameplay offline chưa được tích hợp.");
+                        cancelButton.setEnabled(false);
+                        localShellAvailable = false;
+                        if (localPreviewButton != null) localPreviewButton.setEnabled(false);
+                        refreshInstalledResourceStatus();
+                    } else if (state == WorkInfo.State.FAILED) {
+                        String message = info.getOutputData().getString(OfflineResourceDownloadWorker.KEY_ERROR);
+                        progressBar.setIndeterminate(false);
+                        progressText.setText("Tải chưa hoàn thành");
+                        resourceStatus.setText("Không cài được resource: " + (message == null ? "lỗi không xác định" : message));
+                        cancelButton.setEnabled(false);
+                    } else if (state == WorkInfo.State.CANCELLED) {
+                        progressBar.setIndeterminate(false);
+                        progressText.setText("Đã hủy · phần tải dở được giữ để tiếp tục");
+                        cancelButton.setEnabled(false);
+                    }
+                    updateDownloaderAvailability();
+                });
+    }
+
+    private void renderWorkProgress(Data data) {
+        if (isFinishing() || progressBar == null) return;
+        String rawPhase = data.getString(OfflineResourceDownloadWorker.KEY_PHASE);
+        if (rawPhase == null || OfflineResourceManager.Phase.FETCHING_MANIFEST.name().equals(rawPhase)) {
+            progressBar.setIndeterminate(true);
+            progressText.setText("Đang lấy manifest…");
+            return;
+        }
+        long completed = data.getLong(OfflineResourceDownloadWorker.KEY_COMPLETED_BYTES, 0L);
+        long total = data.getLong(OfflineResourceDownloadWorker.KEY_TOTAL_BYTES, 0L);
+        int percent = total <= 0 ? 0 : (int) Math.min(100L, completed * 100L / total);
+        progressBar.setIndeterminate(false);
+        progressBar.setProgress(percent);
+        String phase = rawPhase;
+        try { phase = phaseLabel(OfflineResourceManager.Phase.valueOf(rawPhase)); } catch (Exception ignored) { }
+        String packId = data.getString(OfflineResourceDownloadWorker.KEY_PACK_ID);
+        String pack = packId == null ? "" : " · " + packId.substring(0, Math.min(12, packId.length()));
+        int index = data.getInt(OfflineResourceDownloadWorker.KEY_PACK_INDEX, 0);
+        int count = data.getInt(OfflineResourceDownloadWorker.KEY_PACK_COUNT, 0);
+        String packCount = count > 0 ? " · gói " + index + "/" + count : "";
+        String fraction = total > 0 ? " · " + formatBytes(completed) + " / " + formatBytes(total) : "";
+        progressText.setText(phase + pack + packCount + fraction + " · " + percent + "%");
+    }
+
+    private void cancelInstall() {
+        WorkManager.getInstance(this).cancelUniqueWork(OfflineResourceDownloadWorker.UNIQUE_WORK_NAME);
+        cancelButton.setEnabled(false);
+        progressText.setText("Đang dừng an toàn; phần tải dở được giữ để tiếp tục sau.");
+    }
+
+    private static String phaseLabel(OfflineResourceManager.Phase phase) {
+        switch (phase) {
+            case DOWNLOADING_PACK: return "Đang tải";
+            case VERIFYING_PACK: return "Đang xác minh gói";
+            case INSTALLING_FILES: return "Đang cài file";
+            case ACTIVATING: return "Đang kích hoạt release";
+            case COMPLETE: return "Hoàn tất";
+            default: return "Đang chuẩn bị";
+        }
+    }
+
+    private static String formatBytes(long bytes) {
+        if (bytes < 1024L) return bytes + " B";
+        if (bytes < 1024L * 1024L) return String.format(Locale.ROOT, "%.1f KiB", bytes / 1024.0);
+        if (bytes < 1024L * 1024L * 1024L) return String.format(Locale.ROOT, "%.1f MiB", bytes / (1024.0 * 1024.0));
+        return String.format(Locale.ROOT, "%.2f GiB", bytes / (1024.0 * 1024.0 * 1024.0));
+    }
+
+    private static String safeMessage(Throwable error) {
+        if (error == null) return "Lỗi không xác định";
+        String message = error.getMessage();
+        return message == null || message.trim().isEmpty() ? error.getClass().getSimpleName() : message;
+    }
+
+    private void startOnlineGame() {
+        if (onlinePageVisible) return;
+        localPageVisible = false;
+        onlinePageVisible = true;
+        if (webView == null) createWebView();
+        webView.setVisibility(View.VISIBLE);
+        webView.bringToFront();
+        showLoading();
+        wakeServerThenOpen();
+    }
+
+    private void openLocalShellPreview() {
+        if (!localShellAvailable || resourceManager == null || localAssetLoader == null) {
+            resourceStatus.setText("Không có web/index.html hợp lệ trong resource release đã cài.");
+            return;
+        }
+        onlinePageVisible = false;
+        localPageVisible = true;
+        if (webView == null) createWebView();
+        webView.setVisibility(View.VISIBLE);
+        webView.bringToFront();
+        webView.loadUrl("https://gxb3.local/");
+    }
+
+    private void createWebView() {
         webView = new WebView(this);
-        webView.setBackgroundColor(Color.rgb(9, 11, 18));
-        setContentView(webView);
-
+        webView.setBackgroundColor(BG);
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true);
@@ -65,100 +461,104 @@ public final class MainActivity extends Activity {
         settings.setDisplayZoomControls(false);
         settings.setTextZoom(100);
         settings.setUserAgentString(settings.getUserAgentString() + " GXB3-Android/1.0 MobileApp");
-
         CookieManager cookies = CookieManager.getInstance();
         cookies.setAcceptCookie(true);
         cookies.setAcceptThirdPartyCookies(webView, false);
-
         webView.setWebChromeClient(new WebChromeClient() {
-            @Override
-            public boolean onJsConfirm(WebView view, String url, String message, JsResult result) {
-                String text = localizeConfirm(message);
+            @Override public boolean onJsConfirm(WebView view, String url, String message, JsResult result) {
                 AlertDialog dialog = new AlertDialog.Builder(MainActivity.this)
-                    .setTitle("GXB 3")
-                    .setMessage(text)
-                    .setNegativeButton("Hủy", (d, which) -> result.cancel())
-                    .setPositiveButton("Xác nhận", (d, which) -> result.confirm())
-                    .setOnCancelListener(d -> result.cancel())
-                    .create();
+                        .setTitle("GXB 3")
+                        .setMessage(localizeConfirm(message))
+                        .setNegativeButton("Hủy", (d, which) -> result.cancel())
+                        .setPositiveButton("Xác nhận", (d, which) -> result.confirm())
+                        .setOnCancelListener(d -> result.cancel())
+                        .create();
                 dialog.setCanceledOnTouchOutside(false);
                 dialog.show();
                 return true;
             }
         });
         webView.setWebViewClient(new WebViewClient() {
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+            @Override public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+                if (!localPageVisible) return null;
                 Uri uri = request.getUrl();
-                if ("https".equalsIgnoreCase(uri.getScheme())
-                        && "180-93-111-99.sslip.io".equalsIgnoreCase(uri.getHost())) {
-                    return false;
+                if ("https".equalsIgnoreCase(uri.getScheme()) && "gxb3.local".equalsIgnoreCase(uri.getHost())
+                        && localAssetLoader != null) {
+                    WebResourceResponse response = localAssetLoader.shouldInterceptRequest(uri);
+                    return response == null ? blockedLocalResponse(404, "Not Found") : response;
                 }
-                if ("https".equalsIgnoreCase(uri.getScheme())
-                        || "http".equalsIgnoreCase(uri.getScheme())
-                        || "zalo".equalsIgnoreCase(uri.getScheme())) {
-                    try {
-                        startActivity(new Intent(Intent.ACTION_VIEW, uri));
-                    } catch (Exception ignored) { }
+                return blockedLocalResponse(403, "Forbidden");
+            }
+            @Override public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                Uri uri = request.getUrl();
+                if (localPageVisible) return "https".equalsIgnoreCase(uri.getScheme()) && "gxb3.local".equalsIgnoreCase(uri.getHost()) ? false : true;
+                if ("https".equalsIgnoreCase(uri.getScheme()) && GAME_HOST.equalsIgnoreCase(uri.getHost())) return false;
+                if ("https".equalsIgnoreCase(uri.getScheme()) || "http".equalsIgnoreCase(uri.getScheme()) || "zalo".equalsIgnoreCase(uri.getScheme())) {
+                    try { startActivity(new Intent(Intent.ACTION_VIEW, uri)); } catch (Exception ignored) { }
                 }
                 return true;
             }
-
-            @Override
-            public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
-                if (request.isForMainFrame()) {
-                    showError();
-                }
+            @Override public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+                if (request.isForMainFrame()) showError();
             }
         });
+        root.addView(webView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+    }
 
-        if (state != null && webView.restoreState(state) != null) {
-            return;
-        }
-        showLoading();
-        wakeServerThenOpen();
+    private static WebResourceResponse blockedLocalResponse(int status, String reason) {
+        byte[] body = reason.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+        return new WebResourceResponse("text/plain", "UTF-8", status, reason,
+                Collections.singletonMap("Cache-Control", "no-store"), new ByteArrayInputStream(body));
     }
 
     private String localizeConfirm(String message) {
         String raw = message == null ? "" : message.trim();
-        if (raw.equalsIgnoreCase("This is irreversible. Are you sure you want to do this?")) {
+        if (raw.equalsIgnoreCase("This is irreversible. Are you sure you want to do this?") || raw.toLowerCase(Locale.ROOT).contains("irreversible")) {
             return "Thao tác này không thể hoàn tác. Bạn có chắc chắn muốn tiếp tục?";
         }
-        if (raw.toLowerCase().contains("irreversible")) {
-            return "Thao tác này không thể hoàn tác. Bạn có chắc chắn muốn tiếp tục?";
-        }
-        if (raw.isEmpty()) {
-            return "Bạn có chắc chắn muốn tiếp tục?";
-        }
-        return raw;
+        return raw.isEmpty() ? "Bạn có chắc chắn muốn tiếp tục?" : raw;
     }
 
     private void showLoading() {
-        webView.loadDataWithBaseURL("https://gxb3.local/", LOADING_HTML, "text/html", "UTF-8", null);
+        webView.loadDataWithBaseURL("https://gxb3.local/", loadingHtml(), "text/html", "UTF-8", null);
     }
 
     private void showError() {
-        webView.loadDataWithBaseURL("https://gxb3.local/", ERROR_HTML, "text/html", "UTF-8", null);
+        webView.loadDataWithBaseURL("https://gxb3.local/", errorHtml(), "text/html", "UTF-8", null);
+    }
+
+    private static String loadingHtml() {
+        return "<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>"
+                + "<style>html,body{margin:0;width:100%;height:100%;background:#090b12;color:#fff;font-family:sans-serif}"
+                + ".w{height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:18px}"
+                + ".l{font-size:38px;font-weight:800;letter-spacing:3px}.s{color:#b9c1d9;font-size:14px;text-align:center;padding:0 24px}"
+                + ".p{width:42px;height:42px;border:4px solid #252b3d;border-top-color:#8f5cff;border-radius:50%;animation:r 1s linear infinite}"
+                + "@keyframes r{to{transform:rotate(360deg)}}</style></head><body><div class='w'><div class='l'>GXB 3</div>"
+                + "<div class='p'></div><div class='s'>Đang kết nối chế độ trực tuyến…</div></div></body></html>";
+    }
+
+    private static String errorHtml() {
+        return "<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>"
+                + "<style>html,body{margin:0;width:100%;height:100%;background:#090b12;color:#fff;font-family:sans-serif}"
+                + ".w{height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:24px;box-sizing:border-box}"
+                + "p{color:#b9c1d9;line-height:1.6}</style></head><body><div class='w'><h1>GXB 3</h1>"
+                + "<p>Không thể kết nối máy chủ trực tuyến.<br>Hãy quay lại màn hình tài nguyên hoặc kiểm tra mạng.</p></div></body></html>";
     }
 
     private boolean serverReady() {
         HttpURLConnection connection = null;
         try {
-            connection = (HttpURLConnection) new URL(READY_URL).openConnection();
+            connection = (HttpURLConnection) new URL(GAME_ORIGIN + "/readyz").openConnection();
             connection.setConnectTimeout(15000);
             connection.setReadTimeout(15000);
             connection.setRequestMethod("GET");
             connection.setRequestProperty("Accept", "application/json");
             connection.setRequestProperty("User-Agent", "GXB3-Android/1.0");
-            if (connection.getResponseCode() != 200) {
-                return false;
-            }
+            if (connection.getResponseCode() != 200) return false;
             BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             StringBuilder body = new StringBuilder();
             String line;
-            while ((line = reader.readLine()) != null && body.length() < 65536) {
-                body.append(line);
-            }
+            while ((line = reader.readLine()) != null && body.length() < 65536) body.append(line);
             reader.close();
             String compact = body.toString().replace(" ", "").replace("\n", "").replace("\r", "");
             return compact.contains("\"ready\":true");
@@ -172,40 +572,65 @@ public final class MainActivity extends Activity {
     private void wakeServerThenOpen() {
         new Thread(() -> {
             long deadline = System.currentTimeMillis() + 150000L;
-            while (System.currentTimeMillis() < deadline) {
+            while (!isFinishing() && onlinePageVisible && System.currentTimeMillis() < deadline) {
                 if (serverReady()) {
-                    runOnUiThread(() -> webView.loadUrl(GAME_ORIGIN));
+                    runOnUiThread(() -> { if (onlinePageVisible && webView != null) webView.loadUrl(GAME_ORIGIN); });
                     return;
                 }
-                try {
-                    Thread.sleep(3000L);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    break;
-                }
+                try { Thread.sleep(3000L); }
+                catch (InterruptedException error) { Thread.currentThread().interrupt(); return; }
             }
-            runOnUiThread(this::showError);
-        }, "gxb3-server-wakeup").start();
+            runOnUiThread(() -> { if (onlinePageVisible && webView != null) showError(); });
+        }, "gxb3-online-server-wakeup").start();
     }
 
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        webView.saveState(outState);
+    private TextView text(String value, float sp, int color, boolean bold) {
+        TextView view = new TextView(this);
+        view.setText(value);
+        view.setTextSize(sp);
+        view.setTextColor(color);
+        if (bold) view.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+        return view;
+    }
+
+    private Button button(String label, boolean primary) {
+        Button view = new Button(this);
+        view.setText(label);
+        view.setAllCaps(false);
+        view.setTextSize(15);
+        view.setTextColor(FG);
+        view.setBackgroundTintList(ColorStateList.valueOf(primary ? PURPLE : Color.rgb(42, 48, 67)));
+        return view;
+    }
+
+    private LinearLayout.LayoutParams matchWrap() {
+        return new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+    }
+
+    private int dp(int value) {
+        return Math.round(value * getResources().getDisplayMetrics().density);
+    }
+
+    @Override protected void onSaveInstanceState(Bundle outState) {
+        if (webView != null && onlinePageVisible) webView.saveState(outState);
         super.onSaveInstanceState(outState);
     }
 
-    @Override
-    public void onBackPressed() {
-        if (webView != null && webView.canGoBack()) {
-            webView.goBack();
+    @Override public void onBackPressed() {
+        if (localPageVisible) {
+            showResourceHome();
+        } else if (onlinePageVisible && webView != null) {
+            if (webView.canGoBack()) webView.goBack();
+            else showResourceHome();
         } else {
             super.onBackPressed();
         }
     }
 
-    @Override
-    protected void onDestroy() {
+    @Override protected void onDestroy() {
+        if (resourceManager != null) resourceManager.close();
         if (webView != null) {
+            webView.stopLoading();
             webView.destroy();
         }
         super.onDestroy();

@@ -3,14 +3,16 @@
 **Nhánh:** `feature/offline-mode`
 
 
-**Trạng thái:** Kế hoạch triển khai; chưa có code tải tài nguyên được thêm trong tài liệu này
-**Mục tiêu người dùng:** Tải toàn bộ tài nguyên một lần, dùng lại không cần mạng, giữ qua lần đóng/mở app và cập nhật app; chỉ xóa khi người dùng xóa dữ liệu game hoặc gỡ game.
+**Trạng thái:** Quyết định sản phẩm đã chốt là Android chơi offline thật sự. Launcher có resource dashboard, signed downloader, background worker và local asset resolver; chưa có resource release đầy đủ hoặc local gameplay/API/save.
+**Mục tiêu người dùng:** Game Android phải chơi được offline; Internet chỉ tùy chọn để tải/cập nhật resource pack, còn shell, API/engine và save chạy local.
+
+Quyết định kiến trúc và cổng nghiệm thu được ghi tại [`QUYET_DINH_ANDROID_OFFLINE.vi.md`](./QUYET_DINH_ANDROID_OFFLINE.vi.md). Kế hoạch resource bên dưới là tổng quan; trình tự triển khai downloader/kho local cụ thể nằm trong [`KE_HOACH_ASSET_DOWNLOADER_ANDROID.vi.md`](./KE_HOACH_ASSET_DOWNLOADER_ANDROID.vi.md). Riêng việc tải tài nguyên **không** đáp ứng mục tiêu gameplay offline.
 
 ## 1. Hiện trạng trong nhánh
 
-Tại commit `ad5373eb`, các launcher Android/iOS vẫn mở game từ server online. Tài liệu [`clients/README.md`](../clients/README.md) nói rõ các launcher cần mạng và không chứa game offline. Mã Android chờ server sẵn sàng rồi mở URL; iOS tải URL gốc với policy bỏ qua cache cục bộ.
+Android hiện mở resource dashboard trước và có lựa chọn chơi online tách biệt; Windows/iOS vẫn là launcher online. Android local shell chỉ phục vụ file thuộc manifest đã ký và không fallback CDN, nhưng API/auth/gameplay chưa chạy local.
 
-Web client yêu cầu ảnh, âm thanh, Spine, JSON và dữ liệu theo đường dẫn `/assets/...`; nhiều màn hình chỉ tải tài nguyên khi người chơi mở màn đó. Server đọc các file trong `web/assets` và trả response `Cache-Control: no-store`. Không thấy service worker, manifest preload, resource pack downloader hoặc nơi lưu asset bền vững do app quản lý.
+Web client yêu cầu ảnh, âm thanh, Spine, JSON và dữ liệu theo đường dẫn `/assets/...`; nhiều màn hình chỉ tải tài nguyên khi người chơi mở màn đó. Android có `OfflineResourceManager`, WebView local handler và manifest/pack builder, nhưng chưa có allowlist release review hoặc origin/CDN phát hành.
 
 Kiểm kê trên working copy hiện tại:
 
@@ -24,11 +26,11 @@ Con số này là dung lượng trong checkout hiện tại, không phải cam k
 
 ## 2. Kết quả mong muốn và ranh giới phạm vi
 
-Sau khi hoàn tất tính năng, người dùng có thể chọn **Tải tài nguyên offline**. App cho biết dung lượng tổng, dung lượng còn thiếu, gói còn chờ tải và yêu cầu Wi-Fi/sạc nếu cần. Tải có thể tạm dừng/tiếp tục sau khi thoát app hoặc mất mạng. Sau khi xác minh xong, app đánh dấu phiên bản tài nguyên sẵn sàng và đọc file từ bộ lưu trữ riêng của ứng dụng, không tải lại từ server khi mở game.
+Người dùng có thể chọn **Tải/cập nhật tài nguyên offline**. App cho biết dung lượng tổng, dung lượng còn thiếu, gói còn chờ tải và yêu cầu Wi-Fi/sạc nếu cần. Tải có thể tạm dừng/tiếp tục sau khi thoát app hoặc mất mạng. Sau khi xác minh xong, app giữ phiên bản trong bộ lưu trữ riêng và dùng cùng local shell/API/engine khi mở game; khởi chạy gameplay không được chờ server hoặc tải lại asset từ production.
 
 Bộ tài nguyên được giữ trong thư mục dữ liệu ứng dụng bền vững. Nó phải tồn tại qua khởi động lại thiết bị và cập nhật app tương thích; bị xóa khi người dùng chọn xóa dữ liệu ứng dụng hoặc gỡ game. Không thể cam kết giữ khi người dùng chủ động xóa dữ liệu/gỡ app hoặc hệ điều hành xóa dữ liệu ứng dụng theo chính sách nền tảng.
 
-Tính năng **không tự đồng nghĩa với gameplay offline đầy đủ**. Hiện client mobile còn gọi server cho HTML/JS và API gameplay, đăng nhập, save, chiến đấu. Muốn game hoạt động khi không có mạng cần một hạng mục riêng: đưa giao diện/logic cần thiết vào app, cung cấp API/local engine, lưu save local và ngăn các request online không hỗ trợ offline. Không quảng bá “chơi offline hoàn toàn” cho tới khi các luồng đó có kiểm thử riêng.
+Việc tải asset chỉ là một lớp của tính năng. Để đáp ứng quyết định sản phẩm, còn phải đưa HTML/JS vào local app/resource store, cung cấp API/engine và save cục bộ, bỏ yêu cầu đăng nhập online cho hồ sơ offline, và chặn/đánh dấu các tính năng online-only. Không quảng bá “chơi offline hoàn toàn” trước khi campaign/save và các luồng single-player đã công bố qua kiểm thử airplane mode trên thiết bị thật.
 
 Asset công khai và save riêng tư cũng là hai loại dữ liệu khác nhau. Nếu dùng AWS, phân phối resource pack qua CDN/bucket asset riêng; không đặt resource pack public trong bucket private chứa save người chơi, và tuyệt đối không để AWS secret trong app.
 
@@ -64,7 +66,7 @@ Nếu người dùng chọn tải full, app phải báo rõ tổng dung lượng
 
 Bản đầu có thể phục vụ gói từ HTTPS server phát hành hiện tại. Khi chuyển sang AWS, dùng bucket/prefix asset riêng cùng CloudFront hoặc CDN tương đương: bucket không public trực tiếp, CDN đọc qua quyền origin, gói và manifest theo URL version bất biến. Resource pack là nội dung phát hành, không phải dữ liệu người dùng; không cần presigned URL theo từng người dùng nếu mô hình cấp phép không yêu cầu.
 
-Phiên bản trong URL không ghi đè, ví dụ `/offline-resources/<resource-version>/<pack-sha256>.zip`. Client xác minh SHA-256 trước khi giải nén. Nếu cần bảo vệ trước thay đổi manifest từ nguồn phân phối, CI ký manifest bằng Ed25519 và client chứa public key để xác minh chữ ký. HTTPS và hash bảo vệ đường truyền/toàn vẹn file; chữ ký manifest bảo vệ tính xác thực nguồn phát hành.
+Phiên bản trong URL không ghi đè, ví dụ `/offline-resources/<resource-version>/<pack-sha256>.zip`. Builder hiện hỗ trợ deterministic pack, SHA-256 và Ed25519-signed envelope; Android pin public key và từ chối manifest unsigned. HTTPS và hash bảo vệ đường truyền/toàn vẹn file; chữ ký manifest bảo vệ tính xác thực nguồn phát hành. Chưa có release publisher hoặc URL manifest dùng thật.
 
 ## 4. Lưu trữ bền vững trên thiết bị
 
@@ -107,10 +109,10 @@ Manifest phải chứa `minimum_app_version` và version schema. Nếu bản app
 
 ## 6. Những phần cần làm trong codebase
 
-1. `tools/build_offline_resource_manifest.py`: quét allowlist, phân loại file, sinh manifest/gói/checksum/chữ ký, kiểm tra file thiếu/trùng/path traversal và xuất báo cáo kích thước.
+1. `tools/build_offline_resource_manifest.py`: đã tạo deterministic pack/hash/signed envelope từ allowlist rõ ràng; còn cần allowlist reviewed, inventory thật sau hydrate LFS và release report.
 2. CI workflow mới `offline-resources.yml`: chạy generator sau khi asset/data thay đổi; kiểm tra manifest sạch; tạo artifacts có SHA-256; lưu metadata build/version; chỉ publish khi release được duyệt.
 3. `server.py` hoặc service phân phối: endpoint manifest/version và tải pack có Range/ETag nếu chưa dùng CDN. Đặt cache policy riêng cho URL bất biến; không để `Cache-Control: no-store` ngăn CDN giữ immutable pack.
-4. Android: module/resource manager native, worker có resume/progress, verify/extract an toàn và local WebView mapping.
+4. Android: manager/Worker/resume/progress/verify/extract/local WebView mapping đã có khung code; còn cần build + device test, Wi-Fi policy/retry/cleanup hardening và local API/engine/save.
 5. iOS: resource manager native, background URLSession, verify/extract an toàn và local WebView resource handler.
 6. Web client: config `online|offline`, asset base URL, không hard-code remote origin trong offline mode; các endpoint dữ liệu phải được xử lý bởi local API hoặc được nêu rõ là tính năng cần mạng.
 7. Desktop packaging: tạo bản phát hành có đủ resource/runtime; tách dependency cài đặt khỏi khởi động để không cần mạng khi chạy offline.

@@ -3,6 +3,8 @@ package com.quangho.goddess.battle.offline;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.bouncycastle.crypto.params.Ed25519PublicKeyParameters;
+import org.bouncycastle.crypto.signers.Ed25519Signer;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -27,6 +29,7 @@ import java.nio.file.StandardCopyOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -72,10 +75,9 @@ import java.util.zip.ZipInputStream;
  * Each ZIP entry must exactly match one manifest file path. ZIP paths are never used as output
  * paths; only validated manifest entries are written to the content-addressed store.</p>
  *
- * <p>This first module version uses HTTPS plus SHA-256 integrity checks. It does not yet verify a
- * signed manifest. Before public release, inject a trusted-manifest signature verifier or add the
- * agreed release-signing format; hashes from an unauthenticated manifest alone are not an origin
- * authenticity mechanism.</p>
+ * <p>Remote installation requires a pinned Ed25519 public key. The HTTPS manifest is an envelope
+ * containing Base64 canonical JSON bytes and their Ed25519 signature; pack and file hashes then
+ * provide content integrity. Never ship the signing private key in the app.</p>
  */
 public final class OfflineResourceManager implements AutoCloseable {
     private static final int MANIFEST_VERSION = 1;
@@ -102,13 +104,21 @@ public final class OfflineResourceManager implements AutoCloseable {
     private final File activeVersionFile;
     private final File lockFile;
     private final Set<String> trustedHosts;
+    private final byte[] manifestSigningKey;
     private final ExecutorService executor;
     private final AtomicBoolean running = new AtomicBoolean(false);
     private final AtomicBoolean cancelled = new AtomicBoolean(false);
     private volatile HttpURLConnection activeConnection;
     private volatile Future<?> activeFuture;
+    private volatile String cachedActiveVersion;
+    private volatile Manifest cachedActiveManifest;
 
     public OfflineResourceManager(File appFilesDirectory, Set<String> trustedHosts) throws IOException {
+        this(appFilesDirectory, trustedHosts, null);
+    }
+
+    /** The public key is raw 32-byte Ed25519 key encoded as standard Base64; null disables remote installs. */
+    public OfflineResourceManager(File appFilesDirectory, Set<String> trustedHosts, String pinnedPublicKeyBase64) throws IOException {
         if (appFilesDirectory == null) throw new IllegalArgumentException("appFilesDirectory is required");
         if (trustedHosts == null || trustedHosts.isEmpty()) {
             throw new IllegalArgumentException("At least one trusted HTTPS host is required");
@@ -130,6 +140,7 @@ public final class OfflineResourceManager implements AutoCloseable {
         }
         if (hosts.isEmpty()) throw new IllegalArgumentException("Trusted host list is empty");
         this.trustedHosts = Collections.unmodifiableSet(hosts);
+        this.manifestSigningKey = decodePublicKey(pinnedPublicKeyBase64);
         ensureDirectory(root);
         ensureDirectory(dataRoot);
         ensureDirectory(obbRoot);
@@ -228,15 +239,18 @@ public final class OfflineResourceManager implements AutoCloseable {
         public final Map<String, ResourceFile> filesByPath;
         public final long totalFileBytes;
         private final String rawJson;
+        private final String persistedJson;
 
         private Manifest(int manifestVersion, String resourceVersion, List<Pack> packs,
-                         Map<String, ResourceFile> filesByPath, long totalFileBytes, String rawJson) {
+                         Map<String, ResourceFile> filesByPath, long totalFileBytes, String rawJson,
+                         String persistedJson) {
             this.manifestVersion = manifestVersion;
             this.resourceVersion = resourceVersion;
             this.packs = Collections.unmodifiableList(new ArrayList<>(packs));
             this.filesByPath = Collections.unmodifiableMap(new LinkedHashMap<>(filesByPath));
             this.totalFileBytes = totalFileBytes;
             this.rawJson = rawJson;
+            this.persistedJson = persistedJson;
         }
     }
 
@@ -295,9 +309,55 @@ public final class OfflineResourceManager implements AutoCloseable {
                 }
                 packs.add(new Pack(id, url, packSize, packHash, packFiles));
             }
-            return new Manifest(version, resourceVersion, packs, files, totalFileBytes, json);
+            return new Manifest(version, resourceVersion, packs, files, totalFileBytes, json, json);
         } catch (JSONException | ArithmeticException e) {
             throw new IOException("Invalid resource manifest", e);
+        }
+    }
+
+    /** Verify the Ed25519 signature over the exact UTF-8 payload bytes before parsing its URLs or paths. */
+    public static Manifest parseSignedManifest(String envelopeJson, Set<String> trustedHosts,
+                                               String pinnedPublicKeyBase64) throws IOException {
+        byte[] publicKey = decodePublicKey(pinnedPublicKeyBase64);
+        return parseSignedManifest(envelopeJson, trustedHosts, publicKey);
+    }
+
+    private static Manifest parseSignedManifest(String envelopeJson, Set<String> trustedHosts,
+                                                byte[] publicKey) throws IOException {
+        if (publicKey == null) throw new IOException("No pinned Ed25519 manifest public key is configured");
+        if (envelopeJson == null || envelopeJson.getBytes(StandardCharsets.UTF_8).length > MAX_MANIFEST_BYTES) {
+            throw new IOException("Signed manifest is missing or exceeds the size limit");
+        }
+        try {
+            JSONObject envelope = new JSONObject(envelopeJson);
+            if (envelope.length() != 2) throw new IOException("Unexpected fields in signed manifest envelope");
+            byte[] payload = Base64.getDecoder().decode(envelope.getString("payload_b64"));
+            byte[] signature = Base64.getDecoder().decode(envelope.getString("signature_b64"));
+            if (payload.length == 0 || payload.length > MAX_MANIFEST_BYTES || signature.length != 64) {
+                throw new IOException("Invalid signed manifest payload or signature size");
+            }
+            Ed25519Signer verifier = new Ed25519Signer();
+            verifier.init(false, new Ed25519PublicKeyParameters(publicKey, 0));
+            verifier.update(payload, 0, payload.length);
+            if (!verifier.verifySignature(signature)) throw new IOException("Manifest Ed25519 signature verification failed");
+            Manifest parsed = parseManifest(new String(payload, StandardCharsets.UTF_8), trustedHosts);
+            return new Manifest(parsed.manifestVersion, parsed.resourceVersion, parsed.packs,
+                    parsed.filesByPath, parsed.totalFileBytes, parsed.rawJson, envelopeJson);
+        } catch (JSONException | IllegalArgumentException e) {
+            throw new IOException("Invalid signed manifest envelope", e);
+        }
+    }
+
+    private static byte[] decodePublicKey(String encoded) throws IOException {
+        if (encoded == null || encoded.trim().isEmpty()) return null;
+        try {
+            byte[] decoded = Base64.getDecoder().decode(encoded.trim());
+            if (decoded.length != Ed25519PublicKeyParameters.KEY_SIZE) {
+                throw new IOException("Pinned Ed25519 public key must contain exactly 32 bytes");
+            }
+            return decoded;
+        } catch (IllegalArgumentException e) {
+            throw new IOException("Pinned Ed25519 public key is not valid Base64", e);
         }
     }
 
@@ -314,8 +374,8 @@ public final class OfflineResourceManager implements AutoCloseable {
              FileLock ignored = acquireLock(channel)) {
             ensureNotCancelled();
             notifyProgress(listener, new Progress(Phase.FETCHING_MANIFEST, null, 0, 0, 0, 0, 0));
-            String json = fetchManifest(manifestUrl);
-            Manifest manifest = parseManifest(json, trustedHosts);
+            String envelope = fetchManifest(manifestUrl);
+            Manifest manifest = parseSignedManifest(envelope, trustedHosts, manifestSigningKey);
             return installManifest(manifest, listener);
         } catch (OverlappingFileLockException e) {
             throw new IOException("Another resource installation is active", e);
@@ -363,10 +423,14 @@ public final class OfflineResourceManager implements AutoCloseable {
     public synchronized Manifest activeManifest() throws IOException {
         String version = activeVersion();
         if (version == null) return null;
+        if (version.equals(cachedActiveVersion) && cachedActiveManifest != null) return cachedActiveManifest;
         File manifestFile = manifestFile(version);
         if (!manifestFile.isFile()) throw new IOException("Active resource manifest is missing");
         String json = new String(Files.readAllBytes(manifestFile.toPath()), StandardCharsets.UTF_8);
-        return parseManifest(json, trustedHosts);
+        Manifest parsed = parseSignedManifest(json, trustedHosts, manifestSigningKey);
+        cachedActiveVersion = version;
+        cachedActiveManifest = parsed;
+        return parsed;
     }
 
     /** Resolve a manifest path to its content-addressed file; no network fallback is performed. */
@@ -390,7 +454,7 @@ public final class OfflineResourceManager implements AutoCloseable {
         if (resourceVersion == null || !resourceVersion.matches("[A-Za-z0-9._-]{1,80}")) return false;
         File file = manifestFile(resourceVersion);
         if (!file.isFile()) return false;
-        Manifest manifest = parseManifest(new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8), trustedHosts);
+        Manifest manifest = parseSignedManifest(new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8), trustedHosts, manifestSigningKey);
         if (!resourceVersion.equals(manifest.resourceVersion)) return false;
         for (ResourceFile resource : manifest.filesByPath.values()) {
             File object = objectFile(resource);
@@ -404,7 +468,7 @@ public final class OfflineResourceManager implements AutoCloseable {
         if (resourceVersion == null || !resourceVersion.matches("[A-Za-z0-9._-]{1,80}")) return false;
         File file = manifestFile(resourceVersion);
         if (!file.isFile()) return false;
-        Manifest manifest = parseManifest(new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8), trustedHosts);
+        Manifest manifest = parseSignedManifest(new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8), trustedHosts, manifestSigningKey);
         for (ResourceFile resource : manifest.filesByPath.values()) {
             File object = objectFile(resource);
             if (!object.isFile() || object.length() != resource.sizeBytes || !resource.sha256.equals(sha256File(object))) return false;
@@ -416,6 +480,8 @@ public final class OfflineResourceManager implements AutoCloseable {
     public synchronized void activateInstalledVersion(String resourceVersion) throws IOException {
         if (!isVersionInstalled(resourceVersion)) throw new IOException("Requested resource release is not installed");
         writeAtomically(activeVersionFile, (resourceVersion + "\n").getBytes(StandardCharsets.UTF_8));
+        cachedActiveVersion = null;
+        cachedActiveManifest = null;
     }
 
     private InstallResult installManifest(Manifest manifest, Listener listener) throws IOException {
@@ -487,8 +553,10 @@ public final class OfflineResourceManager implements AutoCloseable {
         notifyProgress(listener, new Progress(Phase.ACTIVATING, null, manifest.packs.size(), manifest.packs.size(),
                 totalDownloadBytes, totalDownloadBytes, completedPacks));
         File savedManifest = manifestFile(manifest.resourceVersion);
-        writeAtomically(savedManifest, manifest.rawJson.getBytes(StandardCharsets.UTF_8));
+        writeAtomically(savedManifest, manifest.persistedJson.getBytes(StandardCharsets.UTF_8));
         writeAtomically(activeVersionFile, (manifest.resourceVersion + "\n").getBytes(StandardCharsets.UTF_8));
+        cachedActiveVersion = manifest.resourceVersion;
+        cachedActiveManifest = manifest;
         notifyProgress(listener, new Progress(Phase.COMPLETE, null, manifest.packs.size(), manifest.packs.size(),
                 totalDownloadBytes, totalDownloadBytes, completedPacks));
         return new InstallResult(manifest.resourceVersion, manifest.filesByPath.size(), manifest.packs.size(), newlyStoredBytes);

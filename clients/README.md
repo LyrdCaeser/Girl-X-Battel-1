@@ -7,7 +7,23 @@ Native launcher clients for the current GXB 3 production server, with authoritat
 - iOS 15.0+ unsigned IPA (WKWebView, arm64) for developers to sign with their own Apple provisioning profile; **unsigned IPAs cannot be directly installed on customer iPhones**.
 - iOS Safari Web Clip (.mobileconfig) to open the production web game from the Home Screen without Apple signing. Users can also open the URL in Safari and choose Share > Add to Home Screen, no profile needed.
 
-All launchers connect to the online server. Gameplay, login, payments, PvP, guild progress and inventory are stored server-side; these packages do not contain an offline game.
+Windows and iOS launchers connect to the online server. The Android launcher opens a native resource screen first, with a separate **Chơi trực tuyến** entry. Android now has a signed-manifest verifier, content-addressed resource store, strict local WebView asset resolver and resumable WorkManager download job. No resource release is published/configured by default. Downloaded assets and the local HTML shell do not yet provide playable offline gameplay: a device-local game API/engine and save integration remain the major unfinished part.
+
+#### Android Asset Downloader (development wiring)
+
+The default Android build intentionally leaves the download button disabled until a release manifest and trusted HTTPS hosts are configured. Supply Gradle project properties at build time; do not put CDN credentials or signing secrets in these properties:
+
+```sh
+gradle -p clients/android \
+  -PgxbOfflineManifestUrl=https://cdn.example.com/offline-resources/manifest.json \
+  -PgxbOfflineTrustedHosts=cdn.example.com,assets.example.com \
+  -PgxbOfflineManifestPublicKeyB64='<base64 raw 32-byte Ed25519 public key>' \
+  :app:assembleDebug
+```
+
+`gxbOfflineTrustedHosts` must include the manifest host and every HTTPS host used by pack URLs/redirects. `gxbOfflineManifestPublicKeyB64` is a Base64-encoded raw Ed25519 public key; the matching private key is used only by the pack-publishing tool and must never be placed in the APK or repository. The Android worker continues across Activity recreation and retains verified partial downloads for a later retry. The **Xem thử shell local** button only proves local HTML/CSS/JS asset serving; it is not the game API and is not an offline-play readiness check.
+
+Use `tools/build_offline_resource_manifest.py` with an explicit allowlist to create deterministic ZIP packs. Provide `--private-key` for the Ed25519 PEM signing key; unsigned output is development-only and the Android downloader rejects it. Do not publish any pack built from unresolved Git LFS pointer files. This checkout currently lacks the LFS object cache required for the full game asset set, so a real release pack cannot yet be built here.
 
 **Android signature caveat:** The RC workflow currently uses the ephemeral CI debug signing identity. A later rebuild may use a different key and require uninstalling an earlier RC APK before installation. This does not remove server-side account progress but can remove device-local application data. For a permanent production Android release, use a private, persistent release keystore rather than the debug key.
 
