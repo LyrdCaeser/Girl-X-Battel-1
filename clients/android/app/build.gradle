@@ -11,6 +11,19 @@ def asBuildConfigString = { String value ->
 android {
     namespace "com.quangho.goddess.battle"
     compileSdk 35
+    sourceSets {
+        main {
+            // battle_host.lua and runtime/lua are read from app-private storage
+            // by BattleRuntimeBridge after extraction from the APK assets.
+            assets.srcDirs += file("../../../runtime")
+        }
+    }
+    externalNativeBuild {
+        cmake {
+            path file("src/main/cpp/CMakeLists.txt")
+            version "3.22.1"
+        }
+    }
     buildFeatures {
         buildConfig true
     }
@@ -24,6 +37,11 @@ android {
         buildConfigField "String", "OFFLINE_RESOURCE_MANIFEST_URL", asBuildConfigString(offlineManifestUrl)
         buildConfigField "String", "OFFLINE_RESOURCE_TRUSTED_HOSTS", asBuildConfigString(offlineTrustedHosts)
         buildConfigField "String", "OFFLINE_RESOURCE_PUBLIC_KEY_B64", asBuildConfigString(offlineManifestPublicKey)
+        externalNativeBuild {
+            cmake {
+                cppFlags "-std=c++17"
+            }
+        }
     }
 
     buildTypes {

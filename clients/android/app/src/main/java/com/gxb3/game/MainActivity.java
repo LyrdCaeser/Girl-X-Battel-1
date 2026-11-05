@@ -5,6 +5,9 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -70,6 +73,9 @@ public final class MainActivity extends ComponentActivity {
     private boolean onlinePageVisible;
     private volatile boolean localPageVisible;
     private volatile boolean localShellAvailable;
+    private ConnectivityManager connectivityManager;
+    private ConnectivityManager.NetworkCallback connectivityCallback;
+    private volatile boolean switchingToLocal;
 
     @Override protected void onCreate(Bundle state) {
         super.onCreate(state);
@@ -80,8 +86,35 @@ public final class MainActivity extends ComponentActivity {
         setContentView(root);
         createResourceManager();
         showResourceHome();
+        registerConnectivityMonitor();
         refreshInstalledResourceStatus();
         observeDownloadWork();
+    }
+
+    /** Watches connectivity as a trigger for local fallback; it never reopens production automatically. */
+    private void registerConnectivityMonitor() {
+        connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+        if (connectivityManager == null) return;
+        connectivityCallback = new ConnectivityManager.NetworkCallback() {
+            @Override public void onLost(Network network) {
+                runOnUiThread(() -> {
+                    if (onlinePageVisible && !hasUsableNetwork()) switchToLocalMode("Mất kết nối mạng");
+                });
+            }
+        };
+        try {
+            connectivityManager.registerDefaultNetworkCallback(connectivityCallback);
+        } catch (RuntimeException ignored) {
+            connectivityCallback = null;
+        }
+    }
+
+    private boolean hasUsableNetwork() {
+        if (connectivityManager == null) return false;
+        Network network = connectivityManager.getActiveNetwork();
+        if (network == null) return false;
+        NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(network);
+        return capabilities != null && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
     }
 
     private void createResourceManager() {
@@ -421,6 +454,7 @@ public final class MainActivity extends ComponentActivity {
 
     private void startOnlineGame() {
         if (onlinePageVisible) return;
+        switchingToLocal = false;
         localPageVisible = false;
         onlinePageVisible = true;
         if (webView == null) createWebView();
@@ -441,6 +475,30 @@ public final class MainActivity extends ComponentActivity {
         webView.setVisibility(View.VISIBLE);
         webView.bringToFront();
         webView.loadUrl("https://gxb3.local/");
+    }
+
+    /** Switches to the installed local release without falling back to production. */
+    private void switchToLocalMode(String reason) {
+        if (switchingToLocal || localPageVisible || !onlinePageVisible) return;
+        switchingToLocal = true;
+        if (localShellAvailable && resourceManager != null && localAssetLoader != null) {
+            onlinePageVisible = false;
+            localPageVisible = true;
+            if (webView == null) createWebView();
+            webView.setVisibility(View.VISIBLE);
+            webView.bringToFront();
+            webView.loadUrl("https://gxb3.local/");
+            switchingToLocal = false;
+            return;
+        }
+        onlinePageVisible = false;
+        localPageVisible = false;
+        if (webView != null) {
+            webView.setVisibility(View.VISIBLE);
+            webView.bringToFront();
+            webView.loadDataWithBaseURL("https://gxb3.local/", offlineUnavailableHtml(reason), "text/html", "UTF-8", null);
+        }
+        switchingToLocal = false;
     }
 
     private void createWebView() {
@@ -499,7 +557,9 @@ public final class MainActivity extends ComponentActivity {
                 return true;
             }
             @Override public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
-                if (request.isForMainFrame()) showError();
+                if (request.isForMainFrame() && onlinePageVisible) {
+                    switchToLocalMode("Không kết nối được máy chủ trực tuyến");
+                }
             }
         });
         root.addView(webView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -545,6 +605,15 @@ public final class MainActivity extends ComponentActivity {
                 + "<p>Không thể kết nối máy chủ trực tuyến.<br>Hãy quay lại màn hình tài nguyên hoặc kiểm tra mạng.</p></div></body></html>";
     }
 
+    private static String offlineUnavailableHtml(String reason) {
+        String safeReason = reason == null ? "Mất kết nối mạng" : reason.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
+        return "<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>"
+                + "<style>html,body{margin:0;width:100%;height:100%;background:#090b12;color:#fff;font-family:sans-serif}"
+                + ".w{height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:24px;box-sizing:border-box}"
+                + "p{color:#b9c1d9;line-height:1.6;max-width:420px}</style></head><body><div class='w'><h1>GXB 3 · Local mode</h1>"
+                + "<p>" + safeReason + ".</p><p>Chưa có resource release local hợp lệ để mở game. Hãy kết nối mạng, tải tài nguyên offline một lần rồi thử lại.</p></div></body></html>";
+    }
+
     private boolean serverReady() {
         HttpURLConnection connection = null;
         try {
@@ -580,7 +649,9 @@ public final class MainActivity extends ComponentActivity {
                 try { Thread.sleep(3000L); }
                 catch (InterruptedException error) { Thread.currentThread().interrupt(); return; }
             }
-            runOnUiThread(() -> { if (onlinePageVisible && webView != null) showError(); });
+            runOnUiThread(() -> {
+                if (onlinePageVisible && webView != null) switchToLocalMode("Máy chủ trực tuyến không phản hồi");
+            });
         }, "gxb3-online-server-wakeup").start();
     }
 
@@ -628,6 +699,9 @@ public final class MainActivity extends ComponentActivity {
     }
 
     @Override protected void onDestroy() {
+        if (connectivityManager != null && connectivityCallback != null) {
+            try { connectivityManager.unregisterNetworkCallback(connectivityCallback); } catch (RuntimeException ignored) { }
+        }
         if (resourceManager != null) resourceManager.close();
         if (webView != null) {
             webView.stopLoading();
