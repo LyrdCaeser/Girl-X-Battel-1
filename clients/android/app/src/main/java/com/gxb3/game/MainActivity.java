@@ -36,6 +36,7 @@ import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.quangho.goddess.battle.offline.OfflineResourceDownloadWorker;
 import com.quangho.goddess.battle.offline.OfflineResourceManager;
 
 import java.io.BufferedReader;
