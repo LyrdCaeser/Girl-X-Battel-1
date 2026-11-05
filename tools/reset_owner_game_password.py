@@ -89,7 +89,6 @@ def reset_existing_owner_account(password, recovery_code):
         else:
             auth._save_recovery(db, account_id, code_hash, now, 0)
         db.execute("DELETE FROM sessions WHERE account_id=?", (account_id,))
-        db.execute("DELETE FROM login_attempts WHERE bucket IN (SELECT bucket FROM login_attempts)")
         db.commit()
         return {"uid": TARGET_UID, "username": TARGET_USERNAME}
     except Exception:

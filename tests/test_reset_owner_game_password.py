@@ -22,6 +22,9 @@ class ResetOwnerGamePasswordTests(unittest.TestCase):
         })
         self.env.start()
         self.addCleanup(self.env.stop)
+        self.pg = patch.object(database, "is_postgres", return_value=True)
+        self.pg.start()
+        self.addCleanup(self.pg.stop)
         db = auth._db()
         db.execute("""INSERT INTO accounts(uid,username,email,password_hash,salt,status,created_at)
                       VALUES(?,?,?,?,?,'active',?)""",
