@@ -1,9 +1,12 @@
 package com.quangho.goddess.battle;
 
 import android.app.AlertDialog;
+import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.RippleDrawable;
@@ -15,6 +18,7 @@ import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.webkit.CookieManager;
 import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
@@ -73,6 +77,8 @@ public final class MainActivity extends ComponentActivity {
     private Button downloadButton;
     private Button cancelButton;
     private Button localPreviewButton;
+    private View onboardingArtwork;
+    private OnboardingEffectsView onboardingEffects;
     private boolean installBusy;
     private boolean onlinePageVisible;
     private volatile boolean localPageVisible;
@@ -173,66 +179,64 @@ public final class MainActivity extends ComponentActivity {
         LinearLayout page = new LinearLayout(this);
         page.setOrientation(LinearLayout.VERTICAL);
         page.setGravity(Gravity.CENTER_HORIZONTAL);
-        page.setPadding(dp(22), dp(6), dp(22), dp(20));
-        page.setBackgroundColor(BG);
+        page.setPadding(dp(20), 0, dp(20), dp(22));
+        page.setBackground(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
+                new int[] {Color.rgb(39, 29, 88), Color.rgb(17, 20, 63), BG}));
 
         FrameLayout hero = new FrameLayout(this);
         LinearLayout.LayoutParams heroParams = matchWrap();
-        heroParams.height = dp(380);
-        heroParams.setMargins(-dp(22), 0, -dp(22), 0);
+        heroParams.height = dp(520);
+        heroParams.setMargins(-dp(20), 0, -dp(20), 0);
         page.addView(hero, heroParams);
 
+        onboardingEffects = new OnboardingEffectsView(this);
+        hero.addView(onboardingEffects, new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
         ImageView artwork = new ImageView(this);
-        artwork.setImageResource(R.drawable.offline_hero);
-        artwork.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        artwork.setBackgroundColor(Color.rgb(19, 18, 47));
-        artwork.setContentDescription("Nhân vật trong GxB3");
+        onboardingArtwork = artwork;
+        artwork.setImageResource(R.drawable.gxb3_onboarding_hero);
+        artwork.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        artwork.setContentDescription("Gwen và Brigit mở cánh cửa định mệnh");
         hero.addView(artwork, new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
         View lowerFade = new View(this);
         lowerFade.setBackground(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
-                new int[] {0x000b0c27, 0x550b0c27, BG}));
+                new int[] {0x0011153f, 0x5511153f, 0xf011143f, BG}));
         hero.addView(lowerFade, new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-        TextView brand = text("G    W    B", 12, Color.rgb(187, 190, 218), true);
+        TextView brand = text("G  X  B  3", 12, Color.rgb(220, 215, 255), true);
         brand.setGravity(Gravity.CENTER);
-        brand.setLetterSpacing(0.28f);
+        brand.setLetterSpacing(0.2f);
         FrameLayout.LayoutParams brandParams = new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT,
                 Gravity.TOP | Gravity.CENTER_HORIZONTAL);
-        brandParams.topMargin = dp(24);
+        brandParams.topMargin = dp(22);
         hero.addView(brand, brandParams);
 
-        LinearLayout heroCaption = new LinearLayout(this);
-        heroCaption.setOrientation(LinearLayout.VERTICAL);
-        heroCaption.setGravity(Gravity.CENTER_HORIZONTAL);
-        TextView gameTitle = text("GxB3", 38, FG, true);
+        TextView gameTitle = text("Cánh cửa định mệnh đang mở", 26, FG, true);
         gameTitle.setGravity(Gravity.CENTER);
         gameTitle.setShadowLayer(dp(5), 0f, dp(2), Color.BLACK);
-        heroCaption.addView(gameTitle, matchWrap());
-        TextView tagline = text("Cánh cửa định mệnh mở ra", 17, FG, true);
-        tagline.setGravity(Gravity.CENTER);
-        tagline.setShadowLayer(dp(4), 0f, dp(1), Color.BLACK);
-        heroCaption.addView(tagline, matchWrap());
-        FrameLayout.LayoutParams captionParams = new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.BOTTOM);
-        captionParams.bottomMargin = dp(10);
-        hero.addView(heroCaption, captionParams);
+        FrameLayout.LayoutParams titleParams = new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT,
+                Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
+        titleParams.setMargins(dp(22), 0, dp(22), dp(16));
+        hero.addView(gameTitle, titleParams);
 
-        TextView intro = text("Cùng các nữ thần viết nên chương đầu tiên của bạn.", 17, FG, false);
+        TextView intro = text("Cùng các nữ thần viết nên chương đầu tiên của bạn.", 16, FG, false);
         intro.setGravity(Gravity.CENTER);
         intro.setLineSpacing(dp(2), 1f);
         LinearLayout.LayoutParams introParams = matchWrap();
-        introParams.topMargin = dp(7);
+        introParams.topMargin = dp(14);
         page.addView(intro, introParams);
 
-        resourceStatus = text("Chưa có dữ liệu trò chơi. Hãy tải để bắt đầu cuộc phiêu lưu.", 14, MUTED, false);
+        resourceStatus = text("Đang chuẩn bị hành trình…", 12, Color.rgb(194, 190, 226), false);
         resourceStatus.setGravity(Gravity.CENTER);
         resourceStatus.setLineSpacing(dp(3), 1f);
         LinearLayout.LayoutParams statusParams = matchWrap();
-        statusParams.topMargin = dp(10);
+        statusParams.topMargin = dp(8);
         page.addView(resourceStatus, statusParams);
 
         progressBar = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
@@ -251,13 +255,13 @@ public final class MainActivity extends ComponentActivity {
 
         Button startButton = button("Bắt đầu hành trình", true);
         LinearLayout.LayoutParams startParams = matchWrap();
-        startParams.topMargin = dp(16);
+        startParams.topMargin = dp(18);
         page.addView(startButton, startParams);
         startButton.setOnClickListener(view -> startOfflineJourney());
 
         downloadButton = button("Tải dữ liệu trò chơi", false);
         LinearLayout.LayoutParams downloadParams = matchWrap();
-        downloadParams.topMargin = dp(8);
+        downloadParams.topMargin = dp(18);
         page.addView(downloadButton, downloadParams);
         downloadButton.setOnClickListener(view -> confirmAndStartInstall());
 
@@ -271,7 +275,7 @@ public final class MainActivity extends ComponentActivity {
 
         Button onlineButton = button("Chơi với kết nối mạng", false);
         LinearLayout.LayoutParams onlineParams = matchWrap();
-        onlineParams.topMargin = dp(8);
+        onlineParams.topMargin = dp(4);
         page.addView(onlineButton, onlineParams);
         onlineButton.setOnClickListener(view -> startOnlineGame());
 
@@ -290,6 +294,23 @@ public final class MainActivity extends ComponentActivity {
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         if (webView != null) root.addView(webView, new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        artwork.post(() -> artwork.animate()
+                .translationY(dp(7))
+                .scaleX(1.025f)
+                .scaleY(1.025f)
+                .setDuration(2600L)
+                .setInterpolator(new AccelerateDecelerateInterpolator())
+                .setListener(new android.animation.AnimatorListenerAdapter() {
+                    @Override public void onAnimationEnd(android.animation.Animator animation) {
+                        if (artwork.getParent() != null) {
+                            artwork.animate().translationY(0f).scaleX(1f).scaleY(1f)
+                                    .setDuration(2600L)
+                                    .setInterpolator(new AccelerateDecelerateInterpolator())
+                                    .setListener(this)
+                                    .start();
+                        }
+                    }
+                }).start());
         updateDownloaderAvailability();
     }
 
@@ -523,12 +544,7 @@ public final class MainActivity extends ComponentActivity {
 
     private void startOfflineJourney() {
         if (localShellAvailable && resourceManager != null && localAssetLoader != null) {
-            new AlertDialog.Builder(this)
-                    .setTitle("Chế độ ngoại tuyến")
-                    .setMessage("Dữ liệu giao diện local đã có, nhưng API trận đấu và lưu tiến trình offline chưa được tích hợp trong bản này.")
-                    .setNegativeButton("Để sau", (dialog, which) -> { })
-                    .setPositiveButton("Xem thử giao diện", (dialog, which) -> openLocalShellPreview())
-                    .show();
+            openLocalShellPreview();
             return;
         }
         if (downloaderConfigured() && resourceManager != null) {
@@ -721,6 +737,61 @@ public final class MainActivity extends ComponentActivity {
         }, "gxb3-online-server-wakeup").start();
     }
 
+    /** Lightweight ambient magic particles kept deliberately behind the hero artwork. */
+    private final class OnboardingEffectsView extends View {
+        private final Paint glow = new Paint(Paint.ANTI_ALIAS_FLAG);
+        private final Paint speck = new Paint(Paint.ANTI_ALIAS_FLAG);
+        private final float[] x = {0.14f, 0.25f, 0.78f, 0.88f, 0.34f, 0.68f, 0.08f, 0.93f};
+        private final float[] y = {0.24f, 0.42f, 0.18f, 0.48f, 0.68f, 0.72f, 0.78f, 0.83f};
+        private final float[] phase = {0.0f, 1.4f, 2.1f, 3.5f, 4.3f, 5.1f, 0.8f, 2.8f};
+        private ValueAnimator animator;
+
+        OnboardingEffectsView(android.content.Context context) {
+            super(context);
+            setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+            glow.setShader(new android.graphics.RadialGradient(0f, 0f, dp(170),
+                    new int[] {0x668e7dff, 0x2283d9ff, 0x0011153f},
+                    new float[] {0f, 0.45f, 1f}, android.graphics.Shader.TileMode.CLAMP));
+            speck.setColor(0xffb9efff);
+            animator = ValueAnimator.ofFloat(0f, (float) (Math.PI * 2));
+            animator.setDuration(9000L);
+            animator.setRepeatCount(ValueAnimator.INFINITE);
+            animator.addUpdateListener(value -> invalidate());
+        }
+
+        @Override protected void onAttachedToWindow() {
+            super.onAttachedToWindow();
+            if (animator != null) animator.start();
+        }
+
+        @Override protected void onDetachedFromWindow() {
+            if (animator != null) animator.cancel();
+            super.onDetachedFromWindow();
+        }
+
+        @Override protected void onDraw(Canvas canvas) {
+            super.onDraw(canvas);
+            float t = animator == null ? 0f : (Float) animator.getAnimatedValue();
+            float cx = getWidth() * (0.5f + 0.035f * (float) Math.sin(t));
+            float cy = getHeight() * 0.43f;
+            canvas.drawCircle(cx, cy, dp(170), glow);
+            for (int i = 0; i < x.length; i++) {
+                float drift = (float) Math.sin(t * 1.2f + phase[i]) * dp(10);
+                float px = getWidth() * x[i] + drift;
+                float py = getHeight() * y[i] - (t * dp(7) + phase[i] * dp(8)) % dp(48);
+                float pulse = 0.55f + 0.45f * (float) Math.sin(t * 1.8f + phase[i]);
+                speck.setAlpha((int) (90 + 130 * pulse));
+                speck.setStyle(Paint.Style.FILL);
+                canvas.drawCircle(px, py, dp(i % 3 == 0 ? 2 : 1), speck);
+                if (i % 3 == 1) {
+                    speck.setStyle(Paint.Style.STROKE);
+                    speck.setStrokeWidth(dp(1));
+                    canvas.drawOval(px - dp(4), py - dp(2), px + dp(4), py + dp(2), speck);
+                }
+            }
+        }
+    }
+
     private TextView text(String value, float sp, int color, boolean bold) {
         TextView view = new TextView(this);
         view.setText(value);
@@ -770,6 +841,8 @@ public final class MainActivity extends ComponentActivity {
     }
 
     @Override protected void onDestroy() {
+        if (onboardingArtwork != null) onboardingArtwork.animate().cancel();
+        if (onboardingEffects != null) onboardingEffects.setVisibility(View.GONE);
         if (connectivityManager != null && connectivityCallback != null) {
             try { connectivityManager.unregisterNetworkCallback(connectivityCallback); } catch (RuntimeException ignored) { }
         }
