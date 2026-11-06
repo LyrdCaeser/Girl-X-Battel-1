@@ -127,6 +127,15 @@ public final class OfflineLocalApi {
         if (gameProvider != null && "/api/state".equals(path) && "GET".equals(method)) {
             return gameProvider.state();
         }
+        if (gameProvider != null && "/api/partners".equals(path) && "GET".equals(method)) {
+            return gameProvider.partners();
+        }
+        if (gameProvider != null && "/api/formation".equals(path) && "GET".equals(method)) {
+            return gameProvider.formation();
+        }
+        if (gameProvider != null && "/api/inventory".equals(path) && "GET".equals(method)) {
+            return gameProvider.inventory();
+        }
         if (gameProvider != null && "/api/action".equals(path) && "POST".equals(method)) {
             return gameProvider.action(bodyJson);
         }
@@ -138,11 +147,20 @@ public final class OfflineLocalApi {
             catch (NumberFormatException ignored) { return error(400, "invalid_battle_id"); }
         }
 
+        if (isOnlineOnlyPath(path)) return error(403, "offline_online_only");
+
         if (path.startsWith("/api/")) {
             // Deliberately fail rather than return plausible but non-persistent game data.
             return error(501, "offline_api_not_implemented");
         }
         return error(404, "local_api_not_found");
+    }
+
+    private static boolean isOnlineOnlyPath(String path) {
+        return path.equals("/api/login") || path.startsWith("/api/auth/")
+                || path.startsWith("/api/payment/") || path.startsWith("/api/pvp/")
+                || path.startsWith("/api/guild/") || path.startsWith("/api/chat/")
+                || path.startsWith("/api/leaderboard/") || path.startsWith("/api/cloud/");
     }
 
     public String errorEnvelope(String rawMessage, int status, String code) {

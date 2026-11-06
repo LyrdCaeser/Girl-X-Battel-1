@@ -32,9 +32,37 @@ public final class OfflineGameProvider {
         load();
     }
 
+    /** File-backed constructor for JVM contract tests; production uses the Context constructor. */
+    OfflineGameProvider(File filesDirectory) throws IOException {
+        this.context = null;
+        this.saveFile = new File(filesDirectory, "offline/profile.json");
+        load();
+    }
+
     public OfflineLocalApi.Response state() {
         lock.readLock().lock();
         try { return ok(copy(save)); }
+        finally { lock.readLock().unlock(); }
+    }
+
+    public OfflineLocalApi.Response partners() {
+        lock.readLock().lock();
+        try { return ok(new JSONObject().put("partners", save.optJSONArray("roster"))); }
+        catch (JSONException error) { return error(500, "offline_state_invalid"); }
+        finally { lock.readLock().unlock(); }
+    }
+
+    public OfflineLocalApi.Response formation() {
+        lock.readLock().lock();
+        try { return ok(new JSONObject().put("partners", save.optJSONArray("formation"))); }
+        catch (JSONException error) { return error(500, "offline_state_invalid"); }
+        finally { lock.readLock().unlock(); }
+    }
+
+    public OfflineLocalApi.Response inventory() {
+        lock.readLock().lock();
+        try { return ok(new JSONObject().put("items", save.optJSONObject("items"))); }
+        catch (JSONException error) { return error(500, "offline_state_invalid"); }
         finally { lock.readLock().unlock(); }
     }
 
@@ -153,8 +181,8 @@ public final class OfflineGameProvider {
             if (!saveFile.isFile()) { save = initial(); persist(); return; }
             byte[] bytes;
             try (FileInputStream in = new FileInputStream(saveFile)) { bytes = readAll(in); }
-            save = new JSONObject(new String(bytes, StandardCharsets.UTF_8));
-            if (save.optInt("save_version", -1) != SAVE_VERSION) throw new IOException("Unsupported offline save version");
+            save = migrate(new JSONObject(new String(bytes, StandardCharsets.UTF_8)));
+            persist();
         } catch (JSONException error) { throw new IOException("Corrupt offline save", error); }
         finally { lock.writeLock().unlock(); }
     }
@@ -174,6 +202,36 @@ public final class OfflineGameProvider {
         for (int i = 1; i <= 30; i++) stages.put(new JSONObject().put("id", i).put("chapter", 1).put("level_required", 1).put("unlocked", i == 1));
         put(s, "stages", stages); put(s, "battle_reports", new JSONObject()); put(s, "next_battle_id", 1L);
         return s;
+    }
+
+    /**
+     * Upgrades the pre-MVP save shape without discarding campaign progress. Version zero
+     * files were written before the durable save contract was pinned and may only contain
+     * profile/formation/cleared fields. Missing MVP fields receive the same deterministic
+     * defaults as a new guest profile.
+     */
+    static JSONObject migrate(JSONObject legacy) throws JSONException, IOException {
+        int version = legacy.optInt("save_version", 0);
+        if (version > SAVE_VERSION) throw new IOException("Unsupported offline save version");
+        if (version == SAVE_VERSION) return legacy;
+        JSONObject defaults = initial();
+        copyIfMissing(legacy, defaults, "revision");
+        copyIfMissing(legacy, defaults, "level");
+        copyIfMissing(legacy, defaults, "next_stage");
+        copyIfMissing(legacy, defaults, "cleared");
+        copyIfMissing(legacy, defaults, "items");
+        copyIfMissing(legacy, defaults, "profile");
+        copyIfMissing(legacy, defaults, "formation");
+        copyIfMissing(legacy, defaults, "roster");
+        copyIfMissing(legacy, defaults, "stages");
+        copyIfMissing(legacy, defaults, "battle_reports");
+        copyIfMissing(legacy, defaults, "next_battle_id");
+        legacy.put("save_version", SAVE_VERSION);
+        return legacy;
+    }
+
+    private static void copyIfMissing(JSONObject target, JSONObject defaults, String key) throws JSONException {
+        if (!target.has(key)) target.put(key, defaults.get(key));
     }
 
     private void persist() throws IOException {

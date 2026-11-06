@@ -4,6 +4,10 @@ plugins {
 def offlineManifestUrl = (project.findProperty("gxbOfflineManifestUrl") ?: "").toString()
 def offlineTrustedHosts = (project.findProperty("gxbOfflineTrustedHosts") ?: "").toString()
 def offlineManifestPublicKey = (project.findProperty("gxbOfflineManifestPublicKeyB64") ?: "").toString()
+def releaseKeystore = (project.findProperty("gxbReleaseKeystore") ?: System.getenv("GXB_RELEASE_KEYSTORE") ?: "").toString()
+def releaseStorePassword = (project.findProperty("gxbReleaseStorePassword") ?: System.getenv("GXB_RELEASE_STORE_PASSWORD") ?: "").toString()
+def releaseKeyAlias = (project.findProperty("gxbReleaseKeyAlias") ?: System.getenv("GXB_RELEASE_KEY_ALIAS") ?: "").toString()
+def releaseKeyPassword = (project.findProperty("gxbReleaseKeyPassword") ?: System.getenv("GXB_RELEASE_KEY_PASSWORD") ?: "").toString()
 def asBuildConfigString = { String value ->
     '"' + value.replace('\\', '\\\\').replace('"', '\\"').replace('\n', '\\n').replace('\r', '\\r') + '"'
 }
@@ -26,6 +30,17 @@ android {
     }
     buildFeatures {
         buildConfig true
+    }
+
+    signingConfigs {
+        if (releaseKeystore && releaseStorePassword && releaseKeyAlias && releaseKeyPassword) {
+            create("offlineRelease") {
+                storeFile file(releaseKeystore)
+                storePassword releaseStorePassword
+                keyAlias releaseKeyAlias
+                keyPassword releaseKeyPassword
+            }
+        }
     }
 
     defaultConfig {
@@ -51,9 +66,13 @@ android {
         release {
             minifyEnabled false
             shrinkResources false
-            // RC distribution signature. Replace with the permanent private
-            // release keystore before the first irreversible public Android release.
-            signingConfig signingConfigs.debug
+            if (releaseKeystore && releaseStorePassword && releaseKeyAlias && releaseKeyPassword) {
+                signingConfig signingConfigs.offlineRelease
+            } else {
+                // Local developer builds remain possible; release CI runs the gate,
+                // which rejects this debug fallback before publishing.
+                signingConfig signingConfigs.debug
+            }
         }
     }
 }

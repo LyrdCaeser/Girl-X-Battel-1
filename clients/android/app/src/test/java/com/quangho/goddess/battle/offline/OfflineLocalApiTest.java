@@ -45,6 +45,16 @@ public final class OfflineLocalApiTest {
         assertEquals(404, api.handleRequest("GET", "/assets/catalog.json", null).status);
     }
 
+    @Test public void rejectsOnlineOnlyRoutesInsteadOfForwardingToProduction() throws Exception {
+        String[] routes = {"/api/login", "/api/pvp/match", "/api/guild/chat", "/api/leaderboard/top", "/api/cloud/sync"};
+        for (String route : routes) {
+            OfflineLocalApi.Response response = api.handleRequest("GET", route, null);
+            assertEquals(route, 403, response.status);
+            assertEquals(route, "offline_online_only", response.body.getString("error"));
+            assertTrue(response.body.getBoolean("offline"));
+        }
+    }
+
     @Test public void rejectsUntrustedOriginAndInvalidProtocolEnvelope() throws Exception {
         JSONObject request = new JSONObject()
                 .put("v", 1)
