@@ -293,6 +293,29 @@ aws s3 cp "$VERSION_DIR/manifest.json" \
 
 Không ghi đè pack cùng tên hash. Nếu release mới thay đổi file, phải tạo `RESOURCE_VERSION` mới; không sửa object pack đã phát hành.
 
+### Dùng publisher script có kiểm tra trước khi upload
+
+Repository có [`tools/publish_offline_resource_s3.sh`](../tools/publish_offline_resource_s3.sh). Script kiểm tra AWS identity, bucket, signed manifest, toàn bộ SHA-256 pack và từ chối ghi đè version immutable. Nó upload pack trước, manifest versioned tiếp theo và stable `manifest.json` sau cùng. `DISTRIBUTION_ID` là tùy chọn; nếu có, script chỉ invalidation stable manifest.
+
+```bash
+chmod +x tools/publish_offline_resource_s3.sh
+export AWS_REGION=ap-southeast-1
+export RESOURCE_BUCKET=gxb3-offline-resources-prod
+export RESOURCE_PREFIX=offline-resources
+export RESOURCE_VERSION=web-4ab86d79
+export VERSION_DIR=/path/to/offline-resource-release
+export CLOUDFRONT_DOMAIN=dxxxxxxxxxxxx.cloudfront.net
+export DISTRIBUTION_ID=E1234567890ABC
+
+# Kiểm tra lệnh, chưa upload:
+DRY_RUN=1 tools/publish_offline_resource_s3.sh
+
+# Upload thật sau khi xem toàn bộ lệnh dry-run:
+tools/publish_offline_resource_s3.sh
+```
+
+Script cố ý dừng nếu `s3://$RESOURCE_BUCKET/$RESOURCE_PREFIX/$RESOURCE_VERSION/manifest.json` đã tồn tại. Hãy tạo `RESOURCE_VERSION` mới cho release mới; chỉ dùng `ALLOW_EXISTING_VERSION=1` cho tình huống khôi phục đã được review.
+
 ## 9. Kiểm tra CloudFront trước khi build APK
 
 ```bash
