@@ -2,10 +2,10 @@
 
 **Dự án:** Girl-X-Battel-1
 **Nhánh:** `feature/offline-mode`
-**Trạng thái:** Nền downloader đã có signed-manifest verifier, deterministic pack builder, WorkManager worker và strict local asset resolver; chưa có resource release thật hoặc local game API/engine/save
+**Trạng thái:** Nền downloader đã có signed-manifest verifier, streaming deterministic pack builder, WorkManager worker, strict local asset resolver và workflow CI bật Git LFS; workflow chưa chạy/publish. Remote branch đã thêm JNI LuaJIT battle/attrs bridge, nhưng local API/state/action/save vẫn chưa tích hợp.
 **Phạm vi tài liệu:** tải, xác minh, cài đặt, lưu giữ, cập nhật và phục vụ game assets/code tĩnh trên Android.
 
-> Downloader và kho asset là nền tảng bắt buộc, nhưng tự chúng không cung cấp API/game engine/save. Muốn chơi offline đầy đủ, phần local gameplay phải được lập trình và nghiệm thu riêng theo [`QUYET_DINH_ANDROID_OFFLINE.vi.md`](./QUYET_DINH_ANDROID_OFFLINE.vi.md).
+> Downloader và kho asset là nền tảng bắt buộc, nhưng tự chúng không cung cấp API/state/save. JNI battle bridge là bước nền, chưa phải luồng gameplay offline hoàn chỉnh; cần tích hợp API/action và nghiệm thu riêng theo [`QUYET_DINH_ANDROID_OFFLINE.vi.md`](./QUYET_DINH_ANDROID_OFFLINE.vi.md).
 
 ## 1. Mục tiêu và nguyên tắc
 
@@ -24,9 +24,9 @@ Các nguyên tắc bắt buộc:
 
 - Android đã có [`OfflineResourceManager.java`](../clients/android/app/src/main/java/com/quangho/goddess/battle/offline/OfflineResourceManager.java): chỉ nhận signed manifest Ed25519 với public key pin trong APK, URL HTTPS host allowlist, resume byte-range, SHA-256 pack/file, kiểm ZIP path, content-addressed store và activation nguyên tử. Unit tests bao gồm signature hợp lệ/sai/tampered.
 - `MainActivity` khởi chạy unique foreground [`OfflineResourceDownloadWorker.java`](../clients/android/app/src/main/java/com/quangho/goddess/battle/offline/OfflineResourceDownloadWorker.java), quan sát tiến độ/result qua WorkManager, và tách nút chơi online. [`OfflineWebViewPathHandler.java`](../clients/android/app/src/main/java/com/quangho/goddess/battle/offline/OfflineWebViewPathHandler.java) chỉ phục vụ file thuộc manifest active; local shell không fallback mạng.
-- [`tools/build_offline_resource_manifest.py`](../tools/build_offline_resource_manifest.py) tạo deterministic ZIP/hash và signed envelope khi có private Ed25519 PEM. Gradle properties cấu hình URL, allowlist và public key; mặc định nút tải vẫn tắt. Chưa có manifest/pack phát hành, CI publisher hoặc game API local.
-- Checkout hiện có hàng chục nghìn file LFS pointer và không có LFS object cache; builder sẽ từ chối pointer. Không thể tạo resource release đầy đủ trong checkout này cho tới khi hydrate LFS.
-- `web/assets` chứa khoảng hàng chục nghìn file; tải/xác minh mỗi file và scan đồng bộ trên UI thread là không phù hợp. Phải đo CPU, bộ nhớ, số inode/file và thời gian trên thiết bị tầm thấp.
+- [`tools/build_offline_resource_manifest.py`](../tools/build_offline_resource_manifest.py) tạo ZIP streaming theo giới hạn, SHA-256 và signed envelope khi có private Ed25519 PEM. Allowlist [`offline_resources_allowlist.json`](../tools/offline_resources_allowlist.json) bao phủ toàn bộ tracked `web/`, không lấy untracked files. Workflow [offline-resource-pack.yml](../.github/workflows/offline-resource-pack.yml) checkout LFS, từ chối pointer còn sót và dựng toàn bộ web tree; chưa tự publish lên CDN.
+- Pointer-aware inventory: `web/assets` có 31.506 file, khoảng 4,680 GiB; 29.299 Git LFS pointer khai báo khoảng 3,736 GiB payload. Sandbox hiện không có LFS object cache, vì vậy chỉ CI checkout `lfs: true` mới hydrate nội dung thật; pipeline chưa chạy để xác minh số byte/hash payload.
+- Full web tree khoảng 4,683 GiB raw, còn data/runtime có thể cần thêm cho local gameplay. Android manager tổng limit đã nâng lên 8 GiB. Tải/xác minh hơn 31 nghìn file cần đo CPU, bộ nhớ, số inode/file và thời gian trên thiết bị tầm thấp.
 
 ## 3. Kiến trúc đích
 

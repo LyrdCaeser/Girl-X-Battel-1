@@ -3,26 +3,26 @@
 **Nhánh:** `feature/offline-mode`
 
 
-**Trạng thái:** Quyết định sản phẩm đã chốt là Android chơi offline thật sự. Launcher có resource dashboard, signed downloader, background worker và local asset resolver; chưa có resource release đầy đủ hoặc local gameplay/API/save.
+**Trạng thái:** Quyết định sản phẩm đã chốt là Android chơi offline thật sự. Launcher có resource dashboard, signed downloader, background worker và local asset resolver. Builder streaming và workflow GitHub Actions hydrate LFS/build web packs đã được thêm; workflow chưa chạy/publish. Remote branch hiện có LuaJIT JNI bridge cho battle/attrs cùng APK debug, nhưng chưa nối vào local API/frontend và chưa có local profile/state/save hoàn chỉnh.
 **Mục tiêu người dùng:** Game Android phải chơi được offline; Internet chỉ tùy chọn để tải/cập nhật resource pack, còn shell, API/engine và save chạy local.
 
 Quyết định kiến trúc và cổng nghiệm thu được ghi tại [`QUYET_DINH_ANDROID_OFFLINE.vi.md`](./QUYET_DINH_ANDROID_OFFLINE.vi.md). Kế hoạch resource bên dưới là tổng quan; trình tự triển khai downloader/kho local cụ thể nằm trong [`KE_HOACH_ASSET_DOWNLOADER_ANDROID.vi.md`](./KE_HOACH_ASSET_DOWNLOADER_ANDROID.vi.md). Riêng việc tải tài nguyên **không** đáp ứng mục tiêu gameplay offline.
 
 ## 1. Hiện trạng trong nhánh
 
-Android hiện mở resource dashboard trước và có lựa chọn chơi online tách biệt; Windows/iOS vẫn là launcher online. Android local shell chỉ phục vụ file thuộc manifest đã ký và không fallback CDN, nhưng API/auth/gameplay chưa chạy local.
+Android hiện mở resource dashboard trước và có lựa chọn chơi online tách biệt; Windows/iOS vẫn là launcher online. Android local shell chỉ phục vụ file thuộc manifest đã ký và không fallback CDN. JNI bridge LuaJIT mới cung cấp đường gọi battle/attrs native riêng; API/auth, campaign state, economy/action routing và save chưa chạy local qua frontend.
 
 Web client yêu cầu ảnh, âm thanh, Spine, JSON và dữ liệu theo đường dẫn `/assets/...`; nhiều màn hình chỉ tải tài nguyên khi người chơi mở màn đó. Android có `OfflineResourceManager`, WebView local handler và manifest/pack builder, nhưng chưa có allowlist release review hoặc origin/CDN phát hành.
 
-Kiểm kê trên working copy hiện tại:
+Kiểm kê pointer-aware trên working copy hiện tại (LFS size lấy từ metadata pointer; payload thật chưa hydrate trong sandbox):
 
-- `web/assets`: **31.506 file**, **1.017.027.685 byte**, tương đương khoảng **969,9 MiB**.
-- `data`: **1.258 file**, khoảng **71,4 MiB**.
-- `runtime`: **3.599 file**, khoảng **84,4 MiB**.
-- Web source không tính asset/vendor: khoảng **2 MiB**.
-- Tổng các nhóm trên: khoảng **1,10 GiB dữ liệu thô**. Số tải thực tế phụ thuộc đóng gói; PNG/WebP/audio vốn đã nén nên không được giả định zip sẽ giảm đáng kể.
+- `web/assets`: **31.506 file**, **5.025.069.633 byte** (khoảng **4,680 GiB**), gồm **29.299 LFS object** với **4.011.852.022 byte** payload khai báo.
+- Toàn bộ `web/` (source + vendor + assets): **31.667 file**, **5.028.767.826 byte** (khoảng **4,683 GiB**); đây là root allowlist của pipeline.
+- `data`: **1.258 file**, **74.833.722 byte** (khoảng **71,37 MiB**).
+- `runtime`: **3.599 file**, **89.040.410 byte** (khoảng **84,91 MiB**).
+- Tổng `web` + `data` + `runtime`: **5.192.641.958 byte** (khoảng **4,836 GiB**); con số chưa phản ánh ZIP compression hoặc phần nào thực sự cần cho gameplay Android.
 
-Con số này là dung lượng trong checkout hiện tại, không phải cam kết kích thước phát hành. Cần đo lại artifact sau khi xây manifest và pack. `runtime`/`data` còn có thể cần để chạy game offline nhưng khác với ảnh/âm thanh; còn backend `gxb2` và phần thực thi gameplay cũng cần được đóng gói/chạy cục bộ nếu mục tiêu cuối là chơi được, không chỉ xem asset khi mất mạng.
+LFS pointer metadata cho biết byte count dự kiến, không chứng minh payload đã được tải đúng; workflow phải checkout `lfs: true`, từ chối pointer còn sót và đo lại byte/hash trên payload thật. Kích thước pack tải được sẽ do CI report sau khi nén. `runtime`/`data` còn có thể cần cho gameplay nhưng không thuộc web asset pack bước đầu.
 
 ## 2. Kết quả mong muốn và ranh giới phạm vi
 
@@ -93,7 +93,7 @@ Các script khởi động trong repo hiện chạy `server.py` từ thư mục 
 ## 5. Luồng trải nghiệm và cập nhật
 
 1. Khi mở mục **Tài nguyên offline**, client lấy manifest mới nhất qua HTTPS và kiểm tra chữ ký (nếu bật).
-2. Client so manifest với version cục bộ, tính tổng byte còn thiếu và dung lượng trống cần thiết. Với lần tải đầu, báo xấp xỉ 1 GiB hoặc số đo mới nhất từ manifest; yêu cầu người dùng xác nhận.
+2. Client so manifest với version cục bộ, tính tổng byte còn thiếu và dung lượng trống cần thiết. Với lần tải web asset đầu, thông báo khoảng 4,68 GiB uncompressed hoặc số đo pack thực tế trong manifest; yêu cầu người dùng xác nhận.
 3. Tải từng pack vào staging; lưu tiến độ và retry với backoff. Cho phép dừng/resume. Không thay thư mục `current` trong lúc đang tải.
 4. Kiểm tra checksum của từng pack, giải nén an toàn, kiểm tra kích thước/file count/path, sau đó kiểm SHA-256 của từng file theo manifest.
 5. Chạy self-test tài nguyên tối thiểu (HTML entry point, bảng catalog, một ảnh, một file Spine/audio đại diện). Nếu lỗi, đánh dấu pack lỗi và giữ phiên bản hiện tại.
@@ -103,16 +103,16 @@ Các script khởi động trong repo hiện chạy `server.py` từ thư mục 
 
 ### Cập nhật và dung lượng
 
-Do full assets khoảng 970 MiB, cập nhật staging kiểu “giữ hai bản đầy đủ” có thể cần thêm gần một GiB trống. Không yêu cầu người dùng tải lại các gói có cùng hash. Kiểm tra dung lượng trước khi tải; khi thiếu, dừng an toàn và nêu dung lượng cần giải phóng. Ưu tiên lưu pack theo content hash để gói chung giữa hai resource version chỉ chiếm một bản.
+Do web assets hiện khoảng 4,68 GiB raw, cập nhật staging kiểu “giữ hai bản đầy đủ” có thể cần thêm nhiều GiB trống nếu asset thay đổi diện rộng. Không yêu cầu tải lại object có cùng hash. Kiểm tra dung lượng trước khi tải; khi thiếu, dừng an toàn và nêu dung lượng cần giải phóng. Ưu tiên lưu object theo content hash để các release chia sẻ dữ liệu không trùng.
 
 Manifest phải chứa `minimum_app_version` và version schema. Nếu bản app không hiểu định dạng mới, giữ resource version đang hoạt động và yêu cầu cập nhật app. Không tự xóa resource đã cài chỉ vì server tạm thời không truy cập được.
 
 ## 6. Những phần cần làm trong codebase
 
-1. `tools/build_offline_resource_manifest.py`: đã tạo deterministic pack/hash/signed envelope từ allowlist rõ ràng; còn cần allowlist reviewed, inventory thật sau hydrate LFS và release report.
-2. CI workflow mới `offline-resources.yml`: chạy generator sau khi asset/data thay đổi; kiểm tra manifest sạch; tạo artifacts có SHA-256; lưu metadata build/version; chỉ publish khi release được duyệt.
+1. `tools/build_offline_resource_manifest.py`: đã hỗ trợ streaming files, ZIP bounded deterministic, SHA-256, signed envelope, tracked-root allowlist và phát hiện pointer chưa hydrate. `tools/offline_resources_allowlist.json` chọn toàn bộ file Git-tracked dưới `web/`.
+2. `.github/workflows/offline-resource-pack.yml`: checkout bật Git LFS, verify hydration, build đủ web tree khi `web/**`/`.gitattributes` đổi; chạy thủ công sau khi sửa builder/allowlist. Artifact nhiều GiB chỉ upload theo lựa chọn manual 1 ngày. Nếu chưa cấu hình `OFFLINE_RESOURCE_BASE_URL`/`OFFLINE_MANIFEST_SIGNING_KEY_PEM`, build dùng URL placeholder/unsigned development-only; workflow không tự publish lên CDN.
 3. `server.py` hoặc service phân phối: endpoint manifest/version và tải pack có Range/ETag nếu chưa dùng CDN. Đặt cache policy riêng cho URL bất biến; không để `Cache-Control: no-store` ngăn CDN giữ immutable pack.
-4. Android: manager/Worker/resume/progress/verify/extract/local WebView mapping đã có khung code; còn cần build + device test, Wi-Fi policy/retry/cleanup hardening và local API/engine/save.
+4. Android: manager/Worker/resume/progress/verify/extract/local WebView mapping và JNI LuaJIT battle/attrs bridge đã có trong nhánh; còn cần device test, nối API/state/action/save và hardening.
 5. iOS: resource manager native, background URLSession, verify/extract an toàn và local WebView resource handler.
 6. Web client: config `online|offline`, asset base URL, không hard-code remote origin trong offline mode; các endpoint dữ liệu phải được xử lý bởi local API hoặc được nêu rõ là tính năng cần mạng.
 7. Desktop packaging: tạo bản phát hành có đủ resource/runtime; tách dependency cài đặt khỏi khởi động để không cần mạng khi chạy offline.
@@ -168,7 +168,7 @@ Manifest phải chứa `minimum_app_version` và version schema. Nếu bản app
 - **Dung lượng:** thiếu dung lượng trước tải hoặc lúc giải nén không làm mất bản đang dùng; cleanup chỉ xóa hash không còn được version nào tham chiếu.
 - **Offline:** xóa cache WebView/HTTP cache và bật airplane mode vẫn đọc resource từ Application Support/filesDir; kiểm tra khởi động sau force-stop.
 - **Vòng đời:** cập nhật app giữ resource tương thích; nâng resource đổi version atomic; chọn xóa dữ liệu/gỡ app xóa resource theo hành vi hệ điều hành; tải lại sau cài mới.
-- **Hiệu năng:** đo lần tải đầu trên mạng thực, CPU/bộ nhớ khi giải nén, tiêu thụ pin, số file và thời gian lookup; không giả định 31.506 file nhỏ có thể giải nén/scan trong một tác vụ foreground.
+- **Hiệu năng:** đo lần tải đầu trên mạng thực, CPU/bộ nhớ khi giải nén, tiêu thụ pin, số file và thời gian lookup; hiện có 31.506 asset, gần 4,68 GiB raw, nên cần kiểm thử batch/background trên thiết bị.
 - **Gameplay:** kiểm thử riêng đăng nhập, API, state/save, thời gian, battle/runtime và các thao tác game trong airplane mode. Asset được cache thành công không được dùng làm bằng chứng rằng gameplay offline đã hoàn tất.
 
 ### Điều kiện bật nhãn “Đã tải trọn bộ”
@@ -177,7 +177,7 @@ Chỉ hiển thị trạng thái này khi manifest release hợp lệ, tất c�
 
 ## 9. Rủi ro và quyết định cần chốt
 
-- **Dung lượng cao:** full assets hiện gần 1 GiB. Cần xác nhận người dùng mục tiêu có đủ dung lượng; tối ưu asset/loại file không dùng trước khi hạ quality hoặc bỏ asset âm thầm.
+- **Dung lượng cao:** full web asset hiện khoảng 4,68 GiB raw. Cần xác nhận thiết bị mục tiêu có đủ dung lượng và quyền phân phối; tối ưu có chủ đích trước khi bỏ asset hoặc giảm chất lượng.
 - **Tải full không bằng gameplay offline:** phụ thuộc API/gameplay/server state. Đây là blocker sản phẩm riêng, cần đồng bộ với thiết kế save offline trong [`offline-s3-sync-workflow.vi.md`](./offline-s3-sync-workflow.vi.md).
 - **Tài nguyên động/lazy-loaded:** đường dẫn tạo trong JS hoặc file Spine có thể thiếu khỏi manifest tĩnh. Cần scan code + runtime crawl/test UI để kiểm tra coverage.
 - **Gói update quá lớn:** chọn shard theo category/hash và đo tỷ lệ thay đổi giữa hai release; điều chỉnh kích thước pack từ số liệu CI.
@@ -186,10 +186,10 @@ Chỉ hiển thị trạng thái này khi manifest release hợp lệ, tất c�
 
 ## 10. Thứ tự việc nên làm tiếp theo
 
-1. Chốt mục tiêu platform đầu tiên (đề xuất Android trước, sau đó iOS) và quyết định tải resource full có bao gồm runtime/data để chạy local hay chỉ assets.
-2. Tạo allowlist và manifest generator; đo artifact nén thật và lượng download ban đầu.
-3. Làm downloader + storage manager native trước, chưa đụng gameplay/save sync; kiểm thử download-resume-integrity.
-4. Chuyển WebView sang đọc resource local và xác nhận qua airplane mode.
-5. Mới đánh giá/tách phần local API/gameplay để hoàn thiện trải nghiệm chơi offline.
+1. Chạy `.github/workflows/offline-resource-pack.yml` để hydrate/paket web assets thật; cấu hình signing key/CDN origin trước khi xem manifest là release dùng được.
+2. Build sạch APK và kiểm thử trên Android thật: download/resume/integrity/storage, local WebView và airplane mode.
+3. Bổ sung local API + persistent save/profile, rồi nối JNI battle bridge với state/action contracts.
+4. Chuyển frontend sang local provider, khóa network fallback và kiểm campaign/summon/inventory/formation/reward.
+5. Hoàn tất debug/release reproducibility, smoke tests và nghiệm thu offline end-to-end.
 
-**Không nằm trong kế hoạch file này:** bật bucket AWS, phát hành resource pack, thay đổi code app, hoặc xóa/tối ưu assets. Các bước đó cần issue/triển khai riêng sau khi kế hoạch được duyệt.
+**Chưa được workflow này làm:** publish pack ra CDN/bucket, ký production manifest nếu secret chưa được cấu hình, hoặc đóng gói runtime/API/save Android. Artifact upload lớn cần bật thủ công và có thể bị giới hạn quota Actions.

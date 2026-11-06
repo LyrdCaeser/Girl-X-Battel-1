@@ -1,0 +1,136 @@
+name: GXB3 offline resource packs
+
+on:
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: HTTPS CDN/base URL for immutable packs (falls back to repository variable OFFLINE_RESOURCE_BASE_URL)
+        required: false
+        type: string
+      upload_pack_artifact:
+        description: Upload the multi-GiB pack bundle as a one-day Actions artifact
+        required: false
+        default: false
+        type: boolean
+  push:
+    branches: [feature/offline-mode]
+    paths:
+      - "web/**"
+      - ".gitattributes"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: offline-resource-pack-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build-full-web-resource-pack:
+    name: Hydrate LFS and build complete web resource set
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    steps:
+      - name: Checkout repository and hydrate Git LFS objects
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+          fetch-depth: 1
+
+      - name: Verify LFS content was hydrated
+        shell: bash
+        run: |
+          set -euo pipefail
+          git lfs fsck --objects
+          python3 - <<'PY'
+          import subprocess
+          from pathlib import Path
+          paths = subprocess.check_output(["git", "ls-files", "-z", "web"]).decode().split("\0")
+          pointers = []
+          count = 0
+          total_bytes = 0
+          for name in filter(None, paths):
+              path = Path(name)
+              data = path.read_bytes()
+              if data.startswith(b"version https://git-lfs.github.com/spec/v1\n"):
+                  pointers.append(name)
+              count += 1
+              total_bytes += len(data)
+          if pointers:
+              raise SystemExit(f"{len(pointers)} unresolved Git LFS pointer(s), e.g. {pointers[:5]}")
+          print(f"Hydrated {count} tracked web files ({total_bytes} bytes in this checkout).")
+          PY
+
+      - name: Set up Python for pack builder
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Ed25519 signing dependency
+        run: python -m pip install --disable-pip-version-check "cryptography>=41,<47"
+
+      - name: Build full tracked web resource set
+        shell: bash
+        env:
+          RESOURCE_BASE_URL: ${{ inputs.base_url || vars.OFFLINE_RESOURCE_BASE_URL }}
+          SIGNING_KEY_PEM: ${{ secrets.OFFLINE_MANIFEST_SIGNING_KEY_PEM }}
+        run: |
+          set -euo pipefail
+          BASE_URL="${RESOURCE_BASE_URL:-}"
+          if [[ -z "$BASE_URL" ]]; then
+            BASE_URL="https://offline-assets.invalid/offline-resources"
+            echo "::warning::No CDN URL configured; generated manifest URLs are placeholders and cannot be used by devices."
+          fi
+          VERSION="web-${GITHUB_SHA:0:12}"
+          args=(
+            --source-root .
+            --allowlist tools/offline_resources_allowlist.json
+            --output-dir offline-resource-release
+            --resource-version "$VERSION"
+            --base-url "$BASE_URL"
+            --max-pack-size 52428800
+          )
+          if [[ -n "$SIGNING_KEY_PEM" ]]; then
+            KEY_FILE="$RUNNER_TEMP/offline-resource-signing-key.pem"
+            printf '%s\n' "$SIGNING_KEY_PEM" > "$KEY_FILE"
+            chmod 600 "$KEY_FILE"
+            args+=(--private-key "$KEY_FILE")
+          else
+            echo "::warning::OFFLINE_MANIFEST_SIGNING_KEY_PEM is not configured; output will be unsigned development-only data."
+          fi
+          python3 tools/build_offline_resource_manifest.py "${args[@]}"
+          rm -f "$RUNNER_TEMP/offline-resource-signing-key.pem"
+          sha256sum offline-resource-release/manifest.json offline-resource-release/pack-*.zip > offline-resource-release/SHA256SUMS.txt
+          python3 - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          from pathlib import Path
+          manifest_path = Path("offline-resource-release/manifest.json")
+          envelope = json.loads(manifest_path.read_text(encoding="utf-8"))
+          signed = "payload_b64" in envelope and "signature_b64" in envelope
+          if signed:
+              import base64
+              manifest = json.loads(base64.b64decode(envelope["payload_b64"]))
+          else:
+              manifest = envelope
+          files = [entry for pack in manifest["packs"] for entry in pack["files"]]
+          source_bytes = sum(entry["size_bytes"] for entry in files)
+          pack_bytes = sum(pack["size_bytes"] for pack in manifest["packs"])
+          print("## Offline resource pack build")
+          print(f"- Version: `{manifest['resource_version']}`")
+          print(f"- Tracked web files: {len(files):,}")
+          print(f"- Source bytes: {source_bytes:,} ({source_bytes / 1024**3:.2f} GiB)")
+          print(f"- Pack count: {len(manifest['packs']):,}")
+          print(f"- ZIP bytes: {pack_bytes:,} ({pack_bytes / 1024**3:.2f} GiB)")
+          print(f"- Manifest signature: {'Ed25519 signed' if signed else 'UNSIGNED — development only'}")
+          print("- CDN publication is not performed by this workflow.")
+          PY
+
+      - name: Upload full pack bundle (manual opt-in only)
+        if: github.event_name == 'workflow_dispatch' && inputs.upload_pack_artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: GXB3-offline-web-resources-${{ github.sha }}
+          path: offline-resource-release/
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 1

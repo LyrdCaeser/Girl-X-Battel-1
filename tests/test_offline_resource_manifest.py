@@ -1,6 +1,8 @@
 import base64
 import hashlib
 import json
+import random
+import subprocess
 import tempfile
 import unittest
 import zipfile
@@ -55,6 +57,19 @@ class OfflineResourceManifestTests(unittest.TestCase):
         jsonfile.write_text('{"files":["images/a.bin"]}', encoding="utf-8")
         self.assertEqual(read_allowlist(jsonfile), ["images/a.bin"])
 
+    def test_tracked_roots_allowlist_ignores_untracked_files(self):
+        repo = self.root / "repo"
+        (repo / "web/assets").mkdir(parents=True)
+        (repo / "tools").mkdir()
+        (repo / "web/index.html").write_text("index", encoding="utf-8")
+        (repo / "web/assets/a.bin").write_bytes(b"asset")
+        (repo / "web/untracked.tmp").write_text("do not package", encoding="utf-8")
+        subprocess.run(["git", "init", "-q", str(repo)], check=True)
+        subprocess.run(["git", "-C", str(repo), "add", "web/index.html", "web/assets/a.bin"], check=True)
+        policy = repo / "tools/allowlist.json"
+        policy.write_text('{"tracked_roots":["web"]}', encoding="utf-8")
+        self.assertEqual(read_allowlist(policy, repo), ["web/assets/a.bin", "web/index.html"])
+
     def test_traversal_rejected(self):
         for path in ("../secret", "/absolute", "images/../config.json", "a\\b"):
             with self.subTest(path=path), self.assertRaises(BuildError):
@@ -85,7 +100,23 @@ class OfflineResourceManifestTests(unittest.TestCase):
     def test_pack_limit_and_no_partial_output(self):
         with self.assertRaises(BuildError):
             build(self.source, ["images/a.bin"], self.output("bad"), "r1", "https://cdn.example", 10)
+        with self.assertRaisesRegex(BuildError, "max pack size"):
+            build(self.source, ["images/a.bin"], self.output("too-large"), "r1",
+                  "https://cdn.example", 256 * 1024 * 1024 + 1)
         self.assertFalse(self.output("bad").exists())
+        self.assertFalse(self.output("too-large").exists())
+
+    def test_large_resource_set_is_split_into_bounded_packs(self):
+        for index in range(3):
+            (self.source / f"asset-{index}.bin").write_bytes(random.Random(index).randbytes(700))
+        names = [f"asset-{index}.bin" for index in range(3)]
+        manifest = build(self.source, names, self.output("bounded"), "r3", "https://cdn.example", 1100)
+        self.assertGreater(len(manifest["packs"]), 1)
+        self.assertTrue(all(pack["size_bytes"] <= 1100 for pack in manifest["packs"]))
+        self.assertEqual(sum(len(pack["files"]) for pack in manifest["packs"]), 3)
+        for pack in manifest["packs"]:
+            with zipfile.ZipFile(self.output("bounded") / f"pack-{pack['sha256']}.zip") as archive:
+                self.assertEqual(sorted(archive.namelist()), sorted(item["path"] for item in pack["files"]))
 
     def test_signed_envelope_if_cryptography_available(self):
         try:

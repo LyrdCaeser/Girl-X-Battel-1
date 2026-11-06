@@ -86,7 +86,7 @@ public final class OfflineResourceManager implements AutoCloseable {
     private static final int MAX_FILES = 100_000;
     private static final long MAX_PACK_BYTES = 256L * 1024L * 1024L;
     private static final long MAX_FILE_BYTES = 512L * 1024L * 1024L;
-    private static final long MAX_TOTAL_FILE_BYTES = 4L * 1024L * 1024L * 1024L;
+    private static final long MAX_TOTAL_FILE_BYTES = 8L * 1024L * 1024L * 1024L;
     private static final long STORAGE_RESERVE_BYTES = 32L * 1024L * 1024L;
     private static final int CONNECT_TIMEOUT_MS = 15_000;
     private static final int READ_TIMEOUT_MS = 45_000;

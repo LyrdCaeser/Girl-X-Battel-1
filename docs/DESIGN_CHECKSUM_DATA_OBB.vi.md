@@ -106,7 +106,7 @@ Sau khi mọi pack và mọi file bắt buộc đã qua hash:
 - **Quick startup check:** xác minh chữ ký manifest đã lưu, active pointer hợp lệ, version tương thích và các file core tồn tại/đúng size. Nếu thiếu core file, không báo “đã tải trọn bộ”.
 - **Install-time check:** luôn SHA-256 toàn bộ pack và từng file (bắt buộc, đồng bộ trước activation).
 - **First-use check:** hash lại object lần đầu dùng trong mỗi process trước khi cấp cho WebView/game; cache trạng thái chỉ trong RAM theo `{release, sha256, size}`. File JS/config/JSON nhỏ có thể rehash mỗi lần app mở; asset lớn hash trước lần đầu sử dụng trong process.
-- **Deep audit:** chạy `verifyVersion()` theo yêu cầu người dùng hoặc tác vụ nền có giới hạn pin/mạng. Có thể kiểm toàn bộ 31.506+ file/970 MiB theo batch; hiển thị tiến độ và không chặn màn hình khởi động lâu.
+- **Deep audit:** chạy `verifyVersion()` theo yêu cầu người dùng hoặc tác vụ nền có giới hạn pin/mạng. Full `web/assets` hiện có 31.506 file/khoảng 4,68 GiB raw; kiểm theo batch, hiển thị tiến độ và không chặn màn hình khởi động lâu.
 
 Không coi mtime là bằng chứng hash. Nếu file được phân phối trực tiếp từ app-specific external storage, tránh TOCTOU: ưu tiên API mở stream/descriptor từ object đã xác minh; nếu dùng path cho WebView, hash ngay trước khi cấp file và giới hạn việc app khác sửa vùng lưu trữ. Bản ghi “đã xác minh” lưu trên thiết bị chỉ là cache hiệu năng, không thay thế chữ ký manifest hoặc hash lại khi cần.
 
@@ -115,7 +115,7 @@ Không coi mtime là bằng chứng hash. Nếu file được phân phối trự
 Khi integrity fail, manager trả lỗi phân loại (`MANIFEST_SIGNATURE_INVALID`, `PACK_HASH_MISMATCH`, `FILE_HASH_MISMATCH`, `MISSING_OBJECT`, `SIZE_MISMATCH`, `ZIP_PATH_REJECTED`, `INSUFFICIENT_STORAGE`, `RESUME_RANGE_INVALID`). Log chỉ ghi version, pack ID/hash prefix, path logic cần thiết và error code; không ghi token/presigned query hoặc dữ liệu save.
 
 - Đánh dấu object sai là **corrupt**; tuyệt đối không trả object đó cho game, dù file có đúng tên hash.
-- Tìm pack chứa file hỏng từ manifest đã ký; chỉ tải lại pack đó nếu có mạng. Không tải lại toàn bộ 1 GiB.
+- Tìm pack chứa file hỏng từ manifest đã ký; chỉ tải lại pack đó nếu có mạng. Không tải lại toàn bộ resource set nhiều GiB.
 - Nếu offline, giữ lỗi ở trạng thái cần sửa và dùng bản trước chỉ khi bản trước đã được cài + xác minh đầy đủ + tương thích. Nếu không có bản tốt, hiển thị “Tài nguyên bị hỏng/thiếu — cần kết nối để sửa”; không fallback âm thầm sang server online.
 - Với pack resume bị hash sai, xóa part và thử lại từ đầu theo retry có giới hạn/backoff. Sau số lần vượt giới hạn, dừng và cho người dùng thử lại.
 - `active-version` không đổi cho tới khi repair/update đủ điều kiện activation.
@@ -134,7 +134,7 @@ Checksum SHA-256 chứng minh bytes khớp với manifest, không chứng minh a
 6. Crash/force-stop trong lúc tải, giải nén, ghi manifest và đổi active pointer; sau khởi động không được coi bản dở là active.
 7. Object đã cache nhưng bị thay đổi; object share giữa hai release; repair không xóa hash còn được release rollback tham chiếu.
 8. Kiểm layout route: JSON/JS nhỏ ở `data/`, media/lớn ở `obb/`, manifest storage class khớp vị trí, resolver từ chối file ngoài manifest.
-9. Benchmark deep audit trên thiết bị thật với full resource khoảng 970 MiB; đo pin, thời gian, peak storage và khả năng resume.
+9. Benchmark deep audit trên thiết bị thật với full web resource khoảng 4,68 GiB raw; đo pin, thời gian, peak storage và khả năng resume.
 
 ## 9. Điều kiện nghiệm thu
 
