@@ -2,10 +2,10 @@
 
 **Dự án:** Girl-X-Battel-1
 **Nhánh:** `feature/offline-mode`
-**Trạng thái:** Nền downloader đã có signed-manifest verifier, streaming deterministic pack builder, WorkManager worker, strict local asset resolver và workflow CI bật Git LFS; workflow chưa chạy/publish. Remote branch đã thêm JNI LuaJIT battle/attrs bridge, nhưng local API/state/action/save vẫn chưa tích hợp.
+**Trạng thái:** Nền downloader và workflow Git LFS đã có; đã thêm AndroidX WebMessageListener origin restriction cùng local JSON router health-only, và JNI LuaJIT battle/attrs bridge. Gameplay state/action/save và frontend adapter chưa hoàn chỉnh; CI hydrate/publish vẫn chưa chạy.
 **Phạm vi tài liệu:** tải, xác minh, cài đặt, lưu giữ, cập nhật và phục vụ game assets/code tĩnh trên Android.
 
-> Downloader và kho asset là nền tảng bắt buộc, nhưng tự chúng không cung cấp API/state/save. JNI battle bridge là bước nền, chưa phải luồng gameplay offline hoàn chỉnh; cần tích hợp API/action và nghiệm thu riêng theo [`QUYET_DINH_ANDROID_OFFLINE.vi.md`](./QUYET_DINH_ANDROID_OFFLINE.vi.md).
+> Downloader và kho asset là nền tảng bắt buộc, nhưng tự chúng không cung cấp state/save. Local RPC hiện chỉ chứng minh transport/readiness; gameplay routes chưa được triển khai. JNI battle bridge chưa nối vào API/action, nên đây chưa phải luồng gameplay offline hoàn chỉnh; cần nghiệm thu riêng theo [`QUYET_DINH_ANDROID_OFFLINE.vi.md`](./QUYET_DINH_ANDROID_OFFLINE.vi.md).
 
 ## 1. Mục tiêu và nguyên tắc
 

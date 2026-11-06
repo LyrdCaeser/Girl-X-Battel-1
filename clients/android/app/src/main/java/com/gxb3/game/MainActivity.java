@@ -30,6 +30,8 @@ import android.webkit.WebViewClient;
 import android.webkit.WebResourceResponse;
 import androidx.activity.ComponentActivity;
 import androidx.webkit.WebViewAssetLoader;
+import androidx.webkit.WebViewCompat;
+import androidx.webkit.WebViewFeature;
 import androidx.work.Data;
 import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
@@ -43,6 +45,7 @@ import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.quangho.goddess.battle.offline.OfflineLocalApi;
 import com.quangho.goddess.battle.offline.OfflineResourceDownloadWorker;
 import com.quangho.goddess.battle.offline.OfflineResourceManager;
 
@@ -56,6 +59,10 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /** Android launcher with an explicit resource-download screen and separate online entry. */
 public final class MainActivity extends ComponentActivity {
@@ -70,6 +77,15 @@ public final class MainActivity extends ComponentActivity {
     private WebView webView;
     private OfflineResourceManager resourceManager;
     private WebViewAssetLoader localAssetLoader;
+    private final OfflineLocalApi offlineLocalApi = new OfflineLocalApi();
+    private final ThreadPoolExecutor localApiExecutor = new ThreadPoolExecutor(
+            1, 1, 0L, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<>(32),
+            task -> {
+                Thread thread = new Thread(task, "gxb3-offline-api");
+                thread.setDaemon(true);
+                return thread;
+            }, new ThreadPoolExecutor.AbortPolicy());
+    private volatile boolean localApiBridgeInstalled;
     private Set<String> trustedHosts;
     private TextView resourceStatus;
     private TextView progressText;
@@ -618,12 +634,17 @@ public final class MainActivity extends ComponentActivity {
                 return true;
             }
         });
+        installLocalApiBridge();
         webView.setWebViewClient(new WebViewClient() {
             @Override public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
                 if (!localPageVisible) return null;
                 Uri uri = request.getUrl();
                 if ("https".equalsIgnoreCase(uri.getScheme()) && "gxb3.local".equalsIgnoreCase(uri.getHost())
                         && localAssetLoader != null) {
+                    String path = uri.getPath();
+                    if (path != null && ("/api".equals(path) || path.startsWith("/api/"))) {
+                        return localApiTransportRequiredResponse(localApiBridgeInstalled);
+                    }
                     WebResourceResponse response = localAssetLoader.shouldInterceptRequest(uri);
                     return response == null ? blockedLocalResponse(404, "Not Found") : response;
                 }
@@ -645,6 +666,48 @@ public final class MainActivity extends ComponentActivity {
             }
         });
         root.addView(webView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+    }
+
+    /** Adds a narrowly scoped RPC channel; it is never exposed to the online origin. */
+    private void installLocalApiBridge() {
+        if (!WebViewFeature.isFeatureSupported(WebViewFeature.WEB_MESSAGE_LISTENER)) return;
+        try {
+            WebViewCompat.addWebMessageListener(webView, OfflineLocalApi.JS_OBJECT_NAME,
+                    Collections.singleton("https://gxb3.local"),
+                    (view, message, sourceOrigin, isMainFrame, replyProxy) -> {
+                        String rawMessage = message == null ? null : message.getData();
+                        boolean trusted = localPageVisible && isMainFrame && isLocalOrigin(sourceOrigin);
+                        try {
+                            localApiExecutor.execute(() -> {
+                                String response = offlineLocalApi.handleMessage(rawMessage, trusted);
+                                runOnUiThread(() -> {
+                                    if (isFinishing() || isDestroyed() || webView != view) return;
+                                    try { replyProxy.postMessage(response); } catch (RuntimeException ignored) { }
+                                });
+                            });
+                        } catch (RejectedExecutionException busy) {
+                            String response = offlineLocalApi.errorEnvelope(rawMessage, 503, "local_api_busy");
+                            try { replyProxy.postMessage(response); } catch (RuntimeException ignored) { }
+                        }
+                    });
+            localApiBridgeInstalled = true;
+        } catch (RuntimeException unsupported) {
+            // Keep local mode fail-closed; API fetches receive an explicit 501 below.
+            localApiBridgeInstalled = false;
+        }
+    }
+
+    private static boolean isLocalOrigin(Uri origin) {
+        return origin != null && "https".equalsIgnoreCase(origin.getScheme())
+                && "gxb3.local".equalsIgnoreCase(origin.getHost()) && origin.getPort() == -1;
+    }
+
+    private static WebResourceResponse localApiTransportRequiredResponse(boolean bridgeInstalled) {
+        String code = bridgeInstalled ? "local_api_message_bridge_required" : "local_api_transport_unavailable";
+        byte[] body = ("{\"error\":\"" + code + "\",\"offline\":true}")
+                .getBytes(java.nio.charset.StandardCharsets.UTF_8);
+        return new WebResourceResponse("application/json", "UTF-8", 501, "Not Implemented",
+                Collections.singletonMap("Cache-Control", "no-store"), new ByteArrayInputStream(body));
     }
 
     private static WebResourceResponse blockedLocalResponse(int status, String reason) {
@@ -848,9 +911,14 @@ public final class MainActivity extends ComponentActivity {
         }
         if (resourceManager != null) resourceManager.close();
         if (webView != null) {
+            if (localApiBridgeInstalled) {
+                try { WebViewCompat.removeWebMessageListener(webView, OfflineLocalApi.JS_OBJECT_NAME); }
+                catch (RuntimeException ignored) { }
+            }
             webView.stopLoading();
             webView.destroy();
         }
+        localApiExecutor.shutdownNow();
         super.onDestroy();
     }
 }
