@@ -639,7 +639,20 @@ const ACTION_SOUNDS=[[/\/api\/action$/,/^BUY_SHOP_ITEM$/,'shop_buy_success'],[/\
  [/\/guild\/action$/,/^checkin$/,'ui_click_reward_float2'],[/\/midas\/action$/,/.*/,'ui_click_reward_expand'],[/\/internship\/action$/,/^complete$/,'gain_window_sound'],[/\/internship\/action$/,/^start$/,'paper_unfold'],
  [/\/chimes\/action$/,/.*/,'bell_ring'],[/\/firework-project\/action$/,/^make/,'sound_firework_burst'],[/\/jackpot\/action$/,/^(spin|draw)/,'casino_1']];
 function actionSound(url,body){if(typeof GxbAudio==='undefined'||!body||typeof body!=='object')return;const a=String(body.message||body.action||'');for(const [u,m,f,fx]of ACTION_SOUNDS)if(u.test(url)&&m.test(a)){GxbAudio.sfx(f,.8);if(fx&&typeof GxbSpine!=='undefined'&&GxbSpine.burst)GxbSpine.burst(fx);return;}}
-async function api(url,body){const headers={};if(developerMode&&url.startsWith('/api/'))headers['X-GXB2-Mode']='developer';if(adminKey&&url.startsWith('/api/'))headers['X-GXB2-Admin-Key']=adminKey;if(body!==undefined)headers['Content-Type']='application/json';const response=await fetch(url,{headers,...(body===undefined?{}:{method:'POST',body:JSON.stringify(body)})});const data=await response.json();if(!response.ok){const raw=data.error||"Could not complete the action";const msg=(window.GxbLocale&&GxbLocale.current()==='vi'&&window.GxbVi)?GxbVi.t(raw):(window.GxbLocale?GxbLocale.t(raw):raw);throw Error(msg);}actionSound(url,body);if(data&&data.state&&typeof data.state.level==='number'){const before=Number(state?.level||0);if(before&&data.state.level>before&&typeof GxbSpine!=='undefined'&&GxbSpine.burst){GxbSpine.burst('shengji');if(typeof GxbAudio!=='undefined')GxbAudio.sfx('train_level_up',.9);}}return data;}
+const localRpc=(typeof window!=='undefined'&&window.Gxb3LocalApi)?(()=>{
+ let seq=0;const pending=new Map();let listening=false;
+ function listen(){if(listening)return;listening=true;const on=(event)=>{let data;try{data=typeof event.data==='string'?JSON.parse(event.data):event.data;}catch{return;}if(data&&pending.has(data.id)){const done=pending.get(data.id);pending.delete(data.id);done(data);}};try{window.Gxb3LocalApi.addEventListener('message',on);}catch{window.addEventListener('message',on);}}
+ return (method,path,body)=>new Promise((resolve,reject)=>{listen();const id='rpc_'+(++seq);const timer=setTimeout(()=>{pending.delete(id);reject(Error('Local API timeout'));},15000);pending.set(id,(reply)=>{clearTimeout(timer);resolve(reply);});const request={v:1,id,method,path};if(body!==undefined)request.body=body;try{window.Gxb3LocalApi.postMessage(JSON.stringify(request));}catch(error){clearTimeout(timer);pending.delete(id);reject(error);}});
+})():null;
+async function api(url,body){
+ if(localRpc&&url.startsWith('/api/')){
+  const response=await localRpc(body===undefined?'GET':'POST',url,body);
+  const data=response.body||{};
+  if(response.status<200||response.status>=300){const raw=data.error||"Could not complete the action";const msg=(window.GxbLocale&&GxbLocale.current()==='vi'&&window.GxbVi)?GxbVi.t(raw):(window.GxbLocale?GxbLocale.t(raw):raw);throw Error(msg);}
+  actionSound(url,body);return data;
+ }
+ const headers={};if(developerMode&&url.startsWith('/api/'))headers['X-GXB2-Mode']='developer';if(adminKey&&url.startsWith('/api/'))headers['X-GXB2-Admin-Key']=adminKey;if(body!==undefined)headers['Content-Type']='application/json';const response=await fetch(url,{headers,...(body===undefined?{}:{method:'POST',body:JSON.stringify(body)})});const data=await response.json();if(!response.ok){const raw=data.error||"Could not complete the action";const msg=(window.GxbLocale&&GxbLocale.current()==='vi'&&window.GxbVi)?GxbVi.t(raw):(window.GxbLocale?GxbLocale.t(raw):raw);throw Error(msg);}actionSound(url,body);if(data&&data.state&&typeof data.state.level==='number'){const before=Number(state?.level||0);if(before&&data.state.level>before&&typeof GxbSpine!=='undefined'&&GxbSpine.burst){GxbSpine.burst('shengji');if(typeof GxbAudio!=='undefined')GxbAudio.sfx('train_level_up',.9);}}return data;}
+
 function render(){
  document.body.classList.toggle('developer-mode',!!state.developer);
  renderHome();

@@ -3,6 +3,8 @@ package com.quangho.goddess.battle.offline;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.Context;
+
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.regex.Pattern;
@@ -19,6 +21,15 @@ public final class OfflineLocalApi {
     private static final String HEALTH_PATH = "/api/offline/health";
     private static final Pattern REQUEST_ID = Pattern.compile("[A-Za-z0-9_-]{1,64}");
     private static final Pattern API_PATH = Pattern.compile("/api/[A-Za-z0-9._/-]{1,256}");
+    private final OfflineGameProvider gameProvider;
+
+    public OfflineLocalApi() {
+        this.gameProvider = null;
+    }
+
+    public OfflineLocalApi(Context context) throws java.io.IOException {
+        this.gameProvider = new OfflineGameProvider(context);
+    }
 
     /** A response body follows the existing server convention: JSON with `error` on failure. */
     public static final class Response {
@@ -104,13 +115,27 @@ public final class OfflineLocalApi {
             JSONObject body = new JSONObject();
             put(body, "offline", true);
             put(body, "api_version", 1);
-            put(body, "gameplay_ready", false);
+            put(body, "gameplay_ready", gameProvider != null);
             JSONObject pending = new JSONObject();
-            put(pending, "state_action_provider", false);
-            put(pending, "local_save", false);
-            put(pending, "frontend_adapter", false);
+            put(pending, "state_action_provider", gameProvider == null ? false : true);
+            put(pending, "local_save", gameProvider == null ? false : true);
+            put(pending, "frontend_adapter", true);
             put(body, "pending", pending);
             return new Response(200, body);
+        }
+
+        if (gameProvider != null && "/api/state".equals(path) && "GET".equals(method)) {
+            return gameProvider.state();
+        }
+        if (gameProvider != null && "/api/action".equals(path) && "POST".equals(method)) {
+            return gameProvider.action(bodyJson);
+        }
+        if (gameProvider != null && "/api/profile".equals(path) && "POST".equals(method)) {
+            return gameProvider.profile(bodyJson);
+        }
+        if (gameProvider != null && path.matches("/api/battle/[0-9]+") && "GET".equals(method)) {
+            try { return gameProvider.battle(Long.parseLong(path.substring("/api/battle/".length()))); }
+            catch (NumberFormatException ignored) { return error(400, "invalid_battle_id"); }
         }
 
         if (path.startsWith("/api/")) {

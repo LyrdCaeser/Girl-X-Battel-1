@@ -77,7 +77,7 @@ public final class MainActivity extends ComponentActivity {
     private WebView webView;
     private OfflineResourceManager resourceManager;
     private WebViewAssetLoader localAssetLoader;
-    private final OfflineLocalApi offlineLocalApi = new OfflineLocalApi();
+    private OfflineLocalApi offlineLocalApi;
     private final ThreadPoolExecutor localApiExecutor = new ThreadPoolExecutor(
             1, 1, 0L, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<>(32),
             task -> {
@@ -110,6 +110,12 @@ public final class MainActivity extends ComponentActivity {
         root = new FrameLayout(this);
         root.setBackgroundColor(BG);
         setContentView(root);
+        try {
+            offlineLocalApi = new OfflineLocalApi(this);
+        } catch (java.io.IOException saveError) {
+            // Keep the shell available, but do not expose a non-persistent gameplay API.
+            offlineLocalApi = new OfflineLocalApi();
+        }
         createResourceManager();
         showResourceHome();
         registerConnectivityMonitor();
