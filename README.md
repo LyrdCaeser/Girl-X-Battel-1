@@ -1,16 +1,16 @@
-> **02/10/2026 — actualización 088:** nuevas tablas y sistemas locales, ajustes de Campaign y Tests, guías contextuales, iconos y efectos de brillo, textos de interfaz en inglés, estados de batalla, formación centrada y rótulos VICTORY/DEFEAT. [Notas de distribución](DISTRIBUCION_2026-10-02.md).
+> **02/10/2026 — cập nhật 088:** bổ sung bảng và hệ thống cục bộ, điều chỉnh Campaign và Tests, hướng dẫn theo ngữ cảnh, biểu tượng và hiệu ứng phát sáng, văn bản giao diện tiếng Anh, trạng thái chiến đấu, đội hình căn giữa và nhãn VICTORY/DEFEAT. [Ghi chú phân phối](DISTRIBUCION_2026-10-02.md).
 
-> **01/10/2026 — CONTENT-072:** Friend Boss actual, Servant Training, Ulticore y Practical Work disponibles desde Inicio → Training & Bosses. Growth Diary **157/160**. **364 tests aprobados** y combates nativos comprobados en DB temporal. [Alcance y límites](SISTEMAS_PENDIENTES_RECONSTRUIDOS.md). Reiniciar servidor para cargar el código.
+> **01/10/2026 — CONTENT-072:** Friend Boss, Servant Training, Ulticore và Practical Work hiện có tại Trang chủ → Training & Bosses (Huấn luyện & Trùm). Growth Diary **157/160**. **364 bài kiểm thử đạt**; các trận chiến dùng bộ máy gốc đã được xác minh trên cơ sở dữ liệu tạm. [Phạm vi và giới hạn](SISTEMAS_PENDIENTES_RECONSTRUIDOS.md). Khởi động lại máy chủ để nạp mã.
 
-> **01/10/2026 — GXB2-CONTENT-071:** Growth Diary actualizado a **154/160** misiones; Newbie Camp con **tres etapas, 30 tareas y tres premios**, **28/30** tareas conectadas. API y mensajes originales, premios persistentes y comprobación sobre partida temporal. Reiniciar servidor; botones en Inicio. [Newbie Camp](NEWBIE_CAMP.md) · [Diario actualizado](GROWTH_DIARY.md).
+> **01/10/2026 — GXB2-CONTENT-071:** Growth Diary được cập nhật lên **154/160** nhiệm vụ; Newbie Camp có **ba giai đoạn, 30 nhiệm vụ và ba phần thưởng**, trong đó **28/30** nhiệm vụ đã được tích hợp. API và thông điệp gốc, phần thưởng được lưu bền vững và kiểm thử trên bản lưu tạm. Khởi động lại máy chủ; các nút nằm ở Trang chủ. [Newbie Camp](NEWBIE_CAMP.md) · [Growth Diary đã cập nhật](GROWTH_DIARY.md).
 
-# Girls X Battle 2 — versión local
+# Girls X Battle 2 — phiên bản chạy cục bộ
 
-Proyecto de preservación y reconstrucción para jugar en un servidor local, con código, datos, ilustraciones, animaciones, iconos y voces incluidos. Hay sistemas completos y otros parciales; consulta [ESTADO_PROYECTO.md](ESTADO_PROYECTO.md) y [GXB2_MASTER_CHECKLIST.md](GXB2_MASTER_CHECKLIST.md) para conocer el alcance real.
+Dự án lưu giữ và tái dựng game để chơi trên máy chủ cục bộ, bao gồm mã nguồn, dữ liệu, tranh minh họa, hoạt ảnh, biểu tượng và giọng nói. Một số hệ thống đã hoàn chỉnh, một số mới hoàn thiện một phần; xem [ESTADO_PROYECTO.md](ESTADO_PROYECTO.md) và [GXB2_MASTER_CHECKLIST.md](GXB2_MASTER_CHECKLIST.md) để biết phạm vi thực tế.
 
-## Inicio en macOS
+## Khởi chạy trên macOS
 
-Necesitas Python 3.10 o posterior. El motor de combate incluye LuaJIT para macOS Intel. En Apple Silicon, este ejecutable necesita Rosetta; también puedes usar un LuaJIT nativo como se indica abajo.
+Cần Python 3.10 trở lên. Bộ máy chiến đấu có kèm LuaJIT cho máy Mac dùng Intel. Trên Apple Silicon, tệp thực thi này cần Rosetta; bạn cũng có thể dùng bản LuaJIT được biên dịch cho Apple Silicon như hướng dẫn bên dưới.
 
 ```sh
 git clone https://github.com/Armenidez/gxb2-local.git
@@ -21,86 +21,86 @@ python3 -m pip install -r requirements.txt
 python3 server.py --open
 ```
 
-Abre `http://localhost:9080/`. Para detener el servidor, pulsa Ctrl+C. El repositorio es privado: necesitas acceso desde tu cuenta de GitHub para descargarlo. La descarga es grande porque incluye los recursos gráficos y de sonido.
+Mở `http://localhost:9080/`. Để dừng máy chủ, nhấn Ctrl+C. Kho lưu trữ này ở chế độ riêng tư: bạn cần có quyền truy cập bằng tài khoản GitHub của mình để tải xuống. Gói tải xuống có dung lượng lớn vì bao gồm tài nguyên hình ảnh và âm thanh.
 
-Si esos puertos ya están ocupados:
+Nếu các cổng đó đang được sử dụng:
 
 ```sh
 python3 server.py --open --http-port 9242 --tcp-port 9243
 ```
 
-## Inicio en Windows 10/11 (64 bits)
+## Khởi chạy trên Windows 10/11 (64 bit)
 
-1. Instala Python 3.10 o posterior desde https://www.python.org/downloads/windows/ y activa la opción de añadir Python al PATH.
-2. Descarga este repositorio privado con **Code → Download ZIP** (o usa Git) y descomprime toda la carpeta.
-3. Haz doble clic en **Iniciar-Windows.cmd**. La primera vez crea el entorno de Python e instala la dependencia; después abre el juego en el navegador.
+1. Cài Python 3.10 trở lên từ https://www.python.org/downloads/windows/ và bật tùy chọn thêm Python vào PATH.
+2. Tải kho lưu trữ riêng tư này bằng **Code → Download ZIP** (hoặc dùng Git), sau đó giải nén toàn bộ thư mục.
+3. Nhấp đúp vào **Iniciar-Windows.cmd**. Lần đầu chạy, chương trình tạo môi trường Python và cài thư viện phụ thuộc; sau đó game sẽ mở trong trình duyệt.
 
-El motor LuaJIT para Windows x64 ya está incluido y se selecciona automáticamente. No necesitas instalar LuaJIT ni ffmpeg. La primera instalación de la dependencia de Python necesita conexión a Internet; los recursos del juego están incluidos.
+Bộ máy LuaJIT cho Windows x64 đã được bao gồm và tự động chọn. Bạn không cần cài LuaJIT hoặc ffmpeg. Lần đầu cài thư viện phụ thuộc Python cần có kết nối Internet; tài nguyên game đã được đóng gói sẵn.
 
-Si necesitas cambiar los puertos, abre una terminal en la carpeta y ejecuta:
+Nếu cần đổi cổng, mở cửa sổ dòng lệnh trong thư mục và chạy:
 
 ```bat
 Iniciar-Windows.cmd --http-port 9242 --tcp-port 9243
 ```
 
-La consola debe permanecer abierta mientras juegas. Pulsa Ctrl+C para detener el servidor. Windows ARM y versiones anteriores a Windows 10 no están verificados.
+Cửa sổ dòng lệnh phải mở trong khi chơi. Nhấn Ctrl+C để dừng máy chủ. Windows ARM và các phiên bản trước Windows 10 chưa được kiểm chứng.
 
-## LuaJIT en otros equipos
+## LuaJIT trên các máy khác
 
-El motor de combate necesita LuaJIT 2.x. Para utilizar tu propia instalación compatible (por ejemplo, macOS con LuaJIT nativo o Linux), configura la ruta al ejecutable antes de arrancar:
+Bộ máy chiến đấu cần LuaJIT 2.x. Để dùng bản LuaJIT tương thích do bạn tự cài (ví dụ: bản được biên dịch trực tiếp cho macOS hoặc Linux), hãy cấu hình đường dẫn tới tệp thực thi trước khi khởi động:
 
 ```sh
 export GXB2_LUAJIT="$(command -v luajit)"
 python3 server.py --open
 ```
 
-Se incluyen ejecutables separados para macOS x64 y Windows x64. En Linux, instala LuaJIT; el servidor lo busca en PATH o acepta `GXB2_LUAJIT`. Se mantienen los avisos de licencia de las bibliotecas en `runtime/` y `web/vendor/`.
+Các tệp thực thi riêng cho macOS x64 và Windows x64 đã được đóng gói kèm. Trên Linux, hãy cài LuaJIT; máy chủ sẽ tìm trong PATH hoặc nhận đường dẫn qua `GXB2_LUAJIT`. Các thông báo giấy phép của thư viện trong `runtime/` và `web/vendor/` được giữ nguyên.
 
-## Partidas y modo de desarrollador
+## Bản lưu và chế độ nhà phát triển
 
-El primer inicio crea una partida nueva en `state/profile.sqlite3` y una partida independiente de desarrollador en `state/profile.developer.sqlite3`. Las bases de datos y exportaciones personales se excluyen de Git. Cambiar el modo de juego en la interfaz permite probar con la partida de desarrollador.
+Lần khởi chạy đầu tiên tạo một bản lưu mới tại `state/profile.sqlite3` và một bản lưu nhà phát triển riêng tại `state/profile.developer.sqlite3`. Cơ sở dữ liệu và các bản xuất dữ liệu cá nhân được loại khỏi Git. Có thể chuyển chế độ chơi trong giao diện để thử nghiệm bằng bản lưu nhà phát triển.
 
-Para abrir otra copia guardada:
+Để mở một bản lưu khác:
 
 ```sh
 python3 server.py --db state/mi-partida.sqlite3 --open
 ```
 
-Para hacer una copia coherente, incluso con el servidor abierto:
+Để tạo bản sao nhất quán, kể cả khi máy chủ đang chạy:
 
 ```sh
 python3 tools/save_archive.py backup state/profile.sqlite3 backups/mi-partida.sqlite3
 ```
 
-La reconstrucción no recupera por sí misma una cuenta alojada en los antiguos servidores.
+Bản tái dựng không thể tự khôi phục tài khoản từng được lưu trên các máy chủ cũ.
 
-## Archivos incluidos
+## Các tệp được bao gồm
 
-- `server.py`, `gxb2/`: servidor y reglas locales.
-- `web/`: interfaz, bibliotecas del navegador y todos los assets exportados.
-- `data/`: tablas y datos necesarios para jugar.
-- `runtime/`: motor Lua y LuaJIT para macOS x64 y Windows x64.
-- `tools/` y documentos de estado: herramientas e historial del proyecto.
+- `server.py`, `gxb2/`: máy chủ và luật chơi cục bộ.
+- `web/`: giao diện, thư viện trình duyệt và toàn bộ tài nguyên đã xuất.
+- `data/`: các bảng và dữ liệu cần thiết để chơi.
+- `runtime/`: bộ máy Lua và LuaJIT cho macOS x64 và Windows x64.
+- `tools/` và tài liệu trạng thái: công cụ cùng lịch sử dự án.
 
-Las pruebas de desarrollo y las capturas de referencia se conservan en el Mac de trabajo y se excluyen de la versión final del repositorio.
+Các bài kiểm thử phát triển và ảnh chụp màn hình tham chiếu được lưu trên máy Mac làm việc và bị loại khỏi phiên bản cuối của kho lưu trữ.
 
-No necesitas las carpetas originales de `Downloads` para iniciar el juego. Los extractores de `tools/` sirven para reconstruir recursos desde las fuentes originales y algunos sí requieren esas fuentes; no es necesario ejecutarlos tras descargar este repositorio. Las voces ya están convertidas a MP3. Su regeneración opcional requiere ffmpeg y la carpeta de sonidos original.
+Không cần các thư mục gốc trong `Downloads` để khởi chạy game. Các công cụ trích xuất trong `tools/` dùng để tái tạo tài nguyên từ nguồn gốc; một số công cụ cần các nguồn đó. Bạn không cần chạy chúng sau khi tải kho lưu trữ này. Giọng nói đã được chuyển đổi sang MP3. Nếu muốn tạo lại, bạn cần ffmpeg và thư mục âm thanh gốc.
 
-## Verificación
+## Kiểm tra
 
 ```sh
 python3 tools/bundle_voices.py --check
 ```
 
-Los informes históricos no certifican la fidelidad completa del juego y pueden enlazar a pruebas o capturas en `tests/`, `docs/references/` y `validation/`, conservadas localmente y excluidas de la versión final del repositorio junto con las partidas usadas para pruebas. Consulta [LEEME.md](LEEME.md) para el historial y la arquitectura.
+Các báo cáo lịch sử không xác nhận game đã hoàn toàn trung thực với bản gốc; chúng có thể dẫn tới kiểm thử hoặc ảnh chụp trong `tests/`, `docs/references/` và `validation/`. Những nội dung này được lưu cục bộ và loại khỏi phiên bản cuối của kho lưu trữ, cùng với các bản lưu dùng để kiểm thử. Xem [LEEME.md](LEEME.md) để biết lịch sử và kiến trúc.
 
 
-Comprobación de distribución: copia limpia en macOS y [arranque/combate en Windows x64](https://github.com/Armenidez/gxb2-local/actions/runs/36729034925) aprobados. La comprobación de Windows usa Windows Server 2022; no representa una revisión visual completa de todas las pantallas de Windows 10/11.
+Kiểm tra phân phối: bản sao sạch trên macOS và [khởi chạy/chiến đấu trên Windows x64](https://github.com/Armenidez/gxb2-local/actions/runs/36729034925) đều đạt. Kiểm tra Windows chạy trên Windows Server 2022; đây không phải là đợt rà soát trực quan đầy đủ mọi màn hình trên Windows 10/11.
 
-## Recuperación completa de tablas — 01/10/2026
+## Khôi phục đầy đủ các bảng — 01/10/2026
 
-[Tablas recuperadas](TABLAS_RECUPERADAS.md): 904/904 tablas originales, 202.878 filas en segmentos, 252 tablas inglesas y ocho dossiers de sistemas. Datos y manifest en `data/recovered/`; extractor reproducible en `tools/recover_client_tables.py`. Recuperación documental completa de estas fuentes; la integración jugable sigue siendo parcial. No cambia reglas ni partidas.
+[Các bảng đã khôi phục](TABLAS_RECUPERADAS.md): đủ 904/904 bảng gốc, 202.878 hàng dữ liệu trong các phân đoạn, 252 bảng tiếng Anh và tám hồ sơ hệ thống. Dữ liệu và manifest nằm trong `data/recovered/`; công cụ trích xuất có thể tái chạy là `tools/recover_client_tables.py`. Việc khôi phục tài liệu từ các nguồn này đã hoàn tất; tích hợp để chơi vẫn còn một phần. Không thay đổi luật chơi hay bản lưu.
 
 ## Growth Diary — 01/10/2026
 
-Nuevo botón en Inicio tras la fase 5: 40 capítulos / 160 misiones, 121 con seguimiento local, reclamación única y guardado. [Alcance y 39 objetivos pendientes](GROWTH_DIARY.md). Reinicia el servidor para cargarlo.
+Nút mới nằm ở Trang chủ sau giai đoạn 5: 40 chương / 160 nhiệm vụ, theo dõi cục bộ 121 nhiệm vụ, nhận thưởng một lần và lưu tiến trình. [Phạm vi và 39 mục tiêu còn lại](GROWTH_DIARY.md). Khởi động lại máy chủ để nạp thay đổi.
