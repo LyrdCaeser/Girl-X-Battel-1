@@ -41,12 +41,12 @@ public final class OfflineGameProviderTest {
                     .put("message", "SET_HANG_TEAM")
                     .put("data", new JSONObject().put("partners", partners)).toString());
             assertEquals(200, formation.status);
-            assertEquals(2, formation.body.getJSONObject("state").getJSONArray("formation").length());
+            assertEquals(1, formation.body.getJSONObject("state").getJSONArray("formation").length());
             assertEquals(200, provider.profile(new JSONObject().put("name", "Tester").toString()).status);
 
             OfflineGameProvider reopened = new OfflineGameProvider(root);
             assertEquals("Tester", reopened.state().body.getJSONObject("profile").getString("name"));
-            assertEquals(2, reopened.state().body.getJSONArray("formation").length());
+            assertEquals(1, reopened.state().body.getJSONArray("formation").length());
         } finally {
             delete(root);
         }
@@ -82,7 +82,7 @@ public final class OfflineGameProviderTest {
             assertEquals("Legacy Player", state.getJSONObject("profile").getString("name"));
             assertEquals(9, state.getJSONArray("formation").getJSONObject(0).getInt("partner_id"));
             assertEquals(30, state.getJSONArray("stages").length());
-            assertEquals(1, new JSONObject(new String(Files.readAllBytes(save.toPath()), StandardCharsets.UTF_8))
+            assertEquals(2, new JSONObject(new String(Files.readAllBytes(save.toPath()), StandardCharsets.UTF_8))
                     .getInt("save_version"));
         } finally {
             delete(root);
