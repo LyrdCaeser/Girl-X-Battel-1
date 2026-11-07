@@ -20,7 +20,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * local save; every mutation is written through a temporary file and renamed atomically.
  */
 public final class OfflineGameProvider {
-    private static final int SAVE_VERSION = 2;
+    private static final int SAVE_VERSION = 3;
     private final Context context;
     private final File saveFile;
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
@@ -110,6 +110,12 @@ public final class OfflineGameProvider {
                 persist();
                 return ok(new JSONObject().put("state", copy(save)));
             }
+            if ("SUMMON".equals(message)) return summon(data);
+            if ("SHOP_BUY".equals(message)) return shopBuy(data);
+            if ("HOME_ACTION".equals(message)) return homeAction(data);
+            if ("EVENT_ACTION".equals(message)) return eventAction(data);
+            if ("STORY_ACTION".equals(message)) return storyAction(data);
+            if ("EQUIPMENT_ACTION".equals(message)) return equipmentAction(data);
             if ("PARTNER_LEVUP".equals(message)) return levelUp(data);
             if ("PARTNER_GRADEUP".equals(message)) return gradeUp(data);
             if ("AWAKE_PARTNER".equals(message)) return awake(data);
@@ -128,6 +134,132 @@ public final class OfflineGameProvider {
             JSONObject report = reports == null ? null : reports.optJSONObject(Long.toString(id));
             return report == null ? error(404, "battle_not_found") : ok(report);
         } finally { lock.readLock().unlock(); }
+    }
+
+    private OfflineLocalApi.Response summon(JSONObject data) throws JSONException, IOException {
+        if (data == null) return error(400, "invalid_summon_request");
+        int id = data.optInt("summon_id", 0), times = data.optInt("times", 1);
+        if (times != 1 && times != 10) return error(400, "invalid_summon_times");
+        int item, amount, freeSeconds = 0, bonusItem = 0, bonus = 0;
+        switch (id) {
+            case 1: item = 33; amount = times; break;
+            case 2: item = 33; amount = 10; times = 10; break;
+            case 3: item = 0; amount = 0; freeSeconds = 8 * 60 * 60; break;
+            case 4: item = 2; amount = times == 10 ? 2200 : 250; bonusItem = 12; bonus = times == 10 ? 100 : 10; break;
+            case 5: item = 2; amount = 2200; times = 10; bonusItem = 12; bonus = 100; break;
+            case 6: item = 36; amount = times; break;
+            case 7: item = 36; amount = 10; times = 10; break;
+            case 8: item = 0; amount = 0; freeSeconds = 48 * 60 * 60; bonusItem = 12; bonus = 10; break;
+            case 9: item = 12; amount = 1000; break;
+            case 15: item = 11; amount = 10; break;
+            case 16: item = 11; amount = 100; times = 10; break;
+            case 22: item = 2; amount = 250; bonusItem = 12; bonus = 10; break;
+            case 23: item = 2; amount = 2200; times = 10; bonusItem = 12; bonus = 100; break;
+            case 24: item = 36; amount = 1; bonusItem = 12; bonus = 10; break;
+            case 25: item = 36; amount = 10; times = 10; bonusItem = 12; bonus = 100; break;
+            case 26: item = 0; amount = 0; freeSeconds = 24 * 60 * 60; bonusItem = 12; bonus = 10; break;
+            default: return error(400, "summon_not_available_offline");
+        }
+        JSONObject items = save.optJSONObject("items");
+        if (amount > 0 && (items == null || items.optInt(Integer.toString(item), 0) < amount)) return error(409, "insufficient_resources");
+        JSONObject summon = save.optJSONObject("summon");
+        if (summon == null) { summon = new JSONObject(); put(save, "summon", summon); }
+        long now = System.currentTimeMillis() / 1000L; String freeKey = "free_at_" + id;
+        if (freeSeconds > 0 && times != 1) return error(400, "free_summon_single_only");
+        if (freeSeconds > 0 && now < summon.optLong(freeKey, 0L)) return error(409, "summon_free_cooldown");
+        if (amount > 0) put(items, Integer.toString(item), items.optInt(Integer.toString(item), 0) - amount);
+        if (freeSeconds > 0) put(summon, freeKey, now + freeSeconds);
+        JSONArray results = new JSONArray(); JSONArray roster = save.optJSONArray("roster");
+        for (int n = 0; n < times; n++) {
+            int partnerId = save.optInt("next_partner_id", 2); put(save, "next_partner_id", partnerId + 1);
+            JSONObject partner = new JSONObject().put("partner_id", partnerId).put("table_id", 41001 + (partnerId % 5))
+                    .put("name", "Offline Summon #" + partnerId).put("lv", 1).put("stars", 5).put("grade", 0)
+                    .put("max_grade", 5).put("level_cap", 20).put("atk", 100).put("arm", 80).put("hp", 1000).put("power", 347);
+            roster.put(partner); results.put(partner);
+        }
+        if (bonus > 0) put(items, Integer.toString(bonusItem), items.optInt(Integer.toString(bonusItem), 0) + bonus);
+        put(summon, "last_summon_id", id); put(summon, "last_summon_at", now);
+        JSONArray history = summon.optJSONArray("history"); if (history == null) { history = new JSONArray(); put(summon, "history", history); }
+        history.put(new JSONObject().put("summon_id", id).put("times", times).put("at", now).put("results", results));
+        while (history.length() > 50) history.remove(0);
+        persist(); return ok(new JSONObject().put("summon_res", results).put("state", copy(save)));
+    }
+
+    private OfflineLocalApi.Response shopBuy(JSONObject data) throws JSONException, IOException {
+        if (data == null || data.optInt("shop", 0) != 7 || data.optInt("index", 0) != 1) return error(400, "shop_not_available_offline");
+        int num = data.optInt("num", 1); if (num < 1 || num > 10) return error(400, "invalid_shop_item");
+        JSONObject items = save.optJSONObject("items"); int cost = 100 * num;
+        if (items == null || items.optInt("1", 0) < cost) return error(409, "insufficient_resources");
+        put(items, "1", items.optInt("1", 0) - cost); put(items, "3", items.optInt("3", 0) + 10 * num);
+        JSONObject boards = save.optJSONObject("shop_boards"); if (boards == null) { boards = new JSONObject(); put(save, "shop_boards", boards); }
+        JSONObject board = boards.optJSONObject("7"); if (board == null) { board = new JSONObject(); put(boards, "7", board); }
+        put(board, "bought_1", board.optInt("bought_1", 0) + num); persist();
+        return ok(new JSONObject().put("got", new JSONObject().put("3", 10 * num)).put("state", copy(save)));
+    }
+
+    private OfflineLocalApi.Response homeAction(JSONObject data) throws JSONException, IOException {
+        if (data == null) return error(400, "invalid_home_action");
+        JSONObject home = save.optJSONObject("home_systems"); if (home == null) { home = new JSONObject(); put(save, "home_systems", home); }
+        String action = data.optString("action", "");
+        if ("pet_select".equals(action)) put(home, "selected_pet", data.optInt("id", 0));
+        else if ("travel_start".equals(action)) { put(home, "started_travel", true); put(home, "travel_started_at", System.currentTimeMillis() / 1000L); }
+        else if ("travel_collect".equals(action)) {
+            if (!home.optBoolean("started_travel", false)) return error(409, "production_not_started");
+            put(save.optJSONObject("items"), "3", save.optJSONObject("items").optInt("3", 0) + 10);
+            put(home, "travel_started_at", System.currentTimeMillis() / 1000L);
+        } else return error(501, "home_action_not_implemented_offline");
+        persist(); return ok(new JSONObject().put("state", copy(save)));
+    }
+
+    private OfflineLocalApi.Response eventAction(JSONObject data) throws JSONException, IOException {
+        if (data == null) return error(400, "invalid_event_action");
+        JSONObject events = save.optJSONObject("events"); if (events == null) { events = new JSONObject(); put(save, "events", events); }
+        String action = data.optString("action", ""); JSONObject items = save.optJSONObject("items"); JSONObject awards = new JSONObject();
+        long today = System.currentTimeMillis() / 86400000L;
+        if (events.optLong("checkin_day", -1L) != today) { put(events, "checkin_day", today); put(events, "checkin_claimed_today", false); }
+        if ("visit".equals(action)) put(events, "online_days", Math.max(1, events.optInt("online_days", 0)));
+        else if ("checkin".equals(action)) {
+            if (events.optBoolean("checkin_claimed_today", false)) return error(409, "event_already_claimed");
+            put(events, "checkin_claimed_today", true); put(awards, "3", 50);
+        } else if ("sevenday".equals(action)) {
+            int claimed = events.optInt("sevenday_claimed", 0); if (claimed >= 7) return error(409, "event_complete");
+            put(events, "sevenday_claimed", claimed + 1); put(awards, "9", 100);
+        } else return error(501, "event_action_not_implemented_offline");
+        java.util.Iterator<String> keys = awards.keys(); while (keys.hasNext()) { String key = keys.next(); put(items, key, items.optInt(key, 0) + awards.optInt(key, 0)); }
+        persist(); return ok(new JSONObject().put("awards", awards).put("state", copy(save)));
+    }
+
+    private OfflineLocalApi.Response storyAction(JSONObject data) throws JSONException, IOException {
+        if (data == null) return error(400, "invalid_story_action");
+        JSONObject story = save.optJSONObject("story"); if (story == null) { story = new JSONObject(); put(save, "story", story); }
+        JSONArray seen = story.optJSONArray("seen"); if (seen == null) { seen = new JSONArray(); put(story, "seen", seen); }
+        String action = data.optString("action", "");
+        if ("seen".equals(action)) { int plot = data.optInt("plot", 0); if (plot > 0 && !contains(seen, plot)) seen.put(plot); }
+        else if ("unlock".equals(action)) {
+            JSONObject items = save.optJSONObject("items"); int key = 208, cost = 2;
+            if (items.optInt(Integer.toString(key), 0) < cost) return error(409, "insufficient_story_keys");
+            int id = data.optInt("id", 0); if (id <= 0) return error(400, "invalid_story_section");
+            put(items, Integer.toString(key), items.optInt(Integer.toString(key), 0) - cost);
+            JSONArray unlocked = story.optJSONArray("unlocked"); if (unlocked == null) { unlocked = new JSONArray(); put(story, "unlocked", unlocked); }
+            if (!contains(unlocked, id)) unlocked.put(id);
+        } else return error(501, "story_action_not_implemented_offline");
+        persist(); return ok(new JSONObject().put("state", copy(save)));
+    }
+
+    private OfflineLocalApi.Response equipmentAction(JSONObject data) throws JSONException, IOException {
+        if (data == null) return error(400, "invalid_equipment_action");
+        JSONObject hero = hero(data.optInt("partner_id", 0)); if (hero == null) return error(404, "partner_not_found");
+        JSONArray equipment = hero.optJSONArray("equipment"); if (equipment == null) { equipment = new JSONArray(); put(hero, "equipment", equipment); }
+        while (equipment.length() < 6) equipment.put(0);
+        int slot = data.optInt("slot", 0); if (slot < 1 || slot > 6) return error(400, "invalid_equipment_slot");
+        String action = data.optString("action", ""); JSONObject items = save.optJSONObject("items");
+        if ("unequip".equals(action)) put(equipment, slot - 1, 0);
+        else if ("equip".equals(action)) {
+            int item = data.optInt("item_id", 0); if (item <= 0 || items.optInt(Integer.toString(item), 0) < 1) return error(409, "equipment_not_owned");
+            int old = equipment.optInt(slot - 1, 0); put(items, Integer.toString(item), items.optInt(Integer.toString(item), 0) - 1);
+            if (old > 0) put(items, Integer.toString(old), items.optInt(Integer.toString(old), 0) + 1); put(equipment, slot - 1, item);
+        } else return error(501, "equipment_action_not_implemented_offline");
+        persist(); return ok(new JSONObject().put("state", copy(save)));
     }
 
     private OfflineLocalApi.Response fight(JSONObject data) throws JSONException, IOException {
@@ -299,7 +431,9 @@ public final class OfflineGameProvider {
     private static JSONObject initial() throws JSONException {
         JSONObject s = new JSONObject();
         put(s, "save_version", SAVE_VERSION); put(s, "revision", 0L); put(s, "level", 1); put(s, "max_stage", 0);
-        put(s, "next_stage", 1); put(s, "cleared", new JSONArray()); put(s, "items", new JSONObject().put("1", 10000).put("3", 1000).put("9", 1000));
+        put(s, "next_stage", 1); put(s, "cleared", new JSONArray());
+        put(s, "items", new JSONObject().put("1", 10000).put("2", 3000).put("3", 1000)
+                .put("9", 1000).put("11", 100).put("12", 1000).put("33", 20).put("36", 20));
         put(s, "profile", new JSONObject().put("name", "Offline Player").put("avatar", "41001"));
         put(s, "formation", new JSONArray().put(new JSONObject().put("table_id", 41001).put("partner_id", 1).put("lv", 1).put("pos", 1)));
         put(s, "roster", new JSONArray().put(new JSONObject()
@@ -310,6 +444,8 @@ public final class OfflineGameProvider {
         JSONArray stages = new JSONArray();
         for (int i = 1; i <= 30; i++) stages.put(new JSONObject().put("id", i).put("chapter", 1).put("level_required", 1).put("unlocked", i == 1));
         put(s, "stages", stages); put(s, "battle_reports", new JSONObject()); put(s, "next_battle_id", 1L);
+        put(s, "next_partner_id", 2); put(s, "summon", new JSONObject().put("history", new JSONArray()));
+        put(s, "shop_boards", new JSONObject()); put(s, "home_systems", new JSONObject().put("selected_pet", 0).put("started_travel", false));
         return s;
     }
 
@@ -336,6 +472,15 @@ public final class OfflineGameProvider {
         copyIfMissing(legacy, defaults, "battle_reports");
         copyIfMissing(legacy, defaults, "next_battle_id");
         copyIfMissing(legacy, defaults, "max_stage");
+        copyIfMissing(legacy, defaults, "next_partner_id");
+        copyIfMissing(legacy, defaults, "summon");
+        copyIfMissing(legacy, defaults, "shop_boards");
+        copyIfMissing(legacy, defaults, "home_systems");
+        JSONObject items = legacy.optJSONObject("items");
+        JSONObject defaultItems = defaults.optJSONObject("items");
+        if (items == null) { items = new JSONObject(); legacy.put("items", items); }
+        for (String key : new String[] {"2", "3", "9", "11", "12", "33", "36"})
+            if (!items.has(key)) items.put(key, defaultItems.optInt(key, 0));
         JSONArray roster=legacy.optJSONArray("roster"); if(roster!=null) for(int i=0;i<roster.length();i++){JSONObject h=roster.optJSONObject(i);if(h!=null){if(!h.has("grade"))put(h,"grade",0);if(!h.has("max_grade"))put(h,"max_grade",5);if(!h.has("level_cap"))put(h,"level_cap",20);}}
         legacy.put("save_version", SAVE_VERSION);
         return legacy;

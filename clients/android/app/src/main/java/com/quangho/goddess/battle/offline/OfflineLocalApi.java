@@ -147,6 +147,38 @@ public final class OfflineLocalApi {
         if (gameProvider != null && "/api/action".equals(path) && "POST".equals(method)) {
             return gameProvider.action(bodyJson);
         }
+        if (gameProvider != null && "/api/shops/action".equals(path) && "POST".equals(method)) {
+            try { return gameProvider.action(new JSONObject().put("message", "SHOP_BUY").put("data", object(bodyJson)).toString()); }
+            catch (JSONException error) { return error(400, "invalid_local_api_body"); }
+        }
+        if (gameProvider != null && "/api/home/action".equals(path) && "POST".equals(method)) {
+            try { return gameProvider.action(new JSONObject().put("message", "HOME_ACTION").put("data", object(bodyJson)).toString()); }
+            catch (JSONException error) { return error(400, "invalid_local_api_body"); }
+        }
+        if (gameProvider != null && "/api/events/action".equals(path) && "POST".equals(method)) {
+            try { return gameProvider.action(new JSONObject().put("message", "EVENT_ACTION").put("data", object(bodyJson)).toString()); }
+            catch (JSONException error) { return error(400, "invalid_local_api_body"); }
+        }
+        if (gameProvider != null && "/api/equipment/action".equals(path) && "POST".equals(method)) {
+            try { return gameProvider.action(new JSONObject().put("message", "EQUIPMENT_ACTION").put("data", object(bodyJson)).toString()); }
+            catch (JSONException error) { return error(400, "invalid_local_api_body"); }
+        }
+        if (gameProvider != null && "/api/story/action".equals(path) && "POST".equals(method)) {
+            try { return gameProvider.action(new JSONObject().put("message", "STORY_ACTION").put("data", object(bodyJson)).toString()); }
+            catch (JSONException error) { return error(400, "invalid_local_api_body"); }
+        }
+        if (gameProvider != null && "/api/story/stage".equals(path) && "POST".equals(method)) {
+            JSONObject body = new JSONObject(); put(body, "pre", 0); put(body, "post", 0); put(body, "offline", true);
+            return new Response(200, body);
+        }
+        if (gameProvider != null && "/api/story/scene".equals(path) && "POST".equals(method)) {
+            JSONObject body = new JSONObject(); put(body, "lines", new org.json.JSONArray()); put(body, "offline", true);
+            return new Response(200, body);
+        }
+        if (gameProvider != null && "/api/story/catalog".equals(path) && "POST".equals(method)) {
+            JSONObject body = new JSONObject(); put(body, "episodes", new org.json.JSONArray()); put(body, "forts", new org.json.JSONArray()); put(body, "sections", new org.json.JSONArray()); put(body, "offline", true);
+            return new Response(200, body);
+        }
         if (gameProvider != null && "/api/profile".equals(path) && "POST".equals(method)) {
             return gameProvider.profile(bodyJson);
         }

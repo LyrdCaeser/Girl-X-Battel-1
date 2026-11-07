@@ -19,7 +19,7 @@ public final class OfflineGameProviderTest {
         try {
             OfflineGameProvider provider = new OfflineGameProvider(root);
             JSONObject state = provider.state().body;
-            assertEquals(2, state.getInt("save_version"));
+            assertEquals(3, state.getInt("save_version"));
             assertEquals(1, state.getInt("next_stage"));
             assertEquals(30, state.getJSONArray("stages").length());
             assertTrue(state.getJSONArray("stages").getJSONObject(0).getBoolean("unlocked"));
@@ -78,11 +78,11 @@ public final class OfflineGameProviderTest {
 
             OfflineGameProvider migrated = new OfflineGameProvider(root);
             JSONObject state = migrated.state().body;
-            assertEquals(2, state.getInt("save_version"));
+            assertEquals(3, state.getInt("save_version"));
             assertEquals("Legacy Player", state.getJSONObject("profile").getString("name"));
             assertEquals(9, state.getJSONArray("formation").getJSONObject(0).getInt("partner_id"));
             assertEquals(30, state.getJSONArray("stages").length());
-            assertEquals(2, new JSONObject(new String(Files.readAllBytes(save.toPath()), StandardCharsets.UTF_8))
+            assertEquals(3, new JSONObject(new String(Files.readAllBytes(save.toPath()), StandardCharsets.UTF_8))
                     .getInt("save_version"));
         } finally {
             delete(root);
@@ -122,6 +122,35 @@ public final class OfflineGameProviderTest {
             assertEquals(6, result.body.getJSONObject("state").getJSONArray("roster").getJSONObject(0).getInt("stars"));
             assertEquals(1, result.body.getJSONObject("state").getJSONArray("roster").length());
             assertEquals(6, new OfflineGameProvider(root).state().body.getJSONArray("roster").getJSONObject(0).getInt("stars"));
+        } finally { delete(root); }
+    }
+
+    @Test public void summonConsumesCostAddsRosterAndSurvivesReload() throws Exception {
+        File root = Files.createTempDirectory("gxb3-summon-").toFile();
+        try {
+            OfflineGameProvider provider = new OfflineGameProvider(root);
+            int before = provider.state().body.getJSONObject("items").getInt("33");
+            OfflineLocalApi.Response result = provider.action(new JSONObject().put("message", "SUMMON")
+                    .put("data", new JSONObject().put("summon_id", 1).put("times", 1)).toString());
+            assertEquals(200, result.status);
+            assertEquals(before - 1, result.body.getJSONObject("state").getJSONObject("items").getInt("33"));
+            assertEquals(2, result.body.getJSONObject("state").getJSONArray("roster").length());
+            assertEquals(1, new OfflineGameProvider(root).state().body.getJSONObject("summon").getJSONArray("history").length());
+        } finally { delete(root); }
+    }
+
+    @Test public void shopAndHomeMutationsPersistLocally() throws Exception {
+        File root = Files.createTempDirectory("gxb3-shop-home-").toFile();
+        try {
+            OfflineGameProvider provider = new OfflineGameProvider(root);
+            assertEquals(200, provider.action(new JSONObject().put("message", "SHOP_BUY")
+                    .put("data", new JSONObject().put("shop", 7).put("index", 1).put("num", 1)).toString()).status);
+            assertEquals(1010, provider.state().body.getJSONObject("items").getInt("3"));
+            assertEquals(200, provider.action(new JSONObject().put("message", "HOME_ACTION")
+                    .put("data", new JSONObject().put("action", "travel_start")).toString()).status);
+            assertEquals(200, provider.action(new JSONObject().put("message", "HOME_ACTION")
+                    .put("data", new JSONObject().put("action", "travel_collect")).toString()).status);
+            assertTrue(new OfflineGameProvider(root).state().body.getJSONObject("home_systems").getBoolean("started_travel"));
         } finally { delete(root); }
     }
 
