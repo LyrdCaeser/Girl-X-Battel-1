@@ -16,7 +16,18 @@ window.GxbAuth=(()=>{
     }catch{}
   }
   const el=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n;};
+  const localRpc=(typeof window!=='undefined'&&window.Gxb3LocalApi)?(()=>{
+    let seq=0;const pending=new Map();let listening=false;
+    function listen(){if(listening)return;listening=true;const on=event=>{let data;try{data=typeof event.data==='string'?JSON.parse(event.data):event.data;}catch{return;}if(data&&pending.has(data.id)){const done=pending.get(data.id);pending.delete(data.id);done(data);}};try{window.Gxb3LocalApi.addEventListener('message',on);}catch{window.addEventListener('message',on);}}
+    return (method,path,body)=>new Promise((resolve,reject)=>{listen();const id='auth_rpc_'+(++seq);const timer=setTimeout(()=>{pending.delete(id);reject(Error('Local API timeout'));},15000);pending.set(id,reply=>{clearTimeout(timer);resolve(reply);});const request={v:1,id,method,path};if(body!==undefined)request.body=body;try{window.Gxb3LocalApi.postMessage(JSON.stringify(request));}catch(error){clearTimeout(timer);pending.delete(id);reject(error);}});
+  })():null;
   async function request(url,body){
+    if(localRpc&&url.startsWith('/api/')){
+      const response=await localRpc(body===undefined?'GET':'POST',url,body);
+      const data=response.body||{};
+      if(response.status<200||response.status>=300)throw Error(data.error||'Không thể hoàn tất yêu cầu');
+      return data;
+    }
     const r=await fetch(url,{method:body===undefined?'GET':'POST',headers:body===undefined?{}:{'Content-Type':'application/json'},body:body===undefined?undefined:JSON.stringify(body),credentials:'same-origin'});
     const data=await r.json().catch(()=>({}));
     if(!r.ok)throw Error(data.error||'Không thể hoàn tất yêu cầu');

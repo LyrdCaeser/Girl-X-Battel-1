@@ -22,13 +22,16 @@ public final class OfflineLocalApi {
     private static final Pattern REQUEST_ID = Pattern.compile("[A-Za-z0-9_-]{1,64}");
     private static final Pattern API_PATH = Pattern.compile("/api/[A-Za-z0-9._/-]{1,256}");
     private final OfflineGameProvider gameProvider;
+    private final OfflineAuthProvider authProvider;
 
     public OfflineLocalApi() {
         this.gameProvider = null;
+        this.authProvider = new OfflineAuthProvider();
     }
 
     public OfflineLocalApi(Context context) throws java.io.IOException {
         this.gameProvider = new OfflineGameProvider(context);
+        this.authProvider = new OfflineAuthProvider(context.getApplicationContext().getFilesDir());
     }
 
     /** A response body follows the existing server convention: JSON with `error` on failure. */
@@ -124,6 +127,11 @@ public final class OfflineLocalApi {
             return new Response(200, body);
         }
 
+        if ("/api/auth/me".equals(path) && "GET".equals(method)) return authMe();
+        if ("/api/auth/login".equals(path) && "POST".equals(method)) return authLogin(bodyJson);
+        if ("/api/auth/register".equals(path) && "POST".equals(method)) return authRegister(bodyJson);
+        if ("/api/auth/reset-password".equals(path) && "POST".equals(method)) return authReset(bodyJson);
+
         if (gameProvider != null && "/api/state".equals(path) && "GET".equals(method)) {
             return gameProvider.state();
         }
@@ -159,8 +167,38 @@ public final class OfflineLocalApi {
         return error(404, "local_api_not_found");
     }
 
+    private Response authMe() {
+        try { return new Response(200, authProvider.me()); }
+        catch (JSONException error) { return error(500, "offline_auth_store_invalid"); }
+    }
+
+    private Response authLogin(String bodyJson) {
+        try { return new Response(200, authProvider.login(object(bodyJson))); }
+        catch (JSONException error) { return authError(error); }
+        catch (java.io.IOException error) { return error(500, "offline_auth_save_failed"); }
+    }
+
+    private Response authRegister(String bodyJson) {
+        try { return new Response(201, authProvider.register(object(bodyJson))); }
+        catch (JSONException error) { return authError(error); }
+        catch (java.io.IOException error) { return error(500, "offline_auth_save_failed"); }
+    }
+
+    private Response authReset(String bodyJson) {
+        try { return new Response(200, authProvider.resetPassword(object(bodyJson))); }
+        catch (JSONException error) { return authError(error); }
+        catch (java.io.IOException error) { return error(500, "offline_auth_save_failed"); }
+    }
+
+    private static Response authError(JSONException error) {
+        String code = error.getMessage() == null ? "offline_auth_invalid_request" : error.getMessage();
+        int status = "invalid_credentials".equals(code) || "invalid_recovery_code".equals(code) ? 401
+                : "username_taken".equals(code) ? 409 : 400;
+        return error(status, code);
+    }
+
     private static boolean isOnlineOnlyPath(String path) {
-        return path.equals("/api/login") || path.startsWith("/api/auth/")
+        return path.equals("/api/login")
                 || path.startsWith("/api/payment/") || path.startsWith("/api/pvp/")
                 || path.startsWith("/api/guild/") || path.startsWith("/api/chat/")
                 || path.startsWith("/api/leaderboard/") || path.startsWith("/api/cloud/");
@@ -199,6 +237,11 @@ public final class OfflineLocalApi {
         } catch (JSONException impossible) {
             throw new IllegalStateException("Unable to construct local API JSON", impossible);
         }
+    }
+
+    private static JSONObject object(String body) throws JSONException {
+        if (body == null) throw new JSONException("invalid_local_api_body");
+        return new JSONObject(body);
     }
 
     private static int utf8Length(String value) {

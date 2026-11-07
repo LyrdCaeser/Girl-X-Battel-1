@@ -55,6 +55,24 @@ public final class OfflineLocalApiTest {
         }
     }
 
+    @Test public void offlineAuthRegistersLogsInAndResetsPassword() throws Exception {
+        OfflineLocalApi auth = new OfflineLocalApi();
+        assertFalse(auth.handleRequest("GET", "/api/auth/me", null).body.getBoolean("authenticated"));
+        OfflineLocalApi.Response registered = auth.handleRequest("POST", "/api/auth/register",
+                new JSONObject().put("username", "test_user").put("password", "old-pass-123")
+                        .put("character_name", "Tester").toString());
+        assertEquals(201, registered.status);
+        String recovery = registered.body.getString("recovery_code");
+        assertTrue(auth.handleRequest("GET", "/api/auth/me", null).body.getBoolean("authenticated"));
+        assertEquals(401, auth.handleRequest("POST", "/api/auth/login",
+                new JSONObject().put("username", "test_user").put("password", "wrong-pass").toString()).status);
+        assertEquals(200, auth.handleRequest("POST", "/api/auth/reset-password",
+                new JSONObject().put("username", "test_user").put("recovery_code", recovery)
+                        .put("new_password", "new-pass-456").toString()).status);
+        assertEquals(200, auth.handleRequest("POST", "/api/auth/login",
+                new JSONObject().put("username", "test_user").put("password", "new-pass-456").toString()).status);
+    }
+
     @Test public void rejectsUntrustedOriginAndInvalidProtocolEnvelope() throws Exception {
         JSONObject request = new JSONObject()
                 .put("v", 1)
