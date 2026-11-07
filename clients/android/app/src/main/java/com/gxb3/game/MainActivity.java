@@ -195,21 +195,20 @@ public final class MainActivity extends ComponentActivity {
         localPageVisible = false;
         if (webView != null) webView.setVisibility(View.GONE);
 
-        ScrollView scroll = new ScrollView(this);
-        scroll.setFillViewport(true);
-        scroll.setVerticalScrollBarEnabled(false);
-        LinearLayout page = new LinearLayout(this);
-        page.setOrientation(LinearLayout.VERTICAL);
-        page.setGravity(Gravity.CENTER_HORIZONTAL);
-        page.setPadding(dp(20), 0, dp(20), dp(22));
-        page.setBackground(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
-                new int[] {Color.rgb(39, 29, 88), Color.rgb(17, 20, 63), BG}));
+        if (onboardingArtwork != null) onboardingArtwork.animate().cancel();
+        int screenHeightDp = Math.round(getResources().getDisplayMetrics().heightPixels
+                / getResources().getDisplayMetrics().density);
+        int heroHeightDp = Math.min(520, Math.max(330, Math.round(screenHeightDp * 0.58f)));
+        int panelHeightDp = Math.min(550, Math.max(410, Math.round(screenHeightDp * 0.65f)));
+
+        FrameLayout stage = new FrameLayout(this);
+        stage.setBackground(new GradientDrawable(GradientDrawable.Orientation.TL_BR,
+                new int[] {Color.rgb(8, 10, 24), Color.rgb(25, 24, 57), Color.rgb(49, 25, 69)}));
 
         FrameLayout hero = new FrameLayout(this);
-        LinearLayout.LayoutParams heroParams = matchWrap();
-        heroParams.height = dp(520);
-        heroParams.setMargins(-dp(20), 0, -dp(20), 0);
-        page.addView(hero, heroParams);
+        FrameLayout.LayoutParams heroParams = new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, dp(heroHeightDp), Gravity.TOP);
+        stage.addView(hero, heroParams);
 
         onboardingEffects = new OnboardingEffectsView(this);
         hero.addView(onboardingEffects, new FrameLayout.LayoutParams(
@@ -225,41 +224,57 @@ public final class MainActivity extends ComponentActivity {
 
         View lowerFade = new View(this);
         lowerFade.setBackground(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
-                new int[] {0x0011153f, 0x5511153f, 0xf011143f, BG}));
-        hero.addView(lowerFade, new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+                new int[] {0x0011153f, 0x5511153f, 0xe811143f, 0xf80b0d1d}));
+        FrameLayout.LayoutParams fadeParams = new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, dp(220), Gravity.BOTTOM);
+        hero.addView(lowerFade, fadeParams);
 
-        TextView brand = text("G  X  B  3", 12, Color.rgb(220, 215, 255), true);
-        brand.setGravity(Gravity.CENTER);
-        brand.setLetterSpacing(0.2f);
-        FrameLayout.LayoutParams brandParams = new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT,
-                Gravity.TOP | Gravity.CENTER_HORIZONTAL);
-        brandParams.topMargin = dp(22);
-        hero.addView(brand, brandParams);
+        TextView emblem = text("G  W  B", 12, Color.argb(150, 220, 191, 255), true);
+        emblem.setLetterSpacing(0.65f);
+        emblem.setGravity(Gravity.CENTER);
+        FrameLayout.LayoutParams emblemParams = new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, dp(30), Gravity.TOP);
+        emblemParams.topMargin = dp(18);
+        hero.addView(emblem, emblemParams);
 
-        TextView gameTitle = text("Cánh cửa định mệnh đang mở", 26, FG, true);
-        gameTitle.setGravity(Gravity.CENTER);
-        gameTitle.setShadowLayer(dp(5), 0f, dp(2), Color.BLACK);
-        FrameLayout.LayoutParams titleParams = new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT,
-                Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
-        titleParams.setMargins(dp(22), 0, dp(22), dp(16));
-        hero.addView(gameTitle, titleParams);
+        ScrollView panelScroll = new ScrollView(this);
+        panelScroll.setFillViewport(true);
+        panelScroll.setVerticalScrollBarEnabled(false);
+        panelScroll.setOverScrollMode(View.OVER_SCROLL_NEVER);
+        panelScroll.setBackground(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
+                new int[] {0x0011153f, 0xe20b0d1d, 0xf80b0d1d}));
+        FrameLayout.LayoutParams panelScrollParams = new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, dp(panelHeightDp), Gravity.BOTTOM);
+        stage.addView(panelScroll, panelScrollParams);
 
-        TextView intro = text("Cùng các nữ thần viết nên chương đầu tiên của bạn.", 16, FG, false);
+        LinearLayout panel = new LinearLayout(this);
+        panel.setOrientation(LinearLayout.VERTICAL);
+        panel.setGravity(Gravity.CENTER_HORIZONTAL);
+        panel.setPadding(dp(24), dp(22), dp(24), dp(18));
+        panelScroll.addView(panel, new ScrollView.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        TextView brand = text("GXB 3", 30, FG, true);
+        brand.setLetterSpacing(0.16f);
+        panel.addView(brand, matchWrap());
+        TextView heading = text("Cánh cửa định mệnh đang mở", 21, FG, true);
+        heading.setGravity(Gravity.CENTER);
+        LinearLayout.LayoutParams headingParams = matchWrap();
+        headingParams.topMargin = dp(8);
+        panel.addView(heading, headingParams);
+        TextView intro = text("Cùng các nữ thần viết nên chương đầu tiên của bạn.",
+                14, Color.rgb(216, 210, 237), false);
         intro.setGravity(Gravity.CENTER);
-        intro.setLineSpacing(dp(2), 1f);
         LinearLayout.LayoutParams introParams = matchWrap();
-        introParams.topMargin = dp(14);
-        page.addView(intro, introParams);
+        introParams.topMargin = dp(6);
+        panel.addView(intro, introParams);
 
         resourceStatus = text("Đang chuẩn bị hành trình…", 12, Color.rgb(194, 190, 226), false);
         resourceStatus.setGravity(Gravity.CENTER);
         resourceStatus.setLineSpacing(dp(3), 1f);
         LinearLayout.LayoutParams statusParams = matchWrap();
-        statusParams.topMargin = dp(8);
-        page.addView(resourceStatus, statusParams);
+        statusParams.topMargin = dp(12);
+        panel.addView(resourceStatus, statusParams);
 
         progressBar = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
         progressBar.setMax(100);
@@ -269,71 +284,74 @@ public final class MainActivity extends ComponentActivity {
         progressBar.setVisibility(View.GONE);
         LinearLayout.LayoutParams barParams = matchWrap();
         barParams.topMargin = dp(8);
-        page.addView(progressBar, barParams);
-        progressText = text("", 12, MUTED, false);
+        panel.addView(progressBar, barParams);
+        progressText = text("", 11, Color.rgb(166, 160, 190), false);
         progressText.setGravity(Gravity.CENTER);
         progressText.setVisibility(View.GONE);
-        page.addView(progressText, matchWrap());
+        panel.addView(progressText, matchWrap());
 
         Button startButton = button("Bắt đầu hành trình", true);
         LinearLayout.LayoutParams startParams = matchWrap();
-        startParams.topMargin = dp(18);
-        page.addView(startButton, startParams);
+        startParams.topMargin = dp(14);
+        panel.addView(startButton, startParams);
         startButton.setOnClickListener(view -> startOfflineJourney());
 
         downloadButton = button("Tải dữ liệu trò chơi", false);
         LinearLayout.LayoutParams downloadParams = matchWrap();
-        downloadParams.topMargin = dp(18);
-        page.addView(downloadButton, downloadParams);
+        downloadParams.topMargin = dp(8);
+        panel.addView(downloadButton, downloadParams);
         downloadButton.setOnClickListener(view -> confirmAndStartInstall());
 
-        cancelButton = button("Hủy tải", false);
+        cancelButton = button("Dừng tải", false);
         cancelButton.setEnabled(false);
         cancelButton.setVisibility(View.GONE);
         LinearLayout.LayoutParams cancelParams = matchWrap();
         cancelParams.topMargin = dp(8);
-        page.addView(cancelButton, cancelParams);
+        panel.addView(cancelButton, cancelParams);
         cancelButton.setOnClickListener(view -> cancelInstall());
 
         Button onlineButton = button("Chơi với kết nối mạng", false);
         LinearLayout.LayoutParams onlineParams = matchWrap();
-        onlineParams.topMargin = dp(4);
-        page.addView(onlineButton, onlineParams);
+        onlineParams.topMargin = dp(10);
+        panel.addView(onlineButton, onlineParams);
         onlineButton.setOnClickListener(view -> startOnlineGame());
 
-        TextView footer = text("Chế độ chơi ngoại tuyến đầy đủ vẫn đang được hoàn thiện.", 12, MUTED, false);
+        TextView footer = text("Chế độ chơi ngoại tuyến đầy đủ vẫn đang được hoàn thiện.",
+                11, Color.rgb(150, 145, 177), false);
         footer.setGravity(Gravity.CENTER);
         footer.setLineSpacing(dp(2), 1f);
         LinearLayout.LayoutParams footerParams = matchWrap();
-        footerParams.topMargin = dp(12);
-        page.addView(footer, footerParams);
+        footerParams.topMargin = dp(10);
+        panel.addView(footer, footerParams);
 
         localPreviewButton = null;
-        scroll.addView(page, new ScrollView.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         root.removeAllViews();
-        root.addView(scroll, new FrameLayout.LayoutParams(
+        root.addView(stage, new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         if (webView != null) root.addView(webView, new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        artwork.post(() -> artwork.animate()
-                .translationY(dp(7))
-                .scaleX(1.025f)
-                .scaleY(1.025f)
-                .setDuration(2600L)
-                .setInterpolator(new AccelerateDecelerateInterpolator())
-                .setListener(new android.animation.AnimatorListenerAdapter() {
-                    @Override public void onAnimationEnd(android.animation.Animator animation) {
-                        if (artwork.getParent() != null) {
-                            artwork.animate().translationY(0f).scaleX(1f).scaleY(1f)
-                                    .setDuration(2600L)
-                                    .setInterpolator(new AccelerateDecelerateInterpolator())
-                                    .setListener(this)
-                                    .start();
-                        }
-                    }
-                }).start());
+
+        artwork.setAlpha(0f);
+        artwork.setTranslationY(dp(12));
+        artwork.post(() -> {
+            if (artwork != onboardingArtwork || isFinishing()) return;
+            artwork.animate().alpha(1f).translationY(0f).setDuration(850L)
+                    .setInterpolator(new AccelerateDecelerateInterpolator())
+                    .withEndAction(() -> animateArtworkLoop(artwork, false)).start();
+        });
         updateDownloaderAvailability();
+    }
+
+    private void animateArtworkLoop(ImageView artwork, boolean lifted) {
+        if (artwork == null || artwork != onboardingArtwork || isFinishing()
+                || !artwork.isAttachedToWindow()) return;
+        float targetY = lifted ? -dp(6) : dp(6);
+        float targetScale = lifted ? 1.0f : 1.018f;
+        artwork.animate().translationY(targetY).scaleX(targetScale).scaleY(targetScale)
+                .setDuration(2800L)
+                .setInterpolator(new AccelerateDecelerateInterpolator())
+                .withEndAction(() -> animateArtworkLoop(artwork, !lifted))
+                .start();
     }
 
     private void updateDownloaderAvailability() {
