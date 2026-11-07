@@ -142,6 +142,9 @@ public final class OfflineLocalApi {
         if (gameProvider != null && "/api/profile".equals(path) && "POST".equals(method)) {
             return gameProvider.profile(bodyJson);
         }
+        if (gameProvider != null && "/api/graduate/preview".equals(path) && "POST".equals(method)) {
+            return gameProvider.graduatePreview(bodyJson);
+        }
         if (gameProvider != null && path.matches("/api/battle/[0-9]+") && "GET".equals(method)) {
             try { return gameProvider.battle(Long.parseLong(path.substring("/api/battle/".length()))); }
             catch (NumberFormatException ignored) { return error(400, "invalid_battle_id"); }

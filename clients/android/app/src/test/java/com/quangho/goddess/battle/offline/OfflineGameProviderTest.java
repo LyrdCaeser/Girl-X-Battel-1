@@ -19,7 +19,7 @@ public final class OfflineGameProviderTest {
         try {
             OfflineGameProvider provider = new OfflineGameProvider(root);
             JSONObject state = provider.state().body;
-            assertEquals(1, state.getInt("save_version"));
+            assertEquals(2, state.getInt("save_version"));
             assertEquals(1, state.getInt("next_stage"));
             assertEquals(30, state.getJSONArray("stages").length());
             assertTrue(state.getJSONArray("stages").getJSONObject(0).getBoolean("unlocked"));
@@ -78,7 +78,7 @@ public final class OfflineGameProviderTest {
 
             OfflineGameProvider migrated = new OfflineGameProvider(root);
             JSONObject state = migrated.state().body;
-            assertEquals(1, state.getInt("save_version"));
+            assertEquals(2, state.getInt("save_version"));
             assertEquals("Legacy Player", state.getJSONObject("profile").getString("name"));
             assertEquals(9, state.getJSONArray("formation").getJSONObject(0).getInt("partner_id"));
             assertEquals(30, state.getJSONArray("stages").length());
@@ -87,6 +87,42 @@ public final class OfflineGameProviderTest {
         } finally {
             delete(root);
         }
+    }
+
+    @Test public void levelUpConsumesResourcesUpdatesStatsAndSurvivesReload() throws Exception {
+        File root = Files.createTempDirectory("gxb3-level-").toFile();
+        try {
+            OfflineGameProvider provider = new OfflineGameProvider(root);
+            JSONObject before = provider.state().body.getJSONArray("roster").getJSONObject(0);
+            int gold = provider.state().body.getJSONObject("items").getInt("1");
+            OfflineLocalApi.Response result = provider.action(new JSONObject().put("message", "PARTNER_LEVUP")
+                    .put("data", new JSONObject().put("partner_id", 1).put("incr_lv", 1)).toString());
+            assertEquals(200, result.status);
+            JSONObject after = result.body.getJSONObject("state").getJSONArray("roster").getJSONObject(0);
+            assertEquals(2, after.getInt("lv"));
+            assertTrue(after.getInt("power") > before.getInt("power"));
+            assertEquals(gold - 200, result.body.getJSONObject("state").getJSONObject("items").getInt("1"));
+            assertEquals(2, new OfflineGameProvider(root).state().body.getJSONArray("roster").getJSONObject(0).getInt("lv"));
+        } finally { delete(root); }
+    }
+
+    @Test public void starUpRequiresDistinctOwnedMaterialsAndPersists() throws Exception {
+        File root = Files.createTempDirectory("gxb3-star-").toFile();
+        try {
+            File save = new File(new File(root, "offline"), "profile.json");
+            assertTrue(save.getParentFile().mkdirs());
+            JSONArray roster = new JSONArray()
+                    .put(new JSONObject().put("partner_id", 1).put("table_id", 41001).put("name", "Base").put("lv", 1).put("stars", 5).put("level_cap", 20))
+                    .put(new JSONObject().put("partner_id", 2).put("table_id", 41001).put("name", "Material").put("lv", 1).put("stars", 5));
+            Files.write(save.toPath(), new JSONObject().put("roster", roster).put("items", new JSONObject().put("1", 1000)).toString().getBytes(StandardCharsets.UTF_8));
+            OfflineGameProvider provider = new OfflineGameProvider(root);
+            OfflineLocalApi.Response result = provider.action(new JSONObject().put("message", "AWAKE_PARTNER")
+                    .put("data", new JSONObject().put("partner_id", 1).put("material_ids", new JSONArray().put(2))).toString());
+            assertEquals(200, result.status);
+            assertEquals(6, result.body.getJSONObject("state").getJSONArray("roster").getJSONObject(0).getInt("stars"));
+            assertEquals(1, result.body.getJSONObject("state").getJSONArray("roster").length());
+            assertEquals(6, new OfflineGameProvider(root).state().body.getJSONArray("roster").getJSONObject(0).getInt("stars"));
+        } finally { delete(root); }
     }
 
     private static void delete(File file) {

@@ -830,7 +830,7 @@ async function replay(report,options={}){
  const event=options.event===true;
  const ids=event?{arena:'event-arena',skip:'event-skip',rewards:'event-rewards',allies:'event-allies',enemies:'event-enemies',title:'event-battle-title',line:'event-battle-line'}:{arena:'arena',skip:'skip',rewards:'rewards',allies:'allies',enemies:'enemies',title:'battle-title',line:'battle-line'};
  const el=key=>$(ids[key]),arena=el('arena'),label=options.label||`Ải ${selectedStage}`;
- arena.querySelectorAll('.battle-asset-note').forEach(e=>e.remove());const token=++battleReplayToken;if(battleAnimation){battleAnimation.destroy();battleAnimation=null;}
+ arena.querySelectorAll('.battle-asset-note,.chibi-canvas,.battle-bossbar').forEach(e=>e.remove());const token=++battleReplayToken;if(battleAnimation){battleAnimation.destroy();battleAnimation=null;}
  skip=false;arena.hidden=false;if(typeof GxbAudio!=='undefined')GxbAudio.battle();el('skip').hidden=false;el('rewards').replaceChildren();el('allies').replaceChildren();el('enemies').replaceChildren();el('title').textContent=label+" · Chiến Đấu";if(event)$('event-battle-continue').hidden=true;const units=new Map();
  const map=/^battle_map_\w+$/.test(report.map_asset)&&battleMapIds.has(report.map_asset)?report.map_asset:'battle_map_26_1';const field=arena.querySelector('.battlefield');field.style.backgroundImage=`url('/assets/battle-maps/${map}.png')`;field.querySelectorAll('.battle-hud,.battle-round').forEach(e=>e.remove());const round=node('div','battle-round','Hiệp 1');field.append(round);
  // Sanctuary boss: damage bar toward the next reward tier with the gift and the tiers reached (report.boss_bar).
