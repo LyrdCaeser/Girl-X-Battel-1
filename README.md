@@ -1,3 +1,11 @@
+Serious warning (NO RECYCLING, FORK RECYCLED WILL RESULT IN HAND CUTTING OFF YOUR HANDS) :"
+
+© 2026 LyrdCaeser. All Rights Reserved.
+
+This repository and its source code are public strictly for portfolio demonstration and code review purposes.
+
+UNAUTHORIZED USE IS STRICTLY PROHIBITED. You are NOT allowed to reproduce, copy, distribute, modify, or use this source code for any personal or commercial projects without explicit written permission."
+
 > **02/10/2026 — cập nhật 088:** bổ sung bảng và hệ thống cục bộ, điều chỉnh Campaign và Tests, hướng dẫn theo ngữ cảnh, biểu tượng và hiệu ứng phát sáng, văn bản giao diện tiếng Anh, trạng thái chiến đấu, đội hình căn giữa và nhãn VICTORY/DEFEAT. [Ghi chú phân phối](DISTRIBUCION_2026-10-02.md).
 
 > **01/10/2026 — CONTENT-072:** Friend Boss, Servant Training, Ulticore và Practical Work hiện có tại Trang chủ → Training & Bosses (Huấn luyện & Trùm). Growth Diary **157/160**. **364 bài kiểm thử đạt**; các trận chiến dùng bộ máy gốc đã được xác minh trên cơ sở dữ liệu tạm. [Phạm vi và giới hạn](SISTEMAS_PENDIENTES_RECONSTRUIDOS.md). Khởi động lại máy chủ để nạp mã.
