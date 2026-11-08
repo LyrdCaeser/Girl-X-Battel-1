@@ -17,6 +17,7 @@ on:
     paths:
       - "web/**"
       - ".gitattributes"
+      - ".github/workflows/offline-resource-pack.yml"
 
 permissions:
   contents: read
