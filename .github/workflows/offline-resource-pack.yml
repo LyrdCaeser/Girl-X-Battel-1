@@ -20,6 +20,7 @@ on:
 
 permissions:
   contents: read
+  id-token: write
 
 concurrency:
   group: offline-resource-pack-${{ github.ref }}
@@ -28,6 +29,7 @@ concurrency:
 jobs:
   build-full-web-resource-pack:
     name: Hydrate LFS and build complete web resource set
+    if: github.ref == 'refs/heads/feature/offline-mode'
     runs-on: ubuntu-24.04
     timeout-minutes: 360
     steps:
@@ -72,15 +74,13 @@ jobs:
       - name: Build full tracked web resource set
         shell: bash
         env:
-          RESOURCE_BASE_URL: ${{ inputs.base_url || vars.OFFLINE_RESOURCE_BASE_URL }}
+          RESOURCE_BASE_URL: ${{ inputs.base_url || format('https://{0}/offline-resources', secrets.CLOUDFRONT_DOMAIN) }}
           SIGNING_KEY_PEM: ${{ secrets.OFFLINE_MANIFEST_SIGNING_KEY_PEM }}
         run: |
           set -euo pipefail
           BASE_URL="${RESOURCE_BASE_URL:-}"
-          if [[ -z "$BASE_URL" ]]; then
-            BASE_URL="https://offline-assets.invalid/offline-resources"
-            echo "::warning::No CDN URL configured; generated manifest URLs are placeholders and cannot be used by devices."
-          fi
+          : "${BASE_URL:?CLOUDFRONT_DOMAIN or workflow_dispatch base_url is required}"
+          : "${SIGNING_KEY_PEM:?OFFLINE_MANIFEST_SIGNING_KEY_PEM secret is required}"
           VERSION="web-${GITHUB_SHA:0:12}"
           args=(
             --source-root .
@@ -90,14 +90,10 @@ jobs:
             --base-url "$BASE_URL"
             --max-pack-size 52428800
           )
-          if [[ -n "$SIGNING_KEY_PEM" ]]; then
-            KEY_FILE="$RUNNER_TEMP/offline-resource-signing-key.pem"
-            printf '%s\n' "$SIGNING_KEY_PEM" > "$KEY_FILE"
-            chmod 600 "$KEY_FILE"
-            args+=(--private-key "$KEY_FILE")
-          else
-            echo "::warning::OFFLINE_MANIFEST_SIGNING_KEY_PEM is not configured; output will be unsigned development-only data."
-          fi
+          KEY_FILE="$RUNNER_TEMP/offline-resource-signing-key.pem"
+          printf '%s\n' "$SIGNING_KEY_PEM" > "$KEY_FILE"
+          chmod 600 "$KEY_FILE"
+          args+=(--private-key "$KEY_FILE")
           python3 tools/build_offline_resource_manifest.py "${args[@]}"
           rm -f "$RUNNER_TEMP/offline-resource-signing-key.pem"
           sha256sum offline-resource-release/manifest.json offline-resource-release/pack-*.zip > offline-resource-release/SHA256SUMS.txt
@@ -107,11 +103,10 @@ jobs:
           manifest_path = Path("offline-resource-release/manifest.json")
           envelope = json.loads(manifest_path.read_text(encoding="utf-8"))
           signed = "payload_b64" in envelope and "signature_b64" in envelope
-          if signed:
-              import base64
-              manifest = json.loads(base64.b64decode(envelope["payload_b64"]))
-          else:
-              manifest = envelope
+          if not signed:
+              raise SystemExit("manifest is not signed")
+          import base64
+          manifest = json.loads(base64.b64decode(envelope["payload_b64"]))
           files = [entry for pack in manifest["packs"] for entry in pack["files"]]
           source_bytes = sum(entry["size_bytes"] for entry in files)
           pack_bytes = sum(pack["size_bytes"] for pack in manifest["packs"])
@@ -121,9 +116,35 @@ jobs:
           print(f"- Source bytes: {source_bytes:,} ({source_bytes / 1024**3:.2f} GiB)")
           print(f"- Pack count: {len(manifest['packs']):,}")
           print(f"- ZIP bytes: {pack_bytes:,} ({pack_bytes / 1024**3:.2f} GiB)")
-          print(f"- Manifest signature: {'Ed25519 signed' if signed else 'UNSIGNED — development only'}")
-          print("- CDN publication is not performed by this workflow.")
+          print("- Manifest signature: Ed25519 signed")
+          print("- CDN publication: S3 upload + CloudFront manifest invalidation")
           PY
+
+      - name: Configure AWS credentials via GitHub OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION || 'ap-southeast-1' }}
+
+      - name: Publish immutable packs and manifest to S3/CloudFront
+        shell: bash
+        env:
+          AWS_REGION: ${{ secrets.AWS_REGION || 'ap-southeast-1' }}
+          RESOURCE_BUCKET: ${{ secrets.RESOURCE_BUCKET }}
+          RESOURCE_PREFIX: offline-resources
+          RESOURCE_VERSION: web-${{ github.sha }}
+          VERSION_DIR: offline-resource-release
+          CLOUDFRONT_DOMAIN: ${{ secrets.CLOUDFRONT_DOMAIN }}
+          DISTRIBUTION_ID: ${{ secrets.DISTRIBUTION_ID }}
+        run: |
+          set -euo pipefail
+          : "${RESOURCE_BUCKET:?RESOURCE_BUCKET secret is required}"
+          : "${CLOUDFRONT_DOMAIN:?CLOUDFRONT_DOMAIN secret is required}"
+          : "${DISTRIBUTION_ID:?DISTRIBUTION_ID secret is required}"
+          command -v aws
+          aws sts get-caller-identity
+          chmod +x tools/publish_offline_resource_s3.sh
+          tools/publish_offline_resource_s3.sh
 
       - name: Upload full pack bundle (manual opt-in only)
         if: github.event_name == 'workflow_dispatch' && inputs.upload_pack_artifact
