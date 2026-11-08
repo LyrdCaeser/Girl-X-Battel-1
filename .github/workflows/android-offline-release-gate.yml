@@ -1,5 +1,4 @@
 name: Android offline release gate
-
 on:
   pull_request:
     branches: [feature/offline-mode]
@@ -20,6 +19,7 @@ permissions:
 
 jobs:
   release-gate:
+    if: github.ref == 'refs/heads/feature/offline-mode' && github.event_name != 'pull_request'
     runs-on: ubuntu-24.04
     timeout-minutes: 35
     env:
@@ -76,3 +76,10 @@ jobs:
             --manifest "$RUNNER_TEMP/signed-manifest.json" \
             --apk clients/android/app/build/outputs/apk/release/app-release.apk \
             --apksigner "$ANDROID_HOME/build-tools/35.0.0/apksigner"
+      - name: Upload verified production-signed APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: GXB3-offline-release-${{ github.sha }}
+          path: clients/android/app/build/outputs/apk/release/app-release.apk
+          if-no-files-found: error
+          retention-days: 7

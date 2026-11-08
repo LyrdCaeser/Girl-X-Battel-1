@@ -253,11 +253,11 @@ public final class OfflineGameProvider {
         while (equipment.length() < 6) equipment.put(0);
         int slot = data.optInt("slot", 0); if (slot < 1 || slot > 6) return error(400, "invalid_equipment_slot");
         String action = data.optString("action", ""); JSONObject items = save.optJSONObject("items");
-        if ("unequip".equals(action)) put(equipment, slot - 1, 0);
+        if ("unequip".equals(action)) equipment.put(slot - 1, 0);
         else if ("equip".equals(action)) {
             int item = data.optInt("item_id", 0); if (item <= 0 || items.optInt(Integer.toString(item), 0) < 1) return error(409, "equipment_not_owned");
             int old = equipment.optInt(slot - 1, 0); put(items, Integer.toString(item), items.optInt(Integer.toString(item), 0) - 1);
-            if (old > 0) put(items, Integer.toString(old), items.optInt(Integer.toString(old), 0) + 1); put(equipment, slot - 1, item);
+            if (old > 0) put(items, Integer.toString(old), items.optInt(Integer.toString(old), 0) + 1); equipment.put(slot - 1, item);
         } else return error(501, "equipment_action_not_implemented_offline");
         persist(); return ok(new JSONObject().put("state", copy(save)));
     }
