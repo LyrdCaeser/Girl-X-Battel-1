@@ -1,4 +1,4 @@
-Cảnh báo nghiêm trọng (KHÔNG ĐƯỢC TÁI CHẾ, VIỆC TÁI CHẾ,FORK SẼ DẪN ĐẾN VIỆC BỊ CHẶT TAY):
+Cảnh báo nghiêm trọng (KHÔNG ĐƯỢC TÁI CHẾ, VIỆC TÁI CHẾ & FORK SẼ DẪN ĐẾN VIỆC BỊ CHẶT TAY):
 
 © 2026 LyrdCaeser. Bảo lưu mọi quyền.
 
