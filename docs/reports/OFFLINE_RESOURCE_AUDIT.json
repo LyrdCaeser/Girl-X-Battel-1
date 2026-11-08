@@ -1,0 +1,704 @@
+{
+  "audio_changed": [],
+  "audio_files_on_main": 6701,
+  "audio_missing_from_offline": [],
+  "changed_blob_paths": [
+    "data/activity_draw.json",
+    "data/activity_kit.json",
+    "data/blind_box.json",
+    "data/events.json",
+    "data/growth_diary.json",
+    "data/guild.json",
+    "data/jackpot.json",
+    "data/lost_space.json",
+    "data/magic_card.json",
+    "data/newbie_camp.json",
+    "data/partner_plot.json",
+    "data/pirate.json",
+    "data/pumpkin.json",
+    "data/story.json",
+    "runtime/battle_host.lua",
+    "web/assets/chibis/catalog.json",
+    "web/assets/fantasy-book/book.json",
+    "web/assets/girl-details.json",
+    "web/assets/menu/help.json",
+    "web/assets/menu/manga/manga.json"
+  ],
+  "groups": {
+    "data": {
+      "changed": 14,
+      "main": 1252,
+      "missing": 0,
+      "offline": 1258
+    },
+    "runtime": {
+      "changed": 1,
+      "main": 3599,
+      "missing": 0,
+      "offline": 3599
+    },
+    "web/assets/altar": {
+      "changed": 0,
+      "main": 27,
+      "missing": 0,
+      "offline": 27
+    },
+    "web/assets/arena": {
+      "changed": 0,
+      "main": 43,
+      "missing": 0,
+      "offline": 43
+    },
+    "web/assets/assistant": {
+      "changed": 0,
+      "main": 56,
+      "missing": 0,
+      "offline": 56
+    },
+    "web/assets/avatars.json": {
+      "changed": 0,
+      "main": 1,
+      "missing": 0,
+      "offline": 1
+    },
+    "web/assets/avatars.png": {
+      "changed": 0,
+      "main": 1,
+      "missing": 0,
+      "offline": 1
+    },
+    "web/assets/battle-fx": {
+      "changed": 0,
+      "main": 2047,
+      "missing": 0,
+      "offline": 2047
+    },
+    "web/assets/battle-loading": {
+      "changed": 0,
+      "main": 24,
+      "missing": 0,
+      "offline": 24
+    },
+    "web/assets/battle-maps": {
+      "changed": 0,
+      "main": 68,
+      "missing": 0,
+      "offline": 68
+    },
+    "web/assets/battle-maps.json": {
+      "changed": 0,
+      "main": 1,
+      "missing": 0,
+      "offline": 1
+    },
+    "web/assets/bg": {
+      "changed": 0,
+      "main": 2,
+      "missing": 0,
+      "offline": 2
+    },
+    "web/assets/blind-box": {
+      "changed": 0,
+      "main": 29,
+      "missing": 0,
+      "offline": 29
+    },
+    "web/assets/campaign": {
+      "changed": 0,
+      "main": 178,
+      "missing": 0,
+      "offline": 178
+    },
+    "web/assets/campus": {
+      "changed": 0,
+      "main": 16,
+      "missing": 0,
+      "offline": 16
+    },
+    "web/assets/capsule": {
+      "changed": 0,
+      "main": 12,
+      "missing": 0,
+      "offline": 12
+    },
+    "web/assets/cards": {
+      "changed": 0,
+      "main": 408,
+      "missing": 0,
+      "offline": 408
+    },
+    "web/assets/cards.json": {
+      "changed": 0,
+      "main": 1,
+      "missing": 0,
+      "offline": 1
+    },
+    "web/assets/characters": {
+      "changed": 0,
+      "main": 120,
+      "missing": 0,
+      "offline": 120
+    },
+    "web/assets/characters.json": {
+      "changed": 0,
+      "main": 1,
+      "missing": 0,
+      "offline": 1
+    },
+    "web/assets/chibis": {
+      "changed": 1,
+      "main": 3930,
+      "missing": 0,
+      "offline": 3930
+    },
+    "web/assets/chimes": {
+      "changed": 0,
+      "main": 46,
+      "missing": 0,
+      "offline": 46
+    },
+    "web/assets/currency": {
+      "changed": 0,
+      "main": 8,
+      "missing": 0,
+      "offline": 8
+    },
+    "web/assets/daily-quiz": {
+      "changed": 0,
+      "main": 23,
+      "missing": 0,
+      "offline": 23
+    },
+    "web/assets/dates": {
+      "changed": 0,
+      "main": 185,
+      "missing": 0,
+      "offline": 185
+    },
+    "web/assets/detail": {
+      "changed": 0,
+      "main": 141,
+      "missing": 0,
+      "offline": 141
+    },
+    "web/assets/dress": {
+      "changed": 0,
+      "main": 2036,
+      "missing": 0,
+      "offline": 2036
+    },
+    "web/assets/dress-show": {
+      "changed": 0,
+      "main": 47,
+      "missing": 0,
+      "offline": 47
+    },
+    "web/assets/echoes": {
+      "changed": 0,
+      "main": 160,
+      "missing": 0,
+      "offline": 160
+    },
+    "web/assets/enroll": {
+      "changed": 0,
+      "main": 43,
+      "missing": 0,
+      "offline": 43
+    },
+    "web/assets/equipment": {
+      "changed": 0,
+      "main": 142,
+      "missing": 0,
+      "offline": 142
+    },
+    "web/assets/ev-sand": {
+      "changed": 0,
+      "main": 57,
+      "missing": 0,
+      "offline": 57
+    },
+    "web/assets/events": {
+      "changed": 0,
+      "main": 397,
+      "missing": 0,
+      "offline": 397
+    },
+    "web/assets/excursion": {
+      "changed": 0,
+      "main": 80,
+      "missing": 0,
+      "offline": 80
+    },
+    "web/assets/factions": {
+      "changed": 0,
+      "main": 7,
+      "missing": 0,
+      "offline": 7
+    },
+    "web/assets/fantasy-book": {
+      "changed": 1,
+      "main": 66,
+      "missing": 0,
+      "offline": 66
+    },
+    "web/assets/firework-project": {
+      "changed": 0,
+      "main": 14,
+      "missing": 0,
+      "offline": 14
+    },
+    "web/assets/galaxy": {
+      "changed": 0,
+      "main": 152,
+      "missing": 0,
+      "offline": 152
+    },
+    "web/assets/girl-details.json": {
+      "changed": 1,
+      "main": 1,
+      "missing": 0,
+      "offline": 1
+    },
+    "web/assets/girl-ui": {
+      "changed": 0,
+      "main": 30,
+      "missing": 0,
+      "offline": 30
+    },
+    "web/assets/girls-catalog.json": {
+      "changed": 0,
+      "main": 1,
+      "missing": 0,
+      "offline": 1
+    },
+    "web/assets/group-buff": {
+      "changed": 0,
+      "main": 53,
+      "missing": 0,
+      "offline": 53
+    },
+    "web/assets/growth-diary": {
+      "changed": 0,
+      "main": 8,
+      "missing": 0,
+      "offline": 8
+    },
+    "web/assets/guild": {
+      "changed": 0,
+      "main": 90,
+      "missing": 0,
+      "offline": 90
+    },
+    "web/assets/hero-41001.png": {
+      "changed": 0,
+      "main": 1,
+      "missing": 0,
+      "offline": 1
+    },
+    "web/assets/hero-42001.png": {
+      "changed": 0,
+      "main": 1,
+      "missing": 0,
+      "offline": 1
+    },
+    "web/assets/hero-43001.png": {
+      "changed": 0,
+      "main": 1,
+      "missing": 0,
+      "offline": 1
+    },
+    "web/assets/hero-challenge": {
+      "changed": 0,
+      "main": 95,
+      "missing": 0,
+      "offline": 95
+    },
+    "web/assets/home-bg.png": {
+      "changed": 0,
+      "main": 1,
+      "missing": 0,
+      "offline": 1
+    },
+    "web/assets/home-icons-alpha.png": {
+      "changed": 0,
+      "main": 1,
+      "missing": 0,
+      "offline": 1
+    },
+    "web/assets/home-icons.json": {
+      "changed": 0,
+      "main": 1,
+      "missing": 0,
+      "offline": 1
+    },
+    "web/assets/home-icons.png": {
+      "changed": 0,
+      "main": 1,
+      "missing": 0,
+      "offline": 1
+    },
+    "web/assets/home-systems": {
+      "changed": 0,
+      "main": 502,
+      "missing": 0,
+      "offline": 502
+    },
+    "web/assets/house-exam": {
+      "changed": 0,
+      "main": 58,
+      "missing": 0,
+      "offline": 58
+    },
+    "web/assets/img-guides": {
+      "changed": 0,
+      "main": 66,
+      "missing": 0,
+      "offline": 66
+    },
+    "web/assets/internship": {
+      "changed": 0,
+      "main": 79,
+      "missing": 0,
+      "offline": 79
+    },
+    "web/assets/item-icons": {
+      "changed": 0,
+      "main": 2038,
+      "missing": 0,
+      "offline": 2038
+    },
+    "web/assets/item-icons.json": {
+      "changed": 0,
+      "main": 1,
+      "missing": 0,
+      "offline": 1
+    },
+    "web/assets/items-catalog.json": {
+      "changed": 0,
+      "main": 1,
+      "missing": 0,
+      "offline": 1
+    },
+    "web/assets/jackpot": {
+      "changed": 0,
+      "main": 35,
+      "missing": 0,
+      "offline": 35
+    },
+    "web/assets/league": {
+      "changed": 0,
+      "main": 15,
+      "missing": 0,
+      "offline": 15
+    },
+    "web/assets/life": {
+      "changed": 0,
+      "main": 16,
+      "missing": 0,
+      "offline": 16
+    },
+    "web/assets/lihui": {
+      "changed": 0,
+      "main": 2183,
+      "missing": 0,
+      "offline": 2183
+    },
+    "web/assets/login": {
+      "changed": 0,
+      "main": 0,
+      "missing": 0,
+      "offline": 1
+    },
+    "web/assets/lost-space": {
+      "changed": 0,
+      "main": 60,
+      "missing": 0,
+      "offline": 60
+    },
+    "web/assets/magic-card": {
+      "changed": 0,
+      "main": 33,
+      "missing": 0,
+      "offline": 33
+    },
+    "web/assets/menu": {
+      "changed": 2,
+      "main": 713,
+      "missing": 0,
+      "offline": 713
+    },
+    "web/assets/menus": {
+      "changed": 0,
+      "main": 71,
+      "missing": 0,
+      "offline": 71
+    },
+    "web/assets/midas": {
+      "changed": 0,
+      "main": 7,
+      "missing": 0,
+      "offline": 7
+    },
+    "web/assets/missions": {
+      "changed": 0,
+      "main": 18,
+      "missing": 0,
+      "offline": 18
+    },
+    "web/assets/nav": {
+      "changed": 0,
+      "main": 16,
+      "missing": 0,
+      "offline": 16
+    },
+    "web/assets/nav-reference": {
+      "changed": 0,
+      "main": 6,
+      "missing": 0,
+      "offline": 6
+    },
+    "web/assets/newbie-camp": {
+      "changed": 0,
+      "main": 4,
+      "missing": 0,
+      "offline": 4
+    },
+    "web/assets/old-campus": {
+      "changed": 0,
+      "main": 61,
+      "missing": 0,
+      "offline": 61
+    },
+    "web/assets/original-ui": {
+      "changed": 0,
+      "main": 2977,
+      "missing": 0,
+      "offline": 2977
+    },
+    "web/assets/patrol": {
+      "changed": 0,
+      "main": 47,
+      "missing": 0,
+      "offline": 47
+    },
+    "web/assets/picture-layouts.json": {
+      "changed": 0,
+      "main": 1,
+      "missing": 0,
+      "offline": 1
+    },
+    "web/assets/pictures": {
+      "changed": 0,
+      "main": 537,
+      "missing": 0,
+      "offline": 537
+    },
+    "web/assets/pirate": {
+      "changed": 0,
+      "main": 25,
+      "missing": 0,
+      "offline": 25
+    },
+    "web/assets/profile": {
+      "changed": 0,
+      "main": 943,
+      "missing": 0,
+      "offline": 943
+    },
+    "web/assets/pumpkin": {
+      "changed": 0,
+      "main": 18,
+      "missing": 0,
+      "offline": 18
+    },
+    "web/assets/puzzle-events": {
+      "changed": 0,
+      "main": 270,
+      "missing": 0,
+      "offline": 270
+    },
+    "web/assets/remaining-systems": {
+      "changed": 0,
+      "main": 9,
+      "missing": 0,
+      "offline": 9
+    },
+    "web/assets/sanctuary": {
+      "changed": 0,
+      "main": 94,
+      "missing": 0,
+      "offline": 94
+    },
+    "web/assets/scenes": {
+      "changed": 0,
+      "main": 7,
+      "missing": 0,
+      "offline": 7
+    },
+    "web/assets/servant": {
+      "changed": 0,
+      "main": 115,
+      "missing": 0,
+      "offline": 115
+    },
+    "web/assets/shops": {
+      "changed": 0,
+      "main": 213,
+      "missing": 0,
+      "offline": 213
+    },
+    "web/assets/shrine": {
+      "changed": 0,
+      "main": 152,
+      "missing": 0,
+      "offline": 152
+    },
+    "web/assets/skills": {
+      "changed": 0,
+      "main": 465,
+      "missing": 0,
+      "offline": 465
+    },
+    "web/assets/skins": {
+      "changed": 0,
+      "main": 669,
+      "missing": 0,
+      "offline": 669
+    },
+    "web/assets/slots": {
+      "changed": 0,
+      "main": 161,
+      "missing": 0,
+      "offline": 161
+    },
+    "web/assets/souls": {
+      "changed": 0,
+      "main": 139,
+      "missing": 0,
+      "offline": 139
+    },
+    "web/assets/sounds": {
+      "changed": 0,
+      "main": 381,
+      "missing": 0,
+      "offline": 381
+    },
+    "web/assets/spine": {
+      "changed": 0,
+      "main": 538,
+      "missing": 0,
+      "offline": 538
+    },
+    "web/assets/sprite": {
+      "changed": 0,
+      "main": 84,
+      "missing": 0,
+      "offline": 84
+    },
+    "web/assets/stage-check.png": {
+      "changed": 0,
+      "main": 1,
+      "missing": 0,
+      "offline": 1
+    },
+    "web/assets/stage-lock.png": {
+      "changed": 0,
+      "main": 1,
+      "missing": 0,
+      "offline": 1
+    },
+    "web/assets/station": {
+      "changed": 0,
+      "main": 63,
+      "missing": 0,
+      "offline": 65
+    },
+    "web/assets/stellar": {
+      "changed": 0,
+      "main": 14,
+      "missing": 0,
+      "offline": 14
+    },
+    "web/assets/story": {
+      "changed": 0,
+      "main": 526,
+      "missing": 0,
+      "offline": 526
+    },
+    "web/assets/story-items": {
+      "changed": 0,
+      "main": 10,
+      "missing": 0,
+      "offline": 10
+    },
+    "web/assets/summon": {
+      "changed": 0,
+      "main": 1,
+      "missing": 0,
+      "offline": 1
+    },
+    "web/assets/summon-result": {
+      "changed": 0,
+      "main": 15,
+      "missing": 0,
+      "offline": 15
+    },
+    "web/assets/tower": {
+      "changed": 0,
+      "main": 15,
+      "missing": 0,
+      "offline": 15
+    },
+    "web/assets/two-love": {
+      "changed": 0,
+      "main": 21,
+      "missing": 0,
+      "offline": 21
+    },
+    "web/assets/ui": {
+      "changed": 0,
+      "main": 21,
+      "missing": 0,
+      "offline": 21
+    },
+    "web/assets/voices": {
+      "changed": 0,
+      "main": 6108,
+      "missing": 0,
+      "offline": 6108
+    },
+    "web/assets/wish": {
+      "changed": 0,
+      "main": 25,
+      "missing": 0,
+      "offline": 25
+    }
+  },
+  "lfs_audio_hydration": {
+    "hydrated": 6701,
+    "missing": [],
+    "remaining_pointers": [],
+    "tracked": 6701,
+    "verified_by_file_header": true,
+    "working_tree_bytes": 531908765
+  },
+  "lfs_audio_pointers_on_main": 6701,
+  "main": "origin/main",
+  "main_commit": "7a49e5f873a41a9fa7fbe6a885cad775f95de83f",
+  "main_resource_files": 36354,
+  "missing_from_offline": [],
+  "offline": "feature/offline-mode",
+  "offline_commit": "01f0b5841db0c526a20a8d3f86fe9d0ed61d2f5d",
+  "offline_only": [
+    "data/brand.json",
+    "data/guild_online_config.json",
+    "data/local_config.json",
+    "data/pvp_season_rewards.json",
+    "data/topup_packages.json",
+    "data/world_live_defaults.json",
+    "web/assets/login/gxb3-wedding-promo.webp",
+    "web/assets/station/station-vi-candidate.json",
+    "web/assets/station/station-vi.json"
+  ],
+  "offline_resource_files": 36363
+}
