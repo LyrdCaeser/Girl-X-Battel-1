@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       base_url:
-        description: HTTPS CDN/base URL for immutable packs (falls back to repository variable OFFLINE_RESOURCE_BASE_URL)
+        description: HTTPS CDN URL ending in /offline-resources (falls back to repository variable OFFLINE_RESOURCE_BASE_URL)
         required: false
         type: string
       upload_pack_artifact:
@@ -33,6 +33,8 @@ jobs:
     if: github.ref == 'refs/heads/feature/offline-mode'
     runs-on: ubuntu-24.04
     timeout-minutes: 360
+    env:
+      RESOURCE_VERSION: web-${{ github.sha }}
     steps:
       - name: Checkout repository and hydrate Git LFS objects
         uses: actions/checkout@v4
@@ -76,13 +78,19 @@ jobs:
         shell: bash
         env:
           RESOURCE_BASE_URL: ${{ inputs.base_url || format('https://{0}/offline-resources', secrets.CLOUDFRONT_DOMAIN) }}
+          CLOUDFRONT_DOMAIN: ${{ secrets.CLOUDFRONT_DOMAIN }}
           SIGNING_KEY_PEM: ${{ secrets.OFFLINE_MANIFEST_SIGNING_KEY_PEM }}
         run: |
           set -euo pipefail
           BASE_URL="${RESOURCE_BASE_URL:-}"
           : "${BASE_URL:?CLOUDFRONT_DOMAIN or workflow_dispatch base_url is required}"
+          EXPECTED_BASE_URL="https://${CLOUDFRONT_DOMAIN}/offline-resources"
+          case "$BASE_URL" in
+            "$EXPECTED_BASE_URL"|"$EXPECTED_BASE_URL/") ;;
+            *) echo "RESOURCE_BASE_URL must match the CloudFront /offline-resources prefix"; exit 1 ;;
+          esac
           : "${SIGNING_KEY_PEM:?OFFLINE_MANIFEST_SIGNING_KEY_PEM secret is required}"
-          VERSION="web-${GITHUB_SHA:0:12}"
+          VERSION="$RESOURCE_VERSION"
           args=(
             --source-root .
             --allowlist tools/offline_resources_allowlist.json
@@ -133,7 +141,6 @@ jobs:
           AWS_REGION: ${{ secrets.AWS_REGION || 'ap-southeast-1' }}
           RESOURCE_BUCKET: ${{ secrets.RESOURCE_BUCKET }}
           RESOURCE_PREFIX: offline-resources
-          RESOURCE_VERSION: web-${{ github.sha }}
           VERSION_DIR: offline-resource-release
           CLOUDFRONT_DOMAIN: ${{ secrets.CLOUDFRONT_DOMAIN }}
           DISTRIBUTION_ID: ${{ secrets.DISTRIBUTION_ID }}

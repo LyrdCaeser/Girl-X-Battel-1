@@ -7,7 +7,7 @@ set -euo pipefail
 : "${AWS_REGION:?Set AWS_REGION, for example ap-southeast-1}"
 : "${RESOURCE_BUCKET:?Set RESOURCE_BUCKET}"
 : "${RESOURCE_PREFIX:?Set RESOURCE_PREFIX, for example offline-resources}"
-: "${RESOURCE_VERSION:?Set RESOURCE_VERSION, for example web-4ab86d79}"
+: "${RESOURCE_VERSION:?Set RESOURCE_VERSION, for example web-<full-commit-sha>}"
 : "${VERSION_DIR:?Set VERSION_DIR to the built release directory}"
 
 command -v aws >/dev/null || { echo "aws CLI is required" >&2; exit 1; }
@@ -23,16 +23,21 @@ VERSION_KEY="$RESOURCE_PREFIX/$RESOURCE_VERSION"
 MANIFEST_KEY="$RESOURCE_PREFIX/manifest.json"
 VERSION_MANIFEST_KEY="$VERSION_KEY/manifest.json"
 
-# Validate the signed envelope, pack names, pack hashes, and CloudFront URLs before upload.
+# Validate the signed envelope, release version, pack names/hashes, and CloudFront URLs before upload.
+EXPECTED_RESOURCE_VERSION="$RESOURCE_VERSION" RESOURCE_PREFIX="$RESOURCE_PREFIX" \
 python3 - "$VERSION_DIR" "${CLOUDFRONT_DOMAIN:-}" <<'PY'
 import base64
 import hashlib
 import json
+import os
 import sys
 from pathlib import Path
+from urllib.parse import urlsplit
 
 root = Path(sys.argv[1]).resolve()
 cloudfront = sys.argv[2].strip()
+expected_version = os.environ["EXPECTED_RESOURCE_VERSION"]
+resource_prefix = os.environ["RESOURCE_PREFIX"].strip("/")
 envelope = json.loads((root / "manifest.json").read_text(encoding="utf-8"))
 if set(envelope) != {"payload_b64", "signature_b64"}:
     raise SystemExit("manifest must be a signed envelope: payload_b64 + signature_b64")
@@ -44,20 +49,27 @@ except Exception as exc:
 if len(signature) != 64:
     raise SystemExit("manifest signature must be 64 bytes")
 manifest = json.loads(payload.decode("utf-8"))
-if manifest.get("resource_version") != root.name and root.name != "":
-    # VERSION_DIR can be an arbitrary local name, so this is informational only.
-    pass
+if manifest.get("resource_version") != expected_version:
+    raise SystemExit(
+        f"manifest resource_version mismatch: {manifest.get('resource_version')!r} != {expected_version!r}"
+    )
 packs = manifest.get("packs")
 if not isinstance(packs, list) or not packs:
     raise SystemExit("manifest contains no packs")
 seen = set()
 for pack in packs:
-    name = Path(pack["url"].split("/")[-1]).name
+    parsed = urlsplit(pack["url"])
+    name = Path(parsed.path).name
     if not name.startswith("pack-") or not name.endswith(".zip"):
         raise SystemExit(f"invalid pack URL/name: {name}")
     expected = pack["sha256"]
     if name != f"pack-{expected}.zip":
         raise SystemExit(f"pack filename does not match manifest hash: {name}")
+    expected_path = f"/{resource_prefix}/{expected_version}/{name}"
+    if parsed.scheme != "https" or parsed.path != expected_path or parsed.query or parsed.fragment:
+        raise SystemExit(f"pack URL does not match release prefix/version: {pack['url']}")
+    if cloudfront and parsed.netloc.lower() != cloudfront.lower():
+        raise SystemExit(f"pack URL is not on CLOUDFRONT_DOMAIN: {pack['url']}")
     if name in seen:
         raise SystemExit(f"duplicate pack: {name}")
     seen.add(name)
@@ -67,8 +79,6 @@ for pack in packs:
     digest = hashlib.sha256(path.read_bytes()).hexdigest()
     if digest != expected:
         raise SystemExit(f"pack hash mismatch: {name}: {digest} != {expected}")
-    if cloudfront and not pack["url"].startswith("https://" + cloudfront + "/"):
-        raise SystemExit(f"pack URL is not on CLOUDFRONT_DOMAIN: {pack['url']}")
 print(f"Validated signed envelope, {len(packs)} pack(s), and SHA-256 hashes")
 PY
 

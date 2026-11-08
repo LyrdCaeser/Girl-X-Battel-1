@@ -1,6 +1,6 @@
 'use strict';
 window.GxbAuth=(()=>{
-  let overlay=null,session=null,worlds=[],isSuperGM=false;
+  let overlay=null,session=null,worlds=[],isSuperGM=false,isGuest=false;
   const REMEMBER_KEY='gxb3:remember-login:v1';
   function remembered(){
     try {const saved=JSON.parse(localStorage.getItem(REMEMBER_KEY)||'null');
@@ -45,7 +45,7 @@ window.GxbAuth=(()=>{
   function show(){
     remove();document.documentElement.classList.add('auth-locked');overlay=el('div','auth-overlay');
     const panel=el('section','auth-panel');
-    const brand=el('div','auth-brand');brand.append(el('small','','GXB 3'),el('h1','','Nữ Thần Chiến Đấu'),el('p','','Đăng nhập để tiếp tục vào game.'));
+    const brand=el('div','auth-brand');brand.append(el('small','','GXB 3'),el('h1','','Nữ Thần Chiến Đấu'),el('p','',localRpc?'Đăng nhập cục bộ hoặc chơi offline với hồ sơ khách.':'Đăng nhập để tiếp tục vào game.'));
     panel.append(brand);
     const tabs=el('nav','auth-tabs'),loginTab=el('button','on','Đăng nhập'),registerTab=el('button','','Đăng ký');tabs.append(loginTab,registerTab);panel.append(tabs);
     const body=el('div','auth-body');panel.append(body);
@@ -66,6 +66,7 @@ window.GxbAuth=(()=>{
       body.append(saveLabel);
       const submit=el('button','auth-primary','Đăng nhập');submit.onclick=async()=>{submit.disabled=true;status.textContent='Đang đăng nhập…';try{await request('/api/auth/login',{username:user.value,password:pass.value,server_id:world.value,remember_login:save.checked});storeRemember(save.checked,user.value,world.value);location.reload();}catch(e){status.textContent=e.message;submit.disabled=false;}};
       const forgot=el('button','auth-link','Quên mật khẩu?');forgot.onclick=renderRecovery;body.append(submit,forgot);
+      if(localRpc){const guest=el('button','auth-link','Chơi offline với tư cách Khách');guest.type='button';guest.onclick=async()=>{guest.disabled=true;status.textContent='Đang mở hồ sơ khách cục bộ…';try{await request('/api/auth/guest',{});location.reload();}catch(e){status.textContent=e.message;guest.disabled=false;}};body.append(guest);}
       pass.onkeydown=e=>{if(e.key==='Enter')submit.click();};
     }
     function renderRegister(){
@@ -104,6 +105,7 @@ window.GxbAuth=(()=>{
   async function init(){
     try{
       const data=await request('/api/auth/me');worlds=data.worlds||[];session=data.session||null;isSuperGM=!!data.is_super_gm;
+      isGuest=!!data.guest;
       if(!data.authenticated){show();return false;}
       remove();
       queueMicrotask(installAccountControls);
@@ -111,7 +113,9 @@ window.GxbAuth=(()=>{
     }catch(e){worlds=[];show();return false;}
   }
   function installAccountControls(){
-    const settings=document.getElementById('profile-settings-page');if(!settings||settings.querySelector('.auth-account-row'))return;
+    const settings=document.getElementById('profile-settings-page');if(!settings)return;
+    if(isGuest){if(settings.querySelector('.auth-guest-row'))return;const row=el('div','profile-setting-row auth-guest-row'),info=el('div');info.append(el('strong','','Hồ sơ khách offline'),el('small','','Tiến trình được lưu trên thiết bị này.'));const leave=el('button','auth-small-btn','Đổi hồ sơ');leave.onclick=async()=>{leave.disabled=true;try{await request('/api/auth/logout',{});location.reload();}catch(e){leave.disabled=false;window.GirlUI?.notice?.(e.message,{title:'Chế độ offline'});}};row.append(info,leave);settings.append(row);return;}
+    if(settings.querySelector('.auth-account-row'))return;
     const infoPage=document.getElementById('profile-info-page');
     const oldGM=document.getElementById('gxb3-profile-supergm');oldGM?.remove();
     if(isSuperGM&&infoPage){
