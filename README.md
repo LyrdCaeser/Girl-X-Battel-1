@@ -1,10 +1,10 @@
-Serious warning (NO RECYCLING, FORK RECYCLED WILL RESULT IN HAND CUTTING OFF YOUR HANDS) :"
+Cảnh báo nghiêm trọng (KHÔNG ĐƯỢC TÁI CHẾ, VIỆC TÁI CHẾ,FORK SẼ DẪN ĐẾN VIỆC BỊ CHẶT TAY):
 
-© 2026 LyrdCaeser. All Rights Reserved.
+© 2026 LyrdCaeser. Bảo lưu mọi quyền.
 
-This repository and its source code are public strictly for portfolio demonstration and code review purposes.
+Kho lưu trữ này và mã nguồn của nó được công khai chỉ nhằm mục đích trình bày portfolio và xem xét mã.
 
-UNAUTHORIZED USE IS STRICTLY PROHIBITED. You are NOT allowed to reproduce, copy, distribute, modify, or use this source code for any personal or commercial projects without explicit written permission."
+VIỆC SỬ DỤNG TRÁI PHÉP BỊ NGHIÊM CẤM. Bạn KHÔNG được phép sao chép, phân phối, sửa đổi hoặc sử dụng mã nguồn này cho bất kỳ dự án cá nhân hoặc thương mại nào mà không có sự cho phép bằng văn bản rõ ràng. 
 
 > **02/10/2026 — cập nhật 088:** bổ sung bảng và hệ thống cục bộ, điều chỉnh Campaign và Tests, hướng dẫn theo ngữ cảnh, biểu tượng và hiệu ứng phát sáng, văn bản giao diện tiếng Anh, trạng thái chiến đấu, đội hình căn giữa và nhãn VICTORY/DEFEAT. [Ghi chú phân phối](DISTRIBUCION_2026-10-02.md).
 
