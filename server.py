@@ -257,6 +257,15 @@ class HTTPHandler(BaseHTTPRequestHandler):
         if isinstance(content, (dict, list)): content = json.dumps(content, ensure_ascii=False).encode()
         elif isinstance(content, str): content = content.encode()
         extra = {}
+        asset_origin = ''
+        configured_asset_base = os.environ.get('GXB_ASSET_BASE_URL', '').strip().rstrip('/')
+        if configured_asset_base:
+            try:
+                parsed_asset_base = urlparse(configured_asset_base)
+                if parsed_asset_base.scheme == 'https' and parsed_asset_base.netloc and not parsed_asset_base.query and not parsed_asset_base.fragment:
+                    asset_origin = f'{parsed_asset_base.scheme}://{parsed_asset_base.netloc}'
+            except ValueError:
+                asset_origin = ''
         if content_type == 'audio/mpeg':
             # Safari only plays media served with byte ranges.
             extra['Accept-Ranges'] = 'bytes'
@@ -276,7 +285,20 @@ class HTTPHandler(BaseHTTPRequestHandler):
         self.send_header('X-Content-Type-Options', 'nosniff')
         self.send_header('Referrer-Policy', 'same-origin')
         self.send_header('Permissions-Policy', 'camera=(), microphone=(), geolocation=()')
-        self.send_header('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'")
+        # asset-runtime.js redirects immutable CSS/JS/images/media to the configured CDN.
+        # Keep API/auth/WebSocket connections same-origin; only static resource types may
+        # use the CDN origin.
+        asset_sources = f' {asset_origin}' if asset_origin else ''
+        self.send_header(
+            'Content-Security-Policy',
+            "default-src 'self'; "
+            f"script-src 'self'{asset_sources}; "
+            f"style-src 'self'{asset_sources} 'unsafe-inline'; "
+            f"img-src 'self'{asset_sources} data: blob:; "
+            f"font-src 'self'{asset_sources} data:; "
+            f"media-src 'self'{asset_sources} blob:; "
+            "connect-src 'self'; frame-ancestors 'none'"
+        )
         if self.request_is_https():
             self.send_header('Strict-Transport-Security','max-age=31536000; includeSubDomains')
         self.end_headers()

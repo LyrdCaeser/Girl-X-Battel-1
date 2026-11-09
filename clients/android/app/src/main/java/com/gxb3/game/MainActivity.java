@@ -667,6 +667,10 @@ public final class MainActivity extends ComponentActivity {
                         && localAssetLoader != null) {
                     String path = uri.getPath();
                     if (path != null && ("/api".equals(path) || path.startsWith("/api/"))) {
+                        if ("GET".equalsIgnoreCase(request.getMethod()) && offlineLocalApi != null) {
+                            OfflineLocalApi.Response localResponse = offlineLocalApi.handleRequest("GET", path, null);
+                            return localApiResponse(localResponse);
+                        }
                         return localApiTransportRequiredResponse(localApiBridgeInstalled);
                     }
                     WebResourceResponse response = localAssetLoader.shouldInterceptRequest(uri);
@@ -732,6 +736,15 @@ public final class MainActivity extends ComponentActivity {
                 .getBytes(java.nio.charset.StandardCharsets.UTF_8);
         return new WebResourceResponse("application/json", "UTF-8", 501, "Not Implemented",
                 Collections.singletonMap("Cache-Control", "no-store"), new ByteArrayInputStream(body));
+    }
+
+    private static WebResourceResponse localApiResponse(OfflineLocalApi.Response response) {
+        int status = response == null ? 500 : response.status;
+        String reason = status >= 200 && status < 300 ? "OK" : "Local API error";
+        String body = response == null || response.body == null ? "{\"error\":\"local_api_empty_response\"}" : response.body.toString();
+        return new WebResourceResponse("application/json", "UTF-8", status, reason,
+                Collections.singletonMap("Cache-Control", "no-store"),
+                new ByteArrayInputStream(body.getBytes(java.nio.charset.StandardCharsets.UTF_8)));
     }
 
     private static WebResourceResponse blockedLocalResponse(int status, String reason) {
