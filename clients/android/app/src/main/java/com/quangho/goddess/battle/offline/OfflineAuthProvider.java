@@ -33,16 +33,39 @@ final class OfflineAuthProvider {
     synchronized JSONObject me() throws JSONException {
         JSONObject result = worldInfo();
         String username = store.optString("session", "");
+        if (store.optBoolean("guest_session", false)) {
+            put(result, "authenticated", true);
+            put(result, "guest", true);
+            put(result, "session", new JSONObject().put("guest", true).put("username", "guest")
+                    .put("character_name", "Offline Player").put("server_id", "LOCAL"));
+            return result;
+        }
         JSONObject accounts = store.optJSONObject("accounts");
         JSONObject account = accounts == null ? null : accounts.optJSONObject(username);
         if (account != null) {
             put(result, "authenticated", true);
+            put(result, "guest", false);
             put(result, "session", session(account, username));
         } else {
             put(result, "authenticated", false);
+            put(result, "guest", false);
             put(result, "session", JSONObject.NULL);
         }
         return result;
+    }
+
+    synchronized JSONObject startGuest() throws IOException, JSONException {
+        put(store, "session", "");
+        put(store, "guest_session", true);
+        persist();
+        return me();
+    }
+
+    synchronized JSONObject logout() throws IOException, JSONException {
+        put(store, "session", "");
+        put(store, "guest_session", false);
+        persist();
+        return new JSONObject().put("authenticated", false).put("logged_out", true).put("worlds", worlds());
     }
 
     synchronized JSONObject login(JSONObject request) throws IOException, JSONException {
@@ -54,6 +77,7 @@ final class OfflineAuthProvider {
             throw authError("invalid_credentials");
         }
         put(store, "session", username);
+        put(store, "guest_session", false);
         persist();
         return new JSONObject().put("authenticated", true).put("session", session(account, username)).put("worlds", worlds());
     }
@@ -76,6 +100,7 @@ final class OfflineAuthProvider {
         put(account, "recovery_hash", hash(recovery));
         put(accounts, username, account);
         put(store, "session", username);
+        put(store, "guest_session", false);
         persist();
         return new JSONObject().put("authenticated", true).put("recovery_code", recovery)
                 .put("session", session(account, username)).put("worlds", worlds());
@@ -91,7 +116,8 @@ final class OfflineAuthProvider {
         }
         if (nextPassword.length() < 8 || nextPassword.length() > 128) throw authError("invalid_password");
         put(account, "password_hash", hash(nextPassword));
-        put(store, "session", JSONObject.NULL);
+        put(store, "session", "");
+        put(store, "guest_session", false);
         persist();
         return new JSONObject().put("reset", true).put("worlds", worlds());
     }

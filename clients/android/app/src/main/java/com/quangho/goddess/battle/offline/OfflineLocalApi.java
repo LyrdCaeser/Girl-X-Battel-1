@@ -128,6 +128,8 @@ public final class OfflineLocalApi {
         }
 
         if ("/api/auth/me".equals(path) && "GET".equals(method)) return authMe();
+        if ("/api/auth/guest".equals(path) && "POST".equals(method)) return authGuest();
+        if ("/api/auth/logout".equals(path) && "POST".equals(method)) return authLogout();
         if ("/api/auth/login".equals(path) && "POST".equals(method)) return authLogin(bodyJson);
         if ("/api/auth/register".equals(path) && "POST".equals(method)) return authRegister(bodyJson);
         if ("/api/auth/reset-password".equals(path) && "POST".equals(method)) return authReset(bodyJson);
@@ -202,6 +204,18 @@ public final class OfflineLocalApi {
     private Response authMe() {
         try { return new Response(200, authProvider.me()); }
         catch (JSONException error) { return error(500, "offline_auth_store_invalid"); }
+    }
+
+    private Response authGuest() {
+        try { return new Response(200, authProvider.startGuest()); }
+        catch (JSONException error) { return authError(error); }
+        catch (java.io.IOException error) { return error(500, "offline_auth_save_failed"); }
+    }
+
+    private Response authLogout() {
+        try { return new Response(200, authProvider.logout()); }
+        catch (JSONException error) { return authError(error); }
+        catch (java.io.IOException error) { return error(500, "offline_auth_save_failed"); }
     }
 
     private Response authLogin(String bodyJson) {

@@ -22,13 +22,6 @@ jobs:
     if: github.ref == 'refs/heads/feature/offline-mode' && github.event_name != 'pull_request'
     runs-on: ubuntu-24.04
     timeout-minutes: 35
-    env:
-      ANDROID_KEYSTORE_B64: ${{ secrets.ANDROID_RELEASE_KEYSTORE_B64 }}
-      ANDROID_STORE_PASSWORD: ${{ secrets.ANDROID_RELEASE_STORE_PASSWORD }}
-      ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_RELEASE_KEY_ALIAS }}
-      ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_RELEASE_KEY_PASSWORD }}
-      OFFLINE_PUBLIC_KEY_B64: ${{ secrets.OFFLINE_MANIFEST_PUBLIC_KEY_B64 }}
-      OFFLINE_SIGNING_KEY_PEM: ${{ secrets.OFFLINE_MANIFEST_SIGNING_KEY_PEM }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -43,35 +36,122 @@ jobs:
           packages: platform-tools
       - name: Install Android SDK components
         run: sdkmanager "platforms;android-35" "build-tools;35.0.0" "ndk;27.0.12077973"
-      - name: Check release secrets and create isolated signing inputs
+      - name: Install Ed25519 manifest verifier
+        run: python -m pip install --disable-pip-version-check "cryptography>=41,<47"
+      - name: Validate release secrets and published resource manifest
+        shell: bash
+        env:
+          ANDROID_KEYSTORE_B64: ${{ secrets.ANDROID_RELEASE_KEYSTORE_B64 }}
+          ANDROID_STORE_PASSWORD: ${{ secrets.ANDROID_RELEASE_STORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_RELEASE_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_RELEASE_KEY_PASSWORD }}
+          OFFLINE_PUBLIC_KEY_B64: ${{ secrets.OFFLINE_MANIFEST_PUBLIC_KEY_B64 }}
+          CLOUDFRONT_DOMAIN: ${{ secrets.CLOUDFRONT_DOMAIN }}
+        run: |
+          set -euo pipefail
+          for name in ANDROID_KEYSTORE_B64 ANDROID_STORE_PASSWORD ANDROID_KEY_ALIAS ANDROID_KEY_PASSWORD OFFLINE_PUBLIC_KEY_B64 CLOUDFRONT_DOMAIN; do
+            test -n "${!name:-}" || { echo "Missing required release secret: $name"; exit 1; }
+          done
+          [[ "$CLOUDFRONT_DOMAIN" =~ ^[A-Za-z0-9.-]+$ ]] || { echo "CLOUDFRONT_DOMAIN must be a hostname only"; exit 1; }
+          MANIFEST_URL="https://${CLOUDFRONT_DOMAIN}/offline-resources/manifest.json"
+          MANIFEST_PATH="$RUNNER_TEMP/signed-manifest.json"
+          curl --fail --location --silent --show-error --retry 4 --retry-all-errors \
+            --connect-timeout 10 --max-time 120 "$MANIFEST_URL" --output "$MANIFEST_PATH"
+          MANIFEST_PATH="$MANIFEST_PATH" CLOUDFRONT_DOMAIN="$CLOUDFRONT_DOMAIN" \
+          OFFLINE_PUBLIC_KEY_B64="$OFFLINE_PUBLIC_KEY_B64" python3 - <<'PY'
+          import base64
+          import concurrent.futures
+          import json
+          import os
+          import re
+          from pathlib import Path
+          from urllib.error import HTTPError, URLError
+          from urllib.parse import urlsplit
+          from urllib.request import Request, urlopen
+
+          path = Path(os.environ["MANIFEST_PATH"])
+          domain = os.environ["CLOUDFRONT_DOMAIN"].lower()
+          if not path.is_file() or path.stat().st_size == 0 or path.stat().st_size > 8 * 1024 * 1024:
+              raise SystemExit("published resource manifest is missing, empty, or too large")
+          envelope = json.loads(path.read_text(encoding="utf-8"))
+          if set(envelope) != {"payload_b64", "signature_b64"}:
+              raise SystemExit("published manifest is not a signed envelope")
+          payload = base64.b64decode(envelope["payload_b64"], validate=True)
+          signature = base64.b64decode(envelope["signature_b64"], validate=True)
+          public_key = base64.b64decode(os.environ["OFFLINE_PUBLIC_KEY_B64"], validate=True)
+          if len(signature) != 64 or len(public_key) != 32:
+              raise SystemExit("manifest signature/public key has an invalid Ed25519 length")
+          from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
+          Ed25519PublicKey.from_public_bytes(public_key).verify(signature, payload)
+          manifest = json.loads(payload.decode("utf-8"))
+          version = manifest.get("resource_version", "")
+          if not re.fullmatch(r"[A-Za-z0-9._-]{1,80}", version):
+              raise SystemExit("resource_version is missing or invalid")
+          packs = manifest.get("packs")
+          if not isinstance(packs, list) or not packs or len(packs) > 512:
+              raise SystemExit("manifest has no packs or exceeds the supported pack count")
+          urls = []
+          for pack in packs:
+              raw_url = pack.get("url", "")
+              parsed = urlsplit(raw_url)
+              digest = pack.get("sha256", "")
+              if parsed.scheme != "https" or parsed.netloc.lower() != domain or parsed.query or parsed.fragment:
+                  raise SystemExit("pack URL is not restricted to the configured HTTPS CDN host")
+              if not parsed.path.startswith(f"/offline-resources/{version}/"):
+                  raise SystemExit("pack URL version path does not match the signed manifest")
+              if not re.fullmatch(r"[0-9a-f]{64}", digest):
+                  raise SystemExit("pack SHA-256 is missing or malformed")
+              if Path(parsed.path).name != f"pack-{digest}.zip" or int(pack.get("size_bytes", 0)) <= 0:
+                  raise SystemExit("pack filename or size does not match manifest metadata")
+              urls.append(raw_url)
+
+          def probe(url):
+              try:
+                  request = Request(url, headers={"Range": "bytes=0-0", "User-Agent": "GXB3-release-gate/1.0"})
+                  with urlopen(request, timeout=35) as response:
+                      if response.status not in (200, 206):
+                          return url, f"HTTP {response.status}"
+                      if urlsplit(response.geturl()).netloc.lower() != domain:
+                          return url, "redirected to an untrusted host"
+                      if len(response.read(1)) != 1:
+                          return url, "empty response"
+                  return url, None
+              except (HTTPError, URLError, TimeoutError, OSError) as exc:
+                  return url, str(exc)
+
+          with concurrent.futures.ThreadPoolExecutor(max_workers=8) as pool:
+              failures = [(url, error) for url, error in pool.map(probe, urls) if error]
+          if failures:
+              examples = "; ".join(f"{url.rsplit('/', 1)[-1]}: {error}" for url, error in failures[:5])
+              raise SystemExit(f"{len(failures)}/{len(urls)} resource packs are inaccessible: {examples}")
+          print(f"Verified Ed25519 resource manifest {version}; all {len(urls)} packs are reachable.")
+          PY
+          printf '%s\n' "GXB_OFFLINE_RESOURCE_MANIFEST_URL=$MANIFEST_URL" >> "$GITHUB_ENV"
+          printf '%s\n' "GXB_OFFLINE_RESOURCE_TRUSTED_HOSTS=$CLOUDFRONT_DOMAIN" >> "$GITHUB_ENV"
+          printf '%s' "$ANDROID_KEYSTORE_B64" | base64 --decode > "$RUNNER_TEMP/release.keystore"
+          chmod 600 "$RUNNER_TEMP/release.keystore"
+      - name: Build production-signed APK with offline resource config
         shell: bash
         run: |
           set -euo pipefail
-          for name in ANDROID_KEYSTORE_B64 ANDROID_STORE_PASSWORD ANDROID_KEY_ALIAS ANDROID_KEY_PASSWORD OFFLINE_PUBLIC_KEY_B64 OFFLINE_SIGNING_KEY_PEM; do
-            test -n "${!name:-}" || { echo "Missing required release secret: $name"; exit 1; }
-          done
-          printf '%s' "$ANDROID_KEYSTORE_B64" | base64 --decode > "$RUNNER_TEMP/release.keystore"
-          chmod 600 "$RUNNER_TEMP/release.keystore"
-          cat > "$RUNNER_TEMP/build_signed_manifest.py" <<'PY'
-          import base64, json, os
-          from cryptography.hazmat.primitives import serialization
-          from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
-          payload = json.dumps({"manifest_version": 1, "resource_version": "gate", "packs": []}, separators=(",", ":")).encode()
-          key = serialization.load_pem_private_key(os.environ["OFFLINE_SIGNING_KEY_PEM"].encode(), password=None)
-          envelope = {"payload_b64": base64.b64encode(payload).decode(), "signature_b64": base64.b64encode(key.sign(payload)).decode()}
-          open(os.environ["MANIFEST_OUT"], "w").write(json.dumps(envelope))
-          PY
-          python -m pip install --disable-pip-version-check "cryptography>=41,<47"
-          MANIFEST_OUT="$RUNNER_TEMP/signed-manifest.json" OFFLINE_SIGNING_KEY_PEM="$OFFLINE_SIGNING_KEY_PEM" python "$RUNNER_TEMP/build_signed_manifest.py"
-      - name: Build release APK with supplied private keystore
-        run: |
-          ./clients/android/gradlew -p clients/android :app:assembleRelease --no-daemon
+          : "${GXB_OFFLINE_RESOURCE_MANIFEST_URL:?manifest URL not configured}"
+          : "${GXB_OFFLINE_RESOURCE_TRUSTED_HOSTS:?trusted CDN host not configured}"
+          : "${OFFLINE_PUBLIC_KEY_B64:?pinned Ed25519 public key not configured}"
+          ./clients/android/gradlew -p clients/android :app:assembleRelease --no-daemon \
+            "-PgxbOfflineManifestUrl=$GXB_OFFLINE_RESOURCE_MANIFEST_URL" \
+            "-PgxbOfflineTrustedHosts=$GXB_OFFLINE_RESOURCE_TRUSTED_HOSTS" \
+            "-PgxbOfflineManifestPublicKeyB64=$OFFLINE_PUBLIC_KEY_B64"
         env:
           GXB_RELEASE_KEYSTORE: ${{ runner.temp }}/release.keystore
           GXB_RELEASE_STORE_PASSWORD: ${{ secrets.ANDROID_RELEASE_STORE_PASSWORD }}
           GXB_RELEASE_KEY_ALIAS: ${{ secrets.ANDROID_RELEASE_KEY_ALIAS }}
           GXB_RELEASE_KEY_PASSWORD: ${{ secrets.ANDROID_RELEASE_KEY_PASSWORD }}
-      - name: Verify keystore, APK certificate, public key and manifest signature
+          OFFLINE_PUBLIC_KEY_B64: ${{ secrets.OFFLINE_MANIFEST_PUBLIC_KEY_B64 }}
+      - name: Verify keystore, APK certificate, public key and resource manifest
+        env:
+          ANDROID_STORE_PASSWORD: ${{ secrets.ANDROID_RELEASE_STORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_RELEASE_KEY_ALIAS }}
+          OFFLINE_PUBLIC_KEY_B64: ${{ secrets.OFFLINE_MANIFEST_PUBLIC_KEY_B64 }}
         run: |
           python tools/verify_android_release_gate.py \
             --keystore "$RUNNER_TEMP/release.keystore" \

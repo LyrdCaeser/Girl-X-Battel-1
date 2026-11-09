@@ -7,6 +7,7 @@ import org.junit.Test;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -151,6 +152,46 @@ public final class OfflineGameProviderTest {
             assertEquals(200, provider.action(new JSONObject().put("message", "HOME_ACTION")
                     .put("data", new JSONObject().put("action", "travel_collect")).toString()).status);
             assertTrue(new OfflineGameProvider(root).state().body.getJSONObject("home_systems").getBoolean("started_travel"));
+        } finally { delete(root); }
+    }
+
+    @Test public void campaignSettlementUsesEngineResultAndPersistsFirstClear() throws Exception {
+        File root = Files.createTempDirectory("gxb3-campaign-").toFile();
+        try {
+            AtomicBoolean engineWin = new AtomicBoolean(false);
+            OfflineGameProvider provider = new OfflineGameProvider(root, input -> {
+                assertTrue(input.contains("{teamA="));
+                assertTrue(input.contains("teamB="));
+                return new JSONObject().put("isWin", engineWin.get()).put("engine", "test");
+            });
+            int initialGold = provider.state().body.getJSONObject("items").getInt("1");
+            JSONObject request = new JSONObject().put("message", "MAP_FIGHT")
+                    .put("data", new JSONObject().put("stage_id", 1).put("isWin", true));
+
+            OfflineLocalApi.Response defeat = provider.action(request.toString());
+            assertEquals(200, defeat.status);
+            JSONObject afterDefeat = defeat.body.getJSONObject("state");
+            assertFalse(afterDefeat.getJSONObject("last_battle").getBoolean("win"));
+            assertEquals(0, afterDefeat.getJSONArray("cleared").length());
+            assertEquals(1, afterDefeat.getInt("next_stage"));
+            assertEquals(initialGold, afterDefeat.getJSONObject("items").getInt("1"));
+
+            engineWin.set(true);
+            OfflineLocalApi.Response victory = provider.action(request.toString());
+            assertEquals(200, victory.status);
+            JSONObject afterVictory = victory.body.getJSONObject("state");
+            assertTrue(afterVictory.getJSONObject("last_battle").getBoolean("win"));
+            assertEquals(2, afterVictory.getInt("next_stage"));
+            assertEquals(1, afterVictory.getJSONArray("cleared").length());
+            assertEquals(initialGold + 1100, afterVictory.getJSONObject("items").getInt("1"));
+            long battleId = afterVictory.getJSONObject("last_battle").getLong("id");
+            assertEquals("test", provider.battle(battleId).body.getString("engine"));
+
+            OfflineGameProvider reopened = new OfflineGameProvider(root);
+            JSONObject saved = reopened.state().body;
+            assertEquals(2, saved.getInt("next_stage"));
+            assertEquals(1, saved.getJSONArray("cleared").length());
+            assertEquals(initialGold + 1100, saved.getJSONObject("items").getInt("1"));
         } finally { delete(root); }
     }
 

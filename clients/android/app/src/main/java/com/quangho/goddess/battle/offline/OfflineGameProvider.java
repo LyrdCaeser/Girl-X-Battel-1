@@ -23,19 +23,30 @@ public final class OfflineGameProvider {
     private static final int SAVE_VERSION = 3;
     private final Context context;
     private final File saveFile;
+    private final BattleRunner battleRunner;
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
     private JSONObject save;
+
+    interface BattleRunner {
+        JSONObject run(String input) throws Exception;
+    }
 
     public OfflineGameProvider(Context context) throws IOException {
         this.context = context.getApplicationContext();
         this.saveFile = new File(this.context.getFilesDir(), "offline/profile.json");
+        this.battleRunner = input -> new JSONObject(BattleRuntimeBridge.runBattle(this.context, "battle", input));
         load();
     }
 
     /** File-backed constructor for JVM contract tests; production uses the Context constructor. */
     OfflineGameProvider(File filesDirectory) throws IOException {
+        this(filesDirectory, input -> { throw new IllegalStateException("battle_engine_unavailable_in_file_test"); });
+    }
+
+    OfflineGameProvider(File filesDirectory, BattleRunner battleRunner) throws IOException {
         this.context = null;
         this.saveFile = new File(filesDirectory, "offline/profile.json");
+        this.battleRunner = battleRunner;
         load();
     }
 
@@ -274,8 +285,9 @@ public final class OfflineGameProvider {
         String input = battleInput(team, stage);
         JSONObject report;
         try {
-            report = new JSONObject(BattleRuntimeBridge.runBattle(context, "battle", input));
-        } catch (RuntimeException error) {
+            report = battleRunner.run(input);
+            if (report == null) return error(503, "offline_battle_engine_unavailable");
+        } catch (Exception error) {
             return error(503, "offline_battle_engine_unavailable");
         }
         long id = save.optLong("next_battle_id", 1L);

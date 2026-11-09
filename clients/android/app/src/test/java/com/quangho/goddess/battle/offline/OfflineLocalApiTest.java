@@ -73,6 +73,20 @@ public final class OfflineLocalApiTest {
                 new JSONObject().put("username", "test_user").put("password", "new-pass-456").toString()).status);
     }
 
+    @Test public void guestCanEnterWithoutAccountAndLogout() throws Exception {
+        OfflineLocalApi auth = new OfflineLocalApi();
+        OfflineLocalApi.Response guest = auth.handleRequest("POST", "/api/auth/guest", "{}");
+        assertEquals(200, guest.status);
+        assertTrue(guest.body.getBoolean("authenticated"));
+        assertTrue(guest.body.getBoolean("guest"));
+        assertTrue(auth.handleRequest("GET", "/api/auth/me", null).body.getBoolean("guest"));
+
+        OfflineLocalApi.Response logout = auth.handleRequest("POST", "/api/auth/logout", "{}");
+        assertEquals(200, logout.status);
+        assertTrue(logout.body.getBoolean("logged_out"));
+        assertFalse(auth.handleRequest("GET", "/api/auth/me", null).body.getBoolean("authenticated"));
+    }
+
     @Test public void rejectsUntrustedOriginAndInvalidProtocolEnvelope() throws Exception {
         JSONObject request = new JSONObject()
                 .put("v", 1)
