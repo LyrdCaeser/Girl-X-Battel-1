@@ -6,6 +6,7 @@ from email.policy import default
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from http.cookies import SimpleCookie
 import json, re
+from decimal import Decimal
 import hashlib
 import hmac
 import os
@@ -43,6 +44,13 @@ def _card_aliases():
         if gid not in CARD_ART and cur in CARD_ART: out[gid] = cur
     return out
 CARD_ALIAS = _card_aliases()
+
+def _json_default(value):
+    # PostgreSQL NUMERIC values can reach public read-only payloads as Decimal.
+    # Emit them as JSON numbers without changing the existing response schema.
+    if isinstance(value, Decimal):
+        return float(value)
+    raise TypeError(f"Object of type {type(value).__name__} is not JSON serializable")
 _MISC = {}
 def misc_spine(name):
     """On demand: any UI animation of the original client ("Animation (Misc)", 982 Spine 3.6 skeletons, read only) becomes
@@ -254,7 +262,7 @@ class HTTPHandler(BaseHTTPRequestHandler):
         # Request bodies and local session fields are not written to logs.
         pass
     def send(self, status, content, content_type='application/json; charset=utf-8', headers=None):
-        if isinstance(content, (dict, list)): content = json.dumps(content, ensure_ascii=False).encode()
+        if isinstance(content, (dict, list)): content = json.dumps(content, ensure_ascii=False, default=_json_default).encode()
         elif isinstance(content, str): content = content.encode()
         extra = {}
         if content_type == 'audio/mpeg':
@@ -276,7 +284,28 @@ class HTTPHandler(BaseHTTPRequestHandler):
         self.send_header('X-Content-Type-Options', 'nosniff')
         self.send_header('Referrer-Policy', 'same-origin')
         self.send_header('Permissions-Policy', 'camera=(), microphone=(), geolocation=()')
-        self.send_header('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'")
+        asset_origin = ''
+        configured_asset_base = os.environ.get('GXB_ASSET_BASE_URL', '').strip().rstrip('/')
+        if configured_asset_base:
+            try:
+                parsed_asset_base = urlparse(configured_asset_base)
+                if parsed_asset_base.scheme == 'https' and parsed_asset_base.netloc and not parsed_asset_base.query and not parsed_asset_base.fragment:
+                    asset_origin = f'{parsed_asset_base.scheme}://{parsed_asset_base.netloc}'
+            except ValueError:
+                asset_origin = ''
+        # asset-runtime.js redirects immutable CSS/JS/images/media to the configured CDN.
+        # Keep API/auth/WebSocket connections same-origin; only static resource types use CDN.
+        asset_sources = f' {asset_origin}' if asset_origin else ''
+        self.send_header(
+            'Content-Security-Policy',
+            "default-src 'self'; "
+            f"script-src 'self'{asset_sources}; "
+            f"style-src 'self'{asset_sources} 'unsafe-inline'; "
+            f"img-src 'self'{asset_sources} data: blob:; "
+            f"font-src 'self'{asset_sources} data:; "
+            f"media-src 'self'{asset_sources} blob:; "
+            "connect-src 'self'; frame-ancestors 'none'"
+        )
         if self.request_is_https():
             self.send_header('Strict-Transport-Security','max-age=31536000; includeSubDomains')
         self.end_headers()
@@ -348,7 +377,13 @@ class HTTPHandler(BaseHTTPRequestHandler):
         if path == '/api/auth/sessions':
             ctx = self.require_auth()
             if not ctx: return
-            return self.send(200, {'sessions': auth.sessions_for_token(self.session_token())})
+            try:
+                sessions = auth.sessions_for_token(self.session_token())
+            except ValueError as exc:
+                # The session may expire between require_auth() and the query.
+                # Return a normal auth response instead of logging a traceback.
+                return self.send(401, {'error': str(exc)})
+            return self.send(200, {'sessions': sessions})
         if path in ('/giftcode-studio','/giftcode-studio/'):
             # Always use the dedicated Vercel Studio, preserving the game login
             # through a short-lived one-time ticket rather than a shared cookie.
@@ -546,6 +581,12 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                 return self.send(404, {'error':'Recurso inexistente'})
         # On demand from the read-only originals, cached in web/assets/: any cut sprite (/assets/sprite/<name>.png) and any scene
         # background (/assets/bg/<name>.webp, from Images (backgrounds)/scenes · scenes_big · battle_map).
+        if path == '/asset-config.js':
+            asset_base = os.environ.get('GXB_ASSET_BASE_URL', '').strip().rstrip('/')
+            if asset_base and (not asset_base.startswith('https://') or urlparse(asset_base).query or urlparse(asset_base).fragment or not urlparse(asset_base).netloc):
+                return self.send(500, {'error': 'GXB_ASSET_BASE_URL must be an HTTPS URL without query or fragment'})
+            body = ('window.GXB_ASSET_BASE_URL = ' + json.dumps(asset_base) + ';\n').encode('utf-8')
+            return self.send(200, body, 'application/javascript; charset=utf-8')
         if path.startswith('/assets/sprite/') and path.endswith('.png'):
             stem = path[len('/assets/sprite/'):-4]
             if re.fullmatch(r'[A-Za-z0-9_\-]+', stem):
