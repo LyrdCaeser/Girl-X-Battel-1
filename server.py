@@ -546,6 +546,12 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                 return self.send(404, {'error':'Recurso inexistente'})
         # On demand from the read-only originals, cached in web/assets/: any cut sprite (/assets/sprite/<name>.png) and any scene
         # background (/assets/bg/<name>.webp, from Images (backgrounds)/scenes · scenes_big · battle_map).
+        if path == '/asset-config.js':
+            asset_base = os.environ.get('GXB_ASSET_BASE_URL', '').strip().rstrip('/')
+            if asset_base and (not asset_base.startswith('https://') or urlparse(asset_base).query or urlparse(asset_base).fragment or not urlparse(asset_base).netloc):
+                return self.send(500, {'error': 'GXB_ASSET_BASE_URL must be an HTTPS URL without query or fragment'})
+            body = ('window.GXB_ASSET_BASE_URL = ' + json.dumps(asset_base) + ';\n').encode('utf-8')
+            return self.send(200, body, 'application/javascript; charset=utf-8')
         if path.startswith('/assets/sprite/') and path.endswith('.png'):
             stem = path[len('/assets/sprite/'):-4]
             if re.fullmatch(r'[A-Za-z0-9_\-]+', stem):

@@ -104,6 +104,10 @@ jobs:
           chmod 600 "$KEY_FILE"
           args+=(--private-key "$KEY_FILE")
           python3 tools/build_offline_resource_manifest.py "${args[@]}"
+          rm -rf online-asset-release
+          mkdir -p online-asset-release
+          cp -a web/. online-asset-release/
+          printf '%s\n' "$RESOURCE_VERSION" > online-asset-release/RESOURCE_VERSION
           rm -f "$RUNNER_TEMP/offline-resource-signing-key.pem"
           sha256sum offline-resource-release/manifest.json offline-resource-release/pack-*.zip > offline-resource-release/SHA256SUMS.txt
           python3 - <<'PY' >> "$GITHUB_STEP_SUMMARY"
@@ -142,6 +146,8 @@ jobs:
           RESOURCE_BUCKET: ${{ secrets.RESOURCE_BUCKET }}
           RESOURCE_PREFIX: offline-resources
           VERSION_DIR: offline-resource-release
+          ONLINE_ASSET_DIR: online-asset-release
+          ONLINE_ASSET_PREFIX: online-assets
           CLOUDFRONT_DOMAIN: ${{ secrets.CLOUDFRONT_DOMAIN }}
           DISTRIBUTION_ID: ${{ secrets.DISTRIBUTION_ID }}
         run: |

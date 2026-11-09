@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Publish a signed offline resource release: immutable packs first, manifest last.
 # Required: AWS_REGION RESOURCE_BUCKET RESOURCE_PREFIX RESOURCE_VERSION VERSION_DIR
-# Optional: DISTRIBUTION_ID CLOUDFRONT_DOMAIN DRY_RUN=1 ALLOW_EXISTING_VERSION=1
+# Optional: DISTRIBUTION_ID CLOUDFRONT_DOMAIN ONLINE_ASSET_DIR ONLINE_ASSET_PREFIX DRY_RUN=1 ALLOW_EXISTING_VERSION=1
 set -euo pipefail
 
 : "${AWS_REGION:?Set AWS_REGION, for example ap-southeast-1}"
@@ -14,6 +14,10 @@ command -v aws >/dev/null || { echo "aws CLI is required" >&2; exit 1; }
 command -v python3 >/dev/null || { echo "python3 is required" >&2; exit 1; }
 [[ -d "$VERSION_DIR" ]] || { echo "VERSION_DIR does not exist: $VERSION_DIR" >&2; exit 1; }
 [[ -s "$VERSION_DIR/manifest.json" ]] || { echo "manifest.json is missing or empty" >&2; exit 1; }
+if [[ -n "${ONLINE_ASSET_DIR:-}" ]]; then
+  [[ -d "$ONLINE_ASSET_DIR" ]] || { echo "ONLINE_ASSET_DIR does not exist: $ONLINE_ASSET_DIR" >&2; exit 1; }
+  : "${ONLINE_ASSET_PREFIX:=online-assets}"
+fi
 
 export AWS_PAGER=""
 aws sts get-caller-identity >/dev/null
@@ -22,6 +26,7 @@ aws s3api head-bucket --bucket "$RESOURCE_BUCKET" >/dev/null
 VERSION_KEY="$RESOURCE_PREFIX/$RESOURCE_VERSION"
 MANIFEST_KEY="$RESOURCE_PREFIX/manifest.json"
 VERSION_MANIFEST_KEY="$VERSION_KEY/manifest.json"
+ONLINE_VERSION_KEY="${ONLINE_ASSET_PREFIX:-online-assets}/$RESOURCE_VERSION"
 
 # Validate the signed envelope, release version, pack names/hashes, and CloudFront URLs before upload.
 EXPECTED_RESOURCE_VERSION="$RESOURCE_VERSION" RESOURCE_PREFIX="$RESOURCE_PREFIX" \
@@ -98,6 +103,10 @@ if [[ "${ALLOW_EXISTING_VERSION:-0}" != "1" ]] && aws s3api head-object --bucket
   echo "Use a new RESOURCE_VERSION. ALLOW_EXISTING_VERSION=1 is reserved for recovery." >&2
   exit 1
 fi
+if [[ -n "${ONLINE_ASSET_DIR:-}" ]] && [[ "${ALLOW_EXISTING_VERSION:-0}" != "1" ]] && aws s3api head-object --bucket "$RESOURCE_BUCKET" --key "$ONLINE_VERSION_KEY/RESOURCE_VERSION" >/dev/null 2>&1; then
+  echo "Refusing to overwrite existing immutable Online asset release: s3://$RESOURCE_BUCKET/$ONLINE_VERSION_KEY/" >&2
+  exit 1
+fi
 
 shopt -s nullglob
 packs=("$VERSION_DIR"/pack-*.zip)
@@ -111,6 +120,20 @@ for pack in "${packs[@]}"; do
     --cache-control 'public,max-age=31536000,immutable' \
     --only-show-errors
  done
+
+if [[ -n "${ONLINE_ASSET_DIR:-}" ]]; then
+  echo "Uploading Online asset tree to s3://$RESOURCE_BUCKET/$ONLINE_VERSION_KEY/"
+  run aws s3 sync "$ONLINE_ASSET_DIR/" "s3://$RESOURCE_BUCKET/$ONLINE_VERSION_KEY/" \
+    --region "$AWS_REGION" \
+    --cache-control 'public,max-age=31536000,immutable' \
+    --exclude 'RESOURCE_VERSION' \
+    --only-show-errors
+  run aws s3 cp "$ONLINE_ASSET_DIR/RESOURCE_VERSION" "s3://$RESOURCE_BUCKET/$ONLINE_VERSION_KEY/RESOURCE_VERSION" \
+    --region "$AWS_REGION" \
+    --content-type text/plain \
+    --cache-control 'public,max-age=31536000,immutable' \
+    --only-show-errors
+fi
 
 # Versioned manifest supports rollback/audit; stable manifest is uploaded last so clients
 # cannot observe a new pointer before all immutable packs exist.
@@ -140,4 +163,7 @@ fi
 echo "Published: s3://$RESOURCE_BUCKET/$MANIFEST_KEY"
 if [[ -n "${CLOUDFRONT_DOMAIN:-}" ]]; then
   echo "Manifest URL: https://$CLOUDFRONT_DOMAIN/$MANIFEST_KEY"
+  if [[ -n "${ONLINE_ASSET_DIR:-}" ]]; then
+    echo "Online asset base URL: https://$CLOUDFRONT_DOMAIN/$ONLINE_VERSION_KEY/"
+  fi
 fi
