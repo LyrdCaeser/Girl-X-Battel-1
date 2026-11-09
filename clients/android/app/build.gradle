@@ -10,8 +10,8 @@ android {
         applicationId "com.quangho.goddess.battle"
         minSdk 26
         targetSdk 35
-        versionCode 100009
-        versionName "1.0.2-alpha-rc8"
+        versionCode 100010
+        versionName "1.0.3-alpha-rc9"
     }
 
     buildTypes {
