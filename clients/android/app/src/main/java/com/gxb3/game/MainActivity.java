@@ -136,7 +136,20 @@ public final class MainActivity extends Activity {
             }
         });
 
+        boolean restoredProductionPage = false;
         if (state != null && webView.restoreState(state) != null) {
+            String restoredUrl = webView.getUrl();
+            restoredProductionPage = restoredUrl != null && restoredUrl.startsWith(GAME_ORIGIN);
+            if (!restoredProductionPage) {
+                // Never keep the temporary gxb3.local loading/error document as the
+                // WebView origin: relative /api/* calls would fail with TypeError:
+                // Failed to fetch instead of reaching the production server.
+                webView.stopLoading();
+                webView.clearHistory();
+            }
+        }
+        if (restoredProductionPage) {
+            CookieManager.getInstance().flush();
             return;
         }
         showLoading();
