@@ -32,11 +32,20 @@ const GxbSpine=(()=>{
 
 const GxbAudio=(()=>{
  const TRACKS={home:'home_bg_music',campaign:'campaign_bg_music',battle:'battle_bg_music_1',campus:'main_story_campus'};
+ const AUDIO_KEY="gxb3:audio-levels:v1",DOT_KEY="gxb3:hide-red-dots:v1",AUDIO_DEFAULTS={music:70,effects:80,voice:90};
+ let audioLevels={...AUDIO_DEFAULTS},hideDots=false;
+ try{audioLevels={...audioLevels,...JSON.parse(localStorage.getItem(AUDIO_KEY)||"{}")};}catch{}
+ try{hideDots=localStorage.getItem(DOT_KEY)==="1";}catch{}
+ const volume=k=>Math.max(0,Math.min(100,Number(audioLevels[k]??100)));
+ function setVolume(k,v){if(!(k in audioLevels))return;audioLevels[k]=Math.max(0,Math.min(100,Number(v)||0));try{localStorage.setItem(AUDIO_KEY,JSON.stringify(audioLevels));}catch{}if(music&&k==="music")music.volume=volume("music")/100;window.dispatchEvent(new CustomEvent("gxb-audio-volume",{detail:{channel:k,level:volume(k)}}));}
+ function dots(v){hideDots=!!v;try{localStorage.setItem(DOT_KEY,hideDots?"1":"0");}catch{}document.documentElement.classList.toggle("gxb-hide-red-dots",hideDots);}
+ function hiddenDots(){return hideDots;}
+ document.documentElement.classList.toggle("gxb-hide-red-dots",hideDots);
  let muted=false,current='',music=null,unlocked=false,wanted='home';
  try{muted=localStorage.getItem('gxb2-muted')==='1';}catch{}
  function src(name){return '/assets/sounds/'+name+'.mp3';}
- function play(track){wanted=track;if(!unlocked||muted){if(music)music.pause();return;}if(track==='home'&&homeTrack)track=homeTrack;if(current===track&&music&&!music.paused)return;if(music){music.pause();}current=track;music=new Audio(src(TRACKS[track]||track));music.loop=true;music.volume=.45;music.play().catch(()=>{});}
- function sfx(name,volume=.8){if(muted||!unlocked)return;const a=new Audio(src(name));a.volume=Math.max(0,Math.min(1,volume));a.play().catch(()=>{});lastSfx=performance.now();}
+ function play(track){wanted=track;if(!unlocked||muted){if(music)music.pause();return;}if(track==='home'&&homeTrack)track=homeTrack;if(current===track&&music&&!music.paused)return;if(music){music.pause();}current=track;music=new Audio(src(TRACKS[track]||track));music.loop=true;music.volume=volume('music')/100;music.play().catch(()=>{});}
+ function sfx(name,level=.8){if(muted||!unlocked)return;const a=new Audio(src(name));a.volume=Math.max(0,Math.min(1,level))*volume("effects")/100;a.play().catch(()=>{});lastSfx=performance.now();}
  // Game sound ids (xyd.SoundID / sound1-2 → assets/sounds/sounds.json) and skill sounds (skill.sound → skills.json).
  let table=null,skills=null,lastSfx=0,homeTrack='';const recent=new Map();
  try{homeTrack=localStorage.getItem('gxb2-bgm')||'';}catch{}
@@ -51,14 +60,14 @@ const GxbAudio=(()=>{
   const c=(b.className||'')+' '+(b.id||'');const kind=/back/i.test(c)?2007:/(^|[-_ ])(x|close)($|[-_ ])|win-x/i.test(c)?2008:/tab|nav/i.test(c)?2009:2006;
   setTimeout(()=>{if(lastSfx<t0)id(kind,.7);},0);},true);
  function view(next){play(({home:'home','home-systems':'home',events:'home',campaign:'campaign','event-battle':'battle',tower:'campaign','daily-quiz':'campaign',patrol:'campaign','house-exam':'campaign','hero-challenge':'campaign','sanctuary-mode':'campaign','old-campus':'campaign',echoes:'campaign',shrine:'campaign',galaxy:'campaign',dress:'campus',campus:'campus',graduate:'campus',league:'campaign'})[next]||'home');}
- function toggle(){muted=!muted;try{localStorage.setItem('gxb2-muted',muted?'1':'0');}catch{}button.textContent=muted?'🔇':'🔊';if(muted)music?.pause();else{current='';play(wanted);}}
+ function toggle(){muted=!muted;try{localStorage.setItem('gxb2-muted',muted?'1':'0');}catch{}button.textContent=muted?'🔇':'🔊';window.dispatchEvent(new CustomEvent('gxb-audio-mute',{detail:{muted}}));if(muted)music?.pause();else{current='';play(wanted);}}
  const button=document.createElement('button');button.type='button';button.className='gxb-mute';button.title="Music";button.setAttribute('aria-label',"Toggle music");button.textContent=muted?'🔇':'🔊';button.addEventListener('click',e=>{e.stopPropagation();toggle();});
  document.addEventListener('DOMContentLoaded',()=>(window.GxbFrame?.root()||document.body).append(button));
  document.addEventListener('pointerdown',()=>{if(unlocked)return;unlocked=true;current='';play(wanted);},{capture:true});
  // pause()/resume(): the story player (story.js) plays its own music. muted(): story sounds follow the mute button.
  function pause(){if(music&&!music.paused){music.pause();return true;}return false;}
  function resume(){if(music&&!muted&&unlocked)music.play().catch(()=>{});}
- return {play,sfx,view,battle:()=>play('battle'),pause,resume,muted:()=>muted,id,skill,bgm,ready,table:()=>table,homeTrack:()=>homeTrack};
+ return {play,sfx,view,battle:()=>play('battle'),pause,resume,muted:()=>muted,id,skill,bgm,ready,table:()=>table,homeTrack:()=>homeTrack,volume,setVolume,dots,hiddenDots};
 })();
 
 const CampaignUI=(()=>{

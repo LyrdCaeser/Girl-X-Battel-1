@@ -2,10 +2,15 @@ package com.quangho.goddess.battle;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Build;
+import android.util.Log;
+import android.webkit.ConsoleMessage;
 import android.webkit.CookieManager;
 import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
@@ -24,6 +29,7 @@ public final class MainActivity extends Activity {
     private static final String GAME_ORIGIN = "https://180-93-111-99.sslip.io";
     private static final String READY_URL = GAME_ORIGIN + "/readyz";
     private WebView webView;
+    private boolean notificationPermissionAsked;
 
     private static final String LOADING_HTML =
         "<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>"
@@ -49,6 +55,7 @@ public final class MainActivity extends Activity {
         webView = new WebView(this);
         webView.setBackgroundColor(Color.rgb(9, 11, 18));
         setContentView(webView);
+        WebView.setWebContentsDebuggingEnabled((getApplicationInfo().flags & android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0);
 
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
@@ -85,6 +92,14 @@ public final class MainActivity extends Activity {
                 dialog.show();
                 return true;
             }
+
+            @Override
+            public boolean onConsoleMessage(ConsoleMessage message) {
+                Log.d("GXB3-WebView", message.message()
+                    + " -- line " + message.lineNumber()
+                    + " of " + message.sourceId());
+                return true;
+            }
         });
         webView.setWebViewClient(new WebViewClient() {
             @Override
@@ -104,6 +119,15 @@ public final class MainActivity extends Activity {
                 return true;
             }
 
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                Uri uri = Uri.parse(url == null ? "" : url);
+                if ("https".equalsIgnoreCase(uri.getScheme())
+                        && "180-93-111-99.sslip.io".equalsIgnoreCase(uri.getHost())) {
+                    requestNotificationPermissionIfNeeded();
+                }
+            }
             @Override
             public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
                 if (request.isForMainFrame()) {
@@ -169,6 +193,14 @@ public final class MainActivity extends Activity {
         }
     }
 
+    private void requestNotificationPermissionIfNeeded() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+                && !notificationPermissionAsked
+                && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            notificationPermissionAsked = true;
+            requestPermissions(new String[] { Manifest.permission.POST_NOTIFICATIONS }, 1001);
+        }
+    }
     private void wakeServerThenOpen() {
         new Thread(() -> {
             long deadline = System.currentTimeMillis() + 150000L;

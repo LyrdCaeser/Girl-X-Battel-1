@@ -2,65 +2,6 @@
 
 // Game audio and notification preferences. Each channel uses real publisher assets.
 // No server state, rewards or gameplay flags are modified by these local settings.
-const GxbAudio=(()=>{
- const KEY='gxb3:audio-levels:v1',DOT='gxb3:hide-red-dots:v1',TRACK='gxb3:home-music:v1';
- const defaults={music:70,effects:80,voice:90};
- const clamp=v=>Math.max(0,Math.min(100,Number(v)||0));
- const read=k=>{try{return localStorage.getItem(k);}catch{return null;}};
- const write=(k,v)=>{try{localStorage.setItem(k,v);}catch{}};
- let saved={};
- try{const p=JSON.parse(read(KEY)||'{}');if(p&&typeof p==='object')saved=p;}catch{}
- const levels=Object.fromEntries(Object.keys(defaults).map(k=>[k,k in saved?clamp(saved[k]):defaults[k]]));
- let hide=read(DOT)==='1',home=read(TRACK)||'',active='home',bg=null,tableData=null,skills={};
- let unlocked=false;
- document.documentElement.classList.toggle('gxb-hide-red-dots',hide);
- const ready=Promise.all([
-  fetch('/assets/sounds/sounds.json').then(r=>r.ok?r.json():null).catch(()=>null),
-  fetch('/assets/sounds/skills.json').then(r=>r.ok?r.json():null).catch(()=>null)
- ]).then(([table,skillTable])=>{tableData=table||{tracks:[],songs:[],ids:{}};skills=skillTable||{};return tableData;});
- function volume(k){return levels[k]??100;}
- function setVolume(k,v){
-  if(!(k in levels))return;
-  levels[k]=clamp(v);write(KEY,JSON.stringify(levels));
-  if(bg&&k==='music')bg.volume=levels.music/100;
-  window.dispatchEvent(new CustomEvent('gxb-audio-volume',{detail:{channel:k,level:levels[k]}}));
- }
- function dots(v){hide=!!v;write(DOT,hide?'1':'0');document.documentElement.classList.toggle('gxb-hide-red-dots',hide);}
- function hiddenDots(){return hide;}
- function table(){return tableData;}
- function homeTrack(){return home;}
- function bgm(file){home=String(file||'');write(TRACK,home);}
- function audioPath(f){return '/assets/sounds/'+f+'.mp3';}
- function trackFor(v){
-  if(v==='battle'||v==='event-battle'||v==='arena')return 'battle_bg_music_1';
-  if(v==='campaign'||v==='tower')return 'campaign_bg_music';
-  return home||'home_bg_music';
- }
- function play(v){
-  active=v||active;
-  if(!unlocked)return;
-  const f=trackFor(active),src=audioPath(f);
-  if(!bg){bg=new Audio();bg.loop=true;bg.preload='none';}
-  if(!bg.src||!bg.src.endsWith(src)){bg.src=src;bg.load();}
-  bg.volume=volume('music')/100;
-  if(bg.paused)bg.play().catch(()=>{});
- }
- function view(v){play(v);}
- function battle(){play('battle');}
- function sfx(file,multiplier=1){
-  if(!unlocked||volume('effects')===0||!file)return;
-  const name=String(file).replace(/\.mp3$/,'');
-  if(!/^[a-z0-9_/-]+$/i.test(name))return;
-  const a=new Audio(audioPath(name));a.volume=Math.min(1,volume('effects')/100*Math.max(0,Number(multiplier)||0));
-  a.play().catch(()=>{});a.addEventListener('ended',()=>{a.src='';},{once:true});
- }
- function skill(id){
-  const item=tableData?.ids?.[String(skills[String(id)]||id)];
-  if(item?.f)sfx(item.f,item.v===undefined?1:Number(item.v));
- }
- document.addEventListener('pointerdown',()=>{if(!unlocked){unlocked=true;play(active);}}, {once:true});
- return {ready,table,homeTrack,bgm,play,view,battle,sfx,skill,volume,setVolume,dots,hiddenDots};
-})();
 
 // Menu (SettingUpWindow), Yume Collection (CollectionWindow) and Manga (ComicWindow), laid out at prefab coordinates on a
 // 720-unit canvas (references docs/references/2026-09-30-user-b/02, 06, 07). Data: web/assets/menu/menu.json

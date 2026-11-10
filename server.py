@@ -87,13 +87,25 @@ def voice_file(sound_id):
     res = VOICE_SOURCES.get(sound_id)
     if not res or not sound_id.isdigit(): return None
     out = ROOT/'web/assets/voices'/f'{sound_id}.mp3'
-    if not out.exists():
-        src = VOICE_ROOT/f'{res}.ogg'
-        if not src.exists(): return None
-        out.parent.mkdir(parents=True, exist_ok=True)
-        import subprocess
-        subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-i', str(src), '-b:a', '96k', str(out)], check=False, timeout=30)
-    return out if out.exists() else None
+    if out.is_file() and out.stat().st_size > 0:
+        return out
+    src = VOICE_ROOT/f'{res}.ogg'
+    if not src.is_file(): return None
+    out.parent.mkdir(parents=True, exist_ok=True)
+    # Several mobile clients can request the same voice after a cold cache. Convert
+    # into a private temporary file and publish only a complete MP3 atomically.
+    import os, subprocess, threading
+    tmp = out.with_name(f'.{out.name}.{os.getpid()}.{threading.get_ident()}.tmp')
+    try:
+        subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-i', str(src), '-b:a', '96k', str(tmp)], check=False, timeout=30)
+        if tmp.is_file() and tmp.stat().st_size > 0:
+            os.replace(tmp, out)
+    except (OSError, subprocess.SubprocessError):
+        pass
+    finally:
+        try: tmp.unlink()
+        except FileNotFoundError: pass
+    return out if out.is_file() and out.stat().st_size > 0 else None
 EQUIP_ASSETS = {p.stem for p in (ROOT/'web/assets/equipment').glob('*.png')}
 EVENT_ASSETS = {p.stem for p in (ROOT/'web/assets/events').glob('*.png')}
 LEAGUE_ICONS = {p.stem for p in (ROOT/'web/assets/league').glob('*.png')}
@@ -280,7 +292,14 @@ class HTTPHandler(BaseHTTPRequestHandler):
         for key, value in (headers or {}).items(): self.send_header(key, value)
         self.send_header('Content-Type', content_type)
         self.send_header('Content-Length', str(len(content)))
-        self.send_header('Cache-Control', 'no-store')
+        request_path = urlparse(self.path).path
+        static_cacheable = (
+            self.command == 'GET' and status == 200 and request_path != '/asset-config.js' and
+            (request_path.startswith('/assets/') or request_path.startswith('/vendor/') or
+             request_path.startswith('/localization/') or
+             request_path.lower().endswith(('.js', '.css', '.json', '.png', '.webp', '.jpg', '.jpeg', '.gif', '.svg', '.woff', '.woff2', '.mp3', '.ogg')))
+        )
+        self.send_header('Cache-Control', 'public, max-age=3600' if static_cacheable else 'no-store')
         self.send_header('X-Content-Type-Options', 'nosniff')
         self.send_header('Referrer-Policy', 'same-origin')
         self.send_header('Permissions-Policy', 'camera=(), microphone=(), geolocation=()')
@@ -714,9 +733,13 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                 return self.send(200, (ROOT/'web/assets/characters'/f'{stem}.png').read_bytes(), 'image/png')
         if path == '/assets/partner-pictures.json':
             return self.send(200, (ROOT/'data/partner_pictures.json').read_bytes(), 'application/json')
-        if path.startswith('/assets/voice/') and path.endswith('.mp3'):
-            f = voice_file(path[len('/assets/voice/'):-4])
-            return self.send(200, f.read_bytes(), 'audio/mpeg') if f else self.send(404, {'error': 'Voz no disponible'})
+        # Keep both spellings: the original route was singular, while the
+        # restored mobile/frontend clients use the natural plural /voices/ path.
+        for voice_prefix in ('/assets/voice/', '/assets/voices/'):
+            if path.startswith(voice_prefix) and path.endswith('.mp3'):
+                sound_id = path[len(voice_prefix):-4]
+                f = voice_file(sound_id)
+                return self.send(200, f.read_bytes(), 'audio/mpeg') if f else self.send(404, {'error': 'Voz no disponible'})
         if path == '/assets/dress-show.json':
             return self.send(200, (ROOT/'data/dress_show.json').read_bytes(), 'application/json; charset=utf-8')
         if path == '/assets/chimes.json':

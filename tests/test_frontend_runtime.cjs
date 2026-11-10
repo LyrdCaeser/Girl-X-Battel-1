@@ -334,13 +334,18 @@ async function testAudioSettingsAndCyclicVoice(){
     addEventListener:(kind,fn)=>{listeners[kind]=fn;},
   };
   const source=fs.readFileSync(path.join(ROOT,'web/settings-menu.js'),'utf8');
+  const audioFile=fs.readFileSync(path.join(ROOT,'web/campaign-ui.js'),'utf8');
+  const audioStart=audioFile.indexOf('const GxbAudio=(()=>{');
+  const audioEnd=audioFile.indexOf('\n\nconst CampaignUI=',audioStart);
+  assert.ok(audioStart>=0&&audioEnd>audioStart,'GxbAudio module must exist');
+  const audioSource=audioFile.slice(audioStart,audioEnd);
   const ctx=vm.createContext({
-    document:doc,window:{dispatchEvent:e=>winEvents.push(e)},
+    document:{...doc,createElement:()=>({addEventListener(){},setAttribute(){}})},window:{dispatchEvent:e=>winEvents.push(e)},
     localStorage:storage,Audio:MockAudio,
     CustomEvent:class{constructor(type,options){this.type=type;this.detail=options.detail;}},
     fetch:async url=>({ok:true,json:async()=>String(url).endsWith('skills.json')?{}:{tracks:['home_bg_music'],songs:[],ids:{}}}),
   });
-  vm.runInContext(source,ctx);
+  vm.runInContext(audioSource,ctx);
   const settings=vm.runInContext('GxbAudio',ctx);
   await settings.ready;
   assert.equal(settings.volume('music'),70);
