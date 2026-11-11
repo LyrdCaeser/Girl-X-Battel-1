@@ -51,7 +51,31 @@ const GirlUI=(()=>{
  // ---- Awake tab: 6★→15★ ----
  function starOf(g){return g.stars;}
  function matches(code,g,host){if(g.partner_id===host.partner_id)return false;if(code===g.table_id)return true;if(code%1000!==999)return false;const star=Math.floor(code/10000),group=code%10000===9999?0:Math.floor(code/1000)%10;return starOf(g)===star&&(!group||g.group===group);}
- function pick(recipe,host){const used=new Set(),out=[];for(const code of recipe.material){const pool=state.roster.filter(g=>!used.has(g.partner_id)&&!g.flags?.some(Boolean)&&state.acquisition?.exchange?.partner_id!==g.partner_id&&matches(code,g,host)).sort((a,b)=>(a.pos?1:0)-(b.pos?1:0)||a.lv-b.lv||a.stars-b.stars);const g=pool[0];if(g){used.add(g.partner_id);out.push(g);}else out.push(null);}return out;}
+ function pick(recipe,host){const used=new Set(),out=[];for(const code of (recipe.material||[])){const pool=state.roster.filter(g=>!used.has(g.partner_id)&&!g.flags?.some(Boolean)&&state.acquisition?.exchange?.partner_id!==g.partner_id&&matches(code,g,host)).sort((a,b)=>(a.pos?1:0)-(b.pos?1:0)||a.lv-b.lv||a.stars-b.stars);const g=pool[0];if(g){used.add(g.partner_id);out.push(g);}else out.push(null);}return out;}
+ function pickAwake25(recipe){
+  const byId=new Map((state.roster||[]).map(g=>[Number(g.partner_id),g]));
+  const order=(a,b)=>(a.pos?1:0)-(b.pos?1:0)||Number(a.lv||1)-Number(b.lv||1)||Number(a.stars||1)-Number(b.stars||1);
+  const copies=(recipe.copy_candidates||[]).map(id=>byId.get(Number(id))).filter(Boolean).sort(order);
+  const sacrifices=(recipe.sacrifice_candidates||[]).map(id=>byId.get(Number(id))).filter(Boolean).sort(order);
+  const copyNeed=Number(recipe.copies||0),sacrificeNeed=Number(recipe.sacrifices||0);
+  let result=null;
+  function choose(start,selected){
+   if(selected.length===copyNeed){
+    const used=new Set(selected.map(g=>Number(g.partner_id)));
+    const food=sacrifices.filter(g=>!used.has(Number(g.partner_id)));
+    if(food.length>=sacrificeNeed){result={copies:selected.slice(),sacrifices:food.slice(0,sacrificeNeed)};return true;}
+    return false;
+   }
+   for(let i=start;i<=copies.length-(copyNeed-selected.length);i++){
+    selected.push(copies[i]);
+    if(choose(i+1,selected))return true;
+    selected.pop();
+   }
+   return false;
+  }
+  choose(0,[]);
+  return result;
+ }
  function codeLabel(code){if(code%1000===999){const star=Math.floor(code/10000),group=code%10000===9999?0:Math.floor(code/1000)%10;return star+'★ '+(group?"of the faction":'cualquiera');}return (girlsCatalog?.find?.(g=>g.id===code)?.name||"Girl "+code)+" (copy)";}
  // Limit-Break tab (potentiality_component, 672×381): star banner (potentiality_bg02), the five potential nodes in a W
  // (stage i opens at Limit-Break i), Reverse / Replace / Switch. The star opens the Limit-Break window (capture l/04):
@@ -77,22 +101,106 @@ const GirlUI=(()=>{
   const list=el('div','lb-choose-list');const paint=()=>{list.replaceChildren();opts.forEach((id,k)=>{const info=pots.skills[String(id)]||{};const b=el('button','lb-opt'+(sel===k+1?' on':''));b.type='button';
    if(info.icon)b.append(img('/assets/skills/'+info.icon+'.png'));const t=el('div');t.append(el('b','',info.name||('Potencial '+id)),rich('p','',info.desc||''));b.append(t);if((hero.potentials||[])[stage-1]===k+1)b.append(el('span','lb-active','Activo'));b.onclick=()=>{sel=k+1;paint();};list.append(b);});};
   paint();body.append(list);const a=el('div','gs-btns');const ok=el('button','gs-btn','Activate');ok.type='button';ok.onclick=async()=>{if(!sel)return;close();await action('CHOOSE_PARTNER_POTENTIAL',{partner_id:hero.partner_id,awake_index:stage,index:sel});};a.append(ok);body.append(a);}
- function awake(hero){const box=$('detail-awake-status');if(!box)return;box.replaceChildren();const tab=document.querySelector('[data-detail-tab=awake]');if(tab)tab.textContent=hero.stars>=10?'Đột Phá Giới Hạn':'Thức Tỉnh';
-  if(hero.local_promotion&&hero.stars>=10){if(tab)tab.textContent='Thức Tỉnh';box.className='lb-low';box.append(el('p','gu-awake-head','10★'),el('p','detail-note',"Đã hoàn thành tiến trình mở rộng. Cấp tối đa 250; giữ nguyên kỹ năng gốc."));return;}
-  if(hero.stars<10){box.className='lb-low';box.append(el('p','gu-awake-head',hero.stars+'★'),el('p','detail-note',"Nâng sao tại Học Viện → Tiến Hóa. Nữ Thần từ 1★ đến 3★ có tiến trình mở rộng đến 10★."));return;}
-  box.className='lb-tab';const r=hero.next_awake;
-  const top=el('button','lb-banner');top.type='button';top.append(stars(hero.stars,'tag'));if(r&&pick(r,hero).every(Boolean)&&cost(el('span'),r.cost||{}))top.append(img(S+'alert_icon.png','lb-red'));top.onclick=()=>limitBreak(hero);top.title='Limit-Break';box.append(top);
-  box.append(nodes(hero,'tab'));
-  const bar=el('div','lb-btns');for(const [label,fn]of [['Reverse',()=>reverse(hero)],['Replace',()=>exchange(hero)],['Switch',()=>switchPotentials(hero)]]){const b=el('button','gs-btn lb-small',label);b.type='button';b.onclick=fn;bar.append(b);}box.append(bar);}
- function limitBreak(hero){const r=hero.next_awake;const {body,close}=win({title:'Limit-Break',cls:'lb-win'});
-  const head=el('div','lb-head');head.append(stars(r?hero.stars+1:hero.stars,'tag'));body.append(head);
-  if(!r){body.append(el('p','lb-max',hero.stars>=15?"Limit Break maxed (15★, level 330).":"No Limit Break data for this Girl."));return;}
-  const rows=el('div','lb-rows');const row=(k,v)=>{const d=el('div','lb-row');d.append(el('b','',k),el('span','',v));rows.append(d);};row('MAX LVL',String(pots.lv_cap[Math.min(4,hero.awake||0)]));row('HP','+'+Math.floor(pots.attr_up[0]*100)+'%');row('ATK','+'+Math.floor(pots.attr_up[1]*100)+'%');body.append(rows);
-  const un=el('div','lb-unlock');un.append(el('b','','Unlock'));un.append(nodes({...hero,stars:hero.stars+1},'win',false));body.append(un);
-  const chosen=pick(r,hero);const mats=el('div','lb-mats');r.material.forEach((code,i)=>{const g=chosen[i];const c=el('div','lb-mat'+(g?' ok':''));const pic=el('span','lb-pic');
-   const id=g?g.table_id:(code%1000===999?0:code);if(id&&cardIds.has(id))pic.append(img('/assets/cards/partner_card_'+id+'.png'));else pic.append(el('i','',Math.floor(code/10000)+'★'));c.append(pic,el('small','',(g?1:0)+'/1'));c.title=g?g.name+' · '+g.stars+"★ Lv. "+g.lv:codeLabel(code);mats.append(c);});body.append(mats);
-  const c=el('div','lb-cost');const ok=cost(c,r.cost||{});body.append(c);
-  const acts=el('div','gs-btns');const b=el('button','gs-btn','Limit-Break');b.type='button';b.disabled=!ok||chosen.some(x=>!x);b.onclick=async()=>{if(chosen.some(g=>g.pos)&&!await confirmGame("Một số Nữ Thần làm nguyên liệu đang trong đội hình. Bạn vẫn muốn Đột Phá?",{title:"Xác Nhận Đột Phá",ok:"Tiếp Tục",danger:true}))return;close();action('AWAKE_PARTNER',{partner_id:hero.partner_id,material_ids:chosen.map(g=>g.partner_id)});};acts.append(b);body.append(acts);}
+ function awake(hero){
+  const box=$('detail-awake-status');if(!box)return;
+  box.replaceChildren();
+  const tab=document.querySelector('[data-detail-tab=awake]');
+  const isBreak=Number(hero.stars||0)>=10;
+  if(tab)tab.textContent=isBreak?'Đột Phá Giới Hạn':'Thức Tỉnh';
+  if(hero.local_promotion&&hero.stars>=10){
+   if(tab)tab.textContent='Thức Tỉnh';
+   box.className='lb-low';
+   box.append(el('p','gu-awake-head','10★'),el('p','detail-note',"Đã hoàn thành tiến trình Thức Tỉnh gốc. Cấp tối đa "+hero.level_cap+"."));
+   return;
+  }
+  const r=hero.next_awake;
+  if(!r){
+   box.className='lb-low';
+   box.append(el('p','gu-awake-head',String(hero.stars||0)+'★'),
+    el('p','detail-note',isBreak?'Đã đạt giới hạn Đột Phá có trong dữ liệu gốc. Cấp tối đa '+hero.level_cap+'.':"Chưa có công thức Thức Tỉnh tiếp theo trong dữ liệu gốc của Nữ Thần này."));
+   return;
+  }
+  const ready=r.awake25?!!pickAwake25(r):pick(r,hero).every(Boolean);
+  box.className='lb-tab';
+  const top=el('button','lb-banner');top.type='button';top.append(stars(hero.stars,'tag'));
+  if(ready&&cost(el('span'),r.cost||{}))top.append(img(S+'alert_icon.png','lb-red'));
+  top.onclick=()=>limitBreak(hero);top.title=isBreak?'Đột Phá Giới Hạn':'Thức Tỉnh';box.append(top);
+  if(isBreak)box.append(nodes(hero,'tab'));
+  else box.append(el('p','detail-note','Có thể Thức Tỉnh lên '+Number(r.star||hero.stars+1)+'★ theo công thức gốc.'));
+  if(isBreak){
+   const bar=el('div','lb-btns');
+   for(const [label,fn]of [['Hoàn Nguyên',()=>reverse(hero)],['Thay Thế',()=>exchange(hero)],['Chuyển Tiềm Năng',()=>switchPotentials(hero)]]){
+    const b=el('button','gs-btn lb-small',label);b.type='button';b.onclick=fn;bar.append(b);
+   }
+   box.append(bar);
+  }
+ }
+ function limitBreak(hero){
+  const r=hero.next_awake,isBreak=Number(hero.stars||0)>=10;
+  const title=isBreak?'Đột Phá Giới Hạn':'Thức Tỉnh';
+  const {body,close}=win({title,cls:'lb-win'});
+  const head=el('div','lb-head');head.append(stars(r?Number(r.star||hero.stars+1):hero.stars,'tag'));body.append(head);
+  if(!r){
+   body.append(el('p','lb-max',hero.stars>=25?'Đã đạt 25★ · cấp tối đa '+hero.level_cap+'.':"Không có công thức tiếp theo trong dữ liệu gốc."));
+   return;
+  }
+  const rows=el('div','lb-rows');
+  const row=(k,v)=>{const d=el('div','lb-row');d.append(el('b','',k),el('span','',String(v)));rows.append(d);};
+  row('CẤP TỐI ĐA SAU KHI NÂNG',hero.next_awake_level_cap||hero.level_cap);
+  if(r.awake25){
+   row('BẢN SAO CÙNG NỮ THẦN',Number(r.copies||0)+' bản');
+   row('NỮ THẦN PHỤ HỢP LỆ',Number(r.sacrifices||0)+' bản · 8–15★ · hệ 1–6');
+  }
+  body.append(rows);
+  if(isBreak){const un=el('div','lb-unlock');un.append(el('b','','Mở khóa tiềm năng'));un.append(nodes({...hero,stars:hero.stars+1},'win',false));body.append(un);}
+  let materialIds=[],materialsReady=true;
+  const mats=el('div','lb-mats');
+  const addMaterial=(g,label,code)=>{
+   const tile=el('div','lb-mat'+(g?' ok':''));
+   const pic=el('span','lb-pic');
+   if(g){
+    if(cardIds.has(Number(g.table_id)))pic.append(img('/assets/cards/partner_card_'+g.table_id+'.png'));
+    else {const i=img('/assets/original-ui/portraits/partner_avatar_'+g.table_id+'.png');i.onerror=()=>{i.onerror=null;i.src='/assets/original-ui/portraits/partner_avatar_661001.png';};pic.append(i);}
+    tile.append(pic,el('small','',g.name+' · '+g.stars+'★ · Lv.'+g.lv));
+    tile.title=g.name+' · '+g.stars+'★';
+    materialIds.push(Number(g.partner_id));
+   }else{
+    pic.append(el('i','',label));
+    tile.append(pic,el('small','','Chưa đủ nguyên liệu'));
+    materialsReady=false;
+   }
+   mats.append(tile);
+  };
+  if(r.awake25){
+   const picked=pickAwake25(r);
+   for(let i=0;i<Number(r.copies||0);i++)addMaterial(picked?.copies?.[i]||null,'BẢN SAO '+(i+1));
+   for(let i=0;i<Number(r.sacrifices||0);i++)addMaterial(picked?.sacrifices?.[i]||null,'NỮ THẦN PHỤ '+(i+1));
+   if(!picked)body.append(el('p','detail-note','Chưa đủ bản sao cùng Nữ Thần và Nữ Thần phụ hợp lệ trong túi.'));
+  }else{
+   const chosen=pick(r,hero);
+   (r.material||[]).forEach((code,i)=>{
+    const g=chosen[i];
+    const label=codeLabel(code);
+    const tile=el('div','lb-mat'+(g?' ok':''));
+    const pic=el('span','lb-pic');const id=g?g.table_id:(code%1000===999?0:code);
+    if(g&&cardIds.has(id))pic.append(img('/assets/cards/partner_card_'+id+'.png'));
+    else if(g){const im=img('/assets/original-ui/portraits/partner_avatar_'+id+'.png');im.onerror=()=>{im.onerror=null;im.src='/assets/original-ui/portraits/partner_avatar_661001.png';};pic.append(im);}
+    else pic.append(el('i','',code%1000===999?Math.floor(code/10000)+'★':'?'));
+    tile.append(pic,el('small','',(g?'1/1 · '+g.name+' · '+g.stars+'★':'0/1 · '+label)));
+    tile.title=g?g.name+' · '+g.stars+'★':label;mats.append(tile);
+    if(g)materialIds.push(Number(g.partner_id));else materialsReady=false;
+   });
+  }
+  body.append(mats);
+  const c=el('div','lb-cost');const enough=cost(c,r.cost||{});body.append(c);
+  const acts=el('div','gs-btns'),b=el('button','gs-btn',title);b.type='button';b.disabled=!enough||!materialsReady||!materialIds.length;
+  b.onclick=async()=>{
+   const chosenGirls=materialIds.map(id=>state.roster.find(g=>Number(g.partner_id)===id)).filter(Boolean);
+   if(chosenGirls.some(g=>g.pos)&&!await confirmGame("Một số Nữ Thần làm nguyên liệu đang trong đội hình. Bạn vẫn muốn tiếp tục?",{title:"Xác Nhận",ok:"Tiếp Tục",danger:true}))return;
+   close();await action('AWAKE_PARTNER',{partner_id:hero.partner_id,material_ids:materialIds});
+  };
+  acts.append(b);body.append(acts);
+ }
  // ---- Reverse (PotentialityBackWindow), Exchange (TenStarExchangeWindow), Switch (PotentialitySwitchWindow) ----
  let ret=null;
  const card=(tid,cls='')=>{const c=el('span','lb-card '+cls);if(cardIds.has(tid))c.append(img('/assets/cards/partner_card_'+tid+'.png'));else{/* house dolls (561001…766001) share partner_avatar_661001 */const i=img('/assets/original-ui/portraits/partner_avatar_'+tid+'.png');i.onerror=()=>{i.onerror=null;i.src='/assets/original-ui/portraits/partner_avatar_661001.png';};c.append(i);}return c;};
