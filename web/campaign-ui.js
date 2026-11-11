@@ -8,16 +8,19 @@ const GxbSpine=(()=>{
  function load(base){if(cache.has(base))return cache.get(base);const key='spine:'+base;const p=new Promise((resolve,reject)=>{const loader=new PIXI.Loader();loader.add(key,base+'/model.json',{metadata:{spineAtlasFile:base+'/model.atlas'}});loader.onError.add(reject);loader.load((_,res)=>res[key]?.spineData?resolve(res[key].spineData):reject(Error('Spine '+base)));});cache.set(base,p);p.catch(()=>cache.delete(base));return p;}
  // Mounts a skeleton centred in `host`; sequence = [[anim,loop],...]. Returns {destroy, figure}.
  async function mount(host,base,{width=720,height=720,sequence=null,fit=.9,y=.5,className='gxb-spine',scale=null,origin=null,preserve=false,resolution=null}={}){
-  const data=await load(base);const app=new PIXI.Application({width,height,transparent:true,antialias:true,preserveDrawingBuffer:!!preserve,resolution:resolution||Math.min(2,devicePixelRatio||1),autoDensity:false});app.view.className=className;host.append(app.view);
+  const data=await load(base);const app=new PIXI.Application({width,height,transparent:true,antialias:true,preserveDrawingBuffer:!!preserve,resolution:resolution||Math.min(2,devicePixelRatio||1),autoDensity:false});app.ticker.stop();app.view.className=className;host.append(app.view);
   const fig=new PIXI.spine.Spine(data);const names=data.animations.map(a=>a.name);const seq=(sequence||[[names.find(n=>/idle|animation|daiji/i.test(n))||names[0],true]]).filter(([n])=>names.includes(n));
   if(seq.length){fig.state.setAnimation(0,seq[0][0],seq[0][1]);let delay=seq[0][1]?0:(data.findAnimation(seq[0][0])?.duration||0);for(const [n,l,track]of seq.slice(1)){if(track)fig.state.addAnimation(track,n,l,delay);else fig.state.addAnimation(0,n,l,0);}}fig.update(0);
   if(scale){fig.scale.set(scale);fig.x=width*(origin?.[0]??.5);fig.y=height*(origin?.[1]??.5);}else{const b=fig.getLocalBounds();const s=Math.min(width*fit/Math.max(1,b.width),height*fit/Math.max(1,b.height));fig.scale.set(s);fig.x=width/2-(b.x+b.width/2)*s;fig.y=height*y-(b.y+b.height/2)*s;}app.stage.addChild(fig);
-  const handle={figure:fig,app,dead:false,idle:0,destroy(){if(handle.dead)return;handle.dead=true;live.delete(handle);try{app.destroy(true,{children:true,texture:false,baseTexture:false});}catch{}}};live.add(handle);
+  const handle={figure:fig,app,dead:false,idle:0,visible:!visibilityObserver,destroy(){if(handle.dead)return;handle.dead=true;live.delete(handle);if(visibilityObserver)visibilityObserver.unobserve(app.view);try{app.destroy(true,{children:true,texture:false,baseTexture:false});}catch{}}};app.view._gxbSpineHandle=handle;live.add(handle);if(visibilityObserver)visibilityObserver.observe(app.view);else syncTicker(handle);
   return handle;
  }
  // Browsers keep ~16 live WebGL contexts and silently drop the oldest (battle chibis vanished). Every mount is
  // registered; canvases that stay detached from the page for two sweeps are destroyed.
  const live=new Set();
+ function syncTicker(h){if(h.dead)return;if(h.visible&&!document.hidden)h.app.ticker.start();else h.app.ticker.stop();}
+ const visibilityObserver=typeof IntersectionObserver==='function'?new IntersectionObserver(entries=>{for(const entry of entries){const h=entry.target._gxbSpineHandle;if(h){h.visible=entry.isIntersecting;syncTicker(h);}}}):null;
+ document.addEventListener('visibilitychange',()=>{for(const h of live)syncTicker(h);});
  function sweep(){for(const h of [...live]){if(h.app.view.isConnected){h.idle=0;continue;}if(++h.idle>=2)h.destroy();}}
  setInterval(sweep,1500);
  // Static frame for lists (Servant cards): renders once, keeps a PNG and frees the context. Serialized.

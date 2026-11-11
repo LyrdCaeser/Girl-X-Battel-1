@@ -70,7 +70,7 @@
  html.gxb-mobile #app-frame .home-side{top:13%;width:19%;gap:clamp(2px,.7dvh,6px)}
  html.gxb-mobile #app-frame .home-side button{min-height:0!important;height:clamp(48px,8.8dvh,76px);max-width:100%}
  html.gxb-mobile #app-frame .home-side small{font-size:clamp(9px,2.5vw,12px);white-space:normal;line-height:1.1;text-align:center}
- html.gxb-mobile #app-frame .home-left{width:37%!important;grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ html.gxb-mobile #app-frame .home-left{display:grid!important;width:37%!important;grid-template-columns:repeat(2,minmax(0,1fr))!important}
  html.gxb-mobile #app-frame .home-right{right:0;width:18%!important}
  html.gxb-mobile #app-frame .home-destinations{bottom:12.8%;height:19%;width:100%;gap:0}
  html.gxb-mobile #app-frame .home-destinations strong{font-size:clamp(11px,3.4vw,17px)!important;white-space:normal}

@@ -1,13 +1,14 @@
 /* GXB3 online static cache. API/auth/save requests are deliberately never cached. */
 'use strict';
 
-const CACHE_NAME = 'gxb3-online-static-v1';
-const STATIC_EXT = /\.(?:js|css|json|png|webp|jpe?g|gif|svg|woff2?|mp3|ogg)(?:\?.*)?$/i;
+const CACHE_NAME = 'gxb3-online-static-v2';
+const STATIC_EXT = /\.(?:js|css|json|png|webp|jpe?g|gif|svg|woff2?)(?:\?.*)?$/i;
 
 function isStaticRequest(request) {
   if (request.method !== 'GET') return false;
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return false;
+  if (/\.(?:mp3|ogg)$/i.test(url.pathname)) return false;
   if (url.pathname.startsWith('/api/') || url.pathname === '/asset-config.js') return false;
   return url.pathname.startsWith('/assets/') ||
     url.pathname.startsWith('/vendor/') ||
