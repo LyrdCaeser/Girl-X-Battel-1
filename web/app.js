@@ -156,7 +156,7 @@ function renderFormation(){
  for(let pos=1;pos<=6;pos++){const id=formationDraft[pos-1],hero=state.roster.find(h=>h.partner_id===id),slot=node('button','formation-slot '+(pos<=2?'front':'back')+(selectedPosition===pos?' selected':'')+(hero?' occupied':''));slot.type='button';slot.disabled=busy;slot.setAttribute('aria-label',"Position "+pos+(hero?', '+hero.name:", empty"));slot.setAttribute('aria-pressed',String(selectedPosition===pos));slot.append(node('span','slot-number',String(pos)));if(hero){slot.append(portrait(hero.table_id,68,hero),node('span','slot-name',hero.name));}else slot.append(node('span','slot-empty','+'));slot.addEventListener('click',()=>{selectedPosition=pos;render();});$('formation-board').append(slot);}
  $('selected-slot').textContent='Casilla '+selectedPosition+' · '+(selectedPosition<=2?'delante':"back");$('remove-slot').disabled=busy||!formationDraft[selectedPosition-1];
  $('roster-count').textContent=state.roster.length+' / 100';$('roster').replaceChildren();
- for(const hero of state.roster){const pos=formationDraft.indexOf(hero.partner_id)+1,e=node('div','hero-card'+(pos?' assigned':''));const art=portrait(hero.table_id,96,hero);e.append(art,node('span','hero-card-level',"Lv. "+hero.lv),node('span','hero-card-stars','★'.repeat(Math.min(hero.stars,6))));const info=node('div','hero-card-info');info.append(node('strong','',hero.name),node('small','',pos?"In slot "+pos:"Available"));e.append(info);const controls=node('div','hero-card-actions'),place=node('button','secondary',pos===selectedPosition?"Placed":"Place"),upgrade=node('button','secondary',"+1 level");place.disabled=busy||pos===selectedPosition;place.setAttribute('aria-label',"Place "+hero.name+" in position "+selectedPosition);place.addEventListener('click',()=>placeHero(hero.partner_id));upgrade.disabled=busy||hero.lv>=hero.level_cap;upgrade.setAttribute('aria-label',"Level up "+hero.name);upgrade.title=hero.lv>=hero.level_cap?"Current cap reached":number(hero.next_cost['1'])+" Gold · "+number(hero.next_cost['9'])+' exp.';upgrade.addEventListener('click',()=>action('PARTNER_LEVUP',{partner_id:hero.partner_id,incr_lv:1}));controls.append(place,upgrade);e.append(controls);$('roster').append(e);}
+ for(const hero of state.roster){const pos=formationDraft.indexOf(hero.partner_id)+1,e=node('div','hero-card'+(pos?' assigned':''));const art=portrait(hero.table_id,96,hero);e.append(art,node('span','hero-card-level',"Lv. "+hero.lv),node('span','hero-card-stars','★'.repeat(Math.min(hero.stars,6))));const info=node('div','hero-card-info');info.append(node('strong','',hero.name),node('small','',pos?"In slot "+pos:"Available"));e.append(info);const controls=node('div','hero-card-actions'),place=node('button','secondary',pos===selectedPosition?"Placed":"Place"),upgrade=node('button','secondary',"+1 level");place.disabled=busy||pos===selectedPosition;place.setAttribute('aria-label',"Place "+hero.name+" in position "+selectedPosition);place.addEventListener('click',()=>placeHero(hero.partner_id));upgrade.disabled=busy||hero.lv>=hero.level_cap;upgrade.setAttribute('aria-label',"Level up "+hero.name);upgrade.title=hero.lv>=hero.level_cap?"Đã đạt giới hạn cấp":"Tăng nhanh tối đa "+Math.min(10,hero.level_cap-hero.lv)+" cấp · "+number(hero.next_cost['1'])+" Gold · "+number(hero.next_cost['9'])+' exp.';upgrade.addEventListener('click',()=>action('PARTNER_LEVUP',{partner_id:hero.partner_id,incr_lv:Math.min(10,Math.max(1,hero.level_cap-hero.lv))}));controls.append(place,upgrade);e.append(controls);$('roster').append(e);}
 }
 const factionNames=["All","Ghost","Human","Monster","Fairy","Demon","Angel",'Cosmos'];
 const factionIcons=['⌕','🐾','✚','♨','❧','☾','☼','✦'];
@@ -258,7 +258,7 @@ function renderGirlDetail(){
  const levelButton=$('detail-level-up');
  const hasLevelCost=Object.keys(cost).length>0;
  levelButton.disabled=busy||atCap||!hasLevelCost||Object.entries(cost).some(([id,n])=>Number(state.items[id]||0)<Number(n));
- levelButton.textContent=busy?'Đang xử lý…':atCap?'Đã đạt giới hạn cấp':'Tăng 1 cấp';
+ levelButton.textContent=busy?'Đang xử lý…':atCap?'Đã đạt giới hạn cấp':'Tăng tối đa '+Math.min(10,hero.level_cap-hero.lv)+' cấp';
  const gradeButton=$('detail-grade-up');
  const gradeCost=hero.grade_cost||{};
  const isGradeMax=Number(hero.grade||0)>=Number(hero.max_grade||0);
@@ -795,7 +795,7 @@ $('detail-back').addEventListener('click',()=>showView('girls'));
 $('detail-prev').addEventListener('click',()=>cycleGirl(-1));
 $('detail-next').addEventListener('click',()=>cycleGirl(1));
 document.querySelectorAll('[data-detail-tab]').forEach(button=>button.addEventListener('click',()=>{detailTab=button.dataset.detailTab;renderGirlDetail();}));
-$('detail-level-up').addEventListener('click',()=>action('PARTNER_LEVUP',{partner_id:selectedGirlPartnerId,incr_lv:1}));
+$('detail-level-up').addEventListener('click',()=>{const hero=state.roster.find(h=>h.partner_id===selectedGirlPartnerId);if(hero)action('PARTNER_LEVUP',{partner_id:hero.partner_id,incr_lv:Math.min(10,Math.max(1,hero.level_cap-hero.lv))});});
 $('detail-grade-up').addEventListener('click',async()=>{
  const hero=state.roster.find(h=>h.partner_id===selectedGirlPartnerId);
  if(!hero||Number(hero.lv)<Number(hero.level_cap)||Number(hero.grade)>=Number(hero.max_grade))return;
