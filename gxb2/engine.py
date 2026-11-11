@@ -1869,6 +1869,10 @@ class Engine:
                 recipient = skin_gifts.verify(sender,request.get("recipient_uid"),
                     request.get("recipient_name"),request.get("recipient_server"))
                 item, price = skin_gifts.listing_for(request.get("skin_id"),"crystal")
+                if skin_gifts.recipient_has_skin(
+                    live_db, recipient["uid"], recipient["server_id"], item["skin_id"]
+                ):
+                    raise GameError("Người nhận đã sở hữu trang phục này; không thể tặng trùng")
                 items = state.setdefault("items",{})
                 if int(items.get("2",0)) < price:
                     raise GameError("Không đủ Crystal để tặng trang phục")

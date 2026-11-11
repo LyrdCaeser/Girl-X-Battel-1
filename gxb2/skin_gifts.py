@@ -100,6 +100,58 @@ def listing_for(skin_id, payment):
     return item, int(item[cost])
 
 
+
+def recipient_has_skin(db, uid, server_id, skin_id):
+    """Lock Neon profile and check inventory, worn skins, collection and pending mail."""
+    try:
+        sid = int(skin_id)
+    except (TypeError, ValueError):
+        raise ValueError("ID trang phục không hợp lệ") from None
+
+    backend = getattr(db, "backend", "")
+    if backend not in ("postgres", "sqlite"):
+        raise ValueError("Không thể xác minh cơ sở dữ liệu người nhận")
+
+    profile_sql = """SELECT data FROM player_profiles
+        WHERE uid=? AND server_id=?"""
+    if backend == "postgres":
+        profile_sql += " FOR UPDATE"
+    row = db.execute(
+        profile_sql, (str(uid), str(server_id).upper())
+    ).fetchone()
+    if not row:
+        raise ValueError("Hồ sơ Neon người nhận chưa sẵn sàng; chưa giao quà")
+
+    try:
+        state = json.loads(row["data"])
+        if not isinstance(state, dict):
+            raise ValueError("Dữ liệu hồ sơ không hợp lệ")
+        from . import skins as native_skins
+        if sid in native_skins.collected(state):
+            return True
+    except Exception as exc:
+        raise ValueError("Không thể xác minh bộ sưu tập người nhận; chưa giao quà") from exc
+
+    messages = db.execute(
+        """SELECT attachments FROM mail
+           WHERE uid=? AND server_id=? AND status='pending'""",
+        (str(uid), str(server_id).upper())
+    ).fetchall()
+
+    for message in messages:
+        try:
+            attachments = message["attachments"]
+            if isinstance(attachments, str):
+                attachments = json.loads(attachments)
+            if not isinstance(attachments, dict):
+                raise ValueError("Định dạng vật phẩm trong thư không hợp lệ")
+            if int(attachments.get(str(sid), 0) or 0) > 0:
+                return True
+        except Exception as exc:
+            raise ValueError("Không thể xác minh thư đang chờ của người nhận; chưa giao quà") from exc
+
+    return False
+
 def view_recipient(sender_uid, recipient_uid, recipient_name, recipient_server):
     result = verify(sender_uid, recipient_uid, recipient_name, recipient_server)
     # Do not expose the recipient's internal wallet/game UID to the browser.
@@ -122,13 +174,33 @@ def create_bank(sender_uid, sender_server, recipient_uid, recipient_name, recipi
         db = _db()
         try:
             db.execute("BEGIN IMMEDIATE")
+            already_owned = recipient_has_skin(
+                db, target["uid"], target["server_id"], sid
+            )
             existing = db.execute("""SELECT * FROM skin_gift_bank_orders
                 WHERE sender_uid=? AND sender_server=? AND recipient_uid=?
                   AND recipient_server=? AND skin_id=? AND status='pending'""",
                 (sender_uid, sender_server, target["uid"], target["server_id"], sid)).fetchone()
             if existing:
+                if already_owned:
+                    db.execute("""UPDATE skin_gift_bank_orders
+                        SET status='rejected',reviewed_at=?,reviewer=?,mail_id=NULL
+                        WHERE id=? AND status='pending'""",
+                        (now, "SYSTEM_GIFTSKIN", existing["id"]))
+                    live_service._audit(db, "giftskin.bank.auto_reject",
+                        str(existing["id"]),
+                        {"reason":"recipient_already_owns_skin","skin_id":sid},
+                        "SYSTEM_GIFTSKIN")
+                    db.commit()
+                    updated = db.execute(
+                        "SELECT * FROM skin_gift_bank_orders WHERE id=?",
+                        (existing["id"],)
+                    ).fetchone()
+                    return _bank_view(updated)
                 db.commit()
                 return _bank_view(existing)
+            if already_owned:
+                raise ValueError("Người nhận đã sở hữu trang phục này; không thể tạo đơn tặng")
             outstanding = db.execute("""SELECT COUNT(*) AS n FROM skin_gift_bank_orders
                 WHERE sender_uid=? AND status='pending'""", (sender_uid,)).fetchone()
             if int(outstanding["n"]) >= 5:
@@ -209,16 +281,22 @@ def review(order_id, approve, reviewer):
                     WHERE uid=? AND server_id=?""",(row["recipient_uid"],row["recipient_server"])).fetchone()
                 if not player or player["status"] != "active" or player["character_name"] != row["recipient_name"]:
                     raise ValueError("Người nhận không còn hợp lệ; chưa giao quà")
-                mail_id = "MAIL-" + uuid.uuid4().hex[:16].upper()
-                db.execute("""INSERT INTO mail
-                    (id,uid,server_id,character_name,title,body,attachments,status,created_at,operator)
-                    VALUES (?,?,?,?,?,?,?,'pending',?,?)""",
-                    (mail_id,row["recipient_uid"],row["recipient_server"],row["recipient_name"],
-                     "Quà GiftSkin từ người chơi",
-                     "Đơn "+str(row["id"])+" đã được quản trị xác nhận thanh toán. Nhận trang phục trong thư.",
-                     json.dumps({str(row["skin_id"]):1}),now,"GIFTSKIN_BANK"))
-                live_service._audit(db,"giftskin.bank.mail",f"{row['recipient_server']}:{row['recipient_uid']}",
-                    {"order_id":row["id"],"mail_id":mail_id,"skin_id":row["skin_id"]},str(reviewer))
+                if recipient_has_skin(db, row["recipient_uid"], row["recipient_server"], row["skin_id"]):
+                    approve = False
+                    live_service._audit(db, "giftskin.bank.auto_reject", str(row["id"]),
+                        {"reason":"recipient_already_owns_skin","skin_id":int(row["skin_id"])},
+                        str(reviewer))
+                if approve:
+                    mail_id = "MAIL-" + uuid.uuid4().hex[:16].upper()
+                    db.execute("""INSERT INTO mail
+                        (id,uid,server_id,character_name,title,body,attachments,status,created_at,operator)
+                        VALUES (?,?,?,?,?,?,?,'pending',?,?)""",
+                        (mail_id,row["recipient_uid"],row["recipient_server"],row["recipient_name"],
+                         "Quà GiftSkin từ người chơi",
+                         "Đơn "+str(row["id"])+" đã được quản trị xác nhận thanh toán. Nhận trang phục trong thư.",
+                         json.dumps({str(row["skin_id"]):1}),now,"GIFTSKIN_BANK"))
+                    live_service._audit(db,"giftskin.bank.mail",f"{row['recipient_server']}:{row['recipient_uid']}",
+                        {"order_id":row["id"],"mail_id":mail_id,"skin_id":row["skin_id"]},str(reviewer))
             db.execute("""UPDATE skin_gift_bank_orders
                 SET status=?,reviewed_at=?,reviewer=?,mail_id=? WHERE id=?""",
                 ("approved" if approve else "rejected",now,str(reviewer),mail_id,row["id"]))

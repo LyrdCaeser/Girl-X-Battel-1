@@ -4,6 +4,7 @@ Never touches production Neon. The Crystal/Postgres path is additionally
 verified by production integration smoke checks after deployment.
 """
 import inspect
+import json
 import tempfile
 import time
 import unittest
@@ -37,6 +38,19 @@ class GiftSkinTests(unittest.TestCase):
         self.sender = auth.register("GiverUnique", "StrongPass123", "Người tặng", "S1")
         self.recipient = auth.register("ReceiverUnique", "StrongPass123", "Người nhận", "S1")
         self.other = auth.register("OtherUnique", "StrongPass123", "Người khác", "S1")
+        # Isolated SQLite fixture mirroring the Neon profile table.
+        db = live_service._db()
+        db.execute("""CREATE TABLE player_profiles(
+            uid TEXT NOT NULL, server_id TEXT NOT NULL, data TEXT NOT NULL,
+            PRIMARY KEY(uid,server_id))""")
+        empty_state = json.dumps({"skins":{"collected":[]},"items":{},"partners":[]})
+        for account in (self.sender, self.recipient, self.other):
+            db.execute(
+                "INSERT INTO player_profiles(uid,server_id,data) VALUES(?,?,?)",
+                (account["account"]["uid"], "S1", empty_state)
+            )
+        db.commit()
+        db.close()
         self.sid = next(s for s,r in skins.SKINS.items()
                         if not skin_store.is_wedding(s) and r.get("name") and r.get("partners"))
         skin_store.update_configs([{
@@ -47,6 +61,16 @@ class GiftSkinTests(unittest.TestCase):
     def details(self):
         return (self.sender["account"]["uid"], "S1",
                 self.recipient["account"]["display_uid"], "Người nhận", "S1", self.sid)
+
+    def _set_recipient_state(self, state):
+        db = live_service._db()
+        try:
+            db.execute("UPDATE player_profiles SET data=? WHERE uid=? AND server_id=?",
+                       (json.dumps(state, ensure_ascii=False),
+                        self.recipient["account"]["uid"], "S1"))
+            db.commit()
+        finally:
+            db.close()
 
     def test_public_uid_and_duplicate_usernames_never_alias_each_other(self):
         for account in (self.sender,self.recipient,self.other):
@@ -117,6 +141,94 @@ class GiftSkinTests(unittest.TestCase):
         self.assertEqual(len(skin_gifts.mine(self.sender["account"]["uid"])["orders"]),1)
         self.assertEqual(len(skin_gifts.mine(self.other["account"]["uid"])["orders"]),0)
 
+
+    def test_recipient_skin_ownership_checks_collection_inventory_and_equipped(self):
+        uid = self.recipient["account"]["uid"]
+        cases = (
+            {"skins":{"collected":[self.sid]},"items":{},"partners":[]},
+            {"skins":{"collected":[]},"items":{str(self.sid):1},"partners":[]},
+            {"skins":{"collected":[]},"items":{},
+             "partners":[{"equips":[0,0,0,0,0,0,self.sid]}]},
+        )
+        for state in cases:
+            with self.subTest(state=state):
+                self._set_recipient_state(state)
+                db = live_service._db()
+                try:
+                    self.assertTrue(
+                        skin_gifts.recipient_has_skin(db,uid,"S1",self.sid))
+                finally:
+                    db.close()
+
+    def test_pending_mail_counts_as_skin_until_claimed(self):
+        uid = self.recipient["account"]["uid"]
+        db = live_service._db()
+        try:
+            db.execute("""INSERT INTO mail
+                (id,uid,server_id,character_name,title,body,attachments,status,created_at,operator)
+                VALUES(?,?,?,?,?,?,?,'pending',?,?)""",
+                ("TEST-SKIN-MAIL",uid,"S1","Người nhận","Skin test","Test",
+                 json.dumps({str(self.sid):1}),int(time.time()),"TEST"))
+            db.commit()
+            self.assertTrue(skin_gifts.recipient_has_skin(db,uid,"S1",self.sid))
+            db.execute("UPDATE mail SET status='claimed' WHERE id=?",
+                       ("TEST-SKIN-MAIL",))
+            db.commit()
+            self.assertFalse(skin_gifts.recipient_has_skin(db,uid,"S1",self.sid))
+        finally:
+            db.close()
+
+    def test_bank_create_rejects_skin_already_owned(self):
+        self._set_recipient_state(
+            {"skins":{"collected":[self.sid]},"items":{},"partners":[]})
+        with self.assertRaisesRegex(ValueError,"đã sở hữu"):
+            skin_gifts.create_bank(*self.details())
+        db = live_service._db()
+        try:
+            self.assertEqual(db.execute(
+                "SELECT COUNT(*) AS n FROM skin_gift_bank_orders"
+            ).fetchone()["n"],0)
+            self.assertEqual(db.execute(
+                "SELECT COUNT(*) AS n FROM mail"
+            ).fetchone()["n"],0)
+        finally:
+            db.close()
+
+    def test_existing_bank_order_auto_rejected_if_recipient_later_owns_skin(self):
+        order = skin_gifts.create_bank(*self.details())
+        self._set_recipient_state({"skins":{"collected":[]},
+                                   "items":{str(self.sid):1},"partners":[]})
+        result = skin_gifts.create_bank(*self.details())
+        self.assertEqual(result["id"],order["id"])
+        self.assertEqual(result["status"],"rejected")
+        self.assertIsNone(result["mail_id"])
+        db = live_service._db()
+        try:
+            self.assertEqual(db.execute(
+                "SELECT COUNT(*) AS n FROM mail"
+            ).fetchone()["n"],0)
+        finally:
+            db.close()
+
+    def test_bank_review_rejects_if_recipient_owns_skin_before_approval(self):
+        order = skin_gifts.create_bank(*self.details())
+        self._set_recipient_state({"skins":{"collected":[]},
+                                   "items":{str(self.sid):1},"partners":[]})
+        result = skin_gifts.review(order["id"],True,"OWNER")
+        self.assertEqual(result["status"],"rejected")
+        self.assertIsNone(result["mail_id"])
+        db = live_service._db()
+        try:
+            self.assertEqual(db.execute(
+                "SELECT COUNT(*) AS n FROM mail"
+            ).fetchone()["n"],0)
+            count = db.execute("""SELECT COUNT(*) AS n FROM audit
+                WHERE action='giftskin.bank.auto_reject' AND target=?""",
+                (order["id"],)).fetchone()["n"]
+            self.assertEqual(count,1)
+        finally:
+            db.close()
+
     def test_bank_gift_audit_failure_rolls_back_mail_and_review(self):
         receipt=skin_gifts.create_bank(*self.details())
         with patch.object(live_service,"_audit",side_effect=RuntimeError("audit failed")):
@@ -135,7 +247,9 @@ class GiftSkinTests(unittest.TestCase):
                        "ensure_crystal_receipts","self._save_profile(state)",
                        "self.db.commit()","self.db.rollback()","request_id"):
             self.assertIn(clause,source)
-        self.assertIn("recipient",source)
+        self.assertIn("recipient_has_skin",source)
+        self.assertLess(source.index("recipient_has_skin"),
+                        source.index('items["2"] = int(items.get("2",0)) - price'))
         self.assertFalse(skin_store.is_wedding(self.sid))
 
 
