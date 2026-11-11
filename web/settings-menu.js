@@ -43,7 +43,7 @@ const SettingsMenu=(()=>{
   body.replaceChildren();
   const title=el('p','sm-sound-intro','Điều chỉnh âm lượng riêng cho Nhạc, Âm Thanh và Voice nhân vật.');
   body.append(title);
-  for(const [key,label] of [['music','Nhạc'],['effects','Âm Thanh'],['voice','Voice']]){
+  for(const [key,label] of [['effects','Âm Thanh'],['music','Nhạc Nền'],['voice','Voice Nữ Thần']]){
    const row=el('label','sm-sound-row');
    const heading=el('span','sm-sound-heading');
    const name=el('strong','',label),value=el('output','',GxbAudio.volume(key)+'%');
@@ -129,5 +129,5 @@ const SettingsMenu=(()=>{
  function read(list,k){const e=list[k];if(!e)return;if(!e[2]){const {body}=GirlUI.win({title:e[1],cls:'sm-win'});body.append(el('p','sm-note',"Trang truyện của tập này chưa có trong dữ liệu gốc."));return;}
   document.querySelector('.sm-reader')?.remove();const ov=el('div','sm-reader');const bar=el('div','sm-reader-bar');const prev=el('button','sm-rbtn','‹');prev.type='button';prev.disabled=k>=list.length-1;prev.onclick=()=>read(list,k+1);const next=el('button','sm-rbtn','›');next.type='button';next.disabled=k<=0;next.onclick=()=>read(list,k-1);
   const x=el('button','sm-rclose');x.type='button';x.setAttribute('aria-label',"Đóng");x.onclick=()=>ov.remove();bar.append(prev,el('b','',e[1]),next,x);const sc=el('div','sm-reader-page');sc.append(img(M(e[0])));ov.append(bar,sc);root().append(ov);}
- return {open,render:draw};
+ return {open,render:draw,openAudio:audioAndNotifications};
 })();
