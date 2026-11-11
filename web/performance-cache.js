@@ -1,53 +1,43 @@
-/* GXB3 online client cache/snapshot layer.
- * Static resources and a sanitized visual shell are cached locally.
- * Only idempotent profile updates may be queued after a network failure.
+/* GXB3 online client profile retry layer.
+ * Failed profile POSTs are queued locally and retried when connectivity returns.
+ * No service worker, static resource cache, or cached home-screen snapshot is used.
  */
 (function () {
   'use strict';
-  var SNAPSHOT_KEY = 'gxb3.home-shell.snapshot.v3';
   var PROFILE_QUEUE_KEY = 'gxb3.profile.queue.v1';
-  var MAX_SNAPSHOT_BYTES = 180000;
   var MAX_PROFILE_QUEUE = 8;
   var PROFILE_TTL_MS = 24 * 60 * 60 * 1000;
 
-  function registerServiceWorker() {
-    if (!('serviceWorker' in navigator) || !window.isSecureContext) return;
-    navigator.serviceWorker.register('/sw.js', { scope: '/', updateViaCache: 'none' }).catch(function () {});
-  }
-  function restoreShell() {
-    var home = document.getElementById('home-view');
-    if (!home) return;
+  function removeServiceWorkers() {
     try {
-      var raw = localStorage.getItem(SNAPSHOT_KEY);
-      if (!raw) return;
-      var snapshot = JSON.parse(raw);
-      if (!snapshot || snapshot.version !== 1 || typeof snapshot.html !== 'string') return;
-      if (Date.now() - Number(snapshot.savedAt || 0) > 7 * 24 * 60 * 60 * 1000) return;
-      if (snapshot.html.length > MAX_SNAPSHOT_BYTES) return;
-      home.innerHTML = snapshot.html;
-      home.setAttribute('data-cached-shell', 'true');
-    } catch (_) {
-      try { localStorage.removeItem(SNAPSHOT_KEY); } catch (__) {}
-    }
-  }
-  function saveShell() {
-    var home = document.getElementById('home-view');
-    if (!home) return;
-    try {
-      var clone = home.cloneNode(true);
-      clone.removeAttribute('data-cached-shell');
-      ['home-level', 'home-gold', 'home-gems'].forEach(function (id) {
-        var node = clone.querySelector('#' + id);
-        if (node) node.textContent = '—';
-      });
-      clone.querySelectorAll('[data-user-data], input, textarea').forEach(function (node) {
-        if (node.matches('input, textarea')) node.value = '';
-        node.textContent = '';
-      });
-      var html = clone.innerHTML;
-      if (html.length > MAX_SNAPSHOT_BYTES) return;
-      localStorage.setItem(SNAPSHOT_KEY, JSON.stringify({ version: 1, savedAt: Date.now(), html: html }));
+      for (var i = localStorage.length - 1; i >= 0; i--) {
+        var key = localStorage.key(i);
+        if (key && key.indexOf('gxb3.home-shell.snapshot.') === 0) {
+          localStorage.removeItem(key);
+        }
+      }
     } catch (_) {}
+    var controlled = !!(navigator.serviceWorker && navigator.serviceWorker.controller);
+    var jobs = navigator.serviceWorker
+      ? navigator.serviceWorker.getRegistrations().then(function(regs) {
+          return Promise.all(regs.map(function(reg) { return reg.unregister(); }));
+        })
+      : Promise.resolve();
+    Promise.resolve(jobs).catch(function() {}).then(function() {
+      if (!('caches' in window)) return;
+      return caches.keys().then(function(keys) {
+        return Promise.all(keys.filter(function(k) {
+          return k.indexOf('gxb3-online-static-') === 0;
+        }).map(function(k) { return caches.delete(k); }));
+      });
+    }).then(function() {
+      if (!controlled) return;
+      try {
+        if (sessionStorage.getItem('gxb3.sw.removed.v1') === '1') return;
+        sessionStorage.setItem('gxb3.sw.removed.v1', '1');
+        location.reload();
+      } catch (_) {}
+    }).catch(function(e) { console.warn('GXB3 SW cleanup:', e); });
   }
   function readProfileQueue() {
     try {
@@ -122,7 +112,6 @@
           if (typeof fn !== 'function') { current = fn; return; }
           current = function () {
             return Promise.resolve(fn.apply(this, arguments)).then(function (result) {
-              setTimeout(saveShell, 0);
               flushProfileQueue();
               return result;
             });
@@ -131,8 +120,7 @@
       });
     } catch (_) {}
   }
-  registerServiceWorker();
+  removeServiceWorkers();
   installProfileQueue();
-  restoreShell();
   wrapStartGame();
 })();
