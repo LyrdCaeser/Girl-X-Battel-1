@@ -816,8 +816,30 @@ class Engine:
             awake = ASCENSION.get(f"{partner['table_id']}:{stars+1}") or local_promotion.recipe(partner) or self.awake_recipe(partner)
             if awake and awake.get('cost'):
                 awake = {**awake, 'cost': {str(k): local_config.scale_cost(v) for k, v in awake['cost'].items()}}
+            next_awake_level_cap = None
+            if awake and awake.get('kind') == 'awake':
+                next_awake_level_cap = self.level_cap({**partner, 'awake': int(partner.get('awake', 0)) + 1})
+            if awake and awake.get('awake25'):
+                pending_id = (state.get('exchange') or {}).get('partner_id')
+                copy_candidates, sacrifice_candidates = [], []
+                for candidate in state['partners']:
+                    candidate_id = int(candidate['partner_id'])
+                    if candidate_id == int(partner['partner_id']) or candidate_id == pending_id or acquisition.is_locked(candidate):
+                        continue
+                    candidate_row = TABLES['partner'].get(str(candidate['table_id']))
+                    if not candidate_row:
+                        continue
+                    candidate_star = int(candidate_row['max_star']) + int(candidate.get('awake', 0))
+                    if candidate_star in (9, 10) and self.awake25_same_character(row, candidate_row):
+                        copy_candidates.append(candidate_id)
+                    candidate_group = int(candidate_row.get('group') or 0)
+                    if (8 <= candidate_star <= 15 and 1 <= candidate_group <= 6
+                            and self.awake25_valid_goddess(candidate_row)):
+                        sacrifice_candidates.append(candidate_id)
+                awake = {**awake, 'copy_candidates': copy_candidates,
+                         'sacrifice_candidates': sacrifice_candidates}
             state['roster'].append({**partner, 'name': TABLES['names'].get(str(partner['table_id']), str(partner['table_id'])),
-                                    'local_promotion': int(partner['table_id']) in local_promotion.BASE, 'stars': stars, 'level_cap': self.level_cap(partner), 'next_cost': cost,
+                                    'local_promotion': int(partner['table_id']) in local_promotion.BASE, 'stars': stars, 'level_cap': self.level_cap(partner), 'next_awake_level_cap': next_awake_level_cap, 'next_cost': cost,
                                     'group': int(row['group']), 'job': int(row['job']), 'max_grade': max_grade,
                                     'grade_cost': {k: local_config.scale_cost(v) for k, v in item_pairs(row.get(f'grade_exp{grade+1}')).items()} if grade < max_grade else {},
                                     'next_awake': awake if awake and awake.get('kind') == 'awake' else None,
@@ -2639,16 +2661,25 @@ class Engine:
             increment = integer(request.get('incr_lv'), 'incr_lv', 1, 10)
             partner = next((x for x in state['partners'] if x['partner_id'] == pid), None)
             if not partner: raise GameError('Integrante inexistente')
-            end = partner['lv'] + increment
-            if end > self.level_cap(partner): raise GameError('Se alcanzó el límite de nivel de este prototipo')
+            cap = self.level_cap(partner)
+            if partner['lv'] >= cap: raise GameError('Nữ Thần đã đạt cấp tối đa')
+            end = min(partner['lv'] + increment, cap)
             costs = {}
-            for level in range(partner['lv']+1, end+1):
-                for key, value in item_pairs(TABLES['exp_partner'][str(level)]['cost']).items():
-                    costs[key] = costs.get(key, 0) + local_config.scale_cost(value)
+            reached = partner['lv']
+            for level in range(partner['lv'] + 1, end + 1):
+                level_cost = {key: local_config.scale_cost(value)
+                              for key, value in item_pairs(TABLES['exp_partner'][str(level)]['cost']).items()}
+                if any(int(state['items'].get(str(key), 0)) < costs.get(key, 0) + value
+                       for key, value in level_cost.items()):
+                    break
+                for key, value in level_cost.items():
+                    costs[key] = costs.get(key, 0) + value
+                reached = level
+            if reached == partner['lv']:
+                raise GameError('Không đủ tài nguyên để tăng cấp')
             for key, value in costs.items():
-                if state['items'].get(str(key), 0) < value: raise GameError('No hay suficientes recursos')
-            for key, value in costs.items(): state['items'][str(key)] -= value
-            partner['lv'] = end
+                state['items'][str(key)] = int(state['items'].get(str(key), 0)) - value
+            partner['lv'] = reached
             return [(p.MIDS[name], 'partner_levup_res', {'partner_info': partner}),
                     (p.MIDS['ITEM_CHANGE'], 'item_change_res', self.backpack(state))], None
         if name == 'COMPOSE_PARTNER':
