@@ -101,6 +101,15 @@ window.GxbAuth=(()=>{
   }
   function installAccountControls(){
     const settings=document.getElementById('profile-settings-page');if(!settings||settings.querySelector('.auth-account-row'))return;
+    settings.querySelector('#profile-setting-account')?.remove();
+    const soundRow=settings.querySelector('#profile-setting-sound');
+    if(soundRow&&!soundRow.dataset.audioBound){
+      soundRow.dataset.audioBound='1';soundRow.setAttribute('role','button');soundRow.tabIndex=0;
+      const soundLabel=soundRow.querySelector('small');if(soundLabel)soundLabel.textContent='Âm Thanh · Nhạc Nền · Voice Nữ Thần';
+      const openAudio=()=>{try{if(typeof SettingsMenu!=='undefined'&&typeof SettingsMenu.openAudio==='function')SettingsMenu.openAudio();else window.GirlUI?.notice?.('Bảng âm lượng chưa sẵn sàng.',{title:'Âm Thanh'});}catch(e){window.GirlUI?.notice?.(e.message,{title:'Âm Thanh'});}};
+      soundRow.addEventListener('click',openAudio);
+      soundRow.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openAudio();}});
+    }
     const infoPage=document.getElementById('profile-info-page');
     const oldGM=document.getElementById('gxb3-profile-supergm');oldGM?.remove();
     if(isSuperGM&&infoPage){
