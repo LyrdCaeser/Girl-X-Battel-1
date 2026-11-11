@@ -1298,8 +1298,14 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                 if name not in allowed_actions: raise GameError('Acción no disponible')
                 request = data.get('data', {})
                 if not isinstance(request, dict): raise GameError('Datos inválidos')
+                t0 = time.perf_counter()
                 packets = self.engine.handle(name, request)
-                return self.send(200, {'state': self.engine.snapshot(), 'messages': [{'id': mid, 'type': typ, 'data': body} for mid, typ, body in packets]})
+                t1 = time.perf_counter()
+                snapshot = self.engine.snapshot()
+                t2 = time.perf_counter()
+                if name == 'PARTNER_LEVUP':
+                    print(f'[GXB3-PERF] PARTNER_LEVUP handle={t1-t0:.3f}s snapshot={t2-t1:.3f}s total={t2-t0:.3f}s', flush=True)
+                return self.send(200, {'state': snapshot, 'messages': [{'id': mid, 'type': typ, 'data': body} for mid, typ, body in packets]})
             if path == '/api/developer':
                 if not self.admin_authorized():
                     return self.send(403, {'error': 'QTV_KEY_REQUIRED'})

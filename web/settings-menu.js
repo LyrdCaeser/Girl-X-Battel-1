@@ -41,9 +41,9 @@ const SettingsMenu=(()=>{
  function audioAndNotifications(){
   const {body}=GirlUI.win({title:'Âm Thanh & Thông Báo',cls:'sm-sound-panel'});
   body.replaceChildren();
-  const title=el('p','sm-sound-intro','Điều chỉnh âm lượng riêng cho Nhạc, Âm Thanh và Voice nhân vật.');
+  const title=el('p','sm-sound-intro','Điều chỉnh âm lượng riêng cho Âm Thanh, Nhạc Nền và Voice Nữ Thần.');
   body.append(title);
-  for(const [key,label] of [['music','Nhạc'],['effects','Âm Thanh'],['voice','Voice']]){
+  for(const [key,label] of [['effects','Âm Thanh'],['music','Nhạc Nền'],['voice','Voice Nữ Thần']]){
    const row=el('label','sm-sound-row');
    const heading=el('span','sm-sound-heading');
    const name=el('strong','',label),value=el('output','',GxbAudio.volume(key)+'%');

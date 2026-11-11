@@ -18,9 +18,8 @@ const Guild=(()=>{
  const toast=t=>{if(typeof GirlUI!=='undefined')GirlUI.toast(t);};
  function handles(key){return key in KEYS && typeof state!=='undefined' && !!state;}
  function root(){let r=$('guild-view');if(!r){r=el('section','guild-view');r.id='guild-view';r.hidden=true;$('home-systems-view').after(r);}return r;}
- async function open(key,from){origin=(from&&from!=='guild')?from:origin;tab=KEYS[key]||'office';note='';page=null;bossOpen=null;if(!data&&!loading)loading=api('/assets/guild.json').then(d=>{data=d;});await loading;root();showView('guild');
-  if(info()?.has){try{state=(await api('/api/guild/action',{action:'open'})).state;}catch{}}render();}
- function name(id){id=String(id);return id==='4'?'Xu Bang Hội':id==='1'?"Vàng":id==='2'?"Kim Cương":id==='5'?'EXP Bang Hội':itemCatalog?.[id]?.name||data.names?.[id]||"Vật phẩm "+id;}
+ async function open(key,from){return openOnline(key,from);}
+  function name(id){id=String(id);return id==='4'?'Xu Bang Hội':id==='1'?"Vàng":id==='2'?"Kim Cương":id==='5'?'EXP Bang Hội':itemCatalog?.[id]?.name||data.names?.[id]||"Vật phẩm "+id;}
  function icon(id){id=String(id);if(id==='1'||id==='2')return '/assets/currency/icon_'+id+'_small.png';if(id==='4')return '/assets/original-ui/guild-lab/coin.png';const it=itemCatalog?.[id];if(it&&typeof itemPicture==='function'){const p=itemPicture(it);if(p)return p;}return null;}
  function chip(id,n){const w=el('span','gd-chip');const s=icon(id);if(s)w.append(img(s));else w.append(el('em','',name(id)));w.append(el('b','',fmt(n)));w.title=name(id)+' × '+fmt(n);return w;}
  function chips(text,mult=1){const w=el('span','gd-chips');for(const [k,n] of pairs(text))w.append(chip(k,Math.floor(Number(n)*mult)));return w;}

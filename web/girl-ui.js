@@ -51,12 +51,41 @@ const GirlUI=(()=>{
  // ---- Awake tab: 6★→15★ ----
  function starOf(g){return g.stars;}
  function matches(code,g,host){if(g.partner_id===host.partner_id)return false;if(code===g.table_id)return true;if(code%1000!==999)return false;const star=Math.floor(code/10000),group=code%10000===9999?0:Math.floor(code/1000)%10;return starOf(g)===star&&(!group||g.group===group);}
- function pick(recipe,host){const used=new Set(),out=[];for(const code of recipe.material){const pool=state.roster.filter(g=>!used.has(g.partner_id)&&!g.flags?.some(Boolean)&&state.acquisition?.exchange?.partner_id!==g.partner_id&&matches(code,g,host)).sort((a,b)=>(a.pos?1:0)-(b.pos?1:0)||a.lv-b.lv||a.stars-b.stars);const g=pool[0];if(g){used.add(g.partner_id);out.push(g);}else out.push(null);}return out;}
- function codeLabel(code){if(code%1000===999){const star=Math.floor(code/10000),group=code%10000===9999?0:Math.floor(code/1000)%10;return star+'★ '+(group?"of the faction":'cualquiera');}return (girlsCatalog?.find?.(g=>g.id===code)?.name||"Girl "+code)+" (copy)";}
+ function materialAvailable(g,host){return g.partner_id!==host.partner_id&&!g.flags?.some(Boolean)&&state.acquisition?.exchange?.partner_id!==g.partner_id;}
+ function awake25SameCharacter(a,b){
+   if(Number(a.group)!==Number(b.group))return false;
+   const ai=a.awake25_identity||[[],[]],bi=b.awake25_identity||[[],[]],ah=ai[0]||[],bh=bi[0]||[];
+   if(ah.length||bh.length)return !!ah.length&&!!bh.length&&JSON.stringify(ah)===JSON.stringify(bh);
+   const ad=ai[1]||[],bd=bi[1]||[];
+   return !!ad.length&&!!bd.length&&JSON.stringify(ad)===JSON.stringify(bd);
+  }
+  const materialOrder=(a,b)=>(a.pos?1:0)-(b.pos?1:0)||a.lv-b.lv||a.stars-b.stars;
+  function pick(recipe,host){
+   if(recipe?.awake25){
+    const pool=state.roster.filter(g=>materialAvailable(g,host)).sort(materialOrder);
+    const copies=pool.filter(g=>(Number(g.stars)===9||Number(g.stars)===10)&&awake25SameCharacter(g,host)).slice(0,Number(recipe.copies)||0);
+    const used=new Set(copies.map(g=>g.partner_id));
+    const sacrifices=pool.filter(g=>!used.has(g.partner_id)&&Number(g.stars)>=8&&Number(g.stars)<=15&&Number(g.group)>=1&&Number(g.group)<=6&&g.awake25_valid_goddess===true).slice(0,Number(recipe.sacrifices)||0);
+    return {awake25:true,copies,sacrifices};
+   }
+   const used=new Set(),out=[];
+   for(const code of (recipe?.material||[])){
+    const pool=state.roster.filter(g=>!used.has(g.partner_id)&&materialAvailable(g,host)&&matches(code,g,host)).sort(materialOrder);
+    const g=pool[0];if(g){used.add(g.partner_id);out.push(g);}else out.push(null);
+   }
+   return out;
+  }
+  function selectedMaterials(recipe,picked){return recipe?.awake25?[...picked.copies,...picked.sacrifices]:picked;}
+  function materialsReady(recipe,picked){
+   if(!recipe||!picked)return false;
+   if(recipe.awake25)return picked.copies.length===Number(recipe.copies)&&picked.sacrifices.length===Number(recipe.sacrifices);
+   return Array.isArray(recipe.material)&&picked.length===recipe.material.length&&picked.every(Boolean);
+  }
+  function codeLabel(code){if(code%1000===999){const star=Math.floor(code/10000),group=code%10000===9999?0:Math.floor(code/1000)%10;return star+'★ '+(group?"of the faction":'cualquiera');}return (girlsCatalog?.find?.(g=>g.id===code)?.name||"Girl "+code)+" (copy)";}
  // Limit-Break tab (potentiality_component, 672×381): star banner (potentiality_bg02), the five potential nodes in a W
  // (stage i opens at Limit-Break i), Reverse / Replace / Switch. The star opens the Limit-Break window (capture l/04):
  // next emblem, MAX LVL, the nodes, the girls used as material (1/1), the cost and the Limit-Break button.
- const S='/assets/detail/sheet/',CAPS=[260,270,290,310,330];
+ const S='/assets/detail/sheet/',CAPS=[260,270,290,310,330,350,375,400,430,460,495,535,575,620,666];
  // PotentialityComponent:initSkill: stage i is open when stars ≥ 10+i; an open slot shows the chosen skill (or "?"),
  // the next one opens the Limit-Break window, the rest say "Unlocks at Limit-Break Stage i".
  // potentiality_component2: the wings (partner_potential_bg_big, mirrored on the right), the five nodes (skill_icon_bg, 86×86)
@@ -81,19 +110,50 @@ const GirlUI=(()=>{
   if(hero.local_promotion&&hero.stars>=10){if(tab)tab.textContent='Thức Tỉnh';box.className='lb-low';box.append(el('p','gu-awake-head','10★'),el('p','detail-note',"Đã hoàn thành tiến trình mở rộng. Cấp tối đa 250; giữ nguyên kỹ năng gốc."));return;}
   if(hero.stars<10){box.className='lb-low';box.append(el('p','gu-awake-head',hero.stars+'★'),el('p','detail-note',"Nâng sao tại Học Viện → Tiến Hóa. Nữ Thần từ 1★ đến 3★ có tiến trình mở rộng đến 10★."));return;}
   box.className='lb-tab';const r=hero.next_awake;
-  const top=el('button','lb-banner');top.type='button';top.append(stars(hero.stars,'tag'));if(r&&pick(r,hero).every(Boolean)&&cost(el('span'),r.cost||{}))top.append(img(S+'alert_icon.png','lb-red'));top.onclick=()=>limitBreak(hero);top.title='Limit-Break';box.append(top);
+  const top=el('button','lb-banner');top.type='button';top.append(stars(hero.stars,'tag'));if(r&&materialsReady(r,pick(r,hero))&&cost(el('span'),r.cost||{}))top.append(img(S+'alert_icon.png','lb-red'));top.onclick=()=>limitBreak(hero);top.title='Limit-Break';box.append(top);
   box.append(nodes(hero,'tab'));
   const bar=el('div','lb-btns');for(const [label,fn]of [['Reverse',()=>reverse(hero)],['Replace',()=>exchange(hero)],['Switch',()=>switchPotentials(hero)]]){const b=el('button','gs-btn lb-small',label);b.type='button';b.onclick=fn;bar.append(b);}box.append(bar);}
- function limitBreak(hero){const r=hero.next_awake;const {body,close}=win({title:'Limit-Break',cls:'lb-win'});
-  const head=el('div','lb-head');head.append(stars(r?hero.stars+1:hero.stars,'tag'));body.append(head);
-  if(!r){body.append(el('p','lb-max',hero.stars>=15?"Limit Break maxed (15★, level 330).":"No Limit Break data for this Girl."));return;}
-  const rows=el('div','lb-rows');const row=(k,v)=>{const d=el('div','lb-row');d.append(el('b','',k),el('span','',v));rows.append(d);};row('MAX LVL',String(pots.lv_cap[Math.min(4,hero.awake||0)]));row('HP','+'+Math.floor(pots.attr_up[0]*100)+'%');row('ATK','+'+Math.floor(pots.attr_up[1]*100)+'%');body.append(rows);
-  const un=el('div','lb-unlock');un.append(el('b','','Unlock'));un.append(nodes({...hero,stars:hero.stars+1},'win',false));body.append(un);
-  const chosen=pick(r,hero);const mats=el('div','lb-mats');r.material.forEach((code,i)=>{const g=chosen[i];const c=el('div','lb-mat'+(g?' ok':''));const pic=el('span','lb-pic');
-   const id=g?g.table_id:(code%1000===999?0:code);if(id&&cardIds.has(id))pic.append(img('/assets/cards/partner_card_'+id+'.png'));else pic.append(el('i','',Math.floor(code/10000)+'★'));c.append(pic,el('small','',(g?1:0)+'/1'));c.title=g?g.name+' · '+g.stars+"★ Lv. "+g.lv:codeLabel(code);mats.append(c);});body.append(mats);
-  const c=el('div','lb-cost');const ok=cost(c,r.cost||{});body.append(c);
-  const acts=el('div','gs-btns');const b=el('button','gs-btn','Limit-Break');b.type='button';b.disabled=!ok||chosen.some(x=>!x);b.onclick=async()=>{if(chosen.some(g=>g.pos)&&!await confirmGame("Một số Nữ Thần làm nguyên liệu đang trong đội hình. Bạn vẫn muốn Đột Phá?",{title:"Xác Nhận Đột Phá",ok:"Tiếp Tục",danger:true}))return;close();action('AWAKE_PARTNER',{partner_id:hero.partner_id,material_ids:chosen.map(g=>g.partner_id)});};acts.append(b);body.append(acts);}
- // ---- Reverse (PotentialityBackWindow), Exchange (TenStarExchangeWindow), Switch (PotentialitySwitchWindow) ----
+ function limitBreak(hero){
+   const r=hero.next_awake,{body,close}=win({title:'Limit-Break',cls:'lb-win'});
+   const picked=r?pick(r,hero):null,chosen=r?selectedMaterials(r,picked):[];
+   const head=el('div','lb-head');head.append(stars(r?Number(r.star||hero.stars+1):hero.stars,'tag'));body.append(head);
+   if(!r){body.append(el('p','lb-max',hero.stars>=25?"Đã đạt giới hạn 25★ · cấp 666.":"Chưa có dữ liệu Đột Phá tiếp theo cho Nữ Thần này."));return;}
+   const targetStar=Number(r.star||hero.stars+1),cap=CAPS[Math.max(0,Math.min(CAPS.length-1,targetStar-11))];
+   const hpCycle=[14.56,14.56,9.62,9.62],atkCycle=[10.40,10.40,7.49,7.49];
+   const hp=targetStar>=16?hpCycle[(targetStar-16)%4]:Number(pots.attr_up[0]||0)*100;
+   const atk=targetStar>=16?atkCycle[(targetStar-16)%4]:Number(pots.attr_up[1]||0)*100;
+   const pct=v=>Number(v).toFixed(2).replace(/\.??0+$/,'');
+   const rows=el('div','lb-rows'),row=(k,v)=>{const d=el('div','lb-row');d.append(el('b','',k),el('span','',v));rows.append(d);};
+   row('MAX LVL',String(cap));row('HP','+'+pct(hp)+'%');row('ATK','+'+pct(atk)+'%');body.append(rows);
+   const un=el('div','lb-unlock');un.append(el('b','','Unlock'));un.append(nodes({...hero,stars:targetStar},'win',false));body.append(un);
+   if(r.awake25){
+    const addGroup=(label,items,required,emptyText)=>{
+     body.append(el('p','detail-note',label+' · '+items.length+'/'+required));
+     const grid=el('div','lb-mats wrap');
+     for(let i=0;i<required;i++){
+      const g=items[i],c=el('div','lb-mat'+(g?' ok':'')),pic=el('span','lb-pic');
+      if(g)pic.append(card(Number(g.table_id)));else pic.append(el('i','',emptyText));
+      c.append(pic,el('small','',(g?'1':'0')+'/1'));c.title=g?g.name+' · '+g.stars+'★ Lv. '+g.lv:label+' · thiếu '+(i+1);grid.append(c);
+     }
+     body.append(grid);
+    };
+    addGroup('Bản sao đúng Nữ Thần',picked.copies,Number(r.copies)||0,'Bản sao');
+    addGroup('Nữ Thần hiến tế · hệ 1–6',picked.sacrifices,Number(r.sacrifices)||0,'Hiến tế');
+   }else{
+    const mats=el('div','lb-mats');
+    (r.material||[]).forEach((code,i)=>{const g=chosen[i],c=el('div','lb-mat'+(g?' ok':'')),pic=el('span','lb-pic');
+     const id=g?g.table_id:(code%1000===999?0:code);
+     if(id&&cardIds.has(id))pic.append(img('/assets/cards/partner_card_'+id+'.png'));else pic.append(el('i','',Math.floor(code/10000)+'★'));
+     c.append(pic,el('small','',(g?1:0)+'/1'));c.title=g?g.name+' · '+g.stars+"★ Lv. "+g.lv:codeLabel(code);mats.append(c);
+    });body.append(mats);
+   }
+   const c=el('div','lb-cost'),ok=cost(c,r.cost||{});body.append(c);
+   const acts=el('div','gs-btns'),btn=el('button','gs-btn','Limit-Break');btn.type='button';btn.disabled=!ok||!materialsReady(r,picked);
+   btn.onclick=async()=>{if(chosen.some(g=>g?.pos)&&!await confirmGame("Một số Nữ Thần làm nguyên liệu đang trong đội hình. Bạn vẫn muốn Đột Phá?",{title:"Xác Nhận Đột Phá",ok:"Tiếp Tục",danger:true}))return;close();action('AWAKE_PARTNER',{partner_id:hero.partner_id,material_ids:chosen.map(g=>g.partner_id)});};
+   acts.append(btn);body.append(acts);
+  }
+
+  // ---- Reverse (PotentialityBackWindow), Exchange (TenStarExchangeWindow), Switch (PotentialitySwitchWindow) ----
  let ret=null;
  const card=(tid,cls='')=>{const c=el('span','lb-card '+cls);if(cardIds.has(tid))c.append(img('/assets/cards/partner_card_'+tid+'.png'));else{/* house dolls (561001…766001) share partner_avatar_661001 */const i=img('/assets/original-ui/portraits/partner_avatar_'+tid+'.png');i.onerror=()=>{i.onerror=null;i.src='/assets/original-ui/portraits/partner_avatar_661001.png';};c.append(i);}return c;};
  async function reverse(hero){if(!ret)ret=await api('/assets/partner-return.json');const rule=ret.rules[String(hero.stars)];const {body,close}=win({title:'Reverse',cls:'lb-rev',help:"Rebirth returns the Girl as faction Dolls and named 5★ copies, along with equipment and part of her EXP. This cannot be undone."});

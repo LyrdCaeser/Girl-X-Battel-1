@@ -818,7 +818,7 @@ class Engine:
                 awake = {**awake, 'cost': {str(k): local_config.scale_cost(v) for k, v in awake['cost'].items()}}
             state['roster'].append({**partner, 'name': TABLES['names'].get(str(partner['table_id']), str(partner['table_id'])),
                                     'local_promotion': int(partner['table_id']) in local_promotion.BASE, 'stars': stars, 'level_cap': self.level_cap(partner), 'next_cost': cost,
-                                    'group': int(row['group']), 'job': int(row['job']), 'max_grade': max_grade,
+                                    'group': int(row['group']), 'job': int(row['job']), 'awake25_identity': [list(x) for x in self.awake25_identity(row)], 'awake25_valid_goddess': self.awake25_valid_goddess(row), 'max_grade': max_grade,
                                     'grade_cost': {k: local_config.scale_cost(v) for k, v in item_pairs(row.get(f'grade_exp{grade+1}')).items()} if grade < max_grade else {},
                                     'next_awake': awake if awake and awake.get('kind') == 'awake' else None,
                                     'star_10': int(row.get('star_10') or 0), 'astral_list': int(row.get('star_origin') or 0) if stars >= 15 else 0, 'namesake': int(str(row.get('material') or '').split('|')[0] or 0) if int(row['max_star']) > 5 else int(partner['table_id']), 'potential_options': [[int(x) for x in st.split('#') if x] for st in str(row.get('potential') or '').split('|') if st] if int(row['max_star']) == 10 else [],
