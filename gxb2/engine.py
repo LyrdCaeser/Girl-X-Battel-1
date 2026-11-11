@@ -50,7 +50,7 @@ def show_mode(func):
 MODELS = json.loads((ROOT / 'data/models.json').read_text())  # model.lua: scale, battle_pos (BaseFighter:getScale / getModelOffset)
 LOCAL_TOKEN = 'gxb2-local-preservation'
 AWAKE_LEVEL_STEP = 20                       # misc.awake_add_level_limit
-BREAK_LEVEL_CAP = (260, 270, 290, 310, 330)  # misc.hero_break_lv_cap (11–15★)
+BREAK_LEVEL_CAP = (260, 270, 290, 310, 330, 350, 375, 400, 430, 460, 495, 535, 575, 620, 666)  # 11–25★
 PROPHET_SUMMONS = (10, 11, 12, 13, 14, 17, 18, 19, 20, 21)  # Prophet.SUMMONMID: factions 1–5, ×1 and ×10 (Enroll)
 STARTERS = (41001, 42001, 43001)
 PROFILE_CATALOG = json.loads((ROOT / 'web/assets/profile/catalog.json').read_text())
@@ -2280,12 +2280,56 @@ class Engine:
         got, six = self.altar_returns(state, (request or {}).get('partner_ids'))
         return {'items': got, 'six': six, 'six_left': 5 - int((state.get('altar') or {}).get('six', 0) if (state.get('altar') or {}).get('day') == clock.day(self.now()) else 0)}
 
+    @staticmethod
+    def awake25_identity(row):
+        """Stable character identity across the 5★, 6★ and native 10★ table rows."""
+        hero = tuple(sorted(x for x in str(row.get('hero_list') or '').split('|') if x))
+        data = tuple(sorted(x for x in str(row.get('partner_data_id') or '').split('|') if x))
+        return hero, data
+
+    def awake25_same_character(self, host_row, candidate_row):
+        if int(host_row.get('group') or 0) != int(candidate_row.get('group') or 0):
+            return False
+        host_hero, host_data = self.awake25_identity(host_row)
+        cand_hero, cand_data = self.awake25_identity(candidate_row)
+        if host_hero or cand_hero:
+            return bool(host_hero and cand_hero and host_hero == cand_hero)
+        return bool(host_data and cand_data and host_data == cand_data)
+
+    @staticmethod
+    def awake25_valid_goddess(row):
+        # Exclude auxiliary/NPC records without a playable character identity.
+        hero, data = Engine.awake25_identity(row)
+        return bool(int(row.get('group') or 0) in range(1, 7)
+                    and row.get('show_in_guide') and (hero or data))
+
     def awake_recipe(self, partner):
-        """11–15★: awake_material / stone_material of the 10★ row (ASCENSION covers 6–10★)."""
+        """11–15★ native recipes; 16–25★ use two separately validated material groups."""
         row = TABLES['partner'][str(partner['table_id'])]
         awake = int(partner.get('awake', 0))
+        if int(row['max_star']) != 10:
+            return None
+
+        current_star = 10 + awake
+        if 5 <= awake < 15:
+            target_star = current_star + 1
+            index = target_star - 16
+            copy_counts = (1, 2, 3, 4, 5, 1, 2, 3, 4, 5)
+            sacrifice_counts = tuple(range(1, 11))
+            costs = (25000, 30000, 35000, 40000, 50000,
+                     60000, 70000, 80000, 90000, 100000)
+            return {
+                'kind': 'awake', 'awake25': True,
+                'copies': copy_counts[index],
+                'sacrifices': sacrifice_counts[index],
+                'group': int(row['group']),
+                'cost': {'10': costs[index]},
+                'star': target_star,
+            }
+
         mats = [m for m in str(row.get('awake_material') or '').split('|') if m]
-        if int(row['max_star']) != 10 or awake >= len(mats): return None
+        if awake >= len(mats):
+            return None
         costs = [c for c in str(row.get('stone_material') or '').split('|') if c]
         cost = {k: v for k, v in item_pairs(costs[awake]).items()} if awake < len(costs) else {}
         return {'kind': 'awake', 'material': [int(x) for x in mats[awake].split('#')], 'group': int(row['group']),
@@ -2807,14 +2851,48 @@ class Engine:
             recipe = ASCENSION.get(f"{host['table_id']}:{star+1}") or local_promotion.recipe(host) or self.awake_recipe(host)
             if not recipe or recipe['kind'] != 'awake': raise GameError('Ascensión no disponible para esta chica')
             ids = request.get('material_ids')
-            if not isinstance(ids, list) or len(ids) != len(recipe['material']) or any(type(i) is not int for i in ids) or len(set(ids)) != len(ids) or host_id in ids:
+            if not isinstance(ids, list) or any(type(i) is not int for i in ids) or len(set(ids)) != len(ids) or host_id in ids:
                 raise GameError('Los materiales deben ser chicas distintas de la base')
-            if any(pid not in owned for pid in ids): raise GameError('Falta una chica de la receta')
-            if recipe.get('local'):
-                copies=[pid for pid in ids if owned[pid]['table_id']==host['table_id'] and not int(owned[pid].get('awake',0))]
-                if not copies:raise GameError('Necesitas una copia con sus estrellas iniciales')
-                ids=[copies[0]]+[pid for pid in ids if pid!=copies[0]]
-            used = self.match_materials(owned, ids, recipe['material'], int(recipe['group']))
+            expected = (recipe['copies'] + recipe['sacrifices']) if recipe.get('awake25') else len(recipe['material'])
+            if len(ids) != expected:
+                raise GameError('Cantidad de materiales incorrecta')
+            if any(pid not in owned for pid in ids):
+                raise GameError('Falta una chica de la receta')
+
+            if recipe.get('awake25'):
+                import itertools
+                host_row = TABLES['partner'][str(host['table_id'])]
+                pending_id = (state.get('exchange') or {}).get('partner_id')
+                copy_pool, sacrifice_pool = set(), set()
+                for pid in ids:
+                    girl = owned[pid]
+                    row = TABLES['partner'][str(girl['table_id'])]
+                    actual_star = int(row['max_star']) + int(girl.get('awake', 0))
+                    if acquisition.is_locked(girl) or pid == pending_id:
+                        raise GameError('No puedes usar chicas bloqueadas o en intercambio')
+                    if actual_star in (9, 10) and self.awake25_same_character(host_row, row):
+                        copy_pool.add(pid)
+                    group = int(row.get('group') or 0)
+                    if (8 <= actual_star <= 15 and 1 <= group <= 6
+                            and self.awake25_valid_goddess(row)):
+                        sacrifice_pool.add(pid)
+
+                copy_selection = None
+                for subset in itertools.combinations(ids, recipe['copies']):
+                    chosen = set(subset)
+                    remaining = set(ids) - chosen
+                    if chosen <= copy_pool and remaining <= sacrifice_pool:
+                        copy_selection = chosen
+                        break
+                if copy_selection is None:
+                    raise GameError('Materiales incorrectos: revisa las copias y las Nữ Thần phụ')
+                used = set(ids)
+            else:
+                if recipe.get('local'):
+                    copies=[pid for pid in ids if owned[pid]['table_id']==host['table_id'] and not int(owned[pid].get('awake',0))]
+                    if not copies:raise GameError('Necesitas una copia con sus estrellas iniciales')
+                    ids=[copies[0]]+[pid for pid in ids if pid!=copies[0]]
+                used = self.match_materials(owned, ids, recipe['material'], int(recipe['group']))
             scaled_awake_cost = {str(key): local_config.scale_cost(amount) for key, amount in recipe.get('cost', {}).items()}
             for key, amount in scaled_awake_cost.items():
                 if int(state['items'].get(key, 0)) < amount: raise GameError('Không đủ tài nguyên để Thức Tỉnh')
