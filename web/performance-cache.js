@@ -4,7 +4,7 @@
  */
 (function () {
   'use strict';
-  var SNAPSHOT_KEY = 'gxb3.home-shell.snapshot.v2';
+  var SNAPSHOT_KEY = 'gxb3.home-shell.snapshot.v3';
   var PROFILE_QUEUE_KEY = 'gxb3.profile.queue.v1';
   var MAX_SNAPSHOT_BYTES = 180000;
   var MAX_PROFILE_QUEUE = 8;
@@ -12,7 +12,7 @@
 
   function registerServiceWorker() {
     if (!('serviceWorker' in navigator) || !window.isSecureContext) return;
-    navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(function () {});
+    navigator.serviceWorker.register('/sw.js', { scope: '/', updateViaCache: 'none' }).catch(function () {});
   }
   function restoreShell() {
     var home = document.getElementById('home-view');

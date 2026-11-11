@@ -1,7 +1,7 @@
 /* GXB3 online static cache. API/auth/save requests are deliberately never cached. */
 'use strict';
 
-const CACHE_NAME = 'gxb3-online-static-v2';
+const CACHE_NAME = 'gxb3-online-static-v3';
 const STATIC_EXT = /\.(?:js|css|json|png|webp|jpe?g|gif|svg|woff2?)(?:\?.*)?$/i;
 
 function isStaticRequest(request) {
@@ -33,10 +33,11 @@ self.addEventListener('fetch', event => {
   if (!isStaticRequest(event.request)) return;
   event.respondWith((async () => {
     const cache = await caches.open(CACHE_NAME);
+    const refresh = /\.(?:js|css|json)$/i.test(new URL(event.request.url).pathname);
     const cached = await cache.match(event.request);
-    if (cached) return cached;
+    if (cached && !refresh) return cached;
     try {
-      const response = await fetch(event.request);
+      const response = await fetch(refresh ? new Request(event.request, {cache: 'no-store'}) : event.request);
       if (response.ok) await cache.put(event.request, response.clone());
       return response;
     } catch (error) {
