@@ -4,7 +4,7 @@ on:
   push:
     branches: [main, snez-vietnamese]
   pull_request:
-    branches: [main]
+    branches: [main, snez-vietnamese]
 
 jobs:
   test:

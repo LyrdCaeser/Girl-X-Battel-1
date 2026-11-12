@@ -528,7 +528,7 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
             return self.send(200, {
                 'pvp': live_service.pvp_status(account['uid'], account['server_id'], mode),
                 'rating': live_service.pvp_rating(account['uid'], account['server_id'], mode),
-                'rating_board': live_service.pvp_rating_board(mode, limit=50),
+                'rating_board': live_service.pvp_rating_board(mode, limit=50, server_id='' if mode == 'cross' else account['server_id']),
                 'season_reward': live_service.pvp_season_claim_status(account['uid'], account['server_id'], mode),
                 'history': live_service.pvp_history(account['uid'], 20),
             })
@@ -1284,10 +1284,8 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                 return self.send(200, live_service.create_order(state.get('uid'), state.get('server_id'), state.get('name'), data.get('package'), data.get('note','')))
             if path == '/api/mail/claim':
                 return self.send(200, self.engine.claim_live_mail(data.get('mail_id')))
-            if self.headers.get('X-GXB2-Mode') != 'developer':
-                account_state = self.engine.snapshot()
-                if account_state.get('account_status') == 'banned':
-                    return self.send(403, {'error': 'Tài khoản đã bị khóa bởi GM'})
+            # require_auth() above already validates the session and active player row.
+            # Do not take a full gameplay snapshot just to repeat that account check.
             if path == '/api/v1':
                 if data.get('mid') != 1 or data.get('local_mode') is not True:
                     raise GameError('Este endpoint acepta solo RETRIEVE_TOKEN con local_mode=true')
@@ -1326,7 +1324,7 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                 from gxb2 import relations as _rel
                 return self.send(200, {'lines': _rel.plot_scene(int(data.get('plot', 0) or 0)), 'title': _rel.PLOT['titles'].get(str(data.get('plot', 0)), '')})
             if path == '/api/arena3v3/action':
-                return self.send(200, self.engine.arena3v3_action(data))
+                return self.send(410, {'error': 'Đấu Trường 3v3 đã chuyển sang ghép trận trực tuyến. Vui lòng tải lại trò chơi.'})
             if path in ('/api/friend-boss/action','/api/pet-training/action','/api/practical-work/action'):
                 return self.send(200, self.engine.remaining_system_action(path.split('/')[2],data))
             if path == '/api/newbie-camp/action':

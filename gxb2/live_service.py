@@ -726,18 +726,36 @@ def pvp_rating(uid, server_id, mode, season_id=None):
         db.close(); return out
 
 
-def pvp_rating_board(mode, season_id=None, limit=100):
+def pvp_rating_board(mode, season_id=None, limit=100, server_id=None):
+    """Rank real active player characters, including those at the initial 1000 rating."""
     mode=str(mode or "arena").lower()
     season_id=season_id or current_pvp_season()
     limit=max(1,min(500,int(limit)))
+    scope=""
+    scope_params=()
+    if server_id:
+        scope=" AND p.server_id=?"
+        scope_params=(str(server_id).upper(),)
+    query="""SELECT p.uid,p.server_id,p.character_name,
+                    ? AS mode,? AS season_id,
+                    COALESCE(r.rating,1000) AS rating,
+                    COALESCE(r.wins,0) AS wins,
+                    COALESCE(r.losses,0) AS losses,
+                    COALESCE(r.matches,0) AS matches,
+                    COALESCE(l.level,1) AS level,
+                    COALESCE(l.power,0) AS power,
+                    COALESCE(r.updated_at,l.updated_at,p.updated_at) AS updated_at
+             FROM players p
+             LEFT JOIN leaderboard l ON l.uid=p.uid AND l.server_id=p.server_id
+             LEFT JOIN pvp_ratings r ON r.uid=p.uid AND r.server_id=p.server_id
+                  AND r.mode=? AND r.season_id=?
+             WHERE p.status='active'""" + scope + """
+             ORDER BY COALESCE(r.rating,1000) DESC,COALESCE(r.wins,0) DESC,
+                      COALESCE(r.matches,0) ASC,COALESCE(l.power,0) DESC,
+                      p.server_id,p.character_name LIMIT ?"""
     with _lock:
         db=_db()
-        rows=db.execute("""SELECT r.*,p.character_name
-                           FROM pvp_ratings r
-                           LEFT JOIN players p ON p.uid=r.uid AND p.server_id=r.server_id
-                           WHERE r.mode=? AND r.season_id=?
-                           ORDER BY r.rating DESC,r.wins DESC,r.matches ASC,r.updated_at ASC LIMIT ?""",
-                        (mode,season_id,limit)).fetchall()
+        rows=db.execute(query,(mode,season_id,mode,season_id,*scope_params,limit)).fetchall()
         out=[]
         for idx,row in enumerate(rows,1):
             d=dict(row); d["rank"]=idx; out.append(d)

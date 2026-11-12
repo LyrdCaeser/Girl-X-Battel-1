@@ -125,7 +125,7 @@ const GirlUI=(()=>{
    const atk=targetStar>=16?atkCycle[(targetStar-16)%4]:Number(pots.attr_up[1]||0)*100;
    const pct=v=>Number(v).toFixed(2).replace(/\.?0+$/,'');
    const rows=el('div','lb-rows'),row=(k,v)=>{const d=el('div','lb-row');d.append(el('b','',k),el('span','',v));rows.append(d);};
-   row('MAX LVL',String(cap));row('HP','+'+pct(hp)+'%');row('ATK','+'+pct(atk)+'%');body.append(rows);
+   row('MAX LVL',String(cap));row('HP','+'+pct(hp)+'%');row('ATK','+'+pct(atk)+'%');if(targetStar>=16)row('DEF',String(100+(targetStar-15)*2)+'% so với 15★');body.append(rows);
    const un=el('div','lb-unlock');un.append(el('b','','Unlock'));un.append(nodes({...hero,stars:targetStar},'win',false));body.append(un);
    if(r.awake25){
     const addGroup=(label,items,required,emptyText)=>{

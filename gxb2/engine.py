@@ -132,6 +132,7 @@ class Engine:
     def __init__(self, db_path: Path, developer=False, clock_source=None, identity=None):
         self._raw_now = clock_source or time.time
         self.developer = developer
+        self.identity = (str(identity[0]), str(identity[1]).upper()) if identity else None
         self.now = self._monotonic_now
         self._floor = self._floor_saved = 0
         db_path = Path(db_path)
@@ -705,8 +706,15 @@ class Engine:
         state.setdefault('uid', 'GXB3-000001')
         state.setdefault('server_id', 'S1')
         try:
-            player = live_service.register_player(state['uid'], state['server_id'], state['name'])
-            state['account_status'] = player.get('status','active') if player else 'active'
+            # Authenticated PlayerEngine instances are only created after auth.session
+            # has verified the UID + server and the live player row. Re-upserting that
+            # same player on every snapshot adds a write transaction to every action.
+            # Keep registration for the legacy shared/developer engine only.
+            if not self.identity:
+                player = live_service.register_player(state['uid'], state['server_id'], state['name'])
+                state['account_status'] = player.get('status','active') if player else 'active'
+            else:
+                state['account_status'] = 'active'  # current account status is enforced by auth_context()
             state['mail_info'] = live_service.mailbox(state['uid'], state['server_id'])
             state['worlds'] = live_service.worlds()
         except Exception:
