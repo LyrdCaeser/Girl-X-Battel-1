@@ -63,9 +63,10 @@ const GirlUI=(()=>{
   function pick(recipe,host){
    if(recipe?.awake25){
     const pool=state.roster.filter(g=>materialAvailable(g,host)).sort(materialOrder);
-    const copies=pool.filter(g=>(Number(g.stars)===9||Number(g.stars)===10)&&awake25SameCharacter(g,host)).slice(0,Number(recipe.copies)||0);
+    const sacrificeEligible=g=>Number(g.stars)>=8&&Number(g.stars)<=15&&Number(g.group)>=1&&Number(g.group)<=6&&g.awake25_valid_goddess===true;
+    const copies=pool.filter(g=>(Number(g.stars)===9||Number(g.stars)===10)&&awake25SameCharacter(g,host)).sort((a,b)=>Number(sacrificeEligible(a))-Number(sacrificeEligible(b))||materialOrder(a,b)).slice(0,Number(recipe.copies)||0);
     const used=new Set(copies.map(g=>g.partner_id));
-    const sacrifices=pool.filter(g=>!used.has(g.partner_id)&&Number(g.stars)>=8&&Number(g.stars)<=15&&Number(g.group)>=1&&Number(g.group)<=6&&g.awake25_valid_goddess===true).slice(0,Number(recipe.sacrifices)||0);
+    const sacrifices=pool.filter(g=>!used.has(g.partner_id)&&sacrificeEligible(g)).slice(0,Number(recipe.sacrifices)||0);
     return {awake25:true,copies,sacrifices};
    }
    const used=new Set(),out=[];
@@ -122,7 +123,7 @@ const GirlUI=(()=>{
    const hpCycle=[14.56,14.56,9.62,9.62],atkCycle=[10.40,10.40,7.49,7.49];
    const hp=targetStar>=16?hpCycle[(targetStar-16)%4]:Number(pots.attr_up[0]||0)*100;
    const atk=targetStar>=16?atkCycle[(targetStar-16)%4]:Number(pots.attr_up[1]||0)*100;
-   const pct=v=>Number(v).toFixed(2).replace(/\.??0+$/,'');
+   const pct=v=>Number(v).toFixed(2).replace(/\.?0+$/,'');
    const rows=el('div','lb-rows'),row=(k,v)=>{const d=el('div','lb-row');d.append(el('b','',k),el('span','',v));rows.append(d);};
    row('MAX LVL',String(cap));row('HP','+'+pct(hp)+'%');row('ATK','+'+pct(atk)+'%');body.append(rows);
    const un=el('div','lb-unlock');un.append(el('b','','Unlock'));un.append(nodes({...hero,stars:targetStar},'win',false));body.append(un);
