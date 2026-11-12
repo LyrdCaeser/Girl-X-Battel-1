@@ -1,4 +1,5 @@
 import tempfile
+import json
 import unittest
 from pathlib import Path
 
@@ -263,6 +264,17 @@ class OnlineArenaRoutingTests(unittest.TestCase):
             self.assertRegex(index, rf'<script src="/{asset}\?v=(?:20261112|1\.1\.2)-[^" ]+"')
         self.assertIn('href="/online-hub.css?v=20261112-live-arena3v3-r2"', index)
         self.assertIn('href="/guild.css?v=20261112-guild-activity-r4"', index)
+
+    def test_high_density_avatars_are_served_from_a_confined_webp_asset_root(self):
+        server = (ROOT / "server.py").read_text(encoding="utf-8")
+        self.assertIn("('/assets/avatar-hd/', ROOT/'web/assets/avatar-hd')", server)
+        self.assertIn("candidate = (folder / path[len(prefix):]).resolve()", server)
+        self.assertIn("candidate.is_relative_to(folder.resolve()) and candidate.is_file()", server)
+        self.assertIn("'.webp':'image/webp'", server)
+        catalog = json.loads((ROOT / "web/assets/avatars.json").read_text(encoding="utf-8"))
+        avatar = next(row for row in catalog.values() if row.get("src"))
+        self.assertTrue(avatar['src'].startswith('/assets/avatar-hd/portraits/'))
+        self.assertTrue(avatar['src'].endswith('.webp?v=1.1.2'))
 
     def test_gxb3_tests_workflow_runs_for_production_pull_requests(self):
         workflow = (ROOT / ".github/workflows/gxb3-tests.yml").read_text(encoding="utf-8")
