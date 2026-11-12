@@ -34,9 +34,21 @@ class GuildWebRoutingTests(unittest.TestCase):
         self.assertIn("Xếp Hạng Bang Hội", guild)
         self.assertIn("'guild-dining':'cafeteria'", guild)
         self.assertIn("'guild-gym':'gym'", guild)
-        self.assertIn("Căng Tin gốc gồm Cối Xay", guild)
-        self.assertIn("Phòng Tập gốc gồm chuỗi Boss Bang Hội", guild)
-        self.assertIn("đang tạm khóa", guild)
+        self.assertIn("'/api/world-guild/activity'", guild)
+        self.assertIn("onlineActivity('donate'", guild)
+        self.assertIn("onlineActivity('boss_fight'", guild)
+        self.assertIn("Đơn Hàng", guild)
+        self.assertIn("Boss Bang Hội", guild)
+        self.assertNotIn("đang tạm khóa", guild)
+
+
+    def test_cafeteria_and_gym_posts_use_authenticated_player_engine_bridge(self):
+        server = (Path(__file__).resolve().parents[1] / "server.py").read_text(encoding="utf-8")
+        engine = (Path(__file__).resolve().parents[1] / "gxb2/engine.py").read_text(encoding="utf-8")
+        self.assertIn("if path == '/api/world-guild/activity':", server)
+        self.assertIn("self.engine.world_guild_activity_action(data, account['uid'], account['server_id'])", server)
+        self.assertIn("self.db.borrowed_live_transaction()", engine)
+        self.assertIn("world_guild_progress", (Path(__file__).resolve().parents[1] / "gxb2/database.py").read_text(encoding="utf-8"))
 
     def test_junior_varsity_uses_online_real_player_entry_not_local_bot_api(self):
         arena = (WEB / "arena.js").read_text(encoding="utf-8")

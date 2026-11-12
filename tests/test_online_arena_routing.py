@@ -242,17 +242,27 @@ class OnlineArenaRoutingTests(unittest.TestCase):
     def test_arena3v3_entry_routes_to_live_team_pvp_and_blocks_local_simulator(self):
         client = (ROOT / "web/arena3v3.js").read_text(encoding="utf-8")
         open_block = client.split(" function open(", 1)[1].split("\n function icon", 1)[0]
-        self.assertIn("GxbOnline.open('pvp','team')", open_block)
+        self.assertIn("GxbOnline.open('pvp','arena3v3')", open_block)
         self.assertNotIn("showView('arena3v3')", open_block)
         self.assertNotIn("act({action:'open'})", open_block)
+        online = (ROOT / "web/online-hub.js").read_text(encoding="utf-8")
+        self.assertIn("['arena3v3','Đấu Trường 3v3']", online)
+        self.assertIn("/api/pvp/arena3v3/teams", online)
+        self.assertIn("/api/pvp/arena3v3/pay", online)
+        self.assertIn("/api/pvp/arena3v3/round", online)
+        self.assertIn("Thi Đấu Lượt", online)
         server = (ROOT / "server.py").read_text(encoding="utf-8")
         self.assertIn("path == '/api/arena3v3/action':\n                return self.send(410", server)
+        self.assertIn("match.get('mode') == 'arena3v3'", server)
+        self.assertIn("phải hoàn tất đủ loạt đấu", server)
 
     def test_modified_client_assets_are_cache_busted(self):
         index = (ROOT / "web/index.html").read_text(encoding="utf-8")
         for asset in ("app.js", "arena.js", "arena3v3.js", "online-hub.js", "guild.js",
                       "girl-ui.js", "auth.js", "settings-menu.js", "skins.js"):
             self.assertRegex(index, rf'<script src="/{asset}\?v=20261112-[^" ]+"')
+        self.assertIn('href="/online-hub.css?v=20261112-live-arena3v3-r2"', index)
+        self.assertIn('href="/guild.css?v=20261112-guild-activity-r4"', index)
 
     def test_gxb3_tests_workflow_runs_for_production_pull_requests(self):
         workflow = (ROOT / ".github/workflows/gxb3-tests.yml").read_text(encoding="utf-8")

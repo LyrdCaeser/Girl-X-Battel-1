@@ -10,7 +10,7 @@ const Arena3v3=(()=>{
  const img=(src,cls,alt='')=>{const i=el('img',cls);i.src=src;i.alt=alt;i.draggable=false;return i;};
  function center(e,x,y,w,h){e.style.left=`calc(${360+x-w/2} * var(--u))`;e.style.top=`calc(${640-y-h/2} * var(--u))`;e.style.width=`calc(${w} * var(--u))`;if(h!=null)e.style.height=`calc(${h} * var(--u))`;return e;}
  function root(){let r=$('arena3v3-view');if(!r){r=el('section','arena-view a3-view');r.id='arena3v3-view';r.hidden=true;$('home-systems-view').after(r);}return r;}
- function open(from){if(typeof GxbOnline==='undefined'){GirlUI?.notice?.('Đấu Trường trực tuyến chưa sẵn sàng. Vui lòng tải lại trang.',{title:'Đấu Trường'});return;}GxbOnline.open('pvp','team');}
+ function open(from){if(typeof GxbOnline==='undefined'){GirlUI?.notice?.('Đấu Trường trực tuyến chưa sẵn sàng. Vui lòng tải lại trang.',{title:'Đấu Trường'});return;}GxbOnline.open('pvp','arena3v3');}
  function icon(id){id=String(id);if(id==='1'||id==='2')return '/assets/currency/icon_'+id+'_small.png';if(id==='34')return A('icon_34');const row=itemCatalog?.[id];return (row&&itemPicture(row))||'';}
  function nameOf(id){id=String(id);return id==='1'?"Gold":id==='2'?"Gems":itemCatalog?.[id]?.name||"Item "+id;}
  function avatar(id,cls){const src=icon(id);return src?img(src,cls):el('span',cls+' empty','✦');}

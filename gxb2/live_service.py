@@ -5,7 +5,7 @@ import time
 import uuid
 from pathlib import Path
 
-from . import database, topup
+from . import database, topup, guild as guild_rules, clock
 from .battle import normalize_online_seed
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -375,7 +375,7 @@ def online_players(server_id="", max_age=120):
 
 
 def leaderboard(server_id, limit=100):
-    limit=max(1,min(500,int(limit)))
+    limit=max(1,min(5000,int(limit)))
     with _lock:
         db=_db()
         rows=db.execute("""SELECT uid,server_id,character_name,level,power,updated_at
@@ -451,6 +451,11 @@ def create_world_guild(uid, server_id, character_name, name, notice="", power=0)
         db.execute("""INSERT INTO world_guild_members(guild_id,uid,server_id,character_name,role,power,joined_at,last_seen)
                       VALUES(?,?,?,?, 'leader',?,?,?)""",
                    (guild_id,uid,server_id,character_name,max(0,int(power)),now,now))
+        activity = guild_rules.fresh(name, 1, notice, now, __import__('secrets').randbelow)
+        activity['member_daily'] = {}
+        db.execute("""INSERT INTO world_guild_progress(guild_id,state,updated_at)
+                      VALUES(?,?,?) ON CONFLICT(guild_id) DO NOTHING""",
+                   (guild_id,json.dumps(activity,ensure_ascii=False),now))
         _audit(db,"guild.create",f"{server_id}:{guild_id}",{"uid":uid,"name":name},"PLAYER")
         db.commit(); db.close()
     return guild_for_player(uid,server_id)
@@ -547,7 +552,7 @@ def enqueue_pvp(uid, server_id, character_name, mode, power=0):
     uid=str(uid or '').strip(); server_id=str(server_id or '').strip().upper()
     character_name=str(character_name or '').strip()
     mode=str(mode or 'arena').strip().lower()
-    if mode not in ("arena","team","cross"): raise ValueError("Chế độ PvP không hợp lệ")
+    if mode not in ("arena","team","cross","arena3v3"): raise ValueError("Chế độ PvP không hợp lệ")
     power=max(0,int(power)); now=int(time.time())
     with _lock:
         db=_db(); db.execute("BEGIN IMMEDIATE")
@@ -555,7 +560,14 @@ def enqueue_pvp(uid, server_id, character_name, mode, power=0):
                                WHERE status IN ('ready','active') AND (player_a=? OR player_b=?)
                                ORDER BY created_at DESC LIMIT 1""",(uid,uid)).fetchone()
         if existing:
+            if str(existing["mode"]) != mode:
+                db.rollback(); db.close()
+                raise ValueError("Bạn đang có trận PvP ở chế độ khác. Hãy quay lại hoàn tất trận hiện tại trước.")
             out=_public_pvp_match(existing); db.commit(); db.close(); return {"status":"matched","match":out}
+        # A UID/server pair can wait in only one mode at a time. Remove stale
+        # cross-mode queue entries before inserting this queue request.
+        db.execute("DELETE FROM pvp_queue WHERE uid=? AND server_id=? AND mode<>?",
+                   (uid,server_id,mode))
         db.execute("""INSERT INTO pvp_queue(uid,server_id,character_name,mode,power,joined_at,status)
                       VALUES(?,?,?,?,?,?,'waiting')
                       ON CONFLICT(uid,server_id,mode) DO UPDATE SET
@@ -585,6 +597,9 @@ def enqueue_pvp(uid, server_id, character_name, mode, power=0):
                         int(opponent["power"]),power,now,seed))
             db.execute("DELETE FROM pvp_queue WHERE (uid=? AND server_id=? AND mode=?) OR (uid=? AND server_id=? AND mode=?)",
                        (uid,server_id,mode,str(opponent["uid"]),str(opponent["server_id"]),mode))
+            if mode == "arena3v3":
+                db.execute("""INSERT INTO pvp_arena3v3_series(match_id,paid_a,paid_b,rounds,updated_at)
+                              VALUES(?,0,0,'[]',?)""", (match_id, now))
             _audit(db,"pvp.match",match_id,{"mode":mode,"a":opponent["uid"],"b":uid},"SYSTEM")
             row=db.execute("SELECT * FROM pvp_matches WHERE id=?",(match_id,)).fetchone()
             out={"status":"matched","match":_public_pvp_match(row)}
@@ -606,9 +621,15 @@ def pvp_status(uid, server_id, mode=""):
     uid=str(uid or '').strip(); server_id=str(server_id or '').strip().upper(); mode=str(mode or '').lower()
     with _lock:
         db=_db()
-        match=db.execute("""SELECT * FROM pvp_matches
-                            WHERE (player_a=? OR player_b=?) AND status IN ('ready','active')
-                            ORDER BY created_at DESC LIMIT 1""",(uid,uid)).fetchone()
+        if mode:
+            match=db.execute("""SELECT * FROM pvp_matches
+                                WHERE (player_a=? OR player_b=?) AND mode=?
+                                  AND status IN ('ready','active')
+                                ORDER BY created_at DESC LIMIT 1""",(uid,uid,mode)).fetchone()
+        else:
+            match=db.execute("""SELECT * FROM pvp_matches
+                                WHERE (player_a=? OR player_b=?) AND status IN ('ready','active')
+                                ORDER BY created_at DESC LIMIT 1""",(uid,uid)).fetchone()
         if match:
             out={"status":"matched","match":_public_pvp_match(match)}
         else:
@@ -654,17 +675,159 @@ def resolve_pvp_match(match_id, uid, winner_uid):
         db.commit(); out=_public_pvp_match(row, include_result=True); db.close(); return out
 
 
+def _arena3v3_series_view(row, series, uid):
+    rounds = json.loads(series["rounds"] or "[]") if series else []
+    wins_a = sum(1 for item in rounds if item.get("winner_uid") == row["player_a"])
+    wins_b = sum(1 for item in rounds if item.get("winner_uid") == row["player_b"])
+    mine_a = str(uid) == str(row["player_a"])
+    return {
+        "match_id": str(row["id"]), "paid": bool(series["paid_a"] if mine_a else series["paid_b"]) if series else False,
+        "paid_a": bool(series["paid_a"]) if series else False,
+        "paid_b": bool(series["paid_b"]) if series else False,
+        "all_paid": bool(series and int(series["paid_a"]) and int(series["paid_b"])),
+        "rounds": [{"round": int(x.get("round", i)),
+                    "winner_uid": str(x.get("winner_uid") or ""),
+                    "won_by_me": str(x.get("winner_uid") or "") == str(uid),
+                    "wins_a": wins_a, "wins_b": wins_b,
+                    "total_round": int((x.get("report") or {}).get("total_round") or 0)}
+                   for i, x in enumerate(rounds)],
+        "wins_a": wins_a, "wins_b": wins_b,
+        "next_round": len(rounds),
+        "complete": wins_a >= 2 or wins_b >= 2 or len(rounds) >= 3,
+        "winner_uid": row["player_a"] if wins_a >= 2 else row["player_b"] if wins_b >= 2 else "",
+    }
+
+
+def pvp_arena3v3_series_status(match_id, uid):
+    match_id=str(match_id or "").strip(); uid=str(uid or "").strip()
+    with _lock:
+        db=_db()
+        row=db.execute("SELECT * FROM pvp_matches WHERE id=?",(match_id,)).fetchone()
+        if not row:
+            db.close(); raise ValueError("Không tìm thấy trận 3v3")
+        if uid not in (row["player_a"],row["player_b"]):
+            db.close(); raise ValueError("Bạn không thuộc trận 3v3 này")
+        if str(row["mode"]) != "arena3v3":
+            db.close(); raise ValueError("Trận đấu không phải chế độ 3v3")
+        series=db.execute("SELECT * FROM pvp_arena3v3_series WHERE match_id=?",(match_id,)).fetchone()
+        out=_arena3v3_series_view(row,series,uid) if series else None
+        db.close(); return out
+
+
+def mark_pvp_arena3v3_paid(db, match_id, uid):
+    """Mark one participant's Arena Ticket payment in the same Neon transaction as their profile debit."""
+    match_id=str(match_id or "").strip(); uid=str(uid or "").strip(); now=int(time.time())
+    row=db.execute(_for_update(db,"SELECT * FROM pvp_matches WHERE id=?"),(match_id,)).fetchone()
+    if not row or str(row["mode"])!="arena3v3": raise ValueError("Không tìm thấy trận 3v3")
+    if uid not in (row["player_a"],row["player_b"]): raise ValueError("Bạn không thuộc trận 3v3 này")
+    if row["status"]!="active": raise ValueError("Cả hai người chơi cần vào trận trước khi xác nhận vé")
+    series=db.execute(_for_update(db,"SELECT * FROM pvp_arena3v3_series WHERE match_id=?"),(match_id,)).fetchone()
+    if not series: raise ValueError("Không tìm thấy tiến độ trận 3v3")
+    column="paid_a" if uid==row["player_a"] else "paid_b"
+    newly_paid = not bool(int(series[column]))
+    if newly_paid:
+        db.execute(f"UPDATE pvp_arena3v3_series SET {column}=1,updated_at=? WHERE match_id=?",(now,match_id))
+        series=db.execute("SELECT * FROM pvp_arena3v3_series WHERE match_id=?",(match_id,)).fetchone()
+    result = _arena3v3_series_view(row,series,uid)
+    result['newly_paid'] = newly_paid
+    return result
+
+
+def pvp_arena3v3_series_record(match_id):
+    """Canonical, player-neutral series record for the final result and Battle Record."""
+    with _lock:
+        db=_db()
+        row=db.execute("SELECT * FROM pvp_matches WHERE id=? AND mode='arena3v3'",(str(match_id),)).fetchone()
+        series=db.execute("SELECT rounds FROM pvp_arena3v3_series WHERE match_id=?",(str(match_id),)).fetchone()
+        db.close()
+    if not row or not series:
+        raise ValueError("Không tìm thấy lịch sử loạt đấu 3v3")
+    rounds=json.loads(series['rounds'] or '[]')
+    wins_a=sum(1 for item in rounds if item.get('winner_uid')==row['player_a'])
+    wins_b=sum(1 for item in rounds if item.get('winner_uid')==row['player_b'])
+    return {"match_id":str(row['id']),
+            "rounds":[{"round":int(item.get('round',i)),
+                       "winner_uid":str(item.get('winner_uid') or ""),
+                       "total_round":int((item.get('report') or {}).get('total_round') or 0)}
+                      for i,item in enumerate(rounds)],
+            "wins_a":wins_a,"wins_b":wins_b,
+            "complete":wins_a>=2 or wins_b>=2 or len(rounds)>=3,
+            "winner_uid":row['player_a'] if wins_a>=2 else row['player_b'] if wins_b>=2 else ""}
+
+
+def record_pvp_arena3v3_round(match_id, requester_uid, expected_round, winner_uid, report):
+    """Append exactly one authoritative round. Expected-round protects against double clicks/races."""
+    match_id=str(match_id or "").strip(); requester_uid=str(requester_uid or "").strip()
+    winner_uid=str(winner_uid or "").strip(); expected_round=int(expected_round)
+    if not isinstance(report,dict) or report.get("isWin") not in (0,1):
+        raise ValueError("Kết quả trận 3v3 không hợp lệ")
+    with _lock:
+        db=_db(); db.execute("BEGIN IMMEDIATE")
+        try:
+            row=db.execute(_for_update(db,"SELECT * FROM pvp_matches WHERE id=?"),(match_id,)).fetchone()
+            if not row or str(row["mode"])!="arena3v3": raise ValueError("Không tìm thấy trận 3v3")
+            if requester_uid not in (row["player_a"],row["player_b"]): raise ValueError("Bạn không thuộc trận 3v3 này")
+            if winner_uid not in (row["player_a"],row["player_b"]): raise ValueError("Người thắng trận không hợp lệ")
+            if row["status"]!="active":
+                series=db.execute("SELECT * FROM pvp_arena3v3_series WHERE match_id=?",(match_id,)).fetchone()
+                out=_arena3v3_series_view(row,series,requester_uid)
+                db.commit(); return {"series":out,"already_resolved":True}
+            series=db.execute(_for_update(db,"SELECT * FROM pvp_arena3v3_series WHERE match_id=?"),(match_id,)).fetchone()
+            if not series or not (int(series["paid_a"]) and int(series["paid_b"])):
+                raise ValueError("Cả hai người chơi cần dùng 3 Vé Đấu Trường trước khi bắt đầu")
+            rounds=json.loads(series["rounds"] or "[]")
+            wins_a=sum(1 for x in rounds if x.get("winner_uid")==row["player_a"])
+            wins_b=sum(1 for x in rounds if x.get("winner_uid")==row["player_b"])
+            if wins_a>=2 or wins_b>=2 or len(rounds)>=3:
+                out=_arena3v3_series_view(row,series,requester_uid)
+                db.commit(); return {"series":out,"already_resolved":True}
+            if expected_round != len(rounds):
+                out=_arena3v3_series_view(row,series,requester_uid)
+                db.commit(); return {"series":out,"already_resolved":True}
+            rounds.append({"round":len(rounds),"winner_uid":winner_uid,
+                           "report":{"total_round":int(report.get("total_round") or 0),
+                                     "isWin":int(report["isWin"]),
+                                     "total_harm":int(report.get("total_harm") or 0)}})
+            now=int(time.time())
+            db.execute("UPDATE pvp_arena3v3_series SET rounds=?,updated_at=? WHERE match_id=?",
+                       (json.dumps(rounds,ensure_ascii=False),now,match_id))
+            series=db.execute("SELECT * FROM pvp_arena3v3_series WHERE match_id=?",(match_id,)).fetchone()
+            out=_arena3v3_series_view(row,series,requester_uid)
+            db.commit()
+            return {"series":out,"already_resolved":False,
+                    "complete":out["complete"],"winner_uid":out["winner_uid"]}
+        except Exception:
+            db.rollback(); raise
+        finally:
+            db.close()
+
+
 def pvp_history(uid, limit=50):
     limit=max(1,min(200,int(limit)))
     with _lock:
         db=_db()
-        rows=db.execute("""SELECT id,mode,server_id,server_a,server_b,player_a,player_b,name_a,name_b,
-                                  power_a,power_b,status,winner_uid,created_at,resolved_at,
-                                  rating_delta_a,rating_delta_b
-                           FROM pvp_matches
-                           WHERE player_a=? OR player_b=?
-                           ORDER BY created_at DESC LIMIT ?""",(str(uid),str(uid),limit)).fetchall()
-        out=[dict(r) for r in rows]; db.close(); return out
+        rows=db.execute("""SELECT m.id,m.mode,m.server_id,m.server_a,m.server_b,m.player_a,m.player_b,m.name_a,m.name_b,
+                                  m.power_a,m.power_b,m.status,m.winner_uid,m.created_at,m.resolved_at,
+                                  m.rating_delta_a,m.rating_delta_b,s.rounds AS arena3v3_rounds
+                           FROM pvp_matches m
+                           LEFT JOIN pvp_arena3v3_series s ON s.match_id=m.id
+                           WHERE m.player_a=? OR m.player_b=?
+                           ORDER BY m.created_at DESC LIMIT ?""",(str(uid),str(uid),limit)).fetchall()
+        out=[]
+        for row in rows:
+            item=dict(row)
+            if item.get('mode')=='arena3v3':
+                raw=json.loads(item.pop('arena3v3_rounds') or '[]')
+                item['arena3v3_rounds']=[{"round":int(x.get('round',i)),
+                                          "winner_uid":str(x.get('winner_uid') or ""),
+                                          "total_round":int((x.get('report') or {}).get('total_round') or 0)}
+                                         for i,x in enumerate(raw)]
+                item['arena3v3_wins_a']=sum(1 for x in raw if x.get('winner_uid')==item['player_a'])
+                item['arena3v3_wins_b']=sum(1 for x in raw if x.get('winner_uid')==item['player_b'])
+            else:
+                item.pop('arena3v3_rounds',None)
+            out.append(item)
+        db.close(); return out
 
 
 def heartbeat_pvp_match(match_id, uid, ready=True):
@@ -711,8 +874,34 @@ def current_pvp_season(now=None):
     return f"{t.tm_year:04d}-{t.tm_mon:02d}"
 
 
+def pvp_season_id(mode, server_id="", now=None):
+    """3v3 uses the original 15-day season length, anchored to the real server creation time."""
+    mode=str(mode or "arena").lower(); now=int(now or time.time())
+    if mode != "arena3v3":
+        return current_pvp_season(now)
+    server_id=str(server_id or "S1").strip().upper()
+    with _lock:
+        db=_db()
+        row=db.execute("SELECT created_at FROM worlds WHERE server_id=?",(server_id,)).fetchone()
+        db.close()
+    anchor=int(row["created_at"]) if row else now
+    span=max(1,int(__import__('gxb2.arena3v3',fromlist=['SEASON']).SEASON))
+    index=max(0,(now-anchor)//span)
+    return f"3v3:{server_id}:{index}"
+
+
+def previous_pvp_season_id(mode, server_id="", now=None):
+    mode=str(mode or "arena").lower(); now=int(now or time.time())
+    if mode != "arena3v3":
+        return previous_pvp_season(now)
+    current=pvp_season_id(mode,server_id,now)
+    try: index=int(current.rsplit(':',1)[1])
+    except (ValueError,IndexError): return None
+    return current.rsplit(':',1)[0]+f":{index-1}" if index>0 else None
+
+
 def pvp_rating(uid, server_id, mode, season_id=None):
-    season_id=season_id or current_pvp_season()
+    season_id=season_id or pvp_season_id(mode,server_id)
     with _lock:
         db=_db()
         row=db.execute("""SELECT * FROM pvp_ratings
@@ -729,7 +918,7 @@ def pvp_rating(uid, server_id, mode, season_id=None):
 def pvp_rating_board(mode, season_id=None, limit=100, server_id=None):
     """Rank real active player characters, including those at the initial 1000 rating."""
     mode=str(mode or "arena").lower()
-    season_id=season_id or current_pvp_season()
+    season_id=season_id or pvp_season_id(mode,server_id or "S1")
     limit=max(1,min(500,int(limit)))
     scope=""
     scope_params=()
@@ -795,11 +984,11 @@ def finish_authoritative_pvp(match_id, requester_uid, snapshot_a, snapshot_b, re
         if report.get("isWin") not in (0,1):
             db.rollback(); db.close(); raise ValueError("Battle report không hợp lệ")
         winner_uid=row["player_a"] if int(report["isWin"])==1 else row["player_b"]
-        season_id=current_pvp_season()
         server_a=(row["server_a"] or row["server_id"] or snapshot_a.get("server_id") or "").upper()
         server_b=(row["server_b"] or row["server_id"] or snapshot_b.get("server_id") or "").upper()
         mode=str(row["mode"])
         now=int(time.time())
+        season_id=pvp_season_id(mode,server_a,now)
         _ensure_rating(db,row["player_a"],server_a,mode,season_id,now)
         _ensure_rating(db,row["player_b"],server_b,mode,season_id,now)
         ra=db.execute("""SELECT * FROM pvp_ratings WHERE uid=? AND server_id=? AND mode=? AND season_id=?""",
@@ -808,6 +997,9 @@ def finish_authoritative_pvp(match_id, requester_uid, snapshot_a, snapshot_b, re
                       (row["player_b"],server_b,mode,season_id)).fetchone()
         a_won=winner_uid==row["player_a"]
         delta_a=_elo_delta(int(ra["rating"]),int(rb["rating"]),a_won)
+        arena3v3_meta = report.get("arena3v3") if mode == "arena3v3" else None
+        if isinstance(arena3v3_meta, dict) and bool(arena3v3_meta.get("sweep")):
+            delta_a = int(round(delta_a * 1.25))  # Original Arena 3v3 2–0 bonus.
         delta_b=-delta_a
         db.execute("""UPDATE pvp_ratings
                       SET rating=rating+?,wins=wins+?,losses=losses+?,matches=matches+1,updated_at=?
@@ -817,13 +1009,61 @@ def finish_authoritative_pvp(match_id, requester_uid, snapshot_a, snapshot_b, re
                       SET rating=rating+?,wins=wins+?,losses=losses+?,matches=matches+1,updated_at=?
                       WHERE uid=? AND server_id=? AND mode=? AND season_id=?""",
                    (delta_b,0 if a_won else 1,1 if a_won else 0,now,row["player_b"],server_b,mode,season_id))
+        reward_mail_ids = {}
+        if mode == "arena3v3" and isinstance(arena3v3_meta, dict):
+            from .arena3v3 import DATA as arena3v3_data
+            allowed_items = {str(int(str(row_data.get("item", "0#0")).split("#")[0]))
+                             for row_data in arena3v3_data.get("dropbox", [])}
+            rewards = arena3v3_meta.get("player_rewards") or {}
+            for target_uid, target_server, target_name in (
+                (row["player_a"], server_a, snapshot_a.get("name") or row["name_a"]),
+                (row["player_b"], server_b, snapshot_b.get("name") or row["name_b"]),
+            ):
+                reward_view = rewards.get(str(target_uid)) if isinstance(rewards, dict) else None
+                reward = reward_view.get("reward") if isinstance(reward_view, dict) else None
+                if not isinstance(reward, dict):
+                    raise ValueError("Thiếu phần thưởng máy chủ tính cho một người chơi 3v3")
+                clean = {}
+                for item_id, amount in reward.items():
+                    key = str(int(item_id)); qty = int(amount)
+                    if key not in allowed_items or qty <= 0 or qty > 2_000_000_000:
+                        raise ValueError("Phần thưởng 3v3 không hợp lệ")
+                    clean[key] = qty
+                if not clean:
+                    raise ValueError("Phần thưởng 3v3 rỗng")
+                mail_id = "MAIL-" + uuid.uuid4().hex[:16].upper()
+                db.execute("""INSERT INTO mail(id,uid,server_id,character_name,title,body,attachments,status,created_at,operator)
+                              VALUES(?,?,?,?,?,?,?,'pending',?,'PVP_ARENA3V3')""",
+                           (mail_id,str(target_uid),str(target_server).upper(),str(target_name),
+                            "Thưởng Đấu Trường 3v3",
+                            "Phần thưởng sau loạt đấu Đấu Trường 3v3 đã được gửi. Hãy nhận trong Hòm Thư.",
+                            json.dumps(clean,ensure_ascii=False),now))
+                reward_mail_ids[str(target_uid)] = mail_id
+                _audit(db,"pvp.arena3v3.reward",mail_id,
+                       {"match_id":match_id,"uid":str(target_uid),"attachments":clean},"SYSTEM")
+        stored_report = dict(report)
+        if mode == "arena3v3" and isinstance(stored_report.get("series"), dict):
+            source_series = stored_report["series"]
+            stored_report["series"] = {
+                "match_id": str(source_series.get("match_id") or match_id),
+                "rounds": [{"round":int(x.get("round",i)),
+                            "winner_uid":str(x.get("winner_uid") or ""),
+                            "total_round":int(x.get("total_round") or 0)}
+                           for i,x in enumerate(source_series.get("rounds") or [])],
+                "wins_a":int(source_series.get("wins_a") or 0),
+                "wins_b":int(source_series.get("wins_b") or 0),
+                "complete":bool(source_series.get("complete")),
+                "winner_uid":str(source_series.get("winner_uid") or winner_uid),
+            }
+        if reward_mail_ids:
+            stored_report.setdefault("arena3v3", {})["reward_mail_ids"] = reward_mail_ids
         db.execute("""UPDATE pvp_matches SET
                       status='finished',winner_uid=?,resolved_at=?,
                       snapshot_a=?,snapshot_b=?,battle_report=?,
                       rating_delta_a=?,rating_delta_b=?
                       WHERE id=?""",
                    (winner_uid,now,json.dumps(snapshot_a,ensure_ascii=False),json.dumps(snapshot_b,ensure_ascii=False),
-                    json.dumps(report,ensure_ascii=False),delta_a,delta_b,match_id))
+                    json.dumps(stored_report,ensure_ascii=False),delta_a,delta_b,match_id))
         _audit(db,"pvp.authoritative_finish",match_id,{
             "winner":winner_uid,"mode":mode,"season":season_id,
             "rating_delta_a":delta_a,"rating_delta_b":delta_b,
@@ -1004,6 +1244,155 @@ def update_world_guild(uid, server_id, notice=None):
         _audit(db,"guild.notice",f"{server_id}:{member['guild_id']}",{"uid":uid},"PLAYER")
         db.commit(); db.close()
     return guild_for_player(uid,server_id)
+
+
+
+def _guild_progress_row(db, guild_row, now):
+    """Load or lazily initialize shared Guild v1 activity without inventing members."""
+    gid = int(guild_row['id'])
+    row = db.execute(_for_update(db, "SELECT state FROM world_guild_progress WHERE guild_id=?"), (gid,)).fetchone()
+    if row:
+        try:
+            progress = json.loads(row['state'] or '{}')
+        except (TypeError, json.JSONDecodeError) as exc:
+            raise RuntimeError("Dữ liệu hoạt động Bang Hội bị lỗi; đã dừng để bảo vệ tiến độ") from exc
+        if not isinstance(progress, dict) or not isinstance(progress.get('boss'), dict) or not isinstance(progress.get('orders'), dict):
+            raise RuntimeError("Cấu trúc tiến độ Bang Hội không hợp lệ; đã dừng để bảo vệ dữ liệu")
+    else:
+        import secrets
+        progress = guild_rules.fresh(
+            str(guild_row['name']), 1, str(guild_row.get('notice') or ''),
+            int(guild_row['created_at']), secrets.randbelow)
+        progress['exp'] = int(guild_row.get('exp') or 0)
+        progress['member_daily'] = {}
+        db.execute("""INSERT INTO world_guild_progress(guild_id,state,updated_at)
+                      VALUES(?,?,?) ON CONFLICT(guild_id) DO NOTHING""",
+                   (gid, json.dumps(progress, ensure_ascii=False), int(now)))
+    progress.setdefault('member_daily', {})
+    progress['exp'] = int(guild_row.get('exp') or progress.get('exp') or 0)
+    # Shared Guild activity must never simulate offline NPC sign-ins/catch-up.
+    progress['tick_day'] = clock.day(now)
+    progress['checkin_day'] = ''
+    return progress
+
+
+def _guild_member_activity(progress, uid):
+    return progress.setdefault('member_daily', {}).setdefault(str(uid), {})
+
+
+def _guild_activity_view(progress, uid, now):
+    import copy
+    view = copy.deepcopy(progress)
+    daily = _guild_member_activity(view, uid)
+    view['tick_day'] = clock.day(now)
+    view['checkin_day'] = str(daily.get('checkin_day') or '')
+    personal_boss = daily.get('boss') if isinstance(daily.get('boss'), dict) else {}
+    for key, default in (('fights', 0), ('fight_time', 0), ('exp_day', ''), ('exp_n', 0)):
+        view['boss'][key] = personal_boss.get(key, default)
+    # Open newly unlocked orders in the shared state, but don't backfill NPC EXP.
+    guild_rules.data({'guild': view, 'items': {}}, now)
+    payload = guild_rules.snapshot({'guild': view, 'items': {}, 'max_stage': guild_rules.UNLOCK_STAGE}, now)
+    payload.pop('members', None)  # all membership is sourced from world_guild_members
+    payload['checked_in'] = str(daily.get('checkin_day') or '') == clock.day(now)
+    payload['bosses'] = guild_rules.bosses()
+    return payload
+
+
+def guild_activity_snapshot(uid, server_id):
+    """Current player's personal limits plus the Guild-wide Canteen/Boss progress."""
+    uid = str(uid or '').strip(); server_id = str(server_id or '').strip().upper(); now = int(time.time())
+    with _lock:
+        db = _db()
+        try:
+            db.execute('BEGIN IMMEDIATE')
+            member = _guild_member(db, uid, server_id)
+            if not member:
+                db.rollback(); return None
+            guild_lock = db.execute(_for_update(db, "SELECT * FROM world_guilds WHERE id=?"),
+                                     (int(member['guild_id']),)).fetchone()
+            guild_row = dict(guild_lock) if guild_lock else None
+            if not guild_row:
+                db.rollback(); return None
+            progress = _guild_progress_row(db, guild_row, now)
+            # Persist newly unlocked order slots; tick_day is current so no NPC EXP is generated.
+            guild_rules.data({'guild': progress, 'items': {}}, now)
+            activity = _guild_activity_view(progress, uid, now)
+            state_json = json.dumps(progress, ensure_ascii=False)
+            db.execute("""INSERT INTO world_guild_progress(guild_id,state,updated_at)
+                          VALUES(?,?,?) ON CONFLICT(guild_id) DO UPDATE SET
+                          state=excluded.state,updated_at=excluded.updated_at""",
+                       (int(guild_row['id']), state_json, now))
+            db.commit()
+            return activity
+        except Exception:
+            db.rollback()
+            raise
+        finally:
+            db.close()
+
+
+def guild_activity_action_db(db, uid, server_id, player_state, request, now, fight):
+    """Apply original Cafeteria/Gym rules on a caller-owned transaction.
+
+    Production passes the PlayerEngine's borrowed Neon transaction, so Guild
+    progress and the player's gold/gems/items/profile commit or roll back together.
+    """
+    uid = str(uid or '').strip(); server_id = str(server_id or '').strip().upper()
+    if not isinstance(request, dict):
+        raise ValueError("Dữ liệu hoạt động Bang Hội không hợp lệ")
+    action = str(request.get('action') or '')
+    allowed = {'checkin','donate','order_start','order_complete','order_upgrade','order_refresh','boss_fight'}
+    if action not in allowed:
+        raise ValueError("Thao tác Căng Tin/Phòng Tập không hợp lệ")
+    member = _guild_member(db, uid, server_id)
+    if not member:
+        raise ValueError("Bạn chưa gia nhập Bang Hội")
+    guild_lock = db.execute(_for_update(db, "SELECT * FROM world_guilds WHERE id=?"),
+                             (int(member['guild_id']),)).fetchone()
+    guild_row = dict(guild_lock) if guild_lock else None
+    if not guild_row:
+        raise ValueError("Không tìm thấy Bang Hội")
+    progress = _guild_progress_row(db, guild_row, now)
+    daily = _guild_member_activity(progress, uid)
+    working = json.loads(json.dumps(progress, ensure_ascii=False))
+    working['tick_day'] = clock.day(now)
+    working['checkin_day'] = str(daily.get('checkin_day') or '')
+    personal_boss = daily.get('boss') if isinstance(daily.get('boss'), dict) else {}
+    for key, default in (('fights', 0), ('fight_time', 0), ('exp_day', ''), ('exp_n', 0)):
+        working['boss'][key] = personal_boss.get(key, default)
+    # Original guild.action mutates player resources and the shared Guild snapshot.
+    synthetic = {'guild': working, 'items': player_state.setdefault('items', {}),
+                 'max_stage': guild_rules.UNLOCK_STAGE}
+    try:
+        result = guild_rules.action(synthetic, request, int(now), fight=fight,
+                                    player_level=max(1, int(player_state.get('level') or 1)))
+    except guild_rules.GuildError as exc:
+        raise ValueError(str(exc)) from exc
+
+    # Save check-in and Boss attempts per member; keep Boss unlock/clear state shared.
+    daily['checkin_day'] = str(working.get('checkin_day') or '')
+    daily['boss'] = {key: working['boss'].get(key, default) for key, default in
+                     (('fights', 0), ('fight_time', 0), ('exp_day', ''), ('exp_n', 0))}
+    working['checkin_day'] = ''
+    working['boss']['fights'] = 0
+    working['boss']['fight_time'] = 0
+    working['boss']['exp_day'] = ''
+    working['boss']['exp_n'] = 0
+    working['member_daily'] = progress.get('member_daily', {})
+    # Sync level/EXP to the existing Guild directory row. Existing IDs and members remain intact.
+    level = guild_rules.level_of(int(working.get('exp') or 0))
+    db.execute("UPDATE world_guilds SET exp=?,level=? WHERE id=?",
+               (int(working.get('exp') or 0), int(level), int(guild_row['id'])))
+    db.execute("""INSERT INTO world_guild_progress(guild_id,state,updated_at)
+                  VALUES(?,?,?) ON CONFLICT(guild_id) DO UPDATE SET
+                  state=excluded.state,updated_at=excluded.updated_at""",
+               (int(guild_row['id']), json.dumps(working, ensure_ascii=False), int(now)))
+    _audit(db, 'guild.activity.' + action, f"{server_id}:{guild_row['id']}",
+           {'uid': uid, 'action': action, 'guild_level': int(level)}, 'PLAYER')
+    if action == 'order_complete':
+        from . import missions
+        missions.record(player_state, 'guild_orders', 1, int(now))
+    return result
 
 
 
@@ -1250,21 +1639,32 @@ def pvp_season_reward(mode, rating):
 
 
 def pvp_season_claim_status(uid, server_id, mode):
-    season_id=previous_pvp_season()
+    mode=str(mode or "arena").lower(); server_id=str(server_id or "S1").upper()
+    season_id=previous_pvp_season_id(mode,server_id)
+    if not season_id:
+        return {"season_id":"-","eligible":False,"claimed":False,"reward":{},"rating":0,"rank":0}
     with _lock:
         db=_db()
         row=db.execute("""SELECT * FROM pvp_ratings
                           WHERE uid=? AND server_id=? AND mode=? AND season_id=?""",
-                       (str(uid),str(server_id).upper(),str(mode).lower(),season_id)).fetchone()
+                       (str(uid),server_id,mode,season_id)).fetchone()
         claim=db.execute("""SELECT * FROM pvp_season_claims
                             WHERE uid=? AND server_id=? AND mode=? AND season_id=?""",
-                         (str(uid),str(server_id).upper(),str(mode).lower(),season_id)).fetchone()
+                         (str(uid),server_id,mode,season_id)).fetchone()
         db.close()
     if not row or int(row["matches"])<=0:
-        return {"season_id":season_id,"eligible":False,"claimed":False,"reward":{},"rating":0}
-    reward=pvp_season_reward(mode,int(row["rating"]))
+        return {"season_id":season_id,"eligible":False,"claimed":bool(claim),"reward":{},"rating":int(row["rating"]) if row else 0,"rank":0}
+    rank=0
+    if mode=="arena3v3":
+        from . import arena3v3 as arena3v3_rules
+        board=pvp_rating_board(mode,season_id=season_id,limit=500,server_id=server_id)
+        rank=next((int(item["rank"]) for item in board if str(item["uid"])==str(uid)),0)
+        reward=arena3v3_rules.arena.pairs(arena3v3_rules.rank_award(rank)["season_awards"]) if rank else {}
+    else:
+        reward=pvp_season_reward(mode,int(row["rating"]))
     return {"season_id":season_id,"eligible":bool(reward),"claimed":bool(claim),
-            "reward":reward,"rating":int(row["rating"]),"wins":int(row["wins"]),"losses":int(row["losses"])}
+            "reward":reward,"rating":int(row["rating"]),"rank":rank,
+            "wins":int(row["wins"]),"losses":int(row["losses"])}
 
 
 def claim_pvp_season_reward(uid, server_id, character_name, mode):

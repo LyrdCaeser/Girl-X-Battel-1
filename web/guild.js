@@ -194,6 +194,14 @@ const Guild=(()=>{
   catch(e){note=e.message||'Không thể kết nối Bang Hội';renderOnlineGuild();}
   finally{onlineBusy=false;}
  }
+ async function onlineActivity(action,payload={}){
+  const result=await onlineRequest('/api/world-guild/activity',{action,...payload});
+  if(!result)return null;
+  if(action==='boss_fight')toast(result.win?'Đã đánh bại Boss Bang Hội!':'Boss Bang Hội vẫn còn trụ vững.');
+  else if(action==='order_complete')toast('Đã nhận thưởng Đơn Hàng Bang Hội.');
+  else if(action==='checkin')toast('Điểm danh Bang Hội thành công.');
+  return result;
+ }
  async function loadOnlineGuild(){
   let timer;
   try{
@@ -241,6 +249,13 @@ const Guild=(()=>{
     const totalPower=(g.members||[]).reduce((sum,m)=>sum+Number(m.power||0),0);
     const summary=el('div');summary.append(el('h3','',g.name),el('p','',g.notice||'Chưa có thông báo Bang Hội.'),el('p','',`Cấp ${g.level} · ${g.member_count} thành viên · EXP ${fmt(g.exp)} · Tổng lực chiến ${fmt(totalPower)}`));
     identity.append(summary);b.append(identity);
+    const activity=g.activity;
+    if(activity){
+     const daily=onlinePanel(b),sign=activity.sign_in||{};
+     onlineHeading(daily,'Điểm Danh Bang Hội');
+     onlineText(daily,'p','gd-help',`Thưởng mỗi ngày: ${pairs(sign.coin||'').map(([id,n])=>`${fmt(n)} ${name(id)}`).join(' · ')||'—'} · +${fmt(sign.exp||0)} EXP Bang Hội`);
+     onlineButton(daily,activity.checked_in?'Đã điểm danh hôm nay':'Điểm Danh Nhận Thưởng',()=>onlineActivity('checkin'),!!activity.checked_in);
+    }
     if(['leader','deputy'].includes(g.role)){
      const panel=onlinePanel(b),noticeInput=el('textarea','gd-input');noticeInput.placeholder='Thông báo Bang Hội';noticeInput.maxLength=180;noticeInput.value=g.notice||'';
      panel.append(el('label','gd-online-label','Thông báo Bang Hội'),noticeInput);
@@ -299,13 +314,60 @@ const Guild=(()=>{
      b.append(row);
     }
     if(!(d.guilds||[]).length)onlineText(b,'p','gd-help','Chưa có Bang Hội nào trên máy chủ này.');
-   }else if(onlineSection==='cafeteria'||onlineSection==='gym'){
-    const cafeteria=onlineSection==='cafeteria';
-    onlineHeading(b,cafeteria?'Căng Tin Bang Hội':'Phòng Tập Bang Hội');
-    onlineText(b,'p','gd-help',cafeteria
-      ?'Căng Tin gốc gồm Cối Xay, Đơn Hàng, nâng cấp đơn và nhận thưởng. Phần này chưa được chuyển sang trạng thái dùng chung trên PostgreSQL, nên đang tạm khóa để không dùng đơn hàng/NPC giả hoặc ghi tài nguyên sai.'
-      :'Phòng Tập gốc gồm chuỗi Boss Bang Hội, giới hạn lượt, hồi lượt, chiến đấu bằng đội hình thật và thưởng theo kết quả. Phần này chưa được chuyển sang PostgreSQL, nên đang tạm khóa để không dùng tiến trình Boss cục bộ hoặc dữ liệu giả.');
-    onlineText(b,'p','gd-help','Dữ liệu Bang Hội online hiện tại vẫn được giữ nguyên. Không có thao tác ghi tài nguyên hoặc tiến trình nào được thực hiện ở màn này.');
+   }else if(onlineSection==='cafeteria'){
+    const a=g.activity;
+    onlineHeading(b,'Căng Tin Bang Hội');
+    if(!a){onlineText(b,'p','gd-help','Chưa tải được tiến độ Căng Tin từ máy chủ.');onlineButton(b,'Tải lại',()=>loadOnlineGuild());}
+    else{
+     onlineText(b,'p','gd-help',`Căng Tin mở từ cấp ${a.orders.open_level}. Bang Hội hiện cấp ${a.level}.`);
+     const mill=onlinePanel(b);onlineHeading(mill,'Cối Xay');
+     onlineText(mill,'p','gd-online-message',`Cấp ${a.mill.level}/${a.mill.max_level} · Tích lũy ${fmt(a.mill.gold)} Vàng · Hệ số thưởng ${Math.round(Number(a.mill.factor||10000)/100)}%`);
+     if(a.mill.next_gold!=null)onlineText(mill,'p','gd-help',`Mốc Cối Xay tiếp theo: ${fmt(a.mill.next_gold)} Vàng.`);
+     const donateOptions=pairs(a.mill.donate||'');
+     donateOptions.forEach(([id,n],index)=>onlineButton(mill,`Quyên góp ${fmt(n)} ${name(id)}`,()=>onlineConfirm(`Dùng ${fmt(n)} ${name(id)} cho Cối Xay Bang Hội?`,()=>onlineActivity('donate',{index}),'Xác nhận quyên góp')));
+     const orders=onlinePanel(b);onlineHeading(orders,`Đơn Hàng · ${a.orders.list.length}/${a.orders.slots} ô`);
+     if(!a.orders.open)onlineText(orders,'p','gd-help',`Mở khóa khi Bang Hội đạt cấp ${a.orders.open_level}.`);
+     for(const [index,o] of (a.orders.list||[]).entries()){
+      const row=el('div','gd-online-member'),meta=el('div','gd-online-member-meta');
+      const title=el('b','',`Đơn hàng ${index+1} · Cấp ${o.id}`);
+      const rewards=el('small','',`Thưởng: ${pairs(o.awards||'').map(([id,n])=>`${fmt(Math.floor(Number(n)*Number(a.mill.factor||10000)/10000))} ${name(id)}`).join(' · ')}`);
+      meta.append(title,rewards);row.append(meta);
+      if(!Number(o.start)){
+       row.append(btn('gd-go','Bắt Đầu',()=>onlineActivity('order_start',{slot:index})));
+       if(o.up_cost)row.append(btn('gd-go','Nâng Cấp Đơn',()=>onlineConfirm(`Dùng ${pairs(o.up_cost).map(([id,n])=>`${fmt(n)} ${name(id)}`).join(' · ')} để nâng cấp đơn hàng?`,()=>onlineActivity('order_upgrade',{slot:index}),'Nâng cấp đơn')));
+      }else if(Number(o.ready_at)<=Date.now()/1000){
+       row.append(btn('gd-go','Nhận Thưởng',()=>onlineActivity('order_complete',{slot:index})));
+      }else{
+       row.append(el('small','gd-online-note',`Đang xử lý · còn ${hms(Number(o.ready_at)-Date.now()/1000)}`));
+      }
+      orders.append(row);
+     }
+     if(a.orders.refresh_at&&Number(a.orders.refresh_at)<=Date.now()/1000)onlineButton(orders,'Làm Mới Đơn Hàng',()=>onlineActivity('order_refresh'));
+     else if(a.orders.refresh_at)onlineText(orders,'p','gd-help',`Có thể làm mới đơn sau ${hms(Number(a.orders.refresh_at)-Date.now()/1000)}.`);
+    }
+    onlineButton(b,'Quay lại Tổng Quan',()=>{onlineSection='office';renderOnlineGuild();});
+   }else if(onlineSection==='gym'){
+    const a=g.activity;
+    onlineHeading(b,'Phòng Tập · Boss Bang Hội');
+    if(!a){onlineText(b,'p','gd-help','Chưa tải được tiến độ Boss từ máy chủ.');onlineButton(b,'Tải lại',()=>loadOnlineGuild());}
+    else{
+     const bossState=a.boss||{},boss=(a.bosses||[]).find(x=>Number(x.id)===Number(bossState.current));
+     onlineText(b,'p','gd-help',`Đã đánh bại ${bossState.cleared.length}/${bossState.max} Boss · Giới hạn EXP Bang Hội còn ${bossState.exp_left} lượt thắng hôm nay.`);
+     if(boss){
+      const panel=onlinePanel(b);onlineHeading(panel,`Boss ${boss.id} · Cấp ${boss.lv}`);
+      onlineText(panel,'p','gd-online-message',`HP ${fmt(boss.hp)} · Lực Chiến đề xuất ${fmt(boss.power)}`);
+      onlineText(panel,'p','gd-help',`Thưởng mỗi trận: ${pairs(boss.battle_awards||'').map(([id,n])=>`${fmt(n)} ${name(id)}`).join(' · ')}`);
+      onlineText(panel,'p','gd-help',`Thưởng khi chiến thắng: ${pairs(boss.kill_awards||'').map(([id,n])=>`${fmt(n)} ${name(id)}`).join(' · ')} · +${fmt(boss.guild_exp)} EXP Bang Hội (tối đa ${bossState.exp_left} lượt tính EXP/ngày của bạn).`);
+      const cost=bossState.cost;
+      if(cost===null){
+       onlineText(panel,'p','gd-online-note',`Bạn đã dùng hết 4 lượt. Hồi lượt sau ${hms(Number(bossState.fight_at||0)-Date.now()/1000)}.`);
+      }else{
+       const costText=Object.entries(cost||{}).filter(([,n])=>Number(n)>0).map(([id,n])=>`${fmt(n)} ${name(id)}`).join(' · ')||'Miễn phí';
+       onlineText(panel,'p','gd-help',`Lượt ${Number(bossState.fights||0)+1}/4 · Chi phí: ${costText}.`);
+       onlineButton(panel,'Khiêu Chiến Boss',()=>onlineConfirm(`Dùng đội hình hiện tại khiêu chiến Boss ${boss.id}? Chi phí: ${costText}.`,()=>onlineActivity('boss_fight',{boss:Number(boss.id)}),'Xác nhận khiêu chiến'));
+      }
+     }else onlineText(b,'p','gd-help','Không tìm thấy dữ liệu Boss hiện tại.');
+    }
     onlineButton(b,'Quay lại Tổng Quan',()=>{onlineSection='office';renderOnlineGuild();});
    }else if(onlineSection==='ranking'){
     onlineHeading(b,'Xếp Hạng Bang Hội · '+(g.server_id||''));
