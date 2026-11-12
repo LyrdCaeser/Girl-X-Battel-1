@@ -567,6 +567,7 @@ def enqueue_pvp(uid, server_id, character_name, mode, power=0):
                                            WHERE mode=? AND status='waiting' AND uid<>? AND server_id<>?
                                            ORDER BY ABS(power-?),joined_at LIMIT 1""", skip_locked=True),
                                         (mode,uid,server_id,power)).fetchone()
+        else:
             opponent=db.execute(_for_update(db, """SELECT * FROM pvp_queue
                                    WHERE mode=? AND status='waiting' AND server_id=? AND uid<>?
                                    ORDER BY ABS(power-?),joined_at LIMIT 1""", skip_locked=True),
