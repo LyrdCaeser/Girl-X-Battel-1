@@ -31,7 +31,7 @@ const CampaignFlow=(()=>{
   setTimeout(mid,2500);});}
  // --- hero icons (HeroIcon: avatar, hero_frame halves, faction, level, stars) -------------------------------------------
  function heroIcon(h,cls='cf-hero'){const g=girlsCatalog.find(x=>x.id===h.table_id);const w=el('div',cls);const star=Number(h.stars)||g?.stars||1;
-  const av=img('/assets/profile/partner_avatar_'+h.table_id+'.png','cf-av');av.onerror=()=>{const a2=typeof artId==='function'?artId(h.table_id):h.table_id;if(av.dataset.f){av.onerror=null;av.src='/assets/cards/partner_card_'+a2+'.png';return;}av.dataset.f=1;av.src='/assets/profile/partner_avatar_'+a2+'.png';};
+  const av=img('/assets/avatar-hd/profile/partner_avatar_'+h.table_id+'.webp?v=1.1.2','cf-av');av.onerror=()=>{const a2=typeof artId==='function'?artId(h.table_id):h.table_id;if(av.dataset.f){av.onerror=null;av.src='/assets/cards/partner_card_'+a2+'.png';return;}av.dataset.f=1;av.src='/assets/avatar-hd/profile/partner_avatar_'+a2+'.webp?v=1.1.2';};
   w.append(av,img(R('hero_frame'),'cf-frame l'),img(R('hero_frame'),'cf-frame r'));
   if(g?.group){const b=el('span','cf-group');b.append(img(R('img_group'+g.group)));w.append(b);}
   w.append(el('b','cf-lv',String(h.lv||1)));const st=el('span','cf-stars'+(star>5?' red':''));const n=star>5?Math.min(4,star-5):star;for(let i=0;i<n;i++)st.append(img(R(star>5?'star_red':'star')));w.append(st);w.title=h.name||g?.name||'';return w;}
