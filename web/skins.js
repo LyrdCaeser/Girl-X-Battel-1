@@ -20,7 +20,7 @@ const Skins=(()=>{
   art.style.backgroundImage=`url('${src}')`+(s.base?'':`,url('${detailImage(s.id)}')`);c.append(art,el('i','sk-frame'));
   const g=Number(hero.group||girlsCatalog.find(r=>r.id===hero.table_id)?.group||0);if(g){const f=el('img','sk-group');f.src=U+'img_group'+g+'.png';f.alt='';c.append(f);}
   if(worn){const w=el('img','sk-worn');w.src=U+'skin_icon01.png';w.alt='✓';c.append(w);}
-  if(!s.base){c.append(el('span','sk-amount','Amount:'+own));const r=Number(s.rarity||0);if(r){const q=el('span','sk-rarity',RARITY[r]);q.style.backgroundImage=`url('${U}collection_dress_new_bg_${r}.png')`;c.append(q);}}
+  if(!s.base){c.append(el('span','sk-amount','Số lượng: '+own));const r=Number(s.rarity||0);if(r){const q=el('span','sk-rarity',RARITY[r]);q.style.backgroundImage=`url('${U}collection_dress_new_bg_${r}.png')`;c.append(q);}}
   c.append(el('b','sk-name',s.base?baseName(hero):s.name));return c;}
  async function detail(hero){const host=$('detail-skin-list');if(!host)return;await load();host.replaceChildren();
   const mine=Object.entries(cat.skins).filter(([,s])=>s.partners.includes(hero.table_id)).map(([id,s])=>({id:Number(id),...s}));

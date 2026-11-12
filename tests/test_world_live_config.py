@@ -64,6 +64,14 @@ class WorldLiveConfigTests(unittest.TestCase):
         reset = world_live_config.reset("S9")
         self.assertEqual(reset["event_rewards"]["multiplier"], 1.0)
 
+    def test_cached_world_config_is_detached_and_invalidates_after_save(self):
+        cfg = world_live_config.get("S8")
+        self.assertEqual(world_live_config.shop_cost(100, "S8"), 100)
+        cfg["shop"]["price_multiplier"] = 50
+        self.assertEqual(world_live_config.shop_cost(100, "S8"), 100)
+        world_live_config.save("S8", cfg)
+        self.assertEqual(world_live_config.shop_cost(100, "S8"), 5000)
+
 
 if __name__ == "__main__":
     unittest.main()

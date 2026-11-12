@@ -4,6 +4,7 @@ import copy
 import json
 import math
 import re
+import threading
 from pathlib import Path
 
 from . import local_config
@@ -11,6 +12,8 @@ from . import local_config
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_PATH = ROOT / "data" / "world_live_defaults.json"
 STATE_ROOT = ROOT / "state" / "worlds"
+_CACHE_LOCK = threading.RLock()
+_CACHE = {}
 
 _FALLBACK = {
     "shop": {"price_multiplier": 1.0, "disabled_shop_ids": []},
@@ -89,9 +92,30 @@ def path_for(server_id):
     return STATE_ROOT / _server_id(server_id) / "live_config.json"
 
 
+def _signature(path):
+    try:
+        stat = path.stat()
+        return (str(path), stat.st_ino, stat.st_mtime_ns, stat.st_size)
+    except OSError:
+        return (str(path), None, None)
+
+
+def _effective(server_id):
+    """Cached per-server validated config with atomic-file-save invalidation."""
+    sid = _server_id(server_id)
+    override = path_for(sid)
+    signature = (_signature(DEFAULT_PATH), _signature(override))
+    with _CACHE_LOCK:
+        cached = _CACHE.get(sid)
+        if not cached or cached[0] != signature:
+            defaults = _merge(_FALLBACK, _read(DEFAULT_PATH))
+            value = validate(_merge(defaults, _read(override)))
+            _CACHE[sid] = (signature, value)
+        return _CACHE[sid][1]
+
+
 def get(server_id):
-    defaults = _merge(_FALLBACK, _read(DEFAULT_PATH))
-    return validate(_merge(defaults, _read(path_for(server_id))))
+    return copy.deepcopy(_effective(server_id))
 
 
 def save(server_id, raw):
@@ -113,29 +137,29 @@ def reset(server_id):
 
 
 def shop_enabled(server_id, shop_id):
-    return int(shop_id) not in set(get(server_id)["shop"]["disabled_shop_ids"])
+    return int(shop_id) not in _effective(server_id)["shop"]["disabled_shop_ids"]
 
 
 def shop_cost(value, server_id):
     base = local_config.shop_cost(value)
-    mult = get(server_id)["shop"]["price_multiplier"]
+    mult = _effective(server_id)["shop"]["price_multiplier"]
     return max(0, int(math.ceil(base * mult)))
 
 
 def event_shop_cost(value, server_id):
     base = local_config.shop_cost(value)
-    mult = get(server_id)["event_shop"]["price_multiplier"]
+    mult = _effective(server_id)["event_shop"]["price_multiplier"]
     return max(0, int(math.ceil(base * mult)))
 
 
 def event_reward(value, server_id):
     base = local_config.scale_reward(value)
-    mult = get(server_id)["event_rewards"]["multiplier"]
+    mult = _effective(server_id)["event_rewards"]["multiplier"]
     return max(0, int(math.floor(base * mult)))
 
 
 def event_enabled(server_id, kind):
-    cfg = get(server_id)["event_rewards"]
+    cfg = _effective(server_id)["event_rewards"]
     if kind == "checkin":
         return bool(cfg["checkin_enabled"])
     if kind == "sevenday":
@@ -152,7 +176,7 @@ def summon_weight(row, partner_table, server_id):
     if not girl:
         return base
     star = max(1, min(6, int(girl.get("max_star") or 1)))
-    mult = get(server_id)["summon_rate"]["star_multiplier"].get(str(star), 1.0)
+    mult = _effective(server_id)["summon_rate"]["star_multiplier"].get(str(star), 1.0)
     return max(0, int(round(base * mult)))
 
 

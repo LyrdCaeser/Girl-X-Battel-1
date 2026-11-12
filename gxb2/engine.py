@@ -132,6 +132,7 @@ class Engine:
     def __init__(self, db_path: Path, developer=False, clock_source=None, identity=None):
         self._raw_now = clock_source or time.time
         self.developer = developer
+        self.identity = (str(identity[0]), str(identity[1]).upper()) if identity else None
         self.now = self._monotonic_now
         self._floor = self._floor_saved = 0
         db_path = Path(db_path)
@@ -338,6 +339,132 @@ class Engine:
                 'guild_skills': guild_lab.skills(state),
                 'chime_bonus': chimes.bonus(state),
             }
+
+    def ensure_pvp_arena3v3(self):
+        """Initialize original 3v3 entry rewards exactly once, without creating NPC ladder data."""
+        with self.lock:
+            self.db.execute('BEGIN IMMEDIATE')
+            try:
+                state = self._load()
+                if 'arena3v3' not in state:
+                    state['arena3v3'] = {'teams': []}
+                    for item_id, amount in arena3v3.OPEN.items():
+                        key = str(item_id)
+                        state.setdefault('items', {})[key] = int(state['items'].get(key, 0)) + int(amount)
+                    self._save_profile(state)
+                    self.db.commit()
+                else:
+                    # Preserve legacy player's previous unlock/ticket grant and stored teams.
+                    state['arena3v3'].setdefault('teams', [])
+                    if not isinstance(state['arena3v3']['teams'], list):
+                        raise GameError('Dữ liệu đội hình 3v3 bị lỗi; vui lòng liên hệ QTV.')
+                    self.db.commit()
+                return {'teams': self.pvp_arena3v3_teams(),
+                        'ticket_cost': arena3v3.COST,
+                        'tickets': int(state.get('items', {}).get('34', 0))}
+            except Exception:
+                self.db.rollback()
+                raise
+
+    def pvp_arena3v3_teams(self):
+        """Return the saved three-team formation as owned partner IDs/positions only."""
+        with self.lock:
+            state = self._load()
+            raw = (state.get('arena3v3') or {}).get('teams') or []
+            if not raw:
+                return []
+            owned = {int(x['partner_id']) for x in state.get('partners', [])}
+            try:
+                return arena3v3.check_teams(raw, owned)
+            except (ValueError, TypeError, KeyError) as exc:
+                raise GameError('Đội hình 3v3 đã lưu không còn hợp lệ. Vui lòng thiết lập lại.') from exc
+
+    def save_pvp_arena3v3_teams(self, teams):
+        """Persist exactly three non-overlapping teams in this player's authoritative profile."""
+        if not isinstance(teams, list) or len(teams) != 3:
+            raise GameError('Đấu Trường 3v3 cần đúng 3 đội hình.')
+        with self.lock:
+            self.db.execute('BEGIN IMMEDIATE')
+            try:
+                state = self._load()
+                owned = {int(x['partner_id']) for x in state.get('partners', [])}
+                clean = arena3v3.check_teams(teams, owned)
+                state.setdefault('arena3v3', {})['teams'] = clean
+                self._save_profile(state)
+                self.db.commit()
+                return {'teams': clean, 'team_count': len(clean),
+                        'goddess_count': sum(len(x) for x in clean)}
+            except Exception as exc:
+                self.db.rollback()
+                if isinstance(exc, (GameError, ValueError)):
+                    raise GameError(str(exc)) from exc
+                raise
+
+    def pvp_arena3v3_snapshot(self):
+        """Build all 3 saved teams from the real roster; no robots/NPCs or client-supplied stats."""
+        with self.lock:
+            state = self._load()
+            saved = self.pvp_arena3v3_teams()
+            if len(saved) != 3:
+                raise GameError('Hãy thiết lập và lưu đủ 3 đội hình trước khi ghép trận.')
+            by_id = {int(x['partner_id']): x for x in state.get('partners', [])}
+            teams = []
+            for row in saved:
+                units = []
+                for slot in sorted(row, key=lambda x: int(x['pos'])):
+                    partner = by_id.get(int(slot['partner_id']))
+                    if not partner:
+                        raise GameError('Một Nữ Thần trong đội 3v3 không còn thuộc tài khoản.')
+                    unit = copy.deepcopy(partner)
+                    unit['pos'] = int(slot['pos'])
+                    units.append(unit)
+                teams.append(units)
+            power = sum(40 * max(1, int(x.get('lv') or 1)) + 60 for team in teams for x in team)
+            return {'uid': state.get('uid'), 'server_id': state.get('server_id'),
+                    'name': state.get('name'), 'level': player_level(state),
+                    'power': int(power), 'teams': teams, 'pet': self.battle_pet(state),
+                    'guild_skills': guild_lab.skills(state), 'chime_bonus': chimes.bonus(state)}
+
+    def pay_pvp_arena3v3_ticket(self, match_id, uid):
+        """Debit this player's 3 Arena Tickets and mark payment atomically in Neon."""
+        separate_live = not isinstance(self.db, ScopedPostgresPlayerDB)
+        with self.lock:
+            self.db.execute('BEGIN IMMEDIATE')
+            live_db = None
+            try:
+                state = self._load()
+                if str(state.get('uid') or '') != str(uid):
+                    raise GameError('Tài khoản hiện tại không khớp trận 3v3.')
+                if separate_live:
+                    live_db = live_service._db()
+                    live_db.execute('BEGIN IMMEDIATE')
+                else:
+                    live_db = self.db.borrowed_live_transaction()
+                progress = live_service.mark_pvp_arena3v3_paid(live_db, match_id, uid)
+                current = int(state.setdefault('items', {}).get('34', 0))
+                if progress.get('newly_paid'):
+                    if current < arena3v3.COST:
+                        raise GameError(f'Cần {arena3v3.COST} Vé Đấu Trường để tham gia loạt 3v3.')
+                    state['items']['34'] = current - arena3v3.COST
+                    self._save_profile(state)
+                if separate_live:
+                    live_db.commit()
+                self.db.commit()
+                return {'series': progress, 'ticket_cost': arena3v3.COST,
+                        'tickets_left': int(state['items']['34'])}
+            except Exception as exc:
+                try: self.db.rollback()
+                except Exception: pass
+                if separate_live and live_db is not None:
+                    try: live_db.rollback()
+                    except Exception: pass
+                if isinstance(exc, (GameError, ValueError)):
+                    raise GameError(str(exc)) from exc
+                raise
+            finally:
+                if separate_live and live_db is not None:
+                    try: live_db.close()
+                    except Exception: pass
 
     def claim_live_mail(self, mail_id):
         with self.lock:
@@ -705,8 +832,15 @@ class Engine:
         state.setdefault('uid', 'GXB3-000001')
         state.setdefault('server_id', 'S1')
         try:
-            player = live_service.register_player(state['uid'], state['server_id'], state['name'])
-            state['account_status'] = player.get('status','active') if player else 'active'
+            # Authenticated PlayerEngine instances are only created after auth.session
+            # has verified the UID + server and the live player row. Re-upserting that
+            # same player on every snapshot adds a write transaction to every action.
+            # Keep registration for the legacy shared/developer engine only.
+            if not self.identity:
+                player = live_service.register_player(state['uid'], state['server_id'], state['name'])
+                state['account_status'] = player.get('status','active') if player else 'active'
+            else:
+                state['account_status'] = 'active'  # current account status is enforced by auth_context()
             state['mail_info'] = live_service.mailbox(state['uid'], state['server_id'])
             state['worlds'] = live_service.worlds()
         except Exception:
@@ -818,7 +952,7 @@ class Engine:
                 awake = {**awake, 'cost': {str(k): local_config.scale_cost(v) for k, v in awake['cost'].items()}}
             state['roster'].append({**partner, 'name': TABLES['names'].get(str(partner['table_id']), str(partner['table_id'])),
                                     'local_promotion': int(partner['table_id']) in local_promotion.BASE, 'stars': stars, 'level_cap': self.level_cap(partner), 'next_cost': cost,
-                                    'group': int(row['group']), 'job': int(row['job']), 'max_grade': max_grade,
+                                    'group': int(row['group']), 'job': int(row['job']), 'awake25_identity': [list(x) for x in self.awake25_identity(row)], 'awake25_valid_goddess': self.awake25_valid_goddess(row), 'max_grade': max_grade,
                                     'grade_cost': {k: local_config.scale_cost(v) for k, v in item_pairs(row.get(f'grade_exp{grade+1}')).items()} if grade < max_grade else {},
                                     'next_awake': awake if awake and awake.get('kind') == 'awake' else None,
                                     'star_10': int(row.get('star_10') or 0), 'astral_list': int(row.get('star_origin') or 0) if stars >= 15 else 0, 'namesake': int(str(row.get('material') or '').split('|')[0] or 0) if int(row['max_star']) > 5 else int(partner['table_id']), 'potential_options': [[int(x) for x in st.split('#') if x] for st in str(row.get('potential') or '').split('|') if st] if int(row['max_star']) == 10 else [],
@@ -1522,6 +1656,73 @@ class Engine:
                 raise
             result.pop('report_index', None)
             if reports: result['report'] = reports[-1]
+            return {'state': self.snapshot(), **result}
+
+    def world_guild_activity_action(self, request, uid, server_id):
+        """Shared Neon Guild Cafeteria/Gym. Player rewards and Guild progress share one PG transaction."""
+        if not isinstance(request, dict):
+            raise GameError('Dữ liệu hoạt động Bang Hội không hợp lệ')
+        with self.lock:
+            self.db.execute('BEGIN IMMEDIATE')
+            live_db = None
+            separate_live = not isinstance(self.db, ScopedPostgresPlayerDB)
+            reports = []
+            try:
+                state = self._load()
+                if separate_live:
+                    # SQLite is used only by isolated tests/dev; production PlayerEngine
+                    # uses ScopedPostgresPlayerDB and one borrowed Neon transaction.
+                    live_db = live_service._db()
+                    live_db.execute('BEGIN IMMEDIATE')
+                else:
+                    live_db = self.db.borrowed_live_transaction()
+
+                def fight(row):
+                    formation = self.validate_formation(state, state['formation'])
+                    owned = {x['partner_id']: x for x in state['partners']}
+                    team_a = [{**copy.deepcopy(owned[x['partner_id']]), 'pos': x['pos']} for x in formation]
+                    battle = TABLES['battle'][str(row['battle_id'])]
+                    team_b = [{'table_id': int(t), 'pos': int(q), 'isMonster': True}
+                              for t, q in zip(str(battle['monsters']).split('|'), str(battle['stands']).split('|'))]
+                    report = self._simulate(state, team_a, team_b, int(row['battle_id']),
+                                            secrets.randbelow(233280), self.battle_pet(state),
+                                            guild_skills_a=guild_lab.skills(state))
+                    report['map_asset'] = battle['map']; report['display_units'] = []
+                    for side in ('teamA', 'teamB'):
+                        for unit in report[side]:
+                            tid = int(TABLES['monster'][str(unit['table_id'])]['partner_link']) if unit.get('isMonster') else unit['table_id']
+                            report['display_units'].append({'pos': unit['pos'] + (6 if side == 'teamB' else 0),
+                                                            'table_id': tid,
+                                                            'name': TABLES['names'].get(str(tid), f'Quái vật {tid}'),
+                                                            'level': unit['level']})
+                    growth_diary.record(state, 'growth_guild_damage',
+                                        int(report.get('total_harm') or sum(int(h.get('hurt', 0)) for h in report.get('hurts', []) if int(h.get('pos', 0)) <= 6)))
+                    mark_bosses(report)
+                    reports.append(report)
+                    return bool(report.get('isWin')), len(reports) - 1
+
+                result = live_service.guild_activity_action_db(
+                    live_db, uid, server_id, state, request, self.now(), fight)
+                self._save_profile(state)
+                if separate_live:
+                    live_db.commit()
+                self.db.commit()
+            except Exception as exc:
+                try: self.db.rollback()
+                except Exception: pass
+                if separate_live and live_db is not None:
+                    try: live_db.rollback()
+                    except Exception: pass
+                if isinstance(exc, (ValueError, GameError)):
+                    raise GameError(str(exc)) from exc
+                raise
+            finally:
+                if separate_live and live_db is not None:
+                    try: live_db.close()
+                    except Exception: pass
+            result.pop('report_index', None)
+            if reports:
+                result['report'] = reports[-1]
             return {'state': self.snapshot(), **result}
 
     def pirate_action(self, request):

@@ -1,15 +1,29 @@
+import os
+import platform
 import shutil
 import tempfile
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 from gxb2.engine import Engine
-from gxb2.battle import simulate, ONLINE_BATTLE_ID, normalize_online_seed
+from gxb2.battle import simulate, ONLINE_BATTLE_ID, normalize_online_seed, luajit_runtime
 from gxb2 import chimes, guild_lab, home_systems
 
 
 @unittest.skipUnless(shutil.which("luajit"), "LuaJIT is required for runtime battle smoke test")
 class BattleRuntimeTests(unittest.TestCase):
+
+    def test_bundled_linux_runtime_is_preferred_over_host_luajit(self):
+        if not (platform.system() == "Linux" and platform.machine().lower() in ("x86_64", "amd64")):
+            self.skipTest("Bundled Linux x86-64 runtime is not applicable")
+        expected = Path(__file__).resolve().parents[1] / "runtime" / "luajit-linux-x64"
+        if not expected.is_file():
+            self.skipTest("Bundled runtime is not present")
+        with patch.dict(os.environ):
+            os.environ.pop("GXB2_LUAJIT", None)
+            self.assertEqual(luajit_runtime(), expected)
+
     def test_symmetric_pvp_bonus_payload_runs_in_luajit(self):
         with tempfile.TemporaryDirectory() as tmp:
             engine = Engine(Path(tmp) / "player.sqlite3")

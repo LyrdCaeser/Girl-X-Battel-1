@@ -109,10 +109,10 @@ window.GxbAuth=(()=>{
       gm.onclick=async()=>{try{await window.AdminPanel?.open();}catch(e){window.GirlUI?.notice?.(e.message,{title:'Quản trị'});}};
       infoPage.append(gm);
     }
-    const row=el('div','profile-setting-row auth-account-row');const div=el('div');div.append(el('strong','','Tài khoản'),el('small','',session?.account?`${session.account.username} · ${session.account.display_uid||session.account.uid}`:''));
+    const row=settings.querySelector('.profile-setting-row:not(.auth-server-row)')||el('div','profile-setting-row');const icon=row.querySelector('img');row.classList.add('auth-account-row');row.replaceChildren();if(icon)row.append(icon);const div=el('div');div.append(el('strong','','Tài khoản'),el('small','',session?.account?`${session.account.username} · ${session.account.display_uid||session.account.uid}`:''));
     const sessionsBtn=el('button','auth-small-btn','Thiết bị');sessionsBtn.onclick=openSessions;
     const recoveryBtn=el('button','auth-small-btn','Mã khôi phục');recoveryBtn.onclick=rotateRecovery;
-    const out=el('button','auth-small-btn','Đăng xuất');out.onclick=async()=>{try{await request('/api/auth/logout',{});}finally{location.reload();}};row.append(div,sessionsBtn,recoveryBtn,out);settings.append(row);
+    const out=el('button','auth-small-btn','Đăng xuất');out.onclick=async()=>{try{await request('/api/auth/logout',{});}finally{location.reload();}};row.append(div,sessionsBtn,recoveryBtn,out);if(!row.isConnected)settings.append(row);
 
     const serverRow=el('div','profile-setting-row auth-server-row');const host=el('div');host.append(el('strong','','Server / Nhân Vật'),el('small','',session?`${session.account.server_id} · ${session.character_name}`:''));
     const select=worldSelect('auth-account-server');select.value=session?.account?.server_id||'S1';

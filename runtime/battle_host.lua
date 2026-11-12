@@ -54,11 +54,34 @@ env.xyd.models.reportPetAttr=env.require('app.models.ReportPetAttr').new()
 -- awake indices and passes local_growth separately. Same math in detail/combat.
 local nativeAttr=env.xyd.models.heroAttr.attr
 env.xyd.models.heroAttr.attr=function(self,hero,params)
+ local awake=hero.getAwake and tonumber(hero:getAwake()) or 0
+ local breakSteps=math.max(0,awake-5)
+ -- The archived HeroAttr bytecode only has native growth through 15★.
+ -- For 16–25★, calculate the exact native 15★ baseline, then apply the
+ -- approved per-star growth to the same HP/ATK/DEF fields used by combat.
+ if breakSteps>0 then hero.awake_=5 end
  local result=nativeAttr(self,hero,params)
- local n=hero.local_growth or 0
- if n>0 then
-  local before=(result.atk or 0)+(result.arm or 0)+math.floor((result.hp or 0)/6)
-  for _,key in ipairs({'hp','atk','arm'})do if result[key] then result[key]=math.floor(result[key]*(1+0.25*n)) end end
+ if breakSteps>0 then hero.awake_=awake end
+ local before=(result.atk or 0)+(result.arm or 0)+math.floor((result.hp or 0)/6)
+ local localGrowth=tonumber(hero.local_growth or 0) or 0
+ if localGrowth>0 then
+  for _,key in ipairs({'hp','atk','arm'})do if result[key] then result[key]=math.floor(result[key]*(1+0.25*localGrowth)) end end
+ end
+ if breakSteps>0 then
+  local hpGrowth={14.56,14.56,9.62,9.62}
+  local atkGrowth={10.40,10.40,7.49,7.49}
+  local hp=tonumber(result.hp or 0);local atk=tonumber(result.atk or 0)
+  for step=1,breakSteps do
+   local idx=((step-1)%4)+1
+   hp=math.floor(hp*(1+hpGrowth[idx]/100))
+   atk=math.floor(atk*(1+atkGrowth[idx]/100))
+  end
+  result.hp=hp;result.atk=atk
+  -- Approved DEF rule: 102% at 16★ through 120% at 25★,
+  -- each percentage point is measured from the 15★ baseline.
+  result.arm=math.floor((tonumber(result.arm or 0))*(1+0.02*breakSteps))
+ end
+ if localGrowth>0 or breakSteps>0 then
   result.power=(result.power or 0)-before+(result.atk or 0)+(result.arm or 0)+math.floor((result.hp or 0)/6)
  end
  return result

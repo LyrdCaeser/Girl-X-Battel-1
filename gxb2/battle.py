@@ -1,6 +1,7 @@
 from __future__ import annotations
 import json
 import os
+import platform
 import shutil
 import sys
 from pathlib import Path
@@ -32,6 +33,13 @@ def luajit_runtime() -> Path:
         return ROOT / 'runtime/luajit-windows-x64.exe'
     if sys.platform == 'darwin':
         return ROOT / 'runtime/luajit-macos-x64'
+    # The archived publisher Lua modules are bytecode-version-sensitive. Prefer
+    # the exact Linux runtime shipped with GXB3 over whichever luajit happens to
+    # be installed by the host OS; keep native fallback for non-x86_64 Linux.
+    if sys.platform.startswith('linux') and platform.machine().lower() in ('x86_64', 'amd64'):
+        bundled = ROOT / 'runtime/luajit-linux-x64'
+        if bundled.is_file():
+            return bundled
     native = shutil.which('luajit')
     if native:
         return Path(native)

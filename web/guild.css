@@ -184,3 +184,17 @@ img.gd2-abs{object-fit:fill}img.gd2-fit{object-fit:contain}.gd2-abs.flip,.gd2-ar
 .guild-view .gd-online-message{background:#f4e8cc;border:1px solid #d4bd87;color:#5a4426;padding:6px 8px;border-radius:7px;line-height:1.45;overflow-wrap:anywhere}
 .guild-view .gd-online-create .gd-input{width:100%;box-sizing:border-box}
 .guild-view .gd-body>.gd-go{margin:9px 0}
+
+/* Online Guild controls: keep the original warm parchment palette while
+   all displayed members, rankings and actions come from the authenticated API. */
+.guild-view .gd-online-nav{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 14px}
+.guild-view .gd-online-tab{flex:1 1 104px;min-height:36px;padding:7px 10px;border:1px solid #b89555;border-radius:8px;background:#f7e8c6;color:#654622;font-weight:800;cursor:pointer}
+.guild-view .gd-online-tab.on{background:#d9b66f;color:#4d3218;box-shadow:inset 0 0 0 1px #f9e8b7}
+.guild-view .gd-online-panel{display:grid;gap:8px;margin:10px 0 16px;padding:12px;border:1px solid #cdb37e;border-radius:10px;background:#f7edda}
+.guild-view .gd-online-label{color:#6a4b27;font-size:13px;font-weight:800}
+.guild-view .gd-online-panel .gd-input{width:100%;min-width:0;box-sizing:border-box}
+.guild-view .gd-online-member{flex-wrap:wrap;align-items:center}
+.guild-view .gd-online-member-meta{display:grid;gap:3px;min-width:130px;flex:1 1 150px}
+.guild-view .gd-online-member-meta small{margin:0}
+.guild-view .gd-online-member .gd-online-note{margin-left:auto}
+.guild-view .gd-online-tab:focus-visible,.guild-view .gd-online-member .gd-go:focus-visible{outline:2px solid #86612f;outline-offset:2px}

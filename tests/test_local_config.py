@@ -49,6 +49,17 @@ class LocalConfigTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             local_config.save(cfg)
 
+    def test_cached_config_is_detached_and_invalidates_after_atomic_save(self):
+        before = local_config.get()
+        before["progression"]["cost_multiplier"] = 99
+        self.assertEqual(local_config.scale_cost(101), 101)
+        saved = local_config.get()
+        saved["progression"]["cost_multiplier"] = 0.5
+        local_config.save(saved)
+        self.assertEqual(local_config.scale_cost(101), 51)
+        local_config.reset()
+        self.assertEqual(local_config.scale_cost(101), 101)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -305,6 +305,9 @@ def _ensure_live_postgres(db):
             id BIGSERIAL PRIMARY KEY, server_id TEXT NOT NULL, name TEXT NOT NULL,
             notice TEXT NOT NULL DEFAULT '', owner_uid TEXT NOT NULL, level INTEGER NOT NULL DEFAULT 1,
             exp BIGINT NOT NULL DEFAULT 0, created_at BIGINT NOT NULL, UNIQUE(server_id,name))""",
+        """CREATE TABLE IF NOT EXISTS world_guild_progress(
+            guild_id BIGINT PRIMARY KEY REFERENCES world_guilds(id) ON DELETE CASCADE,
+            state TEXT NOT NULL DEFAULT '{}', updated_at BIGINT NOT NULL)""",
         """CREATE TABLE IF NOT EXISTS world_guild_members(
             guild_id BIGINT NOT NULL REFERENCES world_guilds(id) ON DELETE CASCADE,
             uid TEXT NOT NULL, server_id TEXT NOT NULL, character_name TEXT NOT NULL,
@@ -366,6 +369,10 @@ def _ensure_live_postgres(db):
             match_id TEXT NOT NULL REFERENCES pvp_matches(id) ON DELETE CASCADE,
             uid TEXT NOT NULL, ready INTEGER NOT NULL DEFAULT 0, last_seen BIGINT NOT NULL,
             PRIMARY KEY(match_id,uid))""",
+        """CREATE TABLE IF NOT EXISTS pvp_arena3v3_series(
+            match_id TEXT PRIMARY KEY REFERENCES pvp_matches(id) ON DELETE CASCADE,
+            paid_a INTEGER NOT NULL DEFAULT 0, paid_b INTEGER NOT NULL DEFAULT 0,
+            rounds TEXT NOT NULL DEFAULT '[]', updated_at BIGINT NOT NULL)""",
     ]
     for stmt in stmts:
         db.execute(stmt)
@@ -443,6 +450,10 @@ def _ensure_live_sqlite(db):
             id INTEGER PRIMARY KEY AUTOINCREMENT, server_id TEXT NOT NULL, name TEXT NOT NULL,
             notice TEXT NOT NULL DEFAULT '', owner_uid TEXT NOT NULL, level INTEGER NOT NULL DEFAULT 1,
             exp INTEGER NOT NULL DEFAULT 0, created_at INTEGER NOT NULL, UNIQUE(server_id,name))""",
+        """CREATE TABLE IF NOT EXISTS world_guild_progress(
+            guild_id INTEGER PRIMARY KEY,
+            state TEXT NOT NULL DEFAULT '{}', updated_at INTEGER NOT NULL,
+            FOREIGN KEY(guild_id) REFERENCES world_guilds(id) ON DELETE CASCADE)""",
         """CREATE TABLE IF NOT EXISTS world_guild_members(
             guild_id INTEGER NOT NULL, uid TEXT NOT NULL, server_id TEXT NOT NULL,
             character_name TEXT NOT NULL, role TEXT NOT NULL DEFAULT 'member',
@@ -505,6 +516,11 @@ def _ensure_live_sqlite(db):
         """CREATE TABLE IF NOT EXISTS pvp_match_peers(
             match_id TEXT NOT NULL, uid TEXT NOT NULL, ready INTEGER NOT NULL DEFAULT 0,
             last_seen INTEGER NOT NULL, PRIMARY KEY(match_id,uid),
+            FOREIGN KEY(match_id) REFERENCES pvp_matches(id) ON DELETE CASCADE)""",
+        """CREATE TABLE IF NOT EXISTS pvp_arena3v3_series(
+            match_id TEXT PRIMARY KEY, paid_a INTEGER NOT NULL DEFAULT 0,
+            paid_b INTEGER NOT NULL DEFAULT 0, rounds TEXT NOT NULL DEFAULT '[]',
+            updated_at INTEGER NOT NULL,
             FOREIGN KEY(match_id) REFERENCES pvp_matches(id) ON DELETE CASCADE)""",
     ]
     for stmt in stmts:

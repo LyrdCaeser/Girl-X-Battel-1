@@ -504,6 +504,8 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
         if path == '/api/world-guild':
             ctx = self.auth_context(); account = ctx['account']
             guild = live_service.guild_for_player(account['uid'], account['server_id'])
+            if guild:
+                guild['activity'] = live_service.guild_activity_snapshot(account['uid'], account['server_id'])
             payload = {
                 'guild': guild,
                 'guilds': live_service.world_guilds(account['server_id']),
@@ -525,13 +527,19 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
             ctx = self.auth_context(); account = ctx['account']
             query = parse_qs(parsed.query)
             mode = (query.get('mode') or ['arena'])[0]
-            return self.send(200, {
-                'pvp': live_service.pvp_status(account['uid'], account['server_id'], mode),
+            pvp = live_service.pvp_status(account['uid'], account['server_id'], mode)
+            payload = {
+                'pvp': pvp,
                 'rating': live_service.pvp_rating(account['uid'], account['server_id'], mode),
-                'rating_board': live_service.pvp_rating_board(mode, limit=50),
+                'rating_board': live_service.pvp_rating_board(mode, limit=50, server_id='' if mode == 'cross' else account['server_id']),
                 'season_reward': live_service.pvp_season_claim_status(account['uid'], account['server_id'], mode),
                 'history': live_service.pvp_history(account['uid'], 20),
-            })
+            }
+            if mode == 'arena3v3':
+                payload['arena3v3'] = self.engine.ensure_pvp_arena3v3()
+                if pvp.get('status') == 'matched' and pvp.get('match'):
+                    payload['series'] = live_service.pvp_arena3v3_series_status(pvp['match']['id'], account['uid'])
+            return self.send(200, payload)
         if path == '/api/skin-shop/admin/catalog':
             if not self.admin_authorized(): return self.send(403,{'error':'Yêu cầu SUPER GM'})
             return self.send(200,skin_store.catalogue(admin=True))
@@ -885,8 +893,8 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
             if path == '/api/auth/reset-password' and not self.rate_limit('auth_reset'): return
             if path == '/api/auth/recovery-code' and not self.rate_limit('recovery_rotate'): return
             if path == '/api/order/create' and not self.rate_limit('order_create'): return
-            if path == '/api/pvp/queue' and not self.rate_limit('pvp_queue'): return
-            if path in ('/api/pvp/match/battle','/api/guild-war/battle') and not self.rate_limit('battle'): return
+            if path in ('/api/pvp/queue','/api/pvp/arena3v3/teams','/api/pvp/arena3v3/pay') and not self.rate_limit('pvp_queue'): return
+            if path in ('/api/pvp/match/battle','/api/pvp/arena3v3/round','/api/guild-war/battle') and not self.rate_limit('battle'): return
             if path.startswith('/api/admin/') and not self.rate_limit('admin'): return
             if path == '/api/giftcode/redeem' and not self.rate_limit('giftcode_redeem'): return
             if path == '/api/giftcode/sso/exchange' and not self.rate_limit('auth_login'): return
@@ -898,6 +906,8 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
             if path == '/api/giftskin/admin/review' and not self.rate_limit('admin'): return
             if path.startswith('/api/skin-shop/admin/') and not self.rate_limit('admin'): return
             if path == '/api/world-guild/manage' and str(data.get('action') or '') == 'chat' and not self.rate_limit('guild_chat'): return
+            if path == '/api/world-guild/activity' and not self.rate_limit('guild_activity'): return
+            if path == '/api/world-guild/activity' and str(data.get('action') or '') == 'boss_fight' and not self.rate_limit('battle'): return
             if path == '/api/chat/send' and not self.rate_limit('world_chat'): return
             if path in ('/api/auth/register','/api/auth/login'):
                 if path.endswith('/register'):
@@ -1167,6 +1177,10 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                 if detail['war']['status']!='finished':
                     raise ValueError('Guild War chưa kết thúc')
                 return self.send(200,{'war':live_service.settle_guild_war(data.get('war_id'))})
+            if path == '/api/world-guild/activity':
+                ctx = self.auth_context(); account = ctx['account']
+                result = self.engine.world_guild_activity_action(data, account['uid'], account['server_id'])
+                return self.send(200, result)
             if path == '/api/world-guild/manage':
                 ctx = self.auth_context(); account = ctx['account']; player = ctx['player']
                 current = self.engine.snapshot(); power = int(current.get('power',0))
@@ -1220,12 +1234,22 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                 ctx = self.auth_context(); account = ctx['account']; player = ctx['player']
                 return self.send(200, live_service.claim_pvp_season_reward(
                     account['uid'], account['server_id'], player['character_name'], data.get('mode','arena')))
+            if path == '/api/pvp/arena3v3/teams':
+                ctx = self.auth_context(); account = ctx['account']
+                saved = self.engine.save_pvp_arena3v3_teams(data.get('teams'))
+                return self.send(200, {'ok': True, **saved})
+            if path == '/api/pvp/arena3v3/pay':
+                ctx = self.auth_context(); account = ctx['account']
+                return self.send(200, self.engine.pay_pvp_arena3v3_ticket(data.get('match_id'), account['uid']))
             if path == '/api/pvp/queue':
                 ctx = self.auth_context(); account = ctx['account']; player = ctx['player']
-                current = self.engine.snapshot()
                 action = str(data.get('action') or 'join')
                 mode = str(data.get('mode') or 'arena')
                 if action == 'join':
+                    if mode == 'arena3v3':
+                        current = self.engine.pvp_arena3v3_snapshot()
+                    else:
+                        current = self.engine.snapshot()
                     result = live_service.enqueue_pvp(account['uid'], account['server_id'], player['character_name'],
                                                       mode, int(current.get('power',0)))
                 elif action == 'cancel':
@@ -1242,10 +1266,84 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
             if path == '/api/pvp/match/session':
                 ctx = self.auth_context(); account = ctx['account']
                 return self.send(200, live_service.pvp_match_session(data.get('match_id'), account['uid']))
+            if path == '/api/pvp/arena3v3/round':
+                ctx = self.auth_context(); account = ctx['account']
+                match_id = str(data.get('match_id') or '').strip()
+                match = live_service.pvp_match_internal(match_id, account['uid'])
+                if match.get('mode') != 'arena3v3':
+                    raise ValueError('Trận đấu không phải Đấu Trường 3v3')
+                if match.get('status') == 'finished':
+                    return self.send(200, {'result': live_service.pvp_match_result(match_id, account['uid'])})
+                series = live_service.pvp_arena3v3_series_status(match_id, account['uid'])
+                if not series or not series.get('all_paid'):
+                    return self.send(409, {'error': 'Cả hai người chơi cần vào trận và dùng 3 Vé Đấu Trường.', 'series': series})
+                expected_round = int(data.get('expected_round', series.get('next_round', 0)))
+                if expected_round != int(series.get('next_round', 0)):
+                    return self.send(200, {'series': series, 'already_resolved': True})
+                series_complete = bool(series.get('complete'))
+                server_a = str(match.get('server_a') or match.get('server_id') or '').upper()
+                server_b = str(match.get('server_b') or match.get('server_id') or '').upper()
+                if not server_a or server_a != server_b or server_a == 'CROSS':
+                    raise ValueError('Đấu Trường 3v3 hiện ghép người thật trong cùng máy chủ.')
+                pa = live_service.player(match['player_a'], server_a)
+                pb = live_service.player(match['player_b'], server_b)
+                if not pa or not pb:
+                    raise ValueError('Không thể tải hồ sơ của hai người chơi.')
+                engine_a = self.server.player_engines.get(match['player_a'], server_a, pa['character_name'])
+                engine_b = self.server.player_engines.get(match['player_b'], server_b, pb['character_name'])
+                snap_a = engine_a.pvp_arena3v3_snapshot(); snap_b = engine_b.pvp_arena3v3_snapshot()
+                round_report = None
+                stored = {'series': series, 'already_resolved': True}
+                if not series_complete:
+                    round_index = int(series['next_round'])
+                    if round_index not in (0, 1, 2):
+                        raise ValueError('Lượt đấu 3v3 không hợp lệ.')
+                    seed = normalize_online_seed(int(match.get('seed') or 1) + round_index * 7919)
+                    round_report = simulate_battle(
+                        snap_a['teams'][round_index], snap_b['teams'][round_index],
+                        battle_id=ONLINE_BATTLE_ID, seed=seed,
+                        pet_a=snap_a.get('pet'), pet_b=snap_b.get('pet'),
+                        guild_skills_a=snap_a.get('guild_skills') or [],
+                        guild_skills_b=snap_b.get('guild_skills') or [],
+                        chime_bonus_a=snap_a.get('chime_bonus') or [],
+                        chime_bonus_b=snap_b.get('chime_bonus') or [],
+                        battle_type=1,
+                    )
+                    winner_uid = match['player_a'] if int(round_report.get('isWin') or 0) == 1 else match['player_b']
+                    stored = live_service.record_pvp_arena3v3_round(
+                        match_id, account['uid'], round_index, winner_uid, round_report)
+                final = None
+                if stored.get('series', {}).get('complete'):
+                    import secrets
+                    from gxb2 import arena3v3 as arena3v3_rules
+                    completed = stored['series']; winner_uid = completed['winner_uid']
+                    canonical_series = live_service.pvp_arena3v3_series_record(match_id)
+                    player_rewards = {}
+                    for snap in (snap_a, snap_b):
+                        cards = arena3v3_rules.roll(int(snap.get('level') or 1), secrets.randbelow)
+                        pick = secrets.randbelow(len(cards)) if cards else 0
+                        reward = cards[pick] if cards else {}
+                        player_rewards[str(snap['uid'])] = {'cards': cards, 'pick': pick, 'reward': reward}
+                    final_report = {
+                        'isWin': 1 if winner_uid == match['player_a'] else 0,
+                        'series': canonical_series,
+                        'total_round': len(canonical_series.get('rounds') or []),
+                        'arena3v3': {'sweep': len(completed.get('rounds') or []) == 2,
+                                     'player_rewards': player_rewards},
+                    }
+                    final = live_service.finish_authoritative_pvp(match_id, account['uid'], snap_a, snap_b, final_report)
+                return self.send(200, {'series': stored.get('series'), 'already_resolved': stored.get('already_resolved', False),
+                                       'round_report': None if round_report is None else {
+                                           'isWin': int(round_report.get('isWin') or 0),
+                                           'total_round': int(round_report.get('total_round') or 0),
+                                           'total_harm': int(round_report.get('total_harm') or 0)},
+                                       'result': final})
             if path == '/api/pvp/match/battle':
                 ctx = self.auth_context(); account = ctx['account']
                 session = live_service.pvp_match_session(data.get('match_id'), account['uid'])
                 match = live_service.pvp_match_internal(data.get('match_id'), account['uid'])
+                if match.get('mode') == 'arena3v3':
+                    return self.send(409, {'error': 'Trận 3v3 phải hoàn tất đủ loạt đấu tại giao diện Đấu Trường 3v3.'})
                 if match.get('status') == 'finished':
                     return self.send(200, {'result': live_service.pvp_match_result(match['id'], account['uid'])})
                 server_a = str(match.get('server_a') or match.get('server_id') or '').upper()
@@ -1284,10 +1382,8 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                 return self.send(200, live_service.create_order(state.get('uid'), state.get('server_id'), state.get('name'), data.get('package'), data.get('note','')))
             if path == '/api/mail/claim':
                 return self.send(200, self.engine.claim_live_mail(data.get('mail_id')))
-            if self.headers.get('X-GXB2-Mode') != 'developer':
-                account_state = self.engine.snapshot()
-                if account_state.get('account_status') == 'banned':
-                    return self.send(403, {'error': 'Tài khoản đã bị khóa bởi GM'})
+            # require_auth() above already validates the session and active player row.
+            # Do not take a full gameplay snapshot just to repeat that account check.
             if path == '/api/v1':
                 if data.get('mid') != 1 or data.get('local_mode') is not True:
                     raise GameError('Este endpoint acepta solo RETRIEVE_TOKEN con local_mode=true')
@@ -1298,8 +1394,14 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                 if name not in allowed_actions: raise GameError('Acción no disponible')
                 request = data.get('data', {})
                 if not isinstance(request, dict): raise GameError('Datos inválidos')
+                t0 = time.perf_counter()
                 packets = self.engine.handle(name, request)
-                return self.send(200, {'state': self.engine.snapshot(), 'messages': [{'id': mid, 'type': typ, 'data': body} for mid, typ, body in packets]})
+                t1 = time.perf_counter()
+                snapshot = self.engine.snapshot()
+                t2 = time.perf_counter()
+                if name == 'PARTNER_LEVUP':
+                    print(f'[GXB3-PERF] PARTNER_LEVUP handle={t1-t0:.3f}s snapshot={t2-t1:.3f}s total={t2-t0:.3f}s', flush=True)
+                return self.send(200, {'state': snapshot, 'messages': [{'id': mid, 'type': typ, 'data': body} for mid, typ, body in packets]})
             if path == '/api/developer':
                 if not self.admin_authorized():
                     return self.send(403, {'error': 'QTV_KEY_REQUIRED'})
@@ -1320,7 +1422,7 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                 from gxb2 import relations as _rel
                 return self.send(200, {'lines': _rel.plot_scene(int(data.get('plot', 0) or 0)), 'title': _rel.PLOT['titles'].get(str(data.get('plot', 0)), '')})
             if path == '/api/arena3v3/action':
-                return self.send(200, self.engine.arena3v3_action(data))
+                return self.send(410, {'error': 'Đấu Trường 3v3 đã chuyển sang ghép trận trực tuyến. Vui lòng tải lại trò chơi.'})
             if path in ('/api/friend-boss/action','/api/pet-training/action','/api/practical-work/action'):
                 return self.send(200, self.engine.remaining_system_action(path.split('/')[2],data))
             if path == '/api/newbie-camp/action':

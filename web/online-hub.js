@@ -1,12 +1,13 @@
 'use strict';
 window.GxbOnline=(()=>{
   let overlay=null,tab='leaderboard',stream=null,fallbackTimer=null,refreshing=false,pvpMode='arena';
+  let arena3v3Draft=null,arena3v3DraftUid='',arena3v3DraftDirty=false,arena3v3TeamIndex=0;
   const el=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n;};
   const T=s=>window.GxbLocale?GxbLocale.t(s):s;
   const fmt=n=>typeof number==='function'?number(Number(n||0)):String(n||0);
   // API values remain stable English identifiers; translate only visible labels.
   const guildRoleLabel=role=>({leader:'Bang Chủ',deputy:'Phó Bang',member:'Thành Viên'})[role]||String(role||'');
-  const pvpModeLabel=mode=>({arena:'Đấu Trường',team:'Đấu Trường Đội',cross:'Đấu Trường Liên Máy Chủ'})[mode]||String(mode||'');
+  const pvpModeLabel=mode=>({arena:'Đấu Trường',team:'Đấu Trường Đội',cross:'Đấu Trường Liên Máy Chủ',arena3v3:'Đấu Trường 3v3'})[mode]||String(mode||'');
   const matchStatusLabel=status=>({
     idle:'Chưa ghép trận',queued:'Đang xếp hàng',waiting:'Đang tìm đối thủ',
     matched:'Đã ghép trận',ready:'Sẵn sàng',scheduled:'Đã lên lịch',
@@ -186,10 +187,86 @@ window.GxbOnline=(()=>{
   }
 
   function matchOpponent(m){const mine=state?.uid;return m.player_a===mine?{uid:m.player_b,name:m.name_b,power:m.power_b}:{uid:m.player_a,name:m.name_a,power:m.power_a};}
+  function autoArena3v3Teams(){
+    const roster=[...(state?.roster||[])].sort((a,b)=>(Number(b.stars||0)*1000+Number(b.lv||0))-(Number(a.stars||0)*1000+Number(a.lv||0))).slice(0,18);
+    return [0,1,2].map(i=>roster.slice(i*6,(i+1)*6).map((h,j)=>({partner_id:Number(h.partner_id),pos:j+1})));
+  }
+  function renderArena3v3Setup(body,config,locked=false){
+    const saved=Array.isArray(config?.teams)?config.teams:[];
+    const savedValid=saved.length===3&&saved.every(t=>Array.isArray(t)&&t.length>=1&&t.length<=6)&&
+      new Set(saved.flat().map(x=>Number(x.partner_id))).size===saved.flat().length;
+    if(arena3v3DraftUid!==String(state?.uid||'')){
+      arena3v3DraftUid=String(state?.uid||'');arena3v3Draft=JSON.parse(JSON.stringify(savedValid?saved:autoArena3v3Teams()));
+      arena3v3DraftDirty=!savedValid;arena3v3TeamIndex=0;
+    }
+    if(!Array.isArray(arena3v3Draft)||arena3v3Draft.length!==3)arena3v3Draft=[[],[],[]];
+    const card=el('section','online-card'),head=el('h3','','Thiết Lập 3 Đội Hình 3v3');
+    card.append(head,el('p','online-note','Mỗi đội cần 1–6 Nữ Thần. Một Nữ Thần chỉ được xuất hiện trong một đội. Đội hình được lưu vào hồ sơ Neon của tài khoản.'));
+    const tabs=el('div','online-mode');
+    for(let i=0;i<3;i++){const b=el('button',i===arena3v3TeamIndex?'on':'',`Đội ${i+1} · ${arena3v3Draft[i].length}/6`);b.onclick=()=>{arena3v3TeamIndex=i;renderPvp(body);};tabs.append(b);}
+    card.append(tabs);
+    const selected=arena3v3Draft[arena3v3TeamIndex];
+    for(const slot of selected){
+      const hero=(state?.roster||[]).find(x=>Number(x.partner_id)===Number(slot.partner_id));
+      const row=el('div','online-mini-row');
+      row.append(el('b','',hero?.name||`Nữ Thần #${slot.partner_id}`),el('span','',`Vị trí ${slot.pos} · Cấp ${hero?.lv||'—'}`));
+      if(!locked){const remove=el('button','online-small','Bỏ');remove.onclick=()=>{arena3v3Draft[arena3v3TeamIndex]=selected.filter(x=>Number(x.partner_id)!==Number(slot.partner_id)).map((x,j)=>({...x,pos:j+1}));arena3v3DraftDirty=true;renderPvp(body);};row.append(remove);}
+      card.append(row);
+    }
+    const used=new Set(arena3v3Draft.flat().map(x=>Number(x.partner_id)));
+    const available=(state?.roster||[]).filter(x=>!used.has(Number(x.partner_id)));
+    if(!locked&&selected.length<6&&available.length){
+      const addRow=el('div','online-chat-send'),pick=document.createElement('select');pick.className='online-input';
+      for(const h of available){const o=el('option','',`${h.name||'Nữ Thần'} · Lv.${h.lv||1} · ${h.stars||0}★`);o.value=String(h.partner_id);pick.append(o);}
+      const add=el('button','online-primary','Thêm vào Đội');add.onclick=()=>{const id=Number(pick.value);if(!id||selected.length>=6||used.has(id))return;selected.push({partner_id:id,pos:selected.length+1});arena3v3DraftDirty=true;renderPvp(body);};
+      addRow.append(pick,add);card.append(addRow);
+    }else if(!selected.length)card.append(el('p','online-empty',locked?'Đội hình đã khóa trong trận.':'Chưa có Nữ Thần trong đội này.'));
+    if(!locked){
+      const actions=el('div','online-chat-send');
+      const auto=el('button','online-small','Tự Xếp 3 Đội');auto.onclick=()=>{arena3v3Draft=autoArena3v3Teams();arena3v3DraftDirty=true;arena3v3TeamIndex=0;renderPvp(body);};
+      const save=el('button','online-primary','Lưu 3 Đội');const valid=arena3v3Draft.every(t=>Array.isArray(t)&&t.length>=1&&t.length<=6)&&new Set(arena3v3Draft.flat().map(x=>Number(x.partner_id))).size===arena3v3Draft.flat().length;
+      save.disabled=!valid||!arena3v3DraftDirty;
+      save.onclick=async()=>{save.disabled=true;try{await post('/api/pvp/arena3v3/teams',{teams:arena3v3Draft});arena3v3DraftDirty=false;GirlUI.notice('Đã lưu 3 đội hình 3v3 vào hồ sơ tài khoản.',{title:'Đấu Trường 3v3'});await renderPvp(body);}catch(e){save.disabled=false;GirlUI.notice(e.message,{title:'Không thể lưu đội hình'});}};
+      actions.append(auto,save);card.append(actions);
+    }
+    const ready=savedValid&&!arena3v3DraftDirty;
+    card.append(el('small','online-note',`Vé Đấu Trường hiện có: ${fmt(config?.tickets||0)} · Mỗi loạt 3v3 tiêu hao ${Number(config?.ticket_cost||3)} vé từ mỗi người chơi.`));
+    body.append(card);return ready;
+  }
+  async function renderArena3v3Match(body,match,data){
+    const opp=matchOpponent(match),series=data.series||{paid:false,all_paid:false,rounds:[],next_round:0,wins_a:0,wins_b:0};
+    const card=el('section','online-match');
+    card.append(el('small','',match.id+' · Đấu Trường 3v3'),el('h3','',`Đối thủ: ${opp.name}`),el('p','',`${opp.uid} · ${T('Power')} ${fmt(opp.power)}`));
+    let session=null;try{session=await post('/api/pvp/match/heartbeat',{match_id:match.id,ready:true});}catch{}
+    const status=session?.match?.status||match.status;
+    card.append(el('p','online-live',status==='active'?'Đã vào trận trực tuyến':'Đang chờ đối thủ xác nhận sẵn sàng'));
+    const peers=(session?.peers||[]).filter(x=>Date.now()/1000-Number(x.last_seen||0)<=15).length;
+    card.append(el('small','online-note',`Kết nối người chơi: ${peers}/2`));
+    if(status!=='active'){
+      const enter=el('button','online-primary','Sẵn Sàng Vào Trận');enter.onclick=async()=>{await post('/api/pvp/match/heartbeat',{match_id:match.id,ready:true});await renderPvp(body);};card.append(enter);
+    }else if(!series.paid){
+      const pay=el('button','online-primary','Dùng 3 Vé Đấu Trường');pay.onclick=async()=>{pay.disabled=true;try{await post('/api/pvp/arena3v3/pay',{match_id:match.id});await renderPvp(body);}catch(e){pay.disabled=false;GirlUI.notice(e.message,{title:'Không đủ điều kiện'});}};card.append(pay);
+      card.append(el('small','online-note','Vé chỉ bị trừ một lần cho mỗi người; loạt đấu chỉ bắt đầu khi cả hai đã thanh toán.'));
+    }else if(!series.all_paid){
+      card.append(el('p','online-note','Bạn đã xác nhận vé. Đang chờ đối thủ xác nhận 3 vé.'));
+      const refresh=el('button','online-primary','Kiểm Tra Đối Thủ');refresh.onclick=()=>renderPvp(body);card.append(refresh);
+    }else{
+      const meA=String(match.player_a)===String(state?.uid),myWins=meA?series.wins_a:series.wins_b,opponentWins=meA?series.wins_b:series.wins_a;
+      card.append(el('h3','',`Tỷ số loạt đấu: ${myWins} – ${opponentWins} (Bạn – Đối Thủ)`));
+      for(const r of series.rounds||[]){const who=r.won_by_me?'Bạn thắng':'Đối thủ thắng';card.append(el('div','online-mini-row',`Lượt ${Number(r.round)+1}: ${who} · ${Number(r.total_round||0)} vòng`));}
+      if(series.complete){
+        const close=el('button','online-primary','Cập Nhật Kết Quả Cuối');close.onclick=async()=>{try{const out=await post('/api/pvp/arena3v3/round',{match_id:match.id,expected_round:series.next_round});if(out.result)showBattleResult(body,out.result);else await renderPvp(body);}catch(e){GirlUI.notice(e.message,{title:'Đấu Trường 3v3'});}};card.append(close);
+      }else{
+        const next=el('button','online-fight',`Thi Đấu Lượt ${Number(series.next_round)+1}/3`);next.onclick=async()=>{next.disabled=true;next.textContent='Máy chủ đang mô phỏng trận…';try{const out=await post('/api/pvp/arena3v3/round',{match_id:match.id,expected_round:series.next_round});if(out.result)showBattleResult(body,out.result);else await renderPvp(body);}catch(e){next.disabled=false;next.textContent=`Thi Đấu Lượt ${Number(series.next_round)+1}/3`;GirlUI.notice(e.message,{title:'Đấu Trường 3v3'});}};card.append(next);
+      }
+      card.append(el('small','online-note','Mỗi lượt dùng đội hình tương ứng đã lưu. Máy chủ tự tính thắng/thua; không nhận kết quả từ thiết bị người chơi.'));
+    }
+    body.append(card);
+  }
   async function renderPvp(body,quiet=false){
     const data=await get('/api/pvp/status?mode='+encodeURIComponent(pvpMode));body.replaceChildren();
     const modes=el('div','online-mode');
-    [['arena','Arena'],['team','Team Arena'],['cross','Cross-server Arena']].forEach(([id,label])=>{const b=el('button',id===pvpMode?'on':'',T(label));b.onclick=()=>{pvpMode=id;renderPvp(body);const box=overlay?.querySelector('.online-box');if(box)openRealtime(box);};modes.append(b);});body.append(modes);
+    [['arena','Arena'],['team','Team Arena'],['cross','Cross-server Arena'],['arena3v3','Đấu Trường 3v3']].forEach(([id,label])=>{const b=el('button',id===pvpMode?'on':'',T(label));b.onclick=()=>{pvpMode=id;renderPvp(body);const box=overlay?.querySelector('.online-box');if(box)openRealtime(box);};modes.append(b);});body.append(modes);
     const rating=data.rating||{rating:1000,wins:0,losses:0,matches:0,season_id:'-'};
     const ratingBox=el('section','online-rating');
     ratingBox.append(el('div','',T('Season')+' '+rating.season_id),el('strong','',String(rating.rating)),el('small','',T('Wins')+' '+rating.wins+' · '+T('Losses')+' '+rating.losses+' · '+T('Matches')+' '+rating.matches));
@@ -207,7 +284,12 @@ window.GxbOnline=(()=>{
     }
     body.append(ratingBox);
     const p=data.pvp||{status:'idle'};
+    let arena3v3Ready=true;
+    if(pvpMode==='arena3v3')arena3v3Ready=renderArena3v3Setup(body,data.arena3v3||{},p.status==='matched');
     if(p.status==='matched'&&p.match){
+      if(pvpMode==='arena3v3'){
+        await renderArena3v3Match(body,p.match,data);
+      }else{
       const m=p.match,opp=matchOpponent(m),card=el('section','online-match');
       let session=null;try{session=await post('/api/pvp/match/heartbeat',{match_id:m.id,ready:true});}catch{}
       const peerCount=(session?.peers||[]).filter(x=>Date.now()/1000-Number(x.last_seen||0)<=15).length;
@@ -223,18 +305,22 @@ window.GxbOnline=(()=>{
         card.append(fight);
       }
       card.append(el('small','online-note',T('The server loads both saved teams and simulates the result. The client cannot submit a winner.')));body.append(card);
+      }
     }else if(p.status==='waiting'){
       const card=el('section','online-match waiting');card.append(el('h3','',T('Finding opponent…')),el('p','',T('The server is matching by mode and combat power.')));
       const cancel=el('button','online-danger',T('Cancel Matchmaking'));cancel.onclick=async()=>{await post('/api/pvp/queue',{action:'cancel',mode:pvpMode});renderPvp(body);};card.append(cancel);body.append(card);
     }else{
-      const card=el('section','online-match');card.append(el('h3','',T('PvP Matchmaking')),el('p','',T('Join the queue to find another online player.')));
-      const join=el('button','online-primary',T('Find Match'));join.onclick=async()=>{await post('/api/pvp/queue',{action:'join',mode:pvpMode});renderPvp(body);};card.append(join);body.append(card);
+      const card=el('section','online-match');card.append(el('h3','',pvpMode==='arena3v3'?'Ghép Trận 3v3 Với Người Chơi Thật':T('PvP Matchmaking')),el('p','',T('Join the queue to find another online player.')));
+      const join=el('button','online-primary',pvpMode==='arena3v3'?'Tìm Đối Thủ 3v3':T('Find Match'));join.disabled=pvpMode==='arena3v3'&&!arena3v3Ready;
+      join.onclick=async()=>{try{await post('/api/pvp/queue',{action:'join',mode:pvpMode});renderPvp(body);}catch(e){GirlUI.notice(e.message,{title:'Ghép Trận'});}};
+      card.append(join);if(pvpMode==='arena3v3'&&!arena3v3Ready)card.append(el('small','online-note','Hãy lưu đủ 3 đội hình trước khi xếp hàng.'));body.append(card);
     }
     const board=el('div','online-history');board.append(el('h3','',T('Season Ranking')));
     for(const r of (data.rating_board||[]).slice(0,20)){const row=el('article','online-history-row');row.append(el('b','','#'+r.rank+' '+(r.character_name||r.uid)),el('span','',String(r.rating)),el('small','',r.server_id+' · '+T('Wins')+' '+r.wins));board.append(row);}body.append(board);
     const hist=el('div','online-history');hist.append(el('h3','',T('Recent Matches')));
-    for(const m of data.history||[]){const opp=matchOpponent(m),r=el('article','online-history-row');const won=m.status==='finished'&&m.winner_uid===state?.uid;const delta=m.player_a===state?.uid?Number(m.rating_delta_a||0):Number(m.rating_delta_b||0);
-      r.append(el('b','',opp.name),el('span','',m.status==='finished'?(won?T('Victory'):T('Defeat')):matchStatusLabel(m.status)),el('small','',pvpModeLabel(m.mode)+' · '+(m.status==='finished'?(delta>=0?'+':'')+delta+' '+T('Rating'):'')+' · '+new Date(m.created_at*1000).toLocaleString()));hist.append(r);}
+    for(const m of (data.history||[]).filter(x=>pvpMode!=='arena3v3'||x.mode==='arena3v3').slice(0,pvpMode==='arena3v3'?10:20)){const opp=matchOpponent(m),r=el('article','online-history-row');const won=m.status==='finished'&&m.winner_uid===state?.uid;const delta=m.player_a===state?.uid?Number(m.rating_delta_a||0):Number(m.rating_delta_b||0);
+      const seriesNote=m.mode==='arena3v3'?` · ${String(m.player_a)===String(mine)?m.arena3v3_wins_a:m.arena3v3_wins_b}–${String(m.player_a)===String(mine)?m.arena3v3_wins_b:m.arena3v3_wins_a} · ${(m.arena3v3_rounds||[]).length} lượt`:'';
+      r.append(el('b','',opp.name),el('span','',m.status==='finished'?(won?T('Victory'):T('Defeat')):matchStatusLabel(m.status)),el('small','',pvpModeLabel(m.mode)+' · '+(m.status==='finished'?(delta>=0?'+':'')+delta+' '+T('Rating'):'')+seriesNote+' · '+new Date(m.created_at*1000).toLocaleString()));hist.append(r);}
     body.append(hist);
   }
   function showBattleResult(body,result){
@@ -242,6 +328,12 @@ window.GxbOnline=(()=>{
     const mine=state?.uid,won=result?.winner_uid===mine,delta=result?.player_a===mine?Number(result?.rating_delta_a||0):Number(result?.rating_delta_b||0);
     const card=el('section','online-result '+(won?'win':'lose'));card.append(el('small','',result?.id||''),el('h2','',T(won?'Victory':'Defeat')),el('strong','',T('Rating')+' '+(delta>=0?'+':'')+delta));
     const report=result?.battle_report||{};if(report.total_round!==undefined)card.append(el('p','',T('Rounds')+': '+report.total_round));
+    if(result?.mode==='arena3v3'){
+      const meta=report.arena3v3||{},series=report.series||{};
+      card.append(el('p','',meta.sweep?'Thắng 2–0: hệ số điểm xếp hạng 1,25 đã áp dụng.':'Kết quả loạt đấu 3v3 đã được lưu.'));
+      for(const r of series.rounds||[])card.append(el('div','online-mini-row',`Lượt ${Number(r.round)+1}: ${String(r.winner_uid)===String(mine)?'Bạn thắng':'Đối thủ thắng'} · ${Number(r.total_round||0)} vòng`));
+      card.append(el('p','online-note','Phần thưởng của hai người chơi đã được gửi vào Hòm Thư.'));
+    }
     const back=el('button','online-primary',T('Back to PvP'));back.onclick=()=>renderPvp(body);card.append(back);body.append(card);
   }
   function bind(){

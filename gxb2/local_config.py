@@ -3,11 +3,15 @@ from __future__ import annotations
 import copy
 import json
 import math
+import threading
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_PATH = ROOT / "data" / "local_config.json"
 OVERRIDE_PATH = ROOT / "state" / "local_config.json"
+_CACHE_LOCK = threading.RLock()
+_CACHE_SIGNATURE = None
+_CACHE_VALUE = None
 
 _FALLBACK = {
     "starting_resources": {"1": 10000, "2": 0, "3": 0, "9": 5000, "11": 100, "12": 1000, "33": 10, "36": 10},
@@ -93,9 +97,29 @@ def _read(path):
         return {}
 
 
+def _signature(path):
+    try:
+        stat = path.stat()
+        return (str(path), stat.st_ino, stat.st_mtime_ns, stat.st_size)
+    except OSError:
+        return (str(path), None, None)
+
+
+def _effective():
+    """Cached validated configuration; file signatures invalidate it after QTV save/reset."""
+    global _CACHE_SIGNATURE, _CACHE_VALUE
+    signature = (_signature(DEFAULT_PATH), _signature(OVERRIDE_PATH))
+    with _CACHE_LOCK:
+        if signature != _CACHE_SIGNATURE or _CACHE_VALUE is None:
+            defaults = _merge(_FALLBACK, _read(DEFAULT_PATH))
+            _CACHE_VALUE = validate(_merge(defaults, _read(OVERRIDE_PATH)))
+            _CACHE_SIGNATURE = signature
+        return _CACHE_VALUE
+
+
 def get():
-    defaults = _merge(_FALLBACK, _read(DEFAULT_PATH))
-    return validate(_merge(defaults, _read(OVERRIDE_PATH)))
+    # Public callers receive a detached copy and cannot mutate the shared cache.
+    return copy.deepcopy(_effective())
 
 
 def save(raw):
@@ -114,18 +138,18 @@ def reset():
 
 
 def starting_resources():
-    return dict(get()["starting_resources"])
+    return dict(_effective()["starting_resources"])
 
 
 def starter_girls():
-    return list(get()["starter_girls"])
+    return list(_effective()["starter_girls"])
 
 
 def scale_cost(value):
     value = int(value)
     if value <= 0:
         return 0
-    mult = get()["progression"]["cost_multiplier"]
+    mult = _effective()["progression"]["cost_multiplier"]
     return max(0, int(math.ceil(value * mult)))
 
 
@@ -133,7 +157,7 @@ def scale_reward(value):
     value = int(value)
     if value <= 0:
         return 0
-    mult = get()["rewards"]["multiplier"]
+    mult = _effective()["rewards"]["multiplier"]
     return max(0, int(math.floor(value * mult)))
 
 
@@ -141,7 +165,7 @@ def shop_cost(value):
     value = int(value)
     if value <= 0:
         return 0
-    mult = get()["shop"]["price_multiplier"]
+    mult = _effective()["shop"]["price_multiplier"]
     return max(0, int(math.ceil(value * mult)))
 
 
@@ -154,7 +178,7 @@ def summon_weight(row, partner_table):
     if not girl:
         return base
     star = max(1, min(6, int(girl.get("max_star") or 1)))
-    mult = get()["summon_rate"]["star_multiplier"].get(str(star), 1.0)
+    mult = _effective()["summon_rate"]["star_multiplier"].get(str(star), 1.0)
     return max(0, int(round(base * mult)))
 
 
