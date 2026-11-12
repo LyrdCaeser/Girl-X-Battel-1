@@ -260,7 +260,7 @@ class OnlineArenaRoutingTests(unittest.TestCase):
         index = (ROOT / "web/index.html").read_text(encoding="utf-8")
         for asset in ("app.js", "arena.js", "arena3v3.js", "online-hub.js", "guild.js",
                       "girl-ui.js", "auth.js", "settings-menu.js", "skins.js"):
-            self.assertRegex(index, rf'<script src="/{asset}\?v=20261112-[^" ]+"')
+            self.assertRegex(index, rf'<script src="/{asset}\?v=(?:20261112|1\.1\.2)-[^" ]+"')
         self.assertIn('href="/online-hub.css?v=20261112-live-arena3v3-r2"', index)
         self.assertIn('href="/guild.css?v=20261112-guild-activity-r4"', index)
 

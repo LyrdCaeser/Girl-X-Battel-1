@@ -11,7 +11,7 @@ const PumpkinPatch=(()=>{
  const btn=(cls,text,fn,dis=false)=>{const b=el('button',cls,text);b.type='button';b.onclick=fn;b.disabled=dis;return b;};
  const T=k=>data?.text?.[k]||'';
  function at(e,x,y,w,h){e.style.left=`calc(${348+x-w/2} * var(--u))`;e.style.top=`calc(${-y-h/2} * var(--u))`;e.style.width=`calc(${w} * var(--u))`;e.style.height=`calc(${h} * var(--u))`;return e;}
- function iconSrc(id){id=String(id);if(id==='1'||id==='2')return '/assets/currency/icon_'+id+'_small.png';if(id==='182')return A('icon_182');if(/^2000\d{4}$/.test(id))return '/assets/profile/head_'+Number(id.slice(4))+'.png';const it=itemCatalog?.[id];if(it&&typeof itemPicture==='function'){const p=itemPicture(it);if(p)return p;}return it&&itemIcons.has(it.icon)?'/assets/item-icons/'+it.icon+'.png':'';}
+ function iconSrc(id){id=String(id);if(id==='1'||id==='2')return '/assets/currency/icon_'+id+'_small.png';if(id==='182')return A('icon_182');if(/^2000\d{4}$/.test(id))return profileAsset('head_'+Number(id.slice(4)));const it=itemCatalog?.[id];if(it&&typeof itemPicture==='function'){const p=itemPicture(it);if(p)return p;}return it&&itemIcons.has(it.icon)?'/assets/item-icons/'+it.icon+'.png':'';}
  function item(k,n,cls='pk-item'){const w=el('span',cls);const it=itemCatalog?.[k];w.style.backgroundImage=`url('/assets/ui/quality_${Math.min(it?.quality||1,7)}.png')`;const s=iconSrc(k);if(s)w.append(img(s));w.append(el('b','',n>=10000?number(Math.round(n/1000))+'K':number(n)));w.title=it?.name||(/^2000\d{4}$/.test(String(k))?'Ảnh Đại Diện':k);return w;}
  const rows=text=>String(text).split('|').map(p=>p.split('#').map(Number));
  // pumpkinBtn1-10 of the prefab: [x, y, sprite, w, h]

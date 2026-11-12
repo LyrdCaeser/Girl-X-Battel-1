@@ -35,7 +35,7 @@ h1{margin:0}.sub{color:#b9c1d9;max-width:520px;line-height:1.6}
 def server_ready() -> bool:
     request = urllib.request.Request(
         READY_URL,
-        headers={"User-Agent": "GXB3-Windows/1.0", "Accept": "application/json"},
+        headers={"User-Agent": "GXB3-Windows/1.1.2", "Accept": "application/json"},
     )
     try:
         with urllib.request.urlopen(request, timeout=15) as response:
@@ -52,7 +52,7 @@ def wake_and_open(window) -> None:
     deadline = time.monotonic() + 150
     while time.monotonic() < deadline:
         if server_ready():
-            window.load_url(GAME_URL + '/?client=windows')
+            window.load_url(GAME_URL + '/?client=windows&v=1.1.2')
             return
         time.sleep(3)
     window.load_html(ERROR_HTML)
@@ -67,13 +67,13 @@ def main() -> int:
             if server_ready():
                 break
             time.sleep(3)
-        webbrowser.open(GAME_URL + '/?client=windows')
+        webbrowser.open(GAME_URL + '/?client=windows&v=1.1.2')
         return 0
 
     try:
         # Fullscreen native landscape PC window (Alt+F4 to exit).
         window = webview.create_window(
-            "Nữ Thần Chiến Đấu - GXB 3 · ALPHA RC8 · PC",
+            "Nữ Thần Chiến Đấu - GXB 3 · 1.1.2 · PC",
             html=LOADING_HTML,
             width=1600,
             height=900,
@@ -90,7 +90,7 @@ def main() -> int:
         webview.start(on_started, gui="edgechromium", private_mode=False)
         return 0
     except Exception:
-        webbrowser.open(GAME_URL + '/?client=windows')
+        webbrowser.open(GAME_URL + '/?client=windows&v=1.1.2')
         return 0
 
 
