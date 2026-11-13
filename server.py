@@ -1017,8 +1017,11 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                     self.auth_context()['account']['uid']))
             if path == '/api/skin-shop/bank/create':
                 account=self.auth_context()['account']
+                skin_id = int(data.get('skin_id') or 0)
+                profile = self.engine.snapshot()
+                owned = skin_id in (profile.get('skins_info') or {}).get('collected', [])
                 return self.send(200,skin_bank.create(account['uid'],account['server_id'],
-                    self.auth_context()['character_name'],data.get('skin_id')))
+                    self.auth_context()['character_name'],skin_id,already_owned=owned))
             if path == '/api/giftcode/redeem':
                 ctx=self.auth_context()
                 account=ctx['account']

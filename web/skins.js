@@ -20,12 +20,12 @@ const Skins=(()=>{
   art.style.backgroundImage=`url('${src}')`+(s.base?'':`,url('${detailImage(s.id)}')`);c.append(art,el('i','sk-frame'));
   const g=Number(hero.group||girlsCatalog.find(r=>r.id===hero.table_id)?.group||0);if(g){const f=el('img','sk-group');f.src=U+'img_group'+g+'.png';f.alt='';c.append(f);}
   if(worn){const w=el('img','sk-worn');w.src=U+'skin_icon01.png';w.alt='✓';c.append(w);}
-  if(!s.base){c.append(el('span','sk-amount','Số lượng: '+own));const r=Number(s.rarity||0);if(r){const q=el('span','sk-rarity',RARITY[r]);q.style.backgroundImage=`url('${U}collection_dress_new_bg_${r}.png')`;c.append(q);}}
+  if(!s.base){if(own)c.append(el('span','sk-unlocked','Đã sở hữu vĩnh viễn'));const r=Number(s.rarity||0);if(r){const q=el('span','sk-rarity',RARITY[r]);q.style.backgroundImage=`url('${U}collection_dress_new_bg_${r}.png')`;c.append(q);}}
   c.append(el('b','sk-name',s.base?baseName(hero):s.name));return c;}
  async function detail(hero){const host=$('detail-skin-list');if(!host)return;await load();host.replaceChildren();
   const mine=Object.entries(cat.skins).filter(([,s])=>s.partners.includes(hero.table_id)).map(([id,s])=>({id:Number(id),...s}));
   const worn=Number(hero.equips?.[6]||0);if(sel&&!mine.some(s=>s.id===sel)&&sel!==hero.table_id)sel=null;const current=sel||worn||hero.table_id;
-  const owned=id=>state.skins_info?.owned?.[String(id)]||0;
+  const owned=id=>(state.skins_info?.collected||[]).includes(Number(id));
   const box=el('div','sk-box'),car=el('div','sk-carousel');
   for(const s of [{id:hero.table_id,base:true},...mine])car.append(card(s,hero,{on:current===s.id,worn:s.base?!worn:worn===s.id,own:owned(s.id)}));
   box.append(car);host.append(box);
@@ -77,7 +77,7 @@ const Skins=(()=>{
    if(g){const i=el('img');i.src='/assets/factions/'+g+'.png';i.alt='';b.append(i);}f.append(b);
   });tk.append(f);body.append(tk);
   const grid=el('div','sk-store-grid');
-  const owned=id=>Number(state.items?.[String(id)]||0)+(state.roster||[]).filter(h=>Number(h.equips?.[6]||0)===id).length;
+  const owned=id=>(state.skins_info?.collected||[]).includes(Number(id));
   const rows=liveOffers.filter(o=>!o.is_wedding&&o.enabled)
    .filter(o=>!storeGroup||o.group===storeGroup).sort((a,b)=>b.skin_id-a.skin_id);
   for(const r of rows){
@@ -85,7 +85,7 @@ const Skins=(()=>{
    pic.style.backgroundImage="url('/assets/skins/cards/"+r.skin_id+".webp')";
    const rarity=Number(r.rarity||0);
    if(rarity){const q=el('span','sk-rarity',RARITY[rarity]);q.style.backgroundImage="url('"+U+"collection_dress_new_bg_"+rarity+".png')";pic.append(q);}
-   const n=owned(r.skin_id);if(n)pic.append(el('span','sk-store-own','×'+n));
+   const n=owned(r.skin_id);if(n)pic.append(el('span','sk-store-own','Đã sở hữu'));
    c.append(pic,el('b','sk-store-name',r.name),el('small','sk-store-girl',r.girl_name||''));
    let methods=0;
    if(r.allow_bank&&Number(r.price_vnd)>0){
@@ -107,7 +107,7 @@ const Skins=(()=>{
         orderBody.append(link);
       }catch(e){GirlUI.toast(e.message);}finally{bank.disabled=false;}
     });
-    c.append(bank);
+    bank.disabled=Boolean(n);c.append(bank);
    }
    if(r.allow_crystal&&Number(r.price_crystal)>0){
     methods++;
@@ -123,7 +123,7 @@ const Skins=(()=>{
     const it=itemCatalog?.['2'],src=it&&typeof itemPicture==='function'?itemPicture(it):'';
     if(src){const image=el('img');image.src=src;image.alt='';buy.append(image);}
     buy.append(el('span','',number(cost)));
-    buy.title='Mua bằng Crystal';buy.disabled=Number(state.items?.['2']||0)<cost;
+    buy.title=n?'Trang phục đã sở hữu vĩnh viễn':'Mua bằng Crystal';buy.disabled=n||Number(state.items?.['2']||0)<cost;
     c.append(buy);
    }
    if(methods)grid.append(c);

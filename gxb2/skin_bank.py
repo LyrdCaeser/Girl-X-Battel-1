@@ -54,11 +54,13 @@ def _view(row):
     return data
 
 
-def create(uid, server_id, character_name, skin_id):
+def create(uid, server_id, character_name, skin_id, *, already_owned=False):
     try:
         sid = int(skin_id)
     except (TypeError, ValueError):
         raise ValueError("Trang phục không hợp lệ") from None
+    if already_owned:
+        raise ValueError("Trang phục đã mở khóa vĩnh viễn; không cần đặt mua lại")
     if skin_store.is_wedding(sid):
         raise ValueError("Skin cưới là phần thưởng độc quyền, không được phép bán")
     listing = skin_store.offer(sid)

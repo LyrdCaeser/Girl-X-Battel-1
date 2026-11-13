@@ -27,9 +27,13 @@ def saved(state):
 
 
 def collected(state):
-    """Skins owned at some point: in the bag or worn (Yume Collection keeps them)."""
+    """Permanent ownership entitlement, migrated from historical collection, bag or wear.
+
+    Never consume this entitlement when dressing a different copy of the girl.
+    The legacy bag item counts are left intact for compatible old saves/mail.
+    """
     s = saved(state)
-    have = set(s['collected'])
+    have = {int(x) for x in s['collected'] if str(x).isdigit() and int(x) in SKINS}
     for k, n in state.get('items', {}).items():
         if k.isdigit() and int(k) in SKINS and int(n) > 0:
             have.add(int(k))
@@ -76,22 +80,20 @@ def action(state, request):
     if kind == 'equip':
         skin = int(request.get('skin', 0))
         if skin not in SKINS or not fits(skin, partner):
-            raise ValueError('Esta skin no es de esta chica')
-        if int(items.get(str(skin), 0)) < 1:
-            raise ValueError('No tienes esta skin (Amount: 0)')
+            raise ValueError('Trang phục không thuộc Nữ Thần này')
+        # All copies share account-wide perpetual skin entitlement.
+        # The skin is not a consumable/equip item any more.
+        if skin not in collected(state):
+            raise ValueError('Bạn chưa mở khóa vĩnh viễn trang phục này')
         slots = equips_of(partner)
-        if slots[6]:
-            items[str(slots[6])] = int(items.get(str(slots[6]), 0)) + 1
-        items[str(skin)] = int(items[str(skin)]) - 1
         slots[6] = skin
         partner['show_skin'] = 1
-        collected(state)
         return {}
     if kind == 'unequip':
         slots = equips_of(partner)
         if not slots[6]:
-            raise ValueError('No lleva ninguna skin')
-        items[str(slots[6])] = int(items.get(str(slots[6]), 0)) + 1
+            raise ValueError('Nữ Thần chưa mặc trang phục')
+        collected(state)  # migrate any old worn-only skin before clearing slot
         slots[6] = 0
         return {}
     if kind == 'show':
@@ -111,7 +113,7 @@ def snapshot(state):
     items = view.get('items', {})
     got = [e for e in DATA['effects'] if pts >= e['point']]
     nxt = DATA['effects'][len(got)] if len(got) < len(DATA['effects']) else None
-    return {'owned': {str(k): int(n) for k, n in items.items() if k.isdigit() and int(k) in SKINS and int(n) > 0},
+    return {'owned': {str(sid): 1 for sid in sorted(have)},
             'collected': sorted(have), 'points': pts, 'tier': tier(pts), 'total': len(SKINS),
             'level': len(got), 'next_point': nxt['point'] if nxt else None, 'theme_claimed': view.get('skins', {}).get('theme_claimed', {})}
 
