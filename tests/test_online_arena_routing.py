@@ -78,7 +78,8 @@ class OnlineArenaRoutingTests(unittest.TestCase):
 
     def test_junior_varsity_entry_uses_real_online_pvp(self):
         source = (ROOT / "web/arena.js").read_text(encoding="utf-8")
-        self.assertIn("GxbOnline.open('pvp','arena')", source)
+        self.assertIn("NativeOnlineArenas.open(mode,from)", source)
+        self.assertIn("arena_scene", source)
         self.assertNotIn("act({action:'open'})", source)
 
 
@@ -243,7 +244,7 @@ class OnlineArenaRoutingTests(unittest.TestCase):
     def test_arena3v3_entry_routes_to_live_team_pvp_and_blocks_local_simulator(self):
         client = (ROOT / "web/arena3v3.js").read_text(encoding="utf-8")
         open_block = client.split(" function open(", 1)[1].split("\n function icon", 1)[0]
-        self.assertIn("GxbOnline.open('pvp','arena3v3')", open_block)
+        self.assertIn("NativeOnlineArenas.open('arena3v3',from)", open_block)
         self.assertNotIn("showView('arena3v3')", open_block)
         self.assertNotIn("act({action:'open'})", open_block)
         online = (ROOT / "web/online-hub.js").read_text(encoding="utf-8")
@@ -261,9 +262,10 @@ class OnlineArenaRoutingTests(unittest.TestCase):
         index = (ROOT / "web/index.html").read_text(encoding="utf-8")
         for asset in ("app.js", "arena.js", "arena3v3.js", "online-hub.js", "guild.js",
                       "girl-ui.js", "auth.js", "settings-menu.js", "skins.js"):
-            self.assertRegex(index, rf'<script src="/{asset}\?v=(?:20261112|1\.1\.2)-[^" ]+"')
+            self.assertRegex(index, rf'<script src="/{asset}\?v=(?:20261112|20261113|1\.1\.2)-[^" ]+"')
         self.assertIn('href="/online-hub.css?v=20261112-live-arena3v3-r2"', index)
-        self.assertIn('href="/guild.css?v=20261112-guild-activity-r4"', index)
+        self.assertIn('href="/guild.css?v=20261113-native-online-r1"', index)
+        self.assertIn('src="/arena-online-native.js?v=20261113-original-native-r2"', index)
 
     def test_high_density_avatars_are_served_from_a_confined_webp_asset_root(self):
         server = (ROOT / "server.py").read_text(encoding="utf-8")

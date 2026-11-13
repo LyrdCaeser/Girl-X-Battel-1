@@ -8,14 +8,14 @@ const Arena=(()=>{
  const img=(src,cls,alt='')=>{const i=el('img',cls);i.src=src;i.alt=alt;i.draggable=false;return i;};
  function center(e,x,y,w,h){e.style.left=`calc(${360+x-w/2} * var(--u))`;e.style.top=`calc(${640-y-h/2} * var(--u))`;e.style.width=`calc(${w} * var(--u))`;if(h!=null)e.style.height=`calc(${h} * var(--u))`;return e;}
  function root(){let r=$('arena-view');if(!r){r=el('section','arena-view');r.id='arena-view';r.hidden=true;$('home-systems-view').after(r);}return r;}
- function open(from){if(typeof GxbOnline==='undefined'){GirlUI?.notice?.('Đấu Trường trực tuyến chưa sẵn sàng.',{title:'Đấu Trường'});return;}GxbOnline.open('pvp','arena');}
+ function open(from,mode='arena'){if(typeof NativeOnlineArenas==='undefined'){GirlUI?.notice?.('Đấu Trường gốc đang tải, vui lòng thử lại.',{title:'Đấu Trường'});return;}return NativeOnlineArenas.open(mode,from);}
  function icon(id){id=String(id);if(id==='1'||id==='2')return '/assets/currency/icon_'+id+'_small.png';const row=itemCatalog?.[id];return (row&&itemPicture(row))||(row?.icon?'/assets/shops/items/'+row.icon+'.png':'');}
  function nameOf(id){id=String(id);return id==='1'?"Gold":id==='2'?"Gems":itemCatalog?.[id]?.name||"Item "+id;}
  function avatar(id,cls){const src=icon(id);return src?img(src,cls):el('span',cls+' empty','✦');}
  async function act(req){if(busyLocal)return null;busyLocal=true;note='';try{const r=await api('/api/arena/action',req);state=r.state;return r;}catch(e){note=e.message;return null;}finally{busyLocal=false;render();}}
  function clock(at){const s=Math.max(0,at-Math.floor(Date.now()/1000));const d=Math.floor(s/86400);return (d?d+'d ':'')+[Math.floor(s%86400/3600),Math.floor(s%3600/60),s%60].map(n=>String(n).padStart(2,'0')).join(':');}
  function awards(parent,text){const w=el('div','ar-awards');for(const p of String(text||'').split('|')){const [k,n]=p.split('#');if(!k)continue;const c=el('span','ar-award');const s=icon(k);if(s)c.append(img(s));c.append(el('b','',number(n)));c.title=nameOf(k);w.append(c);}parent.append(w);return w;}
- function render(){const r=root();if(view!=='arena'){clearInterval(timer);timer=null;return;}const info=state.arena_info;r.replaceChildren();const st=el('div','ar-stage');r.append(st);
+ function render(){if(typeof NativeOnlineArenas!=='undefined'&&NativeOnlineArenas.isActive('arena')){NativeOnlineArenas.render();return;}const r=root();if(view!=='arena'){clearInterval(timer);timer=null;return;}const info=state.arena_info;r.replaceChildren();const st=el('div','ar-stage');r.append(st);
   st.append(center(img(A('arena_scene'),'ar-bg'),0,7,1457,1457));
   chrome(st,()=>showView(origin==='arena'?'home':origin));
   const shop=center(el('button','ar-icon-btn'),312,516,80,82);shop.type='button';shop.append(img(A('shop')));shop.title='League Store';shop.onclick=()=>Shops.open('arena',5);st.append(shop);
@@ -64,7 +64,7 @@ const Arena=(()=>{
   if(!p.me&&onInspect)ic.onclick=()=>onInspect(p);row.append(ic);
   const nm=el('b','ar2-name',p.name);nm.style.left='calc(202 * var(--u))';nm.style.top='calc(14 * var(--u))';row.append(nm);
   const pw=el('span','ar2-power');pw.style.left='calc(208 * var(--u))';pw.style.top='calc(50 * var(--u))';pw.append(img(A('force_icon')),el('b','',number(p.me?me:p.power||0)));row.append(pw);
-  const sv=at(el('span','ar2-server'),146,0,108,34);sv.style.backgroundImage=`url('${A('trial_bg07')}')`;sv.append(img(A('trial_icon13')),el('b','','S1'));row.append(sv);
+  const sv=at(el('span','ar2-server'),146,0,108,34);sv.style.backgroundImage=`url('${A('trial_bg07')}')`;sv.append(img(A('trial_icon13')),el('b','',p.server_id||'—'));row.append(sv);
   row.append(at(el('small','ar2-plabel','Points'),264,23.5,80,20),at(el('b','ar2-points',String(p.score)),264,-17.5,100,30));return row;}
  // ArenaFormationWindow: the rival's card and defence line-up(s)
  function inspect(p,title){const ov=el('div','ar-overlay');const w=el('div','ar-win ar-inspect');ov.append(w);ov.onclick=e=>{if(e.target===ov)ov.remove();};

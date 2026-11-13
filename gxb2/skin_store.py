@@ -232,6 +232,10 @@ def purchase(state, skin_id, payment):
     price = int(current[price_key])
     if not current[allowed] or price <= 0:
         raise ValueError("Phương thức thanh toán chưa được mở bán")
+    # One payment unlocks this skin permanently for every existing/future
+    # instance of its supported Goddess; never charge for duplicate copies.
+    if sid in skins.collected(state):
+        raise ValueError("Trang phục này đã mở khóa vĩnh viễn; không cần mua lại")
     items = state.setdefault("items", {})
     have = int(items.get(currency, 0))
     if have < price:

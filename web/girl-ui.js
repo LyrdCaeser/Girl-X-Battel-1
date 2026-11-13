@@ -107,26 +107,41 @@ const GirlUI=(()=>{
   const list=el('div','lb-choose-list');const paint=()=>{list.replaceChildren();opts.forEach((id,k)=>{const info=pots.skills[String(id)]||{};const b=el('button','lb-opt'+(sel===k+1?' on':''));b.type='button';
    if(info.icon)b.append(img('/assets/skills/'+info.icon+'.png'));const t=el('div');t.append(el('b','',info.name||('Potencial '+id)),rich('p','',info.desc||''));b.append(t);if((hero.potentials||[])[stage-1]===k+1)b.append(el('span','lb-active','Activo'));b.onclick=()=>{sel=k+1;paint();};list.append(b);});};
   paint();body.append(list);const a=el('div','gs-btns');const ok=el('button','gs-btn','Activate');ok.type='button';ok.onclick=async()=>{if(!sel)return;close();await action('CHOOSE_PARTNER_POTENTIAL',{partner_id:hero.partner_id,awake_index:stage,index:sel});};a.append(ok);body.append(a);}
- function awake(hero){const box=$('detail-awake-status');if(!box)return;box.replaceChildren();const tab=document.querySelector('[data-detail-tab=awake]');if(tab)tab.textContent=hero.stars>=10?'Đột Phá Giới Hạn':'Thức Tỉnh';
-  if(hero.local_promotion&&hero.stars>=10){if(tab)tab.textContent='Thức Tỉnh';box.className='lb-low';box.append(el('p','gu-awake-head','10★'),el('p','detail-note',"Đã hoàn thành tiến trình mở rộng. Cấp tối đa 250; giữ nguyên kỹ năng gốc."));return;}
-  if(hero.stars<10){box.className='lb-low';box.append(el('p','gu-awake-head',hero.stars+'★'),el('p','detail-note',"Nâng sao tại Học Viện → Tiến Hóa. Nữ Thần từ 1★ đến 3★ có tiến trình mở rộng đến 10★."));return;}
+ function awake(hero){const box=$('detail-awake-status');if(!box)return;box.replaceChildren();const tab=document.querySelector('[data-detail-tab=awake]');if(tab)tab.textContent='Thức Tỉnh';
+  if(hero.local_promotion&&hero.stars>=10&&!hero.next_awake){box.className='lb-low';box.append(el('p','gu-awake-head',hero.stars+'★'),el('p','detail-note','Nữ Thần này hiện chưa có công thức Thức Tỉnh tiếp theo trên máy chủ.'));return;}
+  if(hero.stars<10&&!hero.next_awake){box.className='lb-low';box.append(el('p','gu-awake-head',hero.stars+'★'),el('p','detail-note',"Nâng sao tại Học Viện → Tiến Hóa. Nữ Thần từ 1★ đến 3★ có tiến trình mở rộng đến 10★."));return;}
   box.className='lb-tab';const r=hero.next_awake;
-  const top=el('button','lb-banner');top.type='button';top.append(stars(hero.stars,'tag'));if(r&&materialsReady(r,pick(r,hero))&&cost(el('span'),r.cost||{}))top.append(img(S+'alert_icon.png','lb-red'));top.onclick=()=>limitBreak(hero);top.title='Limit-Break';box.append(top);
+  if(hero.stars<10&&r){
+   // The original 6–9★ awakening uses archived partner.awake_material and
+   // stone_material. Potentiality nodes belong only to the 11★+ system.
+   const top=el('button','lb-banner');top.type='button';top.append(stars(hero.stars,'tag'));
+   top.onclick=()=>limitBreak(hero);top.title='Xem nguyên liệu Thức Tỉnh '+r.star+'★';box.append(top);
+   box.append(el('p','detail-note','Thức Tỉnh '+hero.stars+'★ → '+r.star+'★ · công thức Nữ Thần gốc'));
+   const go=el('button','gs-btn','Xem Công Thức & Thức Tỉnh');go.type='button';
+   go.onclick=()=>limitBreak(hero);box.append(go);return;
+  }
+  const top=el('button','lb-banner');top.type='button';top.append(stars(hero.stars,'tag'));if(r&&materialsReady(r,pick(r,hero))&&cost(el('span'),r.cost||{}))top.append(img(S+'alert_icon.png','lb-red'));top.onclick=()=>limitBreak(hero);top.title='Mở giao diện Thức Tỉnh gốc';top.setAttribute('aria-label','Mở công thức và vật liệu Thức Tỉnh Nữ Thần');box.append(top);
   box.append(nodes(hero,'tab'));
   const bar=el('div','lb-btns');for(const [label,fn]of [['Reverse',()=>reverse(hero)],['Replace',()=>exchange(hero)],['Switch',()=>switchPotentials(hero)]]){const b=el('button','gs-btn lb-small',label);b.type='button';b.onclick=fn;bar.append(b);}box.append(bar);}
  function limitBreak(hero){
-   const r=hero.next_awake,{body,close}=win({title:'Limit-Break',cls:'lb-win'});
+   const r=hero.next_awake,{body,close}=win({title:'Thức Tỉnh',cls:'lb-win'});
    const picked=r?pick(r,hero):null,chosen=r?selectedMaterials(r,picked):[];
    const head=el('div','lb-head');head.append(stars(r?Number(r.star||hero.stars+1):hero.stars,'tag'));body.append(head);
    if(!r){body.append(el('p','lb-max',hero.stars>=25?"Đã đạt giới hạn 25★ · cấp 666.":"Chưa có dữ liệu Đột Phá tiếp theo cho Nữ Thần này."));return;}
-   const targetStar=Number(r.star||hero.stars+1),cap=CAPS[Math.max(0,Math.min(CAPS.length-1,targetStar-11))];
+   const targetStar=Number(r.star||hero.stars+1);
+   const cap=targetStar<10?Number(hero.level_cap||0)+20:
+     targetStar===10?Number(r.target_level_cap||250):
+     CAPS[Math.max(0,Math.min(CAPS.length-1,targetStar-11))];
    const hpCycle=[14.56,14.56,9.62,9.62],atkCycle=[10.40,10.40,7.49,7.49];
    const hp=targetStar>=16?hpCycle[(targetStar-16)%4]:Number(pots.attr_up[0]||0)*100;
    const atk=targetStar>=16?atkCycle[(targetStar-16)%4]:Number(pots.attr_up[1]||0)*100;
    const pct=v=>Number(v).toFixed(2).replace(/\.?0+$/,'');
    const rows=el('div','lb-rows'),row=(k,v)=>{const d=el('div','lb-row');d.append(el('b','',k),el('span','',v));rows.append(d);};
-   row('MAX LVL',String(cap));row('HP','+'+pct(hp)+'%');row('ATK','+'+pct(atk)+'%');if(targetStar>=16)row('DEF',String(100+(targetStar-15)*2)+'% so với 15★');body.append(rows);
-   const un=el('div','lb-unlock');un.append(el('b','','Unlock'));un.append(nodes({...hero,stars:targetStar},'win',false));body.append(un);
+   row('MAX LVL',String(cap));
+   if(targetStar<11)row('Chỉ số','Tăng theo dữ liệu Thức Tỉnh gốc');
+   else{row('HP','+'+pct(hp)+'%');row('ATK','+'+pct(atk)+'%');}
+   if(targetStar>=16)row('DEF',String(100+(targetStar-15)*2)+'% so với 15★');body.append(rows);
+   if(targetStar>=11){const un=el('div','lb-unlock');un.append(el('b','','Mở Khóa'));un.append(nodes({...hero,stars:targetStar},'win',false));body.append(un);}
    if(r.awake25){
     const addGroup=(label,items,required,emptyText)=>{
      body.append(el('p','detail-note',label+' · '+items.length+'/'+required));
@@ -149,7 +164,7 @@ const GirlUI=(()=>{
     });body.append(mats);
    }
    const c=el('div','lb-cost'),ok=cost(c,r.cost||{});body.append(c);
-   const acts=el('div','gs-btns'),btn=el('button','gs-btn','Limit-Break');btn.type='button';btn.disabled=!ok||!materialsReady(r,picked);
+   const acts=el('div','gs-btns'),btn=el('button','gs-btn','Thức Tỉnh');btn.type='button';btn.disabled=!ok||!materialsReady(r,picked);
    btn.onclick=async()=>{if(chosen.some(g=>g?.pos)&&!await confirmGame("Một số Nữ Thần làm nguyên liệu đang trong đội hình. Bạn vẫn muốn Đột Phá?",{title:"Xác Nhận Đột Phá",ok:"Tiếp Tục",danger:true}))return;close();action('AWAKE_PARTNER',{partner_id:hero.partner_id,material_ids:chosen.map(g=>g.partner_id)});};
    acts.append(btn);body.append(acts);
   }

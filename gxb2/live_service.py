@@ -1,5 +1,7 @@
 from __future__ import annotations
+import base64
 import json
+import zlib
 import threading
 import time
 import uuid
@@ -755,6 +757,66 @@ def pvp_arena3v3_series_record(match_id):
             "winner_uid":row['player_a'] if wins_a>=2 else row['player_b'] if wins_b>=2 else ""}
 
 
+def _pack_arena3v3_replay(report):
+    """Keep the real original LuaJIT frames, compressed; do not synthesize NPC replays.
+
+    Compatibility: historic/test-only round summaries without frames remain valid
+    but intentionally have no playback. Never abort the authoritative match just
+    because a malformed/oversized optional replay could not be stored.
+    """
+    if not isinstance(report, dict) or not isinstance(report.get('frames'), list):
+        return None
+    if not isinstance(report.get('teamA'), list) or not isinstance(report.get('teamB'), list):
+        return None
+    payload={key:report[key] for key in (
+        'frames','hp','hurts','teamA','teamB','isWin','total_round','total_harm','petA','petB')
+        if key in report}
+    try:
+        raw=json.dumps(payload,ensure_ascii=False,separators=(',',':')).encode('utf-8')
+        if len(raw)>12_000_000:
+            return None
+        zipped=base64.b64encode(zlib.compress(raw,6)).decode('ascii')
+        return zipped if len(zipped)<=3_000_000 else None
+    except (TypeError, ValueError, OverflowError, zlib.error):
+        return None  # Never roll back genuine match scores because optional replay failed
+
+
+def pvp_arena3v3_round_replay(match_id, uid, round_index):
+    """Only the two match participants can replay an already persisted real round."""
+    match_id=str(match_id or '').strip(); uid=str(uid or '').strip()
+    if type(round_index) is not int or round_index not in (0,1,2):
+        raise ValueError('Lượt đấu 3v3 không hợp lệ')
+    with _lock:
+        db=_db()
+        try:
+            row=db.execute("SELECT * FROM pvp_matches WHERE id=? AND mode='arena3v3'",(match_id,)).fetchone()
+            if not row: raise ValueError('Không tìm thấy trận 3v3')
+            if uid not in (row['player_a'],row['player_b']):
+                raise ValueError('Bạn không thuộc trận 3v3 này')
+            series=db.execute("SELECT rounds FROM pvp_arena3v3_series WHERE match_id=?",(match_id,)).fetchone()
+            rounds=json.loads(series['rounds'] or '[]') if series else []
+            if round_index>=len(rounds):
+                raise ValueError('Lượt đấu chưa được máy chủ hoàn tất')
+            zipped=rounds[round_index].get('replay_z')
+            if not isinstance(zipped,str) or not zipped:
+                raise ValueError('Lượt đấu cũ chưa lưu báo cáo chiến đấu gốc')
+            if len(zipped)>3_000_000:
+                raise ValueError('Báo cáo chiến đấu vượt giới hạn an toàn')
+            decoder=zlib.decompressobj()
+            raw=decoder.decompress(base64.b64decode(zipped,validate=True),12_000_001)
+            if len(raw)>12_000_000 or not decoder.eof:
+                raise ValueError('Báo cáo chiến đấu vượt giới hạn an toàn hoặc bị cắt')
+            report=json.loads(raw)
+            player_a,player_b=row['player_a'],row['player_b']
+        finally:
+            db.close()
+    from . import pvp_render
+    from .engine import TABLES
+    return pvp_render.for_viewer(report,uid,player_a,player_b,
+                                 pet_a=report.get('petA'),pet_b=report.get('petB'),
+                                 names=TABLES['names'])
+
+
 def record_pvp_arena3v3_round(match_id, requester_uid, expected_round, winner_uid, report):
     """Append exactly one authoritative round. Expected-round protects against double clicks/races."""
     match_id=str(match_id or "").strip(); requester_uid=str(requester_uid or "").strip()
@@ -784,10 +846,12 @@ def record_pvp_arena3v3_round(match_id, requester_uid, expected_round, winner_ui
             if expected_round != len(rounds):
                 out=_arena3v3_series_view(row,series,requester_uid)
                 db.commit(); return {"series":out,"already_resolved":True}
+            packed_replay=_pack_arena3v3_replay(report)
             rounds.append({"round":len(rounds),"winner_uid":winner_uid,
                            "report":{"total_round":int(report.get("total_round") or 0),
                                      "isWin":int(report["isWin"]),
-                                     "total_harm":int(report.get("total_harm") or 0)}})
+                                     "total_harm":int(report.get("total_harm") or 0)},
+                           **({"replay_z":packed_replay} if packed_replay else {})})
             now=int(time.time())
             db.execute("UPDATE pvp_arena3v3_series SET rounds=?,updated_at=? WHERE match_id=?",
                        (json.dumps(rounds,ensure_ascii=False),now,match_id))

@@ -198,3 +198,10 @@ img.gd2-abs{object-fit:fill}img.gd2-fit{object-fit:contain}.gd2-abs.flip,.gd2-ar
 .guild-view .gd-online-member-meta small{margin:0}
 .guild-view .gd-online-member .gd-online-note{margin-left:auto}
 .guild-view .gd-online-tab:focus-visible,.guild-view .gd-online-member .gd-go:focus-visible{outline:2px solid #86612f;outline-offset:2px}
+
+/* Original native Guild prefab: online member/chat/war data lives inside
+   the existing 720x1280 original guild_window / guild_dininghall / gym art. */
+.gd2-member-placeholder{display:block;width:100%;height:100%;object-fit:contain}
+.gd2-chat-list{max-height:30vh;overflow:auto;display:grid;gap:6px}
+.gd2-directory{max-height:32vh;overflow:auto;display:grid;gap:8px}
+.gd2-ranklist .gd2-mrow{position:relative;min-height:calc(70 * var(--u));padding:calc(10 * var(--u));margin:calc(8 * var(--u));box-sizing:border-box;display:flex;justify-content:space-between;align-items:center;background:#fff9}

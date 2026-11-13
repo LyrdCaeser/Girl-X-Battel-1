@@ -34,7 +34,7 @@ class NativeRestore20261015Tests(unittest.TestCase):
         self.assertIn("api('/api/world-guild')",ui)
         self.assertIn('Promise.race',ui)
         self.assertIn("'Tải lại Bang Hội'",ui)
-        self.assertIn('renderOnlineGuild',ui)
+        self.assertIn('renderNativeOnlineGuild',ui)
 
     def test_native_mobile_book_and_evolution_vietnamese(self):
         ui=self.read('web/fantasy-book.js')

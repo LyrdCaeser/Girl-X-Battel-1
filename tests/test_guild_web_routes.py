@@ -21,7 +21,11 @@ class GuildWebRoutingTests(unittest.TestCase):
         self.assertIn("'/api/world-guild/manage'", guild)
         self.assertIn("'/api/world-guild/action'", guild)
         self.assertIn("GuildTerritory.paint(back,false)", guild)
-        self.assertIn("renderOnlineGuild", guild)
+        self.assertIn("renderNativeOnlineGuild", guild)
+        self.assertIn("function nativeGuild(){", guild)
+        self.assertIn("function renderLegacyOnlineGuild(){", guild)
+        self.assertIn("api('/assets/guild.json')", guild)
+        self.assertIn("api('/api/world-guild/activity',req)", guild)
 
     def test_online_guild_exposes_real_management_mail_ranking_and_war_actions(self):
         guild = (WEB / "guild.js").read_text(encoding="utf-8")
@@ -35,8 +39,8 @@ class GuildWebRoutingTests(unittest.TestCase):
         self.assertIn("'guild-dining':'cafeteria'", guild)
         self.assertIn("'guild-gym':'gym'", guild)
         self.assertIn("'/api/world-guild/activity'", guild)
-        self.assertIn("onlineActivity('donate'", guild)
-        self.assertIn("onlineActivity('boss_fight'", guild)
+        self.assertIn("act({action:'donate'", guild)
+        self.assertIn("act({action:'boss_fight'", guild)
         self.assertIn("Đơn Hàng", guild)
         self.assertIn("Boss Bang Hội", guild)
         self.assertNotIn("đang tạm khóa", guild)
@@ -52,7 +56,7 @@ class GuildWebRoutingTests(unittest.TestCase):
 
     def test_junior_varsity_uses_online_real_player_entry_not_local_bot_api(self):
         arena = (WEB / "arena.js").read_text(encoding="utf-8")
-        self.assertIn("GxbOnline.open('pvp','arena')", arena)
+        self.assertIn("NativeOnlineArenas.open(mode,from)", arena)
         self.assertNotIn("act({action:'open'})", arena)
 
 

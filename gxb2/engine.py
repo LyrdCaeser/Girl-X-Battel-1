@@ -862,7 +862,7 @@ class Engine:
         state['fantasy_book_info'] = fantasy_book.snapshot(_probe, player_level(state), _roster, self.now())
         state['shops_info'] = shops.snapshot(state, player_level(state), self.now())
         state['arena_info'] = arena.snapshot(state, player_level(state), self.now())
-        state['arena3v3_info'] = arena3v3.snapshot(state, player_level(state), self.now())
+        state['arena3v3_info'] = arena3v3.online_snapshot(state)
         state['patrol_info'] = patrol.snapshot(state, self.now())
         state['house_dress_info'] = house_dress.snapshot(state)
         state['guild_lab_info'] = guild_lab.snapshot(state)
@@ -2474,7 +2474,8 @@ class Engine:
                 add('10', math.floor(item_pairs(row.get(f'grade_exp{i}') or '').get(10, 0) * 0.7))
             if star < 10:
                 for i in range(int(g.get('awake', 0))):
-                    rec = ASCENSION.get(f"{g['table_id']}:{int(row['max_star']) + i + 1}") or {}
+                    rec = (ASCENSION.get(f"{g['table_id']}:{int(row['max_star']) + i + 1}")
+                           or self.awake_recipe({**g, 'awake': i}) or {})
                     add('10', math.floor(int((rec.get('cost') or {}).get('10', 0)) * 0.7))
             add('9', math.floor(0.65 * int(str(TABLES['exp_partner'][str(g['lv'])]['all_exp']).split('#')[1])))
         return got, six
@@ -2512,7 +2513,42 @@ class Engine:
         """11–15★ native recipes; 16–25★ use two separately validated material groups."""
         row = TABLES['partner'][str(partner['table_id'])]
         awake = int(partner.get('awake', 0))
-        if int(row['max_star']) != 10:
+        base_star = int(row['max_star'])
+        if base_star == 6:
+            # Some reissued 6★ Goddesses (e.g. Lord Dracula 651024) have their
+            # ORIGINAL 7–10★ recipes in partner.awake_material/stone_material,
+            # but were omitted from the recovered ascension.json index.
+            # ASCENSION takes precedence wherever an explicit native row exists.
+            materials = [part for part in str(row.get('awake_material') or '').split('|') if part]
+            if not 0 <= awake < min(4, len(materials)):
+                return None
+            cost_stages = str(row.get('stone_material') or '').split('|')
+            # Resolve the canonical 10★ form from the base 5★ character, never
+            # infer an unrelated 10★ by name, faction, or sequential ID.
+            base_id = str(row.get('material') or '').split('|')[0]
+            base_row = TABLES['partner'].get(base_id) or {}
+            target_id = int(base_row.get('star_10') or 0)
+            target_row = TABLES['partner'].get(str(target_id)) or {}
+            valid_target = (int(target_row.get('max_star') or 0) == 10
+                            and int(target_row.get('group') or 0) == int(row['group']))
+            if awake == 3 and not valid_target:
+                return None
+            try:
+                mat_ids = [int(part) for part in materials[awake].split('#')]
+            except (TypeError, ValueError):
+                return None
+            if not mat_ids or any(x <= 0 for x in mat_ids):
+                return None
+            cost = item_pairs(cost_stages[awake]) if awake < len(cost_stages) else {}
+            return {
+                'kind': 'awake', 'material': mat_ids,
+                'group': int(row['group']), 'star': base_star + awake + 1,
+                'cost': {str(k): int(v) for k, v in cost.items()},
+                'target': target_id if valid_target else None,
+                'target_level_cap': int(target_row['max_lv'])
+                if awake == 3 else None,
+            }
+        if base_star != 10:
             return None
 
         current_star = 10 + awake

@@ -10,7 +10,7 @@ const Arena3v3=(()=>{
  const img=(src,cls,alt='')=>{const i=el('img',cls);i.src=src;i.alt=alt;i.draggable=false;return i;};
  function center(e,x,y,w,h){e.style.left=`calc(${360+x-w/2} * var(--u))`;e.style.top=`calc(${640-y-h/2} * var(--u))`;e.style.width=`calc(${w} * var(--u))`;if(h!=null)e.style.height=`calc(${h} * var(--u))`;return e;}
  function root(){let r=$('arena3v3-view');if(!r){r=el('section','arena-view a3-view');r.id='arena3v3-view';r.hidden=true;$('home-systems-view').after(r);}return r;}
- function open(from){if(typeof GxbOnline==='undefined'){GirlUI?.notice?.('Đấu Trường trực tuyến chưa sẵn sàng. Vui lòng tải lại trang.',{title:'Đấu Trường'});return;}GxbOnline.open('pvp','arena3v3');}
+ function open(from){if(typeof NativeOnlineArenas==='undefined'){GirlUI?.notice?.('Đấu Trường Đội gốc đang tải, vui lòng thử lại.',{title:'Đấu Trường Đội'});return;}return NativeOnlineArenas.open('arena3v3',from);}
  function icon(id){id=String(id);if(id==='1'||id==='2')return '/assets/currency/icon_'+id+'_small.png';if(id==='34')return A('icon_34');const row=itemCatalog?.[id];return (row&&itemPicture(row))||'';}
  function nameOf(id){id=String(id);return id==='1'?"Gold":id==='2'?"Gems":itemCatalog?.[id]?.name||"Item "+id;}
  function avatar(id,cls){const src=icon(id);return src?img(src,cls):el('span',cls+' empty','✦');}
@@ -21,7 +21,7 @@ const Arena3v3=(()=>{
  const strength=h=>(h.stars||0)*1000+(h.lv||0);
  function teamsPower(teams){return (teams||[]).flat().reduce((s,x)=>{const h=heroOf(x.partner_id);return s+(h?40*(h.lv||1)+60:0);},0);} // same estimate as gxb2/arena.py power()
  function autoTeams(){const best=[...(state.roster||[])].sort((a,b)=>strength(b)-strength(a)).slice(0,18);const t=[[],[],[]];best.forEach((h,i)=>{const k=i%3;t[k].push({partner_id:h.partner_id,pos:t[k].length+1});});return t;}
- function render(){const r=root();if(view!=='arena3v3'){clearInterval(timer);timer=null;return;}const info=state.arena3v3_info;r.replaceChildren();const st=el('div','ar-stage');r.append(st);
+ function render(){if(typeof NativeOnlineArenas!=='undefined'&&NativeOnlineArenas.isActive('arena3v3')){NativeOnlineArenas.render();return;}const r=root();if(view!=='arena3v3'){clearInterval(timer);timer=null;return;}const info=state.arena3v3_info;r.replaceChildren();const st=el('div','ar-stage');r.append(st);
   st.append(center(img(A('arena_3v3_scene'),'ar-bg'),0,1,1457,1457));
   Arena.chrome(st,()=>{if(origin==='arena')Arena.open('home');else showView(origin==='arena3v3'?'home':origin);});
   const shop=center(el('button','ar-icon-btn'),312,518,80,82);shop.type='button';shop.append(img(A('shop')));shop.title='League Store';shop.onclick=()=>Shops.open('arena3v3',5);st.append(shop);

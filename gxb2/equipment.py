@@ -85,9 +85,9 @@ def release(state, partner):
         if slots[slot - 1]:
             add(state, slots[slot - 1], 1)
             slots[slot - 1] = 0
-    if slots[6]:  # the skin (slot 7) also goes back to the bag
-        items = state.setdefault('items', {})
-        items[str(slots[6])] = int(items.get(str(slots[6]), 0)) + 1
+    if slots[6]:  # permanent, account-wide skin entitlement, NOT a consumable
+        from . import skins
+        skins.collected(state)  # preserve historical worn-only ownership before removing this copy
         slots[6] = 0
 
 
