@@ -265,7 +265,7 @@ class OnlineArenaRoutingTests(unittest.TestCase):
             self.assertRegex(index, rf'<script src="/{asset}\?v=(?:20261112|20261113|1\.1\.2)-[^" ]+"')
         self.assertIn('href="/online-hub.css?v=20261112-live-arena3v3-r2"', index)
         self.assertIn('href="/guild.css?v=20261113-native-online-r1"', index)
-        self.assertIn('src="/arena-online-native.js?v=20261113-original-native-r1"', index)
+        self.assertIn('src="/arena-online-native.js?v=20261113-original-native-r2"', index)
 
     def test_high_density_avatars_are_served_from_a_confined_webp_asset_root(self):
         server = (ROOT / "server.py").read_text(encoding="utf-8")

@@ -207,6 +207,17 @@ class HTTPHandler(BaseHTTPRequestHandler):
             return False
         return True
 
+    def rate_limit_player(self, bucket):
+        """Throttle authenticated gameplay per account, not per shared Wi-Fi IP.
+
+        Invalid/missing sessions retain IP throttling. Verified account UID is
+        never read from client-supplied request bodies or spoofable headers.
+        """
+        ctx = self.auth_context()
+        account = (ctx or {}).get('account') or {}
+        uid = str(account.get('uid') or '').strip()
+        return self.rate_limit(bucket, key='player:'+uid if uid else 'ip:'+self.client_ip())
+
     def is_super_gm(self):
         """Bind SUPER GM to the existing owner account, never to a client-supplied email/key."""
         ctx = self.auth_context()
@@ -893,8 +904,8 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
             if path == '/api/auth/reset-password' and not self.rate_limit('auth_reset'): return
             if path == '/api/auth/recovery-code' and not self.rate_limit('recovery_rotate'): return
             if path == '/api/order/create' and not self.rate_limit('order_create'): return
-            if path in ('/api/pvp/queue','/api/pvp/arena3v3/teams','/api/pvp/arena3v3/pay') and not self.rate_limit('pvp_queue'): return
-            if path in ('/api/pvp/match/battle','/api/pvp/match/replay','/api/pvp/arena3v3/round','/api/pvp/arena3v3/replay','/api/guild-war/battle') and not self.rate_limit('battle'): return
+            if path in ('/api/pvp/queue','/api/pvp/arena3v3/teams','/api/pvp/arena3v3/pay') and not self.rate_limit_player('pvp_queue'): return
+            if path in ('/api/pvp/match/battle','/api/pvp/match/replay','/api/pvp/arena3v3/round','/api/pvp/arena3v3/replay','/api/guild-war/battle') and not self.rate_limit_player('battle'): return
             if path.startswith('/api/admin/') and not self.rate_limit('admin'): return
             if path == '/api/giftcode/redeem' and not self.rate_limit('giftcode_redeem'): return
             if path == '/api/giftcode/sso/exchange' and not self.rate_limit('auth_login'): return
@@ -907,7 +918,7 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
             if path.startswith('/api/skin-shop/admin/') and not self.rate_limit('admin'): return
             if path == '/api/world-guild/manage' and str(data.get('action') or '') == 'chat' and not self.rate_limit('guild_chat'): return
             if path == '/api/world-guild/activity' and not self.rate_limit('guild_activity'): return
-            if path == '/api/world-guild/activity' and str(data.get('action') or '') == 'boss_fight' and not self.rate_limit('battle'): return
+            if path == '/api/world-guild/activity' and str(data.get('action') or '') == 'boss_fight' and not self.rate_limit_player('battle'): return
             if path == '/api/chat/send' and not self.rate_limit('world_chat'): return
             if path in ('/api/auth/register','/api/auth/login'):
                 if path.endswith('/register'):

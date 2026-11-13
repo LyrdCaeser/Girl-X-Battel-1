@@ -244,6 +244,42 @@ class PvPArena3v3Tests(unittest.TestCase):
         finally:
             a.close(); b.close()
 
+    def test_online_compat_snapshot_preserves_partial_and_old_saves_without_npc_ladder(self):
+        from gxb2 import arena3v3
+        import copy
+        engine=self._engine('A3V3-A')
+        try:
+            initial=engine._load()
+            tickets=int(initial['items'].get('34',0))
+            state0=engine.snapshot()
+            self.assertFalse(state0['arena3v3_info']['opened'])
+            engine.ensure_pvp_arena3v3()
+            first=engine.snapshot()
+            second=engine.snapshot()
+            self.assertTrue(first['arena3v3_info']['online_only'])
+            self.assertEqual(first['arena3v3_info']['board'],[])
+            self.assertEqual(first['arena3v3_info']['enemies'],[])
+            self.assertIsNone(first['arena3v3_info']['rank'])
+            self.assertEqual(first['arena3v3_info'],second['arena3v3_info'])
+            self.assertEqual(engine._load()['items'].get('34',0),
+                             tickets+int(arena3v3.OPEN.get('34',0)))
+            # Legacy offline 3v3 saves can contain robot ranks. Do not rewrite
+            # the save, remove real teams/tickets or surface robots in online UI.
+            legacy=engine._load()
+            legacy['arena3v3'].update({'score':1234,'rivals':{'1':1500},'wins':9,'records':[{'name':'NPC'}]})
+            before=copy.deepcopy(legacy['arena3v3'])
+            engine._save_profile(legacy);engine.db.commit()
+            viewed=engine.snapshot()['arena3v3_info']
+            self.assertTrue(viewed['opened'])
+            self.assertEqual(viewed['board'],[])
+            self.assertEqual(viewed['records'],[])
+            self.assertIsNone(viewed['score'])
+            self.assertEqual(engine._load()['arena3v3'],before)
+            engine.ensure_pvp_arena3v3()
+            self.assertEqual(engine._load()['arena3v3'],before)
+        finally:
+            engine.close()
+
     def test_team_saves_are_owned_unique_and_persisted(self):
         engine = self._engine('A3V3-A')
         try:

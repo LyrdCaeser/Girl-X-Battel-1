@@ -862,7 +862,7 @@ class Engine:
         state['fantasy_book_info'] = fantasy_book.snapshot(_probe, player_level(state), _roster, self.now())
         state['shops_info'] = shops.snapshot(state, player_level(state), self.now())
         state['arena_info'] = arena.snapshot(state, player_level(state), self.now())
-        state['arena3v3_info'] = arena3v3.snapshot(state, player_level(state), self.now())
+        state['arena3v3_info'] = arena3v3.online_snapshot(state)
         state['patrol_info'] = patrol.snapshot(state, self.now())
         state['house_dress_info'] = house_dress.snapshot(state)
         state['guild_lab_info'] = guild_lab.snapshot(state)
