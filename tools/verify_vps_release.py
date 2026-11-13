@@ -92,6 +92,16 @@ def main():
           assertion=lambda _, data: len(data) > 100)
     check("Game entry links lobby script", PUBLIC + "/",
           assertion=lambda _, data: b"/lobby-dialogue.js" in data)
+    # Public/CDN asset paths must serve actual PNG data, not a Git LFS pointer
+    # accidentally published as an image or a redirect to a broken placeholder.
+    png = b"\x89PNG\r\n\x1a\n"
+    for label, path in (
+        ("Arena original scene", "/assets/arena/arena_scene.png"),
+        ("Arena 3v3 original scene", "/assets/arena/arena_3v3_scene.png"),
+        ("Guild original office scene", "/assets/sprite/guild_bg03.png"),
+        ("Battle original HP bar", "/assets/original-ui/battle_hp_bar1.png"),
+    ):
+        check(label, PUBLIC + path, assertion=lambda _, data: data.startswith(png))
     print("=== RESULT:", "PASS" if not FAILS else f"FAILED ({FAILS})", "===")
     sys.exit(bool(FAILS))
 

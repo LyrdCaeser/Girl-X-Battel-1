@@ -12,6 +12,7 @@ Nhánh phát hành hiện tại: `snez-vietnamese`.
 - [ ] Reverse proxy HTTPS hoạt động; không expose legacy TCP 9081 ra Internet.
 - [ ] `GXB3_TRUST_PROXY=1` chỉ khi proxy là trusted hop.
 - [ ] `python tools/production_preflight.py` PASS trên chính máy/container phát hành.
+- [ ] `python3 tools/verify_native_pvp_assets.py --strict` PASS **trước khi restart hoặc chuyển traffic**; phải là PNG thật, không phải Git LFS pointer. Khi cần: `git lfs pull` rồi kiểm tra lại.
 - [ ] Battle runtime PASS bằng LuaJIT tương thích của target; không chấp nhận CI skip làm bằng chứng runtime.
 - [ ] `GET /healthz` trả 200.
 - [ ] `GET /readyz` trả 200 và `ready:true`.
