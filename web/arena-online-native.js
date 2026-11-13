@@ -81,7 +81,16 @@ const NativeOnlineArenas=(()=>{
   if(!session)return;
   if((session.match?.status||match.status)!=='active'){note='Đang đợi đối thủ vào trận.';panel='match';render();return;}
   const r=await post('/api/pvp/match/battle',{match_id:match.id});
-  if(r?.result){lastMatchResult=r.result;panel='result';render();}
+  if(r?.result){
+   lastMatchResult=r.result;panel='result';render();
+   // Only play the original, stored LuaJIT combat frames. The server orients
+   // all HP, targets, actors and FX for this authenticated viewer.
+   const playback=await post('/api/pvp/match/replay',{match_id:match.id});
+   if(playback?.report&&typeof watchEventBattle==='function'){
+    try{await watchEventBattle({report:playback.report},activeView(),title());}
+    catch(error){note=error.message||'Không thể phát lại báo cáo trận thật';showView(activeView());render();}
+   }
+  }
  }
  async function pay3v3(match){const r=await post('/api/pvp/arena3v3/pay',{match_id:match.id});if(r){panel='match';render();}}
  async function round3v3(match,round){

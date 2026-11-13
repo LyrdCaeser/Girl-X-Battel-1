@@ -13,14 +13,14 @@ class Node{
 }
 function makeContext(){
  const roots={},calls=[],rows=[],notifications=[];
- let simulatedMatch=null,heartbeatReady=false;
+ let simulatedMatch=null,heartbeatReady=false,simulatedMatchMode='arena3v3';const replays=[];
  const dataFor=mode=>({
   rating:{season_id:'2026-11',rating:1140,wins:4,losses:1,matches:5},
   rating_board:[
    {rank:1,uid:'PLAYER-ALPHA',server_id:'S2',character_name:'Người Chơi Thật',rating:1211,wins:3,losses:2,level:51,power:12344},
    {rank:2,uid:'PLAYER-SELF',server_id:'S1',character_name:'Chủ Tài Khoản',rating:1140,wins:4,losses:1,level:61,power:23445}
   ],
-  pvp:simulatedMatch&&mode==='arena3v3'?{status:'matched',match:{...simulatedMatch}}:{status:'idle'},history:[],
+  pvp:simulatedMatch&&mode===simulatedMatchMode?{status:'matched',match:{...simulatedMatch}}:{status:'idle'},history:[],
   series:simulatedMatch&&mode==='arena3v3'?{paid:false,all_paid:false,rounds:[],wins_a:0,wins_b:0,next_round:0}:undefined,
   arena3v3:mode==='arena3v3'?{teams:[
    [{partner_id:1,pos:1}],[{partner_id:2,pos:1}],[{partner_id:3,pos:1}]],tickets:11,ticket_cost:3}:undefined,
@@ -38,6 +38,7 @@ function makeContext(){
    rankRow:(p)=>{rows.push(p);const n=new Node('div');n.className='ar-row2';n.textContent=p.name+' '+p.server_id+' '+p.score;return n;}},
   Arena3v3:{open:()=>{}},
   GirlUI:{notice:(m)=>notifications.push(m),toast:(m)=>notifications.push(m)},
+  watchEventBattle:async(data,origin,label)=>{replays.push({data,origin,label});},
   Shops:{open:()=>{}},
   api:async(url,body)=>{
    calls.push({url,body});
@@ -45,11 +46,13 @@ function makeContext(){
    if(url==='/api/pvp/match/heartbeat')return {match:{...simulatedMatch,status:heartbeatReady?'active':'ready'}};
    if(url==='/api/pvp/queue')return {status:'waiting'};
    if(url==='/api/pvp/arena3v3/teams')return {ok:true,teams:body.teams};
+   if(url==='/api/pvp/match/battle')return {result:{winner_uid:'PLAYER-SELF',battle_report:{total_round:2}}};
+   if(url==='/api/pvp/match/replay')return {report:{frames:[{pos:1,round:1,buffs:[]}],isWin:1,display_units:[]}};
    throw Error('Unexpected request '+url);
   }
  });
  vm.runInContext(fs.readFileSync(path.join(ROOT,'web/arena-online-native.js'),'utf8'),ctx);
- return {ctx,roots,calls,rows,notifications,match:(ready=false)=>{simulatedMatch={id:'M-REAL-1',status:'ready',player_a:'PLAYER-SELF',player_b:'PLAYER-ALPHA',name_a:'Chủ Tài Khoản',name_b:'Người Chơi Thật',server_a:'S1',server_b:'S1'};heartbeatReady=ready;}};
+ return {ctx,roots,calls,rows,notifications,replays,match:(ready=false,matchMode='arena3v3')=>{simulatedMatchMode=matchMode;simulatedMatch={id:'M-REAL-1',status:'ready',player_a:'PLAYER-SELF',player_b:'PLAYER-ALPHA',name_a:'Chủ Tài Khoản',name_b:'Người Chơi Thật',server_a:'S1',server_b:'S1'};heartbeatReady=ready;}};
 }
 (async()=>{
  const {ctx,roots,calls,rows,notifications,match}=makeContext();
@@ -87,5 +90,18 @@ function makeContext(){
         'cannot charge ticket while opponent is not ready');
  assert(calls.some(c=>c.url==='/api/pvp/match/heartbeat'&&c.body?.match_id==='M-REAL-1'));
  assert.equal(notifications.length,0);
+ // A finished single PvP battle must replay the authentic server report,
+ // without accepting frames/winner supplied by the browser.
+ const single=makeContext();single.match(true,'arena');
+ await vm.runInContext('NativeOnlineArenas',single.ctx).open('arena','home');
+ const singleFight=single.roots['arena-view'].descendants.find(n=>n.className==='ar-fight');
+ singleFight.onclick();
+ const enter=single.roots['arena-view'].descendants.find(n=>n.textContent==='Vào trận với đối thủ thật');
+ assert(enter,'only an active real match may enter combat');
+ await enter.onclick();
+ assert(single.calls.some(c=>c.url==='/api/pvp/match/battle'&&c.body?.match_id==='M-REAL-1'));
+ assert(single.calls.some(c=>c.url==='/api/pvp/match/replay'&&c.body?.match_id==='M-REAL-1'));
+ assert.equal(single.replays.length,1,'original LuaJIT replay is rendered once after match resolution');
+ assert.equal(single.replays[0].data.report.isWin,1);
  console.log('PASS | original native Junior Varsity, three-team and cross-server screens use only real PVP data and queue APIs');
 })().catch(e=>{console.error(e);process.exitCode=1;});

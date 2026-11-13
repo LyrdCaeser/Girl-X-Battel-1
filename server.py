@@ -17,7 +17,7 @@ import struct
 import threading
 import time
 from urllib.parse import parse_qs, urlparse
-from gxb2.engine import Engine, GameError, LOCAL_TOKEN
+from gxb2.engine import Engine, GameError, LOCAL_TOKEN, TABLES
 from gxb2.story import catalog as story_catalog
 from gxb2.dress import catalog as dress_catalog
 from gxb2.skins import catalog as skins_catalog
@@ -894,7 +894,7 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
             if path == '/api/auth/recovery-code' and not self.rate_limit('recovery_rotate'): return
             if path == '/api/order/create' and not self.rate_limit('order_create'): return
             if path in ('/api/pvp/queue','/api/pvp/arena3v3/teams','/api/pvp/arena3v3/pay') and not self.rate_limit('pvp_queue'): return
-            if path in ('/api/pvp/match/battle','/api/pvp/arena3v3/round','/api/guild-war/battle') and not self.rate_limit('battle'): return
+            if path in ('/api/pvp/match/battle','/api/pvp/match/replay','/api/pvp/arena3v3/round','/api/guild-war/battle') and not self.rate_limit('battle'): return
             if path.startswith('/api/admin/') and not self.rate_limit('admin'): return
             if path == '/api/giftcode/redeem' and not self.rate_limit('giftcode_redeem'): return
             if path == '/api/giftcode/sso/exchange' and not self.rate_limit('auth_login'): return
@@ -1380,6 +1380,24 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
             if path == '/api/pvp/match/result':
                 ctx = self.auth_context(); account = ctx['account']
                 return self.send(200, {'result': live_service.pvp_match_result(data.get('match_id'), account['uid'])})
+            if path == '/api/pvp/match/replay':
+                # Original LuaJIT report only, after a server-confirmed match,
+                # and only for one of the two authenticated participants.
+                ctx = self.auth_context(); account = ctx['account']
+                result = live_service.pvp_match_result(data.get('match_id'), account['uid'])
+                if result.get('status') != 'finished':
+                    return self.send(409, {'error':'Trận PvP chưa hoàn tất trên máy chủ'})
+                if result.get('mode') == 'arena3v3':
+                    return self.send(409, {'error':'Lượt 3v3 chưa lưu báo cáo khung hình gốc; không tạo phát lại giả'})
+                from gxb2 import pvp_render
+                authoritative = result.get('battle_report')
+                if not isinstance(authoritative, dict) or not isinstance(authoritative.get('frames'), list):
+                    return self.send(409, {'error':'Máy chủ chưa lưu khung hình chiến đấu của trận này'})
+                replay = pvp_render.for_viewer(
+                    authoritative, account['uid'], result['player_a'], result['player_b'],
+                    pet_a=authoritative.get('petA'), pet_b=authoritative.get('petB'),
+                    names=TABLES['names'])
+                return self.send(200, {'report':replay})
             if path == '/api/order/create':
                 state = self.engine.snapshot()
                 return self.send(200, live_service.create_order(state.get('uid'), state.get('server_id'), state.get('name'), data.get('package'), data.get('note','')))
