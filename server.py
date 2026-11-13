@@ -894,7 +894,7 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
             if path == '/api/auth/recovery-code' and not self.rate_limit('recovery_rotate'): return
             if path == '/api/order/create' and not self.rate_limit('order_create'): return
             if path in ('/api/pvp/queue','/api/pvp/arena3v3/teams','/api/pvp/arena3v3/pay') and not self.rate_limit('pvp_queue'): return
-            if path in ('/api/pvp/match/battle','/api/pvp/match/replay','/api/pvp/arena3v3/round','/api/guild-war/battle') and not self.rate_limit('battle'): return
+            if path in ('/api/pvp/match/battle','/api/pvp/match/replay','/api/pvp/arena3v3/round','/api/pvp/arena3v3/replay','/api/guild-war/battle') and not self.rate_limit('battle'): return
             if path.startswith('/api/admin/') and not self.rate_limit('admin'): return
             if path == '/api/giftcode/redeem' and not self.rate_limit('giftcode_redeem'): return
             if path == '/api/giftcode/sso/exchange' and not self.rate_limit('auth_login'): return
@@ -1341,6 +1341,11 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                                            'total_round': int(round_report.get('total_round') or 0),
                                            'total_harm': int(round_report.get('total_harm') or 0)},
                                        'result': final})
+            if path == '/api/pvp/arena3v3/replay':
+                ctx = self.auth_context(); account = ctx['account']
+                report = live_service.pvp_arena3v3_round_replay(
+                    data.get('match_id'), account['uid'], data.get('round'))
+                return self.send(200, {'report':report})
             if path == '/api/pvp/match/battle':
                 ctx = self.auth_context(); account = ctx['account']
                 session = live_service.pvp_match_session(data.get('match_id'), account['uid'])

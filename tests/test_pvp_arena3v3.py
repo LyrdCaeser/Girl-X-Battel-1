@@ -191,6 +191,59 @@ class PvPArena3v3Tests(unittest.TestCase):
         self.assertNotIn("data.get('team_a')", route)
         self.assertNotIn("data.get('team_b')", route)
 
+    def test_original_luajit_round_replay_is_persisted_for_exact_participants(self):
+        match=self._match()
+        a,b=self._pay_both(match)
+        try:
+            report={
+                'isWin':1,'total_round':4,'total_harm':221,
+                'frames':[{'pos':1,'round':1,'skill_id':4100100,'targets':[7],
+                           'buffs':[{'pos':7,'f_pos':1,'hp':30}],
+                           'eps':[{'pos':1,'ep':100},{'pos':14,'ep':5}]}],
+                'teamA':[{'pos':1,'table_id':41001,'level':25}],
+                'teamB':[{'pos':1,'table_id':41002,'level':25}],
+                'hp':[{'pos':1,'hp':100},{'pos':7,'hp':30}],
+                'hurts':[{'pos':7,'hurt':300}],
+                'petA':{'pet_id':9},'petB':{'pet_id':10},
+            }
+            stored=live_service.record_pvp_arena3v3_round(
+                match['id'],'A3V3-A',0,'A3V3-A',report)
+            self.assertFalse(stored['already_resolved'])
+            replay_a=live_service.pvp_arena3v3_round_replay(match['id'],'A3V3-A',0)
+            replay_b=live_service.pvp_arena3v3_round_replay(match['id'],'A3V3-B',0)
+            self.assertEqual(replay_a['isWin'],1)
+            self.assertEqual(replay_b['isWin'],0)
+            self.assertEqual(replay_b['frames'][0]['pos'],7)
+            self.assertEqual(replay_b['frames'][0]['targets'],[1])
+            self.assertEqual(replay_b['frames'][0]['eps'][1]['pos'],13)
+            self.assertEqual(replay_b['petA']['pet_id'],10)
+            self.assertEqual([u['pos'] for u in replay_b['display_units']],[7,1])
+            public=live_service.pvp_arena3v3_series_status(match['id'],'A3V3-A')
+            self.assertNotIn('replay_z',str(public))
+            self.assertNotIn('replay_z',str(live_service.pvp_history('A3V3-A')))
+            self.assertEqual(report['frames'][0]['pos'],1)
+            with self.assertRaisesRegex(ValueError,'không thuộc'):
+                live_service.pvp_arena3v3_round_replay(match['id'],'INTRUDER',0)
+            with self.assertRaisesRegex(ValueError,'chưa'):
+                live_service.pvp_arena3v3_round_replay(match['id'],'A3V3-A',1)
+            duplicate=live_service.record_pvp_arena3v3_round(
+                match['id'],'A3V3-A',0,'A3V3-B',{'isWin':0,'total_round':2})
+            self.assertTrue(duplicate['already_resolved'])
+            self.assertEqual(live_service.pvp_arena3v3_round_replay(match['id'],'A3V3-A',0),replay_a)
+        finally:
+            a.close(); b.close()
+
+    def test_historical_summary_only_round_never_returns_fake_battle_frames(self):
+        match=self._match()
+        a,b=self._pay_both(match)
+        try:
+            live_service.record_pvp_arena3v3_round(
+                match['id'],'A3V3-A',0,'A3V3-A',{'isWin':1,'total_round':15})
+            with self.assertRaisesRegex(ValueError,'chưa lưu'):
+                live_service.pvp_arena3v3_round_replay(match['id'],'A3V3-A',0)
+        finally:
+            a.close(); b.close()
+
     def test_team_saves_are_owned_unique_and_persisted(self):
         engine = self._engine('A3V3-A')
         try:

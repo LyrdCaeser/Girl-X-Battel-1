@@ -13,7 +13,7 @@ class Node{
 }
 function makeContext(){
  const roots={},calls=[],rows=[],notifications=[];
- let simulatedMatch=null,heartbeatReady=false,simulatedMatchMode='arena3v3';const replays=[];
+ let simulatedMatch=null,heartbeatReady=false,simulatedMatchMode='arena3v3',seriesAllPaid=false;const replays=[];
  const dataFor=mode=>({
   rating:{season_id:'2026-11',rating:1140,wins:4,losses:1,matches:5},
   rating_board:[
@@ -21,7 +21,7 @@ function makeContext(){
    {rank:2,uid:'PLAYER-SELF',server_id:'S1',character_name:'Chủ Tài Khoản',rating:1140,wins:4,losses:1,level:61,power:23445}
   ],
   pvp:simulatedMatch&&mode===simulatedMatchMode?{status:'matched',match:{...simulatedMatch}}:{status:'idle'},history:[],
-  series:simulatedMatch&&mode==='arena3v3'?{paid:false,all_paid:false,rounds:[],wins_a:0,wins_b:0,next_round:0}:undefined,
+  series:simulatedMatch&&mode==='arena3v3'?{paid:seriesAllPaid,all_paid:seriesAllPaid,rounds:[],wins_a:0,wins_b:0,next_round:0}:undefined,
   arena3v3:mode==='arena3v3'?{teams:[
    [{partner_id:1,pos:1}],[{partner_id:2,pos:1}],[{partner_id:3,pos:1}]],tickets:11,ticket_cost:3}:undefined,
  });
@@ -48,11 +48,13 @@ function makeContext(){
    if(url==='/api/pvp/arena3v3/teams')return {ok:true,teams:body.teams};
    if(url==='/api/pvp/match/battle')return {result:{winner_uid:'PLAYER-SELF',battle_report:{total_round:2}}};
    if(url==='/api/pvp/match/replay')return {report:{frames:[{pos:1,round:1,buffs:[]}],isWin:1,display_units:[]}};
+   if(url==='/api/pvp/arena3v3/round')return {round_report:{isWin:1,total_round:4},already_resolved:false,series:{wins_a:1,wins_b:0}};
+   if(url==='/api/pvp/arena3v3/replay')return {report:{frames:[{pos:1,round:1,buffs:[]}],isWin:1,display_units:[]}};
    throw Error('Unexpected request '+url);
   }
  });
  vm.runInContext(fs.readFileSync(path.join(ROOT,'web/arena-online-native.js'),'utf8'),ctx);
- return {ctx,roots,calls,rows,notifications,replays,match:(ready=false,matchMode='arena3v3')=>{simulatedMatchMode=matchMode;simulatedMatch={id:'M-REAL-1',status:'ready',player_a:'PLAYER-SELF',player_b:'PLAYER-ALPHA',name_a:'Chủ Tài Khoản',name_b:'Người Chơi Thật',server_a:'S1',server_b:'S1'};heartbeatReady=ready;}};
+ return {ctx,roots,calls,rows,notifications,replays,match:(ready=false,matchMode='arena3v3',allPaid=false)=>{simulatedMatchMode=matchMode;seriesAllPaid=allPaid;simulatedMatch={id:'M-REAL-1',status:'ready',player_a:'PLAYER-SELF',player_b:'PLAYER-ALPHA',name_a:'Chủ Tài Khoản',name_b:'Người Chơi Thật',server_a:'S1',server_b:'S1'};heartbeatReady=ready;}};
 }
 (async()=>{
  const {ctx,roots,calls,rows,notifications,match}=makeContext();
@@ -103,5 +105,17 @@ function makeContext(){
  assert(single.calls.some(c=>c.url==='/api/pvp/match/replay'&&c.body?.match_id==='M-REAL-1'));
  assert.equal(single.replays.length,1,'original LuaJIT replay is rendered once after match resolution');
  assert.equal(single.replays[0].data.report.isWin,1);
+ // Three-team Arena must replay each committed LuaJIT round, not a fake
+ // clip derived from the match winner/scoreboard.
+ const series=makeContext();series.match(true,'arena3v3',true);
+ await vm.runInContext('NativeOnlineArenas',series.ctx).open('arena3v3','home');
+ series.roots['arena3v3-view'].descendants.find(n=>n.className==='ar-fight').onclick();
+ const startRound=series.roots['arena3v3-view'].descendants.find(n=>n.textContent==='Thi đấu lượt 1');
+ assert(startRound,'ready/paid 3v3 match can run native first round');
+ await startRound.onclick();
+ assert(series.calls.some(c=>c.url==='/api/pvp/arena3v3/round'&&c.body?.expected_round===0));
+ assert(series.calls.some(c=>c.url==='/api/pvp/arena3v3/replay'&&c.body?.round===0));
+ assert.equal(series.replays.length,1,'real 3v3 round is replayed exactly once');
+ assert.equal(series.replays[0].label.includes('Lượt 1'),true);
  console.log('PASS | original native Junior Varsity, three-team and cross-server screens use only real PVP data and queue APIs');
 })().catch(e=>{console.error(e);process.exitCode=1;});

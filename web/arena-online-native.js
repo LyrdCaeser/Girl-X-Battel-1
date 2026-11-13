@@ -93,12 +93,22 @@ const NativeOnlineArenas=(()=>{
   }
  }
  async function pay3v3(match){const r=await post('/api/pvp/arena3v3/pay',{match_id:match.id});if(r){panel='match';render();}}
+ async function replay3v3(matchId,index){
+  // Playback is loaded only from the authenticated original LuaJIT report,
+  // never reconstructed from the scoreboard or an artificial NPC battle.
+  const reply=await post('/api/pvp/arena3v3/replay',{match_id:matchId,round:Number(index)});
+  if(reply?.report&&typeof watchEventBattle==='function'){
+   try{await watchEventBattle({report:reply.report},activeView(),title()+' · Lượt '+(Number(index)+1));}
+   catch(error){note=error.message||'Không thể xem báo cáo chiến đấu gốc';showView(activeView());render();}
+  }
+ }
  async function round3v3(match,round){
   const r=await post('/api/pvp/arena3v3/round',{match_id:match.id,expected_round:round});
   if(!r)return;
   if(r.result){lastMatchResult=r.result;panel='result';}
-  else {panel='match';if(r.round_report)note='Đã hoàn tất hiệp '+(round+1)+' trên máy chủ.';}
+  else {panel='match';if(r.round_report)note='Đã hoàn tất lượt '+(round+1)+' trên máy chủ.';}
   render();
+  if(!r.already_resolved&&r.round_report)await replay3v3(match.id,round);
  }
  function titleArt(st){
   if(mode==='arena'||mode==='arena3v3'){
@@ -233,6 +243,11 @@ const NativeOnlineArenas=(()=>{
    for(const h of rows.slice(0,25)){
     const o=opponent(h),won=h.winner_uid===own();
     win.append(el('div','ar-rec '+(won?'win':'lose'),(won?'Thắng':'Thua')+' · '+(o.name||o.uid)+' · '+new Date(h.created_at*1000).toLocaleString()));
+    if(h.mode==='arena3v3')for(const step of h.arena3v3_rounds||[]){
+     const n=Number(step.round);
+     if(Number.isInteger(n)&&n>=0&&n<3)
+      button('▶ Xem Lượt '+(n+1),()=>replay3v3(h.id,n));
+    }
    }
    if(!rows.length)paragraph('Chưa có trận nào trong lịch sử thực.');
   }else if(panel==='defense'){
@@ -249,6 +264,11 @@ const NativeOnlineArenas=(()=>{
    const r=lastMatchResult||{},report=r.battle_report||{},mine=own();
    paragraph('Kết quả do máy chủ xác nhận: '+(String(r.winner_uid)===mine?'Chiến thắng':'Thất bại'));
    paragraph('Số hiệp: '+(report.total_round??report.series?.rounds?.length??'—'));
+   if(mode==='arena3v3'&&r.id)for(const step of report.series?.rounds||[]){
+    const n=Number(step.round);
+    if(Number.isInteger(n)&&n>=0&&n<3)
+     button('▶ Xem Lượt '+(n+1),()=>replay3v3(r.id,n));
+   }
    button('Xem bảng xếp hạng',()=>{panel='';lastMatchResult=null;refresh();});
   }
   stage.append(ov);
