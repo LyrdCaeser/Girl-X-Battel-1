@@ -24,6 +24,9 @@ jobs:
         run: python -m compileall -q gxb2 server.py tools
       - name: Check browser JavaScript syntax
         run: |
+          node --check web/arena-online-native.js
+          node --check web/arena.js
+          node --check web/arena3v3.js
           node --check web/battle-animation.js
           node --check web/app.js
           node --check web/story.js
@@ -54,6 +57,8 @@ jobs:
           node --check web/auth.js
       - name: Run browser-free JS regression tests
         run: |
+          node tests/test_native_online_arenas.cjs
+          node tests/test_native_online_guild.cjs
           node tests/test_frontend_runtime.cjs
           node tests/test_giftcode_studio_runtime.cjs
           node tests/test_giftcode_studio_prices.cjs

@@ -167,6 +167,14 @@ function testBattleScale() {
   assert.match(css, /#arena:not\(\[hidden\]\) \.battlefield/);
   assert.match(css, /#event-arena \.battlefield/);
   assert.match(css, /aspect-ratio:9\/16!important/);
+  const head=vm.runInContext('ChibiBattle.headAnchorForFigure',ctx);
+  assert.deepEqual([...head({x:330,y:840},300,.8)], [330,582], 'one HP HUD above actual actor instead of skeleton FX bounds');
+  assert.deepEqual([...head({x:9999,y:-900},200,1)], [1080,0], 'head anchor clamps to the original viewport');
+  const original=fs.readFileSync(path.join(ROOT,'web/battle-animation.js'),'utf8');
+  assert.match(original, /deadPositions=new Set\(\),deathTokens=new Map\(\)/,
+    'defeated actors do not stand up again by returning to idle');
+  assert.match(original, /if\(kind==='revive'\)/,
+    'real resurrection restores a formerly defeated Spine actor');
   console.log('PASS | battle: native Spine bounds, facing and portrait viewport verified');
 }
 

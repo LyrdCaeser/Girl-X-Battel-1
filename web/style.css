@@ -410,3 +410,10 @@ body:has(#girls-view:not([hidden])){background:#d4dfeb}#girls-return{margin-righ
 .battlefield .unit.hp-head-anchor .unit-buffs{
   position:absolute;top:-40px;left:0;z-index:6
 }
+
+/* Native battle HUD: one HP per living actor, anchored to the Spine actor's
+   top. No persistent ghost HP bars after an enemy is defeated. */
+.battlefield .unit.hp-head-anchor.dead,
+.battlefield .unit.dead .hp,
+.battlefield .unit.dead .unit-status,
+.battlefield .unit.dead .unit-buffs {visibility:hidden!important}
