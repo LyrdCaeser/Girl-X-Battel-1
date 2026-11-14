@@ -126,7 +126,7 @@ const SettingsMenu=(()=>{
   const from=Math.max(0,Math.min(page-1,pages-3));for(let k=from;k<Math.min(pages,from+3);k++){const b=el('button','sm-pg num'+(k===page?' on':''),String(pages-k));b.type='button';b.onclick=()=>go(k);pg.append(b);}
   arrow('','comic_arrow',page+1,true);arrow('edge','comic_double_arrow',pages-1,true);st.append(pg);}
  // ComicDetailWindow: the whole page scrolls; ‹ › move to the next / previous episode.
- function read(list,k){const e=list[k];if(!e)return;if(!e[2]){const {body}=GirlUI.win({title:e[1],cls:'sm-win'});body.append(el('p','sm-note',"Trang truyện của tập này chưa có trong dữ liệu gốc."));return;}
+ function read(list,k){const e=list[k];if(!e)return;if(!e[2]){const {body}=GirlUI.win({title:e[1],cls:'sm-win'});body.append(el('p','sm-note','Tập truyện này chưa được mở.'));return;}
   document.querySelector('.sm-reader')?.remove();const ov=el('div','sm-reader');const bar=el('div','sm-reader-bar');const prev=el('button','sm-rbtn','‹');prev.type='button';prev.disabled=k>=list.length-1;prev.onclick=()=>read(list,k+1);const next=el('button','sm-rbtn','›');next.type='button';next.disabled=k<=0;next.onclick=()=>read(list,k-1);
   const x=el('button','sm-rclose');x.type='button';x.setAttribute('aria-label',"Đóng");x.onclick=()=>ov.remove();bar.append(prev,el('b','',e[1]),next,x);const sc=el('div','sm-reader-page');sc.append(img(M(e[0])));ov.append(bar,sc);root().append(ov);}
  return {open,render:draw};

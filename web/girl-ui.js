@@ -60,29 +60,54 @@ const GirlUI=(()=>{
    return !!ad.length&&!!bd.length&&JSON.stringify(ad)===JSON.stringify(bd);
   }
   const materialOrder=(a,b)=>(a.pos?1:0)-(b.pos?1:0)||a.lv-b.lv||a.stars-b.stars;
+  const selectionKey=(recipe,host)=>host.partner_id+':'+Number(recipe?.star||host.stars+1);
+  function savedSelection(recipe,host){const key=selectionKey(recipe,host);return awakeSel[key]||=(recipe?.awake25?{copies:[],sacrifices:[]}:{normal:[]});}
+  function sacrificeEligible(g){return Number(g.stars)>=8&&Number(g.stars)<=15&&Number(g.group)>=1&&Number(g.group)<=6&&g.awake25_valid_goddess===true;}
+  function selectedById(id){return state.roster.find(g=>String(g.partner_id)===String(id));}
   function pick(recipe,host){
+   const saved=savedSelection(recipe,host),used=new Set();
    if(recipe?.awake25){
-    const pool=state.roster.filter(g=>materialAvailable(g,host)).sort(materialOrder);
-    const sacrificeEligible=g=>Number(g.stars)>=8&&Number(g.stars)<=15&&Number(g.group)>=1&&Number(g.group)<=6&&g.awake25_valid_goddess===true;
-    const copies=pool.filter(g=>(Number(g.stars)===9||Number(g.stars)===10)&&awake25SameCharacter(g,host)).sort((a,b)=>Number(sacrificeEligible(a))-Number(sacrificeEligible(b))||materialOrder(a,b)).slice(0,Number(recipe.copies)||0);
-    const used=new Set(copies.map(g=>g.partner_id));
-    const sacrifices=pool.filter(g=>!used.has(g.partner_id)&&sacrificeEligible(g)).slice(0,Number(recipe.sacrifices)||0);
+    const copies=Array.from({length:Number(recipe.copies)||0},(_,i)=>{const g=selectedById(saved.copies[i]);if(!g||used.has(String(g.partner_id))||!materialAvailable(g,host)||(Number(g.stars)!==9&&Number(g.stars)!==10)||!awake25SameCharacter(g,host))return null;used.add(String(g.partner_id));return g;});
+    const sacrifices=Array.from({length:Number(recipe.sacrifices)||0},(_,i)=>{const g=selectedById(saved.sacrifices[i]);if(!g||used.has(String(g.partner_id))||!materialAvailable(g,host)||!sacrificeEligible(g))return null;used.add(String(g.partner_id));return g;});
     return {awake25:true,copies,sacrifices};
    }
-   const used=new Set(),out=[];
-   for(const code of (recipe?.material||[])){
-    const pool=state.roster.filter(g=>!used.has(g.partner_id)&&materialAvailable(g,host)&&matches(code,g,host)).sort(materialOrder);
-    const g=pool[0];if(g){used.add(g.partner_id);out.push(g);}else out.push(null);
-   }
-   return out;
+   return (recipe?.material||[]).map((code,i)=>{const g=selectedById(saved.normal[i]);if(!g||used.has(String(g.partner_id))||!materialAvailable(g,host)||!matches(Number(code),g,host))return null;used.add(String(g.partner_id));return g;});
   }
   function selectedMaterials(recipe,picked){return recipe?.awake25?[...picked.copies,...picked.sacrifices]:picked;}
   function materialsReady(recipe,picked){
    if(!recipe||!picked)return false;
-   if(recipe.awake25)return picked.copies.length===Number(recipe.copies)&&picked.sacrifices.length===Number(recipe.sacrifices);
+   if(recipe.awake25)return picked.copies.length===Number(recipe.copies)&&picked.copies.every(Boolean)&&picked.sacrifices.length===Number(recipe.sacrifices)&&picked.sacrifices.every(Boolean);
    return Array.isArray(recipe.material)&&picked.length===recipe.material.length&&picked.every(Boolean);
   }
-  function codeLabel(code){if(code%1000===999){const star=Math.floor(code/10000),group=code%10000===9999?0:Math.floor(code/1000)%10;return star+'★ '+(group?"of the faction":'cualquiera');}return (girlsCatalog?.find?.(g=>g.id===code)?.name||"Girl "+code)+" (copy)";}
+  function requirementsAvailable(recipe,host){
+   const pool=state.roster.filter(g=>materialAvailable(g,host)).sort(materialOrder);
+   if(recipe?.awake25){
+    const copies=pool.filter(g=>(Number(g.stars)===9||Number(g.stars)===10)&&awake25SameCharacter(g,host)).sort((a,b)=>Number(sacrificeEligible(a))-Number(sacrificeEligible(b))||materialOrder(a,b)).slice(0,Number(recipe.copies)||0);
+    const used=new Set(copies.map(g=>String(g.partner_id)));
+    return copies.length===Number(recipe.copies)&&pool.filter(g=>!used.has(String(g.partner_id))&&sacrificeEligible(g)).length>=Number(recipe.sacrifices);
+   }
+   const used=new Set();
+   return (recipe?.material||[]).every(code=>{const g=pool.find(x=>!used.has(String(x.partner_id))&&matches(Number(code),x,host));if(!g)return false;used.add(String(g.partner_id));return true;});
+  }
+  function codeLabel(code){if(code%1000===999){const star=Math.floor(code/10000),group=code%10000===9999?0:Math.floor(code/1000)%10;return star+'★ '+(group?'cùng hệ':'bất kỳ hệ nào');}return (girlsCatalog?.find?.(g=>g.id===code)?.name||'Nữ Thần '+code)+' cùng tên';}
+  function setMaterialChoice(recipe,host,kind,index,id){const saved=savedSelection(recipe,host);saved[kind][index]=id||null;}
+  function materialCandidates(recipe,host,kind,index){
+   const picked=pick(recipe,host),used=new Set();
+   if(recipe.awake25){for(const [k,list] of Object.entries({copies:picked.copies,sacrifices:picked.sacrifices}))list.forEach((g,i)=>{if(g&&!(k===kind&&i===index))used.add(String(g.partner_id));});}
+   else picked.forEach((g,i)=>{if(g&&i!==index)used.add(String(g.partner_id));});
+   return state.roster.filter(g=>!used.has(String(g.partner_id))&&materialAvailable(g,host)&&(
+    kind==='copies'?((Number(g.stars)===9||Number(g.stars)===10)&&awake25SameCharacter(g,host)):
+    kind==='sacrifices'?sacrificeEligible(g):matches(Number(recipe.material[index]),g,host)
+   )).sort(materialOrder);
+  }
+  function chooseMaterial(hero,recipe,kind,index,parentClose){
+   const picked=pick(recipe,hero),current=kind==='normal'?picked[index]:picked[kind][index],label=kind==='copies'?'Nữ Thần cùng tên':kind==='sacrifices'?'Nữ Thần bổ trợ':codeLabel(Number(recipe.material[index]));
+   const {body,close}=win({title:'Chọn Nguyên Liệu',cls:'lb-choose'});body.append(el('p','lb-choice-note','Chọn '+label+'. Nữ Thần đã khóa hoặc đang chờ giao dịch sẽ không xuất hiện.'));
+   const grid=el('div','lb-mats wrap'),refresh=()=>{close();parentClose();limitBreak(state.roster.find(g=>g.partner_id===hero.partner_id)||hero);};
+   for(const g of materialCandidates(recipe,hero,kind,index)){const b=el('button','lb-mat ok choose');b.type='button';b.append(card(Number(g.table_id)),el('small','',g.name+' · '+g.stars+'★ · Cấp '+g.lv));b.onclick=()=>{setMaterialChoice(recipe,hero,kind,index,g.partner_id);refresh();};grid.append(b);}
+   if(!grid.children.length)body.append(el('p','lb-max','Không có Nữ Thần phù hợp trong Túi Nữ Thần.'));else body.append(grid);
+   if(current){const actions=el('div','gs-btns'),clear=el('button','gs-btn white','Bỏ Chọn');clear.type='button';clear.onclick=()=>{setMaterialChoice(recipe,hero,kind,index,null);refresh();};actions.append(clear);body.append(actions);}
+  }
  // Limit-Break tab (potentiality_component, 672×381): star banner (potentiality_bg02), the five potential nodes in a W
  // (stage i opens at Limit-Break i), Reverse / Replace / Switch. The star opens the Limit-Break window (capture l/04):
  // next emblem, MAX LVL, the nodes, the girls used as material (1/1), the cost and the Limit-Break button.
@@ -108,8 +133,8 @@ const GirlUI=(()=>{
    if(info.icon)b.append(img('/assets/skills/'+info.icon+'.png'));const t=el('div');t.append(el('b','',info.name||('Potencial '+id)),rich('p','',info.desc||''));b.append(t);if((hero.potentials||[])[stage-1]===k+1)b.append(el('span','lb-active','Activo'));b.onclick=()=>{sel=k+1;paint();};list.append(b);});};
   paint();body.append(list);const a=el('div','gs-btns');const ok=el('button','gs-btn','Activate');ok.type='button';ok.onclick=async()=>{if(!sel)return;close();await action('CHOOSE_PARTNER_POTENTIAL',{partner_id:hero.partner_id,awake_index:stage,index:sel});};a.append(ok);body.append(a);}
  function awake(hero){const box=$('detail-awake-status');if(!box)return;box.replaceChildren();const tab=document.querySelector('[data-detail-tab=awake]');if(tab)tab.textContent='Thức Tỉnh';
-  if(hero.local_promotion&&hero.stars>=10&&!hero.next_awake){box.className='lb-low';box.append(el('p','gu-awake-head',hero.stars+'★'),el('p','detail-note','Nữ Thần này hiện chưa có công thức Thức Tỉnh tiếp theo trên máy chủ.'));return;}
-  if(hero.stars<10&&!hero.next_awake){box.className='lb-low';box.append(el('p','gu-awake-head',hero.stars+'★'),el('p','detail-note',"Chưa có công thức nâng sao tiếp theo trong dữ liệu gốc của Nữ Thần này. Có thể xem Học Viện → Tiến Hóa để kiểm tra tiến trình phù hợp."));return;}
+  if(hero.local_promotion&&hero.stars>=10&&!hero.next_awake){box.className='lb-low';box.append(el('p','gu-awake-head',hero.stars+'★'),el('p','detail-note','Nữ Thần này đã đạt bậc cao nhất hiện có.'));return;}
+  if(hero.stars<10&&!hero.next_awake){box.className='lb-low';box.append(el('p','gu-awake-head',hero.stars+'★'),el('p','detail-note','Nữ Thần này chưa thể nâng sao. Hãy vào Học Viện → Tiến Hóa để xem điều kiện tiếp theo.'));return;}
   box.className='lb-tab';const r=hero.next_awake;
   if(hero.stars<10&&r){
    box.classList.add('lb-progress-preview');
@@ -121,7 +146,7 @@ const GirlUI=(()=>{
    // This tab must show the ORIGINAL server recipe, not a blank card or a
    // generic link. Every existing/future girl uses her own next_awake data.
    const picked=pick(r,hero),materials=selectedMaterials(r,picked);
-   const req=el('div','lb-inline-materials');req.setAttribute('aria-label','Nguyên liệu Thức Tỉnh theo bảng gốc');
+   const req=el('div','lb-inline-materials');req.setAttribute('aria-label','Nguyên liệu cần dùng');
    (r.material||[]).forEach((code,i)=>{
     const g=materials[i],tile=el('span','lb-inline-material'+(g?' ok':''));
     const id=g?.table_id||(Number(code)%1000===999?0:Number(code));
@@ -131,50 +156,51 @@ const GirlUI=(()=>{
    });
    box.append(req);
    const expenses=el('div','lb-inline-cost');const enough=cost(expenses,r.cost||{});box.append(expenses);
-   const go=el('button','gs-btn',(r.kind==='compose'?'Tiến Hóa':'Thức Tỉnh')+' · '+(materialsReady(r,picked)&&enough?'Đủ nguyên liệu':'Xem nguyên liệu'));
+   const go=el('button','gs-btn',(r.kind==='compose'?'Tiến Hóa':'Thức Tỉnh')+' · '+(materialsReady(r,picked)&&enough?'Đủ nguyên liệu':'Tự chọn nguyên liệu'));
    go.type='button';go.onclick=()=>limitBreak(hero);box.append(go);return;
   }
-  const top=el('button','lb-banner');top.type='button';top.append(stars(hero.stars,'tag'));if(r&&materialsReady(r,pick(r,hero))&&cost(el('span'),r.cost||{}))top.append(img(S+'alert_icon.png','lb-red'));top.onclick=()=>limitBreak(hero);top.title='Mở giao diện Thức Tỉnh gốc';top.setAttribute('aria-label','Mở công thức và vật liệu Thức Tỉnh Nữ Thần');box.append(top);
+  const top=el('button','lb-banner');top.type='button';top.append(stars(hero.stars,'tag'));if(r&&requirementsAvailable(r,hero)&&cost(el('span'),r.cost||{}))top.append(img(S+'alert_icon.png','lb-red'));top.onclick=()=>limitBreak(hero);top.title='Mở Thức Tỉnh';top.setAttribute('aria-label','Mở Thức Tỉnh Nữ Thần');box.append(top);
   box.append(nodes(hero,'tab'));
   const bar=el('div','lb-btns');for(const [label,fn]of [['Reverse',()=>reverse(hero)],['Replace',()=>exchange(hero)],['Switch',()=>switchPotentials(hero)]]){const b=el('button','gs-btn lb-small',label);b.type='button';b.onclick=fn;bar.append(b);}box.append(bar);}
  function limitBreak(hero){
    const r=hero.next_awake,{body,close}=win({title:'Thức Tỉnh',cls:'lb-win'});
    const picked=r?pick(r,hero):null,chosen=r?selectedMaterials(r,picked):[];
    const head=el('div','lb-head');head.append(stars(r?Number(r.star||hero.stars+1):hero.stars,'tag'));body.append(head);
-   if(!r){body.append(el('p','lb-max',hero.stars>=25?"Đã đạt giới hạn 25★ · cấp 666.":"Chưa có dữ liệu Đột Phá tiếp theo cho Nữ Thần này."));return;}
+   if(!r){body.append(el('p','lb-max',hero.stars>=25?'Đã đạt giới hạn 25★ · cấp 666.':'Nữ Thần này chưa thể Thức Tỉnh thêm.'));return;}
    const targetStar=Number(r.star||hero.stars+1);
-   const cap=r.kind==='compose'?'Theo hình thái gốc':targetStar<10?Number(hero.level_cap||0)+20:
+   const cap=Number(r.target_level_cap||0)||(targetStar<10?Number(hero.level_cap||0)+20:
      targetStar===10?Number(r.target_level_cap||250):
-     CAPS[Math.max(0,Math.min(CAPS.length-1,targetStar-11))];
+     CAPS[Math.max(0,Math.min(CAPS.length-1,targetStar-11))]);
    const hpCycle=[14.56,14.56,9.62,9.62],atkCycle=[10.40,10.40,7.49,7.49];
    const hp=targetStar>=16?hpCycle[(targetStar-16)%4]:Number(pots.attr_up[0]||0)*100;
    const atk=targetStar>=16?atkCycle[(targetStar-16)%4]:Number(pots.attr_up[1]||0)*100;
    const pct=v=>Number(v).toFixed(2).replace(/\.?0+$/,'');
    const rows=el('div','lb-rows'),row=(k,v)=>{const d=el('div','lb-row');d.append(el('b','',k),el('span','',v));rows.append(d);};
-   row('MAX LVL',String(cap));
-   if(targetStar<11)row('Chỉ số','Tăng theo dữ liệu Thức Tỉnh gốc');
+   row('Cấp Tối Đa',String(cap));
+   if(targetStar<11)row('Sức Mạnh','Tăng sau khi tiến hóa');
    else{row('HP','+'+pct(hp)+'%');row('ATK','+'+pct(atk)+'%');}
-   if(targetStar>=16)row('DEF',String(100+(targetStar-15)*2)+'% so với 15★');body.append(rows);
+   if(targetStar>=16)row('Phòng Thủ',String(100+(targetStar-15)*2)+'% so với 15★');body.append(rows);
    if(targetStar>=11){const un=el('div','lb-unlock');un.append(el('b','','Mở Khóa'));un.append(nodes({...hero,stars:targetStar},'win',false));body.append(un);}
+   body.append(el('p','lb-choice-note','Chạm từng ô để tự chọn Nữ Thần dùng làm nguyên liệu.'));
    if(r.awake25){
-    const addGroup=(label,items,required,emptyText)=>{
-     body.append(el('p','detail-note',label+' · '+items.length+'/'+required));
+    const addGroup=(label,items,required,emptyText,kind)=>{
+     body.append(el('p','detail-note',label+' · '+items.filter(Boolean).length+'/'+required));
      const grid=el('div','lb-mats wrap');
      for(let i=0;i<required;i++){
-      const g=items[i],c=el('div','lb-mat'+(g?' ok':'')),pic=el('span','lb-pic');
+      const g=items[i],c=el('button','lb-mat choose'+(g?' ok':'')),pic=el('span','lb-pic');c.type='button';
       if(g)pic.append(card(Number(g.table_id)));else pic.append(el('i','',emptyText));
-      c.append(pic,el('small','',(g?'1':'0')+'/1'));c.title=g?g.name+' · '+g.stars+'★ Lv. '+g.lv:label+' · thiếu '+(i+1);grid.append(c);
+      c.append(pic,el('small','',(g?'1':'0')+'/1'));c.title=g?g.name+' · '+g.stars+'★ · Cấp '+g.lv:'Chạm để chọn';c.onclick=()=>chooseMaterial(hero,r,kind,i,close);grid.append(c);
      }
      body.append(grid);
     };
-    addGroup('Bản sao đúng Nữ Thần',picked.copies,Number(r.copies)||0,'Bản sao');
-    addGroup('Nữ Thần hiến tế · hệ 1–6',picked.sacrifices,Number(r.sacrifices)||0,'Hiến tế');
+    addGroup('Nữ Thần cùng tên',picked.copies,Number(r.copies)||0,'Chọn','copies');
+    addGroup('Nữ Thần bổ trợ · hệ 1–6',picked.sacrifices,Number(r.sacrifices)||0,'Chọn','sacrifices');
    }else{
     const mats=el('div','lb-mats');
-    (r.material||[]).forEach((code,i)=>{const g=chosen[i],c=el('div','lb-mat'+(g?' ok':'')),pic=el('span','lb-pic');
+    (r.material||[]).forEach((code,i)=>{const g=chosen[i],c=el('button','lb-mat choose'+(g?' ok':'')),pic=el('span','lb-pic');c.type='button';
      const id=g?g.table_id:(code%1000===999?0:code);
-     if(id&&cardIds.has(id))pic.append(img('/assets/cards/partner_card_'+id+'.png'));else pic.append(el('i','',Math.floor(code/10000)+'★'));
-     c.append(pic,el('small','',(g?1:0)+'/1'));c.title=g?g.name+' · '+g.stars+"★ Lv. "+g.lv:codeLabel(code);mats.append(c);
+     if(g&&id&&cardIds.has(id))pic.append(img('/assets/cards/partner_card_'+id+'.png'));else if(g)pic.append(card(Number(id)));else pic.append(el('i','',code%1000===999?Math.floor(code/10000)+'★':'Chọn'));
+     c.append(pic,el('small','',(g?1:0)+'/1'));c.title=g?g.name+' · '+g.stars+'★ · Cấp '+g.lv:codeLabel(code);c.onclick=()=>chooseMaterial(hero,r,'normal',i,close);mats.append(c);
     });body.append(mats);
    }
    const c=el('div','lb-cost'),ok=cost(c,r.cost||{});body.append(c);
@@ -188,7 +214,7 @@ const GirlUI=(()=>{
     const message=compose?'COMPOSE_PARTNER':'AWAKE_PARTNER';
     const data=compose?{table_id:r.target,material_ids:[hero.partner_id,...ids]}:{partner_id:hero.partner_id,material_ids:ids};
     btn.disabled=true;
-    try{const result=await action(message,data);if(result?.state){close();}else{btn.disabled=false;}}
+    try{const result=await action(message,data);if(result?.state){delete awakeSel[selectionKey(r,hero)];close();}else{btn.disabled=false;}}
     catch(err){btn.disabled=false;toast(err.message||'Không thể nâng sao');}
    };
    acts.append(btn);body.append(acts);

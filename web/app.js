@@ -25,14 +25,14 @@ let eventBattleOrigin='tower';
 let profileCatalog={heads:[],partners:[],frames:[]},profileTab='info',profileCategory='heads',profileDraft={avatar:'head_1001',frame:'frame_8007'},profileEditField='name';
 // Routes traced from MainWindow, SchoolChooseWindow, BattleChooseWindow and their child windows.
 const menuRoutes={
- 'luvly-castle':{title:'Luvly’s Dream Castle',scene:'settings',description:"Original castle event. Its rewards and scheduling rules have not been restored yet."},
+ 'luvly-castle':{title:'Lâu Đài Mộng Mơ',scene:'settings',description:'Sự kiện này chưa mở nhận thưởng.'},
  'drift-bottle':{title:'Adrift Message',scene:'settings',description:"Adrift messages. The original messaging service is unavailable."},
- 'starry-altar':{title:'Cosmos Portal',scene:'altar',description:"Original portal. Its summoning system has not been restored yet."},
+ 'starry-altar':{title:'Cổng Vũ Trụ',scene:'altar',description:'Tính năng Triệu Hồi này chưa mở.'},
  settings:{title:"Menu",scene:'settings',description:"Academy settings, memories, and collections.",children:['memories','collection','notices','help','enhance','comic','backgrounds','achievements']},
  memories:{title:"Memories",scene:'settings',art:'setting_icon_memories',description:"Unlocked stories and scenes.",children:['collection']},
  collection:{title:"Collection",scene:'collection',art:'setting_icon_achieve',description:"Girls, skins, and game records.",children:['girls-gallery','costumes']},
  'girls-gallery':{title:"Girls Gallery",scene:'collection',description:"Browse the Girls catalog and their skins."},
- notices:{title:"Notices",scene:'settings',art:'setting_icon_notice',description:"Original game news and notices."},
+ notices:{title:'Thông Báo',scene:'settings',art:'setting_icon_notice',description:'Tin tức và thông báo mới nhất của trò chơi.'},
  help:{title:"Help",scene:'settings',art:'setting_icon_help',description:"Guides and explanations of game systems."},
  enhance:{title:"Enhance",scene:'settings',art:'setting_icon_enhance',description:"Equipment upgrades and effects."},
  comic:{title:"Manga",scene:'settings',art:'setting_icon_comic',description:"Illustrated academy stories."},
@@ -148,7 +148,7 @@ async function composeHomeAtlas(){
  for(let i=0;i<pixels.data.length;i+=4)pixels.data[i+3]=mask.data[i];ctx.putImageData(pixels,0,0);
  const url=c.toDataURL('image/png');for(const e of document.querySelectorAll('.home-sprite'))e.style.backgroundImage=`url(${url})`;
 }
-function renderHome(){const heroes=[41001,42001,43001];const id=heroes[homeHeroIndex%heroes.length];if(typeof LobbyDialogue!=='undefined')LobbyDialogue.sync(id);{const wp=typeof Wallpaper!=='undefined'&&Wallpaper.heroSrc(homeHeroIndex);const hero=$('home-hero');hero.classList.toggle('wp-picture',!!wp);hero.src=wp||'/assets/hero-'+id+'.png';if(typeof Wallpaper!=='undefined'&&Wallpaper.mountHome){const idx=homeHeroIndex;Wallpaper.mountHome(idx).then(on=>{hero.style.visibility=on?'hidden':'';});}}$('home-level').textContent=state.level;$('home-gold').textContent=number(state.items['1']);$('home-gems').textContent=number(state.items['2']);const profile=state.profile||{};const e=document.querySelector('.home-profile-portrait');e.style.backgroundImage=`url('${profileAsset(profile.avatar||'head_1001')}')`;e.style.backgroundSize='cover';e.style.backgroundPosition='center';document.querySelector('.home-profile-frame').src=`/assets/profile/${profile.frame||'frame_8007'}.png`;if(typeof HeroGlow!=='undefined')HeroGlow.profile($('home-profile'),profile.frame);if(state.summon){if(typeof WishCapsule!=='undefined'&&view==='capsule')WishCapsule.capsule();$('capsule-gold').textContent=number(state.items['1']);$('capsule-gems').textContent=number(state.items['2']);$('regular-count').textContent=number(state.summon.basic_scrolls);$('regular-stock').textContent="Tokens: "+number(state.summon.basic_scrolls);$('advanced-count').textContent=number(state.summon.senior_scrolls);$('bff-count').textContent=number(state.summon.friend_hearts);$('regular-free').textContent=state.summon.free_ready?"Free summon available":"Free summon every 8 hours";$('advanced-free').textContent=state.summon.senior_free_ready?"Free advanced summon available":"Free summon every 48 hours";$('summon-free').disabled=busy||!state.summon.free_ready;$('summon-one').disabled=busy||state.summon.basic_scrolls<1;$('summon-ten').disabled=busy||state.summon.basic_scrolls<10;$('summon-senior-free').disabled=busy||!state.summon.senior_free_ready;$('summon-senior-one').disabled=busy||state.summon.senior_scrolls<1;$('summon-senior-ten').disabled=busy||state.summon.senior_scrolls<10;$('summon-senior-gem-one').disabled=busy||Number(state.items['2']||0)<250;$('summon-senior-gem-ten').disabled=busy||Number(state.items['2']||0)<2200;$('summon-bff-one').disabled=busy||state.summon.friend_hearts<10;$('summon-bff-ten').disabled=busy||state.summon.friend_hearts<100;$('capsule-egg-points').textContent=number(state.summon.egg_points)+' / '+number(state.summon.egg_cost);$('capsule-egg-fill').style.width=Math.min(100,100*state.summon.egg_points/state.summon.egg_cost)+'%';$('summon-egg').disabled=busy||state.summon.egg_points<state.summon.egg_cost;$('summon-egg').classList.toggle('ready',state.summon.egg_points>=state.summon.egg_cost);$('capsule-stock').textContent="Basic Tokens: "+number(state.summon.basic_scrolls)+" · Summons saved in your local save.";}}
+function renderHome(){const heroes=[41001,42001,43001];const id=heroes[homeHeroIndex%heroes.length];if(typeof LobbyDialogue!=='undefined')LobbyDialogue.sync(id);{const wp=typeof Wallpaper!=='undefined'&&Wallpaper.heroSrc(homeHeroIndex);const hero=$('home-hero');hero.classList.toggle('wp-picture',!!wp);hero.src=wp||'/assets/hero-'+id+'.png';if(typeof Wallpaper!=='undefined'&&Wallpaper.mountHome){const idx=homeHeroIndex;Wallpaper.mountHome(idx).then(on=>{hero.style.visibility=on?'hidden':'';});}}$('home-level').textContent=state.level;$('home-gold').textContent=number(state.items['1']);$('home-gems').textContent=number(state.items['2']);const profile=state.profile||{};const e=document.querySelector('.home-profile-portrait');e.style.backgroundImage=`url('${profileAsset(profile.avatar||'head_1001')}')`;e.style.backgroundSize='cover';e.style.backgroundPosition='center';document.querySelector('.home-profile-frame').src=`/assets/profile/${profile.frame||'frame_8007'}.png`;if(typeof HeroGlow!=='undefined')HeroGlow.profile($('home-profile'),profile.frame);if(state.summon){if(typeof WishCapsule!=='undefined'&&view==='capsule')WishCapsule.capsule();$('capsule-gold').textContent=number(state.items['1']);$('capsule-gems').textContent=number(state.items['2']);$('regular-count').textContent=number(state.summon.basic_scrolls);$('regular-stock').textContent="Tokens: "+number(state.summon.basic_scrolls);$('advanced-count').textContent=number(state.summon.senior_scrolls);$('bff-count').textContent=number(state.summon.friend_hearts);$('regular-free').textContent=state.summon.free_ready?"Free summon available":"Free summon every 8 hours";$('advanced-free').textContent=state.summon.senior_free_ready?"Free advanced summon available":"Free summon every 48 hours";$('summon-free').disabled=busy||!state.summon.free_ready;$('summon-one').disabled=busy||state.summon.basic_scrolls<1;$('summon-ten').disabled=busy||state.summon.basic_scrolls<10;$('summon-senior-free').disabled=busy||!state.summon.senior_free_ready;$('summon-senior-one').disabled=busy||state.summon.senior_scrolls<1;$('summon-senior-ten').disabled=busy||state.summon.senior_scrolls<10;$('summon-senior-gem-one').disabled=busy||Number(state.items['2']||0)<250;$('summon-senior-gem-ten').disabled=busy||Number(state.items['2']||0)<2200;$('summon-bff-one').disabled=busy||state.summon.friend_hearts<10;$('summon-bff-ten').disabled=busy||state.summon.friend_hearts<100;$('capsule-egg-points').textContent=number(state.summon.egg_points)+' / '+number(state.summon.egg_cost);$('capsule-egg-fill').style.width=Math.min(100,100*state.summon.egg_points/state.summon.egg_cost)+'%';$('summon-egg').disabled=busy||state.summon.egg_points<state.summon.egg_cost;$('summon-egg').classList.toggle('ready',state.summon.egg_points>=state.summon.egg_cost);$('capsule-stock').textContent='Vé Thường: '+number(state.summon.basic_scrolls)+' · Tiến trình đã được lưu.';}}
 function loadFormation(){formationDraft=Array(6).fill(null);for(const slot of state.formation||[])if(slot.pos>=1&&slot.pos<=6)formationDraft[slot.pos-1]=slot.partner_id;selectedPosition=formationDraft.findIndex(id=>id===null)+1||1;}
 function placeHero(id){if(busy)return;const old=formationDraft.indexOf(id);if(old>=0)formationDraft[old]=null;formationDraft[selectedPosition-1]=id;const next=formationDraft.findIndex(value=>value===null);if(next>=0)selectedPosition=next+1;render();}
 function renderFormation(){
@@ -156,7 +156,7 @@ function renderFormation(){
  for(let pos=1;pos<=6;pos++){const id=formationDraft[pos-1],hero=state.roster.find(h=>h.partner_id===id),slot=node('button','formation-slot '+(pos<=2?'front':'back')+(selectedPosition===pos?' selected':'')+(hero?' occupied':''));slot.type='button';slot.disabled=busy;slot.setAttribute('aria-label',"Position "+pos+(hero?', '+hero.name:", empty"));slot.setAttribute('aria-pressed',String(selectedPosition===pos));slot.append(node('span','slot-number',String(pos)));if(hero){slot.append(portrait(hero.table_id,68,hero),node('span','slot-name',hero.name));}else slot.append(node('span','slot-empty','+'));slot.addEventListener('click',()=>{selectedPosition=pos;render();});$('formation-board').append(slot);}
  $('selected-slot').textContent='Casilla '+selectedPosition+' · '+(selectedPosition<=2?'delante':"back");$('remove-slot').disabled=busy||!formationDraft[selectedPosition-1];
  $('roster-count').textContent=state.roster.length+' / 100';$('roster').replaceChildren();
- for(const hero of state.roster){const pos=formationDraft.indexOf(hero.partner_id)+1,e=node('div','hero-card'+(pos?' assigned':''));const art=portrait(hero.table_id,96,hero);e.append(art,node('span','hero-card-level',"Lv. "+hero.lv),node('span','hero-card-stars','★'.repeat(Math.min(hero.stars,6))));const info=node('div','hero-card-info');info.append(node('strong','',hero.name),node('small','',pos?"In slot "+pos:"Available"));e.append(info);const controls=node('div','hero-card-actions'),place=node('button','secondary',pos===selectedPosition?"Placed":"Place"),upgrade=node('button','secondary',"+1 level");place.disabled=busy||pos===selectedPosition;place.setAttribute('aria-label',"Place "+hero.name+" in position "+selectedPosition);place.addEventListener('click',()=>placeHero(hero.partner_id));upgrade.disabled=busy||hero.lv>=hero.level_cap;upgrade.setAttribute('aria-label',"Level up "+hero.name);upgrade.title=hero.lv>=hero.level_cap?"Current cap reached":number(hero.next_cost['1'])+" Gold · "+number(hero.next_cost['9'])+' exp.';upgrade.addEventListener('click',()=>action('PARTNER_LEVUP',{partner_id:hero.partner_id,incr_lv:1}));const fast=node('button','secondary','Nâng cấp nhanh');fast.type='button';fast.disabled=busy;fast.title='Dùng tài nguyên thật để lên cấp và tiến bậc tối đa';fast.addEventListener('click',()=>quickLevelMax(hero.partner_id));controls.append(place,upgrade,fast);e.append(controls);$('roster').append(e);}
+ for(const hero of state.roster){const pos=formationDraft.indexOf(hero.partner_id)+1,e=node('div','hero-card'+(pos?' assigned':''));const art=portrait(hero.table_id,96,hero);e.append(art,node('span','hero-card-level',"Lv. "+hero.lv),node('span','hero-card-stars','★'.repeat(Math.min(hero.stars,6))));const info=node('div','hero-card-info');info.append(node('strong','',hero.name),node('small','',pos?"In slot "+pos:"Available"));e.append(info);const controls=node('div','hero-card-actions'),place=node('button','secondary',pos===selectedPosition?"Placed":"Place"),upgrade=node('button','secondary',"+1 level");place.disabled=busy||pos===selectedPosition;place.setAttribute('aria-label',"Place "+hero.name+" in position "+selectedPosition);place.addEventListener('click',()=>placeHero(hero.partner_id));upgrade.disabled=busy||hero.lv>=hero.level_cap;upgrade.setAttribute('aria-label',"Level up "+hero.name);upgrade.title=hero.lv>=hero.level_cap?"Current cap reached":number(hero.next_cost['1'])+" Gold · "+number(hero.next_cost['9'])+' exp.';upgrade.addEventListener('click',()=>action('PARTNER_LEVUP',{partner_id:hero.partner_id,incr_lv:1}));const fast=node('button','secondary','Nâng cấp nhanh');fast.type='button';fast.disabled=busy;fast.title='Dùng vật phẩm trong Túi Đồ để tăng cấp và tiến bậc tối đa';fast.addEventListener('click',()=>quickLevelMax(hero.partner_id));controls.append(place,upgrade,fast);e.append(controls);$('roster').append(e);}
 }
 const factionNames=["All","Ghost","Human","Monster","Fairy","Demon","Angel",'Cosmos'];
 const factionIcons=['⌕','🐾','✚','♨','❧','☾','☼','✦'];
@@ -271,13 +271,13 @@ function renderGirlDetail(){
  gradeButton.disabled=busy||!readyToGrade||Object.entries(gradeCost).some(([id,n])=>Number(state.items[id]||0)<Number(n));
  gradeButton.textContent=isGradeMax?'Đã tiến hóa tối đa':'Tiến Hóa';
  gradeButton.title=Object.entries(gradeCost).map(([id,n])=>(itemCatalog[id]?.name||('Vật phẩm '+id))+': '+number(n)).join(' · ');
- $('detail-level-note').textContent=atCap?(isGradeMax?'Đã đạt giới hạn tiến hóa của bậc sao này.':'Đạt giới hạn cấp: nhấn Tiến Hóa khi đủ nguyên liệu.'):levelButton.disabled?'Không đủ tài nguyên hoặc dữ liệu chi phí tăng cấp.':'Tăng cấp sử dụng tài nguyên thật từ Túi Đồ.';
+ $('detail-level-note').textContent=atCap?(isGradeMax?'Đã đạt giới hạn tiến hóa của bậc sao này.':'Đạt giới hạn cấp: nhấn Tiến Hóa khi đủ nguyên liệu.'):levelButton.disabled?'Không đủ vật phẩm để tăng cấp.':'Tăng cấp bằng vật phẩm trong Túi Đồ.';
  const stats=$('detail-stats');stats.replaceChildren();for(const [label,base,growth,icon] of [['HP','base_hp','grow_hp','attr_hp_icon'],['ATK','base_atk','grow_atk','attr_atk_icon'],['DEF','base_arm','grow_arm','attr_def_icon'],['SPD','base_spd','grow_spd','attr_spd_icon']]){const e=node('div','detail-stat'),img=node('img');img.src='/assets/detail/'+icon+'.png';img.alt='';const value=Math.round(Number(meta.stats?.[base]||0)+Number(meta.stats?.[growth]||0)*(hero.lv-1));e.append(img,node('span','',label+': '+number(value)));stats.append(e);}
  const skills=$('detail-skills');skills.replaceChildren();for(const skill of meta.skills||[]){const e=node('div','detail-skill'),img=node('img');img.src=skill.icon?'/assets/skills/'+skill.icon+'.png':'/assets/detail/skill_icon_bg.png';img.alt='';e.title=skill.name;e.append(img,node('small','',skill.name));skills.append(e);}
  const slots=$('detail-gear-slots');slots.replaceChildren();for(const [index,icon] of ['partner_weapon','partner_cloth','partner_treasure','partner_shoes'].entries()){const e=node('div','detail-gear-slot'),img=node('img');img.src='/assets/detail/'+icon+'.png';img.alt='';const equipped=hero.equips?.[index];e.append(img,node('span','',equipped?'Đã trang bị':"Trống"));slots.append(e);}
- $('detail-gear-note').textContent='Trang bị theo dữ liệu gốc của Nữ Thần.';
+ $('detail-gear-note').textContent='Trang bị hiện có của Nữ Thần.';
  const gearStock=$('detail-gear-stock');gearStock.replaceChildren();for(const [id,count] of Object.entries(state.items).filter(([id,count])=>Number(count)>0&&itemCatalog[id]?.category===1).slice(0,12)){const item=itemCatalog[id],e=node('div','detail-stock-item'),img=node('img');img.src=itemPicture(item)||'/assets/ui/item_bg.png';img.alt='';e.append(img,node('small','',item.name+' ×'+number(count)));gearStock.append(e);}if(!gearStock.childElementCount)gearStock.append(node('p','detail-note',"Không có trang bị trong Túi Đồ."));
- const skins=$('detail-skin-list');skins.replaceChildren();for(const [id,label] of [[hero.table_id,'Nguyên bản'],...(girl.skins||[]).map((id,i)=>[id,'Trang phục '+(i+1)])]){const src=detailImage(id),button=node('button','detail-skin'+((previewSkinId||hero.table_id)===id?' active':''));button.disabled=!src;const img=node('img');img.src=src||'/assets/ui/item_bg.png';img.alt='';button.append(img,node('strong','',label),node('small','',id===hero.table_id?'Mặc định':src?"Xem trước":"Chưa có ảnh gốc"));button.addEventListener('click',()=>{previewSkinId=id===hero.table_id?null:id;renderGirlDetail();});skins.append(button);}if(!girl.skins?.length)skins.append(node('p','detail-note',"Nữ Thần này chưa có trang phục khác trong dữ liệu gốc."));
+ const skins=$('detail-skin-list');skins.replaceChildren();for(const [id,label] of [[hero.table_id,'Mặc định'],...(girl.skins||[]).map((id,i)=>[id,'Trang phục '+(i+1)])]){const src=detailImage(id),button=node('button','detail-skin'+((previewSkinId||hero.table_id)===id?' active':''));button.disabled=!src;const img=node('img');img.src=src||'/assets/ui/item_bg.png';img.alt='';button.append(img,node('strong','',label),node('small','',id===hero.table_id?'Đang mặc':src?'Xem trước':'Chưa có hình ảnh'));button.addEventListener('click',()=>{previewSkinId=id===hero.table_id?null:id;renderGirlDetail();});skins.append(button);}if(!girl.skins?.length)skins.append(node('p','detail-note','Nữ Thần này chưa có trang phục khác.'));
  const nextAwake=Object.entries(graduateRecipes).find(([,r])=>r.kind==='awake'&&Number(r.source)===Number(hero.table_id)&&Number(r.star)===Number(hero.stars)+1);
  const awakeArea=$('detail-awake'),awakeBtn=awakeArea.querySelector('#detail-awake-open')||node('button','detail-awake-open');
  awakeBtn.id='detail-awake-open';awakeBtn.type='button';
@@ -286,10 +286,10 @@ function renderGirlDetail(){
  awakeBtn.textContent='Mở Giao Diện Thức Tỉnh';
  if(nextAwake){
   const [key,recipe]=nextAwake;
-  $('detail-awake-status').textContent='Thức Tỉnh hiện tại: '+number(hero.awake||0)+' · Mục tiêu: '+recipe.star+'★. Công thức và vật liệu sẽ được chọn tại giao diện Tiến Hóa gốc.';
+  $('detail-awake-status').textContent='Thức Tỉnh hiện tại: '+number(hero.awake||0)+' · Mục tiêu: '+recipe.star+'★. Chạm Tiến Hóa để tự chọn nguyên liệu.';
   awakeBtn.onclick=()=>{graduateGroup=Number(recipe.group)||Number(girl.group)||1;graduateStars=new Set([Number(recipe.star)]);graduateTarget=key;showView('graduate');};
  }else{
-  $('detail-awake-status').textContent='Thức Tỉnh hiện tại: '+number(hero.awake||0)+'. Nữ Thần này chưa có công thức Thức Tỉnh tiếp theo trong dữ liệu máy chủ.';
+  $('detail-awake-status').textContent='Thức Tỉnh hiện tại: '+number(hero.awake||0)+'. Nữ Thần này chưa thể Thức Tỉnh thêm.';
  }
  if(typeof Equipment!=='undefined'){Equipment.gear(hero);Equipment.attrs(hero);}
  if(typeof GirlUI!=='undefined')GirlUI.detail(hero);
@@ -475,14 +475,14 @@ async function showBagItem(item,count,src){
        return;
      }
      const spent=Number(current.need)*times;
-     const msg='Triệu hồi '+number(times)+' Nữ Thần và dùng '+number(spent)+' mảnh theo đúng bảng gốc?';
+     const msg='Triệu hồi '+number(times)+' Nữ Thần và dùng '+number(spent)+' mảnh?';
      const yes=typeof GirlUI!=='undefined'&&GirlUI.confirm?await GirlUI.confirm(msg,{title:'Xác nhận Triệu Hồi',ok:'Triệu Hồi',cancel:'Hủy'}):confirm(msg);
      if(!yes)return;
      panel.hidden=true;
      await action('SUMMON',{summon_id:Number(current.summon_id),times});
    };
  }
- note.hidden=false;note.textContent='Đang kiểm tra chức năng gốc trên máy chủ...';
+ note.hidden=false;note.textContent='Đang kiểm tra vật phẩm...';
  currentBagUse={id:item.id,name:item.name,loading:true};
  panel.hidden=false;
  if(typeof Equipment!=='undefined')Equipment.bagDetail(item.id);
@@ -490,7 +490,7 @@ async function showBagItem(item,count,src){
    const original=await api('/api/inventory/options',{item_id:item.id});
    if(!currentBagUse||String(currentBagUse.id)!==String(item.id)||panel.hidden)return;
    if(!original.usable){
-     note.textContent=shard?(shard.can_compose?'Đã đủ mảnh để Triệu Hồi.':'Cần '+number(shard.need)+' mảnh để Triệu Hồi; hiện có '+number(shard.count)+'.'):(original.reason||'Vật phẩm này không có chức năng dùng trong dữ liệu gốc.');
+     note.textContent=shard?(shard.can_compose?'Đã đủ mảnh để Triệu Hồi.':'Cần '+number(shard.need)+' mảnh để Triệu Hồi; hiện có '+number(shard.count)+'.'):(original.reason||'Vật phẩm này hiện chưa thể sử dụng.');
      return;
    }
    qty.max=String(Math.min(Number(original.max_per_use||50),count));
@@ -499,7 +499,7 @@ async function showBagItem(item,count,src){
    button.hidden=false;button.disabled=false;
    if(original.kind==='choice'){
      const choices=original.choices||[];
-     if(!choices.length){note.textContent='Không có phần thưởng hợp lệ trong bảng gốc.';button.hidden=true;qty.hidden=true;return;}
+     if(!choices.length){note.textContent='Vật phẩm này hiện chưa có phần thưởng.';button.hidden=true;qty.hidden=true;return;}
      const native=$('bag-use-native-choices');
      const choose=id=>{
        select.value=String(id);
@@ -526,8 +526,8 @@ async function showBagItem(item,count,src){
    }else{
      select.hidden=true;$('bag-use-native-choices').hidden=true;
    }
-   note.textContent=original.kind==='choice'?'Chọn phần thưởng theo bảng gốc.':
-     (original.random?'Rương ngẫu nhiên theo tỷ lệ gốc.':'Nhận toàn bộ quà theo bảng gốc.');
+   note.textContent=original.kind==='choice'?'Chọn phần thưởng muốn nhận.':
+     (original.random?'Mở rương để nhận quà ngẫu nhiên.':'Nhận toàn bộ quà trong rương.');
    currentBagUse={id:item.id,name:item.name,kind:original.kind,options:original};
  }catch(e){
    note.textContent=e.message;
@@ -548,7 +548,7 @@ async function useSelectedBagItem(){
  }
  const message=selected.kind==='choice'?
    (' nhận '+$('bag-use-choice').selectedOptions[0]?.textContent+' mỗi lần'):
-   (selected.options.random?' nhận phần thưởng ngẫu nhiên gốc':' nhận quà theo bảng gốc');
+   (selected.options.random?' nhận phần thưởng ngẫu nhiên':' nhận toàn bộ quà');
  const confirmed=typeof GirlUI!=='undefined'&&GirlUI.confirm
    ? await GirlUI.confirm('Dùng '+count+' × '+bagVi(selected.name)+' để'+message+'?',{title:'Xác nhận sử dụng',ok:'Dùng',cancel:'Hủy'})
    : confirm('Dùng '+count+' × '+bagVi(selected.name)+' để'+message+'?');
@@ -763,7 +763,7 @@ function graduateDialog(title,trigger){
 $('graduate-help').addEventListener('click',()=>{
  if(typeof ImgGuides!=='undefined'){ImgGuides.open('shenxue_window');return;}
  const {modal,body}=graduateDialog("Graduate Help",$('graduate-help'));modal.classList.add('graduate-help-dialog');
- const guide=node('img','graduate-help-guide');guide.src='/assets/original-ui/graduate/help-reference.png';guide.alt="Original guide: choose a faction and Girl, review attributes and materials, and confirm Graduate. The base keeps its level and equipment; materials are consumed.";
+ const guide=node('img','graduate-help-guide');guide.src='/assets/original-ui/graduate/help-reference.png';guide.alt='Hướng dẫn Tiến Hóa: chọn hệ và Nữ Thần, xem chỉ số cùng nguyên liệu rồi xác nhận. Nữ Thần chính giữ nguyên cấp và trang bị; Nữ Thần nguyên liệu sẽ được dùng.';
  body.append(guide);
  const notes=node('div','graduate-help-notes');
  for(const text of ["Choose a faction above and the Girl you want to upgrade from the list on the right.","Numbered stars filter the target rank: only one can be active. ALL returns to the full list; pink dots mark ready recipes.","Tap the three lines to compare attributes. Tap a material to choose the copy to keep or consume.","The checkbox auto-selects generic 5★ materials. Turn it off to choose manually. Locked Girls are not used as materials.","Confirming Graduate preserves the base's level and equipment and consumes the materials."])notes.append(node('p','',text));body.append(notes);
@@ -1058,7 +1058,7 @@ $('profile-avatar-open').addEventListener('click',openProfilePicker);$('profile-
 // without EXIF -> Neon. The file itself never enters the ordinary JSON API.
 async function profilePhotoBlob(file){
  if(!file||!['image/jpeg','image/png','image/webp'].includes(file.type))throw Error('Chỉ hỗ trợ ảnh JPG, PNG hoặc WebP.');
- if(file.size>15*1024*1024)throw Error('Ảnh gốc quá lớn (tối đa 15 MB).');
+ if(file.size>15*1024*1024)throw Error('Ảnh đã chọn quá lớn (tối đa 15 MB).');
  const url=URL.createObjectURL(file);
  try{
   const image=new Image();image.src=url;
@@ -1098,7 +1098,7 @@ $('profile-photo-file').addEventListener('change',async e=>{
 });
 $('profile-photo-delete').addEventListener('click',async()=>{
  const button=$('profile-photo-delete');
- if(typeof GirlUI!=='undefined'&&GirlUI.confirm&&!(await GirlUI.confirm('Xóa ảnh cá nhân đã tải lên? Avatar gốc và khung vẫn được giữ.',{title:'Xóa ảnh cá nhân',ok:'Xóa ảnh'})))return;
+ if(typeof GirlUI!=='undefined'&&GirlUI.confirm&&!(await GirlUI.confirm('Xóa ảnh cá nhân đã tải lên? Ảnh đại diện mặc định và khung vẫn được giữ.',{title:'Xóa ảnh cá nhân',ok:'Xóa ảnh'})))return;
  button.disabled=true;
  try{
   const response=await fetch('/api/profile/photo/delete',{method:'POST',credentials:'same-origin'});

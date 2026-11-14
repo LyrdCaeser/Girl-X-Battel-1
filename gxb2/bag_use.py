@@ -28,10 +28,10 @@ def _cells(table, key):
 def _pair(text):
     parts = str(text).split('#')
     if len(parts) != 2 or not all(part.isdecimal() for part in parts):
-        raise ValueError('Bảng thưởng gốc không hợp lệ')
+        raise ValueError('Danh sách phần thưởng không hợp lệ')
     key, amount = map(int, parts)
     if key <= 0 or amount <= 0:
-        raise ValueError('Bảng thưởng gốc không hợp lệ')
+        raise ValueError('Danh sách phần thưởng không hợp lệ')
     return key, amount
 
 
@@ -77,7 +77,7 @@ def recipes():
                 for spec in str(opt['item']).split('|'):
                     reward_id, amount = _pair(spec)
                     if str(reward_id) not in items['rows']:
-                        raise ValueError('Không có vật phẩm gốc')
+                        raise ValueError('Không tìm thấy vật phẩm')
                     choices[str(reward_id)] = amount
             except ValueError:
                 continue
@@ -106,7 +106,7 @@ def describe(item_id):
     recipe = recipes().get(item_id)
     if not recipe:
         return {'usable': False, 'item_id': item_id, 'reason':
-                'Vật phẩm này không có công thức Dùng/Mở được xác thực từ dữ liệu gốc.'}
+                'Vật phẩm này hiện chưa thể Dùng/Mở.'}
     if recipe['kind'] == 'choice':
         catalog = _catalog()
         return {'usable': True, 'item_id': item_id, 'kind': 'choice',
@@ -132,7 +132,7 @@ def open_in_state(state, item_id, count, reward_id=None):
     item_id, count = str(int(item_id)), int(count)
     recipe = recipes().get(item_id)
     if not recipe:
-        raise ValueError('Không có chức năng Dùng/Mở từ nguồn gốc cho vật phẩm này')
+        raise ValueError('Vật phẩm này hiện chưa thể Dùng/Mở')
     if count < 1 or count > MAX_OPEN:
         raise ValueError('Số lượng sử dụng không hợp lệ')
     old = int(state.get('items', {}).get(item_id, 0))
@@ -141,10 +141,10 @@ def open_in_state(state, item_id, count, reward_id=None):
     rewards = {}
     if recipe['kind'] == 'choice':
         if isinstance(reward_id, (bool, float)) or not str(reward_id).isdecimal():
-            raise ValueError('Cần chọn đúng phần thưởng gốc')
+            raise ValueError('Hãy chọn một phần thưởng trong danh sách')
         chosen = str(int(reward_id))
         if chosen not in recipe['choices']:
-            raise ValueError('Phần thưởng không nằm trong danh sách gốc')
+            raise ValueError('Phần thưởng đã chọn không hợp lệ')
         rewards[int(chosen)] = recipe['choices'][chosen] * count
     else:
         if reward_id not in (None, '', 0):

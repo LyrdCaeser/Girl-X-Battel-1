@@ -52,8 +52,8 @@
 .girls-grid .girl-art>img{object-fit:cover;object-position:center}
 .girls-grid .girl-name{position:absolute;z-index:4;left:4px;right:4px;bottom:24px;min-height:0;height:19px;padding:1px 0;background:#ffffffe0;color:#43566d;font-size:11px;line-height:17px;text-shadow:0 1px #fff;letter-spacing:-.25px}
 .girls-grid .girl-stars{position:absolute;left:3px;right:3px;bottom:2px;z-index:4;min-height:22px;align-items:center;overflow:visible}
-.girls-grid .girl-stars .gu-emblem{height:30px;max-width:90px;object-fit:contain}
-.girls-grid .girl-stars .gu-emblem-num{font-size:13px}
+.girls-grid .girl-stars .gu-emblem{height:22px;max-width:66px;object-fit:contain}
+.girls-grid .girl-stars .gu-emblem-num{font-size:10px}
 .girls-grid .girl-stars .gu-star{width:13px;height:13px}
 .girls-grid .girl-faction{z-index:4;left:-1px;top:-1px;width:22px;height:22px;background-size:cover;border:0;box-shadow:0 0 0 1px #fff9}
 .girls-grid .girl-level{z-index:4;top:0;right:1px;padding:0 2px;border-radius:0;background:transparent;font-size:13px;color:#fff;text-shadow:0 1px 2px #213347,1px 0 2px #213347,-1px 0 2px #213347}
@@ -173,6 +173,8 @@
 .lb-mat.ok .lb-pic{border-color:#e4c36a;background:#dfe7f6;filter:none}
 .lb-pic .portrait,.lb-pic canvas,.lb-pic img{width:100%!important;height:100%!important}.lb-pic i{font:900 calc(34 * var(--u)) system-ui;color:#fff;font-style:normal}
 .lb-mat small{font:800 calc(26 * var(--u)) system-ui;color:#d23a3a}.lb-mat.ok small{color:#5aa51c}
+.lb-choice-note{text-align:center;margin:calc(8 * var(--u)) calc(30 * var(--u));color:#53627d;font:700 calc(23 * var(--u))/1.35 system-ui}
+.lb-mat.choose:focus-visible,.lb-mat.choose:hover{filter:brightness(1.08);transform:translateY(calc(-2 * var(--u)))}
 .lb-cost{display:flex;justify-content:center;margin-top:calc(14 * var(--u))}.lb-cost .gu-cost{padding:calc(6 * var(--u)) calc(30 * var(--u));border-radius:calc(30 * var(--u));background:#fff;border:calc(2 * var(--u)) solid #cfd8e6;font-size:calc(26 * var(--u))}.lb-cost .gu-cost img{width:calc(44 * var(--u));height:calc(44 * var(--u))}
 .lb-max{text-align:center;font-weight:700}
 .lb-pic img{object-fit:cover;object-position:top}

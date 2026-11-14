@@ -74,7 +74,7 @@ class OnlineArenaRoutingTests(unittest.TestCase):
 
     def test_limit_break_ui_displays_defense_baseline_for_16_to_25(self):
         source = (ROOT / "web/girl-ui.js").read_text(encoding="utf-8")
-        self.assertIn("row('DEF',String(100+(targetStar-15)*2)+'% so với 15★')", source)
+        self.assertIn("row('Phòng Thủ',String(100+(targetStar-15)*2)+'% so với 15★')", source)
 
     def test_junior_varsity_entry_uses_real_online_pvp(self):
         source = (ROOT / "web/arena.js").read_text(encoding="utf-8")
@@ -264,7 +264,7 @@ class OnlineArenaRoutingTests(unittest.TestCase):
         self.assertIn('href="/guild.css?v=20261113-native-online-r1"', index)
         self.assertIn('src="/arena-online-native.js?v=20261114-systemic-r1"', index)
         self.assertIn('href="/shops.css?v=20261114-native-browser-qa-r2"', index)
-        self.assertIn('src="/shops.js?v=20261114-native-browser-qa-r2"', index)
+        self.assertIn('src="/shops.js?v=20261114-player-fix-r2"', index)
 
     def test_original_guild_shop_scales_by_width_and_height(self):
         css = (ROOT / 'web/shops.css').read_text(encoding='utf-8')

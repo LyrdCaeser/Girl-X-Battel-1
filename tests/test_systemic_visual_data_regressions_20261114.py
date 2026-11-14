@@ -98,9 +98,10 @@ class SystemicVisualDataRegressions(unittest.TestCase):
         self.assertIn('width:100%!important;max-width:none!important',css)
         self.assertIn('position:absolute!important;inset:0!important',css)
         index=(ROOT/'web/index.html').read_text(encoding='utf-8')
-        for filename in ('mobile-native.css','campaign-flow.js','campaign-flow.css',
-                         'girl-ui.js','girl-ui.css','arena.js','arena.css','arena-online-native.js'):
+        for filename in ('mobile-native.css','arena.js','arena.css','arena-online-native.js'):
             self.assertIn(filename+'?v=20261114-systemic-r1',index)
+        for filename in ('campaign-flow.js','campaign-flow.css','girl-ui.js','girl-ui.css'):
+            self.assertIn(filename+'?v=20261114-player-fix-r2',index)
 
     def test_arena_rank_list_uses_actual_profile_photo_for_own_account(self):
         arena=(ROOT/'web/arena.js').read_text()

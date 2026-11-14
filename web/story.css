@@ -6,6 +6,7 @@
 .sp-pic{position:absolute;left:50%;bottom:18%;height:calc(115% * var(--s,1));transform:translateX(calc(-50% + var(--x,0px)));animation:sp-in .3s ease-out}
 @keyframes sp-in{from{opacity:0;transform:translateX(calc(-50% + var(--x,0px))) translateY(12px)}}
 .sp-cg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}.sp-cgimg{max-width:100%;max-height:100%;animation:sp-in .4s}
+.sp-cg.memory::before{content:'';position:absolute;inset:0;background:url('/assets/story/cg/memory_mask.webp') center/cover no-repeat;opacity:.16;mix-blend-mode:screen}
 .sp-dialog{position:absolute;left:4%;right:4%;bottom:3%;min-height:17%;background:rgba(255,255,255,.95);border:3px solid #e8d4b4;border-radius:14px;padding:4cqw 5cqw 3cqw;box-sizing:border-box;color:#555;font-size:4cqw;line-height:1.35}
 .sp-dialog p{margin:0;white-space:pre-line}.sp-dialog.narration{background:rgba(20,20,35,.78);border-color:rgba(255,255,255,.3);color:#fff;font-style:italic}
 .sp-name{position:absolute;top:-4.4cqw;left:4cqw;background:#f4a64a;color:#fff;border-radius:8px;padding:.4cqw 3cqw;font-size:3.6cqw;box-shadow:0 2px 3px rgba(0,0,0,.2)}

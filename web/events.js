@@ -170,7 +170,7 @@ const EventsHub=(()=>{
       if(published.manual_reward)details.append(el('small',undefined,'Quà cụ thể do QTV xác nhận trước khi giao qua Hòm Thư.'));
       offer.append(details);c.append(offer);
     }else if(packageId){
-      c.append(el('p','ev-note',publicGemPacks===null?'Đang tải gói quà từ máy chủ…':'Gói này chưa được QTV công bố trên máy chủ.'));
+      c.append(el('p','ev-note',publicGemPacks===null?'Đang tải gói quà…':'Gói này chưa được QTV mở bán.'));
     }
     c.append(el('p','ev-note','Thanh toán và quà tặng theo danh mục đang được QTV công bố; không dùng giá cũ hoặc tạo vật phẩm giả.'));
     const contact=el('div','ev-original-payment');
@@ -179,7 +179,7 @@ const EventsHub=(()=>{
     z.onclick=()=>window.GxbPayment?.open(packages[a.id]||'CUSTOM',
       vi(a.title.replace(/\n/g,' '))+' · Sự Kiện #'+a.id);
     contact.append(z);c.append(contact);
-  }else c.append(el('p','ev-note',"Sự kiện có trong dữ liệu nhà phát triển. Chức năng nhận thưởng chưa được xác thực trên máy chủ."));
+  }else c.append(el('p','ev-note','Sự kiện này chưa mở nhận thưởng.'));
   parent.append(c);
  }
  function gemOffers(parent){

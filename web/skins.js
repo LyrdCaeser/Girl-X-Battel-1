@@ -14,7 +14,7 @@ const Skins=(()=>{
  // img_group<n> top-left, worn check skin_icon01 top-right, "Amount:N", rarity ribbon collection_dress_new_bg_<qlt>
  // (COLLECTION_SKIN_TEXT13-16), skin name on the frame strip, frame partner_card03 (sliced 37/18/42/57).
  const RARITY=['','Common','Rare','Epic','Legendary'],U='/assets/skins/ui/';
- function baseName(hero){const st=Number(hero.stars||hero.star||0);return st>=15?'15-Star':st>=13?'13-Star':st>=10?'10-Star':st>=6?'Awaken':'Original';}
+ function baseName(hero){const st=Number(hero.stars||hero.star||0);return st>=15?'15★':st>=13?'13★':st>=10?'10★':st>=6?'Thức Tỉnh':'Mặc Định';}
  function card(s,hero,{on,worn,own}){const c=btn('sk-card'+(on?' on':''),'',()=>{sel=s.id;previewSkinId=s.base?null:s.id;renderGirlDetail();});
   const art=el('div','sk-pic');const baseId=typeof artId==='function'?artId(hero.table_id):hero.table_id;const src=s.base?(cardIds.has(baseId)?'/assets/cards/partner_card_'+baseId+'.png':detailImage(baseId)||detailImage(hero.table_id)):'/assets/skins/cards/'+s.id+'.webp';
   art.style.backgroundImage=`url('${src}')`+(s.base?'':`,url('${detailImage(s.id)}')`);c.append(art,el('i','sk-frame'));
