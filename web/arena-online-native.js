@@ -279,7 +279,7 @@ const NativeOnlineArenas=(()=>{
   // Only the authenticated saved roster is offered; no NPC, auto-filled team,
   // random candidate or fabricated rival exists in this screen.
   const teams=teamDraft(),locked=data?.pvp?.status==='matched',roster=state?.roster||[];
-  win.append(el('h3','','Arena3v3BattleFormationWindow · 3 Đội Hình'));
+  win.append(el('h3','','Bố Trận 3 Đội'));
   const used=new Set(teams.flat().map(x=>Number(x.partner_id)));
   teams.forEach((team,i)=>{
    const row=el('div','a3-team'+(teamIndex===i?' on':''));
