@@ -69,7 +69,7 @@ const Arena=(()=>{
   const at=(e,x,y,w,h)=>{e.style.left=`calc(${328+x-w/2} * var(--u))`;e.style.top=`calc(${51.5-y-h/2} * var(--u))`;e.style.width=`calc(${w} * var(--u))`;e.style.height=`calc(${h} * var(--u))`;return e;};
   if(top)row.append(at(img(A('rank_icon0'+(i+1)),'ar2-rk'),-271,2,86,62));else row.append(at(el('b','ar2-num',String(i+1)),-269,0,70,40));
   const ic=at(el('button','ar2-icon'),-177,1,64,64);ic.type='button';const px=Math.round(64*scale());
-  ic.append(p.me?(typeof portrait==='function'&&state?.roster?.[0]?portrait(state.roster[0].table_id,px):el('span')):avatar(p.avatar,'ar2-av'));if(p.lv)ic.append(el('small','ar2-lv',String(p.lv)));
+  ic.append(avatar(p.me?(state?.profile?.avatar||p.avatar):p.avatar,'ar2-av'));if(p.lv)ic.append(el('small','ar2-lv',String(p.lv)));
   if(!p.me&&onInspect)ic.onclick=()=>onInspect(p);row.append(ic);
   const nm=el('b','ar2-name',p.name);nm.style.left='calc(202 * var(--u))';nm.style.top='calc(14 * var(--u))';row.append(nm);
   const pw=el('span','ar2-power');pw.style.left='calc(208 * var(--u))';pw.style.top='calc(50 * var(--u))';pw.append(img(A('force_icon')),el('b','',number(p.me?me:p.power||0)));row.append(pw);

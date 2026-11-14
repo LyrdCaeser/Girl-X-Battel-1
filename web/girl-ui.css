@@ -364,3 +364,15 @@ html.gxb-mobile #app-frame .gs-win.lb-win .gs-win-body{min-height:0;max-height:c
    the popup's scroll/clip rectangle (real mobile hit-test regression). */
 .gs-win.lb-win .gs-win-bar{top:0;left:0;right:0}
 .gs-win.lb-win .gs-win-x{top:calc(9 * var(--u));right:calc(14 * var(--u))}
+
+/* 4–9★: display every genuine source recipe directly in the Awakening tab. */
+#girl-detail-view #detail-awake-status.lb-progress-preview{gap:calc(6 * var(--u))}
+#girl-detail-view #detail-awake-status.lb-progress-preview .lb-banner{height:calc(85 * var(--u))}
+#girl-detail-view .lb-inline-materials{position:relative;z-index:2;display:flex;gap:calc(7 * var(--u));max-width:94%;width:94%;overflow-x:auto;overflow-y:hidden;min-height:calc(92 * var(--u));padding:calc(4 * var(--u))}
+#girl-detail-view .lb-inline-material{position:relative;display:grid;justify-items:center;flex:0 0 calc(80 * var(--u));height:calc(86 * var(--u));background:#5d6f8a;border:calc(2 * var(--u)) solid #b8c4cf;border-radius:calc(8 * var(--u));overflow:hidden}
+#girl-detail-view .lb-inline-material.ok{border-color:#ffe687;background:#3f7f91}
+#girl-detail-view .lb-inline-material .lb-card{width:100%;height:100%}
+#girl-detail-view .lb-inline-material .lb-card img{width:100%;height:100%;object-fit:cover}
+#girl-detail-view .lb-inline-material small{position:absolute;bottom:0;left:0;right:0;text-align:center;font:800 calc(15 * var(--u)) system-ui;color:#fff;text-shadow:0 1px 2px #171f30;background:#1118}
+#girl-detail-view .lb-inline-star{font:800 calc(22 * var(--u)) system-ui;color:#fff;align-self:center}
+#girl-detail-view .lb-inline-cost{position:relative;z-index:2;display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:calc(8 * var(--u));max-height:calc(50 * var(--u));overflow:auto}

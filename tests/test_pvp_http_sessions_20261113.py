@@ -95,8 +95,15 @@ class PvPHttpSessionTests(unittest.TestCase):
         self.assertEqual(before['rating_delta_a'],after['rating_delta_a'])
 
     def test_online_arena_and_guild_rosters_expose_only_public_avatar_ids(self):
+        # Registration is NOT an arena result. Create a real authoritative
+        # 1v1 before checking public leaderboard avatars.
+        self.assertEqual(self.call('GET','/api/pvp/status?mode=arena',user=0)['rating_board'],[])
+        self.ready_match('arena')
+        match=self.call('GET','/api/pvp/status?mode=arena',user=0)['pvp']['match']
+        self.call('POST','/api/pvp/match/battle',{'match_id':match['id']},0)
         board=self.call('GET','/api/pvp/status?mode=arena',user=0)['rating_board']
-        self.assertGreaterEqual(len(board),3)
+        self.assertEqual(len(board),2)
+        self.assertTrue(all(p['matches']>0 for p in board))
         for player in board:
             self.assertEqual(player['avatar'],'head_1001')  # clean SQLite fallback
             self.assertTrue(set(player).isdisjoint({'data','items','email','password_hash','salt'}))

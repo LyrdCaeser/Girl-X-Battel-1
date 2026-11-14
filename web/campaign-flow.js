@@ -34,7 +34,15 @@ const CampaignFlow=(()=>{
   const av=img('/assets/avatar-hd/profile/partner_avatar_'+h.table_id+'.webp?v=1.1.2','cf-av');av.onerror=()=>{const a2=typeof artId==='function'?artId(h.table_id):h.table_id;if(av.dataset.f){av.onerror=null;av.src='/assets/cards/partner_card_'+a2+'.png';return;}av.dataset.f=1;av.src='/assets/avatar-hd/profile/partner_avatar_'+a2+'.webp?v=1.1.2';};
   w.append(av,img(R('hero_frame'),'cf-frame l'),img(R('hero_frame'),'cf-frame r'));
   if(g?.group){const b=el('span','cf-group');b.append(img(R('img_group'+g.group)));w.append(b);}
-  w.append(el('b','cf-lv',String(h.lv||1)));const st=el('span','cf-stars'+(star>5?' red':''));const n=star>5?Math.min(4,star-5):star;for(let i=0;i<n;i++)st.append(img(R(star>5?'star_red':'star')));w.append(st);w.title=h.name||g?.name||'';return w;}
+  w.append(el('b','cf-lv',String(h.lv||1)));
+  // Use the SAME original star artwork/Limit Break emblem as the Girl detail,
+  // instead of truncating every 9–25★ girl to four red stars (= false 9★).
+  const st=el('span','cf-stars'+(star>5?' red':''));
+  if(typeof GirlUI!=='undefined')st.append(GirlUI.stars(star,'card'));
+  else if(star>=10)st.append(el('b','cf-star-count',star+'★'));
+  else for(let i=0;i<(star>5?star-5:star);i++)st.append(img(R(star>5?'star_red':'star')));
+  st.setAttribute('aria-label',star+'★');st.title=star+'★';w.append(st);
+  w.title=(h.name||g?.name||'')+' · '+star+'★';return w;}
  let servants=null;
  // BattleFormationWindow → Servant: choose the Servant that fights with the team (home_systems.selected_pet), or none.
  async function pickServant(){if(!servants)servants=await api('/assets/servants.json').catch(()=>({pets:{}}));const hs=state.home_systems||{};

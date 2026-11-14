@@ -37,6 +37,13 @@
 .cf-group{position:absolute;left:-4%;top:-4%;width:32%}.cf-group img{width:100%}
 .cf-lv{position:absolute;right:8%;top:6%;color:#fff;font:800 13px system-ui;text-shadow:0 0 2px #000,0 0 2px #000}
 .cf-stars{position:absolute;left:0;right:0;bottom:4%;display:flex;justify-content:center}.cf-stars img{width:17%;margin:0 -1%}
+/* The original 10★+ Limit Break wing/emblem must not inherit tiny 4-star sizing. */
+.cf-stars .gu-stars{width:auto;max-width:90%;height:22px;gap:0}
+.cf-stars .gu-stars .gu-star{width:13px;height:13px;max-width:none;margin:0 -1px}
+.cf-stars .gu-stars .gu-emblem{width:32px!important;height:22px!important;max-width:none;margin:0}
+.cf-stars .gu-stars .gu-emblem-num{font-size:11px;line-height:1}
+.cf-star-count{font:900 13px/1 system-ui;color:#fff;text-shadow:0 1px 2px #000}
+
 /* stage detail */
 .cf-stage .cf-sub{display:flex;align-items:center;gap:10px;margin:8px 0;color:#5b6b86;font:700 18px system-ui}
 .cf-stage .cf-sub:before,.cf-stage .cf-sub:after{content:"";flex:1;border-top:1px solid #c9d3e6}

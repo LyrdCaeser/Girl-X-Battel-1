@@ -84,7 +84,7 @@ class OnlineArenaRoutingTests(unittest.TestCase):
 
 
 
-    def test_pvp_board_lists_real_active_players_before_their_first_match(self):
+    def test_pvp_board_shows_only_verified_matches_not_registered_player_ranks(self):
         live_service.create_world("S2", "Server 2")
         live_service.register_player("U21", "S1", "Real Alpha")
         live_service.register_player("U22", "S1", "Real Beta")
@@ -99,17 +99,14 @@ class OnlineArenaRoutingTests(unittest.TestCase):
         db.close()
 
         same_server = live_service.pvp_rating_board("team", server_id="S1")
-        self.assertEqual({r["uid"] for r in same_server}, {"U21", "U22"})
-        beta = next(r for r in same_server if r["uid"] == "U22")
-        alpha = next(r for r in same_server if r["uid"] == "U21")
-        self.assertEqual(beta["rating"], 1120)
-        self.assertEqual(beta["wins"], 2)
-        self.assertEqual(alpha["rating"], 1000)
-        self.assertEqual(alpha["matches"], 0)
-
-        cross_server = live_service.pvp_rating_board("cross")
-        self.assertEqual({r["uid"] for r in cross_server}, {"U21", "U22", "U23"})
-        self.assertEqual(next(r for r in cross_server if r["uid"] == "U23")["character_name"], "Real Gamma")
+        self.assertEqual({r["uid"] for r in same_server}, {"U22"},
+                         'Unplayed accounts cannot receive fabricated rank positions')
+        beta=same_server[0]
+        self.assertEqual(beta["rating"],1120)
+        self.assertEqual(beta["wins"],2)
+        self.assertEqual(beta["matches"],2)
+        self.assertEqual(live_service.pvp_rating_board("cross"),[],
+                         'A team-mode rating is not a cross-server battle result')
 
     def test_cross_server_queue_never_matches_same_server_and_matches_different_server(self):
         live_service.create_world("S2", "Server 2")
@@ -265,7 +262,7 @@ class OnlineArenaRoutingTests(unittest.TestCase):
             self.assertRegex(index, rf'<script src="/{asset}\?v=(?:20261112|20261113|20261114|1\.1\.2)-[^" ]+"')
         self.assertIn('href="/online-hub.css?v=20261112-live-arena3v3-r2"', index)
         self.assertIn('href="/guild.css?v=20261113-native-online-r1"', index)
-        self.assertIn('src="/arena-online-native.js?v=20261114-native-browser-qa-r1"', index)
+        self.assertIn('src="/arena-online-native.js?v=20261114-systemic-r1"', index)
         self.assertIn('href="/shops.css?v=20261114-native-browser-qa-r2"', index)
         self.assertIn('src="/shops.js?v=20261114-native-browser-qa-r2"', index)
 
