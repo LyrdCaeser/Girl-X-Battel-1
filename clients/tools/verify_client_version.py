@@ -7,8 +7,8 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-VERSION = "2.5.2"
-VERSION_CODE = "200266"
+VERSION = "2.6.4"
+VERSION_CODE = "200366"
 
 def require(condition: bool, message: str) -> None:
     if not condition:
@@ -24,18 +24,18 @@ require(ios.get("CFBundleShortVersionString") == VERSION, "iOS CFBundleShortVers
 require(str(ios.get("CFBundleVersion")) == VERSION_CODE, "iOS CFBundleVersion")
 
 windows = (ROOT / "clients/windows/version_info.txt").read_text(encoding="utf-8")
-require(f"filevers=(2, 5, 2, 0)" in windows, "Windows file version")
-require(f"prodvers=(2, 5, 2, 0)" in windows, "Windows product version")
+require(f"filevers=(2, 6, 4, 0)" in windows, "Windows file version")
+require(f"prodvers=(2, 6, 4, 0)" in windows, "Windows product version")
 require(f"ProductVersion', '{VERSION}'" in windows, "Windows ProductVersion metadata")
 
 launcher = (ROOT / "clients/windows/gxb3_launcher.py").read_text(encoding="utf-8")
-require("GXB3-Windows/2.5.2" in launcher and "v=2.5.2" in launcher, "Windows cache-busting URL/User-Agent")
+require("GXB3-Windows/2.6.4" in launcher and "v=2.6.4" in launcher, "Windows cache-busting URL/User-Agent")
 
 app = (ROOT / "clients/ios/GXB3App.swift").read_text(encoding="utf-8")
-require("v=2.5.2" in app and "2.5.2" in app, "iOS app shell cache bust/version")
+require("v=2.6.4" in app and "2.6.4" in app, "iOS app shell cache bust/version")
 
 webclip = (ROOT / "clients/ios/make_webclip.py").read_text(encoding="utf-8")
-require("2.5.2" in webclip and "NuThanChienDau-GXB3-iOS-2.5.2.mobileconfig" in webclip and "v=2.5.2" in webclip, "iOS Web Clip version/cache bust")
+require("2.6.4" in webclip and "NuThanChienDau-GXB3-iOS-2.6.4.mobileconfig" in webclip and "v=2.6.4" in webclip, "iOS Web Clip version/cache bust")
 
 # Every source avatar URL must resolve to a committed 3x WebP asset.
 catalog = json.loads((ROOT / "web/assets/avatars.json").read_text(encoding="utf-8"))
@@ -49,7 +49,7 @@ require(len(list((ROOT / "web/assets/avatar-hd/profile").glob("head_*.webp"))) >
 require(len(list((ROOT / "web/assets/avatar-hd/profile").glob("partner_avatar_*.webp"))) >= 700, "profile Goddess avatar HD set incomplete")
 
 workflow = (ROOT / ".github/workflows/gxb3-clients.yml").read_text(encoding="utf-8")
-require("2.5.2" in workflow and "200266" in workflow, "Build workflow version labels")
-require("publish-release:" in workflow and "tag=\"v2.5.2\"" in workflow, "Versioned production release publishing")
+require("2.6.4" in workflow and "200366" in workflow, "Build workflow version labels")
+require("publish-release:" in workflow and "tag=\"v2.6.4\"" in workflow, "Versioned production release publishing")
 
 print(f"PASS: Android, Windows, iOS IPA and iOS Web Clip use Version Name {VERSION} / VersionCode {VERSION_CODE}; HD portrait assets are present.")
