@@ -406,10 +406,20 @@ def guild_for_player(uid, server_id):
         if not row:
             db.close(); return None
         out=dict(row)
-        members=db.execute("""SELECT uid,server_id,character_name,role,power,contribution,joined_at,last_seen
-                              FROM world_guild_members WHERE guild_id=?
-                              ORDER BY CASE role WHEN 'leader' THEN 0 WHEN 'deputy' THEN 1 ELSE 2 END,
-                                       contribution DESC,power DESC,joined_at""",(int(out["id"]),)).fetchall()
+        # Return only each guild member's public avatar key, never their
+        # full saved profile, equipment, inventory or authentication fields.
+        avatar_field = ("COALESCE(NULLIF(pp.data::jsonb #>> '{profile,avatar}', ''),"
+                        " 'head_1001') AS avatar" if db.backend == 'postgres'
+                        else "'head_1001' AS avatar")
+        profile_join = (" LEFT JOIN player_profiles pp ON pp.uid=m.uid AND pp.server_id=m.server_id"
+                        if db.backend == 'postgres' else "")
+        members=db.execute("""SELECT m.uid,m.server_id,m.character_name,m.role,m.power,
+                                   m.contribution,m.joined_at,m.last_seen,""" + avatar_field + """
+                              FROM world_guild_members m""" + profile_join + """
+                              WHERE m.guild_id=?
+                              ORDER BY CASE m.role WHEN 'leader' THEN 0 WHEN 'deputy' THEN 1 ELSE 2 END,
+                                       m.contribution DESC,m.power DESC,m.joined_at""",
+                           (int(out["id"]),)).fetchall()
         out["members"]=[dict(r) for r in members]
         out["member_count"]=len(out["members"])
         db.close(); return out
@@ -989,6 +999,14 @@ def pvp_rating_board(mode, season_id=None, limit=100, server_id=None):
     if server_id:
         scope=" AND p.server_id=?"
         scope_params=(str(server_id).upper(),)
+    # The original leaderboard shows each player's actual portrait. Only the
+    # public avatar key is projected from Neon player profiles; never return
+    # a raw profile JSON, account email, inventory or other private fields.
+    avatar_expr = ("COALESCE(NULLIF(pp.data::jsonb #>> '{profile,avatar}', ''),"
+                   " 'head_1001') AS avatar" if database.POSTGRES
+                   else "'head_1001' AS avatar")
+    avatar_join = (" LEFT JOIN player_profiles pp ON pp.uid=p.uid AND pp.server_id=p.server_id"
+                   if database.POSTGRES else "")
     query="""SELECT p.uid,p.server_id,p.character_name,
                     ? AS mode,? AS season_id,
                     COALESCE(r.rating,1000) AS rating,
@@ -997,11 +1015,13 @@ def pvp_rating_board(mode, season_id=None, limit=100, server_id=None):
                     COALESCE(r.matches,0) AS matches,
                     COALESCE(l.level,1) AS level,
                     COALESCE(l.power,0) AS power,
+                    """ + avatar_expr + """,
                     COALESCE(r.updated_at,l.updated_at,p.updated_at) AS updated_at
              FROM players p
              LEFT JOIN leaderboard l ON l.uid=p.uid AND l.server_id=p.server_id
              LEFT JOIN pvp_ratings r ON r.uid=p.uid AND r.server_id=p.server_id
                   AND r.mode=? AND r.season_id=?
+             """ + avatar_join + """
              WHERE p.status='active'""" + scope + """
              ORDER BY COALESCE(r.rating,1000) DESC,COALESCE(r.wins,0) DESC,
                       COALESCE(r.matches,0) ASC,COALESCE(l.power,0) DESC,
