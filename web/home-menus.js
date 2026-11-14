@@ -185,6 +185,14 @@ const HomeMenus=(()=>{
    const c=card(parent,m.title||'Thư Máy Chủ',claimed?'mail_sys02':'mail_gm01');
    if(m.created_at)paragraph(c,new Date(Number(m.created_at)*1000).toLocaleString('vi-VN'));
    if(m.body)paragraph(c,m.body,'hm-text');
+   const goddess=m.attachments?.__gxb3_goddess__;
+   if(goddess&&/^\/assets\/(?:cards|characters|original-ui)\//.test(String(goddess.image||''))){
+     const tile=el('div','hm-goddess-gift'),face=el('img');face.src=goddess.image;face.alt=goddess.name||'Nữ Thần';face.loading='lazy';
+     tile.append(face,el('b','',String(goddess.name||'Nữ Thần')+' · '+Number(goddess.stars)+'★ · Lv '+Number(goddess.level)));
+     if(goddess.max_red6)tile.append(el('small','','Trọn bộ trang bị đỏ 6★'));
+     if(goddess.max_stellar)tile.append(el('small','','Lõi Tinh Tú tối đa'));
+     c.append(tile);
+   }
    const items=Object.entries(m.attachments||{}).filter(([,count])=>Number(count)>0);
    if(items.length)rewards(c,items.map(([id,count])=>id+'#'+count).join('|'));
    if(m.status==='pending')button(c,'Nhận Đính Kèm',()=>claimServerMail(m.id),pending);

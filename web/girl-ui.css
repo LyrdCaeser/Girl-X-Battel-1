@@ -343,3 +343,24 @@ html.gxb-mobile #app-frame #girl-detail-view #detail-art.full-art:not(.gu-native
 }
 #girl-detail-view .detail-skill{min-width:0}
 #girl-detail-view .detail-skill img{max-width:100%;height:auto;object-fit:contain}
+
+/* Native 4★–9★ awake preview. The recovered central banner is clickable,
+   but must NOT cover the genuine composition/awake action below it. */
+#girl-detail-view #detail-awake-status.lb-progress-preview{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:calc(16 * var(--u));box-sizing:border-box;padding:calc(16 * var(--u))!important}
+#girl-detail-view #detail-awake-status.lb-progress-preview::before{pointer-events:none}
+#girl-detail-view #detail-awake-status.lb-progress-preview .lb-banner{position:relative;left:auto;top:auto;z-index:1;flex:none;width:calc(300 * var(--u));height:calc(105 * var(--u))}
+#girl-detail-view #detail-awake-status.lb-progress-preview .detail-note{position:relative;z-index:2;flex:none;max-width:92%;text-align:center;font-weight:700;line-height:1.4}
+#girl-detail-view #detail-awake-status.lb-progress-preview .gs-btn{position:relative;z-index:4;flex:none;max-width:90%;white-space:normal;cursor:pointer}
+/* Header controls of the native awakening popup must remain above its
+   9-slice window border, otherwise the parent intercepts the close button. */
+.gs-win-bar{z-index:12;pointer-events:auto}
+.gs-win-bar .gs-win-x,.gs-win-bar .gs-win-help{z-index:13;pointer-events:auto}
+/* The mobile frame's generic `.gs-win{overflow:auto}` clips its original
+   negative-positioned close/header. For awakening windows, scroll only the
+   inner material pane and keep the real close button hittable. */
+html.gxb-mobile #app-frame .gs-win.lb-win{overflow:visible;max-height:calc(100dvh - 24px)}
+html.gxb-mobile #app-frame .gs-win.lb-win .gs-win-body{min-height:0;max-height:calc(100dvh - 125px);overflow-y:auto}
+/* Keep the X control WITHIN the native window's top border, not 60u above
+   the popup's scroll/clip rectangle (real mobile hit-test regression). */
+.gs-win.lb-win .gs-win-bar{top:0;left:0;right:0}
+.gs-win.lb-win .gs-win-x{top:calc(9 * var(--u));right:calc(14 * var(--u))}
