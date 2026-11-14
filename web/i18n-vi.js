@@ -1,0 +1,952 @@
+'use strict';
+(() => {
+  const TEXT = new Map(Object.entries({
+    'Saved on this device':'Đã lưu trên thiết bị',
+    'Gift Packs':'Gói quà',
+    'Luvly’s Castle':'Lâu đài Luvly',
+    'Events':'Sự kiện',
+    'Limited Gift':'Quà giới hạn',
+    'Adrift Message':'Tin nhắn trôi dạt',
+    'Friends':'Bạn bè',
+    'Fantasy Book':'Sách Kỳ Ảo',
+    'Servant':'Linh thú',
+    'Excursion':'Thám hiểm',
+    'Cosmos Portal':'Cổng Vũ Trụ',
+    'Campus':'Học Viện',
+    'Campaign':'Chiến Dịch',
+    'League':'Đấu Trường',
+    'FrontPage':'Trang Chủ',
+    'Girls':'Nữ Sinh',
+    'Bag':'Túi Đồ',
+    'Capsule':'Triệu Hồi',
+    'Guild':'Bang Hội',
+    'Menu':'Menu',
+    'Study':'Học Tập',
+    'Life':'Đời Sống',
+    'Battle':'Chiến Đấu',
+    'Graduate':'Tiến Hóa',
+    'Preset':'Đội Hình',
+    'Shards':'Mảnh Ghép',
+    'Gallery':'Thư Viện',
+    'Girl Shards':'Mảnh Nữ Sinh',
+    'Shards collected:':'Mảnh đã thu thập:',
+    'Load more':'Xem thêm',
+    'YOUR TEAM':'ĐỘI HÌNH',
+    'Lineup':'Đội hình',
+    'Remove from slot':'Gỡ khỏi vị trí',
+    'Save lineup':'Lưu đội hình',
+    'LOCAL CAMPAIGN':'CHIẾN DỊCH LOCAL',
+    'Attribute':'Thuộc tính',
+    'Gear':'Trang bị',
+    'Skins':'Trang phục',
+    'Awake':'Thức tỉnh',
+    'Grade':'Bậc',
+    'Level up once':'Tăng 1 cấp',
+    'In your Bag':'Trong Túi Đồ',
+    'Forge':'Rèn',
+    'Battle':'Chiến đấu',
+    'View results':'Xem kết quả',
+    'Back to event':'Về sự kiện',
+    'Tests in Academy':'Thử Thách Học Viện',
+    'Floor rewards':'Thưởng tầng',
+    'Practice':'Luyện tập',
+    'Replay battle':'Xem lại trận',
+    'Daily Quiz':'Thử Thách Hằng Ngày',
+    'Categories':'Danh mục',
+    'Difficulties':'Độ khó',
+    'My profile':'Hồ Sơ',
+    'Profile':'Hồ Sơ',
+    'Settings':'Cài Đặt',
+    'Student':'Học viên',
+    'Edit name':'Đổi tên',
+    'Signature':'Chữ ký',
+    'Edit signature':'Sửa chữ ký',
+    'Choose avatar and frame':'Chọn avatar và khung',
+    'Account':'Tài khoản',
+    'Sound':'Âm thanh',
+    'Language':'Ngôn ngữ',
+    'English':'Tiếng Việt',
+    'Notices':'Thông báo',
+    'Avatars and frames':'Avatar và khung',
+    'Avatars':'Avatar',
+    'Frames':'Khung',
+    'Use selection':'Sử dụng',
+    'Cancel':'Hủy',
+    'Save':'Lưu',
+    'Developer Mode':'Chế độ Quản Trị',
+    'Khóa QTV':'Khóa QTV',
+    'Nhập khóa hiển thị trong Terminal':'Nhập khóa hiển thị trong Terminal',
+    'Back to my save':'Về bản lưu thường',
+    'Enable Developer Mode':'Bật chế độ Quản Trị',
+    'Add Girl':'Thêm Nữ Sinh',
+    'All Girls':'Tất cả Nữ Sinh',
+    'Girl to 15★':'Nữ Sinh lên 15★',
+    'Apply level to the entire collection':'Áp dụng cấp cho toàn bộ bộ sưu tập',
+    'Go to floor':'Đến tầng',
+    'Unlock all 30 visible stages':'Mở 30 ải đang hiển thị',
+    'Close':'Đóng',
+    'Girl':'Nữ Sinh',
+    'Copies':'Số lượng',
+    'Level':'Cấp',
+    'Tests floor':'Tầng Thử Thách',
+    'Separate test save. Your regular save is preserved.':'Bản lưu Quản Trị tách riêng. Bản lưu thường vẫn được giữ nguyên.',
+    'Activate a separate test save to experiment.':'Bật bản lưu Quản Trị riêng để thử nghiệm.',
+    'Applied to the developer save.':'Đã áp dụng vào bản lưu Quản Trị.',
+    'Resources refill · free summons · unlimited Quiz · unlimited Tests Tokens.':'Tự nạp tài nguyên · triệu hồi miễn phí · Quiz không giới hạn · vé Thử Thách không giới hạn.',
+    'Local preservation in development.':'Bản Local đang được hoàn thiện.',
+    'Loading…':'Đang tải…',
+    'Loading events…':'Đang tải sự kiện…',
+    'Guardando…':'Đang lưu…',
+    'Saved.':'Đã lưu.',
+    'Open now':'Đang mở',
+    'Coming next':'Sắp diễn ra',
+    'Calendar':'Lịch',
+    'There are no events in this tab.':'Không có sự kiện trong mục này.',
+    'Exclusives':'Độc Quyền',
+    'Novato':'Tân Thủ',
+    'Monthly Events':'Sự Kiện Tháng',
+    'Gold':'Vàng',
+    'Gems':'Kim Cương',
+    'EXP':'EXP',
+    'Store':'Cửa Hàng',
+    'Shopping Street':'Phố Mua Sắm',
+    'Skin Store':'Cửa Hàng Trang Phục',
+    'Market':'Chợ',
+    'Lucky Store':'Cửa Hàng May Mắn',
+    'Antique Store':'Cửa Hàng Cổ Vật',
+    'Coming Soon':'Sắp Ra Mắt',
+    'Refresh':'Làm mới',
+    'Refreshes In':'Làm mới sau',
+    'Purchased':'Đã mua',
+    'All':'Tất cả',
+    'League Store':'Cửa Hàng Đấu Trường',
+    'Arena 3v3':'Đấu Trường 3v3',
+    'Rank':'Hạng',
+    'Points':'Điểm',
+    'Reward':'Phần thưởng',
+    'Record':'Lịch sử',
+    'Defense':'Phòng thủ',
+    'Choose Opponent':'Chọn đối thủ',
+    'Score':'Điểm',
+    'Fight':'Chiến đấu',
+    'Press Refresh to find opponents.':'Bấm Làm mới để tìm đối thủ.',
+    'No battles yet.':'Chưa có trận đấu nào.',
+    'Awards':'Phần thưởng',
+    'Claim':'Nhận',
+    'Claimed':'Đã nhận',
+    'Daily award':'Thưởng ngày',
+    'Season award':'Thưởng mùa',
+    'Distributed automatically at the end of the season.':'Tự động phát khi mùa giải kết thúc.',
+    'Junior Varsity':'Đấu Trường Học Viện',
+    'Daily Tasks':'Nhiệm Vụ Hằng Ngày',
+    'Trophies':'Thành Tựu',
+    'Tasks reset at midnight.':'Nhiệm vụ đặt lại lúc nửa đêm.',
+    'Tasks':'Nhiệm Vụ',
+    'Servant Aura':'Hào Quang Linh Thú',
+    'Servant List':'Danh Sách Linh Thú',
+    'Servant Details':'Chi Tiết Linh Thú',
+    'Train':'Huấn luyện',
+    'Tame':'Thuần hóa',
+    'Add to team':'Đưa vào đội',
+    'Lv. Up':'Tăng cấp',
+    'Evolve':'Tiến hóa',
+    'Attack':'Tấn công',
+    'Armor':'Phòng thủ',
+    'Precision':'Chính xác',
+    'Crit':'Bạo kích',
+    'Block':'Đỡ đòn',
+    'Speed':'Tốc độ',
+    'Skill DMG':'ST Kỹ năng',
+    'Crit DMG':'ST Bạo kích',
+    'Crit Resist':'Kháng Bạo kích',
+    'DMG Red.':'Giảm Sát thương',
+    'Holy Dmg':'Sát thương Thánh',
+    'Wishing Tree':'Cây Ước Nguyện',
+    'Food Truck':'Xe Đồ Ăn',
+    'Common Enemy':'Kẻ Địch Thường',
+    'Elite Enemy':'Kẻ Địch Tinh Anh',
+    'Forgotten Chest':'Rương Bị Lãng Quên',
+    'Well-hidden Chest':'Rương Bí Mật',
+    'Help Seeker':'Người Cầu Cứu',
+    'Claim All':'Nhận Tất Cả',
+    'Tap a building and press Start production to begin.':'Chạm vào công trình rồi bấm Bắt đầu sản xuất.',
+    'Nothing to collect.':'Chưa có gì để nhận.',
+    'Start production':'Bắt đầu sản xuất',
+    'Production started.':'Đã bắt đầu sản xuất.',
+    'Collect':'Thu thập',
+    'Upgrade':'Nâng cấp',
+    'Buy Tasty Bread':'Mua Bánh Ngon',
+    'Storage':'Kho',
+    'Help':'Trợ Giúp',
+    'Status Icons':'Biểu Tượng Trạng Thái',
+    'Faction Aura':'Hào Quang Phe',
+    'FAQ':'Hỏi Đáp',
+    'Game music':'Nhạc Game',
+    'Default':'Mặc định',
+    'based on the screen':'theo màn hình',
+    'Music Game':'Nhạc Game',
+    'Memories':'Kỷ Niệm',
+    'Collection':'Bộ Sưu Tập',
+    'Manga':'Truyện Tranh',
+    'Chat with GMs required the original server.':'Chat với GM cần máy chủ gốc.',
+    'This Store is still under construction.':'Cửa hàng này vẫn đang được hoàn thiện.',
+    'Defense uses your current lineup (there are no other players offline).':'Phòng thủ dùng đội hình hiện tại vì bản Local không có người chơi khác.',
+    'Reborn (returning Servant resources) has not been restored yet.':'Tái sinh Linh Thú chưa được phục dựng hoàn chỉnh.',
+    'No data.':'Không có dữ liệu.',
+    'Cofres abiertos':'Rương đã mở',
+    'Mejora:':'Nâng cấp:',
+    'Tienda no disponible':'Cửa hàng không khả dụng',
+    'Ya comprado':'Đã mua hết lượt',
+    'Faltan recursos':'Không đủ tài nguyên',
+    'Esta tienda no se puede refrescar':'Cửa hàng này không thể làm mới',
+    'Acción de tienda no disponible':'Thao tác cửa hàng không khả dụng',
+    'No quedan combates gratis ni Arena Tickets':'Không còn lượt miễn phí hoặc Vé Đấu Trường',
+    'Ya reclamado hoy':'Hôm nay đã nhận rồi',
+    'Acción de arena no disponible':'Thao tác Đấu Trường không khả dụng',
+    'Ya has firmado hoy. Vuelve mañana.':'Hôm nay đã điểm danh. Hãy quay lại ngày mai.',
+    'No hay recompensa disponible hoy':'Hôm nay chưa có phần thưởng để nhận',
+    'Acción de evento no disponible':'Thao tác sự kiện không khả dụng',
+    'No hay suficientes recursos para esta invocación':'Không đủ tài nguyên để Triệu Hồi',
+    'La invocación gratuita aún no está disponible':'Lượt Triệu Hồi miễn phí chưa hồi.',
+    'Tipo de invocación no disponible':'Loại Triệu Hồi này chưa khả dụng.',
+    'Cantidad de invocaciones inválida':'Số lượt Triệu Hồi không hợp lệ.',
+    'Esta invocación usa un botón de cantidad propio':'Loại Triệu Hồi này dùng nút số lượng riêng.',
+    'Chica desconocida':'Không tìm thấy Nữ Sinh.',
+    'Copias':'Số lượng',
+    'Nivel':'Cấp',
+    'Grado máximo alcanzado':'Đã đạt Bậc tối đa.',
+    'Sube primero al nivel máximo de este grado':'Hãy tăng đến cấp tối đa của Bậc hiện tại trước.',
+    'Faltan recursos para subir de grado':'Không đủ tài nguyên để tăng Bậc.',
+    'Ascensión no disponible para esta chica':'Nữ Sinh này chưa có công thức Thức Tỉnh.',
+    'Los materiales deben ser chicas distintas de la base':'Nguyên liệu phải là các Nữ Sinh khác Nữ Sinh chính.',
+    'Falta una chica de la receta':'Thiếu Nữ Sinh trong công thức.',
+    'Primero debes superar esa fase':'Bạn cần vượt ải đó trước.',
+    'Fase bloqueada':'Ải đang bị khóa.',
+    'El nivel del jugador es insuficiente para esa fase':'Cấp người chơi chưa đủ để vào ải.',
+    'No quedan fichas de Tests; se recupera una cada 30 minutos':'Đã hết Vé Thử Thách; mỗi 30 phút hồi 1 vé.',
+    'Todavía no has llegado a ese piso':'Bạn chưa đến tầng này.',
+    'Solo puedes avanzar desde el piso actual':'Chỉ có thể tiến từ tầng hiện tại.',
+    'Dificultad de Daily Quiz desconocida':'Không tìm thấy độ khó Thử Thách Hằng Ngày.',
+    'Ya se usaron los dos intentos de hoy':'Hôm nay đã dùng hết 2 lượt.',
+    'Primero debes ganar esta dificultad':'Hãy thắng độ khó này trước.',
+    'No tienes esa chica':'Bạn không sở hữu Nữ Sinh này.',
+    'Formación inválida':'Đội hình không hợp lệ.',
+    'Selecciona entre una y seis integrantes':'Hãy chọn từ 1 đến 6 Nữ Sinh.',
+    'Herramienta desconocida':'Công cụ QTV không hợp lệ.',
+    'Activa la partida de desarrollo':'Hãy đăng nhập QTV trước.'
+  }));
+
+  const EXTRA_VI = {
+    'Front Page':'Trang Chủ',
+    'Girls Gallery':'Thư Viện Nữ Thần',
+    'Collection':'Bộ Sưu Tập',
+    'Memories':'Kỷ Niệm',
+    'Wallpapers':'Hình Nền',
+    'Achievements':'Thành Tựu',
+    'Find Guild':'Tìm Bang Hội',
+    'Guild Territory':'Lãnh Địa Bang Hội',
+    'Guild Hall':'Sảnh Bang Hội',
+    'Cafeteria':'Nhà Ăn',
+    'Gym':'Phòng Tập',
+    'Guild War':'Bang Chiến',
+    'Lab':'Phòng Nghiên Cứu',
+    'Guild Store':'Cửa Hàng Bang Hội',
+    'Shopping Street':'Phố Mua Sắm',
+    'Girls Store':'Cửa Hàng Nữ Thần',
+    'Skin Store':'Cửa Hàng Trang Phục',
+    'Black Market':'Chợ Đen',
+    'Exchange':'Trao Đổi',
+    'Artifact Store':'Cửa Hàng Cổ Vật',
+    'Transfer':'Chuyển Hóa',
+    'Slots':'Máy Quay',
+    'Normal Slots':'Máy Quay Thường',
+    'High Stakes Slots':'Máy Quay Cao Cấp',
+    'Intern':'Thực Tập',
+    'Enroll':'Chiêu Mộ Phe',
+    'Date':'Hẹn Hò',
+    'Date Stories':'Câu Chuyện Hẹn Hò',
+    'Dorm':'Ký Túc Xá',
+    'Dorm Store':'Cửa Hàng Ký Túc Xá',
+    "Friends' Dorms":'Ký Túc Xá Bạn Bè',
+    'Outfit':'Trang Phục',
+    'Outfit Store':'Cửa Hàng Trang Phục',
+    'Outfit Showcase':'Trình Diễn Trang Phục',
+    'Costume Wardrobe':'Tủ Trang Phục',
+    'Tests':'Thử Thách',
+    'Tests Rewards':'Phần Thưởng Thử Thách',
+    'Battle Start':'Bắt Đầu Chiến Đấu',
+    'Front':'Hàng Trước',
+    'Back':'Hàng Sau',
+    'No Servant':'Không dùng Linh Thú',
+    'Change speed':'Đổi tốc độ',
+    'Battle speed':'Tốc độ chiến đấu',
+    'Skip to results':'Bỏ qua đến kết quả',
+    'Skip battle':'Bỏ qua trận đấu',
+    'Loading original animations…':'Đang tải hoạt ảnh chiến đấu…',
+    'Victory':'Chiến Thắng',
+    'Victory!':'Chiến Thắng!',
+    'Defeat':'Thất Bại',
+    'Continue':'Tiếp Tục',
+    'Upgrade Girls':'Nâng Cấp Nữ Thần',
+    'Battle statistics':'Thống kê chiến đấu',
+    'Ally':'Đồng Minh',
+    'Enemy':'Kẻ Địch',
+    'Damage':'Sát Thương',
+    'Damage Taken':'Sát Thương Nhận',
+    'Heal':'Hồi Phục',
+    'Progress saved. Continue or upgrade your team.':'Đã lưu tiến độ. Tiếp tục hoặc nâng cấp đội hình.',
+    'Try another lineup or level up your team.':'Hãy đổi đội hình hoặc tăng cấp Nữ Thần.',
+    'Rewards saved.':'Đã lưu phần thưởng.',
+    'Upgrade your team and try again.':'Hãy nâng cấp đội hình rồi thử lại.',
+    'Repeated stage: no additional reward.':'Ải đã vượt: không có thêm thưởng lần đầu.',
+    'No resources were spent on this battle.':'Trận này không tiêu hao tài nguyên.',
+    'Stage already cleared: no first-clear reward. Loot is earned through idle farming.':'Ải đã vượt: không còn thưởng lần đầu. Phần thưởng treo máy vẫn nhận bình thường.',
+    'Level up and promote your Girls':'Tăng cấp và tiến hóa Nữ Thần',
+    'Equip them or forge better gear':'Trang bị hoặc rèn trang bị tốt hơn',
+    'Change your lineup: 2 in front, 4 in back':'Đổi đội hình: 2 hàng trước, 4 hàng sau',
+    'Draw':'Triệu Hồi',
+    'Draw 1':'Triệu Hồi 1',
+    'Draw 10':'Triệu Hồi 10',
+    'New Girl recruited!':'Đã chiêu mộ Nữ Thần mới!',
+    'New Girl':'Nữ Thần mới',
+    'Saved in Girls.':'Đã lưu vào danh sách Nữ Thần.',
+    'Skip':'Bỏ Qua',
+    'Profile name':'Tên nhân vật',
+    'Profile signature':'Chữ ký',
+    'Change':'Thay Đổi',
+    'View benefits':'Xem đặc quyền',
+    'Idle rewards':'Thưởng treo máy',
+    'Collect accumulated rewards':'Nhận thưởng tích lũy',
+    'Clear stage 1 to accumulate rewards':'Vượt ải 1 để bắt đầu tích lũy thưởng',
+    'Rare Store':'Cửa Hàng Hiếm',
+    'Common Store':'Cửa Hàng Thường',
+    'Collection Store':'Cửa Hàng Bộ Sưu Tập',
+    'Sold out':'Đã bán hết',
+    'Episodes':'Tập Truyện',
+    'Birthday':'Sinh Nhật',
+    'No rewards':'Không có phần thưởng',
+    'Challenge available!':'Có thể khiêu chiến!',
+    'Battle pending':'Dữ liệu chiến đấu chưa sẵn sàng',
+    'No tickets':'Hết vé',
+    'Unlimited attempts':'Không giới hạn lượt',
+    'Practice without rewards or attempts spent.':'Luyện tập không nhận thưởng và không tốn lượt.',
+    'Daily Quiz victory':'Chiến thắng Thử Thách Hằng Ngày',
+    'Daily Quiz defeat':'Thất bại Thử Thách Hằng Ngày',
+    'Rewards added to the Bag.':'Phần thưởng đã thêm vào Túi Đồ.',
+    'Try again; no attempt was spent.':'Hãy thử lại; lượt khiêu chiến chưa bị trừ.',
+    'Your team':'Đội của bạn',
+    'No Girl icons available in this save.':'Chưa có avatar Nữ Thần nào được mở khóa.'
+  };
+  for(const [k,v] of Object.entries(EXTRA_VI))TEXT.set(k,v);
+
+  const MORE_VI = {
+    'Academy challenge tower.':'Tháp thử thách Học Viện.',
+    'Academy practice and evaluation.':'Luyện tập và đánh giá tại Học Viện.',
+    'Academy settings, memories, and collections.':'Cài đặt, kỷ niệm và bộ sưu tập Học Viện.',
+    'Academy store map.':'Bản đồ khu mua sắm Học Viện.',
+    'Academy tasks and missions.':'Nhiệm vụ và công việc Học Viện.',
+    'Academy tasks and records.':'Nhiệm vụ và hồ sơ Học Viện.',
+    'Achievements and reward records.':'Thành tựu và lịch sử phần thưởng.',
+    'Adrift Message':'Tin Nhắn Trôi Dạt',
+    'Adrift messages. The original messaging service is unavailable.':'Tin nhắn trôi dạt. Dịch vụ nhắn tin gốc hiện không khả dụng.',
+    'Advanced prize machine.':'Máy quay phần thưởng cao cấp.',
+    'All stars':'Tất cả sao',
+    'Anima Gear · Soul Challenge':'Trang Bị Linh Hồn · Thử Thách Linh Hồn',
+    'Arena Defense':'Phòng Thủ Đấu Trường',
+    'Arena defense lineup.':'Đội hình phòng thủ Đấu Trường.',
+    'Arena ranking and rewards.':'Xếp hạng và phần thưởng Đấu Trường.',
+    'Arena Rewards':'Phần Thưởng Đấu Trường',
+    'Artifact exchange.':'Trao đổi Cổ Vật.',
+    'Artwork unavailable':'Hình minh họa chưa khả dụng',
+    'Assemble! Neutralize Threat.':'Tập hợp! Tiêu diệt mối đe dọa.',
+    'Awake is not connected to the local backend yet.':'Tính năng Thức Tỉnh chưa được kết nối hoàn chỉnh.',
+    'Basic Tokens:':'Vé thường:',
+    'Battles against enemies from the past.':'Chiến đấu với những kẻ địch trong quá khứ.',
+    'Battles against other teams.':'Chiến đấu với các đội hình khác.',
+    'Browse the Girls catalog and their skins.':'Xem danh sách Nữ Thần và trang phục.',
+    'Challenge other teams':'Khiêu chiến đội khác',
+    'Change selects this stage for idle farming and preserves accumulated rewards.':'Đổi ải treo máy và giữ nguyên phần thưởng đã tích lũy.',
+    'Character Challenge':'Thử Thách Nhân Vật',
+    'Check your selection: Girls must be different and meet the recipe requirements.':'Hãy kiểm tra lựa chọn: Nữ Thần phải khác nhau và đúng yêu cầu công thức.',
+    'Choose 5★ materials manually or enable auto-selection.':'Chọn nguyên liệu 5★ thủ công hoặc bật tự động chọn.',
+    'Choose another faction or star rank.':'Chọn phe hoặc cấp sao khác.',
+    'Choose at least one Girl':'Hãy chọn ít nhất 1 Nữ Thần',
+    'Choose Sanctuary trials.':'Chọn thử thách Thánh Vực.',
+    'Complete Daily Quizzes to get additional resources!':'Hoàn thành Thử Thách Hằng Ngày để nhận thêm tài nguyên!',
+    'Complete Exam · Become Stronger':'Hoàn thành kỳ thi · Trở nên mạnh hơn',
+    'Cosmos Portal':'Cổng Vũ Trụ',
+    'Create a Guild and configure it.':'Tạo Bang Hội và thiết lập thông tin.',
+    'Cross-server Arena':'Đấu Trường Liên Server',
+    'Cross-server Arena.':'Đấu Trường Liên Server.',
+    'Current Awake:':'Thức Tỉnh hiện tại:',
+    'Current cap reached':'Đã đạt giới hạn hiện tại',
+    'Current maximum level':'Cấp tối đa hiện tại',
+    'Daily battle for EXP.':'Chiến đấu hằng ngày để nhận EXP.',
+    'Daily battle for Girl Shards.':'Chiến đấu hằng ngày để nhận Mảnh Nữ Thần.',
+    'Daily battle for resources.':'Chiến đấu hằng ngày để nhận tài nguyên.',
+    'Daily battles for resources, EXP, and Shards.':'Chiến đấu hằng ngày để nhận tài nguyên, EXP và Mảnh.',
+    'Dorm decoration and Comfort.':'Trang trí Ký Túc Xá và tăng Độ Thoải Mái.',
+    'Echoes of Time':'Dư Âm Thời Gian',
+    'Echoes of Time history.':'Lịch sử Dư Âm Thời Gian.',
+    'Equipment upgrades and effects.':'Nâng cấp và hiệu ứng Trang Bị.',
+    'Equipped gear:':'Trang bị đang dùng:',
+    'Exchange resources for Girls and Shards.':'Đổi tài nguyên lấy Nữ Thần và Mảnh.',
+    'Exchange Shards and resources.':'Trao đổi Mảnh và tài nguyên.',
+    'EXP Quiz':'Thử Thách EXP',
+    'Exploration and expeditions.':'Khám phá và thám hiểm.',
+    'Explore the Secrets of Time':'Khám Phá Bí Mật Thời Gian',
+    'Explore the secrets of time.':'Khám phá những bí mật của thời gian.',
+    'Faction 1':'Phe 1','Faction 2':'Phe 2','Faction 3':'Phe 3','Faction 4':'Phe 4','Faction 5':'Phe 5',
+    'Faction Aura':'Hào Quang Phe',
+    'Faction summons in the Enroll tree.':'Triệu hồi theo phe tại Cây Chiêu Mộ.',
+    'Fantasy Book':'Sách Kỳ Ảo',
+    'First victory':'Thưởng lần đầu',
+    'Free advanced summon available':'Có lượt Triệu Hồi Cao Cấp miễn phí',
+    'Free summon available':'Có lượt Triệu Hồi miễn phí',
+    'Free summon every 48 hours':'Miễn phí Triệu Hồi mỗi 48 giờ',
+    'Free summon every 8 hours':'Miễn phí Triệu Hồi mỗi 8 giờ',
+    'Friends list and assistance.':'Danh sách bạn bè và hỗ trợ.',
+    'Furniture and decoration.':'Nội thất và trang trí.',
+    'Girl dresses and sets.':'Trang phục và bộ đồ Nữ Thần.',
+    'Girl EXP':'EXP Nữ Thần',
+    'Girl skin store.':'Cửa hàng trang phục Nữ Thần.',
+    'Girls Quiz':'Thử Thách Nữ Thần',
+    'Girls Store':'Cửa Hàng Nữ Thần',
+    'Girls, skins, and game records.':'Nữ Thần, trang phục và hồ sơ game.',
+    'Gold ·':'Vàng ·',
+    'Guild competition.':'Thi đấu Bang Hội.',
+    'Guild information, members, and management.':'Thông tin, thành viên và quản lý Bang Hội.',
+    'Guild map with buildings and activities.':'Bản đồ Bang Hội với công trình và hoạt động.',
+    'Guild orders and contributions.':'Nhiệm vụ và đóng góp Bang Hội.',
+    'Guild reward store.':'Cửa hàng phần thưởng Bang Hội.',
+    'Guild training.':'Huấn luyện Bang Hội.',
+    'Guild upgrades and skills.':'Nâng cấp và kỹ năng Bang Hội.',
+    'House Exam':'Kỳ Thi Học Viện',
+    'Illustrated academy stories.':'Truyện tranh minh họa Học Viện.',
+    'Illustration pending':'Hình minh họa đang cập nhật',
+    'In slot':'Đang trang bị',
+    'is not available in the local version yet.':'hiện chưa khả dụng.',
+    'Items and resources on offer.':'Vật phẩm và tài nguyên đang bán.',
+    'Land of Souls':'Vùng Đất Linh Hồn',
+    'Level and resource spending are saved in this local save.':'Cấp độ và tài nguyên tiêu hao đều được lưu.',
+    'Level up':'Tăng cấp',
+    'Level up once':'Tăng 1 cấp',
+    'Limited-time game events.':'Sự kiện giới hạn thời gian.',
+    'Luvly’s Dream Castle':'Lâu Đài Giấc Mơ Luvly',
+    'Member list and management.':'Danh sách và quản lý thành viên.',
+    'Mi perfil':'Hồ Sơ',
+    'Missing Girls or resources':'Thiếu Nữ Thần hoặc tài nguyên',
+    'missing materials':'thiếu nguyên liệu',
+    'No equipment in the Bag.':'Không có Trang Bị trong Túi Đồ.',
+    'No evolutions available':'Không có tiến hóa khả dụng',
+    'No Girls for this combination.':'Không có Nữ Thần phù hợp.',
+    'No skins registered for this Girl in the local data.':'Nữ Thần này chưa có trang phục trong dữ liệu.',
+    'Normal and advanced prize machines.':'Máy quay phần thưởng thường và cao cấp.',
+    'Normal prize machine.':'Máy quay phần thưởng thường.',
+    'Old Campus':'Học Viện Cũ',
+    'Old Campus Exploration':'Khám Phá Học Viện Cũ',
+    'Open details for':'Mở chi tiết',
+    'Opens Guild recruitment or your Guild territory, depending on your save.':'Mở tuyển Bang Hội hoặc Lãnh Địa Bang Hội tùy trạng thái tài khoản.',
+    'Original castle event. Its rewards and scheduling rules have not been restored yet.':'Sự kiện lâu đài hiện chưa mở nhận thưởng.',
+    'Original game news and notices.':'Tin tức và thông báo trong game.',
+    'Original portal. Its summoning system has not been restored yet.':'Cổng Vũ Trụ; hệ thống triệu hồi đang được hoàn thiện.',
+    'Outfit showcase.':'Trình diễn trang phục.',
+    'Outfit Store.':'Cửa hàng trang phục.',
+    'Patrol lineup saved':'Đã lưu đội hình tuần tra',
+    'Player EXP':'EXP Người Chơi',
+    'Portrait unavailable ·':'Chưa có ảnh ·',
+    'Preview: clear this stage to unlock idle farming here.':'Xem trước: vượt ải này để mở treo máy tại đây.',
+    'Ready to Graduate':'Sẵn Sàng Tiến Hóa',
+    'Realm of Trials':'Cõi Thử Thách',
+    'Received messages and rewards.':'Thư và phần thưởng đã nhận.',
+    'Resource Quiz':'Thử Thách Tài Nguyên',
+    'Sanctuary Trial':'Thử Thách Thánh Vực',
+    'Save Team':'Lưu Đội Hình',
+    'Search or browse available Guilds.':'Tìm kiếm hoặc xem các Bang Hội khả dụng.',
+    'Select an area to explore its screens. Actions that need original server data are not simulated locally yet.':'Chọn khu vực để khám phá các màn hình và tính năng.',
+    'Skin and outfit catalog.':'Danh mục trang phục.',
+    'Special items and rewards.':'Vật phẩm đặc biệt và phần thưởng.',
+    'Status Icons':'Biểu Tượng Trạng Thái',
+    'Stories for each Girl.':'Câu chuyện của từng Nữ Thần.',
+    'Summon animation unavailable':'Hoạt ảnh Triệu Hồi không khả dụng',
+    'Summon from the first faction.':'Triệu hồi từ Phe 1.','Summon from the second faction.':'Triệu hồi từ Phe 2.',
+    'Summon from the third faction.':'Triệu hồi từ Phe 3.','Summon from the fourth faction.':'Triệu hồi từ Phe 4.',
+    'Summon from the fifth faction.':'Triệu hồi từ Phe 5.',
+    'Team Arena':'Đấu Trường Đội',
+    'Tests in Academy · Fight to the TOP!':'Thử Thách Học Viện · Chiến đấu lên đỉnh!',
+    'The battle from the past awaits':'Trận chiến trong quá khứ đang chờ bạn',
+    'The lineup is full':'Đội hình đã đầy',
+    'The original client unlocks Awake at advanced evolution stages.':'Thức Tỉnh mở khóa ở các bậc tiến hóa cao.',
+    "This grade's level cap has been reached. Graduate from 4★ to 5★ is available in Campus if you have the materials.":'Đã đạt giới hạn cấp của bậc này. Có thể Tiến Hóa từ 4★ lên 5★ tại Học Viện khi đủ nguyên liệu.',
+    'This is your current idle stage.':'Đây là ải treo máy hiện tại.',
+    'Three teams compete':'Ba đội cùng tranh tài',
+    'Three-team competition.':'Thi đấu ba đội.',
+    'Time Records':'Ký Ức Thời Gian',
+    'Toggle music':'Bật/Tắt nhạc',
+    'Tokens:':'Vé:',
+    'Tower chests and rewards.':'Rương và phần thưởng Tháp.',
+    'Transfer Girls at the Altar to recover resources.':'Chuyển hóa Nữ Thần tại Tế Đàn để hoàn tài nguyên.',
+    'Tsuruga Shrine':'Đền Tsuruga',
+    'Uncover the secret of Campus':'Khám phá bí mật Học Viện',
+    'Unlockable FrontPage wallpapers.':'Hình nền Trang Chủ có thể mở khóa.',
+    'Unlocked stories and scenes.':'Câu chuyện và cảnh đã mở khóa.',
+    'Visit friends\' Dorms.':'Thăm Ký Túc Xá của bạn bè.',
+    'You do not own':'Bạn chưa sở hữu',
+    'You need a base Girl of':'Bạn cần Nữ Thần cơ sở',
+    'You need more Gold or Girl EXP to level up.':'Bạn cần thêm Vàng hoặc EXP Nữ Thần để tăng cấp.'
+  };
+  for(const [k,v] of Object.entries(MORE_VI))TEXT.set(k,v);
+
+  // Shared native Character / Dating / Station UI. Used for every girl ID.
+  const CHARACTER_VI = {
+    'Gift':'Quà Tặng','Voice':'Giọng Nói','Discuss':'Trò Chuyện','File':'Hồ Sơ',
+    'Date':'Hẹn Hò','Touch':'Chạm','Report':'Báo Cáo','Skill':'Kỹ Năng',
+    'Level Up':'Tăng Cấp','Strategy':'Chiến Thuật','Strategies':'Chiến Thuật',
+    'Lineup':'Đội Hình','Review':'Đánh Giá','Description':'Mô Tả',
+    'Skill Description':'Mô Tả Kỹ Năng','Damage Dealer':'Sát Thương Chủ Lực',
+    'AoE':'Sát Thương Diện Rộng','Control':'Khống Chế','HP':'HP',
+    'Armor':'Phòng Thủ','Speed':'Tốc Độ','Attack':'Tấn Công',
+    'Tags':'Đặc Điểm','Rank':'Xếp Hạng','Recommended Antique':'Cổ Vật Đề Xuất',
+    'No Record':'Chưa có thành tích','Patrol:':'Tuần Tra:',
+    'Junior Varsity:':'Đấu Trường Học Viện:','Tests:':'Thử Thách:',
+    'Guild Boss:':'Boss Bang Hội:','Like':'Thích',
+    'Heart Received!':'Đã nhận yêu thích!','Customize':'Tùy Chỉnh',
+    'Comment':'Bình Luận','Delete':'Xóa','Send':'Gửi',
+    "Let's send a message!":'Viết bình luận…','Choose up to 3 tags':'Chọn tối đa 3 đặc điểm',
+    'Popular Lineup':'Đội Hình Phổ Biến','Popularity':'Độ Phổ Biến',
+    'Dummy Test':'Thử Nghiệm Đội Hình','Tests':'Thử Thách',
+    'Guild Boss':'Boss Bang Hội','Junior Varsity':'Đấu Trường Học Viện',
+    'Details':'Chi Tiết','Front':'Hàng Trước','Back':'Hàng Sau','OK':'Xác Nhận',
+    'Change version':'Đổi phiên bản',
+    'No suitable Lineup now~':'Chưa có đội hình phù hợp.',
+    'Junior Varsity records came from other players online.':'Dữ liệu Đấu Trường Học Viện được tổng hợp từ những người chơi trực tuyến.',
+    'Make Gift':'Chế Tạo Quà','Gift Box':'Hộp Quà','Open':'Mở',
+    'Make':'Chế Tạo','Max':'Tối Đa','Food':'Đồ Ăn','Toy':'Đồ Chơi',
+    'Accessory':'Phụ Kiện','Variety':'Khác','Success':'Thành Công',
+    'Tap to send gift':'Chạm để tặng quà',
+    'No giftboxes available':'Không có Hộp Quà.',
+    'No gifts: open a Gift Box or Make one with Gift Shards.':'Chưa có quà. Hãy mở Hộp Quà hoặc chế tạo bằng Mảnh Quà.',
+    'This Girl has no voice lines in the data.':'Nữ Thần này chưa có câu thoại.',
+    'No file':'Chưa có hồ sơ',
+    'Intimacy bonus':'Thưởng Thân Mật',
+    'No Bonus':'Không có hiệu ứng cộng thêm',
+    'Oath completed!':'Đã lập lời thề!',
+    'These bonuses apply in battle (original HeroAttr).':'Các chỉ số cộng thêm được áp dụng trong trận chiến.',
+    'Replay':'Phát Lại','Consume':'Sử Dụng','Unlock':'Mở Khóa','Locked':'Chưa Mở Khóa',
+    'Mission':'Nhiệm Vụ','Story':'Câu Chuyện',
+    'Unlock by finishing the story':'Hoàn thành chương trước để mở khóa.',
+    'Finish this mission to unlock the story.':'Hoàn thành nhiệm vụ để mở khóa câu chuyện.',
+    'This Girl currently has no story':'Nhân vật này hiện chưa có câu chuyện.',
+    'Send gifts to raise intimacy':'Tặng quà để tăng độ thân mật',
+    'Ultimate Extermination':'Tuyệt Diệt Tối Thượng',
+    'Duality':'Lưỡng Cực','Sacred Purification':'Thanh Tẩy Thần Thánh',
+    'Embrace of Darkness':'Vòng Tay Bóng Tối',
+    'One hand holds Light and the other embraces Darkness.':'Một tay cầm ánh sáng, còn tay kia ôm lấy bóng tối.',
+    'One hand holds light and the other embraces darkness.':'Một tay cầm ánh sáng, còn tay kia ôm lấy bóng tối.',
+    '5-Star Nephilim':'Nephilim 5 sao',
+    'Critical Strike':'Đòn Chí Mạng','Active Skill':'Kỹ Năng Chủ Động',
+    'Active':'Chủ Động','Heal':'Hồi Máu','Silence':'Câm Lặng',
+    'Ghost Blast':'Bộc Phá Linh Hồn','Fox Fire':'Lửa Hồ Ly',
+    'Trick Shadow':'Bóng Ảo','Missing Tune':'Giai Điệu Thất Lạc',
+    'Life Drain':'Hút Sinh Mệnh','Blood Anger':'Cuồng Nộ Máu',
+    'Killing Heart':'Sát Tâm','Blood Absorb':'Hút Máu',
+    'Holy Light':'Ánh Sáng Thánh','Meteor Shower':'Mưa Sao Băng',
+    'Inner Peace':'Tâm Tĩnh','Solar Flare':'Bùng Nổ Mặt Trời',
+    'Rush':'Xung Phong','Counterstrike':'Phản Công',
+    'Charge Attack':'Đòn Tấn Công Tích Lực',
+    'Arrow of Eclipse':'Mũi Tên Nhật Thực',
+    'Ready, Aim, Fire!':'Sẵn Sàng, Ngắm, Bắn!',
+    'Star Murmurs':'Lời Thì Thầm Của Sao',
+    'Dream Dust':'Bụi Giấc Mơ','Tasty Poison':'Độc Dược Ngọt Ngào',
+    'Storm Rush':'Bão Tố Xung Kích'
+  };
+  for (const [k,v] of Object.entries(CHARACTER_VI)) TEXT.set(k,v);
+  // Publisher strings contain Cocos colour tags; clean rather than printing control syntax.
+  const cleanMarkup = value => String(value??'')
+    .replace(/\[c\]|\[\/c\]|\[-\]|\[(?:#?[\da-f]{6,8})\]/gi,'')
+    .replace(/Nê\s*-\s*phi\s*-\s*lim/gi,'Nephilim')
+    .replace(/\u005c\u005cn/g,'\n');
+
+  // Verified publisher Station labels for every Girl, plus curated native text by content.
+  for (const [source,vietnamese] of [
+  [
+    "Tank",
+    "Đỡ Đòn"
+  ],
+  [
+    "Frontliner",
+    "Tiên Phong"
+  ],
+  [
+    "Damage Dealer",
+    "Sát Thương Chủ Lực"
+  ],
+  [
+    "Control",
+    "Khống Chế"
+  ],
+  [
+    "Support",
+    "Hỗ Trợ"
+  ],
+  [
+    "Healer",
+    "Hồi Phục"
+  ],
+  [
+    "Survive",
+    "Sinh Tồn"
+  ],
+  [
+    "Regenerate",
+    "Tái Tạo"
+  ],
+  [
+    "Surprise Attack",
+    "Đột Kích"
+  ],
+  [
+    "AoE",
+    "Diện Rộng"
+  ],
+  [
+    "Mark Stacker",
+    "Tích Dấu Ấn"
+  ],
+  [
+    "Core",
+    "Chủ Lực"
+  ],
+  [
+    "Team Leader",
+    "Thủ Lĩnh"
+  ],
+  [
+    "Self-Sacrifice",
+    "Hy Sinh"
+  ],
+  [
+    "Suicide-Bomb",
+    "Tự Bạo"
+  ],
+  [
+    "Enhancement",
+    "Cường Hóa"
+  ],
+  [
+    "Reliable",
+    "Đáng Tin Cậy"
+  ],
+  [
+    "Counter",
+    "Phản Đòn"
+  ],
+  [
+    "Speed",
+    "Tốc Độ"
+  ],
+  [
+    "Buff",
+    "Tăng Cường"
+  ],
+  [
+    "Counterstrike",
+    "Phản Kích"
+  ],
+  [
+    "Growth",
+    "Tăng Trưởng"
+  ],
+  [
+    "Reaper",
+    "Tử Thần"
+  ],
+  [
+    "Invincible",
+    "Bất Bại"
+  ],
+  [
+    "DoT",
+    "Sát Thương Theo Thời Gian"
+  ],
+  [
+    "Flexible",
+    "Linh Hoạt"
+  ],
+  [
+    "Revive",
+    "Hồi Sinh"
+  ],
+  [
+    "Nice Body",
+    "Vóc Dáng Đẹp"
+  ],
+  [
+    "Oppai!!!",
+    "Vòng Một Nổi Bật"
+  ],
+  [
+    "Cute",
+    "Đáng Yêu"
+  ],
+  [
+    "Unique",
+    "Độc Đáo"
+  ],
+  [
+    "Nice Voice",
+    "Giọng Nói Hay"
+  ],
+  [
+    "Sexy",
+    "Quyến Rũ"
+  ],
+  [
+    "My Wife!",
+    "Vợ Của Tôi!"
+  ],
+  [
+    "Taciturn",
+    "Ít Nói"
+  ],
+  [
+    "Gentle",
+    "Dịu Dàng"
+  ],
+  [
+    "My Queen!",
+    "Nữ Hoàng Của Tôi!"
+  ],
+  [
+    "Cuuute!!!",
+    "Cực Kỳ Đáng Yêu!"
+  ],
+  [
+    "1. A girl from House Angel who can deal tons of damage in many ways;\n2. Nephilim has a high basic Speed attribute with her passive skill: \"Duality\" which allows her to trigger her Active skill faster than others this can make her Equilibrium Marks take full effect against her enemies;\n3. With the help of her Active skill and the passive skill \"Sacred Purification\" allows her to deal more damage against the girls with higher Hp and the other passive skill \"Embrace of Darkness\" allows her to deal an additional wave of damage at the end of each round and wipe out her threat swiftly;\n4. As a girl from House Angel she also requires more resources to be powered up. Please properly manage your resource when you want her into your team.",
+    "1. Nữ Thần thuộc phe Thiên Sứ, có thể gây sát thương lớn bằng nhiều cách.\n2. Nephilim có tốc độ cơ bản cao. Kỹ năng bị động “Lưỡng Cực” giúp cô tung kỹ năng chủ động sớm hơn, khiến các Dấu Ấn Cân Bằng phát huy hiệu quả lên đối thủ.\n3. Kỹ năng chủ động kết hợp với “Thanh Tẩy Thần Thánh” gây thêm sát thương lên đối thủ có HP cao. “Vòng Tay Bóng Tối” tạo thêm một đợt sát thương cuối hiệp, giúp nhanh chóng loại bỏ mối đe dọa.\n4. Là Nữ Thần phe Thiên Sứ, Nephilim cần nhiều tài nguyên để bồi dưỡng. Hãy quản lý tài nguyên hợp lý khi đưa cô vào đội hình."
+  ],
+  [
+    "Nephilim's Active skill deals Armor-Ignoring damage against 4 random enemies and tags each of them with an Equilibrium Mark;\nThe mark can take effect almost immediately with the help of Nephilim's high Speed attribute. This can provide great suppression to the girls who rely more on their Active skills to deal damage.",
+    "Kỹ năng chủ động của Nephilim gây sát thương bỏ qua Giáp lên 4 kẻ địch ngẫu nhiên và gắn Dấu Ấn Cân Bằng lên từng mục tiêu.\nNhờ tốc độ cao của Nephilim, dấu ấn có thể kích hoạt gần như ngay lập tức, gây áp lực lớn lên những kẻ địch phụ thuộc vào kỹ năng chủ động."
+  ],
+  [
+    "Buff skill increases Nephilim's Hp Holy Damage Damage Reduction and Speed. Provides Nephilim higher survivability and offensive ability making her able to survive longer in the battlefield while dealing tons of damage.",
+    "Kỹ năng tăng cường giúp Nephilim tăng HP, sát thương Thánh, khả năng giảm sát thương và tốc độ. Nhờ đó, cô vừa sống sót lâu hơn vừa duy trì khả năng tấn công mạnh mẽ."
+  ],
+  [
+    "Buff skill enables Nephilim's basic attack to hit the enemies with the highest Hp dealing additional damage basing on their Maximum Hp and heals Nephilim herself;\nThis skill allows Nephilim to counter the enemies who have higher Hp and get decent recovery by attacking them.",
+    "Kỹ năng tăng cường khiến đòn đánh thường của Nephilim nhắm vào mục tiêu có HP cao nhất, gây thêm sát thương dựa trên HP tối đa của chúng và hồi HP cho bản thân.\nKỹ năng này giúp Nephilim khắc chế đối thủ nhiều HP và hồi phục khi tấn công."
+  ],
+  [
+    "Buff skill allows Nephilim to deal tons of damage against the damage dealers of her enemies;\nThe skill also lowers the effects of healing Nephilim's enemies receive allows Nephilim to gain more advantage if the battle goes further;\nThe Hp recovery effect this skill provides improves Nephilim's survivability even further.",
+    "Kỹ năng tăng cường giúp Nephilim gây sát thương lớn lên các chủ lực gây sát thương của đối phương.\nKỹ năng còn làm giảm hiệu quả hồi máu mà đối phương nhận được, giúp Nephilim có lợi thế trong những trận đấu kéo dài.\nKhả năng hồi HP của kỹ năng cũng gia tăng sức sống cho Nephilim."
+  ],
+  [
+    "Fusion Umbrella",
+    "Ô Hợp Nhất"
+  ],
+  [
+    "Provides Attack increases its owner's offensive ability;\nProvides Damage Reduction and Control Immunity enables its owner to take less damage from each attack and take fewer control skills.",
+    "Tăng Tấn Công cho người trang bị, cải thiện sức mạnh tấn công.\nTăng khả năng giảm sát thương và miễn nhiễm khống chế, giúp chịu ít sát thương và ít bị ảnh hưởng bởi kỹ năng khống chế."
+  ],
+  [
+    "Fate Crystal",
+    "Pha Lê Vận Mệnh"
+  ],
+  [
+    "Provides additional energy enables its owner to trigger her active skill in advance;\nProvides Attack increases its owner's offensive ability.",
+    "Cung cấp thêm năng lượng, giúp người trang bị sử dụng kỹ năng chủ động sớm hơn.\nĐồng thời tăng Tấn Công, cải thiện khả năng gây sát thương."
+  ]
+]) TEXT.set(source,vietnamese);
+
+  // Native growth and affinity controls; shared by the entire roster.
+  for (const [source,translation] of Object.entries({
+  "Promote": "Nâng Bậc",
+  "Grade Up": "Nâng Bậc",
+  "Elite Skills": "Kỹ Năng Tinh Anh",
+  "This Girl has no Elite Skills.": "Nữ Thần này chưa có Kỹ Năng Tinh Anh.",
+  "Next level cost:": "Chi phí cấp tiếp theo:",
+  "All Elite Skills are maxed.": "Tất cả Kỹ Năng Tinh Anh đã đạt cấp tối đa.",
+  "Select Potential": "Chọn Tiềm Năng",
+  "Potential": "Tiềm Năng",
+  "Activate": "Kích Hoạt",
+  "Activo": "Đã Kích Hoạt",
+  "cualquiera": "Bất Kỳ",
+  "of the faction": "cùng phe",
+  "Limit-Break": "Đột Phá Giới Hạn",
+  "Reverse": "Hoàn Nguyên",
+  "Replace": "Chuyển Đổi",
+  "Switch": "Chuyển Tiềm Năng",
+  "Astral Core": "Lõi Tinh Tú",
+  "No Limit Break stages unlocked yet.": "Chưa mở khóa giai đoạn Đột Phá Giới Hạn nào.",
+  "Unlock": "Mở Khóa",
+  "Preview": "Xem Trước",
+  "Empower": "Cường Hóa",
+  "Reset": "Đặt Lại",
+  "Node Upgrade": "Nâng Cấp Nút",
+  "Astral Core Node": "Nút Lõi Tinh Tú",
+  "Upgrade": "Nâng Cấp",
+  "Node is at maximum level.": "Nút đã đạt cấp tối đa.",
+  "No Limit Break data for this Girl.": "Nữ Thần này chưa có dữ liệu Đột Phá Giới Hạn.",
+  "Limit Break maxed (15★, level 330).": "Đã đạt Đột Phá Giới Hạn tối đa (15★, cấp 330).",
+  "Please select required materials": "Vui lòng chọn nguyên liệu bắt buộc",
+  "Please select the same girl": "Chọn Nữ Thần cùng loại",
+  "Exchange": "Chuyển Đổi",
+  "Switch Potential": "Đổi Tiềm Năng",
+  "Activate one Potential": "Kích Hoạt một Tiềm Năng",
+  "Upgrade node": "Nâng cấp nút",
+  "Synchronize Level": "Cấp Đồng Bộ",
+  "Synchronize": "Đồng Bộ",
+  "Attack": "Tấn Công",
+  "Armor": "Phòng Thủ",
+  "Speed": "Tốc Độ",
+  "Power": "Lực Chiến",
+  "Health": "HP",
+  "Atk": "Tấn Công",
+  "MAX LVL": "Cấp Tối Đa",
+  "MAX": "Tối Đa",
+  "Gold": "Vàng",
+  "Gems": "Kim Cương",
+  "Girl EXP": "EXP Nữ Thần",
+  "Grade Dust": "Bụi Nâng Bậc",
+  "Skill Book": "Sách Kỹ Năng",
+  "Skill Crystal": "Pha Lê Kỹ Năng",
+  "Atk +": "Tấn Công +",
+  "Unlocks at Limit-Break Stage 1": "Mở ở Đột Phá Giới Hạn giai đoạn 1",
+  "No suitable Lineup now~": "Chưa có đội hình phù hợp.",
+  "Senpai": "Tiền Bối",
+  "Girls": "Nữ Thần",
+  "Girls Store": "Cửa Hàng Nữ Thần",
+  "Girl": "Nữ Thần",
+  "Unlock the Girl first (padlock).": "Hãy mở khóa Nữ Thần trước (biểu tượng ổ khóa).",
+  "This Girl cannot be reborn.": "Nữ Thần này không thể hoàn nguyên.",
+  "Cosmos Girls cannot be exchanged.": "Không thể chuyển đổi Nữ Thần Vũ Trụ.",
+  "No Record": "Chưa có thành tích",
+  "Coming soon~": "Sắp mở",
+  "No Bonus": "Không có thưởng",
+  "Touch 1": "Chạm 1",
+  "Touch 2": "Chạm 2",
+  "Touch 3": "Chạm 3",
+  "Touch 4": "Chạm 4",
+  "Touch 5": "Chạm 5",
+  "Report": "Báo Cáo",
+  "Skill": "Kỹ Năng",
+  "Level Up": "Tăng Cấp",
+  "Review": "Đánh Giá",
+  "Strategy": "Chiến Thuật",
+  "Strategies": "Chiến Thuật"
+})) TEXT.set(source,translation);
+
+  const ATTRS = ['title','aria-label','placeholder'];
+  const translateText = (s) => {
+    const normalized = cleanMarkup(s);
+    const trimmed = normalized.trim();
+    if (!trimmed) return normalized;
+    if (TEXT.has(trimmed)) return normalized.replace(trimmed, TEXT.get(trimmed));
+    if (/^Touch\s+(\d+)$/i.test(trimmed)) return normalized.replace(trimmed,trimmed.replace(/^Touch\s+(\d+)$/i,'Chạm $1'));
+    if (/^Level\s+(\d+):\s*(.+)$/i.test(trimmed)) return normalized.replace(trimmed,trimmed.replace(/^Level\s+(\d+):\s*(.+)$/i,(_,n,rest)=>'Cấp '+n+': '+translateText(rest)));
+    if (/^Next\s*\((\d+)\):\s*(.+)$/i.test(trimmed)) return normalized.replace(trimmed,trimmed.replace(/^Next\s*\((\d+)\):\s*(.+)$/i,(_,n,rest)=>'Tiếp theo ('+n+'): '+translateText(rest)));
+    if (/^Story\s+(\d+)\s*·\s*(.*)$/i.test(trimmed)) return normalized.replace(trimmed,trimmed.replace(/^Story\s+(\d+)\s*·\s*(.*)$/i,'Câu chuyện $1 · $2'));
+    if (/^Unlocks at Limit-Break Stage\s+(\d+)$/i.test(trimmed)) return normalized.replace(trimmed,trimmed.replace(/^Unlocks at Limit-Break Stage\s+(\d+)$/i,'Mở khóa ở Đột Phá Giới Hạn giai đoạn $1'));
+
+    if (/^Level Up\s+(\d+)$/i.test(trimmed)) return normalized.replace(trimmed,trimmed.replace(/^Level Up\s+(\d+)$/i,'Tăng Cấp $1'));
+    if (/^Story\s+(\d+)$/i.test(trimmed)) return normalized.replace(trimmed,trimmed.replace(/^Story\s+(\d+)$/i,'Câu Chuyện $1'));
+    if (/^Unlock at\s+(\d+)\s+Intimacy$/i.test(trimmed)) return normalized.replace(trimmed,trimmed.replace(/^Unlock at\s+(\d+)\s+Intimacy$/i,'Mở khóa ở $1 điểm thân mật'));
+    if (/^(.+):\s*One hand holds Light and the other embraces Darkness\.$/i.test(trimmed)) return normalized.replace(trimmed, trimmed.replace(/^(.+):\s*One hand holds Light and the other embraces Darkness\.$/i,'$1: Một tay cầm ánh sáng, còn tay kia ôm lấy bóng tối.'));
+
+    const rules = [
+      [/^Unlocks at level (\d+)$/i, 'Mở khóa ở cấp $1'],
+      [/^Ending in:\s*(.+)$/i, 'Kết thúc sau: $1'],
+      [/^Received:\s*(.+)$/i, 'Đã nhận: $1'],
+      [/^Resets\s*(.+)$/i, 'Đặt lại $1'],
+      [/^ends in\s*(.+)$/i, 'kết thúc sau $1'],
+      [/^Coming next\s*(.+)$/i, 'Sắp diễn ra $1'],
+      [/^in\s+(\d.+)$/i, 'sau $1'],
+      [/^Item\s+(\d+)$/i, 'Vật phẩm $1'],
+      [/^Level\.?\s*(\d+)$/i, 'Cấp $1'],
+      [/^Lv\.?\s*(\d+)$/i, 'Cấp $1'],
+      [/^Daily rank award \(rank\s*(\d+)\)$/i, 'Thưởng xếp hạng ngày (hạng $1)'],
+      [/^Unlocks at evolution grade\s*(\d+)$/i, 'Mở khóa ở bậc tiến hóa $1'],
+      [/^(.+) will accompany the team\.$/i, '$1 sẽ đồng hành cùng đội.'],
+      [/^Stage\s+(\d+)$/i, 'Ải $1'],
+      [/^Stage\s+(\d+)\s+·\s+(.+)$/i, 'Ải $1 · $2'],
+      [/^stage\s+(\d+)$/i, 'ải $1'],
+      [/^Round\s+(\d+)$/i, 'Hiệp $1'],
+      [/^Round\s+(\d+)\s+·\s+(.+) acts$/i, 'Hiệp $1 · $2 hành động'],
+      [/^Girl\s+(\d+)$/i, 'Nữ Thần $1'],
+      [/^Floor\s+(\d+)$/i, 'Tầng $1'],
+      [/^Difficulty\s+(\d+)$/i, 'Độ khó $1'],
+      [/^Power\s+(.+)$/i, 'Lực chiến $1'],
+      [/^Draw\s+(\d+)$/i, 'Triệu Hồi $1'],
+      [/^(\d+) of (\d+) attempts available today$/i, 'Hôm nay còn $1/$2 lượt'],
+      [/^Requires level\s+(\d+)$/i, 'Yêu cầu cấp $1'],
+      [/^Unlock after acquiring\s+(\d+) Collection Points$/i, 'Mở khóa khi đạt $1 Điểm Bộ Sưu Tập']
+    ];
+    for (const [re, out] of rules) if (re.test(trimmed)) return s.replace(trimmed, trimmed.replace(re, out));
+    return normalized;
+  };
+
+  function translateNode(root) {
+    if (!root) return;
+    if (root.nodeType === Node.TEXT_NODE) {
+      const next = translateText(root.nodeValue || '');
+      if (next !== root.nodeValue) root.nodeValue = next;
+      return;
+    }
+    if (root.nodeType !== Node.ELEMENT_NODE && root.nodeType !== Node.DOCUMENT_FRAGMENT_NODE) return;
+    if (root.nodeType === Node.ELEMENT_NODE) {
+      for (const a of ATTRS) {
+        const v = root.getAttribute(a);
+        if (v) { const localized=translateText(v); if (localized!==v) root.setAttribute(a,localized); }
+      }
+    }
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (const n of nodes) translateNode(n);
+    if (root.querySelectorAll) {
+      for (const el of root.querySelectorAll('[title],[aria-label],[placeholder]')) {
+        for (const a of ATTRS) {
+          const v = el.getAttribute(a);
+          if (v) { const localized=translateText(v); if (localized!==v) el.setAttribute(a,localized); }
+        }
+      }
+    }
+  }
+
+  window.GxbVi = {clean: cleanMarkup, t: (value) => {
+    if (value === undefined || value === null) return value;
+    return translateText(String(value)).trim();
+  }};
+  if (!window.GxbLocale || GxbLocale.current() === 'vi') document.documentElement.lang = 'vi';
+  document.title = 'Nữ Thần Chiến Đấu - GXB 3';
+  const run = () => {
+    if (window.GxbLocale && GxbLocale.current() !== 'vi') return;
+    translateNode(document.body);
+    const dev = document.getElementById('dev-open');
+    if (dev) dev.textContent = 'QTV';
+    const vipPackages = document.getElementById('vip-packages-open');
+    if (vipPackages && !vipPackages.dataset.boundPackages) {
+      vipPackages.dataset.boundPackages = '1';
+      vipPackages.addEventListener('click', () => window.EventsHub?.openOriginalEvent(2, 'profile'));
+    }
+    const lang = [...document.querySelectorAll('.profile-setting-row strong')]
+      .find(x => x.textContent.trim() === 'Ngôn ngữ');
+    if (lang) {
+      const small = lang.parentElement && lang.parentElement.querySelector('small');
+      if (small) small.textContent = 'Tiếng Việt';
+    }
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run, {once:true});
+  else run();
+
+  if (!window.GxbLocale || GxbLocale.current() === 'vi') {
+    const observer = new MutationObserver(records => {
+      for (const r of records) {
+        for (const n of r.addedNodes) translateNode(n);
+        if (r.type === 'characterData') translateNode(r.target);
+      }
+    });
+    observer.observe(document.documentElement, {subtree:true, childList:true, characterData:true});
+  }
+})();

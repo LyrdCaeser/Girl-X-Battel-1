@@ -6,7 +6,7 @@ event action runs on that local calendar day.
 """
 from __future__ import annotations
 import json, time
-from . import clock
+from . import clock, world_live_config
 from pathlib import Path
 
 DATA = json.loads((Path(__file__).resolve().parents[1] / 'data/events.json').read_text())
@@ -57,6 +57,9 @@ def touch(state, now=None):
 
 def snapshot(state, now=None):
     ev = state.get('events') or {}
+    server_id = str(state.get('server_id') or 'S1').upper()
+    checkin_enabled = world_live_config.event_enabled(server_id, 'checkin')
+    sevenday_enabled = world_live_config.event_enabled(server_id, 'sevenday')
     days = list(ev.get('days', []))
     online = len(days) + (0 if today(now) in days else 1)   # today counts once the hub is opened
     got = int(ev.get('checkin', {}).get('count', 0))
@@ -66,24 +69,27 @@ def snapshot(state, now=None):
         real = start + i
         row = LOGIN[login_show_id(real)]
         grid.append({'day': real, 'pos': i + 1, 'award': row['award'], 'double': row['double'],
-                     'got': real <= got, 'can': got < real <= online})
+                     'got': real <= got, 'can': checkin_enabled and got < real <= online})
     seven_got = int(ev.get('sevenday', {}).get('count', 0))
-    seven = [{'day': d, 'award': r['award'], 'got': d <= seven_got, 'can': seven_got < d <= min(online, 7)}
+    seven = [{'day': d, 'award': r['award'], 'got': d <= seven_got, 'can': sevenday_enabled and seven_got < d <= min(online, 7)}
              for d, r in sorted(SEVENDAY.items())]
-    return {'online_days': online, 'checkin': {'count': got, 'grid': grid},
-            'sevenday': {'count': seven_got, 'days': seven, 'done': seven_got >= len(SEVENDAY)}}
+    return {'online_days': online, 'checkin': {'count': got, 'grid': grid, 'enabled': checkin_enabled},
+            'sevenday': {'count': seven_got, 'days': seven, 'done': seven_got >= len(SEVENDAY), 'enabled': sevenday_enabled}}
 
 
 def action(state, request, now=None):
     if not isinstance(request, dict):
         raise ValueError('Datos inválidos')
     ev = touch(state, now)
+    server_id = str(state.get('server_id') or 'S1').upper()
     online = len(ev['days'])
     kind = request.get('action')
     awards = {}
     if kind == 'visit':
         pass
     elif kind == 'checkin':
+        if not world_live_config.event_enabled(server_id, 'checkin'):
+            raise ValueError('Điểm danh đang tạm đóng trên server này')
         got = ev['checkin']['count']
         if got >= online:
             raise ValueError('Ya has firmado hoy. Vuelve mañana.')
@@ -91,13 +97,15 @@ def action(state, request, now=None):
         end = min(online, got // ROUND * ROUND + ROUND)
         for day in range(got + 1, end + 1):
             for k, n in pairs(LOGIN[login_show_id(day)]['award']).items():
-                awards[k] = awards.get(k, 0) + n
+                awards[k] = awards.get(k, 0) + world_live_config.event_reward(n, server_id)
         ev['checkin']['count'] = end
     elif kind == 'sevenday':
+        if not world_live_config.event_enabled(server_id, 'sevenday'):
+            raise ValueError('Quà 7 ngày đang tạm đóng trên server này')
         got = ev['sevenday']['count']
         if got >= len(SEVENDAY) or got >= online:
             raise ValueError('No hay recompensa disponible hoy')
-        awards = pairs(SEVENDAY[got + 1]['award'])
+        awards = {k: world_live_config.event_reward(n, server_id) for k, n in pairs(SEVENDAY[got + 1]['award']).items()}
         ev['sevenday']['count'] = got + 1
     else:
         raise ValueError('Acción de evento no disponible')

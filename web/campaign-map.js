@@ -8,7 +8,7 @@ const CampaignMap=(()=>{
  const A=n=>'/assets/campaign/'+n+'.png';
  const el=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;};
  const img=(src,cls,alt='')=>{const i=el('img',cls);i.src=src;i.alt=alt;i.draggable=false;return i;};
- const load=()=>data?Promise.resolve(data):(loading||=Promise.all([api('/assets/campaign.json'),api('/assets/chibis/catalog.json')]).then(([c,k])=>{data={...c,chibis:k};return data;}));
+ const load=()=>data?Promise.resolve(data):(loading||=Promise.all([api('/assets/campaign.json'),api('/assets/chibis/catalog.json?v=20261014-nephilim3')]).then(([c,k])=>{data={...c,chibis:k};return data;}));
  const stageLabel=s=>s?s.chapter+'-'+s.chapter_stage:'';
  const compact=n=>{const v=Number(n)||0;return v>=1e6?(Math.round(v/1e5)/10)+'M':v>=1e4?(Math.round(v/100)/10)+'K':number(v);};
  function hangStage(){return state.hang_info?.stage||state.next_stage||1;}
@@ -60,13 +60,37 @@ const CampaignMap=(()=>{
 
  // --- chibi scene (PIXI + original Spine chibis) ---
  function chibiFor(id){return data.chibis[String(id)]||data.chibis[String(id%100000)]||data.chibis[String(id%10000+50000)];}
+ // The 720×627 campaign scene is independent from the 1080×1920 battle view.
+ // Wide wing/FX rigs need a model-specific height, without changing other girls.
+ function chibiScale(bounds,meta={},rigHeight=0){
+  const requested=Number(meta.mapHeight);
+  const custom=Number.isFinite(requested)&&requested>=190&&requested<=330;
+  // getLocalBounds() may contain enormous hidden FX attachments.  On a
+  // custom rig, use the exported skeleton body height, not that FX footprint.
+  const measured=custom&&Number(rigHeight)>0?Number(rigHeight):Number(bounds?.height);
+  const nativeHeight=Math.max(1,Number.isFinite(measured)?measured:1);
+  return Math.min(custom?1.65:1.05,(custom?requested:190)/nativeHeight);
+ }
+ function chibiPosition(x,y,bounds,scale,direction,foot,meta={}){
+  const custom=Number(meta.mapHeight)>=190&&Number(meta.mapHeight)<=330;
+  // Nephilim exports a Pfoot bone at (0,0).  Anchor the ground to this
+  // dedicated bone rather than the FX-heavy bounding box.
+  if(custom&&foot&&Number.isFinite(foot.worldX)&&Number.isFinite(foot.worldY)){
+   return {x:x-foot.worldX*scale*direction,y:y-foot.worldY*scale};
+  }
+  return {x:x-(bounds.x+bounds.width/2)*scale*direction,
+    y:y-(bounds.y+bounds.height)*scale};
+ }
+ function chibiFacing(meta={}){
+  return meta.facing==='left'||meta.facing===-1?-1:1;
+ }
  async function buildScene(box,fx,stage){box.onclick=()=>typeof CampaignFlow!=='undefined'&&CampaignFlow.hangTeam();box.title="Tap to change your idle lineup";const team=(typeof CampaignFlow!=='undefined'?CampaignFlow.hangList():state.formation||[]).map(f=>({pos:f.pos,hero:state.roster.find(h=>h.partner_id===f.partner_id)})).filter(x=>x.hero);const monsters=(data.stages[stage.id]?.monsters||[]).slice(-2);
   const key=stage.id+'|'+team.map(t=>t.hero.table_id+':'+t.pos).join(',')+'|'+monsters.join(',');
   if(key===sceneKey&&app){box.append(app.view);return;}stop(true);sceneKey=key;
   if(typeof PIXI==='undefined')return;app=new PIXI.Application({width:720,height:627,transparent:true,antialias:true,resolution:Math.min(2,devicePixelRatio||1),autoDensity:false});app.view.className='cmp-pixi';box.append(app.view);app.stage.sortableChildren=true;figures=[];
   // Team on the left half (front row 1–2 ahead), monsters on the right, as in the hang scene.
   const spotsA=typeof CampaignFlow!=='undefined'?{1:[360,410],2:[185,300],3:[160,505]}:{1:[350,420],2:[320,500],3:[215,380],4:[170,450],5:[150,520],6:[250,535]},spotsB=[[560,300],[565,500],[620,415]];
-  const add=async(id,x,y,flip,side)=>{const meta=chibiFor(id);if(!meta)return;try{const d=await GxbSpine.load('/assets/chibis/'+meta.model);if(!app)return;const f=new PIXI.spine.Spine(d);const idle=d.animations.some(a=>a.name==='idle')?'idle':d.animations[0]?.name;f.state.setAnimation(0,idle,true);f.state.timeScale=.9+Math.random()*.2;f.update(0);const b=f.getLocalBounds();const s=Math.min(1.05,190/Math.max(1,b.height));f.scale.set(flip?-s:s,s);f.x=x-(b.x+b.width/2)*s*(flip?-1:1);f.y=y-(b.y+b.height)*s;f.zIndex=y;app.stage.addChild(f);figures.push({f,idle,side,x,y});}catch{}};
+  const add=async(id,x,y,flip,side)=>{const meta=chibiFor(id);if(!meta)return;try{const d=await GxbSpine.load('/assets/chibis/'+meta.model);if(!app)return;const f=new PIXI.spine.Spine(d);const idle=d.animations.some(a=>a.name==='idle')?'idle':d.animations[0]?.name;f.state.setAnimation(0,idle,true);f.state.timeScale=.9+Math.random()*.2;f.update(0);const b=f.getLocalBounds();const s=chibiScale(b,meta,d.height);const direction=(flip?-1:1)*chibiFacing(meta);f.scale.set(direction*s,s);const foot=Number(meta.mapHeight)>=190?f.skeleton?.findBone?.('Pfoot'):null;const placed=chibiPosition(x,y,b,s,direction,foot,meta);f.x=placed.x;f.y=placed.y;f.zIndex=y;app.stage.addChild(f);figures.push({f,idle,side,x,y});}catch{}};
   await Promise.all([...team.map(t=>add(t.hero.table_id,...(spotsA[t.pos]||[250,450]),false,'a')),...monsters.map((m,i)=>add(m,...spotsB[i],true,'b'))]);
   clearInterval(loop);loop=setInterval(()=>{if(!app||document.hidden)return;try{const a=figures.filter(x=>x.side==='a'),b=figures.filter(x=>x.side==='b');if(!a.length)return;const actor=a[Math.floor(Math.random()*a.length)];const kind=Math.random()<.2&&actor.f.state.hasAnimation('skill')?'skill':'attack';if(actor.f.state.hasAnimation(kind)){actor.f.state.setAnimation(0,kind,false);actor.f.state.addAnimation(0,actor.idle,true,0);}
    setTimeout(()=>{const t=b[Math.floor(Math.random()*b.length)];if(t&&t.f.state&&t.f.state.hasAnimation('hurt')){t.f.state.setAnimation(0,'hurt',false);t.f.state.addAnimation(0,t.idle,true,0);}},350);}catch{}},1500);}
@@ -105,5 +129,5 @@ const CampaignMap=(()=>{
   b.append(el('p','cr-sub',"Per hour: "+number((i.rate?.['1']||0)*720)+" Gold · "+number((i.rate?.['9']||0)*720)+" Girl EXP · "+number((i.rate?.['3']||0)*720)+" Player EXP"));
   b.append(el('p','cr-sub',"Possible loot (one roll every "+Math.round((i.drop_interval||600)/60)+' min):'));const g=el('div','cr-rewards');for(const id of String(i.drop_show||'').split('|').filter(Boolean)){const c=el('div','cr-reward');const it=itemCatalog?.[id];c.style.backgroundImage=`url('/assets/ui/quality_${Math.min(it?.quality||1,7)}.png')`;const src=it&&itemIcons.has(it.icon)?'/assets/item-icons/'+it.icon+'.png':(typeof Equipment!=='undefined'&&Equipment.icon?.(id))||'/assets/ui/item_bg.png';c.append(img(src));c.title=it?.name||"Item "+id;g.append(c);}b.append(g);
   b.append(el('p','cr-sub',"Pending draws: "+(i.rolls||0)));const col=el('button','cr-btn','Collect');col.type='button';col.onclick=()=>{close();CampaignUI.collect();};b.append(col);}
- return {render,stop,compact};
+ return {render,stop,compact,chibiScale,chibiFacing,chibiPosition};
 })();

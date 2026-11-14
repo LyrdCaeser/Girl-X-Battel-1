@@ -1,0 +1,14 @@
+game.example.com {
+    encode zstd gzip
+
+    reverse_proxy 127.0.0.1:9080 {
+        header_up X-Forwarded-Proto {scheme}
+        header_up X-Forwarded-For {remote_host}
+        # SSE must not be buffered.
+        flush_interval -1
+    }
+
+    header {
+        -Server
+    }
+}

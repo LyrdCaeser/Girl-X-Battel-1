@@ -48,7 +48,7 @@ const Echoes=(()=>{
   const mid=el('div','ec-mid');mid.append(el('small','ec-prog',`Progress:${detail?.progress??w?.progress??0} %`));
   if(!w?.open)mid.append(el('p','ec-note',"Reach 85% progress in the previous world to unlock this one."));
   else if(o&&o.world!==world)mid.append(el('p','ec-note',`An observation is in progress in ${info.worlds.find(x=>x.id===o.world)?.name}.`),btn('ec-go','Continue',()=>{world=o.world;panel=null;act({action:'detail',world});}));
-  else if(o){mid.append(btn('ec-go','Continue',()=>{panel=null;render();}));const t=el('div','ec-timer');t.append(el('b','ec-left',''),btn('ec-x','✕',async()=>{if(confirm("Finish observation now?"))await act({action:'stop'});}));mid.append(t);}
+  else if(o){mid.append(btn('ec-go','Continue',()=>{panel=null;render();}));const t=el('div','ec-timer');t.append(el('b','ec-left',''),btn('ec-x','✕',async()=>{if(await GirlUI.confirm("Kết thúc quan sát ngay bây giờ?",{title:'Xác Nhận Kết Thúc',ok:'Kết Thúc'}))await act({action:'stop'});}));mid.append(t);}
   else mid.append(btn('ec-go','Observe',()=>{pickFor='obs';pick=(o?.partners)||[];panel='pick';render();}));
   row.append(ach,mid,stg);card.append(row);main.append(card);
   const tec=btn('ec-tec ec-tec-main','',()=>{panel='tec';render();});tec.append(img(A('time_cloister_btn_tec')),el('b','','Planetarium'));main.append(tec);st.append(main);}
@@ -67,7 +67,7 @@ const Echoes=(()=>{
   const rec=btn('ec-record','',()=>{panel='record';render();});rec.append(img(A('time_cloister_btn_record')),el('b','',`Record (${o.cards.length})`));decks.append(rec);b.append(decks);
   const foot=el('div','ec-foot');const tec=btn('ec-tec','',async()=>{panel='tec';render();});tec.append(img(A('time_cloister_btn_tec')),el('b','','Planetarium'));
   const team=el('div','ec-team');team.append(attrs(o.attrs,o.green));const faces=el('div','ec-faces');for(const pid of o.partners){const h=(state.roster||[]).find(x=>x.partner_id===pid);if(h&&typeof portrait==='function')faces.append(portrait(h.table_id,56));}team.append(faces);foot.append(tec,team);b.append(foot);
-  const end=el('div','ec-endrow');if(o.ended)end.append(btn('ec-go','Claim',claim));else end.append(btn('ec-small','End Observation',async()=>{if(confirm("Finish observation now? You can claim rewards already earned."))await act({action:'stop'});}));b.append(end);st.append(b);}
+  const end=el('div','ec-endrow');if(o.ended)end.append(btn('ec-go','Claim',claim));else end.append(btn('ec-small','End Observation',async()=>{if(await GirlUI.confirm("Kết thúc quan sát ngay? Bạn vẫn có thể nhận các phần thưởng đã kiếm được.",{title:'Xác Nhận Kết Thúc',ok:'Kết Thúc'}))await act({action:'stop'});}));b.append(end);st.append(b);}
  async function claim(){const r=await act({action:'claim'});if(r?.got)CampaignUI.popup(`Observation complete · ${r.cards} cards · ${r.points} points`,r.got);}
  function cardFace(c){const f=el('div','ec-face t'+c.type);const lv=c.level>1?'_level_'+Math.min(3,c.level):'';f.append(img(A('time_cloister_card_bg'+(c.type===1?lv:'')),'ec-fbg'),img(A(c.img),'ec-fimg'),el('b','ec-fname',c.name));f.title=c.name+'\n'+c.desc;f.onclick=e=>{e.stopPropagation();say(c.name,c.desc);};return f;}
  function overlay(st,title,cls){const ov=el('div','ec-overlay');ov.onclick=e=>{if(e.target===ov){panel=null;render();}};const w=el('div','ec-win '+(cls||''));w.append(el('h2','',title),btn('ec-close','✕',()=>{panel=null;render();}));ov.append(w);st.append(ov);return w;}

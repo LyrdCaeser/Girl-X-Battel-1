@@ -262,7 +262,7 @@ body:has(#girls-view:not([hidden])){background:#d4dfeb}#girls-return{margin-righ
 .battlefield{aspect-ratio:9/16!important;background-size:cover!important;isolation:isolate;overflow:hidden}.battlefield .versus{display:none}.chibi-canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}.battlefield .units{z-index:2;pointer-events:none}.battlefield .unit{background:none!important;border:0!important;box-shadow:none!important;padding:0!important;transform:translate(-50%,-50%)!important;width:19%!important}.battlefield .unit.has-chibi>.unit-art,.battlefield .unit.has-chibi>.portrait{visibility:hidden}.battlefield .unit.dead{opacity:.35}.unit-status{position:absolute;top:-14px;left:0;color:#fff;text-shadow:0 1px 2px #244a81;font-size:11px;display:flex;align-items:center}.unit-faction{width:20px;height:20px;position:absolute;left:-12px;top:11px;z-index:3}.battlefield .unit .hp{position:absolute;top:11px;left:0;width:100%;height:11px;border:2px solid #e7eeff;border-radius:2px;background:#284c32;box-shadow:0 1px 3px #13243f}.battlefield .hp i{background:linear-gradient(#4bff68,#0fb824)}.battle-round{position:absolute;top:5%;left:0;width:100%;text-align:center;font-size:clamp(22px,5vw,32px);font-weight:900;color:#ffdd83;text-shadow:1px 2px 1px #795733;z-index:3}.battle-hud{position:absolute;bottom:3%;left:4%;right:4%;display:flex;align-items:center;gap:10px;z-index:4}.battle-progress{height:20px;flex:1;border:3px solid #edf3ff;border-radius:18px;background:#3c466e;box-shadow:0 0 4px #396797;overflow:hidden}.battle-progress i{display:block;width:0;height:100%;background:linear-gradient(#4cddff,#0ca2e9);box-shadow:0 0 8px #9ff;transition:width .2s}.battle-hud button{width:44px;height:44px;background:transparent;border:0;padding:0}.battle-hud button img{width:100%;height:100%;object-fit:contain}.battlefield .unit.active{outline:0!important}.battlefield .unit.has-chibi.attack .unit-art{animation:none}
 .battle-leader{flex:none;border:2px solid white;border-radius:50%;overflow:hidden}.battle-asset-note{display:block;font-size:11px;color:#59697c;padding:6px}.battlefield .unit.has-chibi{height:22%!important}.battlefield .unit .unit-status{top:0}.battlefield .unit .hp{top:24px}.home-right{gap:4px!important}.home-side button small{font-size:11px!important}
 .battlefield .unit .hp{border:0;height:12px;background:transparent url('/assets/original-ui/battle_hp_bar_bg_new.png') center/100% 100% no-repeat;padding:2px;box-shadow:none}.battlefield .hp i{height:8px;border-radius:0;background:url('/assets/original-ui/battle_hp_bar1.png') left center/100% 100% no-repeat}
-.home-left{display:grid!important;grid-template-columns:1fr 1fr;width:36%!important}.home-left button{min-width:0}.home-left button:nth-child(n+3){grid-column:1}.home-left button:nth-child(2) small{white-space:normal;max-width:80px;line-height:1.1}.home-original-icon{filter:drop-shadow(0 2px 1px #30445b55)}
+.home-left{display:grid!important;grid-template-columns:1fr 1fr;width:36%!important}.home-left button{min-width:0}.home-left button:nth-child(2) small{white-space:normal;max-width:80px;line-height:1.1}.home-original-icon{filter:drop-shadow(0 2px 1px #30445b55)}
 
 .developer-mode .home-stage .dev-open{background:#82400c!important;border:1px solid #ffd68a!important;border-radius:6px;padding:4px 8px}.home-stage .dev-open{background:#27455cdd!important;border:1px solid #bbd2e4!important;border-radius:6px;padding:4px 8px}
 
@@ -377,3 +377,43 @@ body:has(#girls-view:not([hidden])){background:#d4dfeb}#girls-return{margin-righ
 #app-frame #tower-view .tn-nav{position:absolute!important;top:auto!important;bottom:0!important}
 .tn-stage .gs-win-body{overflow:visible}.tn-close{right:0;top:0}
 .tn-keep-out{position:absolute;left:28%;top:calc(100 * var(--u));width:calc(171 * var(--u));height:calc(129 * var(--u));object-fit:contain}
+
+.profile-option{position:relative}
+.profile-option.locked{filter:grayscale(.78) brightness(.55);opacity:.7}
+.profile-option.locked img{pointer-events:none}
+.profile-option .profile-lock{position:absolute;right:5px;bottom:5px;width:25px;height:25px;border-radius:50%;display:grid;place-items:center;background:#090b12dd;border:1px solid #ffffff35;font-size:13px}
+
+/* Native currency add affordances, next to the original Gold / Gem counters. */
+#home-view .home-currency .home-currency-add{
+  display:inline-grid;place-items:center;flex:0 0 auto;width:20px;height:20px;
+  padding:0!important;border:1px solid #e8ffff!important;border-radius:6px;
+  background:linear-gradient(#72e1ee,#257cce)!important;color:#fff!important;
+  font-weight:900;font-size:17px;line-height:1;box-shadow:0 2px 0 #1c4b85;
+  text-shadow:0 1px #225c9b;cursor:pointer;pointer-events:auto
+}
+#home-view .home-currency{z-index:6}
+#girl-detail-view #detail-grade-up{margin-left:6px;background:linear-gradient(#ffdf8b,#dc8e30);color:#58310b;border:1px solid #f1c86c}
+#girl-detail-view #detail-grade-up[hidden]{display:none!important}
+
+/* RC7: health stays above the actual displayed Spine bounds, not behind a sprite. */
+.battlefield .unit.hp-head-anchor{
+  height:0!important;transform:translate(-50%,0)!important;
+  pointer-events:none;z-index:4!important;overflow:visible!important
+}
+.battlefield .unit.hp-head-anchor .hp{
+  left:0!important;top:0!important;width:100%!important;
+  margin:0!important;z-index:6!important
+}
+.battlefield .unit.hp-head-anchor .unit-status{
+  top:-22px!important;left:0!important;z-index:6!important
+}
+.battlefield .unit.hp-head-anchor .unit-buffs{
+  position:absolute;top:-40px;left:0;z-index:6
+}
+
+/* Native battle HUD: one HP per living actor, anchored to the Spine actor's
+   top. No persistent ghost HP bars after an enemy is defeated. */
+.battlefield .unit.hp-head-anchor.dead,
+.battlefield .unit.dead .hp,
+.battlefield .unit.dead .unit-status,
+.battlefield .unit.dead .unit-buffs {visibility:hidden!important}

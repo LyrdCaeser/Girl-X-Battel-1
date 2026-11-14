@@ -87,3 +87,74 @@
 .ev-cal-h{margin:10px 0 4px;color:#4c6aa5;border-bottom:1px solid #d7e0f2}.ev-cal-row{display:flex;justify-content:space-between;gap:10px;padding:3px 0;font-size:13px}.ev-cal-row b{color:#d0662c;white-space:nowrap}
 .ev-cal-note{margin:10px 0 0;font-size:11px;color:#7a86a6}
 .ev-cal-btn{top:-38px;right:150px}
+
+/* Vietnamese event artwork captions: keep original graphic backgrounds, replace
+   English-only raster lettering with readable native game labels. */
+#events-view .sd-title-vi{
+  display:block;position:relative;z-index:2;
+  width:max-content;max-width:88%;margin:8px auto 12px;
+  padding:calc(12 * var(--u)) calc(22 * var(--u));
+  border:calc(3 * var(--u)) solid #fff5c9;border-radius:calc(16 * var(--u));
+  background:linear-gradient(135deg,#fff2a8,#eab45a);
+  color:#714021;text-align:center;font-weight:900;
+  font-size:clamp(17px,calc(30 * var(--u)),26px);
+  line-height:1.2;text-shadow:0 1px #fff8
+}
+#events-view .pe-title-vi{
+  position:absolute;right:calc(18 * var(--u));top:calc(15 * var(--u));
+  width:calc(410 * var(--u));max-width:60%;
+  margin:0;text-align:center;line-height:1.12;
+  font-size:clamp(17px,calc(38 * var(--u)),26px);
+  font-weight:900;color:#fff3b3;
+  text-shadow:0 2px 3px #742e22,0 0 9px #712d4c
+}
+html.gxb-mobile #events-view .ev-window{max-width:100%;min-width:0}
+html.gxb-mobile #events-view .ev-panel{min-width:0;max-width:100%;overflow:hidden}
+html.gxb-mobile #events-view .ev-strip{max-width:100%;overscroll-behavior-x:contain}
+html.gxb-mobile #events-view .ev-title-label{overflow-wrap:anywhere}
+
+/* Vietnamese captions replace old baked-English event title sprites. */
+#events-view .bb-logo-vi,
+#events-view .pi-logo-vi,
+#events-view .fw-logo-vi,
+#events-view .pe-logo-vi{
+  box-sizing:border-box;display:flex;justify-content:center;align-items:center;
+  width:fit-content;max-width:96%;height:auto;min-height:42px;margin:8px auto 12px;
+  padding:9px 16px;border-radius:14px;
+  background:linear-gradient(145deg,#fff5d8,#efb66c);
+  border:2px solid #fff9e8;color:#75402c;font:bold clamp(18px,4vw,27px)/1.15 system-ui,sans-serif;
+  text-align:center;text-wrap:balance;text-shadow:0 1px #fff
+}
+#events-view .bb-logo-vi{font-size:clamp(16px,3.5vw,23px);margin:0}
+#events-view .pi-logo-vi{background:linear-gradient(135deg,#19498b,#389de0);color:#fff5c6;text-shadow:0 2px #102a5b}
+#events-view .fw-logo-vi{background:linear-gradient(135deg,#fee2a8,#ff8f62);color:#803518}
+#events-view .pe-logo-vi{background:linear-gradient(135deg,#ffdbe5,#e89dc5);color:#803b67}
+#events-view .pk-logo-vi{
+  display:flex;align-items:center;justify-content:center;margin:0!important;
+  padding:calc(12 * var(--u));box-sizing:border-box;
+  font:bold calc(34 * var(--u))/1.15 system-ui,sans-serif;
+  color:#fff2c7;text-align:center;text-wrap:balance;
+  background:linear-gradient(145deg,#7f319bb8,#b651e0ba);
+  text-shadow:0 2px 6px #3a0844
+}
+#events-view .jp-title-vi{display:flex;align-items:center;justify-content:center;
+  height:calc(54 * var(--u));min-height:25px;
+  font:bold clamp(15px,4vw,25px)/1.15 system-ui,sans-serif;
+  color:#fff3a5;text-align:center;text-shadow:0 2px 3px #522544,0 0 7px #481e5a
+}
+
+/* Zalo checkout is attached beneath original event artwork, not a replacement event. */
+.ev-original-payment{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin:10px 2px;padding:10px;border-radius:9px;background:rgba(249,238,202,.88);color:#68421a}
+.ev-original-payment .ev-native-pay{border:1px solid #8bb3de;border-radius:8px;background:linear-gradient(#a7e0fb,#3b85cf);padding:9px 12px;color:#15315b;font-weight:700;min-height:42px}
+
+.ev-native-pack-tabs{display:flex;flex-wrap:wrap;gap:4px;padding:5px;background:rgba(242,248,253,.96);position:relative;z-index:2}
+.ev-native-pack-tabs .ev-tab{flex:1 1 88px;min-height:36px;font-weight:700;font-size:clamp(11px,2.8vw,14px)}
+
+.ev-original-gems{padding:8px 4px;margin:12px 0}
+.ev-original-gems h3{color:#17477b;margin:7px 0}
+.ev-gems-offer{display:flex;align-items:center;gap:9px;padding:9px 7px;margin:7px 0;border-radius:9px;border:1px solid #b3c9e6;background:rgba(255,255,255,.92);min-width:0}
+.ev-gems-offer .ev-item{width:43px;height:43px;object-fit:contain;flex:none}
+.ev-gems-data{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1;overflow-wrap:anywhere;color:#3e5974;font-size:12px}
+.ev-gems-data b{color:#144c7d;font-size:14px}
+.ev-gems-offer .ev-native-pay{flex:none;max-width:36%;white-space:normal}
+@media(max-width:365px){.ev-gems-offer{flex-wrap:wrap}.ev-gems-offer .ev-native-pay{margin-left:auto;max-width:100%}}

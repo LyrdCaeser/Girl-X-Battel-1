@@ -1,17 +1,78 @@
-/* GXB2-UI-FRAME-001 — fixed 480×853 canvas scaled to the window (see frame.js). Loaded last. */
+/* GXB3 platform shell: desktop and mobile are separate layouts, not one scaled canvas. */
 html,body{height:100%;margin:0;overflow:hidden;background:#141b2b}
-#app-frame{position:absolute;width:480px;height:853px;transform:scale(var(--frame-scale,1));transform-origin:0 0;overflow:hidden;background:#dfe8f3;box-shadow:0 0 40px #000a}
-#app-frame #game-root{width:100%!important;max-width:none!important;height:100%;margin:0!important;padding:0!important;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;background:#e7eef7}
-#app-frame #game-root>header,#app-frame #game-root>footer{display:none!important}
-/* Every view fills the canvas width. */
-#app-frame #game-root>section,#app-frame #play-view,#app-frame .layout,#app-frame .panel.campaign,#app-frame .girls-view,#app-frame .girl-detail-view{width:100%!important;max-width:none!important;margin:0!important;border-left:0!important;border-right:0!important;border-radius:0!important;box-sizing:border-box}
-#app-frame #game-root>section:not([hidden]){min-height:100%}
-#app-frame #game-root.campaign-mode,#app-frame #game-root.campaign-mode .campaign{min-height:100%!important}
-#app-frame #game-root.campaign-mode .campaign-scene{height:clamp(350px,48%,590px)}
-/* Bottom bars/filters: same width as the canvas. */
-#app-frame .girls-bottom-nav,#app-frame .capsule-bottom-nav,#app-frame .campaign-bottom-nav,#app-frame .menu-explorer-bottom,#app-frame .girls-filters,#app-frame .shard-filters{width:100%!important;left:0!important;transform:none!important;border-radius:0!important}
-#app-frame .cr-overlay{position:absolute}
-#app-frame .gxb-mute{position:absolute;top:auto;left:6px;right:auto;bottom:76px;width:32px;height:32px;font-size:14px;opacity:.85}
-#app-frame #play-view>.local-nav,#app-frame #play-view>.intro{display:none!important}
-/* Keep the music toggle off the bottom-left corner, where Girls / Slots / Menu have their own controls. */
-#app-frame .gxb-mute{top:38%;bottom:auto;left:3px;width:28px;height:28px;font-size:12px;opacity:.55}#app-frame .gxb-mute:hover{opacity:1}
+#app-frame{position:absolute;inset:0;width:100vw;height:100dvh;overflow:hidden;background:#dfe8f3}
+#app-frame #game-root{height:100%;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin}
+
+/* Desktop keeps the normal desktop page geometry and spacing. */
+.gxb-desktop #app-frame{box-shadow:none}
+.gxb-desktop #app-frame #game-root{width:100%;max-width:none;margin:0;background:#141b2b}
+.gxb-desktop #app-frame #game-root>header{display:flex}
+.gxb-desktop #app-frame #game-root>footer{display:block}
+.gxb-desktop #app-frame .cr-overlay{position:fixed}
+.gxb-desktop #app-frame .gxb-mute{position:fixed}
+
+/* Mobile gets a genuine edge-to-edge portrait UI. */
+.gxb-mobile body{background:#e7eef7;overscroll-behavior:none}
+.gxb-mobile #app-frame{width:100vw;height:100dvh;box-shadow:none;background:#e7eef7}
+.gxb-mobile #app-frame #game-root{
+ width:100%!important;max-width:none!important;height:100%;margin:0!important;padding:0!important;
+ overflow-y:auto;overflow-x:hidden;background:#e7eef7;
+ padding-top:env(safe-area-inset-top)!important;
+ padding-bottom:env(safe-area-inset-bottom)!important;
+ box-sizing:border-box;
+ -webkit-overflow-scrolling:touch;
+}
+.gxb-mobile #app-frame #game-root>header,.gxb-mobile #app-frame #game-root>footer{display:none!important}
+.gxb-mobile #app-frame #game-root>section,
+.gxb-mobile #app-frame #play-view,
+.gxb-mobile #app-frame .layout,
+.gxb-mobile #app-frame .panel.campaign,
+.gxb-mobile #app-frame .girls-view,
+.gxb-mobile #app-frame .girl-detail-view{
+ width:100%!important;max-width:none!important;margin:0!important;
+ border-left:0!important;border-right:0!important;border-radius:0!important;box-sizing:border-box
+}
+.gxb-mobile #app-frame #game-root>section:not([hidden]){min-height:100%}
+.gxb-mobile #app-frame #game-root.campaign-mode,
+.gxb-mobile #app-frame #game-root.campaign-mode .campaign{min-height:100%!important}
+.gxb-mobile #app-frame #game-root.campaign-mode .campaign-scene{height:clamp(320px,48dvh,560px)}
+.gxb-mobile #app-frame .girls-bottom-nav,
+.gxb-mobile #app-frame .capsule-bottom-nav,
+.gxb-mobile #app-frame .campaign-bottom-nav,
+.gxb-mobile #app-frame .menu-explorer-bottom,
+.gxb-mobile #app-frame .girls-filters,
+.gxb-mobile #app-frame .shard-filters{
+ width:100%!important;left:0!important;transform:none!important;border-radius:0!important;
+ padding-bottom:max(0px,env(safe-area-inset-bottom))
+}
+.gxb-mobile #app-frame .cr-overlay{position:absolute}
+.gxb-mobile #app-frame #play-view>.local-nav,.gxb-mobile #app-frame #play-view>.intro{display:none!important}
+.gxb-mobile #app-frame .gxb-mute{
+ position:absolute;top:38%;bottom:auto;left:3px;right:auto;width:30px;height:30px;
+ font-size:12px;opacity:.55;z-index:50
+}
+.gxb-mobile #app-frame button,
+.gxb-mobile #app-frame [role="button"]{touch-action:manipulation}
+.gxb-mobile #app-frame button{min-height:40px}
+.gxb-mobile #app-frame input,
+.gxb-mobile #app-frame textarea,
+.gxb-mobile #app-frame select{font-size:16px}
+.gxb-mobile .home-view{width:100%;max-width:none;margin:0}
+.gxb-mobile .home-stage{width:100%;height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom));aspect-ratio:auto;border:0;border-radius:0;box-shadow:none}
+.gxb-mobile .capsule-view{width:100%;max-width:none;margin:0}
+.gxb-mobile .arena{width:100%;max-width:none;margin:0}
+.gxb-mobile .battlefield{width:100%;max-width:none;border-left:0;border-right:0;border-radius:0}
+.gxb-mobile .panel{border-radius:0}
+.gxb-mobile .formation-board{width:calc(100% - 16px);max-width:none;margin:8px;box-sizing:border-box}
+.gxb-mobile .roster-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.gxb-mobile .hero-card-actions{flex-wrap:wrap}
+.gxb-mobile .hero-card-actions button{min-height:34px}
+@media(max-width:380px){
+ .gxb-mobile .home-currency span{font-size:10px;padding:2px 3px}
+ .gxb-mobile .home-side small{font-size:10px}
+ .gxb-mobile .roster-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(orientation:landscape) and (max-height:520px){
+ .gxb-mobile .home-stage{height:100dvh}
+ .gxb-mobile #app-frame #game-root.campaign-mode .campaign-scene{height:70dvh}
+}

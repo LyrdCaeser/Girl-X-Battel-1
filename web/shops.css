@@ -1,10 +1,13 @@
 /* Shopping Street / Market / stores. --u = one prefab pixel of the 720×1280 design. */
-.shops-view{container-type:inline-size;--u:calc(100cqw / 720);position:relative;background:#2b2a36;overflow:hidden;color:#fff}
+/* Fit the original 720x1280 ShopWindow to BOTH available width and height.
+   Width-only scaling created a 2437px-tall, clipped store on 1440x900 PCs.
+   Keep the original prefab aspect ratio on phones and landscape desktop. */
+.shops-view{container-type:size;--u:min(calc(100cqw / 720),calc(100cqh / 1280));position:relative;display:grid;place-items:center;width:100%;height:100%;min-height:0;background:#2b2a36;overflow:hidden;color:#fff}
 .shops-view[hidden]{display:none}
-.sh-stage{position:relative;height:calc(1280 * var(--u));overflow:hidden}
+.sh-stage{position:relative;width:calc(720 * var(--u));height:calc(1280 * var(--u));overflow:hidden;min-width:0;min-height:0}
 .sh-stage>*{position:absolute}
 .sh-map-bg,.sh-scene{object-fit:cover;pointer-events:none}
-.sh-top{position:absolute;left:0;right:0;top:0;z-index:5;display:flex;align-items:center;gap:calc(10 * var(--u));padding:calc(12 * var(--u)) calc(16 * var(--u));background:linear-gradient(rgba(20,24,40,.75),rgba(20,24,40,0))}
+.sh-top{position:absolute;left:50%;right:auto;transform:translateX(-50%);width:calc(720 * var(--u));box-sizing:border-box;top:0;z-index:5;display:flex;align-items:center;gap:calc(10 * var(--u));padding:calc(12 * var(--u)) calc(16 * var(--u));background:linear-gradient(rgba(20,24,40,.75),rgba(20,24,40,0))}
 .sh-top h1{margin:0 auto 0 0;font-size:calc(34 * var(--u));text-shadow:0 2px 3px #0008}
 .sh-cur{display:flex;align-items:center;gap:calc(4 * var(--u));background:#0007;border-radius:calc(20 * var(--u));padding:calc(3 * var(--u)) calc(12 * var(--u)) calc(3 * var(--u)) calc(4 * var(--u));font-size:calc(22 * var(--u))}
 .sh-cur img{width:calc(34 * var(--u));height:calc(34 * var(--u));object-fit:contain}

@@ -12,7 +12,7 @@ const Wallpaper=(()=>{
  const isSkin=id=>skinCat?!!skinCat[String(id)]:(id>=7000&&id<8000);
  const art=id=>{if(isSkin(id))return '/assets/skins/cards/'+id+'.webp';if(cardIds.has(id))return '/assets/cards/partner_card_'+id+'.png';const base=typeof artId==='function'?artId(id):id;if(cardIds.has(base))return '/assets/cards/partner_card_'+base+'.png';
   const d=typeof detailImage==='function'&&(detailImage(base)||detailImage(id));if(d)return d;const av=avatars?.[String(id)]||avatars?.[String(base)];return av?.src||'';};
- function options(){const seen=new Set(),out=[];for(const h of state.roster){if(seen.has(h.table_id))continue;seen.add(h.table_id);out.push({id:h.table_id,group:h.group,label:h.name,sub:'Original'});}
+ function options(){const seen=new Set(),out=[];for(const h of state.roster){if(seen.has(h.table_id))continue;seen.add(h.table_id);out.push({id:h.table_id,group:h.group,label:h.name,sub:'Mặc định'});}
   // skins you own (in the bag, collected or worn), under the girl who can wear them
   const si=state.skins_info||{};const have=new Set([...Object.keys(si.owned||{}).map(Number),...(si.collected||[]).map(Number),...state.roster.map(h=>Number(h.equips?.[6]||0)).filter(Boolean)]);
   for(const sid of [...have].sort((a,b)=>a-b)){const row=skinCat?.[String(sid)];const girl=row&&state.roster.find(h=>row.partners.includes(h.table_id));if(!girl&&skinCat)continue;out.push({id:sid,group:girl?.group||0,label:girl?.name||'Skin',sub:row?.name||'Skin'});}return out;}

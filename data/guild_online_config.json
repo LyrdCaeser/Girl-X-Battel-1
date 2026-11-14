@@ -1,0 +1,24 @@
+{
+  "guild": {
+    "max_level": 20,
+    "exp_per_level": 5000,
+    "contribution": {
+      "war_win": 300,
+      "war_loss": 120,
+      "war_participation": 50,
+      "guild_exp_per_battle": 200
+    }
+  },
+  "guild_war": {
+    "start_delay_seconds": 60,
+    "default_duration_seconds": 86400,
+    "score": {
+      "win_base": 100,
+      "loss_base": 25,
+      "round_bonus_cap": 50
+    },
+    "winner_reward": {"2": 1200, "1": 500000},
+    "loser_reward": {"2": 500, "1": 200000},
+    "draw_reward": {"2": 700, "1": 300000}
+  }
+}

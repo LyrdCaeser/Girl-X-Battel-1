@@ -1,0 +1,26 @@
+plugins {
+    id "com.android.application"
+}
+
+android {
+    namespace "com.quangho.goddess.battle"
+    compileSdk 35
+
+    defaultConfig {
+        applicationId "com.quangho.goddess.battle"
+        minSdk 26
+        targetSdk 35
+        versionCode 200367
+        versionName "2.6.5"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            shrinkResources false
+            // RC distribution signature. Replace with the permanent private
+            // release keystore before the first irreversible public Android release.
+            signingConfig signingConfigs.debug
+        }
+    }
+}

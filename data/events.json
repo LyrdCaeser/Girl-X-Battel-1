@@ -1,1 +1,5319 @@
-{"activities":[{"id":1,"icon":"activity_checkin","title":"Daily\nLogin","desc":"Login","type1":2,"type2":1,"rank":999},{"id":2,"icon":"monthly_giftbag","title":"Monthly\nPack","desc":"Monthly Pack","type1":1,"type2":2,"rank":3},{"id":3,"icon":"weekly_giftbag","title":"Weekly\nPack","desc":"Weekly Pack","type1":1,"type2":2,"rank":4},{"id":6,"icon":"activity_month_card","title":"Monthly\nPass","desc":"Monthly Card","type1":1,"type2":3,"rank":6},{"id":7,"icon":"activity_mini_month_card","title":"Mini\nPass","desc":"Mini Monthly Card","type1":1,"type2":3,"rank":5},{"id":8,"icon":"activity_level_up_giftbag","title":"Level\nPack","desc":"Level Pack","type1":5,"type2":0,"rank":5},{"id":9,"icon":"five_star_gift","title":"4-Star\nTraining","desc":"4-star Training Pack","type1":5,"type2":0,"rank":5},{"id":10,"icon":"five_star_gift","title":"5-Star\nTraining","desc":"5-star Training Pack","type1":5,"type2":0,"rank":5},{"id":11,"icon":"first_recharge","title":"First\nReload","desc":"First Recharge Pack","type1":1,"type2":1,"rank":18},{"id":12,"icon":"activity_value_giftbag","title":"Value\nPack","desc":"Mega Value Pack","type1":1,"type2":1,"rank":15},{"id":13,"icon":"activity_summon_giftbag","title":"Capsule\nPoints","desc":"Capsule Points Event","type1":2,"type2":1,"rank":50},{"id":14,"icon":"summon_special_hero_gift","title":"Capsule\nPack","desc":"Capsule Coin Pack","type1":2,"type2":1,"rank":10},{"id":15,"icon":"activity_value_giftbag","title":"Value\nPack","desc":"Mega Value Pack","type1":1,"type2":1,"rank":15},{"id":16,"icon":"prophet_summon_giftbag","title":"Enroll\nExam","desc":"Enroll Exam","type1":2,"type2":1,"rank":45},{"id":17,"icon":"miracle_giftbag","title":"Girls\nAssembly","desc":"Building Up Girls","type1":2,"type2":1,"rank":10},{"id":18,"icon":"following_giftbag","title":"Fan\nPrize","desc":"Like Page To Win a Prize","type1":2,"type2":1,"rank":2},{"id":19,"icon":"free_recharge","title":"Reload\nBonus","desc":"Bonus Recharge","type1":1,"type2":1,"rank":8},{"id":20,"icon":"wishing_pool_giftbag","title":"Slot\nPoints","desc":"Slot Points Event","type1":2,"type2":1,"rank":50},{"id":21,"icon":"pub_mission_giftbag","title":"Intern\nEvent","desc":"Internship Event","type1":2,"type2":3,"rank":8},{"id":22,"icon":"battle_arena_giftbag","title":"League\nAce","desc":"Decisive Battle in League","type1":2,"type2":3,"rank":7},{"id":23,"icon":"shelter_giftbag","title":"Exclusive\nTask","desc":"Exclusive Task","type1":2,"type2":1,"rank":10},{"id":24,"icon":"mana_week_card","title":"Weekly\nPass","desc":"Weekly Pass","type1":1,"type2":3,"rank":7},{"id":25,"icon":"shenxue_giftbag","title":"Graduate &\nAwake","desc":"Graduate & Awake","type1":2,"type2":3,"rank":5},{"id":26,"icon":"hero_exchange","title":"Girls\nExchange","desc":"Limited Time Exchange","type1":2,"type2":1,"rank":13},{"id":27,"icon":"qixi_giftbag","title":"Explorer\nPack","desc":"Explorer Pack","type1":2,"type2":1,"rank":14},{"id":28,"icon":"sweet_house","title":"Charming\nCabin","desc":"Charming Cabin","type1":2,"type2":1,"rank":10},{"id":30,"icon":"activity_cv","title":"Voice\nof Love","desc":"Voice of Love","type1":2,"type2":1,"rank":1},{"id":31,"icon":"limit_five_star_giftbag","title":"Limit 5-star\nGirl Pack","desc":"Limit 5-star Girl Pack","type1":1,"type2":1,"rank":17},{"id":32,"icon":"activity_world_boss","title":"Practical\nWork","desc":"Practical Work","type1":2,"type2":3,"rank":10},{"id":33,"icon":"mid_autumn_activity","title":"Atelier\nValeera","desc":"Atelier Valeera","type1":2,"type2":1,"rank":30},{"id":34,"icon":"dark_guard","title":"Servant\nRaising","desc":"Servant Raising","type1":2,"type2":1,"rank":10},{"id":35,"icon":"mana_week_card","title":"Subscription","desc":"Subscription","type1":1,"type2":3,"rank":7},{"id":36,"icon":"spring_festival_card","title":"Kitten\nPassport","desc":"Kitten Passport","type1":7,"type2":1,"rank":111},{"id":37,"icon":"activity_jigsaw","title":"Jigsaw","desc":"Jigsaw","type1":2,"type2":1,"rank":10},{"id":38,"icon":"activity_subscription","title":"Subscription","desc":"Subscription","type1":1,"type2":3,"rank":1},{"id":39,"icon":"monthly_giftbag","title":"Monthly\nPack","desc":"Monthly Pack","type1":1,"type2":2,"rank":3},{"id":40,"icon":"weekly_giftbag","title":"Weekly\nPack","desc":"Weekly Pack","type1":1,"type2":2,"rank":4},{"id":41,"icon":"awake_giftbag","title":"Limit Break\nCeremony","desc":"Limit Break Ceremony","type1":2,"type2":1,"rank":9},{"id":42,"icon":"christmas_giftbag","title":"Summer\nTheatre","desc":"Orientation Gift","type1":2,"type2":1,"rank":10},{"id":43,"icon":"christmas_giftbag2","title":"Snow & Ice\nFestival","desc":"Snow & Ice Festival","type1":2,"type2":1,"rank":10},{"id":44,"icon":"benefit_giftbag","title":"Special\nSkin Pack","desc":"Special Skin Pack","type1":1,"type2":1,"rank":13},{"id":45,"icon":"benefit_giftbag02","title":"Special\nSkin Pack","desc":"Special Skin Pack","type1":1,"type2":1,"rank":13},{"id":46,"icon":"favorability_act","title":"First\nDate","desc":"First Date","type1":2,"type2":1,"rank":10},{"id":47,"icon":"newyear_signin","title":"Moon Festival\nSign-In","desc":"Moon Festival Sign-In","type1":2,"type2":1,"rank":10},{"id":48,"icon":"ten_star_exchange","title":"10-Star\nExchange","desc":"10-Star Exchange","type1":2,"type2":1,"rank":10},{"id":49,"icon":"stage_giftbag","title":"Stage\nPack","desc":"Stage Pack","type1":5,"type2":1,"rank":10},{"id":51,"icon":"ring_giftbag_icon","title":"Wedding\nRing","desc":"Wedding Ring","type1":1,"type2":3,"rank":3},{"id":52,"icon":"activity_vote","title":"Winning\nHeart","desc":"Winning Heart","type1":2,"type2":1,"rank":10},{"id":53,"icon":"test_task_giftbag","title":"Test application","desc":"Test application","type1":1,"type2":1,"rank":1},{"id":54,"icon":"test_feedback","title":"Feedback","desc":"Feedback","type1":1,"type2":1,"rank":1},{"id":55,"icon":"fit_up_dorm","title":"Dorm\nDecoration","desc":"Dorm Decoration","type1":2,"type2":1,"rank":10},{"id":56,"icon":"school_opens_gift","title":"Orientation\nGift","desc":"Orientation Gift","type1":2,"type2":1,"rank":70},{"id":57,"icon":"grow_up_giftbag","title":"Growth\nPack","desc":"Growth Pack","type1":1,"type2":1,"rank":16},{"id":58,"icon":"summon_new_server_giftbag","title":"New Server\nCapsule","desc":"New Server Capsule","type1":2,"type2":1,"rank":10},{"id":59,"icon":"plot_finish_giftbag","title":"Yume\nAcademy","desc":"Yume Academy","type1":2,"type2":1,"rank":10},{"id":60,"icon":"equip_gacha","title":"Gear\nSupply","desc":"Gear Supply","type1":2,"type2":1,"rank":10},{"id":61,"icon":"beach_boss","title":"Beach Game","desc":"Beach Game","type1":2,"type2":1,"rank":10},{"id":62,"icon":"upgrade_giftbag","title":"Special Rewards","desc":"Special Rewards","type1":1,"type2":1,"rank":9},{"id":63,"icon":"make_cake","title":"Yume\nTea Party","desc":"Yume Tea Party","type1":2,"type2":1,"rank":15},{"id":64,"icon":"jackpot","title":"Jackpot\nof Fortune","desc":"Jackpot of Fortune","type1":2,"type2":1,"rank":60},{"id":65,"icon":"jackpot_score","title":"Anniversary\nSlot Pt","desc":"Anniversary Slot Pt","type1":2,"type2":1,"rank":10},{"id":66,"icon":"promotion_giftbag","title":"Jingle Bell\nPack","desc":"Jingle Bell Pack","type1":7,"type2":1,"rank":91},{"id":67,"icon":"activity_concert","title":"Live Show","desc":"Live Show","type1":2,"type2":1,"rank":10},{"id":68,"icon":"activity_music_jigsaw","title":"Music\nFestival","desc":"Music Festival","type1":2,"type2":1,"rank":10},{"id":69,"icon":"level_fund","title":"Motivation\nProgram","desc":"Motivation Program","type1":1,"type2":3,"rank":2},{"id":70,"icon":"library_watcher","title":"Observer\nin Library","desc":"Observer in Library","type1":2,"type2":1,"rank":10},{"id":71,"icon":"book_research","title":"Article\nResearch","desc":"Article Research","type1":2,"type2":1,"rank":10},{"id":72,"icon":"double_ring_giftbag","title":"Oath\nPack","desc":"Oath Pack","type1":1,"type2":1,"rank":20},{"id":73,"icon":"candy_collect","title":"Lantern\nLights","desc":"Candy Hunt","type1":2,"type2":1,"rank":30},{"id":74,"icon":"library_watcher2","title":"The Color\nof Chaos","desc":"The Color of Chaos","type1":2,"type2":1,"rank":10},{"id":75,"icon":"activity_monthly","title":"Monthly\nEvents","desc":"Monthly Events","type1":2,"type2":3,"rank":99},{"id":76,"icon":"exp_emergency","title":"EXP Booster","desc":"EXP Booster","type1":5,"type2":0,"rank":5},{"id":77,"icon":"coin_emergency","title":"Coin Booster","desc":"Coin Booster","type1":5,"type2":0,"rank":5},{"id":78,"icon":"new_stage_giftbag","title":"Stage Pack","desc":"Stage Pack","type1":5,"type2":0,"rank":5},{"id":79,"icon":"tower_emergency","title":"Test Booster","desc":"Test Booster","type1":5,"type2":0,"rank":5},{"id":80,"icon":"activity_level_up_giftbag","title":"Level Pack","desc":"Level Pack","type1":5,"type2":0,"rank":5},{"id":81,"icon":"five_star_gift","title":"4-Star\nTraining","desc":"4-star Training Pack","type1":5,"type2":0,"rank":5},{"id":82,"icon":"five_star_gift","title":"5-Star\nTraining","desc":"5-star Training Pack","type1":5,"type2":0,"rank":5},{"id":83,"icon":"activity_star_altar_warmup","title":"Shoot for\nthe Stars","desc":"Shoot for the Stars","type1":7,"type2":0,"rank":10},{"id":84,"icon":"activity_vote3","title":"Winning\nHeart","desc":"Winning Heart","type1":2,"type2":1,"rank":10},{"id":85,"icon":"newyear_baoxiang","title":"New Year\nGift Box","desc":"New Year Gift Box","type1":2,"type2":1,"rank":52},{"id":86,"icon":"turing_task","title":"Halloween\nAdventures","desc":"Halloween Adventures","type1":7,"type2":1,"rank":35},{"id":87,"icon":"welfare_sale","title":"Bonus\nSale","desc":"Bonus Sale","type1":2,"type2":1,"rank":40},{"id":88,"icon":"activity_scratch_card","title":"Luck\nContest","desc":"Luck Contest","type1":2,"type2":1,"rank":10},{"id":89,"icon":"activity_value_giftbag","title":"Value\nPack","desc":"Mega Value Pack","type1":1,"type2":1,"rank":15},{"id":90,"icon":"benefit_giftbag03","title":"Special\nGift Pack","desc":"Special Gift Pack","type1":1,"type2":1,"rank":12},{"id":91,"icon":"free_recharge","title":"Reload\nBonus","desc":"Reload Bonus","type1":1,"type2":1,"rank":7},{"id":92,"icon":"summon_welfare","title":"Capsule\nBonus Pack","desc":"Capsule Bonus Pack","type1":5,"type2":0,"rank":6},{"id":93,"icon":"activity_making_coffee","title":"Coffee\nLab","desc":"Coffee Lab","type1":2,"type2":1,"rank":10},{"id":95,"icon":"activity_pray","title":"Wishing Fountain","desc":"Wishing Fountain","type1":2,"type2":1,"rank":60},{"id":97,"icon":"activity_partner_jackpot","title":"Elite\nAssembly","desc":"Elite Assembly","type1":2,"type2":1,"rank":5},{"id":99,"icon":"activity_gacha_partner","title":"Capsule\nPack","desc":"Capsule Pack","type1":2,"type2":1,"rank":10},{"id":100,"icon":"activity_factory","title":"Pastry\nStudio","desc":"Pastry Studio","type1":2,"type2":1,"rank":10},{"id":101,"icon":"easter_egg","title":"Colorful\nBalloons","desc":"Colorful Balloons","type1":2,"type2":1,"rank":10},{"id":102,"icon":"activity_sports_meeting","title":"Yume Sports\nMeeting","desc":"Yume Sports Meeting","type1":7,"type2":0,"rank":0},{"id":103,"icon":"warm_up_gift","title":"Admission\nPrep","desc":"Admission Prep","type1":1,"type2":1,"rank":25},{"id":104,"icon":"daily_giftbag","title":"Daily\nPack","desc":"Daily Pack","type1":1,"type2":2,"rank":6},{"id":105,"icon":"daily_giftbag","title":"Daily\nPack","desc":"Daily Pack","type1":1,"type2":2,"rank":6},{"id":107,"icon":"five_star_gift","title":"7-Star\nTraining","desc":"7-Star Training Pack","type1":5,"type2":0,"rank":5},{"id":108,"icon":"activity_battle_pass_preview","title":"The Color\nof Chaos","desc":"The Color of Chaos","type1":2,"type2":1,"rank":10},{"id":109,"icon":"activity_search_book","title":"Secret\nSanctuary","desc":"Secret Sanctuary","type1":2,"type2":3,"rank":6},{"id":110,"icon":"five_star_gift","title":"9-Star\nTraining 2","desc":"9-Star Training Pack 2","type1":5,"type2":0,"rank":5},{"id":111,"icon":"five_star_gift","title":"9-Star\nTraining 1","desc":"9-Star Training Pack 1","type1":5,"type2":0,"rank":5},{"id":112,"icon":"activity_binding","title":"Link Account","desc":"Free 5-Star","type1":3,"type2":0,"rank":2},{"id":113,"icon":"activity_online_awards","title":"Online\nRewards","desc":"Online Rewards","type1":3,"type2":0,"rank":12},{"id":114,"icon":"admission_guide","title":"Guidance","desc":"Guidance","type1":3,"type2":0,"rank":1},{"id":115,"icon":"activity_equip_levelup","title":"Tech\nInnovation","desc":"Tech Innovation","type1":2,"type2":1,"rank":10},{"id":116,"icon":"activity_sevenday","title":"7 Day\nBonus","desc":"7 Day Bonus","type1":3,"type2":0,"rank":4},{"id":117,"icon":"activity_food_festival","title":"Holiday\nBreak","desc":"Holiday Break","type1":2,"type2":1,"rank":20},{"id":118,"icon":"activity_equip_levelup","title":"Double\nLoot Reward","desc":"Double Loot Reward","type1":2,"type2":1,"rank":10},{"id":119,"icon":"activity_double_drop_title","title":"Double\nQuiz Reward","desc":"Double Quiz Reward","type1":2,"type2":1,"rank":8},{"id":120,"icon":"activity_warmup_arena","title":"Entrance\nExam","desc":"Entrance Exam","type1":7,"type2":0,"rank":0},{"id":121,"icon":"activity_date","title":"Lovely\nDate","desc":"Lovely Date","type1":4,"type2":0,"rank":0},{"id":122,"icon":"activity_dragon_boat","title":"Count's\nMystery Gift","desc":"Count's Mystery Gift","type1":1,"type2":1,"rank":85},{"id":123,"icon":"activity_energy_summon","title":"Special\nCapsule Summon","desc":"Special Capsule Summon","type1":1,"type2":1,"rank":10},{"id":125,"icon":"activity_card","title":"Lucky\nPair","desc":"Lucky Pair","type1":2,"type2":1,"rank":10},{"id":126,"icon":"school_explore","title":"Explore\nThe Campus","desc":"Explore The Campus","type1":7,"type2":0,"rank":3},{"id":127,"icon":"birthday_colour","title":"2nd Anniversary\nPuzzle","desc":"2nd Anniversary Puzzle","type1":7,"type2":0,"rank":2},{"id":129,"icon":"activity_recharge_triple","title":"4x Gems\nOnly Once!","desc":"4x Gems Only Once!","type1":1,"type2":1,"rank":10},{"id":130,"icon":"benefit_giftbag03","title":"Special\nGift Pack","desc":"Special Gift Pack","type1":1,"type2":1,"rank":12},{"id":131,"icon":"2birthday_cake","title":"2nd Anniversary\nCake","desc":"2nd Anniversary Cake","type1":7,"type2":1,"rank":10},{"id":132,"icon":"icon_rk_privilege_card","title":"Yume\nPrivilege","desc":"Yume Privilege","type1":1,"type2":3,"rank":4},{"id":133,"icon":"activity_ice_summer","title":"Summer\nHeat","desc":"Summer Heat","type1":2,"type2":1,"rank":20},{"id":134,"icon":"activity_ice_secret","title":"Magic\nCard","desc":"Magic Card","type1":7,"type2":0,"rank":30},{"id":135,"icon":"activity_ice_secret_awards","title":"Magic\nGift Box","desc":"Magic Gift Box","type1":0,"type2":0,"rank":20},{"id":136,"icon":"activity_ice_secret_mission","title":"Backstage\nPrep","desc":"Backstage Prep","type1":0,"type2":0,"rank":10},{"id":137,"icon":"activity_return","title":"Welcome\nBack","desc":"Welcome Back","type1":4,"type2":0,"rank":0},{"id":138,"icon":"hot_partner_box","title":"Special Girls\nPack","desc":"Special Girls Pack","type1":1,"type2":1,"rank":20},{"id":140,"icon":"activity_wish_gacha","title":"Wish\nCapsule","desc":"Wish Capsule","type1":2,"type2":1,"rank":42},{"id":141,"icon":"activity_fairy_tale_icon","title":"Fairytale\nLand","desc":"Fairytale Land","type1":4,"type2":0,"rank":0},{"id":142,"icon":"activity_harp","title":"Sweet\nMelody","desc":"Sweet Melody","type1":2,"type2":1,"rank":51},{"id":143,"icon":"activity_sprouts","title":"Journey\nBeyond","desc":"Journey Beyond","type1":7,"type2":0,"rank":25},{"id":144,"icon":"activity_little_red","title":"Red Riding\nHood's Gift","desc":"Red Riding Hood's Gift","type1":1,"type2":1,"rank":90},{"id":145,"icon":"graver_giftbag","title":"Krystal's\nGift","desc":"Krystal's Gift","type1":1,"type2":1,"rank":90},{"id":146,"icon":"tower_fund_giftbag_icon","title":"Test\nFund","desc":"Test Fund","type1":1,"type2":3,"rank":3},{"id":147,"icon":"benefit_giftbag02","title":"Special\nSkin Pack","desc":"Special Skin Pack","type1":1,"type2":1,"rank":13},{"id":148,"icon":"benefit_giftbag03","title":"Special\nGift Pack","desc":"Special Gift Pack","type1":1,"type2":1,"rank":12},{"id":149,"icon":"activity_ice_secret_boss","title":"Magician's\nAssistant","desc":"Magician's Assistant","type1":0,"type2":0,"rank":15},{"id":150,"icon":"halloween_enter","title":"Halloween\nPumpkin Patch","desc":"Halloween Pumpkin Patch","type1":2,"type2":1,"rank":15},{"id":151,"icon":"graver_giftbag","title":"Crystal Chisel\nSupply","desc":"Crystal Chisel Supply","type1":5,"type2":0,"rank":5},{"id":152,"icon":"lunch_box_push_giftbag_icon","title":"Lunchbox\nSupply","desc":"Lunchbox Supply","type1":5,"type2":0,"rank":5},{"id":153,"icon":"cookies_push_giftbag_icon","title":"Servant Cookies\nSupply","desc":"Servant Cookies Supply","type1":5,"type2":0,"rank":5},{"id":155,"icon":"old_building","title":"Old Campus\nExploration","desc":"Old Campus Exploration","type1":2,"type2":1,"rank":51},{"id":156,"icon":"activity_week_mission_icon","title":"7-Day\nMission","desc":"7-Day Mission","type1":3,"type2":0,"rank":11},{"id":157,"icon":"activity_week_giftbag_icon","title":"Beginner\nPack","desc":"Special Gift Pack","type1":3,"type2":0,"rank":3},{"id":158,"icon":"kakaopay_icon","title":"韓國kakaopay（韓語專用）","desc":"韓國kakaopay（韓語專用）","type1":2,"type2":1,"rank":90},{"id":159,"icon":"month_beginning_giftbag","title":"Monthly\nKick Off","desc":"Monthly Kick Off","type1":1,"type2":1,"rank":20},{"id":160,"icon":"black_friday_giftbag_icon","title":"Black Friday\nCrazy Sale","desc":"Black Friday Crazy Sale","type1":7,"type2":1,"rank":30},{"id":161,"icon":"activity_time_limit_call","title":"An Encounter\nThrough Time","desc":"An Encounter Through Time","type1":7,"type2":0,"rank":30},{"id":162,"icon":"activity_limit_call_boss3","title":"Newcomer's\nTrial","desc":"Newcomer's Trial","type1":0,"type2":0,"rank":20},{"id":163,"icon":"limit_call_award_icon","title":"Reward\nExchange","desc":"Reward Exchange","type1":2,"type2":1,"rank":10},{"id":164,"icon":"new_first_recharge_icon","title":"First\nRecharge","desc":"First Recharge","type1":1,"type2":3,"rank":100},{"id":165,"icon":"limit_five_star_giftbag","title":"Beginner\nSpecial","desc":"Beginner Special","type1":1,"type2":1,"rank":99},{"id":166,"icon":"activity_lafuli_icon","title":"Luvly's\nJourney","desc":"Luvly's Journey","type1":2,"type2":1,"rank":50},{"id":167,"icon":"activity_lafuli_giftbag_icon","title":"Luvly's Elite\nSupply","desc":"Luvly's Elite Supply","type1":7,"type2":1,"rank":95},{"id":168,"icon":"activity_summon_giftbag","title":"Girls X\nCapsule Points","desc":"Girls X Capsule Points","type1":2,"type2":1,"rank":50},{"id":169,"icon":"christmas_sale_icon","title":"Black Friday\nStore","desc":"Black Friday Store","type1":7,"type2":0,"rank":55},{"id":170,"icon":"activity_year_fund_main","title":"Special\nFund","desc":"Special Fund","type1":7,"type2":0,"rank":31},{"id":171,"icon":"activity_doll","title":"Christmas\nDollhouse","desc":"Christmas Dollhouse","type1":2,"type2":1,"rank":15},{"id":172,"icon":"newyear_signin","title":"New Year\nSign In","desc":"New Year Sign In","type1":2,"type2":1,"rank":75},{"id":173,"icon":"activity_school_qa","title":"Yume\nStudy Session","desc":"Yume Study Session","type1":2,"type2":1,"rank":10},{"id":174,"icon":"activity_gropup_giftbag","title":"Turin\nEnhancement","desc":"Turin Enhancement","type1":1,"type2":1,"rank":16},{"id":175,"icon":"artifact_shop_warm_up","title":"Antique\nAid","desc":"Antique Aid","type1":7,"type2":0,"rank":101},{"id":176,"icon":"activity_newbee_fund","title":"Beginner\nFunds","desc":"Beginner Funds","type1":1,"type2":1,"rank":99},{"id":177,"icon":"newbee_10gacha_activity_icon","title":"Beginner's\nCapsule","desc":"Beginner's Capsule","type1":7,"type2":0,"rank":10},{"id":178,"icon":"activity_gamble_plus","title":"Lucky\nBonus","desc":"Lucky Bonus","type1":2,"type2":1,"rank":49},{"id":179,"icon":"newbee_gacha_pool_activity_icon","title":"Limited\nStarter Capsule","desc":"Limited Starter Capsule","type1":7,"type2":0,"rank":9},{"id":180,"icon":"activity_newbee_gacha","title":"Beginner's Limited\nCapsule Pack","desc":"Beginner's Limited Capsule Pack","type1":7,"type2":0,"rank":8},{"id":181,"icon":"activity_newyear_welfare","title":"New Year\nEmporium","desc":"New Year Emporium","type1":7,"type2":1,"rank":29},{"id":182,"icon":"activity_spring_festival","title":"Anniversary\nCarnival","desc":"Anniversary Carnival","type1":2,"type2":1,"rank":50},{"id":183,"icon":"activity_unequal_exchange","title":"Super\nExchange","desc":"Super Exchange","type1":2,"type2":1,"rank":14},{"id":184,"icon":"activity_recharge","title":"Recharge\nAddition","desc":"Recharge Addition","type1":2,"type2":1,"rank":30},{"id":185,"icon":"activity_valentine","title":"Valentine's\nAgain","desc":"Valentine's Again","type1":2,"type2":1,"rank":52},{"id":186,"icon":"activity_new_shimo_mask","title":"Servant\nChallenge","desc":"Servant Challenge","type1":2,"type2":1,"rank":53},{"id":187,"icon":"activity_shimo_giftbag","title":"Servant\nSupply","desc":"Servant Supply","type1":1,"type2":1,"rank":96},{"id":188,"icon":"activity_tree_group","title":"Enroll\nBonus","desc":"Enroll Bonus","type1":2,"type2":1,"rank":49},{"id":189,"icon":"activity_puppet","title":"Puppet\nParade","desc":"Puppet Parade","type1":2,"type2":1,"rank":55},{"id":190,"icon":"activity_egg_gift","title":"Easter\nPack","desc":"Easter Pack","type1":1,"type2":1,"rank":97},{"id":191,"icon":"activity_smash_egg","title":"Bottles\nAdrift","desc":"Bottles Adrift","type1":7,"type2":0,"rank":4},{"id":192,"icon":"easter_egg_giftbag","title":"Bottles Adrift\nPack","desc":"Bottles Adrift Pack","type1":7,"type2":0,"rank":3},{"id":193,"icon":"activity_limited_task","title":"Limited\nMissions","desc":"Limited Missions","type1":2,"type2":0,"rank":2},{"id":195,"icon":"activity_limited_task","title":"Gift\nCode","desc":"Gift Code","type1":7,"type2":0,"rank":5},{"id":196,"icon":"activity_bomb","title":"Firework\nProject","desc":"Firework Project","type1":2,"type2":1,"rank":45},{"id":197,"icon":"activity_graduate_gift","title":"Estel's\nDevelopment","desc":"Estel's Development","type1":2,"type2":1,"rank":40},{"id":198,"icon":"activity_fair_arena_icon","title":"Ancient City\nBattle","desc":"Ancient City Battle","type1":7,"type2":0,"rank":0},{"id":199,"icon":"activity_partner_gallery","title":"Senpai!\nIt's roll call!","desc":"Senpai! It's roll call!","type1":2,"type2":1,"rank":46},{"id":202,"icon":"activity_newbee_lesson","title":"New Student\nProgram","desc":"New Student Program","type1":3,"type2":0,"rank":9},{"id":203,"icon":"newbee_lesson_giftbag","title":"Program\nPack","desc":"Program Pack","type1":3,"type2":0,"rank":8},{"id":204,"icon":"activity_course_learning","title":"Program\nStudy","desc":"Program Study","type1":3,"type2":0,"rank":10},{"id":205,"icon":"activity_lafuli_branch","title":"Coral Branch\nCollection","desc":"Coral Branch Collection","type1":2,"type2":1,"rank":51},{"id":206,"icon":"activity_time_gamble","title":"The Secret\nof Time","desc":"The Secret of Time","type1":7,"type2":0,"rank":10},{"id":207,"icon":"activity_time_mission","title":"Traces\nof Time","desc":"Traces of Time","type1":7,"type2":0,"rank":8},{"id":208,"icon":"activity_time_partner","title":"Girl\nCollection","desc":"Girl Collection","type1":7,"type2":0,"rank":7},{"id":209,"icon":"activity_time_gift","title":"Magical\nSupplies","desc":"Magical Supplies","type1":1,"type2":1,"rank":112},{"id":210,"icon":"activity_giftbag_optional","title":"Customization\nPack","desc":"Customization Pack","type1":1,"type2":1,"rank":100},{"id":211,"icon":"activity_space_explore_supply","title":"Bizarre\nSupply","desc":"Bizarre Supply","type1":7,"type2":0,"rank":11},{"id":212,"icon":"activity_space_explore_mission","title":"Adventure\nPrep","desc":"Adventure Prep","type1":7,"type2":0,"rank":10},{"id":213,"icon":"activity_space_explore_team","title":"Adventure Team\nRecruitment","desc":"Adventure Team Recruitment","type1":7,"type2":0,"rank":20},{"id":214,"icon":"activity_space_explore","title":"Bizarre\nAdventures","desc":"Bizarre Adventures","type1":7,"type2":0,"rank":30},{"id":215,"icon":"activity_optional_supply","title":"Customized\nSupply","desc":"Customized Supply","type1":5,"type2":0,"rank":5},{"id":216,"icon":"activity_newbee_lesson","title":"New Student\nProgram","desc":"New Student Program","type1":3,"type2":0,"rank":9},{"id":217,"icon":"newbee_lesson_giftbag","title":"Program\nPack","desc":"Program Pack","type1":3,"type2":0,"rank":8},{"id":218,"icon":"activity_course_learning","title":"Program\nStudy","desc":"Program Study","type1":3,"type2":0,"rank":10},{"id":221,"icon":"activity_crystal_ball","title":"Close Call?\nCrystal Ball Crisis!!!","desc":"Close Call? Crystal Ball Crisis!!!","type1":2,"type2":1,"rank":10},{"id":224,"icon":"anniversary_giftbag3","title":"6th Anniversary\nSpecial Pack","desc":"6th Anniversary Special Pack 1","type1":7,"type2":0,"rank":100},{"id":225,"icon":"anniversary_giftbag3","title":"6th Anniversary\nSpecial Pack","desc":"6th Anniversary Special Pack 2","type1":7,"type2":0,"rank":100},{"id":226,"icon":"activity_3birthday_dinner","title":"Yume Tasting","desc":"Yume Tasting","type1":7,"type2":0,"rank":65},{"id":227,"icon":"activity_3birthday_gamble","title":"Hidden\nCellar","desc":"Hidden Cellar","type1":7,"type2":0,"rank":64},{"id":229,"icon":"activity_3birthday_vip","title":"Blessings from the Stars","desc":"Blessings from the Stars","type1":2,"type2":1,"rank":60},{"id":230,"icon":"activity_beach_island","title":"To\nThe Beach!","desc":"To The Beach!","type1":7,"type2":1,"rank":40},{"id":231,"icon":"activity_beach_puzzle","title":"Beach\nIllustration","desc":"Beach Illustration","type1":7,"type2":1,"rank":50},{"id":232,"icon":"activity_beach_shop","title":"Skin\nExchange","desc":"Skin Exchange","type1":7,"type2":1,"rank":30},{"id":233,"icon":"activity_beach_giftbag","title":"Summer\nPack","desc":"Summer Pack","type1":7,"type2":1,"rank":20},{"id":234,"icon":"activity_jungle","title":"Jungle\nExploration","desc":"Jungle Exploration","type1":2,"type2":1,"rank":10},{"id":235,"icon":"activity_dress_limit_icon","title":"Outfit\nSale","desc":"Outfit Sale","type1":1,"type2":1,"rank":25},{"id":239,"icon":"activity_equip_level_antique","title":"Antique\nLaboratory","desc":"Antique Laboratory","type1":2,"type2":1,"rank":6},{"id":240,"icon":"activity_encounter_story","title":"Story\nChallenge","desc":"Story Challenge","type1":0,"type2":0,"rank":20},{"id":241,"icon":"activity_optional_supply","title":"Customized\nSupply","desc":"Customized Supply","type1":5,"type2":0,"rank":5},{"id":242,"icon":"activity_dress_gacha_award","title":"Outfit\nShopping Spree","desc":"Outfit Shopping Spree","type1":2,"type2":1,"rank":60},{"id":244,"icon":"activity_equip_exchange","title":"Antique\nLimited Exchange","desc":"Antique Limited Exchange","type1":2,"type2":1,"rank":28},{"id":245,"icon":"activity_fish","title":"Seaside\nFishing","desc":"Seaside Fishing","type1":2,"type2":1,"rank":49},{"id":246,"icon":"activity_world_boss2","title":"Practical\nWork","desc":"Practical Work","type1":2,"type2":3,"rank":10},{"id":247,"icon":"activity_newbee_fund","title":"Beginner\nFunds","desc":"Beginner Funds","type1":1,"type2":1,"rank":98},{"id":248,"icon":"activity_trickortreat","title":"Trick\nor Treat","desc":"Trick or Treat","type1":7,"type2":0,"rank":20},{"id":249,"icon":"activity_trickortreat_task","title":"Potion\nBrewing","desc":"Potion Brewing","type1":7,"type2":0,"rank":12},{"id":250,"icon":"activity_trickortreat_giftbag","title":"Halloween\nSurprise","desc":"Halloween Surprise","type1":7,"type2":1,"rank":170},{"id":251,"icon":"activity_secrettreasure","title":"Treasure\nHunt","desc":"Treasure Hunt","type1":7,"type2":0,"rank":20},{"id":252,"icon":"activity_secrettreasure_giftbag","title":"Raider's\nSupply","desc":"Raider's Supply","type1":7,"type2":1,"rank":50},{"id":253,"icon":"activity_secrettreasure_task","title":"Team\nAssembly","desc":"Team Assembly","type1":7,"type2":0,"rank":11},{"id":254,"icon":"activity_pray_giftbag","title":"Wishing Fountain\nSupply","desc":"Wishing Fountain Supply","type1":1,"type2":1,"rank":25},{"id":255,"icon":"activity_newbeefund","title":"Thanksgiving\nFeast","desc":"Thanksgiving Feast","type1":1,"type2":1,"rank":25},{"id":257,"icon":"activity_christmas_countdown","title":"Advent\nCalendar","desc":"Advent Calendar","type1":2,"type2":1,"rank":80},{"id":258,"icon":"activity_jackpot_draw","title":"Lucky\nDraw","desc":"Lucky Draw","type1":2,"type2":1,"rank":55},{"id":260,"icon":"activity_luckyboxes","title":"Lucky\nDips","desc":"Lucky Dips","type1":2,"type2":1,"rank":51},{"id":261,"icon":"monthly_giftbag","title":"Monthly Pack\nDiscount","desc":"Monthly Pack Discount","type1":1,"type2":2,"rank":3},{"id":262,"icon":"weekly_giftbag","title":"Weekly Pack\nDiscount","desc":"Weekly Pack Discount","type1":1,"type2":2,"rank":4},{"id":263,"icon":"activity_month_card","title":"Monthly Pass\nDiscount","desc":"Monthly Pass Discount","type1":1,"type2":3,"rank":6},{"id":264,"icon":"activity_mini_month_card","title":"Mini Pass\nDiscount","desc":"Mini Pass Discount","type1":1,"type2":3,"rank":5},{"id":265,"icon":"icon_rk_privilege_card","title":"Yume Privilege\nDiscount","desc":"Yume Privilege Discount","type1":1,"type2":3,"rank":4},{"id":266,"icon":"daily_giftbag","title":"Daily Pack\nDiscount","desc":"Daily Pack Discount","type1":1,"type2":2,"rank":6},{"id":267,"icon":"monthly_giftbag","title":"Monthly Pack\nDiscount","desc":"Monthly Pack Discount","type1":1,"type2":2,"rank":3},{"id":268,"icon":"weekly_giftbag","title":"Weekly Pack\nDiscount","desc":"Weekly Pack Discount","type1":1,"type2":2,"rank":4},{"id":269,"icon":"daily_giftbag","title":"Daily Pack\nDiscount","desc":"Daily Pack Discount","type1":1,"type2":2,"rank":6},{"id":270,"icon":"activity_santavisit","title":"A Visit\nfrom Santa","desc":"A Visit from Santa","type1":7,"type2":0,"rank":45},{"id":271,"icon":"activity_christmas_exchange","title":"Christmas\nExchange","desc":"Christmas Exchange","type1":7,"type2":0,"rank":40},{"id":272,"icon":"activity_socksurprise","title":"Above\nthe Fireplace","desc":"Above the Fireplace","type1":7,"type2":0,"rank":50},{"id":273,"icon":"activity_luckyboxes_giftbag","title":"Lucky Dips\nPack","desc":"Lucky Dips Pack","type1":1,"type2":1,"rank":50},{"id":274,"icon":"activity_firework","title":"Firework\nDisplay","desc":"Firework Display","type1":7,"type2":0,"rank":75},{"id":275,"icon":"activity_firework_rank","title":"Firework\nRewards","desc":"Firework Rewards","type1":7,"type2":0,"rank":74},{"id":276,"icon":"benefit_giftbag02","title":"Special\nSkin Pack","desc":"Special Skin Pack","type1":1,"type2":1,"rank":13},{"id":277,"icon":"activity_vampire_task","title":"Honor\nRequests","desc":"Honor Requests","type1":2,"type2":1,"rank":58},{"id":278,"icon":"activity_vampire_gamble","title":"Endless\nJourney","desc":"Endless Journey","type1":2,"type2":1,"rank":59},{"id":279,"icon":"activity_lafuli_castle","title":"Luvly's\nDream Castle","desc":"Luvly's Dream Castle","type1":7,"type2":1,"rank":100},{"id":280,"icon":"activity_promotion_ladder","title":"Promotion\nCeremony","desc":"Promotion Ceremony","type1":2,"type2":1,"rank":40},{"id":281,"icon":"activity_promotion_test","title":"Promotion\nExam","desc":"Promotion Exam","type1":2,"type2":1,"rank":39},{"id":282,"icon":"activity_value_giftbag","title":"Value Pack","desc":"Value Pack","type1":1,"type2":1,"rank":15},{"id":283,"icon":"activity_lasso","title":"Ring\nToss","desc":"Ring Toss","type1":2,"type2":1,"rank":80},{"id":284,"icon":"activity_freebuy","title":"Beginner\nInvestment","desc":"Beginner Investment","type1":3,"type2":0,"rank":20},{"id":286,"icon":"activity_clock","title":"Spin\nthe Wheel!","desc":"Spin the Wheel!","type1":7,"type2":0,"rank":61},{"id":287,"icon":"activity_foolsday","title":"April Fools\nPack","desc":"April Fools Pack","type1":7,"type2":0,"rank":60},{"id":288,"icon":"activity_simulation_gacha","title":"Capsule\nSimulator","desc":"Capsule Simulator","type1":7,"type2":0,"rank":0},{"id":289,"icon":"activity_search_book","title":"Sanctuary\nPass","desc":"Sanctuary Pass","type1":2,"type2":3,"rank":6},{"id":290,"icon":"activity_easter2022","title":"Easter\nEgg Factory","desc":"Easter Egg Factory","type1":7,"type2":0,"rank":100},{"id":291,"icon":"activity_relay_gift_icon_rk","title":"Gift Pack\nRelay","desc":"Gift Pack Relay","type1":1,"type2":1,"rank":19},{"id":292,"icon":"activity_lost_space","title":"Lost\nSpace Zone","desc":"Lost Space Zone","type1":2,"type2":1,"rank":80},{"id":293,"icon":"activity_lost_space_giftbag","title":"Spaceship\nSupplies","desc":"Spaceship Supplies","type1":1,"type2":1,"rank":90},{"id":294,"icon":"activity_spring_giftbag","title":"Fair\nSupplies","desc":"Fair Supplies","type1":1,"type2":1,"rank":111},{"id":295,"icon":"activity_star_altar_mission","title":"Falling\nStars","desc":"Falling Stars","type1":7,"type2":0,"rank":80},{"id":296,"icon":"new_partner_warmup_giftbag","title":"Gift\nof the Stars","desc":"Gift of the Stars","type1":7,"type2":0,"rank":70},{"id":297,"icon":"weekly_star_altar_giftbag","title":"Starlight\nPack","desc":"Starlight Pack","type1":1,"type2":2,"rank":100},{"id":298,"icon":"activity_children_task","title":"Childhood\nMemories","desc":"Childhood Memories","type1":7,"type2":0,"rank":20},{"id":299,"icon":"activity_children_shop","title":"Kid's\nStore","desc":"Kid's Store","type1":7,"type2":0,"rank":30},{"id":300,"icon":"activity_spfarm_rk","title":"Dimensional\nManor","desc":"Dimensional Manor","type1":7,"type2":0,"rank":100},{"id":301,"icon":"activity_space_explore_mission","title":"Dimensional\nChallenge","desc":"Dimensional Challenge","type1":7,"type2":0,"rank":20},{"id":302,"icon":"activity_spfarm_giftbag","title":"Dimensional\nSupply","desc":"Dimensional Supply","type1":7,"type2":0,"rank":30},{"id":303,"icon":"activity_dragonboat2022","title":"Yume\nLantern Fair","desc":"Yume Lantern Fair","type1":7,"type2":0,"rank":30},{"id":304,"icon":"activity_4birthday","title":"Celebration\nParty","desc":"Celebration Party","type1":7,"type2":0,"rank":93},{"id":305,"icon":"activity_4birthday_gamble","title":"Melodic\nNotes","desc":"Melodic Notes","type1":7,"type2":0,"rank":92},{"id":306,"icon":"activity_4birthday_task","title":"Cake\nDecoration","desc":"Cake Decoration","type1":7,"type2":0,"rank":91},{"id":307,"icon":"activity_4anniversary_sign","title":"6th Anniversary\nSign In","desc":"6th Anniversary Sign In","type1":7,"type2":0,"rank":200},{"id":308,"icon":"activity_chime","title":"Wish Upon\na Chime","desc":"Wish Upon a Chime","type1":2,"type2":1,"rank":60},{"id":309,"icon":"activity_sand_gamble","title":"Beach\nTreasure Hunt","desc":"Beach Treasure Hunt","type1":7,"type2":0,"rank":80},{"id":310,"icon":"activity_sand_mission","title":"Midsummer\nTask","desc":"Midsummer Task","type1":7,"type2":0,"rank":70},{"id":311,"icon":"activity_sand_gift","title":"Beach\nSupply","desc":"Beach Supply","type1":7,"type2":0,"rank":60},{"id":312,"icon":"activity_sand_shop","title":"Ocean Coin\nExchange","desc":"Ocean Coin Exchange","type1":7,"type2":0,"rank":50},{"id":313,"icon":"activity_cupid_gift","title":"Cupid's\nGift","desc":"Cupid's Gift","type1":2,"type2":1,"rank":50},{"id":314,"icon":"activity_warmup_arena","title":"Entrance\nExam","desc":"Entrance Exam","type1":7,"type2":0,"rank":0},{"id":315,"icon":"activity_free_revert","title":"Reverse\nFor Free","desc":"Reverse For Free","type1":2,"type2":1,"rank":30},{"id":316,"icon":"activity_goldfish","title":"Summer\nDeals","desc":"Summer Deals","type1":7,"type2":0,"rank":62},{"id":317,"icon":"activity_goldfish_awards","title":"Goldfish\nScooper","desc":"Goldfish Scooper","type1":7,"type2":0,"rank":61},{"id":318,"icon":"activity_goldfish_giftbag","title":"Summer\nSale","desc":"Summer Sale","type1":7,"type2":0,"rank":60},{"id":319,"icon":"galaxy_trip_battlepass","title":"Voyager\nPassport","desc":"Voyager Passport","type1":1,"type2":3,"rank":4},{"id":320,"icon":"activity_legendary_skin","title":"Master\nDesigner","desc":"Master Designer","type1":2,"type2":1,"rank":60},{"id":321,"icon":"activity_legendary_skin_giftbag","title":"Master Designer\nPack","desc":"Master Designer Pack","type1":1,"type2":1,"rank":100},{"id":322,"icon":"galaxy_trip_battlepass","title":"Voyager\nPassport","desc":"Voyager Passport","type1":1,"type2":3,"rank":4},{"id":323,"icon":"activity_food_consume","title":"Treasure\nHut","desc":"Treasure Hut","type1":2,"type2":1,"rank":55},{"id":325,"icon":"activity_repair_console","title":"Game Console\nFixer","desc":"Game Console Fixer","type1":7,"type2":0,"rank":3},{"id":326,"icon":"activity_repair_console_mission","title":"Bonnie's\nTo-Do List","desc":"Bonnie's To-Do List","type1":7,"type2":0,"rank":2},{"id":327,"icon":"activity_repair_console_giftbag","title":"Battery\nSupply Pack","desc":"Battery Supply Pack","type1":7,"type2":0,"rank":1},{"id":328,"icon":"activity_guild_new_war","title":"Guild\nChampionship","desc":"Guild Championship","type1":7,"type2":0,"rank":201},{"id":329,"icon":"activity_pirat","title":"Deep Sea\nTreasures","desc":"Deep Sea Treasures","type1":2,"type2":1,"rank":203},{"id":330,"icon":"activity_pirat_giftbag","title":"Palace\nVaults","desc":"Palace Vaults","type1":2,"type2":1,"rank":202},{"id":331,"icon":"activity_2love","title":"Matching\nPairs","desc":"Matching Pairs","type1":7,"type2":0,"rank":3},{"id":332,"icon":"activity_halloween2022_gamble","title":"Pumpkin\nArtisan","desc":"Pumpkin Artisan","type1":7,"type2":1,"rank":203},{"id":333,"icon":"activity_halloween2022_shop","title":"Lantern\nSecrets","desc":"Lantern Secrets","type1":7,"type2":1,"rank":202},{"id":334,"icon":"activity_halloween2022_giftbag","title":"Halloween\nDelights","desc":"Halloween Delights","type1":7,"type2":1,"rank":150},{"id":335,"icon":"activity_relay_gift_icon_rk","title":"Upgrade Booster\nPack","desc":"Upgrade Booster Pack","type1":1,"type2":1,"rank":22},{"id":336,"icon":"activity_5week","title":"Girl Upgrade\nBooster","desc":"Girl Upgrade Booster","type1":7,"type2":0,"rank":3},{"id":337,"icon":"activity_soul_land_battlepass","title":"Soul\nPass","desc":"Soul Pass","type1":0,"type2":0,"rank":0},{"id":338,"icon":"activity_blind_box","title":"Blind Box\nFrenzy","desc":"Blind Box Frenzy","type1":7,"type2":0,"rank":206},{"id":339,"icon":"activity_blind_box_mission","title":"Recharge\nGift","desc":"Recharge Gift","type1":7,"type2":0,"rank":205},{"id":340,"icon":"activity_blind_box_battlepass","title":"Blind Box\nBonus","desc":"Blind Box Bonus","type1":7,"type2":0,"rank":204},{"id":341,"icon":"activity_promotion_ladder","title":"Promotion\nCeremony","desc":"Promotion Ceremony","type1":2,"type2":1,"rank":40},{"id":342,"icon":"activity_star_altar_login","title":"First\nVoyage","desc":"First Voyage","type1":2,"type2":1,"rank":60},{"id":343,"icon":"activity_star_altar_cost","title":"Starry\nBonus","desc":"Starry Bonus","type1":2,"type2":1,"rank":59},{"id":344,"icon":"activity_pay_day","title":"Bubble\nTreasures","desc":"Bubble Treasures","type1":2,"type2":1,"rank":21},{"id":346,"icon":"activity_star_plan","title":"Catch\nAn Astral","desc":"Catch An Astral","type1":2,"type2":1,"rank":50},{"id":347,"icon":"turing_task02","title":"Redeem\nGifts","desc":"Redeem Gifts","type1":7,"type2":1,"rank":35},{"id":348,"icon":"turing_task03","title":"Xmas Sock\nHunt","desc":"Xmas Sock Hunt","type1":7,"type2":1,"rank":35},{"id":349,"icon":"turing_task04","title":"Committee\nErrands","desc":"Committee Errands","type1":7,"type2":1,"rank":35},{"id":350,"icon":"activity_suiprised_giftbag","title":"Hermes'\nSpecial","desc":"Hermes' Special","type1":1,"type2":1,"rank":110},{"id":351,"icon":"activity_suiprised_giftbag","title":"Hermes'\nSpecial","desc":"Hermes' Special","type1":1,"type2":1,"rank":109}],"login":[{"id":1,"award":"2#150","double":true,"special":false},{"id":2,"award":"930067#30","double":false,"special":true},{"id":3,"award":"2#150","double":true,"special":false},{"id":4,"award":"1051#1","double":false,"special":true},{"id":5,"award":"2#150","double":true,"special":false},{"id":6,"award":"2#200","double":true,"special":false},{"id":7,"award":"930112#10","double":false,"special":true},{"id":8,"award":"2#150","double":true,"special":false},{"id":9,"award":"2051#1","double":false,"special":true},{"id":10,"award":"2#150","double":true,"special":false},{"id":11,"award":"2#150","double":true,"special":false},{"id":12,"award":"930112#10","double":false,"special":true},{"id":13,"award":"2#200","double":true,"special":false},{"id":14,"award":"3051#1","double":false,"special":true},{"id":15,"award":"2#150","double":true,"special":false},{"id":16,"award":"2#150","double":true,"special":false},{"id":17,"award":"930112#10","double":false,"special":true},{"id":18,"award":"2#150","double":true,"special":false},{"id":19,"award":"4051#1","double":false,"special":true},{"id":20,"award":"2#200","double":true,"special":false},{"id":21,"award":"2#150","double":true,"special":false},{"id":22,"award":"930112#10","double":false,"special":true},{"id":23,"award":"2#150","double":true,"special":false},{"id":24,"award":"2#150","double":true,"special":false},{"id":25,"award":"930112#10","double":false,"special":true},{"id":26,"award":"2#200","double":true,"special":false},{"id":27,"award":"2#150","double":true,"special":false},{"id":28,"award":"2#150","double":true,"special":false},{"id":29,"award":"2#200","double":true,"special":false},{"id":30,"award":"36#5","double":false,"special":true},{"id":31,"award":"2#30","double":true,"special":false},{"id":32,"award":"940001#30","double":false,"special":true},{"id":33,"award":"2#30","double":true,"special":false},{"id":34,"award":"930081#10","double":false,"special":true},{"id":35,"award":"2#30","double":true,"special":false},{"id":36,"award":"2#30","double":true,"special":false},{"id":37,"award":"36#1","double":false,"special":true},{"id":38,"award":"2#30","double":true,"special":false},{"id":39,"award":"2#100","double":true,"special":false},{"id":40,"award":"930081#10","double":false,"special":true},{"id":41,"award":"2#30","double":true,"special":false},{"id":42,"award":"940001#30","double":false,"special":true},{"id":43,"award":"2#30","double":true,"special":false},{"id":44,"award":"2#30","double":true,"special":false},{"id":45,"award":"930081#10","double":false,"special":true},{"id":46,"award":"2#30","double":true,"special":false},{"id":47,"award":"2#150","double":true,"special":false},{"id":48,"award":"36#1","double":false,"special":true},{"id":49,"award":"2#30","double":true,"special":false},{"id":50,"award":"2#30","double":true,"special":false},{"id":51,"award":"930081#10","double":false,"special":true},{"id":52,"award":"2#30","double":true,"special":false},{"id":53,"award":"2#30","double":true,"special":false},{"id":54,"award":"940001#30","double":false,"special":true},{"id":55,"award":"2#30","double":true,"special":false},{"id":56,"award":"2#30","double":true,"special":false},{"id":57,"award":"930081#10","double":false,"special":true},{"id":58,"award":"2#30","double":true,"special":false},{"id":59,"award":"2#200","double":true,"special":false},{"id":60,"award":"36#2","double":false,"special":true},{"id":61,"award":"2#30","double":true,"special":false},{"id":62,"award":"940001#30","double":false,"special":true},{"id":63,"award":"2#30","double":true,"special":false},{"id":64,"award":"930095#10","double":false,"special":true},{"id":65,"award":"2#30","double":true,"special":false},{"id":66,"award":"2#30","double":true,"special":false},{"id":67,"award":"36#1","double":false,"special":true},{"id":68,"award":"2#30","double":true,"special":false},{"id":69,"award":"2#100","double":true,"special":false},{"id":70,"award":"930095#10","double":false,"special":true},{"id":71,"award":"2#30","double":true,"special":false},{"id":72,"award":"940001#30","double":false,"special":true},{"id":73,"award":"2#30","double":true,"special":false},{"id":74,"award":"2#30","double":true,"special":false},{"id":75,"award":"930095#10","double":false,"special":true},{"id":76,"award":"2#30","double":true,"special":false},{"id":77,"award":"2#150","double":true,"special":false},{"id":78,"award":"36#1","double":false,"special":true},{"id":79,"award":"2#30","double":true,"special":false},{"id":80,"award":"2#30","double":true,"special":false},{"id":81,"award":"930095#10","double":false,"special":true},{"id":82,"award":"2#30","double":true,"special":false},{"id":83,"award":"2#30","double":true,"special":false},{"id":84,"award":"940001#30","double":false,"special":true},{"id":85,"award":"2#30","double":true,"special":false},{"id":86,"award":"2#30","double":true,"special":false},{"id":87,"award":"930095#10","double":false,"special":true},{"id":88,"award":"2#30","double":true,"special":false},{"id":89,"award":"2#200","double":true,"special":false},{"id":90,"award":"36#2","double":false,"special":true},{"id":91,"award":"2#30","double":true,"special":false},{"id":92,"award":"940001#30","double":false,"special":true},{"id":93,"award":"2#30","double":true,"special":false},{"id":94,"award":"930173#10","double":false,"special":true},{"id":95,"award":"2#30","double":true,"special":false},{"id":96,"award":"2#30","double":true,"special":false},{"id":97,"award":"36#1","double":false,"special":true},{"id":98,"award":"2#30","double":true,"special":false},{"id":99,"award":"2#100","double":true,"special":false},{"id":100,"award":"930173#10","double":false,"special":true},{"id":101,"award":"2#30","double":true,"special":false},{"id":102,"award":"940001#30","double":false,"special":true},{"id":103,"award":"2#30","double":true,"special":false},{"id":104,"award":"2#30","double":true,"special":false},{"id":105,"award":"930173#10","double":false,"special":true},{"id":106,"award":"2#30","double":true,"special":false},{"id":107,"award":"2#150","double":true,"special":false},{"id":108,"award":"36#1","double":false,"special":true},{"id":109,"award":"2#30","double":true,"special":false},{"id":110,"award":"2#30","double":true,"special":false},{"id":111,"award":"930173#10","double":false,"special":true},{"id":112,"award":"2#30","double":true,"special":false},{"id":113,"award":"2#30","double":true,"special":false},{"id":114,"award":"940001#30","double":false,"special":true},{"id":115,"award":"2#30","double":true,"special":false},{"id":116,"award":"2#30","double":true,"special":false},{"id":117,"award":"930173#10","double":false,"special":true},{"id":118,"award":"2#30","double":true,"special":false},{"id":119,"award":"2#200","double":true,"special":false},{"id":120,"award":"36#2","double":false,"special":true},{"id":121,"award":"2#30","double":true,"special":false},{"id":122,"award":"940001#30","double":false,"special":true},{"id":123,"award":"2#30","double":true,"special":false},{"id":124,"award":"930103#10","double":false,"special":true},{"id":125,"award":"2#30","double":true,"special":false},{"id":126,"award":"2#30","double":true,"special":false},{"id":127,"award":"36#1","double":false,"special":true},{"id":128,"award":"2#30","double":true,"special":false},{"id":129,"award":"2#100","double":true,"special":false},{"id":130,"award":"930103#10","double":false,"special":true},{"id":131,"award":"2#30","double":true,"special":false},{"id":132,"award":"940001#30","double":false,"special":true},{"id":133,"award":"2#30","double":true,"special":false},{"id":134,"award":"2#30","double":true,"special":false},{"id":135,"award":"930103#10","double":false,"special":true},{"id":136,"award":"2#30","double":true,"special":false},{"id":137,"award":"2#150","double":true,"special":false},{"id":138,"award":"36#1","double":false,"special":true},{"id":139,"award":"2#30","double":true,"special":false},{"id":140,"award":"2#30","double":true,"special":false},{"id":141,"award":"930103#10","double":false,"special":true},{"id":142,"award":"2#30","double":true,"special":false},{"id":143,"award":"2#30","double":true,"special":false},{"id":144,"award":"940001#30","double":false,"special":true},{"id":145,"award":"2#30","double":true,"special":false},{"id":146,"award":"2#30","double":true,"special":false},{"id":147,"award":"930103#10","double":false,"special":true},{"id":148,"award":"2#30","double":true,"special":false},{"id":149,"award":"2#200","double":true,"special":false},{"id":150,"award":"36#2","double":false,"special":true},{"id":151,"award":"2#30","double":true,"special":false},{"id":152,"award":"940001#30","double":false,"special":true},{"id":153,"award":"2#30","double":true,"special":false},{"id":154,"award":"930109#10","double":false,"special":true},{"id":155,"award":"2#30","double":true,"special":false},{"id":156,"award":"2#30","double":true,"special":false},{"id":157,"award":"36#1","double":false,"special":true},{"id":158,"award":"2#30","double":true,"special":false},{"id":159,"award":"2#100","double":true,"special":false},{"id":160,"award":"930109#10","double":false,"special":true},{"id":161,"award":"2#30","double":true,"special":false},{"id":162,"award":"940001#30","double":false,"special":true},{"id":163,"award":"2#30","double":true,"special":false},{"id":164,"award":"2#30","double":true,"special":false},{"id":165,"award":"930109#10","double":false,"special":true},{"id":166,"award":"2#30","double":true,"special":false},{"id":167,"award":"2#150","double":true,"special":false},{"id":168,"award":"36#1","double":false,"special":true},{"id":169,"award":"2#30","double":true,"special":false},{"id":170,"award":"2#30","double":true,"special":false},{"id":171,"award":"930109#10","double":false,"special":true},{"id":172,"award":"2#30","double":true,"special":false},{"id":173,"award":"2#30","double":true,"special":false},{"id":174,"award":"940001#30","double":false,"special":true},{"id":175,"award":"2#30","double":true,"special":false},{"id":176,"award":"2#30","double":true,"special":false},{"id":177,"award":"930109#10","double":false,"special":true},{"id":178,"award":"2#30","double":true,"special":false},{"id":179,"award":"2#200","double":true,"special":false},{"id":180,"award":"36#2","double":false,"special":true},{"id":181,"award":"2#30","double":true,"special":false},{"id":182,"award":"940001#30","double":false,"special":true},{"id":183,"award":"2#30","double":true,"special":false},{"id":184,"award":"930172#10","double":false,"special":true},{"id":185,"award":"2#30","double":true,"special":false},{"id":186,"award":"2#30","double":true,"special":false},{"id":187,"award":"36#1","double":false,"special":true},{"id":188,"award":"2#30","double":true,"special":false},{"id":189,"award":"2#100","double":true,"special":false},{"id":190,"award":"930172#10","double":false,"special":true},{"id":191,"award":"2#30","double":true,"special":false},{"id":192,"award":"940001#30","double":false,"special":true},{"id":193,"award":"2#30","double":true,"special":false},{"id":194,"award":"2#30","double":true,"special":false},{"id":195,"award":"930172#10","double":false,"special":true},{"id":196,"award":"2#30","double":true,"special":false},{"id":197,"award":"2#150","double":true,"special":false},{"id":198,"award":"36#1","double":false,"special":true},{"id":199,"award":"2#30","double":true,"special":false},{"id":200,"award":"2#30","double":true,"special":false},{"id":201,"award":"930172#10","double":false,"special":true},{"id":202,"award":"2#30","double":true,"special":false},{"id":203,"award":"2#30","double":true,"special":false},{"id":204,"award":"940001#30","double":false,"special":true},{"id":205,"award":"2#30","double":true,"special":false},{"id":206,"award":"2#30","double":true,"special":false},{"id":207,"award":"930172#10","double":false,"special":true},{"id":208,"award":"2#30","double":true,"special":false},{"id":209,"award":"2#200","double":true,"special":false},{"id":210,"award":"36#2","double":false,"special":true},{"id":211,"award":"2#30","double":true,"special":false},{"id":212,"award":"940001#30","double":false,"special":true},{"id":213,"award":"2#30","double":true,"special":false},{"id":214,"award":"930081#10","double":false,"special":true},{"id":215,"award":"2#30","double":true,"special":false},{"id":216,"award":"2#30","double":true,"special":false},{"id":217,"award":"36#1","double":false,"special":true},{"id":218,"award":"2#30","double":true,"special":false},{"id":219,"award":"2#100","double":true,"special":false},{"id":220,"award":"930081#10","double":false,"special":true},{"id":221,"award":"2#30","double":true,"special":false},{"id":222,"award":"940001#30","double":false,"special":true},{"id":223,"award":"2#30","double":true,"special":false},{"id":224,"award":"2#30","double":true,"special":false},{"id":225,"award":"930081#10","double":false,"special":true},{"id":226,"award":"2#30","double":true,"special":false},{"id":227,"award":"2#150","double":true,"special":false},{"id":228,"award":"36#1","double":false,"special":true},{"id":229,"award":"2#30","double":true,"special":false},{"id":230,"award":"2#30","double":true,"special":false},{"id":231,"award":"930081#10","double":false,"special":true},{"id":232,"award":"2#30","double":true,"special":false},{"id":233,"award":"2#30","double":true,"special":false},{"id":234,"award":"940001#30","double":false,"special":true},{"id":235,"award":"2#30","double":true,"special":false},{"id":236,"award":"2#30","double":true,"special":false},{"id":237,"award":"930081#10","double":false,"special":true},{"id":238,"award":"2#30","double":true,"special":false},{"id":239,"award":"2#200","double":true,"special":false},{"id":240,"award":"36#2","double":false,"special":true},{"id":241,"award":"2#30","double":true,"special":false},{"id":242,"award":"940001#30","double":false,"special":true},{"id":243,"award":"2#30","double":true,"special":false},{"id":244,"award":"930095#10","double":false,"special":true},{"id":245,"award":"2#30","double":true,"special":false},{"id":246,"award":"2#30","double":true,"special":false},{"id":247,"award":"36#1","double":false,"special":true},{"id":248,"award":"2#30","double":true,"special":false},{"id":249,"award":"2#100","double":true,"special":false},{"id":250,"award":"930095#10","double":false,"special":true},{"id":251,"award":"2#30","double":true,"special":false},{"id":252,"award":"940001#30","double":false,"special":true},{"id":253,"award":"2#30","double":true,"special":false},{"id":254,"award":"2#30","double":true,"special":false},{"id":255,"award":"930095#10","double":false,"special":true},{"id":256,"award":"2#30","double":true,"special":false},{"id":257,"award":"2#150","double":true,"special":false},{"id":258,"award":"36#1","double":false,"special":true},{"id":259,"award":"2#30","double":true,"special":false},{"id":260,"award":"2#30","double":true,"special":false},{"id":261,"award":"930095#10","double":false,"special":true},{"id":262,"award":"2#30","double":true,"special":false},{"id":263,"award":"2#30","double":true,"special":false},{"id":264,"award":"940001#30","double":false,"special":true},{"id":265,"award":"2#30","double":true,"special":false},{"id":266,"award":"2#30","double":true,"special":false},{"id":267,"award":"930095#10","double":false,"special":true},{"id":268,"award":"2#30","double":true,"special":false},{"id":269,"award":"2#200","double":true,"special":false},{"id":270,"award":"36#2","double":false,"special":true},{"id":271,"award":"2#30","double":true,"special":false},{"id":272,"award":"940001#30","double":false,"special":true},{"id":273,"award":"2#30","double":true,"special":false},{"id":274,"award":"930173#10","double":false,"special":true},{"id":275,"award":"2#30","double":true,"special":false},{"id":276,"award":"2#30","double":true,"special":false},{"id":277,"award":"36#1","double":false,"special":true},{"id":278,"award":"2#30","double":true,"special":false},{"id":279,"award":"2#100","double":true,"special":false},{"id":280,"award":"930173#10","double":false,"special":true},{"id":281,"award":"2#30","double":true,"special":false},{"id":282,"award":"940001#30","double":false,"special":true},{"id":283,"award":"2#30","double":true,"special":false},{"id":284,"award":"2#30","double":true,"special":false},{"id":285,"award":"930173#10","double":false,"special":true},{"id":286,"award":"2#30","double":true,"special":false},{"id":287,"award":"2#150","double":true,"special":false},{"id":288,"award":"36#1","double":false,"special":true},{"id":289,"award":"2#30","double":true,"special":false},{"id":290,"award":"2#30","double":true,"special":false},{"id":291,"award":"930173#10","double":false,"special":true},{"id":292,"award":"2#30","double":true,"special":false},{"id":293,"award":"2#30","double":true,"special":false},{"id":294,"award":"940001#30","double":false,"special":true},{"id":295,"award":"2#30","double":true,"special":false},{"id":296,"award":"2#30","double":true,"special":false},{"id":297,"award":"930173#10","double":false,"special":true},{"id":298,"award":"2#30","double":true,"special":false},{"id":299,"award":"2#200","double":true,"special":false},{"id":300,"award":"36#2","double":false,"special":true},{"id":301,"award":"2#30","double":true,"special":false},{"id":302,"award":"940001#30","double":false,"special":true},{"id":303,"award":"2#30","double":true,"special":false},{"id":304,"award":"930103#10","double":false,"special":true},{"id":305,"award":"2#30","double":true,"special":false},{"id":306,"award":"2#30","double":true,"special":false},{"id":307,"award":"36#1","double":false,"special":true},{"id":308,"award":"2#30","double":true,"special":false},{"id":309,"award":"2#100","double":true,"special":false},{"id":310,"award":"930103#10","double":false,"special":true},{"id":311,"award":"2#30","double":true,"special":false},{"id":312,"award":"940001#30","double":false,"special":true},{"id":313,"award":"2#30","double":true,"special":false},{"id":314,"award":"2#30","double":true,"special":false},{"id":315,"award":"930103#10","double":false,"special":true},{"id":316,"award":"2#30","double":true,"special":false},{"id":317,"award":"2#150","double":true,"special":false},{"id":318,"award":"36#1","double":false,"special":true},{"id":319,"award":"2#30","double":true,"special":false},{"id":320,"award":"2#30","double":true,"special":false},{"id":321,"award":"930103#10","double":false,"special":true},{"id":322,"award":"2#30","double":true,"special":false},{"id":323,"award":"2#30","double":true,"special":false},{"id":324,"award":"940001#30","double":false,"special":true},{"id":325,"award":"2#30","double":true,"special":false},{"id":326,"award":"2#30","double":true,"special":false},{"id":327,"award":"930103#10","double":false,"special":true},{"id":328,"award":"2#30","double":true,"special":false},{"id":329,"award":"2#200","double":true,"special":false},{"id":330,"award":"36#2","double":false,"special":true},{"id":331,"award":"2#30","double":true,"special":false},{"id":332,"award":"940001#30","double":false,"special":true},{"id":333,"award":"2#30","double":true,"special":false},{"id":334,"award":"930109#10","double":false,"special":true},{"id":335,"award":"2#30","double":true,"special":false},{"id":336,"award":"2#30","double":true,"special":false},{"id":337,"award":"36#1","double":false,"special":true},{"id":338,"award":"2#30","double":true,"special":false},{"id":339,"award":"2#100","double":true,"special":false},{"id":340,"award":"930109#10","double":false,"special":true},{"id":341,"award":"2#30","double":true,"special":false},{"id":342,"award":"940001#30","double":false,"special":true},{"id":343,"award":"2#30","double":true,"special":false},{"id":344,"award":"2#30","double":true,"special":false},{"id":345,"award":"930109#10","double":false,"special":true},{"id":346,"award":"2#30","double":true,"special":false},{"id":347,"award":"2#150","double":true,"special":false},{"id":348,"award":"36#1","double":false,"special":true},{"id":349,"award":"2#30","double":true,"special":false},{"id":350,"award":"2#30","double":true,"special":false},{"id":351,"award":"930109#10","double":false,"special":true},{"id":352,"award":"2#30","double":true,"special":false},{"id":353,"award":"2#30","double":true,"special":false},{"id":354,"award":"940001#30","double":false,"special":true},{"id":355,"award":"2#30","double":true,"special":false},{"id":356,"award":"2#30","double":true,"special":false},{"id":357,"award":"930109#10","double":false,"special":true},{"id":358,"award":"2#30","double":true,"special":false},{"id":359,"award":"2#200","double":true,"special":false},{"id":360,"award":"36#2","double":false,"special":true},{"id":361,"award":"2#30","double":true,"special":false},{"id":362,"award":"940001#30","double":false,"special":true},{"id":363,"award":"2#30","double":true,"special":false},{"id":364,"award":"930172#10","double":false,"special":true},{"id":365,"award":"2#30","double":true,"special":false},{"id":366,"award":"2#30","double":true,"special":false},{"id":367,"award":"36#1","double":false,"special":true},{"id":368,"award":"2#30","double":true,"special":false},{"id":369,"award":"2#100","double":true,"special":false},{"id":370,"award":"930172#10","double":false,"special":true},{"id":371,"award":"2#30","double":true,"special":false},{"id":372,"award":"940001#30","double":false,"special":true},{"id":373,"award":"2#30","double":true,"special":false},{"id":374,"award":"2#30","double":true,"special":false},{"id":375,"award":"930172#10","double":false,"special":true},{"id":376,"award":"2#30","double":true,"special":false},{"id":377,"award":"2#150","double":true,"special":false},{"id":378,"award":"36#1","double":false,"special":true},{"id":379,"award":"2#30","double":true,"special":false},{"id":380,"award":"2#30","double":true,"special":false},{"id":381,"award":"930172#10","double":false,"special":true},{"id":382,"award":"2#30","double":true,"special":false},{"id":383,"award":"2#30","double":true,"special":false},{"id":384,"award":"940001#30","double":false,"special":true},{"id":385,"award":"2#30","double":true,"special":false},{"id":386,"award":"2#30","double":true,"special":false},{"id":387,"award":"930172#10","double":false,"special":true},{"id":388,"award":"2#30","double":true,"special":false},{"id":389,"award":"2#200","double":true,"special":false},{"id":390,"award":"36#2","double":false,"special":true}],"login_loop_exclude":30,"sevenday":[{"day":1,"award":"36#20"},{"day":2,"award":"930091#50"},{"day":3,"award":"36#30"},{"day":4,"award":"20#20"},{"day":5,"award":"36#50"},{"day":6,"award":"20#30"},{"day":7,"award":"7002#1"}],"item_icons":{"930067":"/assets/events/item_partner_avatar_43006.png","1051":"/assets/item-icons/equip_6_1.png","930112":"/assets/events/item_partner_avatar_54005.png","2051":"/assets/item-icons/equip_6_2.png","3051":"/assets/item-icons/equip_6_3.png","4051":"/assets/item-icons/equip_6_4.png","36":"/assets/item-icons/icon_36.png","940001":"/assets/item-icons/icon_940001.png","930081":"/assets/events/item_partner_avatar_51004.png","930095":"/assets/events/item_partner_avatar_52008.png","930173":"/assets/events/item_partner_avatar_45003.png","930103":"/assets/events/item_partner_avatar_53006.png","930109":"/assets/events/item_partner_avatar_54002.png","930172":"/assets/events/item_partner_avatar_46003.png","930091":"/assets/events/item_partner_avatar_52004.png","20":"/assets/item-icons/icon_20.png"},"item_names":{"930067":"4-star Lightin","1051":"Guitar","930112":"5-star Lavia","2051":"Showing Suit","3051":"White Mic","4051":"Punk Shoes","36":"Adv. Capsule Coin","940001":"4-star Girls Shard","930081":"5-star Dracula","930095":"5-star Caitlyn","930173":"5-star Annie","930103":"5-star Silvia","930109":"5-star Bud Elf","930172":"5-star Selene","930091":"5-star Saint","20":"Seal"},"text":{"CHECKIN_POPUP_TITLE":"Sign In","CHECKIN_POPUP_TEXT1":"Senpai cheer up\nfor a whole new day!","CHECKIN_POPUP_TEXT2":"Senpai come back\ntomorrow for other\nrewards~","GET2":"Claim","ACTIVITY_NAV_TEXT_2_1":"Exclusives","ACTIVITY_NAV_TEXT_2_3":"Monthly Events"}}
+{
+  "activities": [
+    {
+      "id": 1,
+      "icon": "activity_checkin",
+      "title": "Đăng Nhập\nHằng Ngày",
+      "desc": "Đăng Nhập Hằng Ngày",
+      "type1": 2,
+      "type2": 1,
+      "rank": 999
+    },
+    {
+      "id": 2,
+      "icon": "monthly_giftbag",
+      "title": "Gói Quà\nHằng Tháng",
+      "desc": "Gói Quà Hằng Tháng",
+      "type1": 1,
+      "type2": 2,
+      "rank": 3
+    },
+    {
+      "id": 3,
+      "icon": "weekly_giftbag",
+      "title": "Gói Quà\nHằng Tuần",
+      "desc": "Gói Quà Hằng Tuần",
+      "type1": 1,
+      "type2": 2,
+      "rank": 4
+    },
+    {
+      "id": 6,
+      "icon": "activity_month_card",
+      "title": "Thẻ\nTháng",
+      "desc": "Thẻ Tháng",
+      "type1": 1,
+      "type2": 3,
+      "rank": 6
+    },
+    {
+      "id": 7,
+      "icon": "activity_mini_month_card",
+      "title": "Thẻ\nTháng Nhỏ",
+      "desc": "Thẻ Tháng Nhỏ",
+      "type1": 1,
+      "type2": 3,
+      "rank": 5
+    },
+    {
+      "id": 8,
+      "icon": "activity_level_up_giftbag",
+      "title": "Gói Quà\nCấp Độ",
+      "desc": "Gói Quà Cấp Độ",
+      "type1": 5,
+      "type2": 0,
+      "rank": 5
+    },
+    {
+      "id": 9,
+      "icon": "five_star_gift",
+      "title": "Bồi Dưỡng\n4 Sao",
+      "desc": "Bồi Dưỡng 4 Sao",
+      "type1": 5,
+      "type2": 0,
+      "rank": 5
+    },
+    {
+      "id": 10,
+      "icon": "five_star_gift",
+      "title": "Bồi Dưỡng\n5 Sao",
+      "desc": "Bồi Dưỡng 5 Sao",
+      "type1": 5,
+      "type2": 0,
+      "rank": 5
+    },
+    {
+      "id": 11,
+      "icon": "first_recharge",
+      "title": "Nạp\nLần Đầu",
+      "desc": "Nạp Lần Đầu",
+      "type1": 1,
+      "type2": 1,
+      "rank": 18
+    },
+    {
+      "id": 12,
+      "icon": "activity_value_giftbag",
+      "title": "Gói Quà\nGiá Trị",
+      "desc": "Gói Quà Giá Trị",
+      "type1": 1,
+      "type2": 1,
+      "rank": 15
+    },
+    {
+      "id": 13,
+      "icon": "activity_summon_giftbag",
+      "title": "Điểm\nTriệu Hồi",
+      "desc": "Điểm Triệu Hồi",
+      "type1": 2,
+      "type2": 1,
+      "rank": 50
+    },
+    {
+      "id": 14,
+      "icon": "summon_special_hero_gift",
+      "title": "Gói Quà\nTriệu Hồi",
+      "desc": "Gói Quà Triệu Hồi",
+      "type1": 2,
+      "type2": 1,
+      "rank": 10
+    },
+    {
+      "id": 15,
+      "icon": "activity_value_giftbag",
+      "title": "Gói Quà\nGiá Trị",
+      "desc": "Gói Quà Giá Trị",
+      "type1": 1,
+      "type2": 1,
+      "rank": 15
+    },
+    {
+      "id": 16,
+      "icon": "prophet_summon_giftbag",
+      "title": "Kỳ Thi\nChiêu Mộ",
+      "desc": "Kỳ Thi Chiêu Mộ",
+      "type1": 2,
+      "type2": 1,
+      "rank": 45
+    },
+    {
+      "id": 17,
+      "icon": "miracle_giftbag",
+      "title": "Tập Hợp\nNữ Thần",
+      "desc": "Tập Hợp Nữ Thần",
+      "type1": 2,
+      "type2": 1,
+      "rank": 10
+    },
+    {
+      "id": 18,
+      "icon": "following_giftbag",
+      "title": "Quà Tặng\nNgười Hâm Mộ",
+      "desc": "Quà Tặng Người Hâm Mộ",
+      "type1": 2,
+      "type2": 1,
+      "rank": 2
+    },
+    {
+      "id": 19,
+      "icon": "free_recharge",
+      "title": "Thưởng\nNạp",
+      "desc": "Thưởng Nạp",
+      "type1": 1,
+      "type2": 1,
+      "rank": 8
+    },
+    {
+      "id": 20,
+      "icon": "wishing_pool_giftbag",
+      "title": "Điểm\nMáy Quay",
+      "desc": "Điểm Máy Quay",
+      "type1": 2,
+      "type2": 1,
+      "rank": 50
+    },
+    {
+      "id": 21,
+      "icon": "pub_mission_giftbag",
+      "title": "Sự Kiện\nThực Tập",
+      "desc": "Sự Kiện Thực Tập",
+      "type1": 2,
+      "type2": 3,
+      "rank": 8
+    },
+    {
+      "id": 22,
+      "icon": "battle_arena_giftbag",
+      "title": "Cao Thủ\nĐấu Trường",
+      "desc": "Cao Thủ Đấu Trường",
+      "type1": 2,
+      "type2": 3,
+      "rank": 7
+    },
+    {
+      "id": 23,
+      "icon": "shelter_giftbag",
+      "title": "Nhiệm Vụ\nĐộc Quyền",
+      "desc": "Nhiệm Vụ Độc Quyền",
+      "type1": 2,
+      "type2": 1,
+      "rank": 10
+    },
+    {
+      "id": 24,
+      "icon": "mana_week_card",
+      "title": "Thẻ\nTuần",
+      "desc": "Thẻ Tuần",
+      "type1": 1,
+      "type2": 3,
+      "rank": 7
+    },
+    {
+      "id": 25,
+      "icon": "shenxue_giftbag",
+      "title": "Tốt Nghiệp\n& Thức Tỉnh",
+      "desc": "Tốt Nghiệp & Thức Tỉnh",
+      "type1": 2,
+      "type2": 3,
+      "rank": 5
+    },
+    {
+      "id": 26,
+      "icon": "hero_exchange",
+      "title": "Đổi Nữ\nThần",
+      "desc": "Đổi Nữ Thần",
+      "type1": 2,
+      "type2": 1,
+      "rank": 13
+    },
+    {
+      "id": 27,
+      "icon": "qixi_giftbag",
+      "title": "Gói Quà\nThám Hiểm",
+      "desc": "Gói Quà Thám Hiểm",
+      "type1": 2,
+      "type2": 1,
+      "rank": 14
+    },
+    {
+      "id": 28,
+      "icon": "sweet_house",
+      "title": "Ngôi Nhà\nXinh Xắn",
+      "desc": "Ngôi Nhà Xinh Xắn",
+      "type1": 2,
+      "type2": 1,
+      "rank": 10
+    },
+    {
+      "id": 30,
+      "icon": "activity_cv",
+      "title": "Thanh Âm\nTình Yêu",
+      "desc": "Thanh Âm Tình Yêu",
+      "type1": 2,
+      "type2": 1,
+      "rank": 1
+    },
+    {
+      "id": 31,
+      "icon": "limit_five_star_giftbag",
+      "title": "Gói Nữ Thần 5\nSao Giới Hạn",
+      "desc": "Gói Nữ Thần 5 Sao Giới Hạn",
+      "type1": 1,
+      "type2": 1,
+      "rank": 17
+    },
+    {
+      "id": 32,
+      "icon": "activity_world_boss",
+      "title": "Thực\nChiến",
+      "desc": "Thực Chiến",
+      "type1": 2,
+      "type2": 3,
+      "rank": 10
+    },
+    {
+      "id": 33,
+      "icon": "mid_autumn_activity",
+      "title": "Xưởng Nghệ\nThuật Valeera",
+      "desc": "Xưởng Nghệ Thuật Valeera",
+      "type1": 2,
+      "type2": 1,
+      "rank": 30
+    },
+    {
+      "id": 34,
+      "icon": "dark_guard",
+      "title": "Nuôi Dưỡng\nLinh Thú",
+      "desc": "Nuôi Dưỡng Linh Thú",
+      "type1": 2,
+      "type2": 1,
+      "rank": 10
+    },
+    {
+      "id": 35,
+      "icon": "mana_week_card",
+      "title": "Đăng Ký Đặc Quyền",
+      "desc": "Đăng Ký Đặc Quyền",
+      "type1": 1,
+      "type2": 3,
+      "rank": 7
+    },
+    {
+      "id": 36,
+      "icon": "spring_festival_card",
+      "title": "Hộ Chiếu\nMèo Con",
+      "desc": "Hộ Chiếu Mèo Con",
+      "type1": 7,
+      "type2": 1,
+      "rank": 111
+    },
+    {
+      "id": 37,
+      "icon": "activity_jigsaw",
+      "title": "Ghép Hình",
+      "desc": "Ghép Hình",
+      "type1": 2,
+      "type2": 1,
+      "rank": 10
+    },
+    {
+      "id": 38,
+      "icon": "activity_subscription",
+      "title": "Đăng Ký Đặc Quyền",
+      "desc": "Đăng Ký Đặc Quyền",
+      "type1": 1,
+      "type2": 3,
+      "rank": 1
+    },
+    {
+      "id": 39,
+      "icon": "monthly_giftbag",
+      "title": "Gói Quà\nHằng Tháng",
+      "desc": "Gói Quà Hằng Tháng",
+      "type1": 1,
+      "type2": 2,
+      "rank": 3
+    },
+    {
+      "id": 40,
+      "icon": "weekly_giftbag",
+      "title": "Gói Quà\nHằng Tuần",
+      "desc": "Gói Quà Hằng Tuần",
+      "type1": 1,
+      "type2": 2,
+      "rank": 4
+    },
+    {
+      "id": 41,
+      "icon": "awake_giftbag",
+      "title": "Lễ Đột\nPhá",
+      "desc": "Lễ Đột Phá",
+      "type1": 2,
+      "type2": 1,
+      "rank": 9
+    },
+    {
+      "id": 42,
+      "icon": "christmas_giftbag",
+      "title": "Sân Khấu\nMùa Hè",
+      "desc": "Quà Nhập Học",
+      "type1": 2,
+      "type2": 1,
+      "rank": 10
+    },
+    {
+      "id": 43,
+      "icon": "christmas_giftbag2",
+      "title": "Lễ Hội\nBăng Tuyết",
+      "desc": "Lễ Hội Băng Tuyết",
+      "type1": 2,
+      "type2": 1,
+      "rank": 10
+    },
+    {
+      "id": 44,
+      "icon": "benefit_giftbag",
+      "title": "Gói Trang\nPhục Đặc Biệt",
+      "desc": "Gói Trang Phục Đặc Biệt",
+      "type1": 1,
+      "type2": 1,
+      "rank": 13
+    },
+    {
+      "id": 45,
+      "icon": "benefit_giftbag02",
+      "title": "Gói Trang\nPhục Đặc Biệt",
+      "desc": "Gói Trang Phục Đặc Biệt",
+      "type1": 1,
+      "type2": 1,
+      "rank": 13
+    },
+    {
+      "id": 46,
+      "icon": "favorability_act",
+      "title": "Buổi Hẹn\nĐầu Tiên",
+      "desc": "Buổi Hẹn Đầu Tiên",
+      "type1": 2,
+      "type2": 1,
+      "rank": 10
+    },
+    {
+      "id": 47,
+      "icon": "newyear_signin",
+      "title": "Điểm Danh\nTrung Thu",
+      "desc": "Điểm Danh Trung Thu",
+      "type1": 2,
+      "type2": 1,
+      "rank": 10
+    },
+    {
+      "id": 48,
+      "icon": "ten_star_exchange",
+      "title": "Đổi Nữ\nThần 10 Sao",
+      "desc": "Đổi Nữ Thần 10 Sao",
+      "type1": 2,
+      "type2": 1,
+      "rank": 10
+    },
+    {
+      "id": 49,
+      "icon": "stage_giftbag",
+      "title": "Gói Quà\nVượt Ải",
+      "desc": "Gói Quà Vượt Ải",
+      "type1": 5,
+      "type2": 1,
+      "rank": 10
+    },
+    {
+      "id": 51,
+      "icon": "ring_giftbag_icon",
+      "title": "Nhẫn\nCưới",
+      "desc": "Nhẫn Cưới",
+      "type1": 1,
+      "type2": 3,
+      "rank": 3
+    },
+    {
+      "id": 52,
+      "icon": "activity_vote",
+      "title": "Trái Tim\nChiến Thắng",
+      "desc": "Trái Tim Chiến Thắng",
+      "type1": 2,
+      "type2": 1,
+      "rank": 10
+    },
+    {
+      "id": 53,
+      "icon": "test_task_giftbag",
+      "title": "Đăng Ký Thử Nghiệm",
+      "desc": "Đăng Ký Thử Nghiệm",
+      "type1": 1,
+      "type2": 1,
+      "rank": 1
+    },
+    {
+      "id": 54,
+      "icon": "test_feedback",
+      "title": "Góp Ý",
+      "desc": "Góp Ý",
+      "type1": 1,
+      "type2": 1,
+      "rank": 1
+    },
+    {
+      "id": 55,
+      "icon": "fit_up_dorm",
+      "title": "Trang Trí\nKý Túc Xá",
+      "desc": "Trang Trí Ký Túc Xá",
+      "type1": 2,
+      "type2": 1,
+      "rank": 10
+    },
+    {
+      "id": 56,
+      "icon": "school_opens_gift",
+      "title": "Quà\nNhập Học",
+      "desc": "Quà Nhập Học",
+      "type1": 2,
+      "type2": 1,
+      "rank": 70
+    },
+    {
+      "id": 57,
+      "icon": "grow_up_giftbag",
+      "title": "Gói Quà\nPhát Triển",
+      "desc": "Gói Quà Phát Triển",
+      "type1": 1,
+      "type2": 1,
+      "rank": 16
+    },
+    {
+      "id": 58,
+      "icon": "summon_new_server_giftbag",
+      "title": "Triệu Hồi\nMáy Chủ Mới",
+      "desc": "Triệu Hồi Máy Chủ Mới",
+      "type1": 2,
+      "type2": 1,
+      "rank": 10
+    },
+    {
+      "id": 59,
+      "icon": "plot_finish_giftbag",
+      "title": "Học Viện\nYume",
+      "desc": "Học Viện Yume",
+      "type1": 2,
+      "type2": 1,
+      "rank": 10
+    },
+    {
+      "id": 60,
+      "icon": "equip_gacha",
+      "title": "Tiếp Tế\nTrang Bị",
+      "desc": "Tiếp Tế Trang Bị",
+      "type1": 2,
+      "type2": 1,
+      "rank": 10
+    },
+    {
+      "id": 61,
+      "icon": "beach_boss",
+      "title": "Trò Chơi Bãi Biển",
+      "desc": "Trò Chơi Bãi Biển",
+      "type1": 2,
+      "type2": 1,
+      "rank": 10
+    },
+    {
+      "id": 62,
+      "icon": "upgrade_giftbag",
+      "title": "Phần Thưởng Đặc Biệt",
+      "desc": "Phần Thưởng Đặc Biệt",
+      "type1": 1,
+      "type2": 1,
+      "rank": 9
+    },
+    {
+      "id": 63,
+      "icon": "make_cake",
+      "title": "Tiệc\nTrà Yume",
+      "desc": "Tiệc Trà Yume",
+      "type1": 2,
+      "type2": 1,
+      "rank": 15
+    },
+    {
+      "id": 64,
+      "icon": "jackpot",
+      "title": "Giải Độc\nĐắc May Mắn",
+      "desc": "Giải Độc Đắc May Mắn",
+      "type1": 2,
+      "type2": 1,
+      "rank": 60
+    },
+    {
+      "id": 65,
+      "icon": "jackpot_score",
+      "title": "Điểm Máy\nQuay Kỷ Niệm",
+      "desc": "Điểm Máy Quay Kỷ Niệm",
+      "type1": 2,
+      "type2": 1,
+      "rank": 10
+    },
+    {
+      "id": 66,
+      "icon": "promotion_giftbag",
+      "title": "Gói Quà Chuông\nGiáng Sinh",
+      "desc": "Gói Quà Chuông Giáng Sinh",
+      "type1": 7,
+      "type2": 1,
+      "rank": 91
+    },
+    {
+      "id": 67,
+      "icon": "activity_concert",
+      "title": "Buổi Biểu Diễn Trực Tiếp",
+      "desc": "Buổi Biểu Diễn Trực Tiếp",
+      "type1": 2,
+      "type2": 1,
+      "rank": 10
+    },
+    {
+      "id": 68,
+      "icon": "activity_music_jigsaw",
+      "title": "Lễ Hội\nÂm Nhạc",
+      "desc": "Lễ Hội Âm Nhạc",
+      "type1": 2,
+      "type2": 1,
+      "rank": 10
+    },
+    {
+      "id": 69,
+      "icon": "level_fund",
+      "title": "Chương Trình\nKhích Lệ",
+      "desc": "Chương Trình Khích Lệ",
+      "type1": 1,
+      "type2": 3,
+      "rank": 2
+    },
+    {
+      "id": 70,
+      "icon": "library_watcher",
+      "title": "Người Quan\nSát Thư Viện",
+      "desc": "Người Quan Sát Thư Viện",
+      "type1": 2,
+      "type2": 1,
+      "rank": 10
+    },
+    {
+      "id": 71,
+      "icon": "book_research",
+      "title": "Nghiên Cứu\nTài Liệu",
+      "desc": "Nghiên Cứu Tài Liệu",
+      "type1": 2,
+      "type2": 1,
+      "rank": 10
+    },
+    {
+      "id": 72,
+      "icon": "double_ring_giftbag",
+      "title": "Gói Quà\nLời Thề",
+      "desc": "Gói Quà Lời Thề",
+      "type1": 1,
+      "type2": 1,
+      "rank": 20
+    },
+    {
+      "id": 73,
+      "icon": "candy_collect",
+      "title": "Ánh Đèn\nLồng",
+      "desc": "Ánh Đèn Lồng",
+      "type1": 2,
+      "type2": 1,
+      "rank": 30
+    },
+    {
+      "id": 74,
+      "icon": "library_watcher2",
+      "title": "Sắc Màu\nHỗn Mang",
+      "desc": "Sắc Màu Hỗn Mang",
+      "type1": 2,
+      "type2": 1,
+      "rank": 10
+    },
+    {
+      "id": 75,
+      "icon": "activity_monthly",
+      "title": "Sự Kiện\nTháng",
+      "desc": "Sự Kiện Tháng",
+      "type1": 2,
+      "type2": 3,
+      "rank": 99
+    },
+    {
+      "id": 76,
+      "icon": "exp_emergency",
+      "title": "Tăng EXP",
+      "desc": "Tăng EXP",
+      "type1": 5,
+      "type2": 0,
+      "rank": 5
+    },
+    {
+      "id": 77,
+      "icon": "coin_emergency",
+      "title": "Tăng Vàng",
+      "desc": "Tăng Vàng",
+      "type1": 5,
+      "type2": 0,
+      "rank": 5
+    },
+    {
+      "id": 78,
+      "icon": "new_stage_giftbag",
+      "title": "Gói Quà Vượt Ải",
+      "desc": "Gói Quà Vượt Ải",
+      "type1": 5,
+      "type2": 0,
+      "rank": 5
+    },
+    {
+      "id": 79,
+      "icon": "tower_emergency",
+      "title": "Tăng Thưởng Thử Thách",
+      "desc": "Tăng Thưởng Thử Thách",
+      "type1": 5,
+      "type2": 0,
+      "rank": 5
+    },
+    {
+      "id": 80,
+      "icon": "activity_level_up_giftbag",
+      "title": "Gói Quà Cấp Độ",
+      "desc": "Gói Quà Cấp Độ",
+      "type1": 5,
+      "type2": 0,
+      "rank": 5
+    },
+    {
+      "id": 81,
+      "icon": "five_star_gift",
+      "title": "Bồi Dưỡng\n4 Sao",
+      "desc": "Bồi Dưỡng 4 Sao",
+      "type1": 5,
+      "type2": 0,
+      "rank": 5
+    },
+    {
+      "id": 82,
+      "icon": "five_star_gift",
+      "title": "Bồi Dưỡng\n5 Sao",
+      "desc": "Bồi Dưỡng 5 Sao",
+      "type1": 5,
+      "type2": 0,
+      "rank": 5
+    },
+    {
+      "id": 83,
+      "icon": "activity_star_altar_warmup",
+      "title": "Vươn Tới\nVì Sao",
+      "desc": "Vươn Tới Vì Sao",
+      "type1": 7,
+      "type2": 0,
+      "rank": 10
+    },
+    {
+      "id": 84,
+      "icon": "activity_vote3",
+      "title": "Trái Tim\nChiến Thắng",
+      "desc": "Trái Tim Chiến Thắng",
+      "type1": 2,
+      "type2": 1,
+      "rank": 10
+    },
+    {
+      "id": 85,
+      "icon": "newyear_baoxiang",
+      "title": "Hộp Quà\nNăm Mới",
+      "desc": "Hộp Quà Năm Mới",
+      "type1": 2,
+      "type2": 1,
+      "rank": 52
+    },
+    {
+      "id": 86,
+      "icon": "turing_task",
+      "title": "Phiêu Lưu\nHalloween",
+      "desc": "Phiêu Lưu Halloween",
+      "type1": 7,
+      "type2": 1,
+      "rank": 35
+    },
+    {
+      "id": 87,
+      "icon": "welfare_sale",
+      "title": "Ưu Đãi\nThưởng",
+      "desc": "Ưu Đãi Thưởng",
+      "type1": 2,
+      "type2": 1,
+      "rank": 40
+    },
+    {
+      "id": 88,
+      "icon": "activity_scratch_card",
+      "title": "Cuộc Thi\nMay Mắn",
+      "desc": "Cuộc Thi May Mắn",
+      "type1": 2,
+      "type2": 1,
+      "rank": 10
+    },
+    {
+      "id": 89,
+      "icon": "activity_value_giftbag",
+      "title": "Gói Quà\nGiá Trị",
+      "desc": "Gói Quà Giá Trị",
+      "type1": 1,
+      "type2": 1,
+      "rank": 15
+    },
+    {
+      "id": 90,
+      "icon": "benefit_giftbag03",
+      "title": "Gói Quà\nĐặc Biệt",
+      "desc": "Gói Quà Đặc Biệt",
+      "type1": 1,
+      "type2": 1,
+      "rank": 12
+    },
+    {
+      "id": 91,
+      "icon": "free_recharge",
+      "title": "Thưởng\nNạp",
+      "desc": "Thưởng Nạp",
+      "type1": 1,
+      "type2": 1,
+      "rank": 7
+    },
+    {
+      "id": 92,
+      "icon": "summon_welfare",
+      "title": "Gói Thưởng\nTriệu Hồi",
+      "desc": "Gói Thưởng Triệu Hồi",
+      "type1": 5,
+      "type2": 0,
+      "rank": 6
+    },
+    {
+      "id": 93,
+      "icon": "activity_making_coffee",
+      "title": "Phòng Thí\nNghiệm Cà Phê",
+      "desc": "Phòng Thí Nghiệm Cà Phê",
+      "type1": 2,
+      "type2": 1,
+      "rank": 10
+    },
+    {
+      "id": 95,
+      "icon": "activity_pray",
+      "title": "Suối Ước Nguyện",
+      "desc": "Suối Ước Nguyện",
+      "type1": 2,
+      "type2": 1,
+      "rank": 60
+    },
+    {
+      "id": 97,
+      "icon": "activity_partner_jackpot",
+      "title": "Tập Hợp\nTinh Anh",
+      "desc": "Tập Hợp Tinh Anh",
+      "type1": 2,
+      "type2": 1,
+      "rank": 5
+    },
+    {
+      "id": 99,
+      "icon": "activity_gacha_partner",
+      "title": "Gói Quà\nTriệu Hồi",
+      "desc": "Gói Quà Triệu Hồi",
+      "type1": 2,
+      "type2": 1,
+      "rank": 10
+    },
+    {
+      "id": 100,
+      "icon": "activity_factory",
+      "title": "Tiệm\nBánh Ngọt",
+      "desc": "Tiệm Bánh Ngọt",
+      "type1": 2,
+      "type2": 1,
+      "rank": 10
+    },
+    {
+      "id": 101,
+      "icon": "easter_egg",
+      "title": "Bóng Bay\nRực Rỡ",
+      "desc": "Bóng Bay Rực Rỡ",
+      "type1": 2,
+      "type2": 1,
+      "rank": 10
+    },
+    {
+      "id": 102,
+      "icon": "activity_sports_meeting",
+      "title": "Hội Thao\nYume",
+      "desc": "Hội Thao Yume",
+      "type1": 7,
+      "type2": 0,
+      "rank": 0
+    },
+    {
+      "id": 103,
+      "icon": "warm_up_gift",
+      "title": "Chuẩn Bị\nNhập Học",
+      "desc": "Chuẩn Bị Nhập Học",
+      "type1": 1,
+      "type2": 1,
+      "rank": 25
+    },
+    {
+      "id": 104,
+      "icon": "daily_giftbag",
+      "title": "Gói Quà\nHằng Ngày",
+      "desc": "Gói Quà Hằng Ngày",
+      "type1": 1,
+      "type2": 2,
+      "rank": 6
+    },
+    {
+      "id": 105,
+      "icon": "daily_giftbag",
+      "title": "Gói Quà\nHằng Ngày",
+      "desc": "Gói Quà Hằng Ngày",
+      "type1": 1,
+      "type2": 2,
+      "rank": 6
+    },
+    {
+      "id": 107,
+      "icon": "five_star_gift",
+      "title": "Bồi Dưỡng\n7 Sao",
+      "desc": "Bồi Dưỡng 7 Sao",
+      "type1": 5,
+      "type2": 0,
+      "rank": 5
+    },
+    {
+      "id": 108,
+      "icon": "activity_battle_pass_preview",
+      "title": "Sắc Màu\nHỗn Mang",
+      "desc": "Sắc Màu Hỗn Mang",
+      "type1": 2,
+      "type2": 1,
+      "rank": 10
+    },
+    {
+      "id": 109,
+      "icon": "activity_search_book",
+      "title": "Thánh Địa\nBí Mật",
+      "desc": "Thánh Địa Bí Mật",
+      "type1": 2,
+      "type2": 3,
+      "rank": 6
+    },
+    {
+      "id": 110,
+      "icon": "five_star_gift",
+      "title": "Bồi Dưỡng\n9 Sao II",
+      "desc": "Bồi Dưỡng 9 Sao II",
+      "type1": 5,
+      "type2": 0,
+      "rank": 5
+    },
+    {
+      "id": 111,
+      "icon": "five_star_gift",
+      "title": "Bồi Dưỡng\n9 Sao I",
+      "desc": "Bồi Dưỡng 9 Sao I",
+      "type1": 5,
+      "type2": 0,
+      "rank": 5
+    },
+    {
+      "id": 112,
+      "icon": "activity_binding",
+      "title": "Liên Kết Tài Khoản",
+      "desc": "Liên Kết Tài Khoản",
+      "type1": 3,
+      "type2": 0,
+      "rank": 2
+    },
+    {
+      "id": 113,
+      "icon": "activity_online_awards",
+      "title": "Thưởng\nTrực Tuyến",
+      "desc": "Thưởng Trực Tuyến",
+      "type1": 3,
+      "type2": 0,
+      "rank": 12
+    },
+    {
+      "id": 114,
+      "icon": "admission_guide",
+      "title": "Hướng Dẫn Tân Thủ",
+      "desc": "Hướng Dẫn Tân Thủ",
+      "type1": 3,
+      "type2": 0,
+      "rank": 1
+    },
+    {
+      "id": 115,
+      "icon": "activity_equip_levelup",
+      "title": "Đổi Mới\nCông Nghệ",
+      "desc": "Đổi Mới Công Nghệ",
+      "type1": 2,
+      "type2": 1,
+      "rank": 10
+    },
+    {
+      "id": 116,
+      "icon": "activity_sevenday",
+      "title": "Thưởng\n7 Ngày",
+      "desc": "Thưởng 7 Ngày",
+      "type1": 3,
+      "type2": 0,
+      "rank": 4
+    },
+    {
+      "id": 117,
+      "icon": "activity_food_festival",
+      "title": "Kỳ\nNghỉ",
+      "desc": "Kỳ Nghỉ",
+      "type1": 2,
+      "type2": 1,
+      "rank": 20
+    },
+    {
+      "id": 118,
+      "icon": "activity_equip_levelup",
+      "title": "Nhân Đôi\nChiến Lợi Phẩm",
+      "desc": "Nhân Đôi Chiến Lợi Phẩm",
+      "type1": 2,
+      "type2": 1,
+      "rank": 10
+    },
+    {
+      "id": 119,
+      "icon": "activity_double_drop_title",
+      "title": "Nhân Đôi\nThưởng Đố Vui",
+      "desc": "Nhân Đôi Thưởng Đố Vui",
+      "type1": 2,
+      "type2": 1,
+      "rank": 8
+    },
+    {
+      "id": 120,
+      "icon": "activity_warmup_arena",
+      "title": "Kỳ Thi\nĐầu Vào",
+      "desc": "Kỳ Thi Đầu Vào",
+      "type1": 7,
+      "type2": 0,
+      "rank": 0
+    },
+    {
+      "id": 121,
+      "icon": "activity_date",
+      "title": "Buổi Hẹn\nNgọt Ngào",
+      "desc": "Buổi Hẹn Ngọt Ngào",
+      "type1": 4,
+      "type2": 0,
+      "rank": 0
+    },
+    {
+      "id": 122,
+      "icon": "activity_dragon_boat",
+      "title": "Quà Bí Ẩn\nCủa Bá Tước",
+      "desc": "Quà Bí Ẩn Của Bá Tước",
+      "type1": 1,
+      "type2": 1,
+      "rank": 85
+    },
+    {
+      "id": 123,
+      "icon": "activity_energy_summon",
+      "title": "Triệu Hồi\nĐặc Biệt",
+      "desc": "Triệu Hồi Đặc Biệt",
+      "type1": 1,
+      "type2": 1,
+      "rank": 10
+    },
+    {
+      "id": 125,
+      "icon": "activity_card",
+      "title": "Cặp Đôi\nMay Mắn",
+      "desc": "Cặp Đôi May Mắn",
+      "type1": 2,
+      "type2": 1,
+      "rank": 10
+    },
+    {
+      "id": 126,
+      "icon": "school_explore",
+      "title": "Khám Phá\nHọc Viện",
+      "desc": "Khám Phá Học Viện",
+      "type1": 7,
+      "type2": 0,
+      "rank": 3
+    },
+    {
+      "id": 127,
+      "icon": "birthday_colour",
+      "title": "Ghép Hình Kỷ\nNiệm 2 Năm",
+      "desc": "Ghép Hình Kỷ Niệm 2 Năm",
+      "type1": 7,
+      "type2": 0,
+      "rank": 2
+    },
+    {
+      "id": 129,
+      "icon": "activity_recharge_triple",
+      "title": "Kim Cương\nGấp 4 Lần",
+      "desc": "Kim Cương Gấp 4 Lần",
+      "type1": 1,
+      "type2": 1,
+      "rank": 10
+    },
+    {
+      "id": 130,
+      "icon": "benefit_giftbag03",
+      "title": "Gói Quà\nĐặc Biệt",
+      "desc": "Gói Quà Đặc Biệt",
+      "type1": 1,
+      "type2": 1,
+      "rank": 12
+    },
+    {
+      "id": 131,
+      "icon": "2birthday_cake",
+      "title": "Bánh Kỷ\nNiệm 2 Năm",
+      "desc": "Bánh Kỷ Niệm 2 Năm",
+      "type1": 7,
+      "type2": 1,
+      "rank": 10
+    },
+    {
+      "id": 132,
+      "icon": "icon_rk_privilege_card",
+      "title": "Đặc Quyền\nYume",
+      "desc": "Đặc Quyền Yume",
+      "type1": 1,
+      "type2": 3,
+      "rank": 4
+    },
+    {
+      "id": 133,
+      "icon": "activity_ice_summer",
+      "title": "Nắng Hè\nRực Rỡ",
+      "desc": "Nắng Hè Rực Rỡ",
+      "type1": 2,
+      "type2": 1,
+      "rank": 20
+    },
+    {
+      "id": 134,
+      "icon": "activity_ice_secret",
+      "title": "Thẻ Bài\nMa Thuật",
+      "desc": "Thẻ Bài Ma Thuật",
+      "type1": 7,
+      "type2": 0,
+      "rank": 30
+    },
+    {
+      "id": 135,
+      "icon": "activity_ice_secret_awards",
+      "title": "Hộp Quà\nMa Thuật",
+      "desc": "Hộp Quà Ma Thuật",
+      "type1": 0,
+      "type2": 0,
+      "rank": 20
+    },
+    {
+      "id": 136,
+      "icon": "activity_ice_secret_mission",
+      "title": "Chuẩn Bị\nHậu Trường",
+      "desc": "Chuẩn Bị Hậu Trường",
+      "type1": 0,
+      "type2": 0,
+      "rank": 10
+    },
+    {
+      "id": 137,
+      "icon": "activity_return",
+      "title": "Mừng\nTrở Lại",
+      "desc": "Mừng Trở Lại",
+      "type1": 4,
+      "type2": 0,
+      "rank": 0
+    },
+    {
+      "id": 138,
+      "icon": "hot_partner_box",
+      "title": "Gói Nữ Thần\nĐặc Biệt",
+      "desc": "Gói Nữ Thần Đặc Biệt",
+      "type1": 1,
+      "type2": 1,
+      "rank": 20
+    },
+    {
+      "id": 140,
+      "icon": "activity_wish_gacha",
+      "title": "Triệu Hồi\nƯớc Nguyện",
+      "desc": "Triệu Hồi Ước Nguyện",
+      "type1": 2,
+      "type2": 1,
+      "rank": 42
+    },
+    {
+      "id": 141,
+      "icon": "activity_fairy_tale_icon",
+      "title": "Xứ Sở\nCổ Tích",
+      "desc": "Xứ Sở Cổ Tích",
+      "type1": 4,
+      "type2": 0,
+      "rank": 0
+    },
+    {
+      "id": 142,
+      "icon": "activity_harp",
+      "title": "Giai Điệu\nNgọt Ngào",
+      "desc": "Giai Điệu Ngọt Ngào",
+      "type1": 2,
+      "type2": 1,
+      "rank": 51
+    },
+    {
+      "id": 143,
+      "icon": "activity_sprouts",
+      "title": "Hành Trình\nVượt Giới Hạn",
+      "desc": "Hành Trình Vượt Giới Hạn",
+      "type1": 7,
+      "type2": 0,
+      "rank": 25
+    },
+    {
+      "id": 144,
+      "icon": "activity_little_red",
+      "title": "Quà Cô Bé\nQuàng Khăn Đỏ",
+      "desc": "Quà Cô Bé Quàng Khăn Đỏ",
+      "type1": 1,
+      "type2": 1,
+      "rank": 90
+    },
+    {
+      "id": 145,
+      "icon": "graver_giftbag",
+      "title": "Quà Tặng\nKrystal",
+      "desc": "Quà Tặng Krystal",
+      "type1": 1,
+      "type2": 1,
+      "rank": 90
+    },
+    {
+      "id": 146,
+      "icon": "tower_fund_giftbag_icon",
+      "title": "Quỹ Thử\nThách",
+      "desc": "Quỹ Thử Thách",
+      "type1": 1,
+      "type2": 3,
+      "rank": 3
+    },
+    {
+      "id": 147,
+      "icon": "benefit_giftbag02",
+      "title": "Gói Trang\nPhục Đặc Biệt",
+      "desc": "Gói Trang Phục Đặc Biệt",
+      "type1": 1,
+      "type2": 1,
+      "rank": 13
+    },
+    {
+      "id": 148,
+      "icon": "benefit_giftbag03",
+      "title": "Gói Quà\nĐặc Biệt",
+      "desc": "Gói Quà Đặc Biệt",
+      "type1": 1,
+      "type2": 1,
+      "rank": 12
+    },
+    {
+      "id": 149,
+      "icon": "activity_ice_secret_boss",
+      "title": "Trợ Thủ\nPháp Sư",
+      "desc": "Trợ Thủ Pháp Sư",
+      "type1": 0,
+      "type2": 0,
+      "rank": 15
+    },
+    {
+      "id": 150,
+      "icon": "halloween_enter",
+      "title": "Vườn Bí Ngô\nHalloween",
+      "desc": "Vườn Bí Ngô Halloween",
+      "type1": 2,
+      "type2": 1,
+      "rank": 15
+    },
+    {
+      "id": 151,
+      "icon": "graver_giftbag",
+      "title": "Tiếp Tế\nĐục Pha Lê",
+      "desc": "Tiếp Tế Đục Pha Lê",
+      "type1": 5,
+      "type2": 0,
+      "rank": 5
+    },
+    {
+      "id": 152,
+      "icon": "lunch_box_push_giftbag_icon",
+      "title": "Tiếp Tế\nHộp Cơm",
+      "desc": "Tiếp Tế Hộp Cơm",
+      "type1": 5,
+      "type2": 0,
+      "rank": 5
+    },
+    {
+      "id": 153,
+      "icon": "cookies_push_giftbag_icon",
+      "title": "Tiếp Tế Bánh\nLinh Thú",
+      "desc": "Tiếp Tế Bánh Linh Thú",
+      "type1": 5,
+      "type2": 0,
+      "rank": 5
+    },
+    {
+      "id": 155,
+      "icon": "old_building",
+      "title": "Thám Hiểm\nHọc Viện Cũ",
+      "desc": "Thám Hiểm Học Viện Cũ",
+      "type1": 2,
+      "type2": 1,
+      "rank": 51
+    },
+    {
+      "id": 156,
+      "icon": "activity_week_mission_icon",
+      "title": "Nhiệm Vụ\n7 Ngày",
+      "desc": "Nhiệm Vụ 7 Ngày",
+      "type1": 3,
+      "type2": 0,
+      "rank": 11
+    },
+    {
+      "id": 157,
+      "icon": "activity_week_giftbag_icon",
+      "title": "Gói Quà\nTân Thủ",
+      "desc": "Gói Quà Đặc Biệt",
+      "type1": 3,
+      "type2": 0,
+      "rank": 3
+    },
+    {
+      "id": 158,
+      "icon": "kakaopay_icon",
+      "title": "Thanh Toán KakaoPay Hàn Quốc",
+      "desc": "Thanh Toán KakaoPay Hàn Quốc",
+      "type1": 2,
+      "type2": 1,
+      "rank": 90
+    },
+    {
+      "id": 159,
+      "icon": "month_beginning_giftbag",
+      "title": "Khởi Động\nTháng Mới",
+      "desc": "Khởi Động Tháng Mới",
+      "type1": 1,
+      "type2": 1,
+      "rank": 20
+    },
+    {
+      "id": 160,
+      "icon": "black_friday_giftbag_icon",
+      "title": "Siêu Giảm Giá\nThứ Sáu Đen",
+      "desc": "Siêu Giảm Giá Thứ Sáu Đen",
+      "type1": 7,
+      "type2": 1,
+      "rank": 30
+    },
+    {
+      "id": 161,
+      "icon": "activity_time_limit_call",
+      "title": "Cuộc Gặp Gỡ\nXuyên Thời Gian",
+      "desc": "Cuộc Gặp Gỡ Xuyên Thời Gian",
+      "type1": 7,
+      "type2": 0,
+      "rank": 30
+    },
+    {
+      "id": 162,
+      "icon": "activity_limit_call_boss3",
+      "title": "Thử Thách\nTân Thủ",
+      "desc": "Thử Thách Tân Thủ",
+      "type1": 0,
+      "type2": 0,
+      "rank": 20
+    },
+    {
+      "id": 163,
+      "icon": "limit_call_award_icon",
+      "title": "Đổi Phần\nThưởng",
+      "desc": "Đổi Phần Thưởng",
+      "type1": 2,
+      "type2": 1,
+      "rank": 10
+    },
+    {
+      "id": 164,
+      "icon": "new_first_recharge_icon",
+      "title": "Nạp Đầu\nTiên",
+      "desc": "Nạp Đầu Tiên",
+      "type1": 1,
+      "type2": 3,
+      "rank": 100
+    },
+    {
+      "id": 165,
+      "icon": "limit_five_star_giftbag",
+      "title": "Đặc Biệt\nCho Tân Thủ",
+      "desc": "Đặc Biệt Cho Tân Thủ",
+      "type1": 1,
+      "type2": 1,
+      "rank": 99
+    },
+    {
+      "id": 166,
+      "icon": "activity_lafuli_icon",
+      "title": "Hành Trình\nLuvly",
+      "desc": "Hành Trình Luvly",
+      "type1": 2,
+      "type2": 1,
+      "rank": 50
+    },
+    {
+      "id": 167,
+      "icon": "activity_lafuli_giftbag_icon",
+      "title": "Tiếp Tế Tinh\nAnh Luvly",
+      "desc": "Tiếp Tế Tinh Anh Luvly",
+      "type1": 7,
+      "type2": 1,
+      "rank": 95
+    },
+    {
+      "id": 168,
+      "icon": "activity_summon_giftbag",
+      "title": "Điểm Triệu\nHồi Nữ Thần",
+      "desc": "Điểm Triệu Hồi Nữ Thần",
+      "type1": 2,
+      "type2": 1,
+      "rank": 50
+    },
+    {
+      "id": 169,
+      "icon": "christmas_sale_icon",
+      "title": "Cửa Hàng\nThứ Sáu Đen",
+      "desc": "Cửa Hàng Thứ Sáu Đen",
+      "type1": 7,
+      "type2": 0,
+      "rank": 55
+    },
+    {
+      "id": 170,
+      "icon": "activity_year_fund_main",
+      "title": "Quỹ Đặc\nBiệt",
+      "desc": "Quỹ Đặc Biệt",
+      "type1": 7,
+      "type2": 0,
+      "rank": 31
+    },
+    {
+      "id": 171,
+      "icon": "activity_doll",
+      "title": "Ngôi Nhà Búp\nBê Giáng Sinh",
+      "desc": "Ngôi Nhà Búp Bê Giáng Sinh",
+      "type1": 2,
+      "type2": 1,
+      "rank": 15
+    },
+    {
+      "id": 172,
+      "icon": "newyear_signin",
+      "title": "Điểm Danh\nNăm Mới",
+      "desc": "Điểm Danh Năm Mới",
+      "type1": 2,
+      "type2": 1,
+      "rank": 75
+    },
+    {
+      "id": 173,
+      "icon": "activity_school_qa",
+      "title": "Buổi Học\nCùng Yume",
+      "desc": "Buổi Học Cùng Yume",
+      "type1": 2,
+      "type2": 1,
+      "rank": 10
+    },
+    {
+      "id": 174,
+      "icon": "activity_gropup_giftbag",
+      "title": "Cường\nHóa Turin",
+      "desc": "Cường Hóa Turin",
+      "type1": 1,
+      "type2": 1,
+      "rank": 16
+    },
+    {
+      "id": 175,
+      "icon": "artifact_shop_warm_up",
+      "title": "Hỗ Trợ\nCổ Vật",
+      "desc": "Hỗ Trợ Cổ Vật",
+      "type1": 7,
+      "type2": 0,
+      "rank": 101
+    },
+    {
+      "id": 176,
+      "icon": "activity_newbee_fund",
+      "title": "Quỹ\nTân Thủ",
+      "desc": "Quỹ Tân Thủ",
+      "type1": 1,
+      "type2": 1,
+      "rank": 99
+    },
+    {
+      "id": 177,
+      "icon": "newbee_10gacha_activity_icon",
+      "title": "Triệu Hồi\nTân Thủ",
+      "desc": "Triệu Hồi Tân Thủ",
+      "type1": 7,
+      "type2": 0,
+      "rank": 10
+    },
+    {
+      "id": 178,
+      "icon": "activity_gamble_plus",
+      "title": "Thưởng\nMay Mắn",
+      "desc": "Thưởng May Mắn",
+      "type1": 2,
+      "type2": 1,
+      "rank": 49
+    },
+    {
+      "id": 179,
+      "icon": "newbee_gacha_pool_activity_icon",
+      "title": "Triệu Hồi Khởi\nĐầu Giới Hạn",
+      "desc": "Triệu Hồi Khởi Đầu Giới Hạn",
+      "type1": 7,
+      "type2": 0,
+      "rank": 9
+    },
+    {
+      "id": 180,
+      "icon": "activity_newbee_gacha",
+      "title": "Gói Triệu Hồi\nTân Thủ Giới Hạn",
+      "desc": "Gói Triệu Hồi Tân Thủ Giới Hạn",
+      "type1": 7,
+      "type2": 0,
+      "rank": 8
+    },
+    {
+      "id": 181,
+      "icon": "activity_newyear_welfare",
+      "title": "Thương Hội\nNăm Mới",
+      "desc": "Thương Hội Năm Mới",
+      "type1": 7,
+      "type2": 1,
+      "rank": 29
+    },
+    {
+      "id": 182,
+      "icon": "activity_spring_festival",
+      "title": "Lễ Hội\nKỷ Niệm",
+      "desc": "Lễ Hội Kỷ Niệm",
+      "type1": 2,
+      "type2": 1,
+      "rank": 50
+    },
+    {
+      "id": 183,
+      "icon": "activity_unequal_exchange",
+      "title": "Đổi Thưởng\nSiêu Cấp",
+      "desc": "Đổi Thưởng Siêu Cấp",
+      "type1": 2,
+      "type2": 1,
+      "rank": 14
+    },
+    {
+      "id": 184,
+      "icon": "activity_recharge",
+      "title": "Thưởng\nNạp Thêm",
+      "desc": "Thưởng Nạp Thêm",
+      "type1": 2,
+      "type2": 1,
+      "rank": 30
+    },
+    {
+      "id": 185,
+      "icon": "activity_valentine",
+      "title": "Valentine\nTrở Lại",
+      "desc": "Valentine Trở Lại",
+      "type1": 2,
+      "type2": 1,
+      "rank": 52
+    },
+    {
+      "id": 186,
+      "icon": "activity_new_shimo_mask",
+      "title": "Thử Thách\nLinh Thú",
+      "desc": "Thử Thách Linh Thú",
+      "type1": 2,
+      "type2": 1,
+      "rank": 53
+    },
+    {
+      "id": 187,
+      "icon": "activity_shimo_giftbag",
+      "title": "Tiếp Tế\nLinh Thú",
+      "desc": "Tiếp Tế Linh Thú",
+      "type1": 1,
+      "type2": 1,
+      "rank": 96
+    },
+    {
+      "id": 188,
+      "icon": "activity_tree_group",
+      "title": "Thưởng\nChiêu Mộ",
+      "desc": "Thưởng Chiêu Mộ",
+      "type1": 2,
+      "type2": 1,
+      "rank": 49
+    },
+    {
+      "id": 189,
+      "icon": "activity_puppet",
+      "title": "Diễu Hành\nBúp Bê",
+      "desc": "Diễu Hành Búp Bê",
+      "type1": 2,
+      "type2": 1,
+      "rank": 55
+    },
+    {
+      "id": 190,
+      "icon": "activity_egg_gift",
+      "title": "Gói Quà\nPhục Sinh",
+      "desc": "Gói Quà Phục Sinh",
+      "type1": 1,
+      "type2": 1,
+      "rank": 97
+    },
+    {
+      "id": 191,
+      "icon": "activity_smash_egg",
+      "title": "Chai Thư\nTrôi Dạt",
+      "desc": "Chai Thư Trôi Dạt",
+      "type1": 7,
+      "type2": 0,
+      "rank": 4
+    },
+    {
+      "id": 192,
+      "icon": "easter_egg_giftbag",
+      "title": "Gói Quà\nChai Thư",
+      "desc": "Gói Quà Chai Thư",
+      "type1": 7,
+      "type2": 0,
+      "rank": 3
+    },
+    {
+      "id": 193,
+      "icon": "activity_limited_task",
+      "title": "Nhiệm Vụ\nGiới Hạn",
+      "desc": "Nhiệm Vụ Giới Hạn",
+      "type1": 2,
+      "type2": 0,
+      "rank": 2
+    },
+    {
+      "id": 195,
+      "icon": "activity_limited_task",
+      "title": "Mã Quà\nTặng",
+      "desc": "Mã Quà Tặng",
+      "type1": 7,
+      "type2": 0,
+      "rank": 5
+    },
+    {
+      "id": 196,
+      "icon": "activity_bomb",
+      "title": "Dự Án\nPháo Hoa",
+      "desc": "Dự Án Pháo Hoa",
+      "type1": 2,
+      "type2": 1,
+      "rank": 45
+    },
+    {
+      "id": 197,
+      "icon": "activity_graduate_gift",
+      "title": "Bồi Dưỡng\nEstel",
+      "desc": "Bồi Dưỡng Estel",
+      "type1": 2,
+      "type2": 1,
+      "rank": 40
+    },
+    {
+      "id": 198,
+      "icon": "activity_fair_arena_icon",
+      "title": "Đại Chiến\nThành Cổ",
+      "desc": "Đại Chiến Thành Cổ",
+      "type1": 7,
+      "type2": 0,
+      "rank": 0
+    },
+    {
+      "id": 199,
+      "icon": "activity_partner_gallery",
+      "title": "Đàn Anh Ơi!\nĐiểm Danh Nào!",
+      "desc": "Đàn Anh Ơi! Điểm Danh Nào!",
+      "type1": 2,
+      "type2": 1,
+      "rank": 46
+    },
+    {
+      "id": 202,
+      "icon": "activity_newbee_lesson",
+      "title": "Chương Trình\nTân Sinh",
+      "desc": "Chương Trình Tân Sinh",
+      "type1": 3,
+      "type2": 0,
+      "rank": 9
+    },
+    {
+      "id": 203,
+      "icon": "newbee_lesson_giftbag",
+      "title": "Gói Quà\nChương Trình",
+      "desc": "Gói Quà Chương Trình",
+      "type1": 3,
+      "type2": 0,
+      "rank": 8
+    },
+    {
+      "id": 204,
+      "icon": "activity_course_learning",
+      "title": "Học Tập Theo\nChương Trình",
+      "desc": "Học Tập Theo Chương Trình",
+      "type1": 3,
+      "type2": 0,
+      "rank": 10
+    },
+    {
+      "id": 205,
+      "icon": "activity_lafuli_branch",
+      "title": "Bộ Sưu\nTập San Hô",
+      "desc": "Bộ Sưu Tập San Hô",
+      "type1": 2,
+      "type2": 1,
+      "rank": 51
+    },
+    {
+      "id": 206,
+      "icon": "activity_time_gamble",
+      "title": "Bí Mật\nThời Gian",
+      "desc": "Bí Mật Thời Gian",
+      "type1": 7,
+      "type2": 0,
+      "rank": 10
+    },
+    {
+      "id": 207,
+      "icon": "activity_time_mission",
+      "title": "Dấu Vết\nThời Gian",
+      "desc": "Dấu Vết Thời Gian",
+      "type1": 7,
+      "type2": 0,
+      "rank": 8
+    },
+    {
+      "id": 208,
+      "icon": "activity_time_partner",
+      "title": "Sưu Tập\nNữ Thần",
+      "desc": "Sưu Tập Nữ Thần",
+      "type1": 7,
+      "type2": 0,
+      "rank": 7
+    },
+    {
+      "id": 209,
+      "icon": "activity_time_gift",
+      "title": "Tiếp Tế\nMa Thuật",
+      "desc": "Tiếp Tế Ma Thuật",
+      "type1": 1,
+      "type2": 1,
+      "rank": 112
+    },
+    {
+      "id": 210,
+      "icon": "activity_giftbag_optional",
+      "title": "Gói Tùy\nChỉnh",
+      "desc": "Gói Tùy Chỉnh",
+      "type1": 1,
+      "type2": 1,
+      "rank": 100
+    },
+    {
+      "id": 211,
+      "icon": "activity_space_explore_supply",
+      "title": "Tiếp Tế\nKỳ Bí",
+      "desc": "Tiếp Tế Kỳ Bí",
+      "type1": 7,
+      "type2": 0,
+      "rank": 11
+    },
+    {
+      "id": 212,
+      "icon": "activity_space_explore_mission",
+      "title": "Chuẩn Bị\nPhiêu Lưu",
+      "desc": "Chuẩn Bị Phiêu Lưu",
+      "type1": 7,
+      "type2": 0,
+      "rank": 10
+    },
+    {
+      "id": 213,
+      "icon": "activity_space_explore_team",
+      "title": "Tuyển Đội\nPhiêu Lưu",
+      "desc": "Tuyển Đội Phiêu Lưu",
+      "type1": 7,
+      "type2": 0,
+      "rank": 20
+    },
+    {
+      "id": 214,
+      "icon": "activity_space_explore",
+      "title": "Cuộc Phiêu\nLưu Kỳ Bí",
+      "desc": "Cuộc Phiêu Lưu Kỳ Bí",
+      "type1": 7,
+      "type2": 0,
+      "rank": 30
+    },
+    {
+      "id": 215,
+      "icon": "activity_optional_supply",
+      "title": "Tiếp Tế\nTùy Chọn",
+      "desc": "Tiếp Tế Tùy Chọn",
+      "type1": 5,
+      "type2": 0,
+      "rank": 5
+    },
+    {
+      "id": 216,
+      "icon": "activity_newbee_lesson",
+      "title": "Chương Trình\nTân Sinh",
+      "desc": "Chương Trình Tân Sinh",
+      "type1": 3,
+      "type2": 0,
+      "rank": 9
+    },
+    {
+      "id": 217,
+      "icon": "newbee_lesson_giftbag",
+      "title": "Gói Quà\nChương Trình",
+      "desc": "Gói Quà Chương Trình",
+      "type1": 3,
+      "type2": 0,
+      "rank": 8
+    },
+    {
+      "id": 218,
+      "icon": "activity_course_learning",
+      "title": "Học Tập Theo\nChương Trình",
+      "desc": "Học Tập Theo Chương Trình",
+      "type1": 3,
+      "type2": 0,
+      "rank": 10
+    },
+    {
+      "id": 221,
+      "icon": "activity_crystal_ball",
+      "title": "Nguy Cấp! Khủng\nHoảng Quả Cầu Pha Lê",
+      "desc": "Nguy Cấp! Khủng Hoảng Quả Cầu Pha Lê",
+      "type1": 2,
+      "type2": 1,
+      "rank": 10
+    },
+    {
+      "id": 224,
+      "icon": "anniversary_giftbag3",
+      "title": "Gói Kỷ\nNiệm 6 Năm",
+      "desc": "Gói Kỷ Niệm 6 Năm",
+      "type1": 7,
+      "type2": 0,
+      "rank": 100
+    },
+    {
+      "id": 225,
+      "icon": "anniversary_giftbag3",
+      "title": "Gói Kỷ\nNiệm 6 Năm",
+      "desc": "Gói Kỷ Niệm 6 Năm",
+      "type1": 7,
+      "type2": 0,
+      "rank": 100
+    },
+    {
+      "id": 226,
+      "icon": "activity_3birthday_dinner",
+      "title": "Yume Nếm Thử",
+      "desc": "Yume Nếm Thử",
+      "type1": 7,
+      "type2": 0,
+      "rank": 65
+    },
+    {
+      "id": 227,
+      "icon": "activity_3birthday_gamble",
+      "title": "Hầm Rượu\nBí Mật",
+      "desc": "Hầm Rượu Bí Mật",
+      "type1": 7,
+      "type2": 0,
+      "rank": 64
+    },
+    {
+      "id": 229,
+      "icon": "activity_3birthday_vip",
+      "title": "Lời Chúc Từ Vì Sao",
+      "desc": "Lời Chúc Từ Vì Sao",
+      "type1": 2,
+      "type2": 1,
+      "rank": 60
+    },
+    {
+      "id": 230,
+      "icon": "activity_beach_island",
+      "title": "Ra Bãi\nBiển Nào!",
+      "desc": "Ra Bãi Biển Nào!",
+      "type1": 7,
+      "type2": 1,
+      "rank": 40
+    },
+    {
+      "id": 231,
+      "icon": "activity_beach_puzzle",
+      "title": "Tranh Vẽ\nBãi Biển",
+      "desc": "Tranh Vẽ Bãi Biển",
+      "type1": 7,
+      "type2": 1,
+      "rank": 50
+    },
+    {
+      "id": 232,
+      "icon": "activity_beach_shop",
+      "title": "Đổi Trang\nPhục",
+      "desc": "Đổi Trang Phục",
+      "type1": 7,
+      "type2": 1,
+      "rank": 30
+    },
+    {
+      "id": 233,
+      "icon": "activity_beach_giftbag",
+      "title": "Gói Quà\nMùa Hè",
+      "desc": "Gói Quà Mùa Hè",
+      "type1": 7,
+      "type2": 1,
+      "rank": 20
+    },
+    {
+      "id": 234,
+      "icon": "activity_jungle",
+      "title": "Thám Hiểm\nRừng Rậm",
+      "desc": "Thám Hiểm Rừng Rậm",
+      "type1": 2,
+      "type2": 1,
+      "rank": 10
+    },
+    {
+      "id": 235,
+      "icon": "activity_dress_limit_icon",
+      "title": "Giảm Giá\nTrang Phục",
+      "desc": "Giảm Giá Trang Phục",
+      "type1": 1,
+      "type2": 1,
+      "rank": 25
+    },
+    {
+      "id": 239,
+      "icon": "activity_equip_level_antique",
+      "title": "Phòng Thí\nNghiệm Cổ Vật",
+      "desc": "Phòng Thí Nghiệm Cổ Vật",
+      "type1": 2,
+      "type2": 1,
+      "rank": 6
+    },
+    {
+      "id": 240,
+      "icon": "activity_encounter_story",
+      "title": "Thử Thách\nCốt Truyện",
+      "desc": "Thử Thách Cốt Truyện",
+      "type1": 0,
+      "type2": 0,
+      "rank": 20
+    },
+    {
+      "id": 241,
+      "icon": "activity_optional_supply",
+      "title": "Tiếp Tế\nTùy Chọn",
+      "desc": "Tiếp Tế Tùy Chọn",
+      "type1": 5,
+      "type2": 0,
+      "rank": 5
+    },
+    {
+      "id": 242,
+      "icon": "activity_dress_gacha_award",
+      "title": "Mua Sắm\nTrang Phục",
+      "desc": "Mua Sắm Trang Phục",
+      "type1": 2,
+      "type2": 1,
+      "rank": 60
+    },
+    {
+      "id": 244,
+      "icon": "activity_equip_exchange",
+      "title": "Đổi Cổ Vật\nGiới Hạn",
+      "desc": "Đổi Cổ Vật Giới Hạn",
+      "type1": 2,
+      "type2": 1,
+      "rank": 28
+    },
+    {
+      "id": 245,
+      "icon": "activity_fish",
+      "title": "Câu Cá\nVen Biển",
+      "desc": "Câu Cá Ven Biển",
+      "type1": 2,
+      "type2": 1,
+      "rank": 49
+    },
+    {
+      "id": 246,
+      "icon": "activity_world_boss2",
+      "title": "Thực\nChiến",
+      "desc": "Thực Chiến",
+      "type1": 2,
+      "type2": 3,
+      "rank": 10
+    },
+    {
+      "id": 247,
+      "icon": "activity_newbee_fund",
+      "title": "Quỹ\nTân Thủ",
+      "desc": "Quỹ Tân Thủ",
+      "type1": 1,
+      "type2": 1,
+      "rank": 98
+    },
+    {
+      "id": 248,
+      "icon": "activity_trickortreat",
+      "title": "Cho Kẹo\nHay Bị Ghẹo",
+      "desc": "Cho Kẹo Hay Bị Ghẹo",
+      "type1": 7,
+      "type2": 0,
+      "rank": 20
+    },
+    {
+      "id": 249,
+      "icon": "activity_trickortreat_task",
+      "title": "Điều Chế\nThuốc",
+      "desc": "Điều Chế Thuốc",
+      "type1": 7,
+      "type2": 0,
+      "rank": 12
+    },
+    {
+      "id": 250,
+      "icon": "activity_trickortreat_giftbag",
+      "title": "Bất Ngờ\nHalloween",
+      "desc": "Bất Ngờ Halloween",
+      "type1": 7,
+      "type2": 1,
+      "rank": 170
+    },
+    {
+      "id": 251,
+      "icon": "activity_secrettreasure",
+      "title": "Săn\nKho Báu",
+      "desc": "Săn Kho Báu",
+      "type1": 7,
+      "type2": 0,
+      "rank": 20
+    },
+    {
+      "id": 252,
+      "icon": "activity_secrettreasure_giftbag",
+      "title": "Tiếp Tế\nThợ Săn",
+      "desc": "Tiếp Tế Thợ Săn",
+      "type1": 7,
+      "type2": 1,
+      "rank": 50
+    },
+    {
+      "id": 253,
+      "icon": "activity_secrettreasure_task",
+      "title": "Tập Hợp\nĐội Hình",
+      "desc": "Tập Hợp Đội Hình",
+      "type1": 7,
+      "type2": 0,
+      "rank": 11
+    },
+    {
+      "id": 254,
+      "icon": "activity_pray_giftbag",
+      "title": "Tiếp Tế Suối\nƯớc Nguyện",
+      "desc": "Tiếp Tế Suối Ước Nguyện",
+      "type1": 1,
+      "type2": 1,
+      "rank": 25
+    },
+    {
+      "id": 255,
+      "icon": "activity_newbeefund",
+      "title": "Tiệc Lễ\nTạ Ơn",
+      "desc": "Tiệc Lễ Tạ Ơn",
+      "type1": 1,
+      "type2": 1,
+      "rank": 25
+    },
+    {
+      "id": 257,
+      "icon": "activity_christmas_countdown",
+      "title": "Lịch\nGiáng Sinh",
+      "desc": "Lịch Giáng Sinh",
+      "type1": 2,
+      "type2": 1,
+      "rank": 80
+    },
+    {
+      "id": 258,
+      "icon": "activity_jackpot_draw",
+      "title": "Rút Thăm\nMay Mắn",
+      "desc": "Rút Thăm May Mắn",
+      "type1": 2,
+      "type2": 1,
+      "rank": 55
+    },
+    {
+      "id": 260,
+      "icon": "activity_luckyboxes",
+      "title": "Bốc Thăm\nMay Mắn",
+      "desc": "Bốc Thăm May Mắn",
+      "type1": 2,
+      "type2": 1,
+      "rank": 51
+    },
+    {
+      "id": 261,
+      "icon": "monthly_giftbag",
+      "title": "Giảm Giá\nGói Tháng",
+      "desc": "Giảm Giá Gói Tháng",
+      "type1": 1,
+      "type2": 2,
+      "rank": 3
+    },
+    {
+      "id": 262,
+      "icon": "weekly_giftbag",
+      "title": "Giảm Giá\nGói Tuần",
+      "desc": "Giảm Giá Gói Tuần",
+      "type1": 1,
+      "type2": 2,
+      "rank": 4
+    },
+    {
+      "id": 263,
+      "icon": "activity_month_card",
+      "title": "Giảm Giá\nThẻ Tháng",
+      "desc": "Giảm Giá Thẻ Tháng",
+      "type1": 1,
+      "type2": 3,
+      "rank": 6
+    },
+    {
+      "id": 264,
+      "icon": "activity_mini_month_card",
+      "title": "Giảm Giá Thẻ\nTháng Nhỏ",
+      "desc": "Giảm Giá Thẻ Tháng Nhỏ",
+      "type1": 1,
+      "type2": 3,
+      "rank": 5
+    },
+    {
+      "id": 265,
+      "icon": "icon_rk_privilege_card",
+      "title": "Giảm Giá Đặc\nQuyền Yume",
+      "desc": "Giảm Giá Đặc Quyền Yume",
+      "type1": 1,
+      "type2": 3,
+      "rank": 4
+    },
+    {
+      "id": 266,
+      "icon": "daily_giftbag",
+      "title": "Giảm Giá\nGói Ngày",
+      "desc": "Giảm Giá Gói Ngày",
+      "type1": 1,
+      "type2": 2,
+      "rank": 6
+    },
+    {
+      "id": 267,
+      "icon": "monthly_giftbag",
+      "title": "Giảm Giá\nGói Tháng",
+      "desc": "Giảm Giá Gói Tháng",
+      "type1": 1,
+      "type2": 2,
+      "rank": 3
+    },
+    {
+      "id": 268,
+      "icon": "weekly_giftbag",
+      "title": "Giảm Giá\nGói Tuần",
+      "desc": "Giảm Giá Gói Tuần",
+      "type1": 1,
+      "type2": 2,
+      "rank": 4
+    },
+    {
+      "id": 269,
+      "icon": "daily_giftbag",
+      "title": "Giảm Giá\nGói Ngày",
+      "desc": "Giảm Giá Gói Ngày",
+      "type1": 1,
+      "type2": 2,
+      "rank": 6
+    },
+    {
+      "id": 270,
+      "icon": "activity_santavisit",
+      "title": "Ông Già Noel\nGhé Thăm",
+      "desc": "Ông Già Noel Ghé Thăm",
+      "type1": 7,
+      "type2": 0,
+      "rank": 45
+    },
+    {
+      "id": 271,
+      "icon": "activity_christmas_exchange",
+      "title": "Đổi Quà\nGiáng Sinh",
+      "desc": "Đổi Quà Giáng Sinh",
+      "type1": 7,
+      "type2": 0,
+      "rank": 40
+    },
+    {
+      "id": 272,
+      "icon": "activity_socksurprise",
+      "title": "Bên Lò\nSưởi",
+      "desc": "Bên Lò Sưởi",
+      "type1": 7,
+      "type2": 0,
+      "rank": 50
+    },
+    {
+      "id": 273,
+      "icon": "activity_luckyboxes_giftbag",
+      "title": "Gói Bốc\nThăm May Mắn",
+      "desc": "Gói Bốc Thăm May Mắn",
+      "type1": 1,
+      "type2": 1,
+      "rank": 50
+    },
+    {
+      "id": 274,
+      "icon": "activity_firework",
+      "title": "Trình Diễn\nPháo Hoa",
+      "desc": "Trình Diễn Pháo Hoa",
+      "type1": 7,
+      "type2": 0,
+      "rank": 75
+    },
+    {
+      "id": 275,
+      "icon": "activity_firework_rank",
+      "title": "Phần Thưởng\nPháo Hoa",
+      "desc": "Phần Thưởng Pháo Hoa",
+      "type1": 7,
+      "type2": 0,
+      "rank": 74
+    },
+    {
+      "id": 276,
+      "icon": "benefit_giftbag02",
+      "title": "Gói Trang\nPhục Đặc Biệt",
+      "desc": "Gói Trang Phục Đặc Biệt",
+      "type1": 1,
+      "type2": 1,
+      "rank": 13
+    },
+    {
+      "id": 277,
+      "icon": "activity_vampire_task",
+      "title": "Yêu Cầu\nDanh Dự",
+      "desc": "Yêu Cầu Danh Dự",
+      "type1": 2,
+      "type2": 1,
+      "rank": 58
+    },
+    {
+      "id": 278,
+      "icon": "activity_vampire_gamble",
+      "title": "Hành Trình\nBất Tận",
+      "desc": "Hành Trình Bất Tận",
+      "type1": 2,
+      "type2": 1,
+      "rank": 59
+    },
+    {
+      "id": 279,
+      "icon": "activity_lafuli_castle",
+      "title": "Lâu Đài Mộng\nMơ Luvly",
+      "desc": "Lâu Đài Mộng Mơ Luvly",
+      "type1": 7,
+      "type2": 1,
+      "rank": 100
+    },
+    {
+      "id": 280,
+      "icon": "activity_promotion_ladder",
+      "title": "Lễ Thăng\nCấp",
+      "desc": "Lễ Thăng Cấp",
+      "type1": 2,
+      "type2": 1,
+      "rank": 40
+    },
+    {
+      "id": 281,
+      "icon": "activity_promotion_test",
+      "title": "Kỳ Thi\nThăng Cấp",
+      "desc": "Kỳ Thi Thăng Cấp",
+      "type1": 2,
+      "type2": 1,
+      "rank": 39
+    },
+    {
+      "id": 282,
+      "icon": "activity_value_giftbag",
+      "title": "Gói Quà Giá Trị",
+      "desc": "Gói Quà Giá Trị",
+      "type1": 1,
+      "type2": 1,
+      "rank": 15
+    },
+    {
+      "id": 283,
+      "icon": "activity_lasso",
+      "title": "Ném\nVòng",
+      "desc": "Ném Vòng",
+      "type1": 2,
+      "type2": 1,
+      "rank": 80
+    },
+    {
+      "id": 284,
+      "icon": "activity_freebuy",
+      "title": "Đầu Tư\nTân Thủ",
+      "desc": "Đầu Tư Tân Thủ",
+      "type1": 3,
+      "type2": 0,
+      "rank": 20
+    },
+    {
+      "id": 286,
+      "icon": "activity_clock",
+      "title": "Quay Vòng\nQuay!",
+      "desc": "Quay Vòng Quay!",
+      "type1": 7,
+      "type2": 0,
+      "rank": 61
+    },
+    {
+      "id": 287,
+      "icon": "activity_foolsday",
+      "title": "Gói Cá\nTháng Tư",
+      "desc": "Gói Cá Tháng Tư",
+      "type1": 7,
+      "type2": 0,
+      "rank": 60
+    },
+    {
+      "id": 288,
+      "icon": "activity_simulation_gacha",
+      "title": "Mô Phỏng\nTriệu Hồi",
+      "desc": "Mô Phỏng Triệu Hồi",
+      "type1": 7,
+      "type2": 0,
+      "rank": 0
+    },
+    {
+      "id": 289,
+      "icon": "activity_search_book",
+      "title": "Thẻ\nThánh Địa",
+      "desc": "Thẻ Thánh Địa",
+      "type1": 2,
+      "type2": 3,
+      "rank": 6
+    },
+    {
+      "id": 290,
+      "icon": "activity_easter2022",
+      "title": "Xưởng Trứng\nPhục Sinh",
+      "desc": "Xưởng Trứng Phục Sinh",
+      "type1": 7,
+      "type2": 0,
+      "rank": 100
+    },
+    {
+      "id": 291,
+      "icon": "activity_relay_gift_icon_rk",
+      "title": "Tiếp Sức\nGói Quà",
+      "desc": "Tiếp Sức Gói Quà",
+      "type1": 1,
+      "type2": 1,
+      "rank": 19
+    },
+    {
+      "id": 292,
+      "icon": "activity_lost_space",
+      "title": "Vùng Không\nGian Thất Lạc",
+      "desc": "Vùng Không Gian Thất Lạc",
+      "type1": 2,
+      "type2": 1,
+      "rank": 80
+    },
+    {
+      "id": 293,
+      "icon": "activity_lost_space_giftbag",
+      "title": "Tiếp Tế\nPhi Thuyền",
+      "desc": "Tiếp Tế Phi Thuyền",
+      "type1": 1,
+      "type2": 1,
+      "rank": 90
+    },
+    {
+      "id": 294,
+      "icon": "activity_spring_giftbag",
+      "title": "Tiếp Tế\nHội Chợ",
+      "desc": "Tiếp Tế Hội Chợ",
+      "type1": 1,
+      "type2": 1,
+      "rank": 111
+    },
+    {
+      "id": 295,
+      "icon": "activity_star_altar_mission",
+      "title": "Sao\nBăng",
+      "desc": "Sao Băng",
+      "type1": 7,
+      "type2": 0,
+      "rank": 80
+    },
+    {
+      "id": 296,
+      "icon": "new_partner_warmup_giftbag",
+      "title": "Quà Tặng\nTừ Vì Sao",
+      "desc": "Quà Tặng Từ Vì Sao",
+      "type1": 7,
+      "type2": 0,
+      "rank": 70
+    },
+    {
+      "id": 297,
+      "icon": "weekly_star_altar_giftbag",
+      "title": "Gói\nÁnh Sao",
+      "desc": "Gói Ánh Sao",
+      "type1": 1,
+      "type2": 2,
+      "rank": 100
+    },
+    {
+      "id": 298,
+      "icon": "activity_children_task",
+      "title": "Ký Ức\nTuổi Thơ",
+      "desc": "Ký Ức Tuổi Thơ",
+      "type1": 7,
+      "type2": 0,
+      "rank": 20
+    },
+    {
+      "id": 299,
+      "icon": "activity_children_shop",
+      "title": "Cửa Hàng\nThiếu Nhi",
+      "desc": "Cửa Hàng Thiếu Nhi",
+      "type1": 7,
+      "type2": 0,
+      "rank": 30
+    },
+    {
+      "id": 300,
+      "icon": "activity_spfarm_rk",
+      "title": "Trang Viên\nKhông Gian",
+      "desc": "Trang Viên Không Gian",
+      "type1": 7,
+      "type2": 0,
+      "rank": 100
+    },
+    {
+      "id": 301,
+      "icon": "activity_space_explore_mission",
+      "title": "Thử Thách\nKhông Gian",
+      "desc": "Thử Thách Không Gian",
+      "type1": 7,
+      "type2": 0,
+      "rank": 20
+    },
+    {
+      "id": 302,
+      "icon": "activity_spfarm_giftbag",
+      "title": "Tiếp Tế\nKhông Gian",
+      "desc": "Tiếp Tế Không Gian",
+      "type1": 7,
+      "type2": 0,
+      "rank": 30
+    },
+    {
+      "id": 303,
+      "icon": "activity_dragonboat2022",
+      "title": "Hội Đèn\nLồng Yume",
+      "desc": "Hội Đèn Lồng Yume",
+      "type1": 7,
+      "type2": 0,
+      "rank": 30
+    },
+    {
+      "id": 304,
+      "icon": "activity_4birthday",
+      "title": "Tiệc\nĂn Mừng",
+      "desc": "Tiệc Ăn Mừng",
+      "type1": 7,
+      "type2": 0,
+      "rank": 93
+    },
+    {
+      "id": 305,
+      "icon": "activity_4birthday_gamble",
+      "title": "Nốt Nhạc\nDu Dương",
+      "desc": "Nốt Nhạc Du Dương",
+      "type1": 7,
+      "type2": 0,
+      "rank": 92
+    },
+    {
+      "id": 306,
+      "icon": "activity_4birthday_task",
+      "title": "Trang Trí\nBánh Kem",
+      "desc": "Trang Trí Bánh Kem",
+      "type1": 7,
+      "type2": 0,
+      "rank": 91
+    },
+    {
+      "id": 307,
+      "icon": "activity_4anniversary_sign",
+      "title": "Điểm Danh Kỷ\nNiệm 6 Năm",
+      "desc": "Điểm Danh Kỷ Niệm 6 Năm",
+      "type1": 7,
+      "type2": 0,
+      "rank": 200
+    },
+    {
+      "id": 308,
+      "icon": "activity_chime",
+      "title": "Ước Nguyện\nChuông Gió",
+      "desc": "Ước Nguyện Chuông Gió",
+      "type1": 2,
+      "type2": 1,
+      "rank": 60
+    },
+    {
+      "id": 309,
+      "icon": "activity_sand_gamble",
+      "title": "Săn Kho Báu\nBãi Biển",
+      "desc": "Săn Kho Báu Bãi Biển",
+      "type1": 7,
+      "type2": 0,
+      "rank": 80
+    },
+    {
+      "id": 310,
+      "icon": "activity_sand_mission",
+      "title": "Nhiệm Vụ\nGiữa Hè",
+      "desc": "Nhiệm Vụ Giữa Hè",
+      "type1": 7,
+      "type2": 0,
+      "rank": 70
+    },
+    {
+      "id": 311,
+      "icon": "activity_sand_gift",
+      "title": "Tiếp Tế\nBãi Biển",
+      "desc": "Tiếp Tế Bãi Biển",
+      "type1": 7,
+      "type2": 0,
+      "rank": 60
+    },
+    {
+      "id": 312,
+      "icon": "activity_sand_shop",
+      "title": "Đổi Xu\nĐại Dương",
+      "desc": "Đổi Xu Đại Dương",
+      "type1": 7,
+      "type2": 0,
+      "rank": 50
+    },
+    {
+      "id": 313,
+      "icon": "activity_cupid_gift",
+      "title": "Quà Tặng\nThần Tình Yêu",
+      "desc": "Quà Tặng Thần Tình Yêu",
+      "type1": 2,
+      "type2": 1,
+      "rank": 50
+    },
+    {
+      "id": 314,
+      "icon": "activity_warmup_arena",
+      "title": "Kỳ Thi\nĐầu Vào",
+      "desc": "Kỳ Thi Đầu Vào",
+      "type1": 7,
+      "type2": 0,
+      "rank": 0
+    },
+    {
+      "id": 315,
+      "icon": "activity_free_revert",
+      "title": "Hoàn Nguyên\nMiễn Phí",
+      "desc": "Hoàn Nguyên Miễn Phí",
+      "type1": 2,
+      "type2": 1,
+      "rank": 30
+    },
+    {
+      "id": 316,
+      "icon": "activity_goldfish",
+      "title": "Ưu Đãi\nMùa Hè",
+      "desc": "Ưu Đãi Mùa Hè",
+      "type1": 7,
+      "type2": 0,
+      "rank": 62
+    },
+    {
+      "id": 317,
+      "icon": "activity_goldfish_awards",
+      "title": "Vớt Cá\nVàng",
+      "desc": "Vớt Cá Vàng",
+      "type1": 7,
+      "type2": 0,
+      "rank": 61
+    },
+    {
+      "id": 318,
+      "icon": "activity_goldfish_giftbag",
+      "title": "Giảm Giá\nMùa Hè",
+      "desc": "Giảm Giá Mùa Hè",
+      "type1": 7,
+      "type2": 0,
+      "rank": 60
+    },
+    {
+      "id": 319,
+      "icon": "galaxy_trip_battlepass",
+      "title": "Hộ Chiếu\nNhà Du Hành",
+      "desc": "Hộ Chiếu Nhà Du Hành",
+      "type1": 1,
+      "type2": 3,
+      "rank": 4
+    },
+    {
+      "id": 320,
+      "icon": "activity_legendary_skin",
+      "title": "Nhà Thiết\nKế Bậc Thầy",
+      "desc": "Nhà Thiết Kế Bậc Thầy",
+      "type1": 2,
+      "type2": 1,
+      "rank": 60
+    },
+    {
+      "id": 321,
+      "icon": "activity_legendary_skin_giftbag",
+      "title": "Gói Nhà Thiết\nKế Bậc Thầy",
+      "desc": "Gói Nhà Thiết Kế Bậc Thầy",
+      "type1": 1,
+      "type2": 1,
+      "rank": 100
+    },
+    {
+      "id": 322,
+      "icon": "galaxy_trip_battlepass",
+      "title": "Hộ Chiếu\nNhà Du Hành",
+      "desc": "Hộ Chiếu Nhà Du Hành",
+      "type1": 1,
+      "type2": 3,
+      "rank": 4
+    },
+    {
+      "id": 323,
+      "icon": "activity_food_consume",
+      "title": "Lều\nKho Báu",
+      "desc": "Lều Kho Báu",
+      "type1": 2,
+      "type2": 1,
+      "rank": 55
+    },
+    {
+      "id": 325,
+      "icon": "activity_repair_console",
+      "title": "Sửa Máy\nChơi Game",
+      "desc": "Sửa Máy Chơi Game",
+      "type1": 7,
+      "type2": 0,
+      "rank": 3
+    },
+    {
+      "id": 326,
+      "icon": "activity_repair_console_mission",
+      "title": "Danh Sách Việc\nCủa Bonnie",
+      "desc": "Danh Sách Việc Của Bonnie",
+      "type1": 7,
+      "type2": 0,
+      "rank": 2
+    },
+    {
+      "id": 327,
+      "icon": "activity_repair_console_giftbag",
+      "title": "Gói Tiếp\nTế Pin",
+      "desc": "Gói Tiếp Tế Pin",
+      "type1": 7,
+      "type2": 0,
+      "rank": 1
+    },
+    {
+      "id": 328,
+      "icon": "activity_guild_new_war",
+      "title": "Giải Vô Địch\nBang Hội",
+      "desc": "Giải Vô Địch Bang Hội",
+      "type1": 7,
+      "type2": 0,
+      "rank": 201
+    },
+    {
+      "id": 329,
+      "icon": "activity_pirat",
+      "title": "Kho Báu\nBiển Sâu",
+      "desc": "Kho Báu Biển Sâu",
+      "type1": 2,
+      "type2": 1,
+      "rank": 203
+    },
+    {
+      "id": 330,
+      "icon": "activity_pirat_giftbag",
+      "title": "Kho Báu\nHoàng Cung",
+      "desc": "Kho Báu Hoàng Cung",
+      "type1": 2,
+      "type2": 1,
+      "rank": 202
+    },
+    {
+      "id": 331,
+      "icon": "activity_2love",
+      "title": "Ghép\nĐôi",
+      "desc": "Ghép Đôi",
+      "type1": 7,
+      "type2": 0,
+      "rank": 3
+    },
+    {
+      "id": 332,
+      "icon": "activity_halloween2022_gamble",
+      "title": "Nghệ Nhân\nBí Ngô",
+      "desc": "Nghệ Nhân Bí Ngô",
+      "type1": 7,
+      "type2": 1,
+      "rank": 203
+    },
+    {
+      "id": 333,
+      "icon": "activity_halloween2022_shop",
+      "title": "Bí Mật\nĐèn Lồng",
+      "desc": "Bí Mật Đèn Lồng",
+      "type1": 7,
+      "type2": 1,
+      "rank": 202
+    },
+    {
+      "id": 334,
+      "icon": "activity_halloween2022_giftbag",
+      "title": "Niềm Vui\nHalloween",
+      "desc": "Niềm Vui Halloween",
+      "type1": 7,
+      "type2": 1,
+      "rank": 150
+    },
+    {
+      "id": 335,
+      "icon": "activity_relay_gift_icon_rk",
+      "title": "Gói Tăng\nTốc Nâng Cấp",
+      "desc": "Gói Tăng Tốc Nâng Cấp",
+      "type1": 1,
+      "type2": 1,
+      "rank": 22
+    },
+    {
+      "id": 336,
+      "icon": "activity_5week",
+      "title": "Tăng Tốc Nâng\nCấp Nữ Thần",
+      "desc": "Tăng Tốc Nâng Cấp Nữ Thần",
+      "type1": 7,
+      "type2": 0,
+      "rank": 3
+    },
+    {
+      "id": 337,
+      "icon": "activity_soul_land_battlepass",
+      "title": "Thẻ\nLinh Hồn",
+      "desc": "Thẻ Linh Hồn",
+      "type1": 0,
+      "type2": 0,
+      "rank": 0
+    },
+    {
+      "id": 338,
+      "icon": "activity_blind_box",
+      "title": "Cơn Sốt\nHộp Mù",
+      "desc": "Cơn Sốt Hộp Mù",
+      "type1": 7,
+      "type2": 0,
+      "rank": 206
+    },
+    {
+      "id": 339,
+      "icon": "activity_blind_box_mission",
+      "title": "Quà\nTặng Nạp",
+      "desc": "Quà Tặng Nạp",
+      "type1": 7,
+      "type2": 0,
+      "rank": 205
+    },
+    {
+      "id": 340,
+      "icon": "activity_blind_box_battlepass",
+      "title": "Thưởng\nHộp Mù",
+      "desc": "Thưởng Hộp Mù",
+      "type1": 7,
+      "type2": 0,
+      "rank": 204
+    },
+    {
+      "id": 341,
+      "icon": "activity_promotion_ladder",
+      "title": "Lễ Thăng\nCấp",
+      "desc": "Lễ Thăng Cấp",
+      "type1": 2,
+      "type2": 1,
+      "rank": 40
+    },
+    {
+      "id": 342,
+      "icon": "activity_star_altar_login",
+      "title": "Chuyến Hải\nTrình Đầu Tiên",
+      "desc": "Chuyến Hải Trình Đầu Tiên",
+      "type1": 2,
+      "type2": 1,
+      "rank": 60
+    },
+    {
+      "id": 343,
+      "icon": "activity_star_altar_cost",
+      "title": "Thưởng\nÁnh Sao",
+      "desc": "Thưởng Ánh Sao",
+      "type1": 2,
+      "type2": 1,
+      "rank": 59
+    },
+    {
+      "id": 344,
+      "icon": "activity_pay_day",
+      "title": "Kho Báu\nBong Bóng",
+      "desc": "Kho Báu Bong Bóng",
+      "type1": 2,
+      "type2": 1,
+      "rank": 21
+    },
+    {
+      "id": 346,
+      "icon": "activity_star_plan",
+      "title": "Bắt Lấy\nTinh Tú",
+      "desc": "Bắt Lấy Tinh Tú",
+      "type1": 2,
+      "type2": 1,
+      "rank": 50
+    },
+    {
+      "id": 347,
+      "icon": "turing_task02",
+      "title": "Đổi Quà\nTặng",
+      "desc": "Đổi Quà Tặng",
+      "type1": 7,
+      "type2": 1,
+      "rank": 35
+    },
+    {
+      "id": 348,
+      "icon": "turing_task03",
+      "title": "Săn Tất\nGiáng Sinh",
+      "desc": "Săn Tất Giáng Sinh",
+      "type1": 7,
+      "type2": 1,
+      "rank": 35
+    },
+    {
+      "id": 349,
+      "icon": "turing_task04",
+      "title": "Công Việc\nỦy Ban",
+      "desc": "Công Việc Ủy Ban",
+      "type1": 7,
+      "type2": 1,
+      "rank": 35
+    },
+    {
+      "id": 350,
+      "icon": "activity_suiprised_giftbag",
+      "title": "Quà Đặc Biệt\nCủa Hermes",
+      "desc": "Quà Đặc Biệt Của Hermes",
+      "type1": 1,
+      "type2": 1,
+      "rank": 110
+    },
+    {
+      "id": 351,
+      "icon": "activity_suiprised_giftbag",
+      "title": "Quà Đặc Biệt\nCủa Hermes",
+      "desc": "Quà Đặc Biệt Của Hermes",
+      "type1": 1,
+      "type2": 1,
+      "rank": 109
+    }
+  ],
+  "login": [
+    {
+      "id": 1,
+      "award": "2#150",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 2,
+      "award": "930067#30",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 3,
+      "award": "2#150",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 4,
+      "award": "1051#1",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 5,
+      "award": "2#150",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 6,
+      "award": "2#200",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 7,
+      "award": "930112#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 8,
+      "award": "2#150",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 9,
+      "award": "2051#1",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 10,
+      "award": "2#150",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 11,
+      "award": "2#150",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 12,
+      "award": "930112#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 13,
+      "award": "2#200",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 14,
+      "award": "3051#1",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 15,
+      "award": "2#150",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 16,
+      "award": "2#150",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 17,
+      "award": "930112#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 18,
+      "award": "2#150",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 19,
+      "award": "4051#1",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 20,
+      "award": "2#200",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 21,
+      "award": "2#150",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 22,
+      "award": "930112#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 23,
+      "award": "2#150",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 24,
+      "award": "2#150",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 25,
+      "award": "930112#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 26,
+      "award": "2#200",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 27,
+      "award": "2#150",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 28,
+      "award": "2#150",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 29,
+      "award": "2#200",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 30,
+      "award": "36#5",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 31,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 32,
+      "award": "940001#30",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 33,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 34,
+      "award": "930081#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 35,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 36,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 37,
+      "award": "36#1",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 38,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 39,
+      "award": "2#100",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 40,
+      "award": "930081#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 41,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 42,
+      "award": "940001#30",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 43,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 44,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 45,
+      "award": "930081#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 46,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 47,
+      "award": "2#150",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 48,
+      "award": "36#1",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 49,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 50,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 51,
+      "award": "930081#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 52,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 53,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 54,
+      "award": "940001#30",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 55,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 56,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 57,
+      "award": "930081#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 58,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 59,
+      "award": "2#200",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 60,
+      "award": "36#2",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 61,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 62,
+      "award": "940001#30",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 63,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 64,
+      "award": "930095#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 65,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 66,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 67,
+      "award": "36#1",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 68,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 69,
+      "award": "2#100",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 70,
+      "award": "930095#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 71,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 72,
+      "award": "940001#30",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 73,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 74,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 75,
+      "award": "930095#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 76,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 77,
+      "award": "2#150",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 78,
+      "award": "36#1",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 79,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 80,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 81,
+      "award": "930095#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 82,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 83,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 84,
+      "award": "940001#30",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 85,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 86,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 87,
+      "award": "930095#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 88,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 89,
+      "award": "2#200",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 90,
+      "award": "36#2",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 91,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 92,
+      "award": "940001#30",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 93,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 94,
+      "award": "930173#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 95,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 96,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 97,
+      "award": "36#1",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 98,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 99,
+      "award": "2#100",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 100,
+      "award": "930173#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 101,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 102,
+      "award": "940001#30",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 103,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 104,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 105,
+      "award": "930173#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 106,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 107,
+      "award": "2#150",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 108,
+      "award": "36#1",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 109,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 110,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 111,
+      "award": "930173#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 112,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 113,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 114,
+      "award": "940001#30",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 115,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 116,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 117,
+      "award": "930173#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 118,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 119,
+      "award": "2#200",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 120,
+      "award": "36#2",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 121,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 122,
+      "award": "940001#30",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 123,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 124,
+      "award": "930103#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 125,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 126,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 127,
+      "award": "36#1",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 128,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 129,
+      "award": "2#100",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 130,
+      "award": "930103#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 131,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 132,
+      "award": "940001#30",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 133,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 134,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 135,
+      "award": "930103#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 136,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 137,
+      "award": "2#150",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 138,
+      "award": "36#1",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 139,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 140,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 141,
+      "award": "930103#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 142,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 143,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 144,
+      "award": "940001#30",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 145,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 146,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 147,
+      "award": "930103#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 148,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 149,
+      "award": "2#200",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 150,
+      "award": "36#2",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 151,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 152,
+      "award": "940001#30",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 153,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 154,
+      "award": "930109#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 155,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 156,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 157,
+      "award": "36#1",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 158,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 159,
+      "award": "2#100",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 160,
+      "award": "930109#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 161,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 162,
+      "award": "940001#30",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 163,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 164,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 165,
+      "award": "930109#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 166,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 167,
+      "award": "2#150",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 168,
+      "award": "36#1",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 169,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 170,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 171,
+      "award": "930109#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 172,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 173,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 174,
+      "award": "940001#30",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 175,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 176,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 177,
+      "award": "930109#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 178,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 179,
+      "award": "2#200",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 180,
+      "award": "36#2",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 181,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 182,
+      "award": "940001#30",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 183,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 184,
+      "award": "930172#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 185,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 186,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 187,
+      "award": "36#1",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 188,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 189,
+      "award": "2#100",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 190,
+      "award": "930172#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 191,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 192,
+      "award": "940001#30",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 193,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 194,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 195,
+      "award": "930172#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 196,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 197,
+      "award": "2#150",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 198,
+      "award": "36#1",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 199,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 200,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 201,
+      "award": "930172#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 202,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 203,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 204,
+      "award": "940001#30",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 205,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 206,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 207,
+      "award": "930172#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 208,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 209,
+      "award": "2#200",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 210,
+      "award": "36#2",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 211,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 212,
+      "award": "940001#30",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 213,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 214,
+      "award": "930081#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 215,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 216,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 217,
+      "award": "36#1",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 218,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 219,
+      "award": "2#100",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 220,
+      "award": "930081#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 221,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 222,
+      "award": "940001#30",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 223,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 224,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 225,
+      "award": "930081#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 226,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 227,
+      "award": "2#150",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 228,
+      "award": "36#1",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 229,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 230,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 231,
+      "award": "930081#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 232,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 233,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 234,
+      "award": "940001#30",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 235,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 236,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 237,
+      "award": "930081#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 238,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 239,
+      "award": "2#200",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 240,
+      "award": "36#2",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 241,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 242,
+      "award": "940001#30",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 243,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 244,
+      "award": "930095#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 245,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 246,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 247,
+      "award": "36#1",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 248,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 249,
+      "award": "2#100",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 250,
+      "award": "930095#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 251,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 252,
+      "award": "940001#30",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 253,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 254,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 255,
+      "award": "930095#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 256,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 257,
+      "award": "2#150",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 258,
+      "award": "36#1",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 259,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 260,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 261,
+      "award": "930095#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 262,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 263,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 264,
+      "award": "940001#30",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 265,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 266,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 267,
+      "award": "930095#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 268,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 269,
+      "award": "2#200",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 270,
+      "award": "36#2",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 271,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 272,
+      "award": "940001#30",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 273,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 274,
+      "award": "930173#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 275,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 276,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 277,
+      "award": "36#1",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 278,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 279,
+      "award": "2#100",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 280,
+      "award": "930173#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 281,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 282,
+      "award": "940001#30",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 283,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 284,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 285,
+      "award": "930173#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 286,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 287,
+      "award": "2#150",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 288,
+      "award": "36#1",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 289,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 290,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 291,
+      "award": "930173#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 292,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 293,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 294,
+      "award": "940001#30",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 295,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 296,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 297,
+      "award": "930173#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 298,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 299,
+      "award": "2#200",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 300,
+      "award": "36#2",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 301,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 302,
+      "award": "940001#30",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 303,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 304,
+      "award": "930103#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 305,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 306,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 307,
+      "award": "36#1",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 308,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 309,
+      "award": "2#100",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 310,
+      "award": "930103#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 311,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 312,
+      "award": "940001#30",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 313,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 314,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 315,
+      "award": "930103#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 316,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 317,
+      "award": "2#150",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 318,
+      "award": "36#1",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 319,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 320,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 321,
+      "award": "930103#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 322,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 323,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 324,
+      "award": "940001#30",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 325,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 326,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 327,
+      "award": "930103#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 328,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 329,
+      "award": "2#200",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 330,
+      "award": "36#2",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 331,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 332,
+      "award": "940001#30",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 333,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 334,
+      "award": "930109#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 335,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 336,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 337,
+      "award": "36#1",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 338,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 339,
+      "award": "2#100",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 340,
+      "award": "930109#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 341,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 342,
+      "award": "940001#30",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 343,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 344,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 345,
+      "award": "930109#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 346,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 347,
+      "award": "2#150",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 348,
+      "award": "36#1",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 349,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 350,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 351,
+      "award": "930109#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 352,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 353,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 354,
+      "award": "940001#30",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 355,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 356,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 357,
+      "award": "930109#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 358,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 359,
+      "award": "2#200",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 360,
+      "award": "36#2",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 361,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 362,
+      "award": "940001#30",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 363,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 364,
+      "award": "930172#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 365,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 366,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 367,
+      "award": "36#1",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 368,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 369,
+      "award": "2#100",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 370,
+      "award": "930172#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 371,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 372,
+      "award": "940001#30",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 373,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 374,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 375,
+      "award": "930172#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 376,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 377,
+      "award": "2#150",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 378,
+      "award": "36#1",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 379,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 380,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 381,
+      "award": "930172#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 382,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 383,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 384,
+      "award": "940001#30",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 385,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 386,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 387,
+      "award": "930172#10",
+      "double": false,
+      "special": true
+    },
+    {
+      "id": 388,
+      "award": "2#30",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 389,
+      "award": "2#200",
+      "double": true,
+      "special": false
+    },
+    {
+      "id": 390,
+      "award": "36#2",
+      "double": false,
+      "special": true
+    }
+  ],
+  "login_loop_exclude": 30,
+  "sevenday": [
+    {
+      "day": 1,
+      "award": "36#20"
+    },
+    {
+      "day": 2,
+      "award": "930091#50"
+    },
+    {
+      "day": 3,
+      "award": "36#30"
+    },
+    {
+      "day": 4,
+      "award": "20#20"
+    },
+    {
+      "day": 5,
+      "award": "36#50"
+    },
+    {
+      "day": 6,
+      "award": "20#30"
+    },
+    {
+      "day": 7,
+      "award": "7002#1"
+    }
+  ],
+  "item_icons": {
+    "20": "/assets/item-icons/icon_20.png",
+    "36": "/assets/item-icons/icon_36.png",
+    "1051": "/assets/item-icons/equip_6_1.png",
+    "2051": "/assets/item-icons/equip_6_2.png",
+    "3051": "/assets/item-icons/equip_6_3.png",
+    "4051": "/assets/item-icons/equip_6_4.png",
+    "930067": "/assets/events/item_partner_avatar_43006.png",
+    "930081": "/assets/events/item_partner_avatar_51004.png",
+    "930091": "/assets/events/item_partner_avatar_52004.png",
+    "930095": "/assets/events/item_partner_avatar_52008.png",
+    "930103": "/assets/events/item_partner_avatar_53006.png",
+    "930109": "/assets/events/item_partner_avatar_54002.png",
+    "930112": "/assets/events/item_partner_avatar_54005.png",
+    "930172": "/assets/events/item_partner_avatar_46003.png",
+    "930173": "/assets/events/item_partner_avatar_45003.png",
+    "940001": "/assets/item-icons/icon_940001.png"
+  },
+  "item_names": {
+    "20": "Ấn Chiêu Mộ",
+    "36": "Xu Triệu Hồi Cao Cấp",
+    "1051": "Đàn Guitar",
+    "2051": "Trang Phục Biểu Diễn",
+    "3051": "Micro Trắng",
+    "4051": "Giày Punk",
+    "930067": "Nữ Thần Lightin 4 Sao",
+    "930081": "Nữ Thần Dracula 5 Sao",
+    "930091": "Nữ Thần Saint 5 Sao",
+    "930095": "Nữ Thần Caitlyn 5 Sao",
+    "930103": "Nữ Thần Silvia 5 Sao",
+    "930109": "Nữ Thần Bud Elf 5 Sao",
+    "930112": "Nữ Thần Lavia 5 Sao",
+    "930172": "Nữ Thần Selene 5 Sao",
+    "930173": "Nữ Thần Annie 5 Sao",
+    "940001": "Mảnh Nữ Thần 4 Sao"
+  },
+  "text": {
+    "CHECKIN_POPUP_TITLE": "Điểm Danh",
+    "CHECKIN_POPUP_TEXT1": "Cùng bắt đầu\nmột ngày mới nào!",
+    "CHECKIN_POPUP_TEXT2": "Ngày mai quay lại\nnhận thêm phần thưởng\nnhé!",
+    "GET2": "Nhận",
+    "ACTIVITY_NAV_TEXT_2_1": "Độc Quyền",
+    "ACTIVITY_NAV_TEXT_2_3": "Sự Kiện Tháng"
+  }
+}

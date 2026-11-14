@@ -43,8 +43,8 @@ const MagicCard=(()=>{
    else{cell.append(img(A('ice_secret_bk_1'),'mc-back'));cell.onclick=()=>flip(i,s);}
    st.append(cell);});
   if(s.status===0){st.append(at(img(A('ice_secret_start_bg'),'mc-abs'),0,-300,693,213));const b=at(btn('mc-abs mc-start',T('ACTIVITY_ICE_SECRET_START')||'Start',async()=>{const r=await act({action:'start'});if(r)GirlUI.toast(T('ACTIVITY_ICE_SECRET_PARTNER_TEXT'+(1+Math.floor(Math.random()*3))));}),0,-320,246,70);st.append(b);}}
- async function flip(pos,s){if(s.wands<s.cost){GirlUI.toast('Not enough Magic Wand');return;}
-  if(s.got_big&&!confirm(T('ACTIVITY_ICE_SECRET_GAME_TIP')||"Continue this round?"))return;
+ async function flip(pos,s){if(s.wands<s.cost){GirlUI.toast('Không đủ Đũa Phép');return;}
+  if(s.got_big&&!await GirlUI.confirm('Bạn đã nhận phần thưởng lớn. Tiếp tục lật thẻ của lượt này?',{title:'Xác Nhận Lật Thẻ',ok:'Tiếp Tục'}))return;
   const cell=host.querySelectorAll('.mc-cell')[pos];cell?.classList.add('flipping');await new Promise(r=>setTimeout(r,260));
   const r=await act({action:'flip',pos});if(!r)return;fresh=pos;draw();
   const [k,n]=Object.entries(r.got)[0]||[];GirlUI.toast((r.big?'★ Ultimate Reward! ':'')+number(n||0)+' '+(itemCatalog?.[k]?.name||k));

@@ -2,6 +2,7 @@ from __future__ import annotations
 import copy
 import math
 import json
+from contextvars import ContextVar
 import secrets
 from pathlib import Path
 import sqlite3
@@ -18,7 +19,8 @@ from . import fantasy_book, growth_diary, newbie_camp, friend_boss, pet_training
 from . import arena3v3
 from . import puzzle_events, firework_project, local_promotion
 from . import wish, magic_card, two_love, lost_space, vip, activity_kit, activity_draw, jackpot, blind_box, pirate, guild
-from . import home_systems, events, equipment, campaign, point_events, acquisition, clock, explore, relations, missions, shops, arena, patrol, house_exam, hero_challenge, sanctuary, internship, midas, old_campus, guild_lab, echoes, shrine, galaxy, story, dress, skins, house_dress, souls, soul_land, stellar_altar, quick_formation, ev_sand, dress_show
+from . import home_systems, events, equipment, campaign, point_events, acquisition, clock, explore, relations, missions, shops, arena, patrol, house_exam, hero_challenge, sanctuary, internship, midas, old_campus, guild_lab, echoes, shrine, galaxy, story, dress, skins, house_dress, souls, soul_land, stellar_altar, quick_formation, ev_sand, dress_show, local_config, world_live_config, live_service, database
+from .player_state_db import ScopedPostgresPlayerDB
 from .battle import attributes
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -26,29 +28,39 @@ TABLES = {name: json.loads((ROOT / f'data/{name}.json').read_text()) for name in
 DEBRIS = json.loads((ROOT / 'data/debris.json').read_text())
 GRADUATE = json.loads((ROOT / 'data/graduate.json').read_text())
 ASCENSION = json.loads((ROOT / 'data/ascension.json').read_text())
+# Native 4★ → 5★ and 5★ → 6★ use COMPOSE_PARTNER, not AWAKE_PARTNER.
+# Both are genuine recipes indexed by their source's table ID.
+COMPOSE_BY_SOURCE = {}
+for _recipe in (*GRADUATE.values(), *(r for r in ASCENSION.values() if r.get('kind') == 'compose')):
+    _source = int(_recipe['source'])
+    if _source in COMPOSE_BY_SOURCE:
+        raise RuntimeError(f'Duplicate original composition source: {_source}')
+    COMPOSE_BY_SOURCE[_source] = {**_recipe, 'kind':'compose',
+                                  'star':int(_recipe.get('star') or 5),
+                                  'cost':dict(_recipe.get('cost') or {})}
 EXSKILL = json.loads((ROOT / 'data/exskill.json').read_text())  # partner_exskill_cost
 RESONATE = json.loads((ROOT / 'data/resonate.json').read_text())
 RETURN = json.loads((ROOT / 'data/partner_return.json').read_text())
 ASTRAL = json.loads((ROOT / 'data/astral.json').read_text())  # Astral Core (star_origin*)  # Reverse / 10★ Exchange  # Skill-Synchronize of the Cosmic girls (skill_resonate_*)
 DAILY_QUIZ = json.loads((ROOT / 'data/daily_quiz.json').read_text())
 TOWER = json.loads((ROOT / 'data/tower.json').read_text())
-SHOW_FUNC = [0]  # function id of the mode being fought (Outfit Showcase buffs, dress_show.battle_skills)
+SHOW_FUNC = ContextVar('gxb2_show_func', default=0)  # request-local mode for Outfit Showcase battle buffs
 
 
 def show_mode(func):
     """Mark an action's battles as mode `func` (15 Tests, 19 Patrol, 35 House Exams, 39 Old Campus) for the Showcase buffs."""
     def wrap(fn):
         def run(self, *a, **k):
-            SHOW_FUNC[0] = func
+            token = SHOW_FUNC.set(func)
             try: return fn(self, *a, **k)
-            finally: SHOW_FUNC[0] = 0
+            finally: SHOW_FUNC.reset(token)
         run.__name__, run.__doc__ = fn.__name__, fn.__doc__
         return run
     return wrap
 MODELS = json.loads((ROOT / 'data/models.json').read_text())  # model.lua: scale, battle_pos (BaseFighter:getScale / getModelOffset)
 LOCAL_TOKEN = 'gxb2-local-preservation'
 AWAKE_LEVEL_STEP = 20                       # misc.awake_add_level_limit
-BREAK_LEVEL_CAP = (260, 270, 290, 310, 330)  # misc.hero_break_lv_cap (11–15★)
+BREAK_LEVEL_CAP = (260, 270, 290, 310, 330, 350, 375, 400, 430, 460, 495, 535, 575, 620, 666)  # 11–25★
 PROPHET_SUMMONS = (10, 11, 12, 13, 14, 17, 18, 19, 20, 21)  # Prophet.SUMMONMID: factions 1–5, ×1 and ×10 (Enroll)
 STARTERS = (41001, 42001, 43001)
 PROFILE_CATALOG = json.loads((ROOT / 'web/assets/profile/catalog.json').read_text())
@@ -89,7 +101,8 @@ def item_pairs(text):
     result = {}
     for part in str(text).split('|'):
         key, value = part.split('#')
-        result[int(key)] = int(value)
+        item_id = int(key)
+        result[item_id] = result.get(item_id, 0) + int(value)
     return result
 
 def quiz_reward_pairs(text):
@@ -109,32 +122,37 @@ def player_level(state):
 
 def new_state(now=None):
     now = clock.epoch(now)
-    return {'format': 2, 'created': now, 'name': 'Preservación local',
+    starters = local_config.starter_girls()
+    valid_starters = [tid for tid in starters if str(tid) in TABLES['partner']][:6] or list(STARTERS)
+    return {'format': 2, 'created': now, 'uid': 'GXB3-000001', 'server_id': 'S1', 'name': 'Nữ Thần',
             'profile': {'avatar': 'head_1001', 'frame': 'frame_8007', 'signature': ''},
             'max_stage': 0, 'current_stage': 1, 'hang': {'since': now, 'drop_since': now},
-            'battle_count': 0, 'cleared': [], 'last_battle': None, 'next_partner_id': 4, 'summon_free_at': 0,
+            'battle_count': 0, 'cleared': [], 'last_battle': None, 'next_partner_id': len(valid_starters) + 1, 'summon_free_at': 0,
             'senior_summon_free_at': 0,
-            # Paquete inicial del prototipo local para probar los tres banners.
-            'items': {'1': 10000, '2': 0, '3': 0, '9': 5000, '11': 100, '12': 1000, '33': 10, '36': 10},
+            'items': local_config.starting_resources(),
             'partners': [{'partner_id': i+1, 'table_id': tid, 'lv': 1, 'grade': 0, 'awake': 0,
-                          'equips': [], 'pos': i+1, 'show_skin': 1} for i, tid in enumerate(STARTERS)],
-            'formation': [{'partner_id': i+1, 'pos': i+1} for i in range(len(STARTERS))]}
+                          'equips': [], 'pos': i+1, 'show_skin': 1} for i, tid in enumerate(valid_starters)],
+            'formation': [{'partner_id': i+1, 'pos': i+1} for i in range(len(valid_starters))]}
 
 _EQ = json.loads((ROOT / 'data/equipment.json').read_text())['items']
 DEV_GEAR = [str(r['id']) for r in _EQ.values() if r['pos'] in (1, 2, 3, 4) and r.get('job') and int(r.get('item_lv') or 0) >= 24] + \
            [str(r['id']) for r in sorted((r for r in _EQ.values() if r['pos'] == 6), key=lambda r: -int(r.get('item_lv') or 0))[:12]]
 
 class Engine:
-    def __init__(self, db_path: Path, developer=False, clock_source=None):
+    def __init__(self, db_path: Path, developer=False, clock_source=None, identity=None):
         self._raw_now = clock_source or time.time
         self.developer = developer
+        self.identity = (str(identity[0]), str(identity[1]).upper()) if identity else None
         self.now = self._monotonic_now
         self._floor = self._floor_saved = 0
         db_path = Path(db_path)
-        db_path.parent.mkdir(parents=True, exist_ok=True)
-        self.db = sqlite3.connect(db_path, check_same_thread=False)
         self.lock = threading.RLock()
-        self.db.execute('PRAGMA journal_mode=WAL')
+        if identity and database.is_postgres() and not developer:
+            self.db = ScopedPostgresPlayerDB(identity[0], identity[1])
+        else:
+            db_path.parent.mkdir(parents=True, exist_ok=True)
+            self.db = sqlite3.connect(db_path, check_same_thread=False)
+            self.db.execute('PRAGMA journal_mode=WAL')
         self.db.execute('CREATE TABLE IF NOT EXISTS profile(id INTEGER PRIMARY KEY CHECK(id=1), data TEXT NOT NULL)')
         self.db.execute('CREATE TABLE IF NOT EXISTS clock(id INTEGER PRIMARY KEY CHECK(id=1), floor INTEGER NOT NULL)')
         row = self.db.execute('SELECT floor FROM clock WHERE id=1').fetchone()
@@ -243,6 +261,21 @@ class Engine:
         """Seconds the system clock is behind the game clock (0 when in sync)."""
         return 0 if self.developer else max(0, self._floor - int(self._raw_now()))
 
+    def bind_identity(self, uid, server_id, character_name):
+        with self.lock:
+            state = self._load()
+            changed = False
+            if state.get('uid') != str(uid):
+                state['uid'] = str(uid); changed = True
+            if state.get('server_id') != str(server_id).upper():
+                state['server_id'] = str(server_id).upper(); changed = True
+            if character_name and state.get('name') != str(character_name):
+                state['name'] = str(character_name); changed = True
+            if changed:
+                self._save_profile(state)
+                self.db.commit()
+        return None
+
     def close(self):
         if not self.developer and self._floor != self._floor_saved:
             self._save_floor()
@@ -274,8 +307,9 @@ class Engine:
     def _simulate(state, *args, **kwargs):
         """Run the original battle with this save's Tree of Chimes (and the Outfit Showcase buffs of the current mode)."""
         kwargs.setdefault('chime_bonus_a', chimes.bonus(state))
-        if SHOW_FUNC[0]:
-            extra = dress_show.battle_skills(state, SHOW_FUNC[0])
+        show_func = SHOW_FUNC.get()
+        if show_func:
+            extra = dress_show.battle_skills(state, show_func)
             if extra: kwargs['god_skills'] = list(kwargs.get('god_skills') or []) + extra
         return simulate(*args, **kwargs)
 
@@ -284,6 +318,224 @@ class Engine:
         growth_diary.observe(state, self.missions_probe(probe), player_level(state))
         newbie_camp.observe(state, self.missions_probe(dict(state)), player_level(state), self.now())
         self.db.execute('UPDATE profile SET data=? WHERE id=1', (json.dumps(state, ensure_ascii=False),))
+
+    def pvp_team_snapshot(self):
+        with self.lock:
+            state = self._load()
+            by_id = {int(p['partner_id']): p for p in state.get('partners', [])}
+            team = []
+            for slot in sorted(state.get('formation', []), key=lambda x: int(x.get('pos', 0))):
+                partner = by_id.get(int(slot.get('partner_id', 0)))
+                if not partner:
+                    continue
+                unit = copy.deepcopy(partner)
+                unit['pos'] = int(slot.get('pos', unit.get('pos', 0) or 0))
+                team.append(unit)
+            if not team:
+                team = [copy.deepcopy(p) for p in state.get('partners', [])[:6]]
+                for i, unit in enumerate(team, 1):
+                    unit['pos'] = i
+            if not team:
+                raise GameError('Đội hình PvP đang trống')
+            power = self._friend_power(state)
+            return {
+                'uid': state.get('uid'),
+                'server_id': state.get('server_id'),
+                'name': state.get('name'),
+                'level': player_level(state),
+                'power': int(power),
+                'team': team[:6],
+                'pet': self.battle_pet(state),
+                'guild_skills': guild_lab.skills(state),
+                'chime_bonus': chimes.bonus(state),
+            }
+
+    def ensure_pvp_arena3v3(self):
+        """Initialize original 3v3 entry rewards exactly once, without creating NPC ladder data."""
+        with self.lock:
+            self.db.execute('BEGIN IMMEDIATE')
+            try:
+                state = self._load()
+                if 'arena3v3' not in state:
+                    state['arena3v3'] = {'teams': []}
+                    for item_id, amount in arena3v3.OPEN.items():
+                        key = str(item_id)
+                        state.setdefault('items', {})[key] = int(state['items'].get(key, 0)) + int(amount)
+                    self._save_profile(state)
+                    self.db.commit()
+                else:
+                    # Preserve legacy player's previous unlock/ticket grant and stored teams.
+                    state['arena3v3'].setdefault('teams', [])
+                    if not isinstance(state['arena3v3']['teams'], list):
+                        raise GameError('Dữ liệu đội hình 3v3 bị lỗi; vui lòng liên hệ QTV.')
+                    self.db.commit()
+                return {'teams': self.pvp_arena3v3_teams(),
+                        'ticket_cost': arena3v3.COST,
+                        'tickets': int(state.get('items', {}).get('34', 0))}
+            except Exception:
+                self.db.rollback()
+                raise
+
+    def pvp_arena3v3_teams(self):
+        """Return the saved three-team formation as owned partner IDs/positions only."""
+        with self.lock:
+            state = self._load()
+            raw = (state.get('arena3v3') or {}).get('teams') or []
+            if not raw:
+                return []
+            owned = {int(x['partner_id']) for x in state.get('partners', [])}
+            try:
+                return arena3v3.check_teams(raw, owned)
+            except (ValueError, TypeError, KeyError) as exc:
+                raise GameError('Đội hình 3v3 đã lưu không còn hợp lệ. Vui lòng thiết lập lại.') from exc
+
+    def save_pvp_arena3v3_teams(self, teams):
+        """Persist exactly three non-overlapping teams in this player's authoritative profile."""
+        if not isinstance(teams, list) or len(teams) != 3:
+            raise GameError('Đấu Trường 3v3 cần đúng 3 đội hình.')
+        with self.lock:
+            self.db.execute('BEGIN IMMEDIATE')
+            try:
+                state = self._load()
+                owned = {int(x['partner_id']) for x in state.get('partners', [])}
+                clean = arena3v3.check_teams(teams, owned)
+                state.setdefault('arena3v3', {})['teams'] = clean
+                self._save_profile(state)
+                self.db.commit()
+                return {'teams': clean, 'team_count': len(clean),
+                        'goddess_count': sum(len(x) for x in clean)}
+            except Exception as exc:
+                self.db.rollback()
+                if isinstance(exc, (GameError, ValueError)):
+                    raise GameError(str(exc)) from exc
+                raise
+
+    def pvp_arena3v3_snapshot(self):
+        """Build all 3 saved teams from the real roster; no robots/NPCs or client-supplied stats."""
+        with self.lock:
+            state = self._load()
+            saved = self.pvp_arena3v3_teams()
+            if len(saved) != 3:
+                raise GameError('Hãy thiết lập và lưu đủ 3 đội hình trước khi ghép trận.')
+            by_id = {int(x['partner_id']): x for x in state.get('partners', [])}
+            teams = []
+            for row in saved:
+                units = []
+                for slot in sorted(row, key=lambda x: int(x['pos'])):
+                    partner = by_id.get(int(slot['partner_id']))
+                    if not partner:
+                        raise GameError('Một Nữ Thần trong đội 3v3 không còn thuộc tài khoản.')
+                    unit = copy.deepcopy(partner)
+                    unit['pos'] = int(slot['pos'])
+                    units.append(unit)
+                teams.append(units)
+            power = sum(40 * max(1, int(x.get('lv') or 1)) + 60 for team in teams for x in team)
+            return {'uid': state.get('uid'), 'server_id': state.get('server_id'),
+                    'name': state.get('name'), 'level': player_level(state),
+                    'power': int(power), 'teams': teams, 'pet': self.battle_pet(state),
+                    'guild_skills': guild_lab.skills(state), 'chime_bonus': chimes.bonus(state)}
+
+    def pay_pvp_arena3v3_ticket(self, match_id, uid):
+        """Debit this player's 3 Arena Tickets and mark payment atomically in Neon."""
+        separate_live = not isinstance(self.db, ScopedPostgresPlayerDB)
+        with self.lock:
+            self.db.execute('BEGIN IMMEDIATE')
+            live_db = None
+            try:
+                state = self._load()
+                if str(state.get('uid') or '') != str(uid):
+                    raise GameError('Tài khoản hiện tại không khớp trận 3v3.')
+                if separate_live:
+                    live_db = live_service._db()
+                    live_db.execute('BEGIN IMMEDIATE')
+                else:
+                    live_db = self.db.borrowed_live_transaction()
+                progress = live_service.mark_pvp_arena3v3_paid(live_db, match_id, uid)
+                current = int(state.setdefault('items', {}).get('34', 0))
+                if progress.get('newly_paid'):
+                    if current < arena3v3.COST:
+                        raise GameError(f'Cần {arena3v3.COST} Vé Đấu Trường để tham gia loạt 3v3.')
+                    state['items']['34'] = current - arena3v3.COST
+                    self._save_profile(state)
+                if separate_live:
+                    live_db.commit()
+                self.db.commit()
+                return {'series': progress, 'ticket_cost': arena3v3.COST,
+                        'tickets_left': int(state['items']['34'])}
+            except Exception as exc:
+                try: self.db.rollback()
+                except Exception: pass
+                if separate_live and live_db is not None:
+                    try: live_db.rollback()
+                    except Exception: pass
+                if isinstance(exc, (GameError, ValueError)):
+                    raise GameError(str(exc)) from exc
+                raise
+            finally:
+                if separate_live and live_db is not None:
+                    try: live_db.close()
+                    except Exception: pass
+
+    def claim_live_mail(self, mail_id):
+        with self.lock:
+            self.db.execute('BEGIN IMMEDIATE')
+            try:
+                state = self._load()
+                uid = state.setdefault('uid', 'GXB3-000001')
+                server_id = state.setdefault('server_id', 'S1')
+                profile = live_service.player(uid, server_id)
+                if profile and profile.get('status') == 'banned':
+                    raise GameError('Tài khoản đang bị khóa')
+                # Neon: claim + reward update are one transaction, so a failed
+                # player-save cannot leave a paid/GM mail marked claimed.
+                # ScopedPostgresPlayerDB is a player-persistence adapter, not
+                # a live_service.DBConnection and has no .backend attribute.
+                # Borrow its active PostgreSQL connection so claiming the mail
+                # and persisting rewards are ONE atomic transaction.
+                live_db = self.db.borrowed_live_transaction() if isinstance(
+                    self.db, ScopedPostgresPlayerDB) else None
+                attachments = live_service.claim_mail(str(mail_id), uid, server_id,
+                    db=live_db)
+                inventory = dict(attachments)
+                special_gift = inventory.pop('__gxb3_goddess__', None)
+                gifted = None
+                if special_gift is not None:
+                    from . import goddess_gifts
+                    gifted = goddess_gifts.grant(state, special_gift, self.level_cap)
+                vip.claim_reward(state, inventory)
+                for item_id, amount in inventory.items():
+                    state['items'][str(item_id)] = int(state['items'].get(str(item_id), 0)) + int(amount)
+                self._save_profile(state)
+                self.db.commit()
+            except Exception:
+                self.db.rollback()
+                raise
+        return {'state': self.snapshot(), 'attachments': attachments,
+                'goddess': gifted}
+
+    def bag_use_options(self, item_id):
+        from . import bag_use
+        return bag_use.describe(item_id)
+
+    def use_bag_item(self, item_id, reward_id=None, count=1):
+        """Server-authoritative original game reward rules; never trust client data."""
+        from . import bag_use
+        with self.lock:
+            self.db.execute('BEGIN IMMEDIATE')
+            try:
+                state = self._load()
+                try:
+                    rewards = bag_use.open_in_state(state, item_id, count, reward_id)
+                except ValueError as exc:
+                    raise GameError(str(exc)) from exc
+                self._save_profile(state)
+                self.db.commit()
+            except Exception:
+                self.db.rollback()
+                raise
+        return {'state': self.snapshot(),
+                'used': {'item_id': int(item_id), 'count': int(count)},
+                'rewards': rewards}
 
     def growth_diary_action(self, request):
         if not isinstance(request, dict): raise GameError('Datos inválidos')
@@ -358,8 +610,8 @@ class Engine:
                 self.db.rollback();raise
             return {'state':self.snapshot(),**result}
 
-    def developer_action(self, request):
-        if not self.developer: raise GameError('Activa la partida de desarrollo')
+    def developer_action(self, request, *, super_gm=False):
+        if not self.developer and not super_gm: raise GameError('Chỉ SUPER GM mới có quyền dùng công cụ này')
         with self.lock:
             state = self._load()
             action = request.get('action')
@@ -470,6 +722,75 @@ class Engine:
         attrs = self._attributes(state, rows, guild_skills=guild_lab.skills(state))
         return {pid: int(a.get('power', 0)) for pid, a in attrs.items()}
 
+    def level_up_max(self, partner_id):
+        """One atomic click: level up and advance regular grade as far as the
+        ORIGINAL exp_partner/partner tables and current inventory allow.
+
+        No star ascension, sacrificial partners, or premium-item creation. Uses
+        the same level/grade costs as PARTNER_LEVUP and PARTNER_GRADEUP for any
+        present or future table_id. Never silently changes another character.
+        """
+        pid = integer(partner_id, 'partner_id', 1)
+        with self.lock:
+            self.db.execute('BEGIN IMMEDIATE')
+            try:
+                state = self._load()
+                host = next((g for g in state['partners'] if int(g['partner_id']) == pid), None)
+                if host is None:
+                    raise GameError('Không tìm thấy Nữ Thần của tài khoản')
+                row = TABLES['partner'].get(str(host['table_id']))
+                if row is None:
+                    raise GameError('Dữ liệu Nữ Thần chưa có trong bản gốc')
+                before_lv, before_grade = int(host['lv']), int(host.get('grade', 0))
+                spent: dict[str, int] = {}
+                promoted = 0
+                # Limit iteration for malformed tables: 666 levels + <=10 grades.
+                for _ in range(750):
+                    cap = self.level_cap(host)
+                    if int(host['lv']) >= cap:
+                        grade = int(host.get('grade', 0))
+                        if grade >= int(row.get('max_grade') or 0):
+                            break
+                        raw = row.get(f'grade_exp{grade+1}')
+                        if not raw:
+                            break
+                        cost = {str(k): local_config.scale_cost(v) for k, v in item_pairs(raw).items()}
+                        if not cost or any(int(state['items'].get(k, 0)) < n for k, n in cost.items()):
+                            break
+                        for key, n in cost.items():
+                            state['items'][key] = int(state['items'].get(key, 0)) - n
+                            spent[key] = spent.get(key, 0) + n
+                        host['grade'] = grade + 1
+                        promoted += 1
+                        continue
+                    target = str(int(host['lv']) + 1)
+                    stage = TABLES['exp_partner'].get(target)
+                    if not stage:
+                        break
+                    raw = item_pairs(stage.get('cost') or '')
+                    cost = {str(k): local_config.scale_cost(n) for k, n in raw.items()}
+                    if not cost or any(int(state['items'].get(k, 0)) < n for k, n in cost.items()):
+                        break
+                    for key, n in cost.items():
+                        state['items'][key] = int(state['items'].get(key, 0)) - n
+                        spent[key] = spent.get(key, 0) + n
+                    host['lv'] = int(host['lv']) + 1
+                else:
+                    raise GameError('Dữ liệu giới hạn cấp không hợp lệ')
+                gained = int(host['lv']) - before_lv
+                if not gained and not promoted:
+                    raise GameError('Nữ Thần đã đạt giới hạn hoặc không đủ tài nguyên nâng cấp')
+                self._save_profile(state)
+                self.db.commit()
+            except Exception:
+                self.db.rollback()
+                raise
+        return {'state': self.snapshot(), 'partner_id': pid, 'levels_gained': gained,
+                'grades_gained': promoted, 'from_level': before_lv,
+                'to_level': int(host['lv']), 'from_grade': before_grade,
+                'to_grade': int(host.get('grade', 0)), 'cost': spent,
+                'max_level_for_current_stars': self.level_cap(host)}
+
     def partner_attributes(self, partner_id):
         with self.lock:
             state = self._load()
@@ -507,6 +828,43 @@ class Engine:
                 'level_cap_before': self.level_cap(before), 'level_cap_after': self.level_cap(after),
                 'local': bool(recipe.get('local'))}
 
+    def profile_unlocks(self, state):
+        """Profile cosmetics unlocked by actual collection/roster progress.
+
+        Heads/frames follow Collection types 3/4. Girl portraits unlock when the
+        corresponding Girl (or a released avatar variant of that Girl) is owned.
+        The currently equipped cosmetic remains valid for legacy saves.
+        """
+        got = collection_mod.owned_ids(state)
+        heads = {'head_1001'}
+        frames = set()
+        for cid, typ, item, _points in collection_mod.ROWS:
+            if cid not in got:
+                continue
+            if int(typ) == 3:
+                raw = int(item)
+                hid = raw if raw < 100000 else raw % 10000
+                if hid:
+                    heads.add(f'head_{hid}')
+            elif int(typ) == 4:
+                frames.add(f'frame_{int(item)}')
+        owned_ids = {str(int(p.get('table_id', 0))) for p in state.get('partners', []) if int(p.get('table_id', 0) or 0)}
+        partners = set()
+        for name in PROFILE_CATALOG.get('partners', []):
+            suffix = str(name).removeprefix('partner_avatar_')
+            if any(suffix == tid or suffix.startswith(tid) for tid in owned_ids):
+                partners.add(name)
+        current = state.get('profile') or {}
+        avatar = str(current.get('avatar') or '')
+        frame = str(current.get('frame') or '')
+        if avatar.startswith('head_'):
+            heads.add(avatar)
+        elif avatar.startswith('partner_avatar_'):
+            partners.add(avatar)
+        if frame:
+            frames.add(frame)
+        return {'heads': sorted(heads), 'partners': sorted(partners), 'frames': sorted(frames)}
+
     def update_profile(self, changes):
         if not isinstance(changes, dict) or not changes or set(changes) - {'name', 'signature', 'avatar', 'frame', 'wallpapers', 'wallpaper_random'}:
             raise GameError('Campos de perfil inválidos')
@@ -530,25 +888,93 @@ class Engine:
                     if not 1 <= len(value) <= 20 or any(ord(c) < 32 for c in value):
                         raise GameError('El nombre debe tener entre 1 y 20 caracteres')
                     state['name'] = value
+                    try: live_service.register_player(state.get('uid','GXB3-000001'), state.get('server_id','S1'), value)
+                    except Exception: pass
                 elif key == 'signature':
                     if len(value) > 100 or any(ord(c) < 32 and c != '\n' for c in value):
                         raise GameError('La firma debe tener como máximo 100 caracteres')
                     profile['signature'] = value
                 elif key == 'avatar':
-                    if value not in PROFILE_CATALOG['heads'] and value not in PROFILE_CATALOG['partners']:
-                        raise GameError('Icono de perfil desconocido')
+                    # The photo token belongs to THIS saved profile, not another
+                    # player. Client-provided links/paths can never be selected.
+                    if value == profile.get('uploaded_avatar') and isinstance(value, str) and value.startswith('custom_'):
+                        from . import profile_photos
+                        if profile_photos.read(value) is None:
+                            raise GameError('Ảnh đã tải không còn tồn tại, hãy tải ảnh mới.')
+                    else:
+                        if value not in PROFILE_CATALOG['heads'] and value not in PROFILE_CATALOG['partners']:
+                            raise GameError('Avatar không hợp lệ')
+                        unlocked = self.profile_unlocks(state)
+                        if value not in unlocked['heads'] and value not in unlocked['partners']:
+                            raise GameError('Avatar này chưa được mở khóa')
                     profile['avatar'] = value
                 elif key == 'frame':
                     if value not in PROFILE_CATALOG['frames']:
-                        raise GameError('Marco de perfil desconocido')
+                        raise GameError('Khung avatar không hợp lệ')
+                    if value not in self.profile_unlocks(state)['frames']:
+                        raise GameError('Khung avatar này chưa được mở khóa')
                     profile['frame'] = value
             self._save_profile(state)
             self.db.commit()
         return self.snapshot()
 
+    def update_uploaded_avatar(self, avatar_key):
+        """Atomically switch this one UID/world to a new server-owned photo."""
+        from . import profile_photos
+        if not profile_photos.AVATAR_RE.fullmatch(str(avatar_key)):
+            raise GameError('Mã ảnh đại diện không hợp lệ')
+        with self.lock:
+            self.db.execute('BEGIN IMMEDIATE')
+            try:
+                state = self._load()
+                profile = state.setdefault('profile', {})
+                previous = profile.get('uploaded_avatar', '')
+                profile['uploaded_avatar'] = avatar_key
+                profile['avatar'] = avatar_key
+                self._save_profile(state)
+                self.db.commit()
+            except Exception:
+                self.db.rollback()
+                raise
+        return self.snapshot(), previous
+
+    def clear_uploaded_avatar(self):
+        """Remove only this saved photo; leave all original unlocks and frames."""
+        with self.lock:
+            self.db.execute('BEGIN IMMEDIATE')
+            try:
+                state = self._load()
+                profile = state.setdefault('profile', {})
+                previous = str(profile.pop('uploaded_avatar', '') or '')
+                if profile.get('avatar') == previous and previous:
+                    profile['avatar'] = 'head_1001'
+                self._save_profile(state)
+                self.db.commit()
+            except Exception:
+                self.db.rollback()
+                raise
+        return self.snapshot(), previous
+
     def snapshot(self):
         with self.lock:
             state = self._load()
+        state.setdefault('uid', 'GXB3-000001')
+        state.setdefault('server_id', 'S1')
+        try:
+            # Authenticated PlayerEngine instances are only created after auth.session
+            # has verified the UID + server and the live player row. Re-upserting that
+            # same player on every snapshot adds a write transaction to every action.
+            # Keep registration for the legacy shared/developer engine only.
+            if not self.identity:
+                player = live_service.register_player(state['uid'], state['server_id'], state['name'])
+                state['account_status'] = player.get('status','active') if player else 'active'
+            else:
+                state['account_status'] = 'active'  # current account status is enforced by auth_context()
+            state['mail_info'] = live_service.mailbox(state['uid'], state['server_id'])
+            state['worlds'] = live_service.worlds()
+        except Exception:
+            state['account_status'] = 'active'; state['mail_info'] = []; state['worlds'] = []
+        state['profile_unlocks'] = self.profile_unlocks(state)
         state['home_systems'] = home_systems.snapshot(state, now=self.now())
         state['event_hub'] = events.snapshot(state, now=self.now())
         state['hang_info'] = campaign.pending(state, now=self.now())
@@ -565,7 +991,7 @@ class Engine:
         state['fantasy_book_info'] = fantasy_book.snapshot(_probe, player_level(state), _roster, self.now())
         state['shops_info'] = shops.snapshot(state, player_level(state), self.now())
         state['arena_info'] = arena.snapshot(state, player_level(state), self.now())
-        state['arena3v3_info'] = arena3v3.snapshot(state, player_level(state), self.now())
+        state['arena3v3_info'] = arena3v3.online_snapshot(state)
         state['patrol_info'] = patrol.snapshot(state, self.now())
         state['house_dress_info'] = house_dress.snapshot(state)
         state['guild_lab_info'] = guild_lab.snapshot(state)
@@ -647,15 +1073,20 @@ class Engine:
         state['roster'] = []
         for partner in state['partners']:
             row = TABLES['partner'][str(partner['table_id'])]
-            cost = item_pairs(TABLES['exp_partner'][str(partner['lv'] + 1)]['cost']) if partner['lv'] < self.level_cap(partner) else {}
+            cost = {k: local_config.scale_cost(v) for k, v in item_pairs(TABLES['exp_partner'][str(partner['lv'] + 1)]['cost']).items()} if partner['lv'] < self.level_cap(partner) else {}
             stars = int(row['max_star']) + int(partner.get('awake', 0))
             grade, max_grade = int(partner.get('grade', 0)), int(row.get('max_grade') or 0)
-            awake = ASCENSION.get(f"{partner['table_id']}:{stars+1}") or local_promotion.recipe(partner) or self.awake_recipe(partner)
+            awake = (COMPOSE_BY_SOURCE.get(int(partner['table_id'])) if stars in (4, 5) and not int(partner.get('awake', 0)) else None) or ASCENSION.get(f"{partner['table_id']}:{stars+1}") or local_promotion.recipe(partner) or self.awake_recipe(partner)
+            if awake and awake.get('kind') == 'compose':
+                target_row = TABLES['partner'].get(str(awake.get('target') or ''), {})
+                awake = {**awake, 'target_level_cap': int(target_row.get('max_lv') or self.level_cap(partner))}
+            if awake and awake.get('cost'):
+                awake = {**awake, 'cost': {str(k): local_config.scale_cost(v) for k, v in awake['cost'].items()}}
             state['roster'].append({**partner, 'name': TABLES['names'].get(str(partner['table_id']), str(partner['table_id'])),
                                     'local_promotion': int(partner['table_id']) in local_promotion.BASE, 'stars': stars, 'level_cap': self.level_cap(partner), 'next_cost': cost,
-                                    'group': int(row['group']), 'job': int(row['job']), 'max_grade': max_grade,
-                                    'grade_cost': item_pairs(row.get(f'grade_exp{grade+1}')) if grade < max_grade else {},
-                                    'next_awake': awake if awake and awake.get('kind') == 'awake' else None,
+                                    'group': int(row['group']), 'job': int(row['job']), 'awake25_identity': [list(x) for x in self.awake25_identity(row)], 'awake25_valid_goddess': self.awake25_valid_goddess(row), 'max_grade': max_grade,
+                                    'grade_cost': {k: local_config.scale_cost(v) for k, v in item_pairs(row.get(f'grade_exp{grade+1}')).items()} if grade < max_grade else {},
+                                    'next_awake': awake if awake and awake.get('kind') in ('awake', 'compose') else None,
                                     'star_10': int(row.get('star_10') or 0), 'astral_list': int(row.get('star_origin') or 0) if stars >= 15 else 0, 'namesake': int(str(row.get('material') or '').split('|')[0] or 0) if int(row['max_star']) > 5 else int(partner['table_id']), 'potential_options': [[int(x) for x in st.split('#') if x] for st in str(row.get('potential') or '').split('|') if st] if int(row['max_star']) == 10 else [],
                                     'has_ex_skills': stars >= 10 and str(row.get('ex_skill')) == '1', 'gift_like': str(row.get('gift_type1') or ''),
                                     'ex_skill_cost': item_pairs(EXSKILL['cost'].get(str(min((partner.get('ex_skills') or [0])) + 1), '')),
@@ -671,6 +1102,16 @@ class Engine:
                    {'key': 'exam', 'label': 'House Exams season ends', 'at': (state.get('house_exam_info') or {}).get('season_end', 0)}]
         state['calendar_info'] = game_calendar.snapshot(self.now(), _resets)
         state['bots_info'] = bots.snapshot(state, player_level(state), self.now())  # simulated players: rankings and chat (LOCAL-085)
+        if not self.developer:
+            try:
+                state['power'] = self._friend_power(state)
+                live_service.touch_presence(state['uid'], state['server_id'], state['name'], state['level'], state['power'])
+                state['online_count'] = len(live_service.online_players(state['server_id']))
+                state['leaderboard_preview'] = live_service.leaderboard(state['server_id'], 20)
+            except Exception:
+                state['power'] = int(state.get('power', 0))
+                state['online_count'] = 0
+                state['leaderboard_preview'] = []
         return state
 
     def tower_info(self, state):
@@ -1349,6 +1790,73 @@ class Engine:
             if reports: result['report'] = reports[-1]
             return {'state': self.snapshot(), **result}
 
+    def world_guild_activity_action(self, request, uid, server_id):
+        """Shared Neon Guild Cafeteria/Gym. Player rewards and Guild progress share one PG transaction."""
+        if not isinstance(request, dict):
+            raise GameError('Dữ liệu hoạt động Bang Hội không hợp lệ')
+        with self.lock:
+            self.db.execute('BEGIN IMMEDIATE')
+            live_db = None
+            separate_live = not isinstance(self.db, ScopedPostgresPlayerDB)
+            reports = []
+            try:
+                state = self._load()
+                if separate_live:
+                    # SQLite is used only by isolated tests/dev; production PlayerEngine
+                    # uses ScopedPostgresPlayerDB and one borrowed Neon transaction.
+                    live_db = live_service._db()
+                    live_db.execute('BEGIN IMMEDIATE')
+                else:
+                    live_db = self.db.borrowed_live_transaction()
+
+                def fight(row):
+                    formation = self.validate_formation(state, state['formation'])
+                    owned = {x['partner_id']: x for x in state['partners']}
+                    team_a = [{**copy.deepcopy(owned[x['partner_id']]), 'pos': x['pos']} for x in formation]
+                    battle = TABLES['battle'][str(row['battle_id'])]
+                    team_b = [{'table_id': int(t), 'pos': int(q), 'isMonster': True}
+                              for t, q in zip(str(battle['monsters']).split('|'), str(battle['stands']).split('|'))]
+                    report = self._simulate(state, team_a, team_b, int(row['battle_id']),
+                                            secrets.randbelow(233280), self.battle_pet(state),
+                                            guild_skills_a=guild_lab.skills(state))
+                    report['map_asset'] = battle['map']; report['display_units'] = []
+                    for side in ('teamA', 'teamB'):
+                        for unit in report[side]:
+                            tid = int(TABLES['monster'][str(unit['table_id'])]['partner_link']) if unit.get('isMonster') else unit['table_id']
+                            report['display_units'].append({'pos': unit['pos'] + (6 if side == 'teamB' else 0),
+                                                            'table_id': tid,
+                                                            'name': TABLES['names'].get(str(tid), f'Quái vật {tid}'),
+                                                            'level': unit['level']})
+                    growth_diary.record(state, 'growth_guild_damage',
+                                        int(report.get('total_harm') or sum(int(h.get('hurt', 0)) for h in report.get('hurts', []) if int(h.get('pos', 0)) <= 6)))
+                    mark_bosses(report)
+                    reports.append(report)
+                    return bool(report.get('isWin')), len(reports) - 1
+
+                result = live_service.guild_activity_action_db(
+                    live_db, uid, server_id, state, request, self.now(), fight)
+                self._save_profile(state)
+                if separate_live:
+                    live_db.commit()
+                self.db.commit()
+            except Exception as exc:
+                try: self.db.rollback()
+                except Exception: pass
+                if separate_live and live_db is not None:
+                    try: live_db.rollback()
+                    except Exception: pass
+                if isinstance(exc, (ValueError, GameError)):
+                    raise GameError(str(exc)) from exc
+                raise
+            finally:
+                if separate_live and live_db is not None:
+                    try: live_db.close()
+                    except Exception: pass
+            result.pop('report_index', None)
+            if reports:
+                result['report'] = reports[-1]
+            return {'state': self.snapshot(), **result}
+
     def pirate_action(self, request):
         """Deep Sea Treasures (gxb2/pirate.py): raid a land, collection rewards, daily compasses, free pack."""
         if not isinstance(request, dict): raise GameError('Datos inválidos')
@@ -1653,6 +2161,83 @@ class Engine:
                 raise
             return {'state': self.snapshot(), **result}
 
+
+    def gift_skin_crystal(self, request):
+        """One Neon transaction: debit sender Crystal, mail recipient, save receipt."""
+        import uuid
+        from . import skin_gifts, live_service
+        if not isinstance(request, dict):
+            raise GameError("Dữ liệu GiftSkin không hợp lệ")
+        if not isinstance(self.db, ScopedPostgresPlayerDB):
+            raise GameError("GiftSkin Crystal yêu cầu lưu trữ Neon PostgreSQL")
+        request_id = str(request.get("request_id") or "")
+        if not skin_gifts.REQUEST_RE.fullmatch(request_id):
+            raise GameError("Mã giao dịch GiftSkin không hợp lệ")
+        with self.lock:
+            self.db.execute("BEGIN IMMEDIATE")
+            try:
+                state = self._load()
+                sender = str(state.get("uid") or "")
+                world = str(state.get("server_id") or "").upper()
+                if sender != self.db.uid or world != self.db.server_id:
+                    raise GameError("Phiên người tặng không hợp lệ")
+                live_db = self.db.borrowed_live_transaction()
+                if live_db is None:
+                    raise GameError("Giao dịch Neon chưa sẵn sàng")
+                skin_gifts.ensure_crystal_receipts(live_db)
+                existing = live_db.execute(
+                    "SELECT * FROM skin_gift_crystal_receipts WHERE request_id=?",
+                    (request_id,)).fetchone()
+                if existing:
+                    if (existing["sender_uid"] != sender or existing["sender_server"] != world
+                        or existing["recipient_public_uid"] != str(request.get("recipient_uid") or "").strip().upper()
+                        or existing["recipient_server"] != str(request.get("recipient_server") or "").strip().upper()
+                        or existing["recipient_name"].casefold() != str(request.get("recipient_name") or "").strip().casefold()
+                        or str(existing["skin_id"]) != str(request.get("skin_id"))):
+                        raise GameError("Mã giao dịch đã được sử dụng cho đơn khác")
+                    receipt = {"request_id":request_id,"mail_id":existing["mail_id"],
+                        "price_crystal":int(existing["price_crystal"]),"delivery":"mail","replayed":True}
+                    self.db.commit()
+                    return {"state":self.snapshot(), **receipt}
+                recipient = skin_gifts.verify(sender,request.get("recipient_uid"),
+                    request.get("recipient_name"),request.get("recipient_server"))
+                item, price = skin_gifts.listing_for(request.get("skin_id"),"crystal")
+                if skin_gifts.recipient_has_skin(
+                    live_db, recipient["uid"], recipient["server_id"], item["skin_id"]
+                ):
+                    raise GameError("Người nhận đã sở hữu trang phục này; không thể tặng trùng")
+                items = state.setdefault("items",{})
+                if int(items.get("2",0)) < price:
+                    raise GameError("Không đủ Crystal để tặng trang phục")
+                items["2"] = int(items.get("2",0)) - price
+                sid = int(item["skin_id"])
+                now = int(time.time())
+                mail_id = "MAIL-" + uuid.uuid4().hex[:16].upper()
+                live_db.execute("""INSERT INTO mail
+                    (id,uid,server_id,character_name,title,body,attachments,status,created_at,operator)
+                    VALUES(?,?,?,?,?,?,?,'pending',?,?)""",
+                    (mail_id,recipient["uid"],recipient["server_id"],recipient["character_name"],
+                    "Quà GiftSkin từ người chơi",
+                    "Một người chơi đã tặng trang phục bằng Crystal. Nhận quà qua Hòm Thư.",
+                    json.dumps({str(sid):1}),now,"GIFTSKIN_CRYSTAL"))
+                live_db.execute("""INSERT INTO skin_gift_crystal_receipts
+                    (request_id,sender_uid,sender_server,recipient_uid,recipient_server,
+                     recipient_public_uid,recipient_name,skin_id,price_crystal,mail_id,created_at)
+                    VALUES(?,?,?,?,?,?,?,?,?,?,?)""",
+                    (request_id,sender,world,recipient["uid"],recipient["server_id"],
+                     recipient["display_uid"],recipient["character_name"],sid,price,mail_id,now))
+                live_service._audit(live_db,"giftskin.crystal",f"{world}:{sender}",
+                    {"request_id":request_id,"recipient_uid":recipient["display_uid"],
+                     "recipient_server":recipient["server_id"],"skin_id":sid,
+                     "price_crystal":price,"mail_id":mail_id},"PLAYER")
+                self._save_profile(state)
+                self.db.commit()
+            except Exception:
+                self.db.rollback()
+                raise
+        return {"state":self.snapshot(),"request_id":request_id,"mail_id":mail_id,
+                "price_crystal":price,"delivery":"mail","replayed":False}
+
     def skins_action(self, request):
         """Girl skins (gxb2/skins.py): wear / take off (equipments[7]) and show_skin."""
         if not isinstance(request, dict): raise GameError('Datos inválidos')
@@ -1661,6 +2246,42 @@ class Engine:
             try:
                 state = self._load()
                 result = skins.action(state, request)
+                # For the production Neon player database, keep Crystal debit,
+                # mail award and the player-save inside one Postgres transaction.
+                # Never deliver directly AND via mail (would duplicate paid skins).
+                if (request.get('action') == 'buy' and request.get('payment') == 'crystal'
+                        and isinstance(self.db, ScopedPostgresPlayerDB)):
+                    import uuid
+                    sid = int(request['skin'])
+                    inventory = state.setdefault('items', {})
+                    inventory[str(sid)] = int(inventory.get(str(sid), 0)) - 1
+                    if inventory[str(sid)] < 0:
+                        raise GameError('Không thể xác nhận trang phục vừa mua')
+                    from . import skin_store
+                    if skin_store.is_wedding(sid):
+                        raise GameError('Không thể mua trang phục cưới độc quyền')
+                    live_db = self.db.borrowed_live_transaction()
+                    if live_db is None:
+                        raise GameError('Chưa sẵn sàng giao dịch Hòm Thư')
+                    mail_id = 'MAIL-' + uuid.uuid4().hex[:16].upper()
+                    uid = str(state.get('uid') or '')
+                    world = str(state.get('server_id') or '').upper()
+                    if not uid or not world:
+                        raise GameError('Phiên nhân vật không hợp lệ')
+                    name = str(state.get('name') or '')
+                    now = int(time.time())
+                    live_db.execute("""INSERT INTO mail
+                      (id,uid,server_id,character_name,title,body,attachments,status,created_at,operator)
+                      VALUES (?,?,?,?,?,?,?,'pending',?,?)""",
+                      (mail_id,uid,world,name,'Trang phục mua bằng Crystal',
+                       'Đã thanh toán Crystal thành công. Vào Hòm Thư để nhận trang phục.',
+                       json.dumps({str(sid):1}),now,'SKIN_SHOP'))
+                    live_service._audit(live_db,'skin_shop.crystal_mail',f'{world}:{uid}',
+                        {'mail_id':mail_id,'skin_id':sid,'crystal':result.get('purchase',{}).get('price',0)},
+                        'SKIN_SHOP')
+                    result['mail_id'] = mail_id
+                    result['delivery'] = 'mail'
+                    result['got'] = {}
                 self._save_profile(state)
                 self.db.commit()
             except Exception:
@@ -1816,7 +2437,7 @@ class Engine:
                                                     'table_id': tid, 'name': TABLES['names'].get(str(tid), f'Enemigo {tid}'),
                                                     'level': unit['level']})
             win = bool(report['isWin'])
-            rewards = quiz_reward_pairs(row['reward']) if win and not practice else {}
+            rewards = {k: local_config.scale_reward(v) for k, v in quiz_reward_pairs(row['reward']).items()} if win and not practice else {}
             if not practice:
                 now = self.now()
                 tickets = info['tickets'] - 1
@@ -1909,7 +2530,7 @@ class Engine:
                                       'name': TABLES['names'].get(str(tid), f'Enemigo {tid}'), 'level': unit['level']})
                 report['display_units'] = units
             win = bool(sweep or report['isWin'])
-            rewards = quiz_reward_pairs(stage['awards']) if win and not practice else {}
+            rewards = {k: local_config.scale_reward(v) for k, v in quiz_reward_pairs(stage['awards']).items()} if win and not practice else {}
             if not practice and win:
                 try:
                     self.db.execute('BEGIN IMMEDIATE')
@@ -1985,7 +2606,8 @@ class Engine:
                 add('10', math.floor(item_pairs(row.get(f'grade_exp{i}') or '').get(10, 0) * 0.7))
             if star < 10:
                 for i in range(int(g.get('awake', 0))):
-                    rec = ASCENSION.get(f"{g['table_id']}:{int(row['max_star']) + i + 1}") or {}
+                    rec = (ASCENSION.get(f"{g['table_id']}:{int(row['max_star']) + i + 1}")
+                           or self.awake_recipe({**g, 'awake': i}) or {})
                     add('10', math.floor(int((rec.get('cost') or {}).get('10', 0)) * 0.7))
             add('9', math.floor(0.65 * int(str(TABLES['exp_partner'][str(g['lv'])]['all_exp']).split('#')[1])))
         return got, six
@@ -1996,12 +2618,91 @@ class Engine:
         got, six = self.altar_returns(state, (request or {}).get('partner_ids'))
         return {'items': got, 'six': six, 'six_left': 5 - int((state.get('altar') or {}).get('six', 0) if (state.get('altar') or {}).get('day') == clock.day(self.now()) else 0)}
 
+    @staticmethod
+    def awake25_identity(row):
+        """Stable character identity across the 5★, 6★ and native 10★ table rows."""
+        hero = tuple(sorted(x for x in str(row.get('hero_list') or '').split('|') if x))
+        data = tuple(sorted(x for x in str(row.get('partner_data_id') or '').split('|') if x))
+        return hero, data
+
+    def awake25_same_character(self, host_row, candidate_row):
+        if int(host_row.get('group') or 0) != int(candidate_row.get('group') or 0):
+            return False
+        host_hero, host_data = self.awake25_identity(host_row)
+        cand_hero, cand_data = self.awake25_identity(candidate_row)
+        if host_hero or cand_hero:
+            return bool(host_hero and cand_hero and host_hero == cand_hero)
+        return bool(host_data and cand_data and host_data == cand_data)
+
+    @staticmethod
+    def awake25_valid_goddess(row):
+        # Exclude auxiliary/NPC records without a playable character identity.
+        hero, data = Engine.awake25_identity(row)
+        return bool(int(row.get('group') or 0) in range(1, 7)
+                    and row.get('show_in_guide') and (hero or data))
+
     def awake_recipe(self, partner):
-        """11–15★: awake_material / stone_material of the 10★ row (ASCENSION covers 6–10★)."""
+        """11–15★ native recipes; 16–25★ use two separately validated material groups."""
         row = TABLES['partner'][str(partner['table_id'])]
         awake = int(partner.get('awake', 0))
+        base_star = int(row['max_star'])
+        if base_star == 6:
+            # Some reissued 6★ Goddesses (e.g. Lord Dracula 651024) have their
+            # ORIGINAL 7–10★ recipes in partner.awake_material/stone_material,
+            # but were omitted from the recovered ascension.json index.
+            # ASCENSION takes precedence wherever an explicit native row exists.
+            materials = [part for part in str(row.get('awake_material') or '').split('|') if part]
+            if not 0 <= awake < min(4, len(materials)):
+                return None
+            cost_stages = str(row.get('stone_material') or '').split('|')
+            # Resolve the canonical 10★ form from the base 5★ character, never
+            # infer an unrelated 10★ by name, faction, or sequential ID.
+            base_id = str(row.get('material') or '').split('|')[0]
+            base_row = TABLES['partner'].get(base_id) or {}
+            target_id = int(base_row.get('star_10') or 0)
+            target_row = TABLES['partner'].get(str(target_id)) or {}
+            valid_target = (int(target_row.get('max_star') or 0) == 10
+                            and int(target_row.get('group') or 0) == int(row['group']))
+            if awake == 3 and not valid_target:
+                return None
+            try:
+                mat_ids = [int(part) for part in materials[awake].split('#')]
+            except (TypeError, ValueError):
+                return None
+            if not mat_ids or any(x <= 0 for x in mat_ids):
+                return None
+            cost = item_pairs(cost_stages[awake]) if awake < len(cost_stages) else {}
+            return {
+                'kind': 'awake', 'material': mat_ids,
+                'group': int(row['group']), 'star': base_star + awake + 1,
+                'cost': {str(k): int(v) for k, v in cost.items()},
+                'target': target_id if valid_target else None,
+                'target_level_cap': int(target_row['max_lv'])
+                if awake == 3 else None,
+            }
+        if base_star != 10:
+            return None
+
+        current_star = 10 + awake
+        if 5 <= awake < 15:
+            target_star = current_star + 1
+            index = target_star - 16
+            copy_counts = (1, 2, 3, 4, 5, 1, 2, 3, 4, 5)
+            sacrifice_counts = tuple(range(1, 11))
+            costs = (25000, 30000, 35000, 40000, 50000,
+                     60000, 70000, 80000, 90000, 100000)
+            return {
+                'kind': 'awake', 'awake25': True,
+                'copies': copy_counts[index],
+                'sacrifices': sacrifice_counts[index],
+                'group': int(row['group']),
+                'cost': {'10': costs[index]},
+                'star': target_star,
+            }
+
         mats = [m for m in str(row.get('awake_material') or '').split('|') if m]
-        if int(row['max_star']) != 10 or awake >= len(mats): return None
+        if awake >= len(mats):
+            return None
         costs = [c for c in str(row.get('stone_material') or '').split('|') if c]
         cost = {k: v for k, v in item_pairs(costs[awake]).items()} if awake < len(costs) else {}
         return {'kind': 'awake', 'material': [int(x) for x in mats[awake].split('#')], 'group': int(row['group']),
@@ -2054,11 +2755,19 @@ class Engine:
         interval = int(TABLES['summon']['3']['freetime_interval'])
         return {'last_time_3': max(0, state.get('summon_free_at', 0) - interval)}
 
-    def summon_pool(self, dropbox_id):
-        rows = [row for row in TABLES['dropbox'].values() if row['dropbox_id'] == dropbox_id
-                and int(row['weight']) > 0 and str(row['item']).split('#')[0] in TABLES['partner']]
-        if not rows: raise GameError('No hay personajes válidos en la tabla de invocación')
-        return rows, sum(int(row['weight']) for row in rows)
+    def summon_pool(self, dropbox_id, server_id='S1'):
+        rows = []
+        for source in TABLES['dropbox'].values():
+            if source['dropbox_id'] != dropbox_id or str(source['item']).split('#')[0] not in TABLES['partner']:
+                continue
+            weight = world_live_config.summon_weight(source, TABLES['partner'], server_id)
+            if weight <= 0:
+                continue
+            row = dict(source)
+            row['_local_weight'] = weight
+            rows.append(row)
+        if not rows: raise GameError('Pool Triệu Hồi không còn phần thưởng hợp lệ theo cấu hình Local')
+        return rows, sum(int(row['_local_weight']) for row in rows)
 
     def handle(self, name: str, request: dict):
         """Apply one command transactionally; returns response + ordered push packets."""
@@ -2208,8 +2917,9 @@ class Engine:
             if summon_id not in (1, 2, 3, 4, 5, 6, 7, 8, 9, 15, 16) + wish.SUMMONS and not prophet and not fragment_summon: raise GameError('Tipo de invocación no disponible')
             if summon_id in wish.SUMMONS and not wish.data(state)['select']: raise GameError('Please choose your Wish Girl')
             config = TABLES['summon'][str(summon_id)]
-            times = integer(request.get('times', 1), 'times', 1, 10)
-            if times not in (1, 10): raise GameError('Cantidad de invocaciones inválida')
+            times = integer(request.get('times', 1), 'times', 1, 50 if fragment_summon else 10)
+            # Publisher summon data determines every per-draw cost and reward; bulk
+            # use changes only the number of identical original shard summons.
             if not fragment_summon and times != 1: raise GameError('Esta invocación usa un botón de cantidad propio')
             count = int(config['summon_num']) * (times if fragment_summon else 1)
             now = self.now()
@@ -2250,7 +2960,7 @@ class Engine:
                     state['items'][bonus[0]] = int(state['items'].get(bonus[0], 0)) + extra; items[bonus[0]] = items.get(bonus[0], 0) + extra
                 data = {'summon_id': summon_id, 'summon_result': {'items': [{'item_id': int(k), 'item_num': n} for k, n in items.items()]}, 'summon_info': self.summon_info(state)}
                 return [(p.MIDS[name], 'summon_res', data), (p.MIDS['ITEM_CHANGE'], 'item_change_res', self.backpack(state))], None
-            rows, total = self.summon_pool(int(config['dropbox_id']))
+            rows, total = self.summon_pool(int(config['dropbox_id']), state.get('server_id', 'S1'))
             if summon_id == 9 and any(int(TABLES['partner'][str(row['item']).split('#')[0]]['max_star']) != 5 for row in rows):
                 raise GameError('El huevo requiere una tabla de premios de cinco estrellas')
             new = []
@@ -2258,7 +2968,7 @@ class Engine:
             for _ in range(count):
                 draw = secrets.randbelow(total)
                 for row in rows:
-                    draw -= int(row['weight'])
+                    draw -= int(row.get('_local_weight', row['weight']))
                     if draw < 0: break
                 table_id = int(str(row['item']).split('#')[0])
                 if summon_id in wish.SUMMONS: table_id = wish.roll(state, table_id)
@@ -2302,7 +3012,8 @@ class Engine:
             if end > self.level_cap(partner): raise GameError('Se alcanzó el límite de nivel de este prototipo')
             costs = {}
             for level in range(partner['lv']+1, end+1):
-                for key, value in item_pairs(TABLES['exp_partner'][str(level)]['cost']).items(): costs[key] = costs.get(key, 0)+value
+                for key, value in item_pairs(TABLES['exp_partner'][str(level)]['cost']).items():
+                    costs[key] = costs.get(key, 0) + local_config.scale_cost(value)
             for key, value in costs.items():
                 if state['items'].get(str(key), 0) < value: raise GameError('No hay suficientes recursos')
             for key, value in costs.items(): state['items'][str(key)] -= value
@@ -2347,7 +3058,7 @@ class Engine:
             top, costs = (RESONATE['max'], RESONATE['cost']) if cosmic else (EXSKILL['max'], EXSKILL['cost'])
             if skills[index-1] >= top: raise GameError('Habilidad al máximo')
             cost = item_pairs(costs[str(skills[index-1] + 1)])
-            if any(int(state['items'].get(str(k), 0)) < n for k, n in cost.items()): raise GameError('Faltan materiales')
+            if any(int(state['items'].get(str(k), 0)) < n for k, n in cost.items()): raise GameError('Không đủ nguyên liệu')
             for k, n in cost.items(): state['items'][str(k)] = int(state['items'].get(str(k), 0)) - n
             skills[index-1] += 1; host['ex_skills'] = skills
             growth_diary.record(state,'growth_elite_skill')
@@ -2496,7 +3207,7 @@ class Engine:
             grade = int(host.get('grade', 0))
             if grade >= int(row.get('max_grade') or 0): raise GameError('Grado máximo alcanzado')
             if host['lv'] < self.level_cap(host): raise GameError('Sube primero al nivel máximo de este grado')
-            cost = item_pairs(row[f'grade_exp{grade+1}'])
+            cost = {k: local_config.scale_cost(v) for k, v in item_pairs(row[f'grade_exp{grade+1}']).items()}
             if any(int(state['items'].get(str(k), 0)) < n for k, n in cost.items()): raise GameError('Faltan recursos para subir de grado')
             for k, n in cost.items(): state['items'][str(k)] = int(state['items'].get(str(k), 0)) - n
             host['grade'] = grade + 1
@@ -2513,17 +3224,52 @@ class Engine:
             recipe = ASCENSION.get(f"{host['table_id']}:{star+1}") or local_promotion.recipe(host) or self.awake_recipe(host)
             if not recipe or recipe['kind'] != 'awake': raise GameError('Ascensión no disponible para esta chica')
             ids = request.get('material_ids')
-            if not isinstance(ids, list) or len(ids) != len(recipe['material']) or any(type(i) is not int for i in ids) or len(set(ids)) != len(ids) or host_id in ids:
+            if not isinstance(ids, list) or any(type(i) is not int for i in ids) or len(set(ids)) != len(ids) or host_id in ids:
                 raise GameError('Los materiales deben ser chicas distintas de la base')
-            if any(pid not in owned for pid in ids): raise GameError('Falta una chica de la receta')
-            if recipe.get('local'):
-                copies=[pid for pid in ids if owned[pid]['table_id']==host['table_id'] and not int(owned[pid].get('awake',0))]
-                if not copies:raise GameError('Necesitas una copia con sus estrellas iniciales')
-                ids=[copies[0]]+[pid for pid in ids if pid!=copies[0]]
-            used = self.match_materials(owned, ids, recipe['material'], int(recipe['group']))
-            for key, amount in recipe.get('cost', {}).items():
-                if int(state['items'].get(key, 0)) < amount: raise GameError('Faltan recursos para esta ascensión')
-            for key, amount in recipe.get('cost', {}).items(): state['items'][key] -= amount
+            expected = (recipe['copies'] + recipe['sacrifices']) if recipe.get('awake25') else len(recipe['material'])
+            if len(ids) != expected:
+                raise GameError('Cantidad de materiales incorrecta')
+            if any(pid not in owned for pid in ids):
+                raise GameError('Falta una chica de la receta')
+
+            if recipe.get('awake25'):
+                import itertools
+                host_row = TABLES['partner'][str(host['table_id'])]
+                pending_id = (state.get('exchange') or {}).get('partner_id')
+                copy_pool, sacrifice_pool = set(), set()
+                for pid in ids:
+                    girl = owned[pid]
+                    row = TABLES['partner'][str(girl['table_id'])]
+                    actual_star = int(row['max_star']) + int(girl.get('awake', 0))
+                    if acquisition.is_locked(girl) or pid == pending_id:
+                        raise GameError('No puedes usar chicas bloqueadas o en intercambio')
+                    if actual_star in (9, 10) and self.awake25_same_character(host_row, row):
+                        copy_pool.add(pid)
+                    group = int(row.get('group') or 0)
+                    if (8 <= actual_star <= 15 and 1 <= group <= 6
+                            and self.awake25_valid_goddess(row)):
+                        sacrifice_pool.add(pid)
+
+                copy_selection = None
+                for subset in itertools.combinations(ids, recipe['copies']):
+                    chosen = set(subset)
+                    remaining = set(ids) - chosen
+                    if chosen <= copy_pool and remaining <= sacrifice_pool:
+                        copy_selection = chosen
+                        break
+                if copy_selection is None:
+                    raise GameError('Materiales incorrectos: revisa las copias y las Nữ Thần phụ')
+                used = set(ids)
+            else:
+                if recipe.get('local'):
+                    copies=[pid for pid in ids if owned[pid]['table_id']==host['table_id'] and not int(owned[pid].get('awake',0))]
+                    if not copies:raise GameError('Necesitas una copia con sus estrellas iniciales')
+                    ids=[copies[0]]+[pid for pid in ids if pid!=copies[0]]
+                used = self.match_materials(owned, ids, recipe['material'], int(recipe['group']))
+            scaled_awake_cost = {str(key): local_config.scale_cost(amount) for key, amount in recipe.get('cost', {}).items()}
+            for key, amount in scaled_awake_cost.items():
+                if int(state['items'].get(key, 0)) < amount: raise GameError('Không đủ tài nguyên để Thức Tỉnh')
+            for key, amount in scaled_awake_cost.items(): state['items'][key] -= amount
             if recipe.get('local'):
                 host['awake'] = int(host.get('awake',0))+1
             elif star+1 == 10:
@@ -2558,7 +3304,7 @@ class Engine:
             if report['isWin'] and not state['max_stage']:
                 state['hang'] = {'since': self.now(), 'drop_since': self.now()}
             if report['isWin'] and stage_id not in state['cleared']:
-                awarded = item_pairs(stage['reward'])
+                awarded = {k: local_config.scale_reward(v) for k, v in item_pairs(stage['reward']).items()}
                 for key, count in awarded.items(): state['items'][str(key)] = state['items'].get(str(key), 0)+count
                 state['cleared'].append(stage_id)
                 campaign.change_stage(state,stage_id,now=self.now())

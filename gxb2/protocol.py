@@ -55,6 +55,16 @@ def normalize(name: str, data: dict, *, strict: bool = True) -> dict:
                 raise ValueError(f'{name}.{key} must be an object')
             out[key] = normalize(field['message_type'], value, strict=strict)
         else:
+            if name == 'battle_data' and key == 'total_harm':
+                # The original client defines total_harm as signed int32.
+                # LuaJIT legitimately accumulates more than 2**31-1 at 25★.
+                # Saturate ONLY the legacy protobuf copy, not the actual
+                # authoritative LuaJIT report saved as exact JSON. Otherwise
+                # MAP_FIGHT raises "Value out of range: 3192954487" and
+                # rolls back the player fight and rewards.
+                if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+                    raise ValueError('battle_data.total_harm must be a nonnegative integer')
+                value = min(value, 2**31 - 1)
             out[key] = value
     return out
 

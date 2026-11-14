@@ -101,3 +101,15 @@
 .gs-win .eq-cost{font-size:calc(24 * var(--u))}.gs-win .eq-cost img{width:calc(36 * var(--u));height:calc(36 * var(--u))}
 .eq-choose-grid{grid-template-columns:repeat(5,calc(100 * var(--u)));justify-content:center;overflow-x:hidden}
 .eq-choose-item .eq-icon{width:calc(94 * var(--u))!important;height:calc(94 * var(--u))!important}
+
+/* Retain the newer mobile forge constraints after native equipment style. */
+/* Source-constrained mobile smithy layout: keep art and forge arrow separate. */
+@media (max-width:620px){
+ #smithy-view .sm-top{min-height:185px;overflow:hidden}
+ #smithy-view .sm-top .eq-icon{min-width:0;max-width:80px;max-height:80px;aspect-ratio:1}
+ #smithy-view .sm-top .eq-icon>img{width:84%;height:84%;object-fit:contain}
+ #smithy-view .sm-top .sm-arrow{max-width:58px;object-fit:contain}
+ #smithy-view .sm-info{overflow-wrap:anywhere}
+ #smithy-view .sm-info .eq-cost{display:flex;flex-wrap:wrap;gap:7px}
+ #smithy-view .sm-grid .eq-icon{max-width:66px;max-height:66px;aspect-ratio:1}
+}

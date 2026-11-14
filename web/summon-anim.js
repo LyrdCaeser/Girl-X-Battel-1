@@ -36,7 +36,18 @@ const SummonAnim=(()=>{
  // girl's stars; an empty texture keeps them hidden whatever the animation keys.
  function hideStars(fig,star){const names=['zhiye','cv','name'];for(let s=star+1;s<=5;s++)names.push(s+'xing');
   for(const n of names){if(fig.skeleton.findSlotIndex(n)>=0)try{fig.hackTextureBySlotName(n,PIXI.Texture.EMPTY,{width:1,height:1});}catch{}}return ()=>{};}
- function caption(p,star){const c=overlay.querySelector('.sa-caption');c.replaceChildren(el('b','',p.name||''));c.hidden=false;return ()=>{c.hidden=true;};}
+ function caption(p,star){
+  const c=overlay.querySelector('.sa-caption');
+  c.replaceChildren(el('b','',p.name||''));
+  c.hidden=false;
+  const voice=overlay.querySelector('.sa-voice');
+  if(voice){
+    voice.hidden=typeof Dates==='undefined';
+    voice.onclick=()=>{if(typeof Dates!=='undefined')void Dates.playGirlVoice(p.table_id);};
+  }
+  if(typeof Dates!=='undefined')void Dates.playGirlVoice(p.table_id);
+  return ()=>{c.hidden=true;if(voice)voice.hidden=true;};
+ }
  async function reveal(p,i,summon){const star=Number(p.star)||5;
   if(star>=5){if(summon){const m=await layer('/assets/spine/fx_ui_gacha_revision',1.2,.66);sfx('vd_egg_5star');await run(m.fig,'222');m.done();if(skipped)return;}
    const e=await layer('/assets/spine/fx_ui_newgirl_gaino');await attachGirl(e.fig,p.table_id);const unhide=hideStars(e.fig,Math.min(star,5));const uncap=caption(p,star);sfx('ui_gain_hero_5star_bg');setTimeout(()=>sfx('ui_gain_hero_5star'),1000);
@@ -44,14 +55,22 @@ const SummonAnim=(()=>{
   else{const e=await layer('/assets/spine/fx_ui_newgirl_gainp');await attachGirl(e.fig,p.table_id);const unhide=hideStars(e.fig,star);const uncap=caption(p,star);const left=summon&&i%2===1;sfx(left?'ui_gain_hero_left':'ui_gain_hero_right');
    await run(e.fig,left?'texiao03':'texiao01');unhide();uncap();e.done();}}
  // partners: [{table_id, star, name}] in draw order. Resolves when the sequence ends or is skipped.
- async function play(summonId,partners){if(typeof PIXI==='undefined'||!partners?.length)return;await assets();skipped=false;
+ function waiting(summonId){
+  document.querySelector('.sa-waiting')?.remove();
+  const o=el('div','sa-waiting');const box=el('div','sa-waiting-box');
+  const spin=el('i','sa-waiting-spin');box.append(spin,el('b','',"Đang triệu hồi..."),el('small','',"Đang kết nối với máy chủ"));
+  o.append(box);(window.GxbFrame?.root()||document.body).append(o);
+  assets().catch(()=>{});
+  return ()=>o.remove();
+ }
+ async function play(summonId,partners){document.querySelector('.sa-waiting')?.remove();if(typeof PIXI==='undefined'||!partners?.length)return;await assets();skipped=false;
   overlay=el('div','sa-overlay');const stage=el('div','sa-stage');const bg=el('img','sa-bg');bg.src='/assets/summon/summon_scene.png';bg.alt='';stage.append(bg);overlay.append(stage);
-  const touch=el('div','sa-touch');touch.hidden=true;const hint=el('button','sa-hint','Desliza hacia abajo ▼');hint.type='button';hint.hidden=true;const cap=el('div','sa-caption');cap.hidden=true;
-  const skip=el('button','sa-skip','Skip');skip.type='button';skip.onclick=()=>{skipped=true;};overlay.append(touch,hint,cap,skip);(window.GxbFrame?.root()||document.body).append(overlay);
+  const touch=el('div','sa-touch');touch.hidden=true;const hint=el('button','sa-hint','Vuốt xuống để tiếp tục ▼');hint.type='button';hint.hidden=true;const cap=el('div','sa-caption');cap.hidden=true;
+  const skip=el('button','sa-skip','Bỏ Qua');skip.type='button';skip.onclick=()=>{skipped=true;};const voice=el('button','sa-voice','♪ Nghe giọng');voice.type='button';voice.hidden=true;voice.setAttribute('aria-label','Phát giọng Nữ Thần');overlay.append(touch,hint,cap,skip,voice);(window.GxbFrame?.root()||document.body).append(overlay);
   try{const kind=KIND[summonId];
    if(kind){const m=await layer('/assets/spine/fx_ui_gacha_revision',1.2,.66);run(m.fig,kind+'04',true);await swipe();if(!skipped){sfx('vd_egg');await run(m.fig,kind+'01');}if(!skipped)await run(m.fig,kind+'02');if(!skipped){sfx('gacha_obtain');await run(m.fig,kind+'03');}m.done();}
    for(let i=0;i<partners.length&&!skipped;i++)await reveal(partners[i],i,!!kind);
   }catch(e){console.warn("Summon animation unavailable",e);}
   finally{overlay.remove();overlay=null;}}
- return {play};
+ return {play,waiting};
 })();

@@ -1,0 +1,75 @@
+
+/* Original Bag popup action for selectable chests (ID 133 / 207 / 4102003). */
+.bag-detail:has(.bag-use-controls:not([hidden])){grid-template-columns:72px minmax(0,1fr)}
+.bag-use-controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px}
+.bag-use-controls select{flex:1 1 175px;min-width:0;border:1px solid #a8bcd5;border-radius:8px;background:#fff;color:#33465f;padding:9px}
+.bag-use-controls input{width:68px;min-height:36px;border:1px solid #a8bcd5;border-radius:8px;padding:6px;color:#33465f}
+.bag-use-controls button{min-height:38px;padding:7px 24px;border:2px solid #f8fcff;border-radius:9px;background:linear-gradient(#8ed2ff,#337ecc);color:#fff;font-weight:900;box-shadow:0 2px 4px #51668a88}
+.bag-use-controls button:disabled{opacity:.55}
+.bag-use-note{font-size:12px;color:#8d625b;line-height:1.4}
+.bag-use-controls [hidden]{display:none!important}
+.gxb-desktop .bag-detail{width:min(540px,calc(100vw - 40px));bottom:10%;grid-template-columns:82px minmax(0,1fr)}
+.gxb-desktop .bag-detail img{height:80px;width:80px}
+
+/* Inventory restoration: source item sprites, original-scale slots, image-choice box.
+   No inventory amounts, recipes, prices, or rewards are changed by CSS. */
+.bag-tabs{display:flex;overflow-x:auto;scrollbar-width:thin;scroll-snap-type:x proximity;gap:0;overscroll-behavior-x:contain}
+.bag-tabs button{flex:1 0 auto;min-width:80px;padding:9px 6px;scroll-snap-align:start}
+.bag-native-choices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:start;gap:7px;width:100%;max-height:min(33dvh,250px);overflow-y:auto;margin:8px 0;padding:4px;scrollbar-width:thin}
+.bag-native-choices[hidden]{display:none!important}
+.bag-native-choice{min-width:0;border:2px solid #acc5de;border-radius:8px;background:linear-gradient(#fff,#edf4fa);padding:6px 3px;display:grid;justify-items:center;gap:3px;color:#3b526e;cursor:pointer}
+.bag-native-choice.selected{border-color:#438cdb;box-shadow:0 0 0 2px #8dc7f7;background:#dff0ff}
+.bag-native-choice-art{width:clamp(42px,12vw,63px);aspect-ratio:1;display:grid;place-items:center;background-size:100% 100%;background-repeat:no-repeat}
+.bag-native-choice-art img{width:76%;height:76%;object-fit:contain}
+.bag-native-choice-name{width:100%;font-size:11px;font-weight:700;line-height:1.2;text-align:center;overflow-wrap:anywhere}
+.bag-native-choice-amount{font-size:12px;color:#185eab}
+.bag-detail{max-height:calc(100dvh - 140px);overflow-y:auto;grid-template-columns:clamp(48px,13vw,68px) minmax(0,1fr)}
+.bag-detail>div{min-width:0}
+.bag-detail>img{width:clamp(46px,13vw,68px);height:clamp(46px,13vw,68px)}
+.bag-use-controls{justify-content:flex-start}
+.bag-use-controls .bag-native-choices{flex:0 0 100%}
+.bag-use-controls #bag-use-note{flex-basis:100%;line-height:1.4}
+@media(max-width:620px){
+ .bag-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:10px 7px}
+ .bag-item{width:100%;max-width:100%;aspect-ratio:1}
+ .bag-panel{padding:10px 7px 12px}
+ .bag-detail{left:50%;top:49%;bottom:auto;transform:translate(-50%,-50%);width:min(420px,calc(100vw - 24px));max-height:calc(100dvh - 140px);padding:12px}
+ .bag-native-choices{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .bag-tabs button{font-size:clamp(11px,2.8vw,13px);min-height:45px}
+ /* Align the source icons, progress bar, arrow and selected forged item.
+    The old flex rows could overlap the 6/3 gauge and volleyball icon. */
+ #smithy-view .sm-top{display:grid;grid-template-columns:minmax(0,1fr) 58px minmax(0,1fr);align-items:center;justify-items:center;gap:4px;padding:10px 8px;height:clamp(175px,27dvh,210px);background-size:contain}
+ #smithy-view .sm-from{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:9px;min-width:0;width:100%}
+ #smithy-view .sm-top .eq-icon{display:inline-block;position:relative;flex:0 0 auto;width:clamp(58px,18vw,80px);height:clamp(58px,18vw,80px)}
+ #smithy-view .sm-top .sm-bar{position:relative;flex:none;width:min(110px,100%);height:22px;min-height:22px;margin:0}
+ #smithy-view .sm-top .sm-bar span{position:absolute;inset:0;line-height:20px;text-align:center}
+ #smithy-view .sm-top .sm-arrow{width:100%;max-width:58px;height:auto;object-fit:contain}
+ #smithy-view .sm-top .sm-result{transform:none}
+ #smithy-view .sm-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;margin:8px}
+ #smithy-view .sm-grid .sm-item{min-width:0;width:100%;padding:2px}
+ #smithy-view .sm-grid .eq-icon{width:min(16vw,66px);height:min(16vw,66px)}
+ #smithy-view .sm-actions{gap:10px;margin:12px 6px}
+ #smithy-view .sm-btn{flex:1;min-width:0;width:auto;max-width:180px;height:54px;white-space:normal}
+}
+
+/* Bag icons: four original portrait columns, not stretched five across on phones. */
+@media (max-width:620px) {
+ .bag-panel .bag-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:8px 7px}
+ .bag-panel .bag-item{width:100%;aspect-ratio:1;max-height:100%;min-width:0}
+ .bag-panel .bag-item-image{inset:15% 10%;width:80%;height:70%;object-fit:contain}
+}
+
+/* Original item slots stay at their publisher size; long inventories scroll inside. */
+.bag-view{height:calc(100dvh - 90px);max-height:calc(100dvh - 90px);min-height:0;display:flex;flex-direction:column;overflow:hidden;padding-bottom:0}
+.bag-view[hidden]{display:none}
+.bag-view .bag-top,.bag-view .bag-tabs,.bag-view .bag-actions{flex-shrink:0}
+.bag-view .bag-panel{flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;touch-action:pan-y;overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch;scrollbar-width:thin;padding-bottom:22px}
+.bag-view .bag-grid{align-content:start}
+.bag-view .bag-actions{position:relative;bottom:auto;margin-bottom:0;z-index:7}
+.bag-use-controls #bag-detail-summon{min-height:38px;padding:7px 18px;border:2px solid #fff;border-radius:9px;background:linear-gradient(#94d7ff,#327bc9);color:white;font-weight:900}
+.bag-use-controls #bag-detail-summon[hidden]{display:none!important}
+
+/* Bulk shard summons: a single confirmed server transaction, capped by stock. */
+.bag-summon-label{display:inline-flex;align-items:center;gap:8px;color:#355779;font-weight:700;font-size:14px}
+.bag-summon-label[hidden]{display:none!important}
+.bag-summon-label input{box-sizing:border-box;width:72px;max-width:22vw;min-height:40px;border:1px solid #a7b9ca;border-radius:9px;text-align:center;font-size:17px;background:#fff;color:#30435e}

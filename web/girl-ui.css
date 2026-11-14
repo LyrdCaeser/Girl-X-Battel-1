@@ -52,8 +52,8 @@
 .girls-grid .girl-art>img{object-fit:cover;object-position:center}
 .girls-grid .girl-name{position:absolute;z-index:4;left:4px;right:4px;bottom:24px;min-height:0;height:19px;padding:1px 0;background:#ffffffe0;color:#43566d;font-size:11px;line-height:17px;text-shadow:0 1px #fff;letter-spacing:-.25px}
 .girls-grid .girl-stars{position:absolute;left:3px;right:3px;bottom:2px;z-index:4;min-height:22px;align-items:center;overflow:visible}
-.girls-grid .girl-stars .gu-emblem{height:30px;max-width:90px;object-fit:contain}
-.girls-grid .girl-stars .gu-emblem-num{font-size:13px}
+.girls-grid .girl-stars .gu-emblem{height:22px;max-width:66px;object-fit:contain}
+.girls-grid .girl-stars .gu-emblem-num{font-size:10px}
 .girls-grid .girl-stars .gu-star{width:13px;height:13px}
 .girls-grid .girl-faction{z-index:4;left:-1px;top:-1px;width:22px;height:22px;background-size:cover;border:0;box-shadow:0 0 0 1px #fff9}
 .girls-grid .girl-level{z-index:4;top:0;right:1px;padding:0 2px;border-radius:0;background:transparent;font-size:13px;color:#fff;text-shadow:0 1px 2px #213347,1px 0 2px #213347,-1px 0 2px #213347}
@@ -173,6 +173,8 @@
 .lb-mat.ok .lb-pic{border-color:#e4c36a;background:#dfe7f6;filter:none}
 .lb-pic .portrait,.lb-pic canvas,.lb-pic img{width:100%!important;height:100%!important}.lb-pic i{font:900 calc(34 * var(--u)) system-ui;color:#fff;font-style:normal}
 .lb-mat small{font:800 calc(26 * var(--u)) system-ui;color:#d23a3a}.lb-mat.ok small{color:#5aa51c}
+.lb-choice-note{text-align:center;margin:calc(8 * var(--u)) calc(30 * var(--u));color:#53627d;font:700 calc(23 * var(--u))/1.35 system-ui}
+.lb-mat.choose:focus-visible,.lb-mat.choose:hover{filter:brightness(1.08);transform:translateY(calc(-2 * var(--u)))}
 .lb-cost{display:flex;justify-content:center;margin-top:calc(14 * var(--u))}.lb-cost .gu-cost{padding:calc(6 * var(--u)) calc(30 * var(--u));border-radius:calc(30 * var(--u));background:#fff;border:calc(2 * var(--u)) solid #cfd8e6;font-size:calc(26 * var(--u))}.lb-cost .gu-cost img{width:calc(44 * var(--u));height:calc(44 * var(--u))}
 .lb-max{text-align:center;font-weight:700}
 .lb-pic img{object-fit:cover;object-position:top}
@@ -287,3 +289,92 @@
 /* Shared sheets outside Girl detail must measure the game, not the browser viewport. */
 .gs-overlay{container-type:inline-size;--u:calc(100cqw / 720)}
 .gs-overlay>.gs-win{max-width:94%;max-height:94%;min-width:0}
+
+/* Quantity input rendered inside the game instead of the browser's prompt. */
+.gs-number-overlay{z-index:10020!important}
+.gs-number{width:min(420px,calc(100vw - 24px));max-height:calc(100dvh - 24px)}
+.gs-number .gs-number-label{display:flex;flex-direction:column;gap:12px;
+  color:#425c83;font-weight:700;line-height:1.4;text-align:center}
+.gs-number .gs-number-input{display:block;box-sizing:border-box;width:100%;min-height:48px;
+  padding:10px 12px;border:2px solid #9db9dc;border-radius:10px;
+  background:#fff;color:#263f64;font-size:18px;font-weight:700;text-align:center}
+.gs-number .gs-btns{display:flex;justify-content:center;gap:10px;margin-top:16px}
+.gs-number .gs-btns>button{min-width:100px;min-height:40px}
+
+/* Keep the recovered Dates/Oath entrance visible above character artwork. */
+#girl-detail-view .gu-love{z-index:18;cursor:pointer;pointer-events:auto;filter:drop-shadow(0 2px 3px #224b82)}
+#girl-detail-view .gu-love:focus-visible{outline:2px solid #fff;border-radius:50%}
+
+/* Native 720×1280 sheet: keep the publisher's original coordinate system.
+   An older mobile override constrained the scene to 540px and clipped the art. */
+html.gxb-mobile #app-frame #girl-detail-view:not([hidden]){
+ height:100dvh!important;min-height:0!important;
+ --u:min(calc(100cqw / 720),calc(100dvh / 1280));
+}
+html.gxb-mobile #app-frame #girl-detail-view>.detail-scene{
+ height:100%!important;min-height:0!important;inset:0!important;
+}
+html.gxb-mobile #app-frame #girl-detail-view .detail-art-wrap{
+ overflow:visible!important;max-width:none!important;
+}
+html.gxb-mobile #app-frame #girl-detail-view #detail-art.gu-native{
+ max-width:none!important;object-fit:contain;
+}
+html.gxb-mobile #app-frame #girl-detail-view #detail-art.full-art:not(.gu-native){
+ transform:none!important;object-fit:contain;object-position:center bottom;
+}
+#girl-detail-view .detail-art-wrap{cursor:pointer}
+/* Original star stack above a white nameplate, not a free-floating name. */
+#girl-detail-view .detail-identity>div{align-items:flex-start;gap:calc(4 * var(--u))}
+#girl-detail-view .detail-identity h2{
+ margin:0!important;min-width:calc(154 * var(--u));
+ padding:calc(4 * var(--u)) calc(16 * var(--u));
+ border-radius:calc(9 * var(--u));border:calc(2 * var(--u)) solid #a8bad4;
+ background:linear-gradient(#fff,#eef3ffed);box-shadow:0 calc(2 * var(--u)) calc(5 * var(--u)) #2035513d;
+ color:#3e5675;font:900 calc(26 * var(--u))/1.15 system-ui;
+ text-align:center;text-shadow:0 1px #fff;
+}
+/* Attribute panel: restore balanced native four-skill, stat and level spacing. */
+#girl-detail-view .detail-summary{display:flex;align-items:center;gap:calc(12 * var(--u))}
+#girl-detail-view .detail-summary strong{font-size:calc(26 * var(--u));min-width:0;white-space:nowrap}
+#girl-detail-view .detail-summary b{font-size:calc(25 * var(--u));white-space:nowrap}
+#girl-detail-view .detail-summary span{font-size:calc(22 * var(--u));white-space:nowrap}
+#girl-detail-view .detail-skills{
+ display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+ justify-items:center;gap:calc(12 * var(--u));margin-top:calc(12 * var(--u));
+}
+#girl-detail-view .detail-skill{min-width:0}
+#girl-detail-view .detail-skill img{max-width:100%;height:auto;object-fit:contain}
+
+/* Native 4★–9★ awake preview. The recovered central banner is clickable,
+   but must NOT cover the genuine composition/awake action below it. */
+#girl-detail-view #detail-awake-status.lb-progress-preview{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:calc(16 * var(--u));box-sizing:border-box;padding:calc(16 * var(--u))!important}
+#girl-detail-view #detail-awake-status.lb-progress-preview::before{pointer-events:none}
+#girl-detail-view #detail-awake-status.lb-progress-preview .lb-banner{position:relative;left:auto;top:auto;z-index:1;flex:none;width:calc(300 * var(--u));height:calc(105 * var(--u))}
+#girl-detail-view #detail-awake-status.lb-progress-preview .detail-note{position:relative;z-index:2;flex:none;max-width:92%;text-align:center;font-weight:700;line-height:1.4}
+#girl-detail-view #detail-awake-status.lb-progress-preview .gs-btn{position:relative;z-index:4;flex:none;max-width:90%;white-space:normal;cursor:pointer}
+/* Header controls of the native awakening popup must remain above its
+   9-slice window border, otherwise the parent intercepts the close button. */
+.gs-win-bar{z-index:12;pointer-events:auto}
+.gs-win-bar .gs-win-x,.gs-win-bar .gs-win-help{z-index:13;pointer-events:auto}
+/* The mobile frame's generic `.gs-win{overflow:auto}` clips its original
+   negative-positioned close/header. For awakening windows, scroll only the
+   inner material pane and keep the real close button hittable. */
+html.gxb-mobile #app-frame .gs-win.lb-win{overflow:visible;max-height:calc(100dvh - 24px)}
+html.gxb-mobile #app-frame .gs-win.lb-win .gs-win-body{min-height:0;max-height:calc(100dvh - 125px);overflow-y:auto}
+/* Keep the X control WITHIN the native window's top border, not 60u above
+   the popup's scroll/clip rectangle (real mobile hit-test regression). */
+.gs-win.lb-win .gs-win-bar{top:0;left:0;right:0}
+.gs-win.lb-win .gs-win-x{top:calc(9 * var(--u));right:calc(14 * var(--u))}
+
+/* 4–9★: display every genuine source recipe directly in the Awakening tab. */
+#girl-detail-view #detail-awake-status.lb-progress-preview{gap:calc(6 * var(--u))}
+#girl-detail-view #detail-awake-status.lb-progress-preview .lb-banner{height:calc(85 * var(--u))}
+#girl-detail-view .lb-inline-materials{position:relative;z-index:2;display:flex;gap:calc(7 * var(--u));max-width:94%;width:94%;overflow-x:auto;overflow-y:hidden;min-height:calc(92 * var(--u));padding:calc(4 * var(--u))}
+#girl-detail-view .lb-inline-material{position:relative;display:grid;justify-items:center;flex:0 0 calc(80 * var(--u));height:calc(86 * var(--u));background:#5d6f8a;border:calc(2 * var(--u)) solid #b8c4cf;border-radius:calc(8 * var(--u));overflow:hidden}
+#girl-detail-view .lb-inline-material.ok{border-color:#ffe687;background:#3f7f91}
+#girl-detail-view .lb-inline-material .lb-card{width:100%;height:100%}
+#girl-detail-view .lb-inline-material .lb-card img{width:100%;height:100%;object-fit:cover}
+#girl-detail-view .lb-inline-material small{position:absolute;bottom:0;left:0;right:0;text-align:center;font:800 calc(15 * var(--u)) system-ui;color:#fff;text-shadow:0 1px 2px #171f30;background:#1118}
+#girl-detail-view .lb-inline-star{font:800 calc(22 * var(--u)) system-ui;color:#fff;align-self:center}
+#girl-detail-view .lb-inline-cost{position:relative;z-index:2;display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:calc(8 * var(--u));max-height:calc(50 * var(--u));overflow:auto}
