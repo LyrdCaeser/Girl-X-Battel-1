@@ -81,6 +81,8 @@ DEFAULT_LIMITS = {
     "auth_reset": (5, 900),
     "recovery_rotate": (4, 3600),
     "order_create": (6, 600),
+    "profile_avatar_upload": (3, 3600),
+    "profile_avatar_delete": (6, 3600),
     "guild_chat": (30, 60),
     "guild_activity": (20, 60),
     "world_chat": (15, 60),

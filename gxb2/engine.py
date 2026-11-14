@@ -810,11 +810,18 @@ class Engine:
                         raise GameError('La firma debe tener como máximo 100 caracteres')
                     profile['signature'] = value
                 elif key == 'avatar':
-                    if value not in PROFILE_CATALOG['heads'] and value not in PROFILE_CATALOG['partners']:
-                        raise GameError('Avatar không hợp lệ')
-                    unlocked = self.profile_unlocks(state)
-                    if value not in unlocked['heads'] and value not in unlocked['partners']:
-                        raise GameError('Avatar này chưa được mở khóa')
+                    # The photo token belongs to THIS saved profile, not another
+                    # player. Client-provided links/paths can never be selected.
+                    if value == profile.get('uploaded_avatar') and isinstance(value, str) and value.startswith('custom_'):
+                        from . import profile_photos
+                        if profile_photos.read(value) is None:
+                            raise GameError('Ảnh đã tải không còn tồn tại, hãy tải ảnh mới.')
+                    else:
+                        if value not in PROFILE_CATALOG['heads'] and value not in PROFILE_CATALOG['partners']:
+                            raise GameError('Avatar không hợp lệ')
+                        unlocked = self.profile_unlocks(state)
+                        if value not in unlocked['heads'] and value not in unlocked['partners']:
+                            raise GameError('Avatar này chưa được mở khóa')
                     profile['avatar'] = value
                 elif key == 'frame':
                     if value not in PROFILE_CATALOG['frames']:
@@ -825,6 +832,43 @@ class Engine:
             self._save_profile(state)
             self.db.commit()
         return self.snapshot()
+
+    def update_uploaded_avatar(self, avatar_key):
+        """Atomically switch this one UID/world to a new server-owned photo."""
+        from . import profile_photos
+        if not profile_photos.AVATAR_RE.fullmatch(str(avatar_key)):
+            raise GameError('Mã ảnh đại diện không hợp lệ')
+        with self.lock:
+            self.db.execute('BEGIN IMMEDIATE')
+            try:
+                state = self._load()
+                profile = state.setdefault('profile', {})
+                previous = profile.get('uploaded_avatar', '')
+                profile['uploaded_avatar'] = avatar_key
+                profile['avatar'] = avatar_key
+                self._save_profile(state)
+                self.db.commit()
+            except Exception:
+                self.db.rollback()
+                raise
+        return self.snapshot(), previous
+
+    def clear_uploaded_avatar(self):
+        """Remove only this saved photo; leave all original unlocks and frames."""
+        with self.lock:
+            self.db.execute('BEGIN IMMEDIATE')
+            try:
+                state = self._load()
+                profile = state.setdefault('profile', {})
+                previous = str(profile.pop('uploaded_avatar', '') or '')
+                if profile.get('avatar') == previous and previous:
+                    profile['avatar'] = 'head_1001'
+                self._save_profile(state)
+                self.db.commit()
+            except Exception:
+                self.db.rollback()
+                raise
+        return self.snapshot(), previous
 
     def snapshot(self):
         with self.lock:

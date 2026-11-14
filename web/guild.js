@@ -71,9 +71,10 @@ const Guild=(()=>{
  // ---- members (NPC members of gxb2/guild.py + the player as Leader) ----
  function avatar(p){
   const h=el('span','gd2-av'),key=String(p.avatar||'head_1001');
-  if(/^(?:head|partner_avatar)_\d{4,9}$/.test(key)){
-   const photo=img('/assets/avatar-hd/profile/'+key+'.webp?v=1.1.2','gd2-member-avatar');
-   photo.onerror=()=>{photo.onerror=null;photo.src='/assets/profile/'+key+'.png';};
+  if(/^(?:head|partner_avatar)_\d{4,9}$/.test(key)||/^custom_[0-9a-f]{32}$/.test(key)){
+   const src=/^custom_[0-9a-f]{32}$/.test(key)?'/api/profile/photo/'+key+'.webp':'/assets/avatar-hd/profile/'+key+'.webp?v=1.1.2';
+   const photo=img(src,'gd2-member-avatar');
+   photo.onerror=()=>{photo.onerror=null;photo.src='/assets/profile/head_1001.png';};
    h.append(photo);
   }else h.append(img('/assets/guild/guild_icon02.png','gd2-member-placeholder'));
   return h;

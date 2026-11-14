@@ -22,7 +22,7 @@ from gxb2.story import catalog as story_catalog
 from gxb2.dress import catalog as dress_catalog
 from gxb2.skins import catalog as skins_catalog
 from gxb2.souls import catalog as souls_catalog
-from gxb2 import protocol as p, local_promotion, local_config, world_live_config, topup, live_service, auth, database, gm_catalog, giftcodes, studio_sso, skin_store, skin_bank, skin_gifts, owner_recovery
+from gxb2 import protocol as p, local_promotion, local_config, world_live_config, topup, live_service, auth, database, gm_catalog, giftcodes, studio_sso, skin_store, skin_bank, skin_gifts, owner_recovery, profile_photos
 from gxb2.player_engines import PlayerEnginePool
 from gxb2.battle import simulate as simulate_battle, ONLINE_BATTLE_ID, normalize_online_seed
 from gxb2.security import FixedWindowRateLimiter, DEFAULT_LIMITS, env_bool, validate_production_config
@@ -483,6 +483,12 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
         if path == '/api/skin-shop/catalog':
             # Safe for anonymous browsing; all purchases require player login.
             return self.send(200, skin_store.catalogue())
+        match = re.fullmatch(r'/api/profile/photo/(custom_[0-9a-f]{32})\.webp', path)
+        if match:
+            # A chosen avatar is PUBLIC (seen on rankings and Guild members).
+            # The random immutable key is stored only by an authenticated owner.
+            photo = profile_photos.read(match.group(1))
+            return self.send(200, photo, 'image/webp') if photo else self.send(404, {'error': 'Không tìm thấy ảnh.'})
         if path.startswith('/api/') and not self.require_auth():
             return
         if path == '/api/events/stream':
@@ -897,8 +903,63 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
             allowed.add(self.server.public_origin.rstrip('/'))
         if origin and origin not in allowed: return self.send(403, {'error': 'Nguồn truy cập không được phép'})
         try:
-            data = self.read_body()
             path = urlparse(self.path).path
+            if path in ('/api/profile/photo/upload', '/api/profile/photo/delete'):
+                ctx = self.require_auth()
+                if not ctx: return
+                if not self.rate_limit_player('profile_avatar_upload' if path.endswith('/upload') else 'profile_avatar_delete'): return
+                if self.headers.get('X-GXB2-Mode') == 'developer':
+                    return self.send(403, {'error': 'Ảnh cá nhân chỉ dành cho hồ sơ người chơi.'})
+                account = ctx['account']
+                uid, world = account['uid'], account['server_id']
+                player = self.server.player_engines.get(uid, world, ctx['character_name'])
+                if path.endswith('/delete'):
+                    # This action needs no request body. Refuse unread bytes
+                    # rather than accidentally parsing them as a new request.
+                    if self.headers.get('Transfer-Encoding') or self.headers.get('Content-Length', '0') not in ('', '0'):
+                        self.close_connection = True
+                        return self.send(400, {'error': 'Yêu cầu xóa ảnh không được có dữ liệu đính kèm.'})
+                    state, previous = player.clear_uploaded_avatar()
+                    if previous:
+                        profile_photos.remove(uid, world, previous)
+                    return self.send(200, {'state': state, 'removed': bool(previous)})
+                if self.headers.get('Transfer-Encoding'):
+                    self.close_connection = True
+                    return self.send(400, {'error': 'Không hỗ trợ dữ liệu tải lên dạng luồng.'})
+                raw_length = self.headers.get('Content-Length', '')
+                if not 0 < len(raw_length) <= 10 or not raw_length.isascii() or not raw_length.isdecimal():
+                    self.close_connection = True
+                    return self.send(411, {'error': 'Thiếu dung lượng ảnh tải lên.'})
+                size = int(raw_length)
+                if size < 1 or size > profile_photos.MAX_UPLOAD_BYTES:
+                    # Prevent HTTP/1.1 request desync from unread oversize bodies.
+                    self.close_connection = True
+                    return self.send(413, {'error': 'Ảnh tải lên không được vượt quá 3 MB.'})
+                # Timeout against slowloris-style partial uploads. Never read
+                # arbitrary data beyond the declared, bounded content length.
+                self.connection.settimeout(15)
+                try:
+                    raw_photo = self.rfile.read(size)
+                except TimeoutError:
+                    self.close_connection = True
+                    return self.send(408, {'error': 'Tải ảnh quá lâu. Vui lòng thử lại.'})
+                if len(raw_photo) != size:
+                    self.close_connection = True
+                    return self.send(400, {'error': 'Dữ liệu ảnh chưa tải đủ.'})
+                # Decode and re-encode before storing. No raw EXIF/GPS/metadata
+                # or arbitrary HTML/SVG is ever served to public clients.
+                picture = profile_photos.normalize_image(raw_photo, self.headers.get('Content-Type', ''))
+                avatar = profile_photos.store(uid, world, picture)
+                try:
+                    state, previous = player.update_uploaded_avatar(avatar)
+                except Exception:
+                    profile_photos.remove(uid, world, avatar)
+                    raise
+                if previous and previous != avatar:
+                    try: profile_photos.remove(uid, world, previous)
+                    except Exception: pass  # Profile already committed; never roll it back.
+                return self.send(200, {'state': state, 'avatar': avatar})
+            data = self.read_body()
             if path == '/api/auth/register' and not self.rate_limit('auth_register'): return
             if path == '/api/auth/login' and not self.rate_limit('auth_login'): return
             if path == '/api/auth/reset-password' and not self.rate_limit('auth_reset'): return

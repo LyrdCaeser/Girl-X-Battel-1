@@ -13,6 +13,7 @@ import android.util.Log;
 import android.webkit.ConsoleMessage;
 import android.webkit.CookieManager;
 import android.webkit.JsResult;
+import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
@@ -30,6 +31,8 @@ public final class MainActivity extends Activity {
     private static final String READY_URL = GAME_ORIGIN + "/readyz";
     private WebView webView;
     private boolean notificationPermissionAsked;
+    private static final int PROFILE_PHOTO_PICK_REQUEST = 3612;
+    private ValueCallback<Uri[]> profilePhotoCallback;
 
     private static final String LOADING_HTML =
         "<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>"
@@ -63,7 +66,9 @@ public final class MainActivity extends Activity {
         settings.setDatabaseEnabled(true);
         settings.setMediaPlaybackRequiresUserGesture(false);
         settings.setAllowFileAccess(false);
-        settings.setAllowContentAccess(false);
+        // Required only for content:// grants received from the OS document
+        // picker. Keep file:// access OFF to prevent local file disclosure.
+        settings.setAllowContentAccess(true);
         settings.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
         settings.setUseWideViewPort(false);
         settings.setLoadWithOverviewMode(false);
@@ -78,6 +83,35 @@ public final class MainActivity extends Activity {
         cookies.setAcceptThirdPartyCookies(webView, false);
 
         webView.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public boolean onShowFileChooser(WebView view, ValueCallback<Uri[]> callback,
+                                             WebChromeClient.FileChooserParams params) {
+                // An installed Android WebView never opens <input type=file>
+                // without this callback. Only the trusted GXB 3 HTTPS origin
+                // may request a photo; no broad storage permissions are needed.
+                Uri current = Uri.parse(view.getUrl() == null ? "" : view.getUrl());
+                if (!"https".equalsIgnoreCase(current.getScheme())
+                        || !"180-93-111-99.sslip.io".equalsIgnoreCase(current.getHost())) {
+                    callback.onReceiveValue(null);
+                    return true;
+                }
+                if (profilePhotoCallback != null) {
+                    profilePhotoCallback.onReceiveValue(null);
+                }
+                profilePhotoCallback = callback;
+                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                intent.setType("image/*");
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                try {
+                    startActivityForResult(intent, PROFILE_PHOTO_PICK_REQUEST);
+                } catch (Exception error) {
+                    profilePhotoCallback.onReceiveValue(null);
+                    profilePhotoCallback = null;
+                }
+                return true;
+            }
+
             @Override
             public boolean onJsConfirm(WebView view, String url, String message, JsResult result) {
                 String text = localizeConfirm(message);
@@ -249,7 +283,22 @@ public final class MainActivity extends Activity {
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode != PROFILE_PHOTO_PICK_REQUEST) return;
+        if (profilePhotoCallback != null) {
+            Uri photo = resultCode == RESULT_OK && data != null ? data.getData() : null;
+            profilePhotoCallback.onReceiveValue(photo == null ? null : new Uri[]{photo});
+            profilePhotoCallback = null;
+        }
+    }
+
+    @Override
     protected void onDestroy() {
+        if (profilePhotoCallback != null) {
+            profilePhotoCallback.onReceiveValue(null);
+            profilePhotoCallback = null;
+        }
         if (webView != null) {
             webView.destroy();
         }

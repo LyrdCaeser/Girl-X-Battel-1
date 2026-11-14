@@ -965,7 +965,7 @@ $('tower-rewatch').addEventListener('click',()=>{if(towerResult?.report)watchEve
 $('tower-practice').addEventListener('click',()=>playTower(true));
 $('tower-fight').addEventListener('click',()=>playTower(false));
 
-function profileAsset(name){const key=String(name||'');if(/^(?:head|partner_avatar)_\d+$/.test(key))return '/assets/avatar-hd/profile/'+key+'.webp?v=1.1.2';return '/assets/profile/'+key+'.png';}
+function profileAsset(name){const key=String(name||'');if(/^custom_[0-9a-f]{32}$/.test(key))return '/api/profile/photo/'+key+'.webp';if(/^(?:head|partner_avatar)_\d+$/.test(key))return '/assets/avatar-hd/profile/'+key+'.webp?v=1.1.2';return '/assets/profile/'+key+'.png';}
 function renderProfile(){
  const profile=state.profile||{},avatar=profile.avatar||'head_1001',frame=profile.frame||'frame_8007';
  $('profile-name').textContent=state.name;
@@ -999,6 +999,15 @@ function renderProfilePicker(){
  $('profile-preview-name').textContent=state.name;
  document.querySelectorAll('[data-profile-category]').forEach(button=>button.classList.toggle('active',button.dataset.profileCategory===profileCategory));
  const grid=$('profile-picker-grid');grid.replaceChildren();
+ $('profile-photo-tools').hidden=profileCategory!=='heads';
+ const previousPhoto=state.profile?.uploaded_avatar||'';
+ $('profile-photo-delete').hidden=!/^custom_[0-9a-f]{32}$/.test(previousPhoto);
+ if(profileCategory==='heads'&&/^custom_[0-9a-f]{32}$/.test(previousPhoto)){
+  const personal=node('button','profile-option profile-photo-choice'+(profileDraft.avatar===previousPhoto?' selected':''));
+  personal.type='button';personal.setAttribute('aria-label','Ảnh cá nhân của tôi');
+  const photo=node('img');photo.src=profileAsset(previousPhoto);photo.alt='Ảnh cá nhân';
+  personal.append(photo);personal.addEventListener('click',()=>{profileDraft.avatar=previousPhoto;$('profile-picker-message').textContent='Đã chọn ảnh cá nhân';renderProfilePicker();});grid.append(personal);
+ }
  let options=profileCatalog[profileCategory]||[];
  const unlocked=new Set(state.profile_unlocks?.[profileCategory]||[]);
  for(const name of options){const open=unlocked.has(name);const button=node('button','profile-option'+(open?'':' locked'));button.type='button';button.setAttribute('aria-label',profileOptionLabel(name)+(open?'':' · Chưa mở khóa'));button.classList.toggle('selected',name===(profileCategory==='frames'?profileDraft.frame:profileDraft.avatar));const img=node('img');img.src=profileAsset(name);img.alt='';button.append(img);if(!open){const lock=node('span','profile-lock','🔒');lock.title='Chưa mở khóa';button.append(lock);button.disabled=true;}else button.addEventListener('click',()=>{if(profileCategory==='frames')profileDraft.frame=name;else profileDraft.avatar=name;$('profile-picker-message').textContent=profileOptionLabel(name)+" đã chọn";renderProfilePicker();});grid.append(button);}
@@ -1009,6 +1018,51 @@ function openProfileEdit(field){profileEditField=field;const isName=field==='nam
 $('profile-back').addEventListener('click',()=>{$('profile-picker').hidden=true;showView('home');});
 document.querySelectorAll('[data-profile-tab]').forEach(button=>button.addEventListener('click',()=>{profileTab=button.dataset.profileTab;$('profile-picker').hidden=true;renderProfile();}));
 $('profile-avatar-open').addEventListener('click',openProfilePicker);$('profile-avatar-cta').addEventListener('click',openProfilePicker);
+// Player-provided photo: device gallery -> client-side square -> server re-encode
+// without EXIF -> Neon. The file itself never enters the ordinary JSON API.
+async function profilePhotoBlob(file){
+ if(!file||!['image/jpeg','image/png','image/webp'].includes(file.type))throw Error('Chỉ hỗ trợ ảnh JPG, PNG hoặc WebP.');
+ if(file.size>15*1024*1024)throw Error('Ảnh gốc quá lớn (tối đa 15 MB).');
+ const url=URL.createObjectURL(file);
+ try{
+  const image=new Image();image.src=url;
+  await new Promise((resolve,reject)=>{image.onload=resolve;image.onerror=()=>reject(Error('Không thể mở ảnh này.'));});
+  if(!image.naturalWidth||!image.naturalHeight||image.naturalWidth*image.naturalHeight>50000000)throw Error('Ảnh vượt quá 50 megapixel, hãy chọn ảnh khác.');
+  const canvas=document.createElement('canvas');canvas.width=320;canvas.height=320;
+  const side=Math.min(image.naturalWidth,image.naturalHeight),x=(image.naturalWidth-side)/2,y=(image.naturalHeight-side)/2;
+  canvas.getContext('2d').drawImage(image,x,y,side,side,0,0,320,320);
+  const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/webp',0.8));
+  if(!blob)throw Error('Không thể xử lý ảnh trên thiết bị.');
+  return blob;
+ }finally{URL.revokeObjectURL(url);}
+}
+$('profile-photo-upload').addEventListener('click',()=>$('profile-photo-file').click());
+$('profile-photo-file').addEventListener('change',async e=>{
+ const file=e.target.files?.[0],button=$('profile-photo-upload');if(!file)return;
+ button.disabled=true;$('profile-picker-message').textContent='Đang xử lý và tải ảnh lên…';
+ try{
+  const blob=await profilePhotoBlob(file);
+  const response=await fetch('/api/profile/photo/upload',{method:'POST',credentials:'same-origin',headers:{'Content-Type':blob.type},body:blob});
+  const result=await response.json();if(!response.ok)throw Error(response.status===429?'Bạn đã đổi ảnh quá nhiều lần, hãy thử lại sau.':(result.error||'Không thể tải ảnh.'));
+  state=result.state;profileDraft.avatar=result.avatar;
+  renderProfilePicker();renderProfile();renderHome();
+  $('profile-picker-message').textContent='Đã lưu ảnh lên hồ sơ Neon. Ảnh sẽ hiển thị công khai.';
+ }catch(error){$('profile-picker-message').textContent=error.message||'Không thể tải ảnh.';}
+ finally{button.disabled=false;e.target.value='';}
+});
+$('profile-photo-delete').addEventListener('click',async()=>{
+ const button=$('profile-photo-delete');
+ if(typeof GirlUI!=='undefined'&&GirlUI.confirm&&!(await GirlUI.confirm('Xóa ảnh cá nhân đã tải lên? Avatar gốc và khung vẫn được giữ.',{title:'Xóa ảnh cá nhân',ok:'Xóa ảnh'})))return;
+ button.disabled=true;
+ try{
+  const response=await fetch('/api/profile/photo/delete',{method:'POST',credentials:'same-origin'});
+  const result=await response.json();if(!response.ok)throw Error(result.error||'Không thể xóa ảnh.');
+  state=result.state;profileDraft.avatar=state.profile?.avatar||'head_1001';
+  renderProfilePicker();renderProfile();renderHome();
+  $('profile-picker-message').textContent='Đã xóa ảnh cá nhân khỏi hồ sơ.';
+ }catch(error){$('profile-picker-message').textContent=error.message||'Không thể xóa ảnh.';}
+ finally{button.disabled=false;}
+});
 $('profile-picker-back').addEventListener('click',()=>{$('profile-picker').hidden=true;});
 document.querySelectorAll('[data-profile-category]').forEach(button=>button.addEventListener('click',()=>{profileCategory=button.dataset.profileCategory;renderProfilePicker();}));
 $('profile-apply').addEventListener('click',async()=>{const button=$('profile-apply');button.disabled=true;try{const result=await api('/api/profile',profileDraft);state=result.state;$('profile-picker').hidden=true;render();}catch(error){$('profile-picker-message').textContent=error.message;}finally{button.disabled=false;}});
