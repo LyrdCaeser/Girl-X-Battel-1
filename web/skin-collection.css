@@ -261,3 +261,13 @@
 .wp-scenes-h{display:block;margin:2px 0 4px;color:#4c6aa5}.wp-scenes{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:8px}
 .wp-scene-btn{flex:none;border:2px solid #d5deec;border-radius:14px;background:#fff;color:#3b4b72;font-size:12px;padding:3px 10px;cursor:pointer;text-transform:capitalize}.wp-scene-btn.on{border-color:#f0b43c;background:#fff8e2}
 .home-stage:has(.wp-scene) .home-hero,.home-stage:has(.wp-scene) .wp-home{visibility:hidden!important}
+
+/* Device-gallery avatar: opt-in public photo, alongside all original unlocks. */
+#profile-view .profile-photo-tools{display:flex;flex-wrap:wrap;align-items:center;gap:5px;flex:none;padding:3px 1px}
+#profile-view .profile-photo-tools[hidden]{display:none!important}
+#profile-view .profile-photo-tools button{border:2px solid #c3ddf7;border-radius:8px;padding:7px 10px;background:linear-gradient(#89d2ff,#3378d2);color:white;font-weight:800;font-size:12px;cursor:pointer}
+#profile-view .profile-photo-tools #profile-photo-delete{background:linear-gradient(#f7e9ed,#e1b5bb);border-color:#e3b6bc;color:#763841}
+#profile-view .profile-photo-tools button:disabled{opacity:.6;cursor:progress}
+#profile-view .profile-photo-tools small{width:100%;color:#596a81;font-size:10px;line-height:1.15}
+#profile-view .profile-photo-choice img{width:100%;height:100%;object-fit:cover}
+#profile-view #profile-picker-message{flex:none;height:auto;min-height:14px;max-height:40px;margin:0 2px;overflow:auto;font-size:11px;color:#7e3450}

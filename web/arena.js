@@ -13,9 +13,10 @@ const Arena=(()=>{
  function nameOf(id){id=String(id);return id==='1'?"Gold":id==='2'?"Gems":itemCatalog?.[id]?.name||"Item "+id;}
  function avatar(id,cls){
   const key=String(id||'').trim();
-  if(/^(?:head|partner_avatar)_\d{4,9}$/.test(key)){
-   const face=img('/assets/avatar-hd/profile/'+key+'.webp?v=1.1.2',cls);
-   face.onerror=()=>{face.onerror=null;face.src='/assets/profile/'+key+'.png';};
+  if(/^(?:head|partner_avatar)_\d{4,9}$/.test(key)||/^custom_[0-9a-f]{32}$/.test(key)){
+   const src=/^custom_[0-9a-f]{32}$/.test(key)?'/api/profile/photo/'+key+'.webp':'/assets/avatar-hd/profile/'+key+'.webp?v=1.1.2';
+   const face=img(src,cls);
+   face.onerror=()=>{face.onerror=null;face.src='/assets/profile/head_1001.png';};
    return face;
   }
   const src=icon(id);return src?img(src,cls):el('span',cls+' empty','✦');
