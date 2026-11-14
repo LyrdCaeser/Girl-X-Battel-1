@@ -31,6 +31,16 @@ html.gxb-mobile #app-frame .layout>.panel{width:100%!important;max-width:none!im
 html.gxb-mobile #app-frame .roster-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
 html.gxb-mobile #app-frame .battlefield{min-width:0!important;width:100%!important;gap:6px!important;padding:10px 4px!important}
 html.gxb-mobile #app-frame .units{max-width:46%!important;gap:4px!important}
+/* BattleWindow renders all 12 Spine actors in ONE 1080-wide coordinate space.
+   The generic two-column .units{max-width:46%!important} squeezed the
+   absolute-positioned HP/status anchors to the LEFT HALF of the screen,
+   even for enemies. Restrict the legacy 46% layout to other views only. */
+html.gxb-mobile #app-frame .battlefield>.units{
+  position:absolute!important;inset:0!important;
+  left:0!important;right:0!important;top:0!important;bottom:0!important;
+  width:100%!important;max-width:none!important;min-width:0!important;
+  display:block!important;gap:0!important;padding:0!important;
+}
 html.gxb-mobile #app-frame .unit{width:clamp(42px,13vw,65px)!important}
 html.gxb-mobile #app-frame .unit .portrait{width:clamp(40px,12vw,60px)!important;height:clamp(40px,12vw,60px)!important}
 html.gxb-mobile #app-frame .gs-win,html.gxb-mobile #app-frame dialog{

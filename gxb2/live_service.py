@@ -990,7 +990,11 @@ def pvp_rating(uid, server_id, mode, season_id=None):
 
 
 def pvp_rating_board(mode, season_id=None, limit=100, server_id=None):
-    """Rank real active player characters, including those at the initial 1000 rating."""
+    """Rank ONLY players with authoritative completed battles this season.
+
+    Mere registration/strength is NOT a competitive result. The former LEFT
+    JOIN fabricated ranks #1..N out of all active users tied at 1000 Elo.
+    """
     mode=str(mode or "arena").lower()
     season_id=season_id or pvp_season_id(mode,server_id or "S1")
     limit=max(1,min(500,int(limit)))
@@ -1009,22 +1013,22 @@ def pvp_rating_board(mode, season_id=None, limit=100, server_id=None):
                    if database.POSTGRES else "")
     query="""SELECT p.uid,p.server_id,p.character_name,
                     ? AS mode,? AS season_id,
-                    COALESCE(r.rating,1000) AS rating,
-                    COALESCE(r.wins,0) AS wins,
-                    COALESCE(r.losses,0) AS losses,
-                    COALESCE(r.matches,0) AS matches,
+                    r.rating AS rating,
+                    r.wins AS wins,
+                    r.losses AS losses,
+                    r.matches AS matches,
                     COALESCE(l.level,1) AS level,
                     COALESCE(l.power,0) AS power,
                     """ + avatar_expr + """,
                     COALESCE(r.updated_at,l.updated_at,p.updated_at) AS updated_at
              FROM players p
              LEFT JOIN leaderboard l ON l.uid=p.uid AND l.server_id=p.server_id
-             LEFT JOIN pvp_ratings r ON r.uid=p.uid AND r.server_id=p.server_id
-                  AND r.mode=? AND r.season_id=?
+             JOIN pvp_ratings r ON r.uid=p.uid AND r.server_id=p.server_id
+                  AND r.mode=? AND r.season_id=? AND r.matches>0
              """ + avatar_join + """
              WHERE p.status='active'""" + scope + """
-             ORDER BY COALESCE(r.rating,1000) DESC,COALESCE(r.wins,0) DESC,
-                      COALESCE(r.matches,0) ASC,COALESCE(l.power,0) DESC,
+             ORDER BY r.rating DESC,r.wins DESC,
+                      r.matches DESC,COALESCE(l.power,0) DESC,
                       p.server_id,p.character_name LIMIT ?"""
     with _lock:
         db=_db()

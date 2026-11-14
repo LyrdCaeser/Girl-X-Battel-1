@@ -117,9 +117,22 @@ const GirlUI=(()=>{
    // AWAKE_PARTNER. Potentiality belongs ONLY to the 11★+ window.
    const top=el('button','lb-banner');top.type='button';top.append(stars(hero.stars,'tag'));
    top.onclick=()=>limitBreak(hero);top.title='Xem nguyên liệu Thức Tỉnh '+r.star+'★';box.append(top);
-   box.append(el('p','detail-note',(r.kind==='compose'?'Tiến Hóa ':'Thức Tỉnh ')+hero.stars+'★ → '+r.star+'★ · vật liệu đúng bảng gốc'));
-   const go=el('button','gs-btn','Xem nguyên liệu · '+(r.kind==='compose'?'Tiến Hóa':'Thức Tỉnh'));go.type='button';
-   go.onclick=()=>limitBreak(hero);box.append(go);return;
+   box.append(el('p','detail-note',(r.kind==='compose'?'Tiến Hóa ':'Thức Tỉnh ')+hero.stars+'★ → '+r.star+'★'));
+   // This tab must show the ORIGINAL server recipe, not a blank card or a
+   // generic link. Every existing/future girl uses her own next_awake data.
+   const picked=pick(r,hero),materials=selectedMaterials(r,picked);
+   const req=el('div','lb-inline-materials');req.setAttribute('aria-label','Nguyên liệu Thức Tỉnh theo bảng gốc');
+   (r.material||[]).forEach((code,i)=>{
+    const g=materials[i],tile=el('span','lb-inline-material'+(g?' ok':''));
+    const id=g?.table_id||(Number(code)%1000===999?0:Number(code));
+    if(id)tile.append(card(Number(id)));else tile.append(el('b','lb-inline-star',Math.floor(Number(code)/10000)+'★'));
+    tile.append(el('small','',g?'1/1':'0/1'));
+    tile.title=g?g.name+' · '+g.stars+'★':codeLabel(Number(code));req.append(tile);
+   });
+   box.append(req);
+   const expenses=el('div','lb-inline-cost');const enough=cost(expenses,r.cost||{});box.append(expenses);
+   const go=el('button','gs-btn',(r.kind==='compose'?'Tiến Hóa':'Thức Tỉnh')+' · '+(materialsReady(r,picked)&&enough?'Đủ nguyên liệu':'Xem nguyên liệu'));
+   go.type='button';go.onclick=()=>limitBreak(hero);box.append(go);return;
   }
   const top=el('button','lb-banner');top.type='button';top.append(stars(hero.stars,'tag'));if(r&&materialsReady(r,pick(r,hero))&&cost(el('span'),r.cost||{}))top.append(img(S+'alert_icon.png','lb-red'));top.onclick=()=>limitBreak(hero);top.title='Mở giao diện Thức Tỉnh gốc';top.setAttribute('aria-label','Mở công thức và vật liệu Thức Tỉnh Nữ Thần');box.append(top);
   box.append(nodes(hero,'tab'));

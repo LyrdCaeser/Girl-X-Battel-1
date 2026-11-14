@@ -83,6 +83,16 @@ function makeContext(){
  assert(roots['arena3v3-view'].descendants.some(n=>n.src?.includes('arena_3v3_scene.png')),
         'three-team Arena uses original 3v3 scenery');
  assert(calls.some(c=>c.url.includes('/api/pvp/status?mode=arena3v3')));
+ // The archived Arena3v3BattleFormationWindow has THREE rows of SIX original
+ // native slots. No auto/random formation or made-up NPC rival is permitted.
+ const editor=roots['arena3v3-view'].descendants.find(n=>n.className==='ar-side'&&n.descendants.some(c=>c.textContent==='Đội hình'));
+ assert(editor,'native formation control available');editor.onclick();
+ const formed=roots['arena3v3-view'].descendants;
+ assert.equal(formed.filter(n=>n.className.includes('a3-team')).length,3);
+ assert.equal(formed.filter(n=>n.className==='a3-slots').length,3);
+ assert.equal(formed.filter(n=>n.className.split(' ').includes('a3-slot')).length,18);
+ assert.equal(formed.filter(n=>n.src?.includes('arena_3v3_t')).length,3);
+ assert(!fs.readFileSync(path.join(ROOT,'web/arena-online-native.js'),'utf8').includes('function autoTeams'));
  match(false);
  await vm.runInContext('NativeOnlineArenas',ctx).open('arena3v3','home');
  const go=roots['arena3v3-view'].descendants.find(n=>n.className==='ar-fight');go.onclick();

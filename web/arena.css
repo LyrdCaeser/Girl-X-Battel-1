@@ -58,3 +58,6 @@
 .ar-row2{border-image-slice:30 19 fill;width:min(calc(656 * var(--u)),100%)}
 .ar-rank-list{overflow-x:hidden}
 .ar-rank-list{scrollbar-width:none}.ar-rank-list::-webkit-scrollbar{display:none}
+
+/* Owner badge always shows the uploaded public PROFILE avatar, not first Girl. */
+.ar-me-icon .ar-own-avatar{display:block;width:100%;height:100%;object-fit:cover;border-radius:calc(10 * var(--u))}
