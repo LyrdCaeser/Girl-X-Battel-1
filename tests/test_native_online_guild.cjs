@@ -12,10 +12,10 @@ class N{
  querySelectorAll(q){return this.descendants.filter(x=>x.className?.split(' ').includes(q.slice(1)));}
 }
 (async()=>{
- const roots={},calls=[];
- const realMember={uid:'P1',server_id:'S1',character_name:'Nhân Vật Thật',role:'leader',power:4000,contribution:5,joined_at:100,last_seen:Math.floor(Date.now()/1000)};
+ const roots={},calls=[],originalNavigation=[];
+ const realMember={uid:'P1',server_id:'S1',character_name:'Nhân Vật Thật',role:'leader',avatar:'head_1001',power:4000,contribution:5,joined_at:100,last_seen:Math.floor(Date.now()/1000)};
  const owned={id:18,server_id:'S1',name:'Bang Hội Thật',notice:'Thông báo lưu Neon',role:'leader',
-   members:[realMember],member_count:1,activity:{
+   members:[realMember,{uid:'P2',server_id:'S1',character_name:'Người Chơi 2',role:'member',avatar:'partner_avatar_5501104',power:125,contribution:0,joined_at:100,last_seen:Math.floor(Date.now()/1000)}],member_count:2,activity:{
     has:true,unlocked:true,flag:1,level:1,exp:0,base_exp:0,next_exp:100,capacity:20,
     created:1700000000,checked_in:false,sign_in:{coin:'4#25',exp:10},log:[],
     mill:{gold:0,level:1,max_level:2,factor:10000,next_gold:100,donate:'1#100'},
@@ -29,6 +29,8 @@ class N{
   showView:function(v){ctx.view=v;},number:n=>String(n),
   itemCatalog:{},itemPicture:()=>null,portrait:id=>{const x=new N('portrait');x.textContent=String(id);return x;},
   GirlUI:{toast:()=>{},win:()=>({body:new N('div'),close:()=>{}}),confirm:async()=>true},
+  Shops:{open:(origin,id)=>originalNavigation.push({name:'shop',origin,id})},
+  GuildLab:{open:(origin)=>originalNavigation.push({name:'lab',origin})},
   setInterval:()=>1,clearInterval:()=>{},setTimeout,clearTimeout,
   api:async(url,req)=>{
    calls.push({url,req});
@@ -51,6 +53,16 @@ class N{
  assert(!contents.includes('No applications: simulated'),'local bot placeholder is never presented');
  assert(nodes.some(n=>n.className?.includes('gd2-stage')),'original 720x1280 Guild window');
  assert(nodes.some(n=>n.src?.includes('guild_bg03')),'original Guild Office art is retained');
+ assert(nodes.some(n=>n.src?.includes('/assets/avatar-hd/profile/head_1001.webp')),
+        'leader portrait must use actual public Neon avatar key');
+ assert(nodes.some(n=>n.src?.includes('/assets/avatar-hd/profile/partner_avatar_5501104.webp')),
+        'other members must use actual private-to-public profile avatars instead of fake placeholders');
+ const guildStore=nodes.find(n=>n.textContent==='Cửa Hàng Bang Hội');
+ const lab=nodes.find(n=>n.textContent==='Phòng Nghiên Cứu');
+ assert(guildStore&&lab,'original Guild Shop and Lab are reachable from online Office');
+ guildStore.onclick();lab.onclick();
+ assert.deepEqual(originalNavigation,[{name:'shop',origin:'guild',id:6},{name:'lab',origin:'guild'}],
+                 'existing Guild Shop ID 6 and original research subsystem are reused, never reimplemented');
  const sign=nodes.find(n=>n.textContent==='Điểm Danh');
  assert(sign,'original office sign-in is present');
  await sign.onclick();

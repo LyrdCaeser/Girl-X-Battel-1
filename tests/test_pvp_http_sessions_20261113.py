@@ -94,6 +94,30 @@ class PvPHttpSessionTests(unittest.TestCase):
         after=self.call('POST','/api/pvp/match/result',{'match_id':match_id},0)['result']
         self.assertEqual(before['rating_delta_a'],after['rating_delta_a'])
 
+    def test_online_arena_and_guild_rosters_expose_only_public_avatar_ids(self):
+        board=self.call('GET','/api/pvp/status?mode=arena',user=0)['rating_board']
+        self.assertGreaterEqual(len(board),3)
+        for player in board:
+            self.assertEqual(player['avatar'],'head_1001')  # clean SQLite fallback
+            self.assertTrue(set(player).isdisjoint({'data','items','email','password_hash','salt'}))
+        made=self.call('POST','/api/world-guild/action',
+                       {'action':'create','name':'HTTP Public Avatar Guild','notice':'QA isolated'},0)
+        gid=made['guild']['id']
+        self.call('POST','/api/world-guild/manage',{'action':'apply','guild_id':gid},1)
+        first=self.call('GET','/api/world-guild',user=0)
+        pending=first.get('applications') or []
+        self.assertEqual(len(pending),1)
+        self.call('POST','/api/world-guild/manage',
+                  {'action':'review','target_uid':pending[0]['uid'],'approve':True},0)
+        own=self.call('GET','/api/world-guild',user=0)
+        other=self.call('GET','/api/world-guild',user=1)
+        for payload in (own,other):
+            members=payload['guild']['members']
+            self.assertEqual(len(members),2)
+            for member in members:
+                self.assertEqual(member['avatar'],'head_1001')
+                self.assertTrue(set(member).isdisjoint({'data','items','email','password_hash','salt'}))
+
     def test_shared_wifi_rate_limits_each_verified_account_separately(self):
         # All three HTTP sessions connect from localhost, like players on one NAT.
         # Malformed match IDs trigger a normal 400, without reading other saves.

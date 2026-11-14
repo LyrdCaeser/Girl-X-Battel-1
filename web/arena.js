@@ -11,7 +11,15 @@ const Arena=(()=>{
  function open(from,mode='arena'){if(typeof NativeOnlineArenas==='undefined'){GirlUI?.notice?.('Đấu Trường gốc đang tải, vui lòng thử lại.',{title:'Đấu Trường'});return;}return NativeOnlineArenas.open(mode,from);}
  function icon(id){id=String(id);if(id==='1'||id==='2')return '/assets/currency/icon_'+id+'_small.png';const row=itemCatalog?.[id];return (row&&itemPicture(row))||(row?.icon?'/assets/shops/items/'+row.icon+'.png':'');}
  function nameOf(id){id=String(id);return id==='1'?"Gold":id==='2'?"Gems":itemCatalog?.[id]?.name||"Item "+id;}
- function avatar(id,cls){const src=icon(id);return src?img(src,cls):el('span',cls+' empty','✦');}
+ function avatar(id,cls){
+  const key=String(id||'').trim();
+  if(/^(?:head|partner_avatar)_\d{4,9}$/.test(key)){
+   const face=img('/assets/avatar-hd/profile/'+key+'.webp?v=1.1.2',cls);
+   face.onerror=()=>{face.onerror=null;face.src='/assets/profile/'+key+'.png';};
+   return face;
+  }
+  const src=icon(id);return src?img(src,cls):el('span',cls+' empty','✦');
+ }
  async function act(req){if(busyLocal)return null;busyLocal=true;note='';try{const r=await api('/api/arena/action',req);state=r.state;return r;}catch(e){note=e.message;return null;}finally{busyLocal=false;render();}}
  function clock(at){const s=Math.max(0,at-Math.floor(Date.now()/1000));const d=Math.floor(s/86400);return (d?d+'d ':'')+[Math.floor(s%86400/3600),Math.floor(s%3600/60),s%60].map(n=>String(n).padStart(2,'0')).join(':');}
  function awards(parent,text){const w=el('div','ar-awards');for(const p of String(text||'').split('|')){const [k,n]=p.split('#');if(!k)continue;const c=el('span','ar-award');const s=icon(k);if(s)c.append(img(s));c.append(el('b','',number(n)));c.title=nameOf(k);w.append(c);}parent.append(w);return w;}
@@ -60,7 +68,7 @@ const Arena=(()=>{
   const at=(e,x,y,w,h)=>{e.style.left=`calc(${328+x-w/2} * var(--u))`;e.style.top=`calc(${51.5-y-h/2} * var(--u))`;e.style.width=`calc(${w} * var(--u))`;e.style.height=`calc(${h} * var(--u))`;return e;};
   if(top)row.append(at(img(A('rank_icon0'+(i+1)),'ar2-rk'),-271,2,86,62));else row.append(at(el('b','ar2-num',String(i+1)),-269,0,70,40));
   const ic=at(el('button','ar2-icon'),-177,1,64,64);ic.type='button';const px=Math.round(64*scale());
-  ic.append(p.me?(typeof portrait==='function'&&state.roster?.[0]?portrait(state.roster[0].table_id,px):el('span')):avatar(p.avatar,'ar2-av'));if(p.lv)ic.append(el('small','ar2-lv',String(p.lv)));
+  ic.append(p.me?(typeof portrait==='function'&&state?.roster?.[0]?portrait(state.roster[0].table_id,px):el('span')):avatar(p.avatar,'ar2-av'));if(p.lv)ic.append(el('small','ar2-lv',String(p.lv)));
   if(!p.me&&onInspect)ic.onclick=()=>onInspect(p);row.append(ic);
   const nm=el('b','ar2-name',p.name);nm.style.left='calc(202 * var(--u))';nm.style.top='calc(14 * var(--u))';row.append(nm);
   const pw=el('span','ar2-power');pw.style.left='calc(208 * var(--u))';pw.style.top='calc(50 * var(--u))';pw.append(img(A('force_icon')),el('b','',number(p.me?me:p.power||0)));row.append(pw);
@@ -75,7 +83,7 @@ const Arena=(()=>{
   (p.teams||[]).forEach((t,k)=>{const r=el('div','ar-ins-team');if((p.teams||[]).length>1)r.append(el('b','ar-ins-n',String(k+1)));for(let s=0;s<6;s++){const u=t.find(v=>v.pos===s+1)||t[s];const c=el('div','ar-ins-slot');if(u){c.append(typeof portrait==='function'?portrait(u.table_id,px):el('span'));c.append(el('small','',String(u.lv)));}r.append(c);}w.append(r);});
   curStage().append(ov);}
  // WindowTop (gold · gems · back) and the bottom navigation, as in the Arena screens
- function chrome(st,onBack){const bar=center(el('div','ar-top'),0,612,720,56);for(const id of ['1','2']){const r=el('span','ar-top-res');r.append(img(icon(id)),el('b','',number(state.items?.[id]||0)));bar.append(r);}
+ function chrome(st,onBack){const bar=center(el('div','ar-top'),0,612,720,56);for(const id of ['1','2']){const r=el('span','ar-top-res');r.append(img(icon(id)),el('b','',number(state?.items?.[id]||0)));bar.append(r);}
   const back=el('button','ar-top-back');back.type='button';back.append(img('/assets/ui/win_back_btn.png'));back.onclick=onBack;bar.append(back);st.append(bar);
   const src=document.querySelector('.menu-explorer-bottom');if(src){const n=src.cloneNode(true);n.classList.add('ar-nav');n.querySelectorAll('button').forEach(b=>b.classList.remove('current'));st.append(n);}}
  return {open,render,rankRow,inspect,chrome};

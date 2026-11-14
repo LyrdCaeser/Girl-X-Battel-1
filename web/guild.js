@@ -69,12 +69,20 @@ const Guild=(()=>{
   b.append(el('small','gd-help',"Without a server, your Guild has simulated members who join daily, sign in daily, and level it up with you."));shell(b);}
 
  // ---- members (NPC members of gxb2/guild.py + the player as Leader) ----
- function avatar(i,me){const h=el('span','gd2-av');if(me&&typeof portrait==='function'&&state.roster?.[0])h.append(portrait(state.roster[0].table_id,74));else h.append(img(S('guild_icon02'),'gd2-member-placeholder'));return h;}
+ function avatar(p){
+  const h=el('span','gd2-av'),key=String(p.avatar||'head_1001');
+  if(/^(?:head|partner_avatar)_\d{4,9}$/.test(key)){
+   const photo=img('/assets/avatar-hd/profile/'+key+'.webp?v=1.1.2','gd2-member-avatar');
+   photo.onerror=()=>{photo.onerror=null;photo.src='/assets/profile/'+key+'.png';};
+   h.append(photo);
+  }else h.append(img('/assets/guild/guild_icon02.png','gd2-member-placeholder'));
+  return h;
+ }
  function people(g){return (g.members||[]).map((m,i)=>({i,me:String(m.uid)===String(state.uid),uid:m.uid,
     name:m.character_name,level:String(m.uid)===String(state.uid)?state.level:'—',job:m.role==='leader'?3:m.role==='deputy'?2:1,
-    online:Date.now()/1000-Number(m.last_seen||0)<120,power:Number(m.power||0),contribution:Number(m.contribution||0),role:m.role}));}
+    online:Date.now()/1000-Number(m.last_seen||0)<120,power:Number(m.power||0),contribution:Number(m.contribution||0),role:m.role,avatar:m.avatar||'head_1001'}));}
  const seen2=p=>p.online?'Trực tuyến':'Ngoại tuyến';
- function memberRow(p){const r=el('div','gd2-mrow');r.append(avatar(p.i,p.me),el('span','gd2-mlv',String(p.level)),el('b','gd2-mname',p.name),el('small','gd2-mjob',T('GUILD_JOB'+p.job,p.job===3?'Leader':p.job===2?'Deputy Leader':'Members')),img(S('guild_war_fight'),'gd2-mwar'),el('span','gd2-mseen',seen2(p)));return r;}
+ function memberRow(p){const r=el('div','gd2-mrow');r.append(avatar(p),el('span','gd2-mlv',String(p.level)),el('b','gd2-mname',p.name),el('small','gd2-mjob',T('GUILD_JOB'+p.job,p.job===3?'Leader':p.job===2?'Deputy Leader':'Members')),img(S('guild_war_fight'),'gd2-mwar'),el('span','gd2-mseen',seen2(p)));return r;}
 
  // ---- Office (guild_window.prefab) ----
  function office(st,g){frame(st,'Văn Phòng Bang Hội',963,0,()=>help('Office',["Điểm danh mỗi ngày để nhận Xu Bang Hội và EXP.","Thành viên, EXP và tiến độ lấy từ máy chủ Neon.","Không sử dụng thành viên NPC hoặc dữ liệu mô phỏng."]));
@@ -93,7 +101,12 @@ const Guild=(()=>{
   B(st,'blue','Xin Gia Nhập',()=>nativeGuildRequests(),-176,-428,144,66).disabled=false;
   B(st,'blue','Thành Viên',()=>membersWin(g),-20,-428,144,66).disabled=false;
   B(st,'blue','Tìm Bang',()=>nativeGuildDirectory(),136,-428,144,66).disabled=false;
-  const q=put(st,btn('gd2-abs gd2-ib','',()=>nativeGuildExit()),287,-428,62,65);q.append(img(S('guild_btn01')));}
+  const q=put(st,btn('gd2-abs gd2-ib','',()=>nativeGuildExit()),287,-428,62,65);q.append(img(S('guild_btn01')));
+  // Restore navigation to the ORIGINAL shop ID 6 and GuildLabWindow. Their
+  // existing backend validates all currency costs and skill prerequisites.
+  B(st,'blue','Cửa Hàng Bang Hội',()=>Shops.open('guild',6),-162,-520,310,58);
+  B(st,'blue','Phòng Nghiên Cứu',()=>GuildLab.open('guild'),162,-520,310,58);
+ }
  function logWin(g){const {body}=GirlUI.win({title:T('LOG','LOG'),cls:'gd2-ask'});if(!g.log.length)body.append(el('p','','—'));for(const l of g.log)body.append(el('p','gd2-logline',new Date(l.at*1000).toLocaleString()+' · '+l.text));}
  function membersWin(g){nativeGuildMembers();}
  function settings(g){const {body,close:c}=GirlUI.win({title:'Thiết Lập Bang Hội',cls:'gd2-ask'});

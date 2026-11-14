@@ -25,6 +25,7 @@ const NativeOnlineArenas=(()=>{
  function stop(){if(timer){clearInterval(timer);timer=null;}}
  function beginPoll(){stop();timer=setInterval(()=>{if(!selected()){stop();return;}if(panel==='teams'||busy)return;refresh(true);},5000);}
  async function open(which='arena',from='home'){
+  if(!state?.items){GirlUI.notice('Hồ sơ người chơi đang tải. Vui lòng thử lại.',{title:'Đấu Trường'});return;}
   mode=['arena','cross','arena3v3'].includes(which)?which:'arena';origin=from||view||'home';
   data=null;panel='';note='';lastMatchResult=null;draft=null;teamIndex=0;stop();
   root();showView(activeView());render();await refresh();beginPoll();
@@ -140,7 +141,7 @@ const NativeOnlineArenas=(()=>{
   const rows=el('div','ar-rank-list');rank.append(rows);
   for(const [i,p] of (data?.rating_board||[]).entries()){
    const player={uid:p.uid,server_id:p.server_id,name:p.character_name,lv:p.level,
-     power:p.power||0,score:p.rating,me:String(p.uid)===own(),avatar:null};
+     power:p.power||0,score:p.rating,me:String(p.uid)===own(),avatar:p.avatar||'head_1001'};
    rows.append(Arena.rankRow(player,i,Number(state?.power||0),openPlayer));
   }
   if(!data)rows.append(el('p','ar-empty',note||'Đang tải bảng xếp hạng trực tuyến…'));

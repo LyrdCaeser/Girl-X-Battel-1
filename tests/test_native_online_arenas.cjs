@@ -92,6 +92,11 @@ function makeContext(){
         'cannot charge ticket while opponent is not ready');
  assert(calls.some(c=>c.url==='/api/pvp/match/heartbeat'&&c.body?.match_id==='M-REAL-1'));
  assert.equal(notifications.length,0);
+ const src=fs.readFileSync(path.join(ROOT,'web/arena.js'),'utf8');
+ assert(src.includes('/assets/avatar-hd/profile/'), 'original Arena displays high-density profile avatars');
+ assert(src.includes('partner_avatar'), 'partner-themed profile avatar IDs remain supported');
+ assert(fs.readFileSync(path.join(ROOT,'web/arena-online-native.js'),'utf8').includes("avatar:p.avatar||'head_1001'"),
+        'ranking draws avatar key returned by online Neon service');
  // A finished single PvP battle must replay the authentic server report,
  // without accepting frames/winner supplied by the browser.
  const single=makeContext();single.match(true,'arena');
