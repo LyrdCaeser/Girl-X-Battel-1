@@ -66,7 +66,8 @@ def _public(row):
     d = dict(row)
     d['rewards'] = json.loads(d['rewards'])
     d['active'] = bool(d['active'])
-    d['remaining'] = max(0,int(d['max_uses'])-int(d['used_count']))
+    d['remaining'] = None if int(d['max_uses']) == 0 else max(0,int(d['max_uses'])-int(d['used_count']))
+    d['unlimited'] = int(d['max_uses']) == 0
     return d
 
 def list_codes(limit=150):
@@ -89,17 +90,25 @@ def create(payload, operator):
     message=str(payload.get('message') or 'Chúc bạn chơi game vui vẻ!').strip()[:1000]
     if not title:
         raise ValueError('Vui lòng nhập tiêu đề')
-    rewards=gm_catalog.validate_gift(payload.get('rewards'))
-    if len(rewards)>35:
-        raise ValueError('Tối đa 35 loại vật phẩm trên một giftcode')
+    goddess=payload.get('goddess')
+    if goddess is not None:
+        from . import goddess_gifts
+        if payload.get('rewards'): raise ValueError('Gift Nữ Thần không thể trộn với quà vật phẩm')
+        rewards={'__gxb3_goddess__':goddess_gifts.validate(goddess)}
+    else:
+        rewards=gm_catalog.validate_gift(payload.get('rewards'))
+        if len(rewards)>35:raise ValueError('Tối đa 35 loại vật phẩm trên một giftcode')
     try:
         max_uses=int(payload.get('max_uses') or 0)
         expires_at=int(payload.get('expires_at') or 0)
     except (TypeError,ValueError):
         raise ValueError('Số lượt hoặc thời hạn không hợp lệ') from None
-    if not 1<=max_uses<=100000:
+    if goddess is None and not 1<=max_uses<=100000:
         raise ValueError('Số lượt sử dụng phải từ 1 đến 100.000')
     now=int(time.time())
+    if goddess is not None:
+        # 30-day policy is immutable: 0 means unlimited GLOBAL use.
+        max_uses=0; expires_at=now+30*86400
     if expires_at and (expires_at<=now or expires_at>now+366*86400*2):
         raise ValueError('Hạn dùng phải ở tương lai, tối đa 2 năm')
     world=str(payload.get('server_id') or 'ALL').strip().upper()
@@ -119,12 +128,23 @@ def create(payload, operator):
         db.commit()
         return {'code':code,'title':title,'message':message,'rewards':rewards,
                 'server_id':world,'max_uses':max_uses,'used_count':0,
-                'expires_at':expires_at,'active':True,'remaining':max_uses,'created_at':now}
+                'expires_at':expires_at,'active':True,'remaining':None if goddess is not None else max_uses,
+                'unlimited':goddess is not None,'created_at':now}
     except Exception:
         db.rollback()
         raise
     finally:
         db.close()
+
+def create_goddess(config: dict, operator: str) -> dict:
+    """SUPER GM: 30 days, unlimited global redemptions, once per UID."""
+    from . import goddess_gifts
+    validated=goddess_gifts.validate(config)
+    return create({'goddess':validated,
+                   'title':'Gift Nữ Thần · '+validated['name']+' '+str(validated['stars'])+'★',
+                   'message':'Quà Nữ Thần SUPER GM. Mỗi tài khoản chỉ được nhận mã này một lần.',
+                   'server_id':'ALL'},operator)
+
 
 def revoke(code,operator):
     code=_normalize(code)
@@ -185,7 +205,7 @@ def redeem(code,uid,server_id):
             raise ValueError('Giftcode đã hết hạn')
         if row['server_id']!='ALL' and row['server_id']!=server_id:
             raise ValueError('Giftcode không áp dụng cho máy chủ này')
-        if int(row['used_count'])>=int(row['max_uses']):
+        if int(row['max_uses']) and int(row['used_count'])>=int(row['max_uses']):
             raise ValueError('Giftcode đã hết lượt sử dụng')
         rewards=json.loads(row['rewards'])
         # Reward catalog was validated on creation; mail still validates ownership
@@ -199,7 +219,7 @@ def redeem(code,uid,server_id):
         db.execute("""INSERT INTO giftcode_redemptions(code,uid,server_id,mail_id,redeemed_at)
                    VALUES(?,?,?,?,?)""",(code,uid,server_id,mail_id,now))
         cur=db.execute("""UPDATE giftcodes SET used_count=used_count+1
-                          WHERE code=? AND used_count<max_uses AND active=1""",(code,))
+                          WHERE code=? AND (max_uses=0 OR used_count<max_uses) AND active=1""",(code,))
         if cur.rowcount!=1:
             raise ValueError('Giftcode đã hết lượt sử dụng')
         live_service._audit(db,'giftcode.redeem',code,{'uid':uid,'server_id':server_id,'mail_id':mail_id},'PLAYER')

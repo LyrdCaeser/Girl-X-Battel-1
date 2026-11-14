@@ -64,6 +64,9 @@ env.xyd.models.heroAttr.attr=function(self,hero,params)
  if breakSteps>0 then hero.awake_=awake end
  local before=(result.atk or 0)+(result.arm or 0)+math.floor((result.hp or 0)/6)
  local localGrowth=tonumber(hero.local_growth or 0) or 0
+ -- SUPER GM goddess-gift flat bonuses apply in the original HeroAttr pipeline
+ -- for both detail and actual LuaJIT battle. Ordinary girls carry no bonus.
+ local gmBonus=hero.gm_bonus
  if localGrowth>0 then
   for _,key in ipairs({'hp','atk','arm'})do if result[key] then result[key]=math.floor(result[key]*(1+0.25*localGrowth)) end end
  end
@@ -81,7 +84,13 @@ env.xyd.models.heroAttr.attr=function(self,hero,params)
   -- each percentage point is measured from the 15★ baseline.
   result.arm=math.floor((tonumber(result.arm or 0))*(1+0.02*breakSteps))
  end
- if localGrowth>0 or breakSteps>0 then
+ if type(gmBonus)=='table' then
+  for _,key in ipairs({'hp','atk','arm','spd'}) do
+   local bonus=math.max(0,math.floor(tonumber(gmBonus[key]) or 0))
+   if bonus>0 then result[key]=math.floor(tonumber(result[key] or 0)+bonus) end
+  end
+ end
+ if localGrowth>0 or breakSteps>0 or type(gmBonus)=='table' then
   result.power=(result.power or 0)-before+(result.atk or 0)+(result.arm or 0)+math.floor((result.hp or 0)/6)
  end
  return result
@@ -94,14 +103,14 @@ if target then local f=assert(loadfile(target));setfenv(f,{});input=f() end
 if mode=='attrs'then
  -- Real partner attributes (HeroAttr:attr) for the detail screen; input = list of partner rows.
  local out={}
- for _,item in ipairs(input.partners or input)do local hero=Hero.new();hero:populate(item);hero.local_growth=item.local_growth;hero:setGuildInfo(input.guildSkills or {});if input.chimeBonus and hero.setChimeBonus then hero:setChimeBonus(input.chimeBonus) end;local a=env.xyd.models.heroAttr:attr(hero);local r={};for k,v in pairs(a)do if type(v)=='number'then r[k]=v end end;out[tostring(item.partner_id)]=r end
+ for _,item in ipairs(input.partners or input)do local hero=Hero.new();hero:populate(item);hero.local_growth=item.local_growth;hero.gm_bonus=item.gm_bonus;hero:setGuildInfo(input.guildSkills or {});if input.chimeBonus and hero.setChimeBonus then hero:setChimeBonus(input.chimeBonus) end;local a=env.xyd.models.heroAttr:attr(hero);local r={};for k,v in pairs(a)do if type(v)=='number'then r[k]=v end end;out[tostring(item.partner_id)]=r end
  print(json(out));return
 end
 local function team(rows,guildSkills,chimeBonus)
  local out={}
  for _,item in ipairs(rows)do
   local hero=Hero.new()
-  if item.isMonster then hero:populateWithTableID(item.table_id,item)else hero:populate(item);hero.local_growth=item.local_growth end
+  if item.isMonster then hero:populateWithTableID(item.table_id,item)else hero:populate(item);hero.local_growth=item.local_growth;hero.gm_bonus=item.gm_bonus end
   if hero.setGuildInfo then hero:setGuildInfo(guildSkills or {}) end
   if chimeBonus and hero.setChimeBonus then hero:setChimeBonus(chimeBonus) end
   out[#out+1]=hero

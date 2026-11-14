@@ -610,6 +610,13 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
             if not self.admin_authorized():
                 return self.send(403, {'error': 'QTV_KEY_REQUIRED'})
             return self.send(200, topup.get())
+        if path == '/api/admin/goddess-gift/catalog':
+            if not self.admin_authorized():
+                return self.send(403, {'error':'Chỉ SUPER GM được chọn Gift Nữ Thần'})
+            from gxb2 import goddess_gifts
+            return self.send(200, {'goddesses': goddess_gifts.catalog(),
+                                   'factions': 7, 'duration_days': 30,
+                                   'unlimited': True, 'one_per_uid': True})
         if path == '/api/admin/gift-catalog':
             if not self.admin_authorized():
                 return self.send(403, {'error': 'QTV_KEY_REQUIRED'})
@@ -1082,6 +1089,10 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
             if path == '/api/giftcode/admin/unlock':
                 if not self.admin_authorized(): return self.send(403,{'error':'Yêu cầu SUPER GM'})
                 return self.send(200,{'access':studio_sso.unlock(data.get('password'),self.session_token(),data.get('admin_key'),data.get('gm_key')),'expires_in':studio_sso.PANEL_TTL})
+            if path == '/api/girls/level-max':
+                if not self.rate_limit_player('girl_level_max'):
+                    return
+                return self.send(200, self.engine.level_up_max(data.get('partner_id')))
             if path == '/api/inventory/options':
                 return self.send(200, self.engine.bag_use_options(data.get('item_id')))
             if path == '/api/inventory/use':
@@ -1142,6 +1153,15 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                 if path == '/api/giftcode/admin/revoke':
                     return self.send(200,giftcodes.revoke(data.get('code'),operator))
                 return self.send(404,{'error':'Đường dẫn giftcode không tồn tại'})
+            if path == '/api/admin/goddess-gift/create':
+                if not self.admin_authorized():
+                    return self.send(403, {'error':'Chỉ SUPER GM được tạo Gift Nữ Thần'})
+                if not self.gm_key_authorized():
+                    return self.send(403, {'error':'Khóa hành động QTV không hợp lệ'})
+                if not self.rate_limit_player('admin_goddess_gift'):
+                    return
+                return self.send(200, giftcodes.create_goddess(data,
+                    self.auth_context()['account']['uid']))
             if path == '/api/admin/check':
                 if not self.admin_authorized():
                     return self.send(403, {'error': 'QTV_KEY_INVALID'})

@@ -2,6 +2,7 @@
 window.AdminPanel=(()=>{
   let root=null,cfg=null,dash=null,worldCfg=null,topupCfg=null,active='overview';
   let giftCatalog=null,giftBasket={},giftKey='',recipient=null,catalogSearch='',catalogPage=0;
+  let goddessCatalog=null,goddessSelected=null,goddessGroup=0,goddessSearch='',goddessPage=0;
   const el=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n;};
   const field=(parent,label,id,type='text',step=null)=>{const l=el('label','admin-field',label),i=document.createElement('input');i.id=id;i.type=type;if(step)i.step=step;l.append(i);parent.append(l);return i;};
   const textarea=(parent,label,id,placeholder='')=>{const l=el('label','admin-field',label),i=document.createElement('textarea');i.id=id;i.placeholder=placeholder;l.append(i);parent.append(l);return i;};
@@ -16,7 +17,7 @@ window.AdminPanel=(()=>{
     root.append(head);
 
     const nav=el('nav','admin-nav');
-    [['overview','Tổng quan'],['players','Người chơi'],['mail','Gửi thư'],['currency','Tiền tệ'],['items','Vật phẩm'],['shards','Mảnh nhân vật'],['orders','Đơn nạp'],['worlds','Server'],['config','Cấu hình'],['audit','Audit']].forEach(([id,label])=>{
+    [['overview','Tổng quan'],['players','Người chơi'],['mail','Gửi thư'],['currency','Tiền tệ'],['items','Vật phẩm'],['shards','Mảnh nhân vật'],['goddess','Gift Nữ Thần'],['orders','Đơn nạp'],['worlds','Server'],['config','Cấu hình'],['audit','Audit']].forEach(([id,label])=>{
       const b=btn(label,()=>show(id),'admin-tab');b.dataset.tab=id;nav.append(b);
     });
     root.append(nav);
@@ -29,7 +30,7 @@ window.AdminPanel=(()=>{
   async function refreshDashboard(){dash=await api('/api/admin/dashboard');}
   function show(id){active=id;for(const b of root.querySelectorAll('.admin-tab'))b.classList.toggle('on',b.dataset.tab===id);render();}
   function render(){const body=document.getElementById('admin-body');if(!body)return;body.replaceChildren();
-    const fn={overview:renderOverview,mail:renderMail,currency:renderCurrency,items:renderItems,shards:renderShards,orders:renderOrders,players:renderPlayers,worlds:renderWorlds,config:renderConfig,audit:renderAudit}[active]||renderOverview;fn(body);
+    const fn={overview:renderOverview,mail:renderMail,currency:renderCurrency,items:renderItems,shards:renderShards,goddess:renderGoddessGift,orders:renderOrders,players:renderPlayers,worlds:renderWorlds,config:renderConfig,audit:renderAudit}[active]||renderOverview;fn(body);
   }
   function renderOverview(body){
     const grid=el('div','admin-grid');
@@ -180,6 +181,74 @@ window.AdminPanel=(()=>{
     if(!response.ok)throw Error(result.error||'Máy chủ từ chối thao tác QTV.');
     return result;
   }
+  function renderGoddessGift(body){
+    const panel=card('Gift Nữ Thần · 7 hệ · Ảnh gốc');
+    panel.append(el('p','admin-note','Chỉ SUPER GM. 30 ngày từ lúc tạo; KHÔNG GIỚI HẠN tổng lượt nhập, MỖI UID chỉ nhận một lần. Nữ Thần được cấp trong Hòm Thư, không gửi trực tiếp bằng JSON.'));
+    body.append(panel);
+    if(!goddessCatalog){
+      panel.append(el('p','admin-note','Đang nạp danh sách Nữ Thần và ảnh gốc từ máy chủ...'));
+      api('/api/admin/goddess-gift/catalog').then(res=>{goddessCatalog=res.goddesses||[];if(active==='goddess')render();})
+        .catch(err=>status(err.message,false));
+      return;
+    }
+    const tool=el('div','admin-form-row');
+    const search=document.createElement('input');search.type='search';search.placeholder='Tìm tên Nữ Thần hoặc ID';search.value=goddessSearch;
+    const group=document.createElement('select');
+    const names=['Tất cả 7 hệ','Hệ 1','Hệ 2','Hệ 3','Hệ 4','Hệ 5','Hệ 6','Hệ 7'];
+    names.forEach((name,i)=>{const o=el('option','',name);o.value=i;group.append(o);});group.value=String(goddessGroup);
+    tool.append(search,group);panel.append(tool);
+    const gallery=el('div','admin-gift-grid'),paging=el('div','admin-pagination');panel.append(gallery,paging);
+    function draw(){
+      gallery.replaceChildren();paging.replaceChildren();
+      const q=goddessSearch.toLocaleLowerCase('vi-VN');
+      const matched=goddessCatalog.filter(g=>(!goddessGroup||g.group===goddessGroup)&&(!q||g.name.toLocaleLowerCase('vi-VN').includes(q)||String(g.id).includes(q)));
+      const pages=Math.max(1,Math.ceil(matched.length/24));goddessPage=Math.max(0,Math.min(goddessPage,pages-1));
+      for(const g of matched.slice(goddessPage*24,(goddessPage+1)*24)){
+        const tile=el('article','admin-gift-card'+(goddessSelected?.id===g.id?' selected':''));
+        const face=giftPic(g.image,g.name);face.onerror=()=>{face.style.visibility='hidden';};tile.append(face);
+        const desc=el('div','admin-gift-details');desc.append(el('b','',g.name),el('small','','Hệ '+g.group+' · ID '+g.id),el('small','','Từ '+g.base_star+'★ · '+g.stars.length+' mốc hợp lệ'));tile.append(desc);
+        tile.append(btn(goddessSelected?.id===g.id?'Đã chọn':'Chọn Nữ Thần',()=>{goddessSelected=g;render();},'primary'));gallery.append(tile);
+      }
+      if(!matched.length)gallery.append(el('p','admin-note','Không có Nữ Thần có ảnh gốc và dữ liệu sao hợp lệ.'));
+      const prev=btn('← Trước',()=>{goddessPage--;draw();},'admin-secondary'),next=btn('Tiếp →',()=>{goddessPage++;draw();},'admin-secondary');
+      prev.disabled=goddessPage===0;next.disabled=goddessPage>=pages-1;
+      paging.append(prev,el('span','',String(goddessPage+1)+' / '+pages+' · '+matched.length+' Nữ Thần'),next);
+    }
+    search.oninput=()=>{goddessSearch=search.value;goddessPage=0;draw();};
+    group.onchange=()=>{goddessGroup=Number(group.value);goddessPage=0;draw();};
+    draw();
+    if(!goddessSelected){panel.append(el('p','admin-note','Chọn một Nữ Thần trong danh mục để thiết lập giftcode.'));return;}
+    const chosen=card('Cấu hình · '+goddessSelected.name+' · Hệ '+goddessSelected.group);
+    chosen.append(giftPic(goddessSelected.image,goddessSelected.name));
+    const stars=document.createElement('select');stars.id='gm-goddess-star';
+    for(const v of goddessSelected.stars){const opt=el('option','',v+'★');opt.value=v;stars.append(opt);}
+    stars.value=String(goddessSelected.stars[0]);
+    const wrap=el('label','admin-field','Số sao · theo các hình thái gốc');wrap.append(stars);chosen.append(wrap);
+    const level=field(chosen,'Cấp Nữ Thần (tối đa theo hình thái và dữ liệu gốc)','gm-goddess-level','number');level.min=1;level.max=666;level.value='1';
+    chosen.append(el('h3','','Chọn chỉ số cộng thêm (được áp dụng trong chiến đấu thật)'));
+    for(const [id,label,max]of [['hp','HP',1000000000],['atk','ATK',100000000],['arm','DEF',10000000],['spd','SPD',3000]]){
+      const f=field(chosen,label,'gm-goddess-stat-'+id,'number');f.min=0;f.max=max;f.step=1;f.value='0';
+    }
+    function check(label,id){const l=el('label','admin-check'),input=document.createElement('input');input.type='checkbox';input.id=id;l.append(input,document.createTextNode(label));chosen.append(l);return input;}
+    const stellar=check('Lõi Tinh Tú: tối đa 10 nút gốc (chỉ từ 15★)','gm-goddess-stellar');
+    const gear=check('Trang bị đủ bộ đỏ 6★ gốc (4 món)','gm-goddess-red6');
+    const update=()=>{stellar.disabled=Number(stars.value)<15;if(stellar.disabled)stellar.checked=false;};stars.onchange=update;update();
+    const key=field(chosen,'Khóa hành động SUPER GM (chỉ giữ trong phiên)','gm-goddess-key','password');key.autocomplete='off';if(giftKey)key.placeholder='Đã có khóa QTV trong phiên';
+    const button=btn('Tạo Giftcode · 30 ngày · vô hạn lượt nhập',async()=>{
+      button.disabled=true;
+      try{
+        const ownKey=key.value.trim();if(ownKey)giftKey=ownKey;
+        const stats=Object.fromEntries(['hp','atk','arm','spd'].map(id=>[id,Number(val('gm-goddess-stat-'+id)||0)]));
+        const cfg={girl_id:goddessSelected.id,stars:Number(stars.value),level:Number(level.value),stats,max_stellar:stellar.checked,max_red6:gear.checked};
+        const res=await gmAction('/api/admin/goddess-gift/create',cfg);
+        const generated=el('div','admin-card');generated.append(el('b','',res.code),el('p','',goddessSelected.name+' · '+cfg.stars+'★ · cấp '+cfg.level+' · hết hạn '+new Date(res.expires_at*1000).toLocaleString('vi-VN')));
+        generated.append(btn('Sao chép giftcode',()=>navigator.clipboard?.writeText(res.code),'admin-secondary'));
+        chosen.append(generated);status('Đã tạo giftcode Nữ Thần: '+res.code+' · hạn 30 ngày · không giới hạn tổng lượt.');
+      }catch(err){status('Tạo Giftcode thất bại: '+(err.message||String(err)),false);}
+      finally{button.disabled=false;key.value='';}
+    },'primary');chosen.append(button);body.append(chosen);
+  }
+
   function renderMail(body){
     const c=card('Gửi quà qua Hòm Thư · xác nhận UID trước khi gửi');
     const key=field(c,'Khóa QTV (không lưu vào thiết bị)','gm-action-key','password');key.autocomplete='off';

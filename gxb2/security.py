@@ -89,6 +89,8 @@ DEFAULT_LIMITS = {
     "pvp_queue": (20, 60),
     "battle": (12, 60),
     "admin": (60, 60),
+    "girl_level_max": (8, 60),
+    "admin_goddess_gift": (10, 3600),
     "giftcode_redeem": (6, 120),
     "giftcode_unlock": (5, 600),
 }

@@ -48,7 +48,7 @@ const GirlUI=(()=>{
   skills.forEach((lv,i)=>{const b=el('button','gu-ex-skill');b.type='button';if(icons[i])b.append(img(icons[i]));b.append(el('span','gu-ex-lv',lv+'/5'));b.disabled=lv>=5;b.title=(names[i]||'Habilidad '+(i+1))+(lv>=5?" · maxed":" · upgrade");b.onclick=async()=>{await action('UPGRADE_PARTNER_EX_SKILL',{partner_id:hero.partner_id,index:i+1});const h=state.roster.find(x=>x.partner_id===hero.partner_id);if(h){sheetRoot().querySelector('.gs-overlay')?.remove();eliteSkills(h);}};row.append(b);});
   body.append(row);const low=Math.min(...skills);if(low<5){const c=el('div','gu-grade');c.append(el('small','',"Next level cost:"));cost(c,hero.ex_skill_cost);body.append(c);}else body.append(el('p','detail-note',"All Elite Skills are maxed."));}
 
- // ---- Awake tab: 6★→15★ ----
+ // ---- Native evolution / awakening: 4★→5★→6★ and 6★→25★ ----
  function starOf(g){return g.stars;}
  function matches(code,g,host){if(g.partner_id===host.partner_id)return false;if(code===g.table_id)return true;if(code%1000!==999)return false;const star=Math.floor(code/10000),group=code%10000===9999?0:Math.floor(code/1000)%10;return starOf(g)===star&&(!group||g.group===group);}
  function materialAvailable(g,host){return g.partner_id!==host.partner_id&&!g.flags?.some(Boolean)&&state.acquisition?.exchange?.partner_id!==g.partner_id;}
@@ -109,15 +109,16 @@ const GirlUI=(()=>{
   paint();body.append(list);const a=el('div','gs-btns');const ok=el('button','gs-btn','Activate');ok.type='button';ok.onclick=async()=>{if(!sel)return;close();await action('CHOOSE_PARTNER_POTENTIAL',{partner_id:hero.partner_id,awake_index:stage,index:sel});};a.append(ok);body.append(a);}
  function awake(hero){const box=$('detail-awake-status');if(!box)return;box.replaceChildren();const tab=document.querySelector('[data-detail-tab=awake]');if(tab)tab.textContent='Thức Tỉnh';
   if(hero.local_promotion&&hero.stars>=10&&!hero.next_awake){box.className='lb-low';box.append(el('p','gu-awake-head',hero.stars+'★'),el('p','detail-note','Nữ Thần này hiện chưa có công thức Thức Tỉnh tiếp theo trên máy chủ.'));return;}
-  if(hero.stars<10&&!hero.next_awake){box.className='lb-low';box.append(el('p','gu-awake-head',hero.stars+'★'),el('p','detail-note',"Nâng sao tại Học Viện → Tiến Hóa. Nữ Thần từ 1★ đến 3★ có tiến trình mở rộng đến 10★."));return;}
+  if(hero.stars<10&&!hero.next_awake){box.className='lb-low';box.append(el('p','gu-awake-head',hero.stars+'★'),el('p','detail-note',"Chưa có công thức nâng sao tiếp theo trong dữ liệu gốc của Nữ Thần này. Có thể xem Học Viện → Tiến Hóa để kiểm tra tiến trình phù hợp."));return;}
   box.className='lb-tab';const r=hero.next_awake;
   if(hero.stars<10&&r){
-   // The original 6–9★ awakening uses archived partner.awake_material and
-   // stone_material. Potentiality nodes belong only to the 11★+ system.
+   box.classList.add('lb-progress-preview');
+   // 4–5★ use original GRADUATE/COMPOSE_PARTNER; 6–9★ use native
+   // AWAKE_PARTNER. Potentiality belongs ONLY to the 11★+ window.
    const top=el('button','lb-banner');top.type='button';top.append(stars(hero.stars,'tag'));
    top.onclick=()=>limitBreak(hero);top.title='Xem nguyên liệu Thức Tỉnh '+r.star+'★';box.append(top);
-   box.append(el('p','detail-note','Thức Tỉnh '+hero.stars+'★ → '+r.star+'★ · công thức Nữ Thần gốc'));
-   const go=el('button','gs-btn','Xem Công Thức & Thức Tỉnh');go.type='button';
+   box.append(el('p','detail-note',(r.kind==='compose'?'Tiến Hóa ':'Thức Tỉnh ')+hero.stars+'★ → '+r.star+'★ · vật liệu đúng bảng gốc'));
+   const go=el('button','gs-btn','Xem nguyên liệu · '+(r.kind==='compose'?'Tiến Hóa':'Thức Tỉnh'));go.type='button';
    go.onclick=()=>limitBreak(hero);box.append(go);return;
   }
   const top=el('button','lb-banner');top.type='button';top.append(stars(hero.stars,'tag'));if(r&&materialsReady(r,pick(r,hero))&&cost(el('span'),r.cost||{}))top.append(img(S+'alert_icon.png','lb-red'));top.onclick=()=>limitBreak(hero);top.title='Mở giao diện Thức Tỉnh gốc';top.setAttribute('aria-label','Mở công thức và vật liệu Thức Tỉnh Nữ Thần');box.append(top);
@@ -129,7 +130,7 @@ const GirlUI=(()=>{
    const head=el('div','lb-head');head.append(stars(r?Number(r.star||hero.stars+1):hero.stars,'tag'));body.append(head);
    if(!r){body.append(el('p','lb-max',hero.stars>=25?"Đã đạt giới hạn 25★ · cấp 666.":"Chưa có dữ liệu Đột Phá tiếp theo cho Nữ Thần này."));return;}
    const targetStar=Number(r.star||hero.stars+1);
-   const cap=targetStar<10?Number(hero.level_cap||0)+20:
+   const cap=r.kind==='compose'?'Theo hình thái gốc':targetStar<10?Number(hero.level_cap||0)+20:
      targetStar===10?Number(r.target_level_cap||250):
      CAPS[Math.max(0,Math.min(CAPS.length-1,targetStar-11))];
    const hpCycle=[14.56,14.56,9.62,9.62],atkCycle=[10.40,10.40,7.49,7.49];
@@ -164,8 +165,19 @@ const GirlUI=(()=>{
     });body.append(mats);
    }
    const c=el('div','lb-cost'),ok=cost(c,r.cost||{});body.append(c);
-   const acts=el('div','gs-btns'),btn=el('button','gs-btn','Thức Tỉnh');btn.type='button';btn.disabled=!ok||!materialsReady(r,picked);
-   btn.onclick=async()=>{if(chosen.some(g=>g?.pos)&&!await confirmGame("Một số Nữ Thần làm nguyên liệu đang trong đội hình. Bạn vẫn muốn Đột Phá?",{title:"Xác Nhận Đột Phá",ok:"Tiếp Tục",danger:true}))return;close();action('AWAKE_PARTNER',{partner_id:hero.partner_id,material_ids:chosen.map(g=>g.partner_id)});};
+   const compose=r.kind==='compose';
+   const acts=el('div','gs-btns'),btn=el('button','gs-btn',compose?'Tiến Hóa Nữ Thần':'Thức Tỉnh');btn.type='button';btn.disabled=!ok||!materialsReady(r,picked);
+   btn.onclick=async()=>{
+    if(!materialsReady(r,picked))return;
+    const involved=chosen.filter(g=>g?.pos);
+    if(involved.length&&!await confirmGame('Có '+involved.length+' Nữ Thần nguyên liệu đang trong đội hình. Tiếp tục?',{title:'Xác Nhận Tiến Hóa',ok:'Tiếp tục',danger:true}))return;
+    const ids=chosen.map(g=>g.partner_id);
+    const message=compose?'COMPOSE_PARTNER':'AWAKE_PARTNER';
+    const data=compose?{table_id:r.target,material_ids:[hero.partner_id,...ids]}:{partner_id:hero.partner_id,material_ids:ids};
+    btn.disabled=true;
+    try{const result=await action(message,data);if(result?.state){close();}else{btn.disabled=false;}}
+    catch(err){btn.disabled=false;toast(err.message||'Không thể nâng sao');}
+   };
    acts.append(btn);body.append(acts);
   }
 

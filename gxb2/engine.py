@@ -28,6 +28,16 @@ TABLES = {name: json.loads((ROOT / f'data/{name}.json').read_text()) for name in
 DEBRIS = json.loads((ROOT / 'data/debris.json').read_text())
 GRADUATE = json.loads((ROOT / 'data/graduate.json').read_text())
 ASCENSION = json.loads((ROOT / 'data/ascension.json').read_text())
+# Native 4★ → 5★ and 5★ → 6★ use COMPOSE_PARTNER, not AWAKE_PARTNER.
+# Both are genuine recipes indexed by their source's table ID.
+COMPOSE_BY_SOURCE = {}
+for _recipe in (*GRADUATE.values(), *(r for r in ASCENSION.values() if r.get('kind') == 'compose')):
+    _source = int(_recipe['source'])
+    if _source in COMPOSE_BY_SOURCE:
+        raise RuntimeError(f'Duplicate original composition source: {_source}')
+    COMPOSE_BY_SOURCE[_source] = {**_recipe, 'kind':'compose',
+                                  'star':int(_recipe.get('star') or 5),
+                                  'cost':dict(_recipe.get('cost') or {})}
 EXSKILL = json.loads((ROOT / 'data/exskill.json').read_text())  # partner_exskill_cost
 RESONATE = json.loads((ROOT / 'data/resonate.json').read_text())
 RETURN = json.loads((ROOT / 'data/partner_return.json').read_text())
@@ -487,6 +497,11 @@ class Engine:
                 attachments = live_service.claim_mail(str(mail_id), uid, server_id,
                     db=live_db)
                 inventory = dict(attachments)
+                special_gift = inventory.pop('__gxb3_goddess__', None)
+                gifted = None
+                if special_gift is not None:
+                    from . import goddess_gifts
+                    gifted = goddess_gifts.grant(state, special_gift, self.level_cap)
                 vip.claim_reward(state, inventory)
                 for item_id, amount in inventory.items():
                     state['items'][str(item_id)] = int(state['items'].get(str(item_id), 0)) + int(amount)
@@ -495,7 +510,8 @@ class Engine:
             except Exception:
                 self.db.rollback()
                 raise
-        return {'state': self.snapshot(), 'attachments': attachments}
+        return {'state': self.snapshot(), 'attachments': attachments,
+                'goddess': gifted}
 
     def bag_use_options(self, item_id):
         from . import bag_use
@@ -705,6 +721,75 @@ class Engine:
             return {}
         attrs = self._attributes(state, rows, guild_skills=guild_lab.skills(state))
         return {pid: int(a.get('power', 0)) for pid, a in attrs.items()}
+
+    def level_up_max(self, partner_id):
+        """One atomic click: level up and advance regular grade as far as the
+        ORIGINAL exp_partner/partner tables and current inventory allow.
+
+        No star ascension, sacrificial partners, or premium-item creation. Uses
+        the same level/grade costs as PARTNER_LEVUP and PARTNER_GRADEUP for any
+        present or future table_id. Never silently changes another character.
+        """
+        pid = integer(partner_id, 'partner_id', 1)
+        with self.lock:
+            self.db.execute('BEGIN IMMEDIATE')
+            try:
+                state = self._load()
+                host = next((g for g in state['partners'] if int(g['partner_id']) == pid), None)
+                if host is None:
+                    raise GameError('Không tìm thấy Nữ Thần của tài khoản')
+                row = TABLES['partner'].get(str(host['table_id']))
+                if row is None:
+                    raise GameError('Dữ liệu Nữ Thần chưa có trong bản gốc')
+                before_lv, before_grade = int(host['lv']), int(host.get('grade', 0))
+                spent: dict[str, int] = {}
+                promoted = 0
+                # Limit iteration for malformed tables: 666 levels + <=10 grades.
+                for _ in range(750):
+                    cap = self.level_cap(host)
+                    if int(host['lv']) >= cap:
+                        grade = int(host.get('grade', 0))
+                        if grade >= int(row.get('max_grade') or 0):
+                            break
+                        raw = row.get(f'grade_exp{grade+1}')
+                        if not raw:
+                            break
+                        cost = {str(k): local_config.scale_cost(v) for k, v in item_pairs(raw).items()}
+                        if not cost or any(int(state['items'].get(k, 0)) < n for k, n in cost.items()):
+                            break
+                        for key, n in cost.items():
+                            state['items'][key] = int(state['items'].get(key, 0)) - n
+                            spent[key] = spent.get(key, 0) + n
+                        host['grade'] = grade + 1
+                        promoted += 1
+                        continue
+                    target = str(int(host['lv']) + 1)
+                    stage = TABLES['exp_partner'].get(target)
+                    if not stage:
+                        break
+                    raw = item_pairs(stage.get('cost') or '')
+                    cost = {str(k): local_config.scale_cost(n) for k, n in raw.items()}
+                    if not cost or any(int(state['items'].get(k, 0)) < n for k, n in cost.items()):
+                        break
+                    for key, n in cost.items():
+                        state['items'][key] = int(state['items'].get(key, 0)) - n
+                        spent[key] = spent.get(key, 0) + n
+                    host['lv'] = int(host['lv']) + 1
+                else:
+                    raise GameError('Dữ liệu giới hạn cấp không hợp lệ')
+                gained = int(host['lv']) - before_lv
+                if not gained and not promoted:
+                    raise GameError('Nữ Thần đã đạt giới hạn hoặc không đủ tài nguyên nâng cấp')
+                self._save_profile(state)
+                self.db.commit()
+            except Exception:
+                self.db.rollback()
+                raise
+        return {'state': self.snapshot(), 'partner_id': pid, 'levels_gained': gained,
+                'grades_gained': promoted, 'from_level': before_lv,
+                'to_level': int(host['lv']), 'from_grade': before_grade,
+                'to_grade': int(host.get('grade', 0)), 'cost': spent,
+                'max_level_for_current_stars': self.level_cap(host)}
 
     def partner_attributes(self, partner_id):
         with self.lock:
@@ -991,14 +1076,14 @@ class Engine:
             cost = {k: local_config.scale_cost(v) for k, v in item_pairs(TABLES['exp_partner'][str(partner['lv'] + 1)]['cost']).items()} if partner['lv'] < self.level_cap(partner) else {}
             stars = int(row['max_star']) + int(partner.get('awake', 0))
             grade, max_grade = int(partner.get('grade', 0)), int(row.get('max_grade') or 0)
-            awake = ASCENSION.get(f"{partner['table_id']}:{stars+1}") or local_promotion.recipe(partner) or self.awake_recipe(partner)
+            awake = (COMPOSE_BY_SOURCE.get(int(partner['table_id'])) if stars in (4, 5) and not int(partner.get('awake', 0)) else None) or ASCENSION.get(f"{partner['table_id']}:{stars+1}") or local_promotion.recipe(partner) or self.awake_recipe(partner)
             if awake and awake.get('cost'):
                 awake = {**awake, 'cost': {str(k): local_config.scale_cost(v) for k, v in awake['cost'].items()}}
             state['roster'].append({**partner, 'name': TABLES['names'].get(str(partner['table_id']), str(partner['table_id'])),
                                     'local_promotion': int(partner['table_id']) in local_promotion.BASE, 'stars': stars, 'level_cap': self.level_cap(partner), 'next_cost': cost,
                                     'group': int(row['group']), 'job': int(row['job']), 'awake25_identity': [list(x) for x in self.awake25_identity(row)], 'awake25_valid_goddess': self.awake25_valid_goddess(row), 'max_grade': max_grade,
                                     'grade_cost': {k: local_config.scale_cost(v) for k, v in item_pairs(row.get(f'grade_exp{grade+1}')).items()} if grade < max_grade else {},
-                                    'next_awake': awake if awake and awake.get('kind') == 'awake' else None,
+                                    'next_awake': awake if awake and awake.get('kind') in ('awake', 'compose') else None,
                                     'star_10': int(row.get('star_10') or 0), 'astral_list': int(row.get('star_origin') or 0) if stars >= 15 else 0, 'namesake': int(str(row.get('material') or '').split('|')[0] or 0) if int(row['max_star']) > 5 else int(partner['table_id']), 'potential_options': [[int(x) for x in st.split('#') if x] for st in str(row.get('potential') or '').split('|') if st] if int(row['max_star']) == 10 else [],
                                     'has_ex_skills': stars >= 10 and str(row.get('ex_skill')) == '1', 'gift_like': str(row.get('gift_type1') or ''),
                                     'ex_skill_cost': item_pairs(EXSKILL['cost'].get(str(min((partner.get('ex_skills') or [0])) + 1), '')),
