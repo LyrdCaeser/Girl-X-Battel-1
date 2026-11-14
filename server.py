@@ -491,6 +491,11 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
             return self.send(200, photo, 'image/webp') if photo else self.send(404, {'error': 'Không tìm thấy ảnh.'})
         if path.startswith('/api/') and not self.require_auth():
             return
+        if path == '/api/profile/photo/status':
+            account = self.auth_context()['account']
+            retry = profile_photos.remaining(account['uid'])
+            return self.send(200, {'can_upload': retry == 0, 'retry_after': retry,
+                                   'cooldown_seconds': profile_photos.UPLOAD_COOLDOWN_SECONDS})
         if path == '/api/events/stream':
             ctx=self.auth_context()
             mode=(parse_qs(parsed.query).get('mode') or ['arena'])[0]
@@ -921,7 +926,7 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                         return self.send(400, {'error': 'Yêu cầu xóa ảnh không được có dữ liệu đính kèm.'})
                     state, previous = player.clear_uploaded_avatar()
                     if previous:
-                        profile_photos.remove(uid, world, previous)
+                        profile_photos.remove_all_owned(uid, world)
                     return self.send(200, {'state': state, 'removed': bool(previous)})
                 if self.headers.get('Transfer-Encoding'):
                     self.close_connection = True
@@ -935,6 +940,13 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                     # Prevent HTTP/1.1 request desync from unread oversize bodies.
                     self.close_connection = True
                     return self.send(413, {'error': 'Ảnh tải lên không được vượt quá 3 MB.'})
+                retry = profile_photos.remaining(uid)
+                if retry:
+                    # Reject before reading/decoding to save CPU and prevent
+                    # reusing this socket with unread request-body bytes.
+                    self.close_connection = True
+                    return self.send(429, {'error': 'Mỗi tài khoản chỉ được đổi ảnh cá nhân 1 lần/24 giờ.',
+                                           'retry_after': retry}, headers={'Retry-After': str(retry)})
                 # Timeout against slowloris-style partial uploads. Never read
                 # arbitrary data beyond the declared, bounded content length.
                 self.connection.settimeout(15)
@@ -949,16 +961,22 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                 # Decode and re-encode before storing. No raw EXIF/GPS/metadata
                 # or arbitrary HTML/SVG is ever served to public clients.
                 picture = profile_photos.normalize_image(raw_photo, self.headers.get('Content-Type', ''))
-                avatar = profile_photos.store(uid, world, picture)
+                try:
+                    avatar = profile_photos.store(uid, world, picture)
+                except profile_photos.PhotoCooldownError as exc:
+                    return self.send(429, {'error': str(exc), 'retry_after': exc.retry_after},
+                                     headers={'Retry-After': str(exc.retry_after)})
                 try:
                     state, previous = player.update_uploaded_avatar(avatar)
                 except Exception:
-                    profile_photos.remove(uid, world, avatar)
+                    profile_photos.cancel_uncommitted(uid, world, avatar)
                     raise
-                if previous and previous != avatar:
-                    try: profile_photos.remove(uid, world, previous)
-                    except Exception: pass  # Profile already committed; never roll it back.
-                return self.send(200, {'state': state, 'avatar': avatar})
+                # Prune every superseded photo in this UID/world. Committing
+                # the game profile first ensures a failed upload never removes
+                # the last valid photo. Cooldown remains even after deletion.
+                profile_photos.prune_replaced(uid, world, avatar)
+                return self.send(200, {'state': state, 'avatar': avatar,
+                                       'retry_after': profile_photos.UPLOAD_COOLDOWN_SECONDS})
             data = self.read_body()
             if path == '/api/auth/register' and not self.rate_limit('auth_register'): return
             if path == '/api/auth/login' and not self.rate_limit('auth_login'): return
