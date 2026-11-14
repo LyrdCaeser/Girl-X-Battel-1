@@ -8,9 +8,9 @@ Trong Hồ sơ → Ảnh đại diện → Avatar, người chơi có thể tả
 
 - Máy khách cắt vuông và nén WebP 320×320. Máy chủ **luôn** giải mã và nén lại bằng Pillow; không tin định dạng/tên do máy khách khai báo; không nhận SVG/GIF động.
 - Giới hạn yêu cầu ảnh 3 MiB; giới hạn số pixel và dung lượng sau nén. Xóa EXIF/GPS và metadata nhúng trong output WebP.
-- Bắt buộc phiên đăng nhập hợp lệ, kiểm tra Origin, giới hạn 3 lượt tải/giờ theo UID (không trừ oan người dùng chung Wi-Fi). Không nhận UID/server từ JSON để xác định chủ ảnh.
+- Bắt buộc phiên đăng nhập hợp lệ, kiểm tra Origin. **Tối đa một lần tải hoặc thay ảnh cá nhân mỗi 24 giờ tính từ lần tải thành công**, theo UID tài khoản trên mọi world. Thời điểm được lưu lâu dài tại Neon `profile_avatar_upload_cooldowns`; không reset khi xóa ảnh, đổi máy, đổi server/world hay restart VPS. API `/api/profile/photo/status` giúp giao diện báo giờ/phút còn lại; POST mới trong thời gian chờ trả HTTP 429 + `Retry-After` trước khi đọc/giải mã ảnh. Vẫn giới hạn thêm 3 yêu cầu tải/giờ theo UID để chống CPU spam (người dùng cùng Wi-Fi không ảnh hưởng nhau). Không nhận UID/server từ JSON để xác định chủ ảnh.
 - Ảnh lưu trong bảng PostgreSQL Neon `profile_avatar_photos` (`avatar_key` ngẫu nhiên, UID, server_id, picture BYTEA, updated_at). Cửa sổ hồ sơ lưu `profile.avatar` và `profile.uploaded_avatar` theo **đúng UID + world**; game không lấy ảnh của tài khoản khác dù đoán được tên token.
-- Mỗi avatar có URL bất biến `/api/profile/photo/custom_<128-bit-random>.webp`, công khai để người chơi khác nhìn thấy. Xóa/đổi ảnh sẽ xóa dữ liệu ảnh cũ. Neon backup bao gồm cả ảnh, không phụ thuộc ổ đĩa VPS.
+- Mỗi avatar có URL bất biến `/api/profile/photo/custom_<128-bit-random>.webp`, công khai để người chơi khác nhìn thấy. Khi **upload ảnh mới và lưu profile thành công**, máy chủ xóa **tất cả ảnh cũ cùng UID+world khỏi Neon BYTEA**, kể cả ảnh tồn lưu từ lỗi cũ, để không phình dung lượng. Xóa ảnh cá nhân cũng dọn tất cả ảnh của UID+world nhưng vẫn giữ cooldown. Không xóa ảnh của cùng UID trên world khác khi hồ sơ đó còn sử dụng. Nếu lưu hồ sơ thất bại thì ảnh mới và thời gian chờ mới được hoàn tác, ảnh cũ vẫn nguyên. Neon backup bao gồm cả ảnh, không phụ thuộc ổ đĩa VPS.
 - Thao tác ảnh không trừ tiền tệ/vật phẩm, không thay save tiến trình, không sửa bảng skin.
 
 ## Trước phát hành client
