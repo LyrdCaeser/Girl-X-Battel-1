@@ -1,7 +1,7 @@
 import UIKit
 import WebKit
 
-// GXB 3 version 2.6.4 — iOS WKWebView shell for the authenticated production VPS.
+// GXB 3 version 2.6.5 — iOS WKWebView shell for the authenticated production VPS.
 // No cached or fabricated gameplay; the authoritative game remains on server.
 @main
 final class GXB3Application: UIResponder, UIApplicationDelegate {
@@ -18,7 +18,7 @@ final class GXB3Application: UIResponder, UIApplicationDelegate {
 }
 
 final class GXB3Controller: UIViewController, WKNavigationDelegate {
-    private let origin = URL(string: "https://180-93-111-99.sslip.io/?client=ios&v=2.6.4")!
+    private let origin = URL(string: "https://180-93-111-99.sslip.io/?client=ios&v=2.6.5")!
     private var web: WKWebView!
     private let loading = UILabel()
 
@@ -40,7 +40,7 @@ final class GXB3Controller: UIViewController, WKNavigationDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        loading.text = "Nữ Thần Chiến Đấu - GXB 3 · 2.6.4\nĐang kết nối máy chủ…"
+        loading.text = "Nữ Thần Chiến Đấu - GXB 3 · 2.6.5\nĐang kết nối máy chủ…"
         loading.numberOfLines = 0
         loading.textAlignment = .center
         loading.textColor = .white

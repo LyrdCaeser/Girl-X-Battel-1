@@ -1,4 +1,4 @@
-name: GXB 3 2.6.4 client packages
+name: GXB 3 2.6.5 client packages
 
 on:
   workflow_dispatch:
@@ -10,9 +10,9 @@ on:
         default: false
   push:
     branches: [snez-vietnamese]
-    # One explicit signed-off release tag is allowed to publish exactly 2.6.4.
+    # One explicit signed-off release tag is allowed to publish exactly 2.6.5.
     # Branch pushes continue to build for QA without publishing anything.
-    tags: [v2.6.4]
+    tags: [v2.6.5]
     paths:
       - "clients/**"
       - ".gitattributes"
@@ -23,7 +23,7 @@ permissions:
 
 jobs:
   windows-exe:
-    name: Windows EXE 2.6.4
+    name: Windows EXE 2.6.5
     runs-on: windows-2022
     timeout-minutes: 35
     steps:
@@ -31,7 +31,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Validate all four release formats use version 2.6.4 / code 200366
+      - name: Validate all four release formats use version 2.6.5 / code 200367
         run: python clients/tools/verify_client_version.py
       - name: Check production URL (informational)
         shell: pwsh
@@ -49,26 +49,26 @@ jobs:
       - name: Build Windows x64 EXE
         shell: pwsh
         run: |
-          pyinstaller --noconfirm --clean --onefile --windowed --name NuThanChienDau-GXB3-2.6.4 --icon clients/windows/gxb3.ico --version-file clients/windows/version_info.txt --collect-all webview clients/windows/gxb3_launcher.py
+          pyinstaller --noconfirm --clean --onefile --windowed --name NuThanChienDau-GXB3-2.6.5 --icon clients/windows/gxb3.ico --version-file clients/windows/version_info.txt --collect-all webview clients/windows/gxb3_launcher.py
       - name: Verify native Windows EXE
         shell: pwsh
         run: |
-          $target = "dist/NuThanChienDau-GXB3-2.6.4.exe"
+          $target = "dist/NuThanChienDau-GXB3-2.6.5.exe"
           if (!(Test-Path $target)) { throw "EXE was not built" }
           if ((Get-Item $target).Length -lt 1000000) { throw "EXE unexpectedly small" }
           $productVersion = (Get-Item $target).VersionInfo.ProductVersion
-          if ($productVersion -notlike "2.6.4*") { throw "Windows EXE version metadata mismatch: $productVersion" }
+          if ($productVersion -notlike "2.6.5*") { throw "Windows EXE version metadata mismatch: $productVersion" }
           Get-Item $target | Select-Object Name,Length,@{Name="ProductVersion";Expression={$_.VersionInfo.ProductVersion}}
       - uses: actions/upload-artifact@v4
         with:
-          name: NuThanChienDau-GXB3-Windows-2.6.4
-          path: dist/NuThanChienDau-GXB3-2.6.4.exe
+          name: NuThanChienDau-GXB3-Windows-2.6.5
+          path: dist/NuThanChienDau-GXB3-2.6.5.exe
           if-no-files-found: error
           compression-level: 9
           retention-days: 30
 
   android-apk:
-    name: Android APK 2.6.4
+    name: Android APK 2.6.5
     runs-on: ubuntu-24.04
     timeout-minutes: 35
     steps:
@@ -95,7 +95,7 @@ jobs:
         run: |
           python3 -m pip install --user --break-system-packages Pillow
           python3 clients/tools/generate_icons.py
-      - name: Build signed 2.6.4 APK
+      - name: Build signed 2.6.5 APK
         run: gradle -p clients/android :app:assembleRelease --stacktrace --no-daemon
       - name: Verify package signature and size
         shell: bash
@@ -104,18 +104,18 @@ jobs:
           src="clients/android/app/build/outputs/apk/release/app-release.apk"
           test -s "$src"
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose "$src"
-          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$src" | grep -F "versionCode='200366' versionName='2.6.4'"
-          cp "$src" NuThanChienDau-GXB3-Android-2.6.4.apk
-          ls -lh NuThanChienDau-GXB3-Android-2.6.4.apk
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$src" | grep -F "versionCode='200367' versionName='2.6.5'"
+          cp "$src" NuThanChienDau-GXB3-Android-2.6.5.apk
+          ls -lh NuThanChienDau-GXB3-Android-2.6.5.apk
       - uses: actions/upload-artifact@v4
         with:
-          name: NuThanChienDau-GXB3-Android-2.6.4
-          path: NuThanChienDau-GXB3-Android-2.6.4.apk
+          name: NuThanChienDau-GXB3-Android-2.6.5
+          path: NuThanChienDau-GXB3-Android-2.6.5.apk
           if-no-files-found: error
           retention-days: 30
 
   ios-beta:
-    name: iOS 2.6.4 developer IPA and Web Clip
+    name: iOS 2.6.5 developer IPA and Web Clip
     runs-on: macos-15
     timeout-minutes: 25
     steps:
@@ -144,29 +144,29 @@ jobs:
             clients/ios/GXB3App.swift
           test -s build/Payload/GXB3.app/GXB3
           /usr/libexec/PlistBuddy -c 'Print CFBundleIdentifier' build/Payload/GXB3.app/Info.plist
-          /usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' build/Payload/GXB3.app/Info.plist | grep -Fx '2.6.4'
-          /usr/libexec/PlistBuddy -c 'Print CFBundleVersion' build/Payload/GXB3.app/Info.plist | grep -Fx '200366'
+          /usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' build/Payload/GXB3.app/Info.plist | grep -Fx '2.6.5'
+          /usr/libexec/PlistBuddy -c 'Print CFBundleVersion' build/Payload/GXB3.app/Info.plist | grep -Fx '200367'
       - name: Bundle unsigned iOS IPA for later Apple signing
         shell: bash
         run: |
           cd build
-          zip -qry ../NuThanChienDau-GXB3-iOS-2.6.4-UNSIGNED.ipa Payload
+          zip -qry ../NuThanChienDau-GXB3-iOS-2.6.5-UNSIGNED.ipa Payload
           cd ..
-          test -s NuThanChienDau-GXB3-iOS-2.6.4-UNSIGNED.ipa
-          unzip -t NuThanChienDau-GXB3-iOS-2.6.4-UNSIGNED.ipa | tail -1
+          test -s NuThanChienDau-GXB3-iOS-2.6.5-UNSIGNED.ipa
+          unzip -t NuThanChienDau-GXB3-iOS-2.6.5-UNSIGNED.ipa | tail -1
       - name: Create installable Safari Web Clip alternative
         run: python3 clients/ios/make_webclip.py
       - uses: actions/upload-artifact@v4
         with:
-          name: NuThanChienDau-GXB3-iOS-2.6.4
+          name: NuThanChienDau-GXB3-iOS-2.6.5
           path: |
-            NuThanChienDau-GXB3-iOS-2.6.4-UNSIGNED.ipa
-            NuThanChienDau-GXB3-iOS-2.6.4.mobileconfig
+            NuThanChienDau-GXB3-iOS-2.6.5-UNSIGNED.ipa
+            NuThanChienDau-GXB3-iOS-2.6.5.mobileconfig
           if-no-files-found: error
           retention-days: 30
 
   full-package:
-    name: GXB3 Combined Android Windows iOS 2.6.4
+    name: GXB3 Combined Android Windows iOS 2.6.5
     needs: [windows-exe, android-apk, ios-beta]
     runs-on: ubuntu-24.04
     timeout-minutes: 12
@@ -182,20 +182,20 @@ jobs:
         run: |
           set -euo pipefail
           cd distribution
-          test -s NuThanChienDau-GXB3-2.6.4.exe
-          test -s NuThanChienDau-GXB3-Android-2.6.4.apk
-          test -s NuThanChienDau-GXB3-iOS-2.6.4-UNSIGNED.ipa
-          test -s NuThanChienDau-GXB3-iOS-2.6.4.mobileconfig
+          test -s NuThanChienDau-GXB3-2.6.5.exe
+          test -s NuThanChienDau-GXB3-Android-2.6.5.apk
+          test -s NuThanChienDau-GXB3-iOS-2.6.5-UNSIGNED.ipa
+          test -s NuThanChienDau-GXB3-iOS-2.6.5.mobileconfig
           sha256sum *.exe *.apk *.ipa *.mobileconfig > SHA256SUMS.txt
           cat > PHIEN_BAN.txt <<'TXT'
-          GXB 3 · Version Name 2.6.4 · VersionCode 200366
+          GXB 3 · Version Name 2.6.5 · VersionCode 200367
           Android APK: Android 8+ (RC/debug signature; see HUONG_DAN.txt)
           Windows EXE: Windows x64, WebView2
           iOS IPA: unsigned developer build; Apple signing is required to install as an app
           iOS Web Clip: install the .mobileconfig profile on iPhone/iPad, then open the home-screen icon
           TXT
           cat > HUONG_DAN.txt <<'TXT'
-          GXB 3 - 2.6.4
+          GXB 3 - 2.6.5
 
           Android 8+ : Cai APK tren dien thoai.
           Windows x64: Chay EXE tren Windows, yeu cau WebView2.
@@ -205,13 +205,13 @@ jobs:
 
           Tat ca launcher can ket noi mang va may chu GXB 3.
           Tien trinh game duoc luu tren server; khong phai ban offline.
-          APK duoc ky bang debug/RC key. Neu chu ky khac ban dang cai, can go ban cu truoc khi cai 2.6.4.
+          APK duoc ky bang debug/RC key. Neu chu ky khac ban dang cai, can go ban cu truoc khi cai 2.6.5.
           Du lieu nguoi choi van luu tren Neon; go app khong xoa tien trinh game tren may chu.
           TXT
       - name: Upload the single complete package
         uses: actions/upload-artifact@v4
         with:
-          name: GXB3-TRON-BO-APK-EXE-IOS-2.6.4
+          name: GXB3-TRON-BO-APK-EXE-IOS-2.6.5
           path: distribution/
           if-no-files-found: error
           compression-level: 9
@@ -219,11 +219,11 @@ jobs:
 
 
   publish-release:
-    name: Publish GXB 3 2.6.4 production packages
+    name: Publish GXB 3 2.6.5 production packages
     # Publish ONLY after explicit owner authorization: manual checkbox OR
-    # the single approved v2.6.4 release tag pushed after CI/QA success.
+    # the single approved v2.6.5 release tag pushed after CI/QA success.
     # Ordinary branch pushes NEVER publish or overwrite earlier releases.
-    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.publish == true) || (github.event_name == 'push' && github.ref == 'refs/tags/v2.6.4') }}
+    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.publish == true) || (github.event_name == 'push' && github.ref == 'refs/tags/v2.6.5') }}
     needs: [full-package]
     runs-on: ubuntu-24.04
     timeout-minutes: 10
@@ -234,7 +234,7 @@ jobs:
       - name: Download the verified four-format package
         uses: actions/download-artifact@v4
         with:
-          name: GXB3-TRON-BO-APK-EXE-IOS-2.6.4
+          name: GXB3-TRON-BO-APK-EXE-IOS-2.6.5
           path: distribution
       - name: Publish versioned production downloads
         env:
@@ -242,9 +242,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          tag="v2.6.4"
-          title="Nữ Thần Chiến Đấu - GXB 3 · 2.6.4"
-          notes=$(printf 'Version Name 2.6.4 · VersionCode 200366\n\nBuild source: %s\n\nFour distribution formats: Android APK, Windows x64 EXE, unsigned iOS IPA, and iOS Web Clip mobileconfig. Read HUONG_DAN.txt and PHIEN_BAN.txt before installing.' "$GITHUB_SHA")
+          tag="v2.6.5"
+          title="Nữ Thần Chiến Đấu - GXB 3 · 2.6.5"
+          notes=$(printf 'Version Name 2.6.5 · VersionCode 200367\n\nBuild source: %s\n\nFour distribution formats: Android APK, Windows x64 EXE, unsigned iOS IPA, and iOS Web Clip mobileconfig. Read HUONG_DAN.txt and PHIEN_BAN.txt before installing.' "$GITHUB_SHA")
           if gh release view "$tag" >/dev/null 2>&1; then
             gh release edit "$tag" --title "$title" --notes "$notes"
             gh release upload "$tag" distribution/*.exe distribution/*.apk distribution/*.ipa distribution/*.mobileconfig distribution/SHA256SUMS.txt distribution/HUONG_DAN.txt distribution/PHIEN_BAN.txt --clobber
