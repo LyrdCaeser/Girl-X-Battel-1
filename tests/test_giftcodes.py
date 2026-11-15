@@ -39,6 +39,37 @@ class GiftcodeStudioTests(unittest.TestCase):
             giftcodes.redeem(code['code'],"GXB-TEST-A","S1")
         self.assertEqual(giftcodes.list_codes()[0]['used_count'],1)
         self.assertEqual(len(giftcodes.redemptions(code['code'])),1)
+    def test_private_campaign_clear_code_is_uid_bound_and_has_no_mail(self):
+        db=live_service._db()
+        try:
+            db.execute("""CREATE TABLE IF NOT EXISTS player_profiles(
+                uid TEXT NOT NULL, server_id TEXT NOT NULL, data TEXT NOT NULL,
+                updated_at INTEGER NOT NULL, PRIMARY KEY(uid,server_id))""")
+            db.execute("""INSERT INTO player_profiles(uid,server_id,data,updated_at)
+                          VALUES(?,?,?,0)""",
+                       ("GXB-TEST-A","S1",'{"max_stage":1,"current_stage":2}'))
+            db.commit()
+        finally:
+            db.close()
+        created=giftcodes.create_campaign_clear("GXB-TEST-A","S1","SUPER_GM",code="CLEAR530-TEST")
+        self.assertEqual(created['max_stage'],530)
+        with self.assertRaisesRegex(ValueError,'UID khác'):
+            giftcodes.redeem(created['code'],"GXB-TEST-B","S1")
+        result=giftcodes.redeem(created['code'],"GXB-TEST-A","S1")
+        self.assertEqual(result['effect'],'campaign_all')
+        self.assertTrue(result['state_changed'])
+        self.assertEqual(live_service.mailbox("GXB-TEST-A","S1"),[])
+        db=live_service._db()
+        try:
+            state=__import__('json').loads(db.execute(
+                "SELECT data FROM player_profiles WHERE uid=? AND server_id=?",
+                ("GXB-TEST-A","S1")).fetchone()['data'])
+        finally:
+            db.close()
+        self.assertEqual((state['max_stage'],state['current_stage']),(530,530))
+        with self.assertRaisesRegex(ValueError,'đã sử dụng|hết lượt'):
+            giftcodes.redeem(created['code'],"GXB-TEST-A","S1")
+
     def test_cap_revocation_and_server_scope(self):
         code=self.issue(max_uses=1)
         giftcodes.redeem(code['code'],"GXB-TEST-A","S1")

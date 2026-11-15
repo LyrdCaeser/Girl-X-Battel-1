@@ -10,7 +10,11 @@ import secrets
 import threading
 import time
 import uuid
+from pathlib import Path
 from . import gm_catalog, live_service
+
+ROOT = Path(__file__).resolve().parents[1]
+LAST_CAMPAIGN_STAGE = max(map(int, json.loads((ROOT / 'data/stage.json').read_text())))
 
 _LOCK = threading.RLock()
 _READY = False
@@ -29,7 +33,19 @@ def _connection():
                         server_id TEXT NOT NULL DEFAULT 'ALL',
                         max_uses INTEGER NOT NULL, used_count INTEGER NOT NULL DEFAULT 0,
                         expires_at BIGINT NOT NULL DEFAULT 0, active INTEGER NOT NULL DEFAULT 1,
-                        created_at BIGINT NOT NULL, created_by TEXT NOT NULL)""")
+                        created_at BIGINT NOT NULL, created_by TEXT NOT NULL,
+                        target_uid TEXT NOT NULL DEFAULT '',
+                        effect TEXT NOT NULL DEFAULT '')""")
+                    if db.backend == 'postgres':
+                        columns = {row['column_name'] for row in db.execute(
+                            "SELECT column_name FROM information_schema.columns WHERE table_name='giftcodes'"
+                        ).fetchall()}
+                    else:
+                        columns = {row['name'] for row in db.execute("PRAGMA table_info(giftcodes)").fetchall()}
+                    if 'target_uid' not in columns:
+                        db.execute("ALTER TABLE giftcodes ADD COLUMN target_uid TEXT NOT NULL DEFAULT ''")
+                    if 'effect' not in columns:
+                        db.execute("ALTER TABLE giftcodes ADD COLUMN effect TEXT NOT NULL DEFAULT ''")
                     db.execute("""CREATE TABLE IF NOT EXISTS giftcode_redemptions(
                         code TEXT NOT NULL, uid TEXT NOT NULL,
                         server_id TEXT NOT NULL, mail_id TEXT NOT NULL,
@@ -119,10 +135,10 @@ def create(payload, operator):
         if db.execute("SELECT code FROM giftcodes WHERE code=?", (code,)).fetchone():
             raise ValueError('Mã đã tồn tại, hãy chọn mã khác')
         db.execute("""INSERT INTO giftcodes
-            (code,title,message,rewards,server_id,max_uses,used_count,expires_at,active,created_at,created_by)
-            VALUES(?,?,?,?,?,?,0,?,1,?,?)""",
+            (code,title,message,rewards,server_id,max_uses,used_count,expires_at,active,created_at,created_by,target_uid,effect)
+            VALUES(?,?,?,?,?,?,0,?,1,?,?,?,?)""",
             (code,title,message,json.dumps(rewards,ensure_ascii=False),world,
-             max_uses,expires_at,now,str(operator)[:100]))
+             max_uses,expires_at,now,str(operator)[:100],'',''))
         live_service._audit(db,'giftcode.create',code,
             {'server_id':world,'max_uses':max_uses,'expires_at':expires_at,'rewards':rewards},str(operator))
         db.commit()
@@ -144,6 +160,41 @@ def create_goddess(config: dict, operator: str) -> dict:
                    'title':'Gift Nữ Thần · '+validated['name']+' '+str(validated['stars'])+'★',
                    'message':'Quà Nữ Thần SUPER GM. Mỗi tài khoản chỉ được nhận mã này một lần.',
                    'server_id':'ALL'},operator)
+
+
+def create_campaign_clear(uid, server_id, operator, code=''):
+    """Create one private, one-use code bound to one exact character."""
+    uid=str(uid or '').strip()
+    server_id=str(server_id or '').strip().upper()
+    target=live_service.player(uid,server_id)
+    if not target or target.get('status')=='banned':
+        raise ValueError('Không tìm thấy nhân vật nhận mã')
+    code=_normalize(str(code or '').strip() or ('CLEAR530-'+secrets.token_hex(6).upper()))
+    now=int(time.time())
+    expires_at=now+30*86400
+    db=_connection()
+    try:
+        if db.execute("SELECT 1 FROM giftcodes WHERE code=?",(code,)).fetchone():
+            raise ValueError('Mã đã tồn tại, hãy tạo mã khác')
+        db.execute("""INSERT INTO giftcodes
+            (code,title,message,rewards,server_id,max_uses,used_count,expires_at,active,
+             created_at,created_by,target_uid,effect)
+            VALUES(?,?,?,?,?,1,0,?,1,?,?,?,?)""",
+            (code,'Quét Sạch Chiến Dịch',
+             f'Mở đủ toàn bộ {LAST_CAMPAIGN_STAGE} ải Chiến Dịch cho đúng tài khoản đã chỉ định.',
+             '{}',server_id,expires_at,now,str(operator)[:100],uid,'campaign_all'))
+        live_service._audit(db,'giftcode.create.campaign_all',code,
+            {'uid':uid,'server_id':server_id,'max_stage':LAST_CAMPAIGN_STAGE,
+             'max_uses':1,'expires_at':expires_at},str(operator))
+        db.commit()
+        return {'code':code,'title':'Quét Sạch Chiến Dịch','server_id':server_id,
+                'target_uid':uid,'max_uses':1,'used_count':0,'expires_at':expires_at,
+                'active':True,'effect':'campaign_all','max_stage':LAST_CAMPAIGN_STAGE}
+    except Exception:
+        db.rollback()
+        raise
+    finally:
+        db.close()
 
 
 def revoke(code,operator):
@@ -205,25 +256,52 @@ def redeem(code,uid,server_id):
             raise ValueError('Giftcode đã hết hạn')
         if row['server_id']!='ALL' and row['server_id']!=server_id:
             raise ValueError('Giftcode không áp dụng cho máy chủ này')
+        if str(row['target_uid'] or '') and str(row['target_uid'])!=uid:
+            raise ValueError('Giftcode này được khóa cho một UID khác')
         if int(row['max_uses']) and int(row['used_count'])>=int(row['max_uses']):
             raise ValueError('Giftcode đã hết lượt sử dụng')
         rewards=json.loads(row['rewards'])
-        # Reward catalog was validated on creation; mail still validates ownership
-        # and the final item application occurs only at Mail > Claim Attachment.
-        mail_id='MAIL-'+uuid.uuid4().hex[:16].upper()
-        db.execute("""INSERT INTO mail
-            (id,uid,server_id,character_name,title,body,attachments,status,created_at,operator)
-            VALUES(?,?,?,?,?,?,?,'pending',?,'GIFTCODE')""",
-            (mail_id,uid,server_id,profile['character_name'],row['title'],row['message'],
-             json.dumps(rewards,ensure_ascii=False),now))
+        effect=str(row['effect'] or '')
+        state_changed=False
+        if effect:
+            if effect!='campaign_all':
+                raise ValueError('Hiệu lực Giftcode không được hỗ trợ')
+            lock=" FOR UPDATE" if db.backend=='postgres' else ""
+            saved=db.execute("SELECT data FROM player_profiles WHERE uid=? AND server_id=?"+lock,
+                             (uid,server_id)).fetchone()
+            if not saved:
+                raise ValueError('Không tìm thấy dữ liệu nhân vật')
+            state=json.loads(saved['data'])
+            state['max_stage']=LAST_CAMPAIGN_STAGE
+            state['current_stage']=LAST_CAMPAIGN_STAGE
+            db.execute("""UPDATE player_profiles SET data=?,updated_at=?
+                          WHERE uid=? AND server_id=?""",
+                       (json.dumps(state,ensure_ascii=False,separators=(',',':')),now,uid,server_id))
+            mail_id='ACTION-'+uuid.uuid4().hex[:16].upper()
+            state_changed=True
+        else:
+            # Item giftcodes keep the original Mail > Claim Attachment flow.
+            mail_id='MAIL-'+uuid.uuid4().hex[:16].upper()
+            db.execute("""INSERT INTO mail
+                (id,uid,server_id,character_name,title,body,attachments,status,created_at,operator)
+                VALUES(?,?,?,?,?,?,?,'pending',?,'GIFTCODE')""",
+                (mail_id,uid,server_id,profile['character_name'],row['title'],row['message'],
+                 json.dumps(rewards,ensure_ascii=False),now))
         db.execute("""INSERT INTO giftcode_redemptions(code,uid,server_id,mail_id,redeemed_at)
                    VALUES(?,?,?,?,?)""",(code,uid,server_id,mail_id,now))
         cur=db.execute("""UPDATE giftcodes SET used_count=used_count+1
                           WHERE code=? AND (max_uses=0 OR used_count<max_uses) AND active=1""",(code,))
         if cur.rowcount!=1:
             raise ValueError('Giftcode đã hết lượt sử dụng')
-        live_service._audit(db,'giftcode.redeem',code,{'uid':uid,'server_id':server_id,'mail_id':mail_id},'PLAYER')
+        live_service._audit(db,'giftcode.redeem',code,
+            {'uid':uid,'server_id':server_id,'mail_id':mail_id,'effect':effect,
+             'max_stage':LAST_CAMPAIGN_STAGE if effect=='campaign_all' else None},'PLAYER')
         db.commit()
+        if effect=='campaign_all':
+            return {'ok':True,'action_id':mail_id,'title':row['title'],
+                    'effect':effect,'state_changed':state_changed,
+                    'max_stage':LAST_CAMPAIGN_STAGE,
+                    'message':f'Kích hoạt thành công! Đã mở đủ {LAST_CAMPAIGN_STAGE} ải Chiến Dịch.'}
         return {'ok':True,'mail_id':mail_id,'title':row['title'],
                 'message':'Đổi mã thành công! Mở Hòm Thư để nhận đính kèm.'}
     except Exception:

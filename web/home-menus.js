@@ -288,6 +288,7 @@ const HomeMenus=(()=>{
   try{
    const result=await api('/api/giftcode/redeem',{code});
    giftcodeTyped='';message=result?.message||'Đổi mã thành công! Quà đã được gửi vào Hòm Thư.';
+   if(result?.state_changed)state=await api('/api/state');
    mailLastRefresh=0;await refreshServerMail(true);
   }catch(e){message=e.message||'Không thể đổi Giftcode.';}
   finally{giftcodeBusy=false;if(view==='home-systems'&&root==='mail'&&tab==='server')render();}
