@@ -1,6 +1,7 @@
 from __future__ import annotations
 import base64
 import json
+import re
 import zlib
 import threading
 import time
@@ -2171,7 +2172,8 @@ def friends_snapshot(uid, server_id):
         result=[]
         for row in rows:
             r=dict(row); target=r['uid']
-            r['online']=int(r.pop('last_seen') or 0)>=cutoff
+            r['last_seen']=int(r.get('last_seen') or 0)
+            r['online']=r['last_seen']>=cutoff
             r['relation']='friend' if target in friends else 'incoming' if target in incoming else 'outgoing' if target in outgoing else 'none'
             result.append(r)
         db.close()
@@ -2244,14 +2246,23 @@ SOCIAL_CURRENCY_GIFTS = {
     "9": {"name":"Nước EXP", "max_quantity":5_000_000, "affection_divisor":50_000},
 }
 SOCIAL_CURRENCY_IDS = tuple(SOCIAL_CURRENCY_GIFTS)
-SOCIAL_BLOCK_WORDS = ("event","ticket","coupon","coin","token","scroll","certificate","invitation",
-                      " key","currency","draw","summon","lottery","arena","guild","league","store",
-                      "exchange","limited","anniversary","festival","ranking","badge","pass","permit",
-                      "seal","portfolio","ring","chest","box"," bag","pack","shard","girl",
-                      "school excursion","tree of chimes")
-SOCIAL_MATERIAL_WORDS = ("upgrade","enhance","level up","promot","forge","craft","refin","train",
-                         "evolve","awaken","building material")
+# These catalog classes cannot be transferred safely as stackable inventory:
+# avatars/frames, girls, equipment instances, skins, furniture, chests,
+# summon coupons, outfit shards and other account-bound systems.
+SOCIAL_BLOCK_TYPES = {2,3,6,7,8,9,10,11,12,13,14,15,16,18,19,20,21,22,23,24,
+                      27,29,31,33,34,35,36,37,38,39,40,41,42,43}
+SOCIAL_BLOCK_WORDS = ("event","events","easter egg","ticket","coupon","token","scroll","certificate","invitation",
+                      " key","draw","summon","lottery","limited","anniversary","festival",
+                      "ranking","pass","permit","seal","portfolio","ring","chest","box",
+                      "bag","pack","shard","skin","avatar","frame",
+                      "school excursion","tree of chimes","exclusive item")
 _social_schema_ready = set()
+
+
+def _social_text_blocked(text):
+    # Match complete words/phrases: e.g. "ring" must not reject "staring".
+    return any(re.search(r"(?<![a-z0-9])" + re.escape(word.strip()) + r"(?![a-z0-9])", text)
+               for word in SOCIAL_BLOCK_WORDS)
 
 
 def social_gift_meta(item_id):
@@ -2265,23 +2276,19 @@ def social_gift_meta(item_id):
     currency = SOCIAL_CURRENCY_GIFTS.get(item_id)
     if currency:
         return {"id":item_id, "name":currency["name"], "kind":"currency",
-                "quality":int(row.get("quality") or 0), "points":1,
+                "icon":str(row.get("icon") or ""), "quality":int(row.get("quality") or 0), "points":1,
                 "max_quantity":int(currency["max_quantity"]),
                 "affection_divisor":int(currency["affection_divisor"])}
     if typ == 17 and item_id in SOCIAL_PRESENTS:
         group = int(SOCIAL_PRESENTS[item_id].get("group") or 1)
         points = SOCIAL_PRESENT_POINTS.get(group, 15)
-    elif typ == 1 and category == 2:
-        if any(word in text for word in SOCIAL_BLOCK_WORDS):
-            return None
-        if not any(word in desc.lower() for word in SOCIAL_MATERIAL_WORDS):
+    else:
+        if typ in SOCIAL_BLOCK_TYPES or _social_text_blocked(text):
             return None
         points = SOCIAL_QUALITY_POINTS.get(int(row.get("quality") or 1), 10)
-    else:
-        return None
     return {"id":item_id, "name":name or ("Vật phẩm "+item_id), "kind":"item",
-            "quality":int(row.get("quality") or 0), "points":int(points),
-            "max_quantity":None, "affection_divisor":1}
+            "icon":str(row.get("icon") or ""), "quality":int(row.get("quality") or 0),
+            "points":int(points), "max_quantity":None, "affection_divisor":1}
 
 
 def social_gift_affection(meta, quantity):

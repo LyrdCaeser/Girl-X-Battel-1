@@ -42,11 +42,12 @@
 /* Bạn Bè: danh sách người chơi của máy chủ, giữ phong cách cửa sổ gốc. */
 .hm-friend-board{display:grid;gap:8px;padding:8px;background:linear-gradient(#eaf5ff,#d8e9fb);border:2px solid #9eb7d2;border-radius:9px}
 .hm-friend-row{display:grid;grid-template-columns:58px minmax(0,1fr) auto;gap:9px;align-items:center;min-height:72px;padding:7px;background:linear-gradient(#fff,#edf4fb);border:1px solid #aabbd0;border-radius:8px;box-shadow:inset 0 0 0 1px #fff}
-.hm-friend-avatar{width:54px;height:54px;object-fit:contain}
+.hm-friend-avatar-btn{display:block;width:54px;height:54px;min-width:54px;padding:0;border:0;border-radius:50%;overflow:hidden;background:#edf5ff;box-shadow:0 1px 4px #36597b44}
+.hm-friend-avatar{display:block;width:100%;height:100%;aspect-ratio:1;object-fit:cover;object-position:center}
 .hm-friend-info{display:grid;gap:2px;min-width:0;color:#344f76}.hm-friend-info>b{overflow:hidden;text-overflow:ellipsis}.hm-friend-info small{color:#6a7e98}
 .hm-friend-info span{font-size:12px;font-weight:800}.hm-online{color:#38a858}.hm-offline{color:#8995a4}
 .hm-friend-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:5px}.hm-friend-actions button{min-width:74px}
-@media(max-width:430px){.hm-friend-row{grid-template-columns:48px minmax(0,1fr)}.hm-friend-avatar{width:46px;height:46px}.hm-friend-actions{grid-column:1/-1}}
+@media(max-width:430px){.hm-friend-row{grid-template-columns:48px minmax(0,1fr)}.hm-friend-avatar-btn{width:46px;height:46px;min-width:46px}.hm-friend-actions{grid-column:1/-1}}
 
 /* Hòm Thư tự cập nhật và ảnh quà Nữ Thần dùng chung một kích thước gọn. */
 .hm-mail-tools{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin:0 0 10px}
@@ -64,7 +65,7 @@
 /* Public player profiles use the avatar and main formation saved in Neon. */
 .hm-friend-avatar{border-radius:50%;background:#edf5ff;border:2px solid #b6c9e2;object-fit:cover}
 .hm-friend-avatar,.hm-friend-info{cursor:pointer}.hm-friend-avatar:hover,.hm-friend-info:hover{filter:brightness(1.04)}
-.hm-friend-avatar{padding:0}.hm-friend-info{border:0;background:transparent;text-align:left;padding:0}
+.hm-friend-info{border:0;background:transparent;text-align:left;padding:0}
 .hm-social-profile{width:min(640px,94vw)}.hm-profile-head{display:flex;align-items:center;gap:14px;padding:10px;border-radius:12px;background:linear-gradient(135deg,#e9f4ff,#fff)}
 .hm-profile-avatar{width:82px;height:82px;border-radius:50%;object-fit:cover;border:4px solid #fff;box-shadow:0 2px 8px #38587b55}.hm-profile-head h3{margin:0;color:#34547d}.hm-profile-head p{margin:4px 0}
 .hm-affection{color:#d35f82;font-weight:800}.hm-profile-title{margin:12px 0 7px;color:#46648e}.hm-profile-lineup{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
@@ -75,3 +76,12 @@
 .hm-wedding-hall{background:radial-gradient(circle at 50% 15%,#fff,#fff0f6 52%,#e7d7ff);border-color:#e797b7}.hm-wedding-title{text-align:center;color:#bd4f7b;font-size:18px;font-weight:900}.hm-wedding-couple{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;padding:18px 8px}.hm-wedding-couple>div{display:grid;justify-items:center;gap:7px;color:#704c76}.hm-wedding-couple img{width:92px;height:92px;border-radius:50%;object-fit:cover;border:4px solid #fff;box-shadow:0 0 0 3px #eda7c2,0 5px 15px #7b466155}.hm-wedding-ring{font-size:34px;filter:drop-shadow(0 2px 3px #a36b37)}
 
 .hm-gift-points{display:block;margin:9px 0;padding:8px 10px;border-radius:9px;background:#fff4d7;color:#b1682d;text-align:center}
+
+.hm-gift-search{width:100%;box-sizing:border-box;min-height:40px;margin:4px 0 8px;padding:8px 10px;border:2px solid #a9bdd5;border-radius:9px;background:#fff;color:#405a7d}
+.hm-gift-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;max-height:310px;overflow:auto;padding:4px;background:#edf5fc;border:1px solid #b4c7dc;border-radius:10px;overscroll-behavior:contain}
+.hm-gift-item{display:grid;grid-template-columns:48px minmax(0,1fr);align-items:center;gap:7px;min-height:62px;padding:6px;border:2px solid transparent;border-radius:9px;background:linear-gradient(#fff,#edf4fb);color:#405a7d;text-align:left}
+.hm-gift-item.active{border-color:#4f95dc;background:linear-gradient(#e8f6ff,#cfe8ff);box-shadow:0 0 0 1px #fff inset}
+.hm-gift-item img{display:block;width:46px;height:46px;object-fit:contain;border-radius:7px;background:#fff}
+.hm-gift-item span{display:grid;gap:1px;min-width:0}.hm-gift-item b{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.hm-gift-item small{font-size:10px;color:#697d96}.hm-gift-item em{font-size:10px;color:#bd6b24;font-style:normal;font-weight:800}
+.hm-gift-controls{display:grid;grid-template-columns:auto 110px;justify-content:end;align-items:center;gap:8px;margin-top:8px;color:#4b6281;font-weight:800}.hm-gift-controls .hm-gift-qty{width:110px;box-sizing:border-box}
+@media(max-width:390px){.hm-gift-list{grid-template-columns:1fr;max-height:290px}}

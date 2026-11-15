@@ -31,7 +31,7 @@ def message_type(mid: int, direction: str) -> str:
 
 # Fields the local save keeps next to an original message but that never go on the wire: partner `soul_infos` is the
 # Anima Gear params for ReportHero / HeroAttr (the original sends only `souls`, the equipped ids).
-LOCAL_ONLY = {'partners_info': {'soul_infos'}}
+LOCAL_ONLY = {'partners_info': {'soul_infos', 'gm_bonus'}}
 
 def normalize(name: str, data: dict, *, strict: bool = True) -> dict:
     fields = {f['name']: f for f in SCHEMA[name]['fields']}

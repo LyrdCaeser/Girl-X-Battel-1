@@ -128,11 +128,15 @@ class LiveServiceTests(unittest.TestCase):
         import json
         live_service.register_player("A1", "S1", "Anh")
         live_service.register_player("B1", "S1", "Bé")
+        seen = live_service.touch_presence("B1", "S1", "Bé", 36, 141061)
+        directory = next(p for p in live_service.friends_snapshot("A1","S1")["players"] if p["uid"]=="B1")
+        self.assertTrue(directory["online"])
+        self.assertEqual(directory["last_seen"], seen["last_seen"])
         live_service.friend_action("A1", "S1", "request", "B1")
         live_service.friend_action("B1", "S1", "accept", "A1")
         db = live_service._db()
         live_service._ensure_social_tables(db)
-        a = {"items":{"1":1000001,"2":1001,"9":5000001,"10":5001,"1000001":12,"43":1,"263":1,"11001":1,"362":1,"204":1,"325":1,"326":1,"45":1},"social_affection":{},
+        a = {"items":{"1":1000001,"2":1001,"9":5000001,"10":5001,"14":20,"27":20,"94":2,"3000001":3,"1000001":12,"43":1,"263":1,"11001":1,"362":1,"204":1,"325":1,"326":1,"45":1},"social_affection":{},
              "profile":{"avatar":"head_1002","frame":"frame_8007"},
              "partners":[{"partner_id":1,"table_id":41001,"lv":80,"grade":3,"awake":0}],
              "formation":[{"partner_id":1,"pos":1}]}
@@ -153,6 +157,9 @@ class LiveServiceTests(unittest.TestCase):
         eligible = {row["id"]: row for row in profile["gift_items"]}
         self.assertIn("1000001", eligible)
         self.assertEqual(eligible["1000001"]["points"], 15)
+        for ordinary_id in ("14","27","94","3000001"):
+            self.assertIn(ordinary_id, eligible)
+            self.assertTrue(eligible[ordinary_id]["icon"])
         self.assertEqual(profile["currency_gift_left"], 3)
         for currency_id, maximum in {"1":1000000,"2":1000,"10":5000,"9":5000000}.items():
             self.assertEqual(eligible[currency_id]["kind"], "currency")

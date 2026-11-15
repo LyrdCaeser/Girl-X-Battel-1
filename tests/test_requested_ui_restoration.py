@@ -49,7 +49,8 @@ class RequestedRestorationTests(unittest.TestCase):
         self.assertIn("api('/api/friends')",home)
         self.assertIn("if(!tab)tab='players'",home)
         self.assertIn("friendAct('request'",home)
-        self.assertIn("'Đang ngoại tuyến'",home)
+        self.assertIn("friendPresence(p)",home)
+        self.assertIn("Online '+Math.floor(seconds/60)+' phút trước",home)
 
     def test_mail_refreshes_live_and_goddess_gifts_stay_compact(self):
         home=(WEB/"home-menus.js").read_text(encoding="utf-8")
@@ -82,6 +83,12 @@ class RequestedRestorationTests(unittest.TestCase):
         self.assertIn("profile.currency_gift_left",home)
         self.assertIn("Tiền tệ: còn",home)
         self.assertIn("item.max_quantity",home)
+        self.assertIn("hm-gift-list",home)
+        self.assertIn("GxbBagVi?.t",home)
+        self.assertIn("itemPicture",home)
+        self.assertNotIn("const select=el('select',undefined,'hm-gift-select')",home)
+        self.assertIn("Quay Lại Bạn Bè", (WEB/"remaining-systems.js").read_text(encoding="utf-8"))
+        self.assertIn("Boss hôm nay đã bị đánh bại", (WEB/"remaining-systems.js").read_text(encoding="utf-8"))
         self.assertNotIn("Mỗi vật phẩm tặng tăng 100 Hảo Cảm",home)
         self.assertIn("social_gift_meta", (ROOT/"gxb2/live_service.py").read_text(encoding="utf-8"))
         self.assertIn("Cầu Hôn · 1 Oath Ring",home)

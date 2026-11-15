@@ -32,6 +32,16 @@ const HomeMenus=(()=>{
   key=String(key||'head_1001');
   return typeof profileAsset==='function'?profileAsset(key):('/assets/avatar-hd/profile/'+key+'.webp?v=1.1.2');
  }
+ function friendPresence(player){
+  if(player.online)return 'Đang trực tuyến';
+  const seen=Number(player.last_seen||0);if(!seen)return 'Chưa từng online';
+  const seconds=Math.max(0,Math.floor(Math.max(Date.now()/1000,Number(state.server_time||0))-seen));
+  if(seconds<60)return 'Online vừa xong';
+  if(seconds<3600)return 'Online '+Math.floor(seconds/60)+' phút trước';
+  if(seconds<86400)return 'Online '+Math.floor(seconds/3600)+' giờ trước';
+  if(seconds<604800)return 'Online '+Math.floor(seconds/86400)+' ngày trước';
+  return 'Online '+new Date(seen*1000).toLocaleDateString('vi-VN');
+ }
  function loadFriends(){
   if(friendsBusy)return;friendsBusy=true;
   api('/api/friends').then(r=>{friendsData=r;message='';}).catch(e=>{friendsData={players:[]};message=e.message||'Không tải được danh sách Bạn Bè.';})
@@ -44,37 +54,51 @@ const HomeMenus=(()=>{
   finally{friendsBusy=false;render();}
  }
  async function friendGift(profile,refresh){
+  const giftName=item=>window.GxbBagVi?.t(item.name)||item.name||('Vật phẩm '+item.id);
   const owned=(profile.gift_items||[]).filter(x=>Number(x.owned)>0)
-   .sort((a,b)=>(a.kind==='currency'?-1:0)-(b.kind==='currency'?-1:0)||Number(b.points)-Number(a.points)||String(a.name).localeCompare(String(b.name),'vi'));
+   .sort((a,b)=>(a.kind==='currency'?-1:0)-(b.kind==='currency'?-1:0)||Number(b.quality)-Number(a.quality)||giftName(a).localeCompare(giftName(b),'vi'));
   if(!owned.length){GirlUI.toast('Túi Đồ chưa có vật phẩm hoặc tiền tệ được phép tặng.');return;}
   const {body,close}=GirlUI.win({title:'Tặng Vật Phẩm',cls:'hm-social-win',stack:true});
-  body.append(el('p','Vật phẩm thường: còn '+profile.gift_left+'/10 trong 7 ngày. Tiền tệ: còn '+profile.currency_gift_left+'/3 lần trong 7 ngày và có giới hạn số lượng riêng. Rương, hộp, túi, Nữ Thần, vé và vật phẩm sự kiện vẫn bị cấm.','hm-social-note'));
-  const select=el('select',undefined,'hm-gift-select');
-  for(const item of owned){
-   const currency=item.kind==='currency';
-   const suffix=currency?' · Tối đa '+number(item.max_quantity)+'/lần · Còn '+number(profile.currency_gift_left)+'/3 lần':' · +'+number(item.points)+' Hảo Cảm/món';
-   const o=el('option',item.name+' · Có '+number(item.owned)+suffix);
-   o.value=item.id;o.dataset.owned=item.owned;o.dataset.points=item.points;o.dataset.kind=item.kind||'item';o.dataset.max=item.max_quantity||'';o.dataset.divisor=item.affection_divisor||1;select.append(o);
-  }
+  body.append(el('p','Vật phẩm thường: còn '+profile.gift_left+'/10 trong 7 ngày. Tiền tệ: còn '+profile.currency_gift_left+'/3 lần trong 7 ngày. Rương, hộp, túi, Nữ Thần, vé và vật phẩm sự kiện không được phép tặng.','hm-social-note'));
+  const search=el('input',undefined,'hm-gift-search');search.type='search';search.placeholder='Tìm vật phẩm…';search.setAttribute('aria-label','Tìm vật phẩm');
+  const list=el('div',undefined,'hm-gift-list');body.append(search,list);
+  let selected=owned[0];
   const qty=el('input',undefined,'hm-gift-qty');qty.type='number';qty.min='1';qty.value='1';
   const preview=el('b','', 'hm-gift-points');
-  const controls=el('div',undefined,'hm-social-form');controls.append(select,qty);body.append(controls,preview);
+  const controls=el('div',undefined,'hm-gift-controls');controls.append(el('label','Số lượng'),qty);body.append(controls,preview);
   const sendButton=button(body,'Tặng Vật Phẩm',async()=>{
-   try{const out=await api('/api/friends/gift',{target_uid:profile.uid,item_id:select.value,quantity:Number(qty.value)});
+   try{const out=await api('/api/friends/gift',{target_uid:profile.uid,item_id:selected.id,quantity:Number(qty.value)});
     state.items=out.sender_items;close();GirlUI.toast('Đã tặng quà · +'+number(out.affection_gained)+' Hảo Cảm');await refresh();
    }catch(e){GirlUI.toast(e.message);}
   },false,'hm-social-primary');
+  const itemImage=item=>{
+   const original=itemCatalog?.[item.id];let src='';
+   if(original&&typeof itemPicture==='function')src=itemPicture(original);
+   if(!src&&item.icon)src='/assets/item-icons/'+item.icon+'.png';
+   return src||'/assets/ui/item_bg.png';
+  };
   const sync=()=>{
-   const o=select.selectedOptions[0],currency=o?.dataset.kind==='currency';
-   const allowance=currency?(Number(profile.currency_gift_left||0)>0?Number(o?.dataset.max||0):0):Number(profile.gift_left||0);
-   const max=Math.max(0,Math.min(Number(o?.dataset.owned||0),allowance));
+   const currency=selected.kind==='currency';
+   const allowance=currency?(Number(profile.currency_gift_left||0)>0?Number(selected.max_quantity||0):0):Number(profile.gift_left||0);
+   const max=Math.max(0,Math.min(Number(selected.owned||0),allowance));
    qty.max=String(max);if(Number(qty.value)>max)qty.value=String(max);if(Number(qty.value)<1&&max>0)qty.value='1';
-   const amount=Number(qty.value||0),divisor=Math.max(1,Number(o?.dataset.divisor||1));
-   const affection=currency?Math.max(1,Math.ceil(amount/divisor)):Number(o?.dataset.points||0)*amount;
-   preview.textContent=(currency?'Còn '+number(profile.currency_gift_left)+'/3 lần · Giới hạn '+number(max)+' · ':'')+'Nhận +'+number(affection)+' Hảo Cảm';
+   const amount=Number(qty.value||0),divisor=Math.max(1,Number(selected.affection_divisor||1));
+   const affection=currency?Math.max(1,Math.ceil(amount/divisor)):Number(selected.points||0)*amount;
+   preview.textContent=giftName(selected)+' · '+(currency?'Còn '+number(profile.currency_gift_left)+'/3 lần · Giới hạn '+number(max)+' · ':'')+'Nhận +'+number(affection)+' Hảo Cảm';
    sendButton.disabled=max<1;
   };
-  select.onchange=sync;qty.oninput=sync;sync();
+  const drawList=()=>{
+   list.replaceChildren();const keyword=search.value.trim().toLocaleLowerCase('vi');
+   const visible=owned.filter(item=>!keyword||giftName(item).toLocaleLowerCase('vi').includes(keyword));
+   for(const item of visible){
+    const currency=item.kind==='currency',card=el('button',undefined,'hm-gift-item'+(item.id===selected.id?' active':''));
+    card.type='button';const pic=el('img');pic.src=itemImage(item);pic.alt=giftName(item);pic.loading='lazy';pic.onerror=()=>{pic.onerror=null;pic.src='/assets/ui/item_bg.png';};
+    const text=el('span');text.append(el('b',giftName(item)),el('small','Có '+number(item.owned)),el('em',currency?'Tối đa '+number(item.max_quantity)+'/lần':('+'+number(item.points)+' Hảo Cảm/món')));
+    card.append(pic,text);card.onclick=()=>{selected=item;drawList();sync();};list.append(card);
+   }
+   if(!visible.length)list.append(el('p','Không tìm thấy vật phẩm.','hm-social-note'));
+  };
+  search.oninput=drawList;qty.oninput=sync;drawList();sync();
  }
  async function friendMarriage(profile,action,refresh){
   try{const out=await api('/api/friends/marriage',{target_uid:profile.uid,action});
@@ -129,7 +153,7 @@ const HomeMenus=(()=>{
    const row=el('article',undefined,'hm-friend-row');
    const avatar=el('button',undefined,'hm-friend-avatar-btn');avatar.type='button';avatar.title='Xem hồ sơ và đội hình';const face=el('img',undefined,'hm-friend-avatar');face.src=friendAvatar(p.avatar);face.onerror=()=>{face.onerror=null;face.src='/assets/profile/head_1001.png';};avatar.append(face);avatar.onclick=()=>openFriendProfile(p);
    const inf=el('button',undefined,'hm-friend-info hm-friend-profile-open');inf.type='button';inf.title='Xem hồ sơ và đội hình';
-   inf.append(el('b',p.character_name||p.uid),el('small','Cấp '+(p.level||1)+' · Lực chiến '+number(p.power||0)),el('span',p.online?'Đang trực tuyến':'Đang ngoại tuyến',p.online?'hm-online':'hm-offline'));inf.onclick=()=>openFriendProfile(p);
+   inf.append(el('b',p.character_name||p.uid),el('small','Cấp '+(p.level||1)+' · Lực chiến '+number(p.power||0)),el('span',friendPresence(p),p.online?'hm-online':'hm-offline'));inf.onclick=()=>openFriendProfile(p);
    const actions=el('div',undefined,'hm-friend-actions');
    if(p.relation==='none')button(actions,'Kết Bạn',()=>friendAct('request',p.uid));
    else if(p.relation==='outgoing')button(actions,'Đã gửi lời mời',()=>{},false).disabled=true;
@@ -397,10 +421,11 @@ const HomeMenus=(()=>{
   if(topupPackages===null)loadTopupPackages();
   paragraph(parent,'Không dùng giá cũ từ nhà phát hành. EXP VIP và vật phẩm chỉ được cấp khi đơn được QTV xác nhận và người chơi nhận thư.');
  }
+ function showFriendsTab(next='friends'){tab=next;render();}
  function openFriendsBoss(from){launch('friends',from);tab='coop';render();RemainingSystems.openFriendTab();}
  // Poll only while the matching online window is open.
  setInterval(()=>{
   if(root==='chat'&&view==='home-systems'&&catalog&&!chatBusy)refreshRealChat(true);
  },12000);
- return {openFriendsBoss,handles:key=>Object.hasOwn(titles,key),open:launch,render};
+ return {showFriendsTab,openFriendsBoss,handles:key=>Object.hasOwn(titles,key),open:launch,render};
 })();

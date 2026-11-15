@@ -5,6 +5,7 @@ ALL writes use isolated temporary SQLite. Never touch Neon/Production.
 import copy
 import tempfile
 import time
+from gxb2 import protocol
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -84,6 +85,10 @@ class GoddessGiftcodeTests(unittest.TestCase):
         # Neither users B/C nor a stranger receive automatic characters until
         # they explicitly claim the mailed reward on their own account.
         self.assertEqual(len(self.games[self.names[1]].snapshot()['roster']),len(self.games[self.names[2]].snapshot()['roster']))
+
+    def test_gm_bonus_is_local_save_data_not_legacy_wire_field(self):
+        self.assertEqual(protocol.normalize('partners_info',
+                         {'gm_bonus':{'hp':1200,'atk':310,'arm':125,'spd':4}}), {})
 
     def test_full_25_star_666_level_cannot_exceed_native_cap(self):
         valid=self.config(girl_id=757001,stars=25,level=666,stats={},max_red6=True,max_stellar=True)
