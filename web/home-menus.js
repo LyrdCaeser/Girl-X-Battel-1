@@ -16,7 +16,7 @@ const HomeMenus=(()=>{
  async function send(request){if(pending)return;pending=true;message='Đang lưu…';render();try{const result=await api('/api/home/action',request);state=result.state;message="Đã lưu.";if(result.awards)message="Đã quay xong. Xem kết quả trong lịch sử.";}catch(e){message=e.message;}finally{pending=false;render();}}
  function navigation(parent,entries){const nav=el('nav',undefined,'hm-tabs');for(const [id,label]of entries)button(nav,label,()=>{page=0;change(id);},tab===id,'');parent.append(nav);}
  function link(parent,label,route){button(parent,label,()=>{if(route==='campaign'||route==='capsule'||route==='graduate')showView(route);else openMenu(route,'home-systems');});}
- function launch(key,from){if(key==='giftpacks'&&typeof EventsHub!=='undefined'){EventsHub.openOriginalEvent(2,from||view);return;}if(key==='chat'){chatRows=[];chatLoadedKey='';chatRecipient='';chatTyped='';chatError='';}if(key==='friends')friendsData=null;if(from==='home-systems'&&view==='home-systems')stack.push({root,tab,selected,page,origin});else stack=[];if(from!=='home-systems'||!stack.length)origin=from||'home';root=key;tab='';selected=null;page=0;message='';showView('home-systems');if(!catalog&&!loaded){loaded=api('/assets/home-systems/catalog.json').then(c=>{catalog=c;if(view==='home-systems')render();}).catch(e=>{message=e.message;loaded=null;render();});}}
+ function launch(key,from){if(key==='giftpacks'&&typeof EventsHub!=='undefined'){EventsHub.openOriginalEvent(2,from||view);return;}if(key==='chat'){chatRows=[];chatLoadedKey='';chatRecipient='';chatTyped='';chatError='';}if(key==='friends')friendsData=null;if(key==='mail')mailLastRefresh=0;if(from==='home-systems'&&view==='home-systems')stack.push({root,tab,selected,page,origin});else stack=[];if(from!=='home-systems'||!stack.length)origin=from||'home';root=key;tab='';selected=null;page=0;message='';showView('home-systems');if(!catalog&&!loaded){loaded=api('/assets/home-systems/catalog.json').then(c=>{catalog=c;if(view==='home-systems')render();}).catch(e=>{message=e.message;loaded=null;render();});}}
  function back(){if(tab==='detail'||tab==='building'||tab==='adventure'||tab==='training'){change('');return;}if(stack.length){({root,tab,selected,page,origin}=stack.pop());message='';showView('home-systems');render();return;}showView(origin==='home-systems'?'home':origin);}
  function render(){const wrap=$('home-systems-view');if(!wrap||view!=='home-systems')return;wrap.replaceChildren();wrap.dataset.hmRoot=root;
   const top=el('header',undefined,'hm-top');const b=button(top,'',back);b.setAttribute('aria-label',"Back");b.append(image('mail_back_bg','hm-back'));b.replaceChildren();const arrow=el('img');arrow.src='/assets/ui/win_back_btn.png';arrow.alt='';b.append(arrow);top.append(el('h1',titles[root]));const money=el('div',undefined,'hm-money');money.append(el('span',"Vàng "+number(state.items['1'])),el('span',"Kim Cương "+number(state.items['2'])));top.append(money);wrap.append(top);
@@ -162,7 +162,7 @@ const HomeMenus=(()=>{
   if(chatError)paragraph(parent,chatError,'hm-chat-error');
  }
 
- let mailRefreshBusy=false,mailLastRefresh=0;
+ let mailRefreshBusy=false,mailLastRefresh=0,giftcodeBusy=false,giftcodeTyped='';
  const mailSignature=rows=>JSON.stringify((rows||[]).map(m=>[m.id,m.status,m.created_at]));
  async function refreshServerMail(silent=false){
   if(mailRefreshBusy||pending)return;
@@ -182,7 +182,18 @@ const HomeMenus=(()=>{
  }
  function openGiftcode(){
   window.open('/api/giftcode/sso/start','_blank','noopener');
-  mailLastRefresh=0;
+ }
+ async function redeemGiftcode(){
+  const code=giftcodeTyped.trim().toUpperCase();
+  if(giftcodeBusy)return;
+  if(!/^[A-Z0-9_-]{6,40}$/.test(code)){message='Giftcode gồm 6–40 ký tự A–Z, số, _ hoặc -.';render();return;}
+  giftcodeBusy=true;message='Đang đổi Giftcode…';render();
+  try{
+   const result=await api('/api/giftcode/redeem',{code});
+   giftcodeTyped='';message=result?.message||'Đổi mã thành công! Quà đã được gửi vào Hòm Thư.';
+   mailLastRefresh=0;await refreshServerMail(true);
+  }catch(e){message=e.message||'Không thể đổi Giftcode.';}
+  finally{giftcodeBusy=false;if(view==='home-systems'&&root==='mail'&&tab==='server')render();}
  }
  async function claimServerMail(mailId){
   if(pending)return;
@@ -197,7 +208,14 @@ const HomeMenus=(()=>{
  }
  function serverMail(parent){
   const tools=el('div',undefined,'hm-mail-tools');
-  button(tools,'◈ Nhập mã Giftcode',openGiftcode);
+  const gift=el('div',undefined,'hm-giftcode-entry'),code=el('input');
+  code.type='text';code.inputMode='text';code.maxLength=40;code.autocomplete='off';
+  code.placeholder='Nhập mã Giftcode';code.setAttribute('aria-label','Nhập mã Giftcode');code.value=giftcodeTyped;
+  code.addEventListener('input',()=>{giftcodeTyped=code.value.toUpperCase();});
+  code.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();giftcodeTyped=code.value;redeemGiftcode();}});
+  gift.append(code);button(gift,giftcodeBusy?'Đang đổi…':'Đổi mã',()=>{giftcodeTyped=code.value;redeemGiftcode();},giftcodeBusy);
+  tools.append(gift);
+  button(tools,'Mở trang Giftcode',openGiftcode);
   button(tools,mailRefreshBusy?'Đang làm mới…':'↻ Làm mới',()=>refreshServerMail(false),mailRefreshBusy);
   parent.append(tools);
   if(!mailRefreshBusy&&Date.now()-mailLastRefresh>4000)queueMicrotask(()=>refreshServerMail(true));
@@ -311,11 +329,5 @@ const HomeMenus=(()=>{
  setInterval(()=>{
   if(root==='chat'&&view==='home-systems'&&catalog&&!chatBusy)refreshRealChat(true);
  },12000);
- setInterval(()=>{
-  if(root==='mail'&&view==='home-systems'&&tab==='server'&&!document.hidden)refreshServerMail(true);
- },3000);
- const refreshMailOnReturn=()=>{if(root==='mail'&&view==='home-systems'&&tab==='server')refreshServerMail(true);};
- window.addEventListener('focus',refreshMailOnReturn);
- document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshMailOnReturn();});
  return {openFriendsBoss,handles:key=>Object.hasOwn(titles,key),open:launch,render};
 })();

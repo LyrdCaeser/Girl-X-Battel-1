@@ -56,3 +56,7 @@
 .hm-goddess-gift>b{font-size:13px;text-align:center;color:#394f72}
 .hm-goddess-gift>small{font-size:11px;text-align:center;color:#657996}
 @media(max-width:370px){.hm-goddess-gift{width:86%}.hm-goddess-gift>img{height:220px}}
+
+.hm-giftcode-entry{display:flex;align-items:center;gap:6px;flex:1 1 100%;margin-bottom:2px}
+.hm-content .hm-giftcode-entry input{flex:1 1 auto;width:auto;min-width:0;margin:0;text-transform:uppercase}
+.hm-content .hm-giftcode-entry button{flex:0 0 auto;min-width:78px;margin:0}
