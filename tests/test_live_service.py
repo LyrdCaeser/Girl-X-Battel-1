@@ -153,6 +153,7 @@ class LiveServiceTests(unittest.TestCase):
         eligible = {row["id"]: row for row in profile["gift_items"]}
         self.assertIn("1000001", eligible)
         self.assertEqual(eligible["1000001"]["points"], 15)
+        self.assertEqual(profile["currency_gift_left"], 3)
         for currency_id, maximum in {"1":1000000,"2":1000,"10":5000,"9":5000000}.items():
             self.assertEqual(eligible[currency_id]["kind"], "currency")
             self.assertEqual(eligible[currency_id]["max_quantity"], maximum)
@@ -160,17 +161,23 @@ class LiveServiceTests(unittest.TestCase):
         self.assertTrue({"43","263","11001","362","204","325","326"}.isdisjoint(eligible))
         for blocked in ("43","263","11001","362","204","325","326"):
             self.assertIsNone(live_service.social_gift_meta(blocked))
-        for currency_id, maximum in {"1":1000000,"2":1000,"10":5000,"9":5000000}.items():
-            currency_gift = live_service.friend_gift("A1","S1","B1",currency_id,maximum)
-            self.assertEqual(currency_gift["gift_left"], 10)
-            self.assertEqual(currency_gift["affection_gained"], 100)
+        currencies = {"1":1000000,"2":1000,"10":5000,"9":5000000}
+        for currency_id, maximum in currencies.items():
             with self.assertRaises(ValueError):
                 live_service.friend_gift("A1","S1","B1",currency_id,maximum+1)
+        for index, (currency_id, maximum) in enumerate(list(currencies.items())[:3]):
+            currency_gift = live_service.friend_gift("A1","S1","B1",currency_id,maximum)
+            self.assertEqual(currency_gift["gift_left"], 10)
+            self.assertEqual(currency_gift["currency_gift_left"], 2-index)
+            self.assertEqual(currency_gift["affection_gained"], 100)
+        with self.assertRaisesRegex(ValueError, "3 lần"):
+            live_service.friend_gift("A1","S1","B1","9",currencies["9"])
+        self.assertEqual(live_service.friend_profile("A1","S1","B1")["currency_gift_left"], 0)
         gift = live_service.friend_gift("A1","S1","B1","1000001",10)
         self.assertEqual(gift["gift_left"], 0)
         self.assertEqual(gift["points_per_item"], 15)
         self.assertEqual(gift["affection_gained"], 150)
-        self.assertEqual(gift["affection"], 550)
+        self.assertEqual(gift["affection"], 450)
         with self.assertRaises(ValueError):
             live_service.friend_gift("A1","S1","B1","1000001",1)
 

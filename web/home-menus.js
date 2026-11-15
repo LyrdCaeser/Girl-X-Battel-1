@@ -48,11 +48,11 @@ const HomeMenus=(()=>{
    .sort((a,b)=>(a.kind==='currency'?-1:0)-(b.kind==='currency'?-1:0)||Number(b.points)-Number(a.points)||String(a.name).localeCompare(String(b.name),'vi'));
   if(!owned.length){GirlUI.toast('Túi Đồ chưa có vật phẩm hoặc tiền tệ được phép tặng.');return;}
   const {body,close}=GirlUI.win({title:'Tặng Vật Phẩm',cls:'hm-social-win',stack:true});
-  body.append(el('p','Vật phẩm thường: còn '+profile.gift_left+'/10 trong 7 ngày. Tiền tệ có giới hạn riêng mỗi lần tặng. Rương, hộp, túi, Nữ Thần, vé và vật phẩm sự kiện vẫn bị cấm.','hm-social-note'));
+  body.append(el('p','Vật phẩm thường: còn '+profile.gift_left+'/10 trong 7 ngày. Tiền tệ: còn '+profile.currency_gift_left+'/3 lần trong 7 ngày và có giới hạn số lượng riêng. Rương, hộp, túi, Nữ Thần, vé và vật phẩm sự kiện vẫn bị cấm.','hm-social-note'));
   const select=el('select',undefined,'hm-gift-select');
   for(const item of owned){
    const currency=item.kind==='currency';
-   const suffix=currency?' · Tối đa '+number(item.max_quantity)+'/lần':' · +'+number(item.points)+' Hảo Cảm/món';
+   const suffix=currency?' · Tối đa '+number(item.max_quantity)+'/lần · Còn '+number(profile.currency_gift_left)+'/3 lần':' · +'+number(item.points)+' Hảo Cảm/món';
    const o=el('option',item.name+' · Có '+number(item.owned)+suffix);
    o.value=item.id;o.dataset.owned=item.owned;o.dataset.points=item.points;o.dataset.kind=item.kind||'item';o.dataset.max=item.max_quantity||'';o.dataset.divisor=item.affection_divisor||1;select.append(o);
   }
@@ -66,12 +66,12 @@ const HomeMenus=(()=>{
   },false,'hm-social-primary');
   const sync=()=>{
    const o=select.selectedOptions[0],currency=o?.dataset.kind==='currency';
-   const allowance=currency?Number(o?.dataset.max||0):Number(profile.gift_left||0);
+   const allowance=currency?(Number(profile.currency_gift_left||0)>0?Number(o?.dataset.max||0):0):Number(profile.gift_left||0);
    const max=Math.max(0,Math.min(Number(o?.dataset.owned||0),allowance));
    qty.max=String(max);if(Number(qty.value)>max)qty.value=String(max);if(Number(qty.value)<1&&max>0)qty.value='1';
    const amount=Number(qty.value||0),divisor=Math.max(1,Number(o?.dataset.divisor||1));
    const affection=currency?Math.max(1,Math.ceil(amount/divisor)):Number(o?.dataset.points||0)*amount;
-   preview.textContent=(currency?'Giới hạn '+number(max)+' · ':'')+'Nhận +'+number(affection)+' Hảo Cảm';
+   preview.textContent=(currency?'Còn '+number(profile.currency_gift_left)+'/3 lần · Giới hạn '+number(max)+' · ':'')+'Nhận +'+number(affection)+' Hảo Cảm';
    sendButton.disabled=max<1;
   };
   select.onchange=sync;qty.oninput=sync;sync();

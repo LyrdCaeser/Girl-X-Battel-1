@@ -2228,6 +2228,7 @@ def friend_action(uid, server_id, action, target_uid):
 # transactional in the same Neon database as the two player profiles.
 SOCIAL_GIFT_LIMIT = 10
 SOCIAL_GIFT_WINDOW = 7 * 86400
+SOCIAL_CURRENCY_GIFT_LIMIT = 3
 SOCIAL_MARRIAGE_AFFECTION = 12000
 SOCIAL_OATH_RING = "45"
 SOCIAL_ITEMS = json.loads((ROOT / "web/assets/items-catalog.json").read_text())
@@ -2367,6 +2368,11 @@ def friend_profile(uid, server_id, target_uid):
                                AND item_id NOT IN (?,?,?,?)""",
                           (server_id, uid, now-SOCIAL_GIFT_WINDOW,
                            *SOCIAL_CURRENCY_IDS)).fetchone()
+        currency_used = db.execute("""SELECT COUNT(*) AS n FROM social_item_gifts
+                                      WHERE server_id=? AND sender_uid=? AND created_at>=?
+                                        AND item_id IN (?,?,?,?)""",
+                                   (server_id, uid, now-SOCIAL_GIFT_WINDOW,
+                                    *SOCIAL_CURRENCY_IDS)).fetchone()
         gift_items = []
         for item_id, owned in (my_state.get("items") or {}).items():
             meta = social_gift_meta(item_id)
@@ -2386,6 +2392,7 @@ def friend_profile(uid, server_id, target_uid):
             "frame": profile.get("frame") or "frame_8007",
             "lineup": lineup, "friend": _friend_flag(uid, target_uid, server_id),
             "gift_left": max(0, SOCIAL_GIFT_LIMIT-int(used["n"] or 0)),
+            "currency_gift_left": max(0, SOCIAL_CURRENCY_GIFT_LIMIT-int(currency_used["n"] or 0)),
             "gift_items": gift_items,
             "affection": affinity, "affection_required": SOCIAL_MARRIAGE_AFFECTION,
             "marriage": dict(marriage) if marriage else None}
@@ -2418,13 +2425,8 @@ def friend_gift(uid, server_id, target_uid, item_id, quantity):
         try:
             if not _are_friends(db, uid, target_uid, server_id):
                 raise ValueError("Chỉ có thể tặng vật phẩm cho Bạn Bè.")
-            sent = db.execute("""SELECT COALESCE(SUM(quantity),0) AS n FROM social_item_gifts
-                                 WHERE server_id=? AND sender_uid=? AND created_at>=?
-                                   AND item_id NOT IN (?,?,?,?)""",
-                              (server_id, uid, now-SOCIAL_GIFT_WINDOW,
-                               *SOCIAL_CURRENCY_IDS)).fetchone()
-            if not is_currency and int(sent["n"] or 0) + quantity > SOCIAL_GIFT_LIMIT:
-                raise ValueError("Mỗi tài khoản chỉ được tặng tối đa 10 vật phẩm trong 7 ngày.")
+            # Lock the sender before counting recent transfers so simultaneous
+            # requests cannot both pass the weekly limit.
             lock = " FOR UPDATE" if db.backend == "postgres" else ""
             sender = db.execute("SELECT data FROM player_profiles WHERE uid=? AND server_id=?"+lock,
                                 (uid, server_id)).fetchone()
@@ -2432,6 +2434,20 @@ def friend_gift(uid, server_id, target_uid, item_id, quantity):
                                   (target_uid, server_id)).fetchone()
             s, r = _profile_state(sender), _profile_state(receiver)
             if not s or not r: raise ValueError("Không tải được Túi Đồ của người chơi.")
+            sent = db.execute("""SELECT COALESCE(SUM(quantity),0) AS n FROM social_item_gifts
+                                 WHERE server_id=? AND sender_uid=? AND created_at>=?
+                                   AND item_id NOT IN (?,?,?,?)""",
+                              (server_id, uid, now-SOCIAL_GIFT_WINDOW,
+                               *SOCIAL_CURRENCY_IDS)).fetchone()
+            currency_sent = db.execute("""SELECT COUNT(*) AS n FROM social_item_gifts
+                                          WHERE server_id=? AND sender_uid=? AND created_at>=?
+                                            AND item_id IN (?,?,?,?)""",
+                                       (server_id, uid, now-SOCIAL_GIFT_WINDOW,
+                                        *SOCIAL_CURRENCY_IDS)).fetchone()
+            if is_currency and int(currency_sent["n"] or 0) >= SOCIAL_CURRENCY_GIFT_LIMIT:
+                raise ValueError("Mỗi tài khoản chỉ được tặng tiền tệ tối đa 3 lần trong 7 ngày.")
+            if not is_currency and int(sent["n"] or 0) + quantity > SOCIAL_GIFT_LIMIT:
+                raise ValueError("Mỗi tài khoản chỉ được tặng tối đa 10 vật phẩm trong 7 ngày.")
             if int((s.get("items") or {}).get(item_id, 0)) < quantity:
                 raise ValueError("Không đủ vật phẩm trong Túi Đồ.")
             s.setdefault("items", {})[item_id] = int(s["items"].get(item_id, 0))-quantity
@@ -2458,6 +2474,7 @@ def friend_gift(uid, server_id, target_uid, item_id, quantity):
     return {"ok": True, "item_id": item_id, "quantity": quantity,
             "sender_items": s["items"],
             "gift_left": SOCIAL_GIFT_LIMIT-int(sent["n"] or 0)-(0 if is_currency else quantity),
+            "currency_gift_left": SOCIAL_CURRENCY_GIFT_LIMIT-int(currency_sent["n"] or 0)-(1 if is_currency else 0),
             "points_per_item": meta["points"], "affection_gained": gain,
             "affection": s["social_affection"][target_uid]}
 
