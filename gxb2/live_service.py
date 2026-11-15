@@ -2118,7 +2118,14 @@ def maintenance_tick(now=None):
             return {"ok":True,"at":now,"skipped":"not_maintenance_leader"}
     try:
         refresh_guild_wars()
-        settle_previous_pvp_season(now)
+        # Settle each real 30-day ladder exactly once. Passing `now` as the
+        # first positional argument used to turn every timer tick into a fake
+        # mode/season and spam Top 1-3 mail.
+        for world in worlds():
+            server_id=str(world["server_id"]).upper()
+            settle_previous_pvp_season("arena", server_id, now)
+            settle_previous_pvp_season("arena3v3", server_id, now)
+        settle_previous_pvp_season("cross", "S1", now)
         with _lock:
             db=_db()
             db.execute("DELETE FROM pvp_queue WHERE joined_at<?",(now-600,))
@@ -2194,7 +2201,9 @@ def _top3_season_reward(mode, rank):
 
 def settle_previous_pvp_season(mode="arena", server_id="S1", now=None):
     """Idempotently mail original top-3 rewards when a fixed 30-day season closes."""
-    mode=str(mode or "arena").lower(); server_id=str(server_id or "S1").upper()
+    mode=str(mode or "arena").strip().lower(); server_id=str(server_id or "S1").strip().upper()
+    if mode not in ("arena", "arena3v3", "cross"):
+        raise ValueError("Chế độ xếp hạng không hợp lệ")
     now=int(now or time.time()); season_id=previous_pvp_season_id(mode,server_id,now)
     if not season_id: return {"season_id":"-","issued":0}
     cache_key=(str(DB_PATH),mode,server_id,season_id)

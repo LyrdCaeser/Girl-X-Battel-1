@@ -3,6 +3,7 @@
 Isolated SQLite for rankings; no writes to player Neon/Production state.
 """
 from pathlib import Path
+import json
 import tempfile
 import unittest
 
@@ -101,12 +102,22 @@ class SystemicVisualDataRegressions(unittest.TestCase):
         index=(ROOT/'web/index.html').read_text(encoding='utf-8')
         for filename in ('mobile-native.css','arena.js'):
             self.assertIn(filename+'?v=20261114-systemic-r1',index)
-        for filename in ('arena.css','arena-online-native.js'):
-            self.assertIn(filename+'?v=20261115-select-r1',index)
+        self.assertIn('arena.css?v=20261115-select-r1',index)
+        self.assertIn('arena-online-native.js?v=20261115-replay-r2',index)
         for filename in ('campaign-flow.js','campaign-flow.css'):
             self.assertIn(filename+'?v=20261114-player-fix-r2',index)
         for filename in ('girl-ui.js','girl-ui.css'):
             self.assertIn(filename+'?v=20261115-social-ui-r3',index)
+
+    def test_apollis_all_forms_keep_original_readable_battle_height(self):
+        catalogue=json.loads((ROOT/'web/assets/chibis/catalog.json').read_text())
+        for table_id in ('55014','655023','755013'):
+            self.assertEqual(catalogue[table_id].get('battleHeight'),330)
+
+    def test_arena_history_restores_original_battle_replay(self):
+        native=(ROOT/'web/arena-online-native.js').read_text()
+        self.assertIn("button('▶ Xem Lại Trận Đấu',()=>replaySingle(h.id))",native)
+        self.assertIn("post('/api/pvp/match/replay',{match_id:matchId})",native)
 
     def test_arena_rank_list_uses_actual_profile_photo_for_own_account(self):
         arena=(ROOT/'web/arena.js').read_text()

@@ -1,6 +1,7 @@
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import call, patch
 
 from gxb2 import live_service
 from gxb2.engine import Engine, TABLES
@@ -56,6 +57,22 @@ class SelectedOpponentMailCampaignTests(unittest.TestCase):
         self.assertTrue(live_service.mailbox("C", "S1"))
         self.assertFalse(live_service.mailbox("D", "S1"))
         self.assertEqual(live_service.settle_previous_pvp_season("arena", "S1", now=100 + 31 * 86400)["issued"], 0)
+
+    def test_maintenance_settles_only_real_modes_never_timestamp_modes(self):
+        now=1794760009
+        with patch.object(live_service, "worlds", return_value=[{"server_id":"S1"}]), \
+             patch.object(live_service, "refresh_guild_wars"), \
+             patch.object(live_service, "settle_previous_pvp_season") as settle:
+            live_service.maintenance_tick(now)
+        self.assertEqual(settle.call_args_list, [
+            call("arena", "S1", now),
+            call("arena3v3", "S1", now),
+            call("cross", "S1", now),
+        ])
+
+    def test_season_settlement_rejects_timestamp_as_mode(self):
+        with self.assertRaisesRegex(ValueError, "không hợp lệ"):
+            live_service.settle_previous_pvp_season("1794760009", "S1", now=1794760009)
 
     def test_server_mail_red_dot_state_can_be_marked_read(self):
         self._player("MAIL", "Người nhận", 1)
