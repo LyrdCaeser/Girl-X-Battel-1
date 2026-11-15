@@ -177,5 +177,24 @@ class PvPHttpSessionTests(unittest.TestCase):
         self.assertTrue(replay['report']['frames'])
 
 
+    def test_keepalive_cookie_change_never_reuses_previous_account(self):
+        # BaseHTTPRequestHandler serves multiple HTTP/1.1 requests on the same
+        # handler object. Changing the Cookie must therefore re-resolve auth,
+        # never reuse the previous request's cached player engine.
+        conn=http.client.HTTPConnection('127.0.0.1',self.port,timeout=30)
+        try:
+            seen=[]
+            for user in (0,1,0):
+                conn.request('GET','/api/state',headers={'Cookie':self.tokens[user]})
+                response=conn.getresponse()
+                payload=json.loads(response.read())
+                self.assertEqual(response.status,200,payload)
+                seen.append((payload['uid'],payload['name']))
+            self.assertNotEqual(seen[0],seen[1])
+            self.assertEqual(seen[0],seen[2])
+        finally:
+            conn.close()
+
+
 if __name__=='__main__':
     unittest.main()

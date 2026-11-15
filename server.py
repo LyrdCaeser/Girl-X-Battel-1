@@ -389,6 +389,10 @@ class HTTPHandler(BaseHTTPRequestHandler):
         self.close_connection=True
 
     def do_GET(self):
+        # BaseHTTPRequestHandler reuses this object for HTTP/1.1 keep-alive.
+        # Never carry an authenticated account into the next request: its Cookie
+        # may have changed, or the session may have been revoked elsewhere.
+        self._auth_context = None
         if self.reject_unauthorized_admin_mode():
             return
         parsed = urlparse(self.path)
@@ -905,6 +909,8 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
         if not isinstance(data, dict): raise GameError('Dữ liệu yêu cầu phải là đối tượng JSON')
         return data
     def do_POST(self):
+        # Authentication context is request-scoped, not connection-scoped.
+        self._auth_context = None
         if self.reject_unauthorized_admin_mode():
             return
         origin = self.headers.get('Origin')
