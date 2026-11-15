@@ -162,18 +162,45 @@ const HomeMenus=(()=>{
   if(chatError)paragraph(parent,chatError,'hm-chat-error');
  }
 
+ let mailRefreshBusy=false,mailLastRefresh=0;
+ const mailSignature=rows=>JSON.stringify((rows||[]).map(m=>[m.id,m.status,m.created_at]));
+ async function refreshServerMail(silent=false){
+  if(mailRefreshBusy||pending)return;
+  const expectedUid=state?.uid,previous=mailSignature(state?.mail_info);let redraw=false;
+  mailRefreshBusy=true;
+  try{
+   const result=await api('/api/mail');
+   if(expectedUid!==state?.uid)return;
+   const rows=Array.isArray(result?.mail_info)?result.mail_info:[];
+   const changed=mailSignature(rows)!==previous;
+   state={...state,mail_info:rows};mailLastRefresh=Date.now();
+   if(!silent)message='Hòm Thư đã được cập nhật.';
+   redraw=!silent||changed;
+  }catch(e){
+   if(!silent){message=e.message||'Không thể làm mới Hòm Thư.';redraw=true;}
+  }finally{mailRefreshBusy=false;if(redraw&&view==='home-systems'&&root==='mail'&&tab==='server')render();}
+ }
+ function openGiftcode(){
+  window.open('/api/giftcode/sso/start','_blank','noopener');
+  mailLastRefresh=0;
+ }
  async function claimServerMail(mailId){
   if(pending)return;
   pending=true;message='';
   try{
    const result=await api('/api/mail/claim',{mail_id:mailId});
    if(result?.state)state=result.state;
+   mailLastRefresh=Date.now();
    message='Đã nhận vật phẩm đính kèm.';
   }catch(e){message=e.message||'Không thể nhận thư.';}
   finally{pending=false;render();}
  }
  function serverMail(parent){
-  button(parent,'◈ Nhập mã Giftcode',()=>window.open('/api/giftcode/sso/start','_blank','noopener'));
+  const tools=el('div',undefined,'hm-mail-tools');
+  button(tools,'◈ Nhập mã Giftcode',openGiftcode);
+  button(tools,mailRefreshBusy?'Đang làm mới…':'↻ Làm mới',()=>refreshServerMail(false),mailRefreshBusy);
+  parent.append(tools);
+  if(!mailRefreshBusy&&Date.now()-mailLastRefresh>4000)queueMicrotask(()=>refreshServerMail(true));
   const rows=Array.isArray(state?.mail_info)?state.mail_info:[];
   if(!rows.length)paragraph(parent,'Chưa có thư máy chủ.');
   for(const m of rows){
@@ -183,10 +210,10 @@ const HomeMenus=(()=>{
    if(m.body)paragraph(c,m.body,'hm-text');
    const goddess=m.attachments?.__gxb3_goddess__;
    if(goddess&&/^\/assets\/(?:cards|characters|original-ui)\//.test(String(goddess.image||''))){
-     const tile=el('div','hm-goddess-gift'),face=el('img');face.src=goddess.image;face.alt=goddess.name||'Nữ Thần';face.loading='lazy';
-     tile.append(face,el('b','',String(goddess.name||'Nữ Thần')+' · '+Number(goddess.stars)+'★ · Lv '+Number(goddess.level)));
-     if(goddess.max_red6)tile.append(el('small','','Trọn bộ trang bị đỏ 6★'));
-     if(goddess.max_stellar)tile.append(el('small','','Lõi Tinh Tú tối đa'));
+     const tile=el('div',undefined,'hm-goddess-gift'),face=el('img');face.src=goddess.image;face.alt=goddess.name||'Nữ Thần';face.loading='lazy';
+     tile.append(face,el('b',String(goddess.name||'Nữ Thần')+' · '+Number(goddess.stars)+'★ · Lv '+Number(goddess.level)));
+     if(goddess.max_red6)tile.append(el('small','Trọn bộ trang bị đỏ 6★'));
+     if(goddess.max_stellar)tile.append(el('small','Lõi Tinh Tú tối đa'));
      c.append(tile);
    }
    const items=Object.entries(m.attachments||{}).filter(([,count])=>Number(count)>0);
@@ -280,9 +307,15 @@ const HomeMenus=(()=>{
   paragraph(parent,'Không dùng giá cũ từ nhà phát hành. EXP VIP và vật phẩm chỉ được cấp khi đơn được QTV xác nhận và người chơi nhận thư.');
  }
  function openFriendsBoss(from){launch('friends',from);tab='coop';render();RemainingSystems.openFriendTab();}
- // Poll only while the player actually has the online chat window open.
+ // Poll only while the matching online window is open.
  setInterval(()=>{
   if(root==='chat'&&view==='home-systems'&&catalog&&!chatBusy)refreshRealChat(true);
  },12000);
+ setInterval(()=>{
+  if(root==='mail'&&view==='home-systems'&&tab==='server'&&!document.hidden)refreshServerMail(true);
+ },3000);
+ const refreshMailOnReturn=()=>{if(root==='mail'&&view==='home-systems'&&tab==='server')refreshServerMail(true);};
+ window.addEventListener('focus',refreshMailOnReturn);
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshMailOnReturn();});
  return {openFriendsBoss,handles:key=>Object.hasOwn(titles,key),open:launch,render};
 })();

@@ -504,6 +504,10 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
             ctx=self.auth_context()
             mode=(parse_qs(parsed.query).get('mode') or ['arena'])[0]
             return self.send_sse(ctx,mode)
+        if path == '/api/mail':
+            ctx = self.auth_context(); account = ctx['account']
+            return self.send(200, {'mail_info': live_service.mailbox(
+                account['uid'], account['server_id'])})
         if path == '/api/friends':
             ctx = self.auth_context(); account = ctx['account']
             return self.send(200, live_service.friends_snapshot(account['uid'], account['server_id']))

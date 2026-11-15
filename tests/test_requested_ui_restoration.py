@@ -51,6 +51,18 @@ class RequestedRestorationTests(unittest.TestCase):
         self.assertIn("friendAct('request'",home)
         self.assertIn("'Đang ngoại tuyến'",home)
 
+    def test_mail_refreshes_live_and_goddess_gifts_stay_compact(self):
+        home=(WEB/"home-menus.js").read_text(encoding="utf-8")
+        css=(WEB/"home-menus.css").read_text(encoding="utf-8")
+        server=(ROOT/"server.py").read_text(encoding="utf-8")
+        self.assertIn("path == '/api/mail'",server)
+        self.assertIn("async function refreshServerMail",home)
+        self.assertIn("↻ Làm mới",home)
+        self.assertIn("},3000);",home)
+        self.assertIn("el('div',undefined,'hm-goddess-gift')",home)
+        self.assertIn(".hm-goddess-gift>img",css)
+        self.assertIn("height:250px",css)
+
     def test_missions_appear_in_vietnamese_without_modifying_rules(self):
         newbie=json.loads((ROOT/"data/newbie_camp.json").read_text(encoding="utf-8"))
         diary=json.loads((ROOT/"data/growth_diary.json").read_text(encoding="utf-8"))
