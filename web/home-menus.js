@@ -45,21 +45,36 @@ const HomeMenus=(()=>{
  }
  async function friendGift(profile,refresh){
   const owned=(profile.gift_items||[]).filter(x=>Number(x.owned)>0)
-   .sort((a,b)=>Number(b.points)-Number(a.points)||String(a.name).localeCompare(String(b.name),'vi'));
-  if(!owned.length){GirlUI.toast('Túi Đồ chưa có vật phẩm thường nào được phép tặng.');return;}
+   .sort((a,b)=>(a.kind==='currency'?-1:0)-(b.kind==='currency'?-1:0)||Number(b.points)-Number(a.points)||String(a.name).localeCompare(String(b.name),'vi'));
+  if(!owned.length){GirlUI.toast('Túi Đồ chưa có vật phẩm hoặc tiền tệ được phép tặng.');return;}
   const {body,close}=GirlUI.win({title:'Tặng Vật Phẩm',cls:'hm-social-win',stack:true});
-  body.append(el('p','Còn '+profile.gift_left+'/10 vật phẩm trong 7 ngày. Rương, hộp, túi, Nữ Thần, vé và vật phẩm sự kiện không được phép tặng.','hm-social-note'));
+  body.append(el('p','Vật phẩm thường: còn '+profile.gift_left+'/10 trong 7 ngày. Tiền tệ có giới hạn riêng mỗi lần tặng. Rương, hộp, túi, Nữ Thần, vé và vật phẩm sự kiện vẫn bị cấm.','hm-social-note'));
   const select=el('select',undefined,'hm-gift-select');
-  for(const item of owned){const o=el('option',item.name+' · Có '+number(item.owned)+' · +'+number(item.points)+' Hảo Cảm');o.value=item.id;o.dataset.owned=item.owned;o.dataset.points=item.points;select.append(o);}
+  for(const item of owned){
+   const currency=item.kind==='currency';
+   const suffix=currency?' · Tối đa '+number(item.max_quantity)+'/lần':' · +'+number(item.points)+' Hảo Cảm/món';
+   const o=el('option',item.name+' · Có '+number(item.owned)+suffix);
+   o.value=item.id;o.dataset.owned=item.owned;o.dataset.points=item.points;o.dataset.kind=item.kind||'item';o.dataset.max=item.max_quantity||'';o.dataset.divisor=item.affection_divisor||1;select.append(o);
+  }
   const qty=el('input',undefined,'hm-gift-qty');qty.type='number';qty.min='1';qty.value='1';
   const preview=el('b','', 'hm-gift-points');
-  const sync=()=>{const o=select.selectedOptions[0];qty.max=String(Math.max(1,Math.min(Number(o?.dataset.owned||0),Number(profile.gift_left||0))));if(Number(qty.value)>Number(qty.max))qty.value=qty.max;preview.textContent='Nhận +'+number(Number(o?.dataset.points||0)*Number(qty.value||0))+' Hảo Cảm';};select.onchange=sync;qty.oninput=sync;sync();
   const controls=el('div',undefined,'hm-social-form');controls.append(select,qty);body.append(controls,preview);
-  button(body,'Tặng Vật Phẩm',async()=>{
+  const sendButton=button(body,'Tặng Vật Phẩm',async()=>{
    try{const out=await api('/api/friends/gift',{target_uid:profile.uid,item_id:select.value,quantity:Number(qty.value)});
     state.items=out.sender_items;close();GirlUI.toast('Đã tặng quà · +'+number(out.affection_gained)+' Hảo Cảm');await refresh();
    }catch(e){GirlUI.toast(e.message);}
-  },profile.gift_left<1,'hm-social-primary');
+  },false,'hm-social-primary');
+  const sync=()=>{
+   const o=select.selectedOptions[0],currency=o?.dataset.kind==='currency';
+   const allowance=currency?Number(o?.dataset.max||0):Number(profile.gift_left||0);
+   const max=Math.max(0,Math.min(Number(o?.dataset.owned||0),allowance));
+   qty.max=String(max);if(Number(qty.value)>max)qty.value=String(max);if(Number(qty.value)<1&&max>0)qty.value='1';
+   const amount=Number(qty.value||0),divisor=Math.max(1,Number(o?.dataset.divisor||1));
+   const affection=currency?Math.max(1,Math.ceil(amount/divisor)):Number(o?.dataset.points||0)*amount;
+   preview.textContent=(currency?'Giới hạn '+number(max)+' · ':'')+'Nhận +'+number(affection)+' Hảo Cảm';
+   sendButton.disabled=max<1;
+  };
+  select.onchange=sync;qty.oninput=sync;sync();
  }
  async function friendMarriage(profile,action,refresh){
   try{const out=await api('/api/friends/marriage',{target_uid:profile.uid,action});
@@ -89,7 +104,7 @@ const HomeMenus=(()=>{
    body.append(el('h4','Đội Hình Chính','hm-profile-title'));const lineup=el('div',undefined,'hm-profile-lineup');
    for(const h of p.lineup||[]){const c=el('div',undefined,'hm-profile-girl');const im=el('img');const gid=typeof artId==='function'?artId(h.table_id):h.table_id;im.src='/assets/cards/partner_card_'+gid+'.png';im.onerror=()=>im.remove();c.append(im,el('b','Lv.'+h.lv),el('small','Vị trí '+h.pos));lineup.append(c);}
    if(!lineup.childElementCount)paragraph(lineup,'Người chơi chưa xếp đội hình.');body.append(lineup);
-   const acts=el('div',undefined,'hm-profile-actions');button(acts,'So Tài',()=>friendDuel(p,close),!p.friend,'hm-social-primary');button(acts,'Tặng Vật Phẩm',()=>friendGift(p,draw),!p.friend||p.gift_left<1);
+   const acts=el('div',undefined,'hm-profile-actions');button(acts,'So Tài',()=>friendDuel(p,close),!p.friend,'hm-social-primary');button(acts,'Tặng Vật Phẩm',()=>friendGift(p,draw),!p.friend||!(p.gift_items||[]).length);
    const marriage=p.marriage;
    if(marriage?.status==='married')button(acts,'💍 Đã Kết Hôn',()=>{},true);
    else if(marriage?.status==='pending'&&marriage.proposer_uid===p.uid){button(acts,'Đồng Ý Kết Hôn',()=>friendMarriage(p,'accept',draw),false,'hm-marriage');button(acts,'Từ Chối',()=>friendMarriage(p,'reject',draw));}
