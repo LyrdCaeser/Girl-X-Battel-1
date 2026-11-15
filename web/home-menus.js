@@ -44,19 +44,20 @@ const HomeMenus=(()=>{
   finally{friendsBusy=false;render();}
  }
  async function friendGift(profile,refresh){
-  const owned=Object.entries(state.items||{}).filter(([id,n])=>Number(n)>0&&!['1','2'].includes(id))
-   .sort((a,b)=>(itemCatalog?.[a[0]]?.name||a[0]).localeCompare(itemCatalog?.[b[0]]?.name||b[0],'vi'));
-  if(!owned.length){GirlUI.toast('Túi Đồ chưa có vật phẩm có thể tặng.');return;}
+  const owned=(profile.gift_items||[]).filter(x=>Number(x.owned)>0)
+   .sort((a,b)=>Number(b.points)-Number(a.points)||String(a.name).localeCompare(String(b.name),'vi'));
+  if(!owned.length){GirlUI.toast('Túi Đồ chưa có vật phẩm thường nào được phép tặng.');return;}
   const {body,close}=GirlUI.win({title:'Tặng Vật Phẩm',cls:'hm-social-win',stack:true});
-  body.append(el('p','Còn '+profile.gift_left+'/10 vật phẩm trong 7 ngày.','hm-social-note'));
+  body.append(el('p','Còn '+profile.gift_left+'/10 vật phẩm trong 7 ngày. Rương, hộp, túi, Nữ Thần, vé và vật phẩm sự kiện không được phép tặng.','hm-social-note'));
   const select=el('select',undefined,'hm-gift-select');
-  for(const [id,n] of owned){const o=el('option',(itemCatalog?.[id]?.name||'Vật phẩm '+id)+' · Có '+number(n));o.value=id;select.append(o);}
+  for(const item of owned){const o=el('option',item.name+' · Có '+number(item.owned)+' · +'+number(item.points)+' Hảo Cảm');o.value=item.id;o.dataset.owned=item.owned;o.dataset.points=item.points;select.append(o);}
   const qty=el('input',undefined,'hm-gift-qty');qty.type='number';qty.min='1';qty.value='1';
-  const sync=()=>{qty.max=String(Math.max(1,Math.min(Number(state.items?.[select.value]||0),Number(profile.gift_left||0))));if(Number(qty.value)>Number(qty.max))qty.value=qty.max;};select.onchange=sync;sync();
-  const controls=el('div',undefined,'hm-social-form');controls.append(select,qty);body.append(controls);
+  const preview=el('b','', 'hm-gift-points');
+  const sync=()=>{const o=select.selectedOptions[0];qty.max=String(Math.max(1,Math.min(Number(o?.dataset.owned||0),Number(profile.gift_left||0))));if(Number(qty.value)>Number(qty.max))qty.value=qty.max;preview.textContent='Nhận +'+number(Number(o?.dataset.points||0)*Number(qty.value||0))+' Hảo Cảm';};select.onchange=sync;qty.oninput=sync;sync();
+  const controls=el('div',undefined,'hm-social-form');controls.append(select,qty);body.append(controls,preview);
   button(body,'Tặng Vật Phẩm',async()=>{
    try{const out=await api('/api/friends/gift',{target_uid:profile.uid,item_id:select.value,quantity:Number(qty.value)});
-    state.items=out.sender_items;close();GirlUI.toast('Đã tặng quà · Hảo Cảm '+number(out.affection));await refresh();
+    state.items=out.sender_items;close();GirlUI.toast('Đã tặng quà · +'+number(out.affection_gained)+' Hảo Cảm');await refresh();
    }catch(e){GirlUI.toast(e.message);}
   },profile.gift_left<1,'hm-social-primary');
  }
@@ -94,7 +95,7 @@ const HomeMenus=(()=>{
    else if(marriage?.status==='pending'&&marriage.proposer_uid===p.uid){button(acts,'Đồng Ý Kết Hôn',()=>friendMarriage(p,'accept',draw),false,'hm-marriage');button(acts,'Từ Chối',()=>friendMarriage(p,'reject',draw));}
    else if(marriage?.status==='pending')button(acts,'Đang Chờ Trả Lời',()=>{},true);
    else button(acts,'Cầu Hôn · 1 Oath Ring',()=>friendMarriage(p,'propose',draw),!p.friend||p.affection<p.affection_required,'hm-marriage');
-   body.append(acts,el('p','Mỗi vật phẩm tặng tăng 100 Hảo Cảm. Cần đủ 12.000 Hảo Cảm và 1 Oath Ring để mở Lễ Đường.','hm-social-note'));
+   body.append(acts,el('p','Điểm Hảo Cảm phụ thuộc từng món và giá trị của món đó. Cần đủ 12.000 Hảo Cảm và 1 Oath Ring để mở Lễ Đường.','hm-social-note'));
   };open(profile);
  }
  function friends(parent){

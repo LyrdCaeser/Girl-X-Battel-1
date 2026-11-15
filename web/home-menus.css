@@ -73,3 +73,5 @@
 .hm-social-note{font-size:12px;color:#687d97;line-height:1.4}.hm-social-form{display:grid;grid-template-columns:minmax(0,1fr) 72px;gap:8px}.hm-gift-select,.hm-gift-qty{min-height:42px;border:2px solid #a9bdd5;border-radius:9px;background:#fff;padding:6px;color:#405a7d}
 
 .hm-wedding-hall{background:radial-gradient(circle at 50% 15%,#fff,#fff0f6 52%,#e7d7ff);border-color:#e797b7}.hm-wedding-title{text-align:center;color:#bd4f7b;font-size:18px;font-weight:900}.hm-wedding-couple{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;padding:18px 8px}.hm-wedding-couple>div{display:grid;justify-items:center;gap:7px;color:#704c76}.hm-wedding-couple img{width:92px;height:92px;border-radius:50%;object-fit:cover;border:4px solid #fff;box-shadow:0 0 0 3px #eda7c2,0 5px 15px #7b466155}.hm-wedding-ring{font-size:34px;filter:drop-shadow(0 2px 3px #a36b37)}
+
+.hm-gift-points{display:block;margin:9px 0;padding:8px 10px;border-radius:9px;background:#fff4d7;color:#b1682d;text-align:center}

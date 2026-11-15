@@ -2228,10 +2228,43 @@ def friend_action(uid, server_id, action, target_uid):
 # transactional in the same Neon database as the two player profiles.
 SOCIAL_GIFT_LIMIT = 10
 SOCIAL_GIFT_WINDOW = 7 * 86400
-SOCIAL_AFFECTION_PER_ITEM = 100
 SOCIAL_MARRIAGE_AFFECTION = 12000
 SOCIAL_OATH_RING = "45"
+SOCIAL_ITEMS = json.loads((ROOT / "web/assets/items-catalog.json").read_text())
+SOCIAL_PRESENTS = json.loads((ROOT / "data/relations.json").read_text()).get("gifts", {})
+SOCIAL_QUALITY_POINTS = {1:10, 2:20, 3:35, 4:60, 5:100, 6:160, 7:250}
+SOCIAL_PRESENT_POINTS = {1:15, 2:25, 3:40, 4:60}
+SOCIAL_BLOCK_WORDS = ("event","ticket","coupon","coin","token","scroll","certificate","invitation",
+                      " key","currency","draw","summon","lottery","arena","guild","league","store",
+                      "exchange","limited","anniversary","festival","ranking","badge","pass","permit",
+                      "seal","portfolio","ring","chest","box"," bag","pack","shard","girl",
+                      "school excursion","tree of chimes")
+SOCIAL_MATERIAL_WORDS = ("upgrade","enhance","level up","promot","forge","craft","refin","train",
+                         "evolve","awaken","building material")
 _social_schema_ready = set()
+
+
+def social_gift_meta(item_id):
+    item_id = str(item_id or "")
+    row = SOCIAL_ITEMS.get(item_id)
+    if not row:
+        return None
+    typ, category = int(row.get("type") or 0), int(row.get("category") or 0)
+    name, desc = str(row.get("name") or ""), str(row.get("description") or "")
+    text = (" "+name+" "+desc).lower()
+    if typ == 17 and item_id in SOCIAL_PRESENTS:
+        group = int(SOCIAL_PRESENTS[item_id].get("group") or 1)
+        points = SOCIAL_PRESENT_POINTS.get(group, 15)
+    elif typ == 1 and category == 2:
+        if any(word in text for word in SOCIAL_BLOCK_WORDS):
+            return None
+        if not any(word in desc.lower() for word in SOCIAL_MATERIAL_WORDS):
+            return None
+        points = SOCIAL_QUALITY_POINTS.get(int(row.get("quality") or 1), 10)
+    else:
+        return None
+    return {"id":item_id, "name":name or ("Vật phẩm "+item_id),
+            "quality":int(row.get("quality") or 0), "points":int(points)}
 
 
 def _ensure_social_tables(db):
@@ -2308,6 +2341,12 @@ def friend_profile(uid, server_id, target_uid):
         used = db.execute("""SELECT COALESCE(SUM(quantity),0) AS n FROM social_item_gifts
                              WHERE server_id=? AND sender_uid=? AND created_at>=?""",
                           (server_id, uid, now-SOCIAL_GIFT_WINDOW)).fetchone()
+        gift_items = []
+        for item_id, owned in (my_state.get("items") or {}).items():
+            meta = social_gift_meta(item_id)
+            if meta and int(owned or 0) > 0:
+                gift_items.append({**meta, "owned":int(owned)})
+        gift_items.sort(key=lambda x: (-x["quality"], x["name"], int(x["id"])))
         a, b = _social_pair(uid, target_uid)
         marriage = db.execute("""SELECT proposer_uid,status,created_at,updated_at
                                  FROM player_marriages WHERE server_id=? AND uid_a=? AND uid_b=?""",
@@ -2321,6 +2360,7 @@ def friend_profile(uid, server_id, target_uid):
             "frame": profile.get("frame") or "frame_8007",
             "lineup": lineup, "friend": _friend_flag(uid, target_uid, server_id),
             "gift_left": max(0, SOCIAL_GIFT_LIMIT-int(used["n"] or 0)),
+            "gift_items": gift_items,
             "affection": affinity, "affection_required": SOCIAL_MARRIAGE_AFFECTION,
             "marriage": dict(marriage) if marriage else None}
 
@@ -2340,8 +2380,9 @@ def friend_gift(uid, server_id, target_uid, item_id, quantity):
     except (TypeError, ValueError): raise ValueError("Số lượng vật phẩm không hợp lệ.") from None
     if not target_uid or target_uid == uid or quantity < 1:
         raise ValueError("Quà tặng không hợp lệ.")
-    if not item_id.isdigit() or item_id in ("1", "2"):
-        raise ValueError("Vàng và Kim Cương không thể dùng làm quà.")
+    meta = social_gift_meta(item_id)
+    if not meta:
+        raise ValueError("Vật phẩm này không được phép tặng. Không thể tặng rương, hộp, túi, Nữ Thần, vé, vật phẩm sự kiện hoặc vật phẩm đặc biệt.")
     now = int(time.time())
     with _lock:
         db = _db(); _ensure_social_tables(db); db.execute("BEGIN IMMEDIATE")
@@ -2364,7 +2405,7 @@ def friend_gift(uid, server_id, target_uid, item_id, quantity):
                 raise ValueError("Không đủ vật phẩm trong Túi Đồ.")
             s.setdefault("items", {})[item_id] = int(s["items"].get(item_id, 0))-quantity
             r.setdefault("items", {})[item_id] = int(r["items"].get(item_id, 0))+quantity
-            gain = SOCIAL_AFFECTION_PER_ITEM * quantity
+            gain = int(meta["points"]) * quantity
             s.setdefault("social_affection", {})[target_uid] = min(
                 SOCIAL_MARRIAGE_AFFECTION, int(s["social_affection"].get(target_uid, 0))+gain)
             r.setdefault("social_affection", {})[uid] = min(
@@ -2377,7 +2418,8 @@ def friend_gift(uid, server_id, target_uid, item_id, quantity):
                           VALUES(?,?,?,?,?,?,?)""",
                        (uuid.uuid4().hex, server_id, uid, target_uid, item_id, quantity, now))
             _audit(db, "friend.item_gift", target_uid,
-                   {"sender_uid":uid,"item_id":item_id,"quantity":quantity}, uid)
+                   {"sender_uid":uid,"item_id":item_id,"quantity":quantity,
+                    "points_per_item":meta["points"],"affection_gained":gain}, uid)
             db.commit()
         except Exception:
             db.rollback(); db.close(); raise
@@ -2385,6 +2427,7 @@ def friend_gift(uid, server_id, target_uid, item_id, quantity):
     return {"ok": True, "item_id": item_id, "quantity": quantity,
             "sender_items": s["items"],
             "gift_left": SOCIAL_GIFT_LIMIT-int(sent["n"] or 0)-quantity,
+            "points_per_item": meta["points"], "affection_gained": gain,
             "affection": s["social_affection"][target_uid]}
 
 

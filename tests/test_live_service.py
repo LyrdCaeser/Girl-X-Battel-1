@@ -132,7 +132,7 @@ class LiveServiceTests(unittest.TestCase):
         live_service.friend_action("B1", "S1", "accept", "A1")
         db = live_service._db()
         live_service._ensure_social_tables(db)
-        a = {"items":{"44":12,"45":1},"social_affection":{},
+        a = {"items":{"1000001":12,"43":1,"263":1,"11001":1,"362":1,"204":1,"325":1,"326":1,"45":1},"social_affection":{},
              "profile":{"avatar":"head_1002","frame":"frame_8007"},
              "partners":[{"partner_id":1,"table_id":41001,"lv":80,"grade":3,"awake":0}],
              "formation":[{"partner_id":1,"pos":1}]}
@@ -150,11 +150,19 @@ class LiveServiceTests(unittest.TestCase):
         profile = live_service.friend_profile("A1","S1","B1")
         self.assertEqual(profile["avatar"], "head_1003")
         self.assertEqual(profile["lineup"][0]["table_id"], 42001)
-        gift = live_service.friend_gift("A1","S1","B1","44",10)
+        eligible = {row["id"]: row for row in profile["gift_items"]}
+        self.assertIn("1000001", eligible)
+        self.assertEqual(eligible["1000001"]["points"], 15)
+        self.assertTrue({"43","263","11001","362","204","325","326"}.isdisjoint(eligible))
+        for blocked in ("43","263","11001","362","204","325","326"):
+            self.assertIsNone(live_service.social_gift_meta(blocked))
+        gift = live_service.friend_gift("A1","S1","B1","1000001",10)
         self.assertEqual(gift["gift_left"], 0)
-        self.assertEqual(gift["affection"], 1000)
+        self.assertEqual(gift["points_per_item"], 15)
+        self.assertEqual(gift["affection_gained"], 150)
+        self.assertEqual(gift["affection"], 150)
         with self.assertRaises(ValueError):
-            live_service.friend_gift("A1","S1","B1","44",1)
+            live_service.friend_gift("A1","S1","B1","1000001",1)
 
         db = live_service._db()
         rowa = db.execute("SELECT data FROM player_profiles WHERE uid=? AND server_id=?",("A1","S1")).fetchone()
