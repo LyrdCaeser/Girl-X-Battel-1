@@ -60,3 +60,14 @@
 .hm-giftcode-entry{display:flex;align-items:center;gap:6px;flex:1 1 100%;margin-bottom:2px}
 .hm-content .hm-giftcode-entry input{flex:1 1 auto;width:auto;min-width:0;margin:0;text-transform:uppercase}
 .hm-content .hm-giftcode-entry button{flex:0 0 auto;min-width:78px;margin:0}
+
+/* Public player profiles use the avatar and main formation saved in Neon. */
+.hm-friend-avatar{border-radius:50%;background:#edf5ff;border:2px solid #b6c9e2;object-fit:cover}
+.hm-friend-avatar,.hm-friend-info{cursor:pointer}.hm-friend-avatar:hover,.hm-friend-info:hover{filter:brightness(1.04)}
+.hm-friend-avatar{padding:0}.hm-friend-info{border:0;background:transparent;text-align:left;padding:0}
+.hm-social-profile{width:min(640px,94vw)}.hm-profile-head{display:flex;align-items:center;gap:14px;padding:10px;border-radius:12px;background:linear-gradient(135deg,#e9f4ff,#fff)}
+.hm-profile-avatar{width:82px;height:82px;border-radius:50%;object-fit:cover;border:4px solid #fff;box-shadow:0 2px 8px #38587b55}.hm-profile-head h3{margin:0;color:#34547d}.hm-profile-head p{margin:4px 0}
+.hm-affection{color:#d35f82;font-weight:800}.hm-profile-title{margin:12px 0 7px;color:#46648e}.hm-profile-lineup{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.hm-profile-girl{position:relative;display:grid;gap:2px;text-align:center;padding:5px;border-radius:9px;background:#edf4fb;border:1px solid #b7c8dc}.hm-profile-girl img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:7px}.hm-profile-girl b{font-size:12px}.hm-profile-girl small{font-size:10px;color:#687d97}
+.hm-profile-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:12px}.hm-profile-actions button{min-width:126px}.hm-social-primary,.hm-marriage{background:linear-gradient(#72c5f4,#3b83ce)!important;color:#fff!important;font-weight:800}.hm-marriage{background:linear-gradient(#ffb5cf,#d55b8d)!important}
+.hm-social-note{font-size:12px;color:#687d97;line-height:1.4}.hm-social-form{display:grid;grid-template-columns:minmax(0,1fr) 72px;gap:8px}.hm-gift-select,.hm-gift-qty{min-height:42px;border:2px solid #a9bdd5;border-radius:9px;background:#fff;padding:6px;color:#405a7d}

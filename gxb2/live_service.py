@@ -2143,12 +2143,18 @@ def friends_snapshot(uid, server_id):
     uid=str(uid); server_id=str(server_id).upper(); now=int(time.time()); cutoff=now-120
     with _lock:
         db=_db()
-        rows=db.execute("""SELECT p.uid,p.character_name,
+        avatar_expr = ("COALESCE(NULLIF(pp.data::jsonb #>> '{profile,avatar}', ''), 'head_1001')"
+                       if db.backend == 'postgres' else "'head_1001'")
+        profile_join = ("LEFT JOIN player_profiles pp ON pp.uid=p.uid AND pp.server_id=p.server_id"
+                        if db.backend == 'postgres' else "")
+        rows=db.execute(f"""SELECT p.uid,p.character_name,
                                   COALESCE(l.level,1) AS level,COALESCE(l.power,0) AS power,
-                                  COALESCE(pr.last_seen,0) AS last_seen
+                                  COALESCE(pr.last_seen,0) AS last_seen,
+                                  {avatar_expr} AS avatar
                            FROM players p
                            LEFT JOIN leaderboard l ON l.uid=p.uid AND l.server_id=p.server_id
                            LEFT JOIN presence pr ON pr.uid=p.uid AND pr.server_id=p.server_id
+                           {profile_join}
                            WHERE p.server_id=? AND p.status='active' AND p.uid<>?
                            ORDER BY COALESCE(pr.last_seen,0) DESC,COALESCE(l.power,0) DESC,p.character_name""",
                         (server_id,uid)).fetchall()
@@ -2216,3 +2222,233 @@ def friend_action(uid, server_id, action, target_uid):
             db.close(); raise ValueError('Thao tác Bạn Bè không hợp lệ.')
         db.commit(); db.close()
     return friends_snapshot(uid,server_id)
+
+
+# Player-to-player social profile, gifts and ceremony. All mutations are
+# transactional in the same Neon database as the two player profiles.
+SOCIAL_GIFT_LIMIT = 10
+SOCIAL_GIFT_WINDOW = 7 * 86400
+SOCIAL_AFFECTION_PER_ITEM = 100
+SOCIAL_MARRIAGE_AFFECTION = 12000
+SOCIAL_OATH_RING = "45"
+_social_schema_ready = set()
+
+
+def _ensure_social_tables(db):
+    key = (db.backend, str(DB_PATH))
+    if key in _social_schema_ready:
+        return
+    db.execute("""CREATE TABLE IF NOT EXISTS player_profiles(
+        uid TEXT NOT NULL, server_id TEXT NOT NULL, data TEXT NOT NULL,
+        clock_floor BIGINT NOT NULL DEFAULT 0, updated_at BIGINT NOT NULL,
+        PRIMARY KEY(uid,server_id))""")
+    db.execute("""CREATE TABLE IF NOT EXISTS social_item_gifts(
+        id TEXT PRIMARY KEY, server_id TEXT NOT NULL, sender_uid TEXT NOT NULL,
+        recipient_uid TEXT NOT NULL, item_id TEXT NOT NULL, quantity INTEGER NOT NULL,
+        created_at BIGINT NOT NULL)""")
+    db.execute("""CREATE TABLE IF NOT EXISTS player_marriages(
+        server_id TEXT NOT NULL, uid_a TEXT NOT NULL, uid_b TEXT NOT NULL,
+        proposer_uid TEXT NOT NULL, status TEXT NOT NULL,
+        created_at BIGINT NOT NULL, updated_at BIGINT NOT NULL,
+        PRIMARY KEY(server_id,uid_a,uid_b))""")
+    # DDL may open a PostgreSQL transaction. Finish it before callers start
+    # the atomic two-profile mutation below.
+    db.commit()
+    _social_schema_ready.add(key)
+
+
+def _profile_state(row):
+    if not row:
+        return None
+    raw = row["data"]
+    return json.loads(raw) if isinstance(raw, str) else dict(raw)
+
+
+def _social_pair(uid, target_uid):
+    return tuple(sorted((str(uid), str(target_uid))))
+
+
+def _are_friends(db, uid, target_uid, server_id):
+    a, b = _social_pair(uid, target_uid)
+    return bool(db.execute(
+        "SELECT 1 FROM friendships WHERE uid_a=? AND uid_b=? AND server_id=?",
+        (a, b, server_id)).fetchone())
+
+
+def friend_profile(uid, server_id, target_uid):
+    uid, target_uid = str(uid), str(target_uid or "").strip()
+    server_id = str(server_id).upper()
+    if not target_uid or target_uid == uid:
+        raise ValueError("Người chơi không hợp lệ.")
+    now = int(time.time())
+    with _lock:
+        db = _db(); _ensure_social_tables(db)
+        row = db.execute("""SELECT p.uid,p.character_name,COALESCE(l.level,1) AS level,
+                                  COALESCE(l.power,0) AS power,pp.data
+                           FROM players p
+                           LEFT JOIN leaderboard l ON l.uid=p.uid AND l.server_id=p.server_id
+                           JOIN player_profiles pp ON pp.uid=p.uid AND pp.server_id=p.server_id
+                           WHERE p.uid=? AND p.server_id=? AND p.status='active'""",
+                         (target_uid, server_id)).fetchone()
+        mine = db.execute("SELECT data FROM player_profiles WHERE uid=? AND server_id=?",
+                          (uid, server_id)).fetchone()
+        if not row or not mine:
+            db.close(); raise ValueError("Không tìm thấy hồ sơ người chơi.")
+        target_state, my_state = _profile_state(row), _profile_state(mine)
+        formation = {int(x.get("partner_id") or 0): int(x.get("pos") or 0)
+                     for x in target_state.get("formation", [])}
+        lineup = []
+        for partner in target_state.get("partners", []):
+            pid = int(partner.get("partner_id") or 0)
+            if pid not in formation: continue
+            lineup.append({"pos": formation[pid], "table_id": int(partner.get("table_id") or 0),
+                           "lv": int(partner.get("lv") or 1), "grade": int(partner.get("grade") or 0),
+                           "awake": int(partner.get("awake") or 0), "skin_id": int(partner.get("skin_id") or 0)})
+        lineup.sort(key=lambda x: x["pos"])
+        used = db.execute("""SELECT COALESCE(SUM(quantity),0) AS n FROM social_item_gifts
+                             WHERE server_id=? AND sender_uid=? AND created_at>=?""",
+                          (server_id, uid, now-SOCIAL_GIFT_WINDOW)).fetchone()
+        a, b = _social_pair(uid, target_uid)
+        marriage = db.execute("""SELECT proposer_uid,status,created_at,updated_at
+                                 FROM player_marriages WHERE server_id=? AND uid_a=? AND uid_b=?""",
+                              (server_id, a, b)).fetchone()
+        db.close()
+    affinity = int((my_state.get("social_affection") or {}).get(target_uid, 0))
+    profile = target_state.get("profile") or {}
+    return {"uid": target_uid, "character_name": row["character_name"],
+            "level": int(row["level"] or 1), "power": int(row["power"] or 0),
+            "avatar": profile.get("avatar") or "head_1001",
+            "frame": profile.get("frame") or "frame_8007",
+            "lineup": lineup, "friend": _friend_flag(uid, target_uid, server_id),
+            "gift_left": max(0, SOCIAL_GIFT_LIMIT-int(used["n"] or 0)),
+            "affection": affinity, "affection_required": SOCIAL_MARRIAGE_AFFECTION,
+            "marriage": dict(marriage) if marriage else None}
+
+
+def _friend_flag(uid, target_uid, server_id):
+    with _lock:
+        db = _db()
+        ok = _are_friends(db, uid, target_uid, server_id)
+        db.close()
+    return ok
+
+
+def friend_gift(uid, server_id, target_uid, item_id, quantity):
+    uid, target_uid = str(uid), str(target_uid or "").strip()
+    server_id, item_id = str(server_id).upper(), str(item_id or "").strip()
+    try: quantity = int(quantity)
+    except (TypeError, ValueError): raise ValueError("Số lượng vật phẩm không hợp lệ.") from None
+    if not target_uid or target_uid == uid or quantity < 1:
+        raise ValueError("Quà tặng không hợp lệ.")
+    if not item_id.isdigit() or item_id in ("1", "2"):
+        raise ValueError("Vàng và Kim Cương không thể dùng làm quà.")
+    now = int(time.time())
+    with _lock:
+        db = _db(); _ensure_social_tables(db); db.execute("BEGIN IMMEDIATE")
+        try:
+            if not _are_friends(db, uid, target_uid, server_id):
+                raise ValueError("Chỉ có thể tặng vật phẩm cho Bạn Bè.")
+            sent = db.execute("""SELECT COALESCE(SUM(quantity),0) AS n FROM social_item_gifts
+                                 WHERE server_id=? AND sender_uid=? AND created_at>=?""",
+                              (server_id, uid, now-SOCIAL_GIFT_WINDOW)).fetchone()
+            if int(sent["n"] or 0) + quantity > SOCIAL_GIFT_LIMIT:
+                raise ValueError("Mỗi tài khoản chỉ được tặng tối đa 10 vật phẩm trong 7 ngày.")
+            lock = " FOR UPDATE" if db.backend == "postgres" else ""
+            sender = db.execute("SELECT data FROM player_profiles WHERE uid=? AND server_id=?"+lock,
+                                (uid, server_id)).fetchone()
+            receiver = db.execute("SELECT data FROM player_profiles WHERE uid=? AND server_id=?"+lock,
+                                  (target_uid, server_id)).fetchone()
+            s, r = _profile_state(sender), _profile_state(receiver)
+            if not s or not r: raise ValueError("Không tải được Túi Đồ của người chơi.")
+            if int((s.get("items") or {}).get(item_id, 0)) < quantity:
+                raise ValueError("Không đủ vật phẩm trong Túi Đồ.")
+            s.setdefault("items", {})[item_id] = int(s["items"].get(item_id, 0))-quantity
+            r.setdefault("items", {})[item_id] = int(r["items"].get(item_id, 0))+quantity
+            gain = SOCIAL_AFFECTION_PER_ITEM * quantity
+            s.setdefault("social_affection", {})[target_uid] = min(
+                SOCIAL_MARRIAGE_AFFECTION, int(s["social_affection"].get(target_uid, 0))+gain)
+            r.setdefault("social_affection", {})[uid] = min(
+                SOCIAL_MARRIAGE_AFFECTION, int(r["social_affection"].get(uid, 0))+gain)
+            db.execute("UPDATE player_profiles SET data=?,updated_at=? WHERE uid=? AND server_id=?",
+                       (json.dumps(s, ensure_ascii=False), now, uid, server_id))
+            db.execute("UPDATE player_profiles SET data=?,updated_at=? WHERE uid=? AND server_id=?",
+                       (json.dumps(r, ensure_ascii=False), now, target_uid, server_id))
+            db.execute("""INSERT INTO social_item_gifts(id,server_id,sender_uid,recipient_uid,item_id,quantity,created_at)
+                          VALUES(?,?,?,?,?,?,?)""",
+                       (uuid.uuid4().hex, server_id, uid, target_uid, item_id, quantity, now))
+            _audit(db, "friend.item_gift", target_uid,
+                   {"sender_uid":uid,"item_id":item_id,"quantity":quantity}, uid)
+            db.commit()
+        except Exception:
+            db.rollback(); db.close(); raise
+        db.close()
+    return {"ok": True, "item_id": item_id, "quantity": quantity,
+            "sender_items": s["items"],
+            "gift_left": SOCIAL_GIFT_LIMIT-int(sent["n"] or 0)-quantity,
+            "affection": s["social_affection"][target_uid]}
+
+
+def marriage_action(uid, server_id, target_uid, action):
+    uid, target_uid, action = str(uid), str(target_uid or "").strip(), str(action or "")
+    server_id = str(server_id).upper()
+    if not target_uid or target_uid == uid:
+        raise ValueError("Người chơi không hợp lệ.")
+    now = int(time.time()); a, b = _social_pair(uid, target_uid)
+    with _lock:
+        db = _db(); _ensure_social_tables(db); db.execute("BEGIN IMMEDIATE")
+        try:
+            if not _are_friends(db, uid, target_uid, server_id):
+                raise ValueError("Hai người phải là Bạn Bè.")
+            row = db.execute("""SELECT proposer_uid,status FROM player_marriages
+                                WHERE server_id=? AND uid_a=? AND uid_b=?""",
+                             (server_id,a,b)).fetchone()
+            if action == "propose":
+                mine = db.execute("SELECT data FROM player_profiles WHERE uid=? AND server_id=?",
+                                  (uid,server_id)).fetchone()
+                state = _profile_state(mine)
+                if int((state.get("social_affection") or {}).get(target_uid,0)) < SOCIAL_MARRIAGE_AFFECTION:
+                    raise ValueError("Cần đủ 12.000 Hảo Cảm để cầu hôn.")
+                if int((state.get("items") or {}).get(SOCIAL_OATH_RING,0)) < 1:
+                    raise ValueError("Cần 1 Oath Ring để cầu hôn.")
+                married = db.execute("""SELECT 1 FROM player_marriages WHERE server_id=? AND status='married'
+                                        AND (uid_a=? OR uid_b=? OR uid_a=? OR uid_b=?)""",
+                                     (server_id,uid,uid,target_uid,target_uid)).fetchone()
+                if married: raise ValueError("Một trong hai người đã kết hôn.")
+                db.execute("""INSERT INTO player_marriages(server_id,uid_a,uid_b,proposer_uid,status,created_at,updated_at)
+                              VALUES(?,?,?,?,'pending',?,?)
+                              ON CONFLICT(server_id,uid_a,uid_b) DO UPDATE SET
+                              proposer_uid=excluded.proposer_uid,status='pending',updated_at=excluded.updated_at""",
+                           (server_id,a,b,uid,now,now))
+            elif action == "accept":
+                if not row or row["status"] != "pending" or row["proposer_uid"] != target_uid:
+                    raise ValueError("Không có lời cầu hôn đang chờ.")
+                lock = " FOR UPDATE" if db.backend == "postgres" else ""
+                proposer = db.execute("SELECT data FROM player_profiles WHERE uid=? AND server_id=?"+lock,
+                                      (target_uid,server_id)).fetchone()
+                receiver = db.execute("SELECT data FROM player_profiles WHERE uid=? AND server_id=?"+lock,
+                                      (uid,server_id)).fetchone()
+                ps, rs = _profile_state(proposer), _profile_state(receiver)
+                if int((ps.get("items") or {}).get(SOCIAL_OATH_RING,0)) < 1:
+                    raise ValueError("Người cầu hôn không còn Oath Ring.")
+                ps["items"][SOCIAL_OATH_RING] -= 1
+                ps["spouse_uid"], ps["wedding_date"] = uid, now
+                rs["spouse_uid"], rs["wedding_date"] = target_uid, now
+                db.execute("UPDATE player_profiles SET data=?,updated_at=? WHERE uid=? AND server_id=?",
+                           (json.dumps(ps,ensure_ascii=False),now,target_uid,server_id))
+                db.execute("UPDATE player_profiles SET data=?,updated_at=? WHERE uid=? AND server_id=?",
+                           (json.dumps(rs,ensure_ascii=False),now,uid,server_id))
+                db.execute("""UPDATE player_marriages SET status='married',updated_at=?
+                              WHERE server_id=? AND uid_a=? AND uid_b=?""",(now,server_id,a,b))
+            elif action == "reject":
+                if not row or row["status"] != "pending" or row["proposer_uid"] != target_uid:
+                    raise ValueError("Không có lời cầu hôn đang chờ.")
+                db.execute("""UPDATE player_marriages SET status='rejected',updated_at=?
+                              WHERE server_id=? AND uid_a=? AND uid_b=?""",(now,server_id,a,b))
+            else:
+                raise ValueError("Thao tác Lễ Đường không hợp lệ.")
+            _audit(db, "friend.marriage."+action, target_uid, {"uid":uid}, uid)
+            db.commit()
+        except Exception:
+            db.rollback(); db.close(); raise
+        db.close()
+    return friend_profile(uid, server_id, target_uid)

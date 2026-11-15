@@ -378,3 +378,5 @@ html.gxb-mobile #app-frame .gs-win.lb-win .gs-win-body{min-height:0;max-height:c
 #girl-detail-view .lb-inline-material small{position:absolute;bottom:0;left:0;right:0;text-align:center;font:800 calc(15 * var(--u)) system-ui;color:#fff;text-shadow:0 1px 2px #171f30;background:#1118}
 #girl-detail-view .lb-inline-star{font:800 calc(22 * var(--u)) system-ui;color:#fff;align-self:center}
 #girl-detail-view .lb-inline-cost{position:relative;z-index:2;display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:calc(8 * var(--u));max-height:calc(50 * var(--u));overflow:auto}
+
+.gu-ex-skill{padding-bottom:28px!important;aspect-ratio:auto!important;min-height:116px}.gu-ex-skill img{height:78px!important}.gu-ex-up{position:absolute;left:4px;right:4px;bottom:4px;min-height:22px;display:grid;place-items:center;border-radius:7px;background:linear-gradient(#69baf2,#347ecb);color:#fff;font-size:11px;font-weight:800;text-shadow:0 1px #24568e}.gu-ex-skill:disabled .gu-ex-up{background:#8993a4}

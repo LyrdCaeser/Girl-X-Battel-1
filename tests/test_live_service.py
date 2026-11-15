@@ -124,5 +124,57 @@ class LiveServiceTests(unittest.TestCase):
 
 
 
+    def test_friend_profile_gift_limit_and_marriage_transaction(self):
+        import json
+        live_service.register_player("A1", "S1", "Anh")
+        live_service.register_player("B1", "S1", "Bé")
+        live_service.friend_action("A1", "S1", "request", "B1")
+        live_service.friend_action("B1", "S1", "accept", "A1")
+        db = live_service._db()
+        live_service._ensure_social_tables(db)
+        a = {"items":{"44":12,"45":1},"social_affection":{},
+             "profile":{"avatar":"head_1002","frame":"frame_8007"},
+             "partners":[{"partner_id":1,"table_id":41001,"lv":80,"grade":3,"awake":0}],
+             "formation":[{"partner_id":1,"pos":1}]}
+        b = {"items":{},"social_affection":{},
+             "profile":{"avatar":"head_1003","frame":"frame_8007"},
+             "partners":[{"partner_id":2,"table_id":42001,"lv":70,"grade":2,"awake":0}],
+             "formation":[{"partner_id":2,"pos":2}]}
+        now = 1
+        db.execute("INSERT INTO player_profiles(uid,server_id,data,updated_at) VALUES(?,?,?,?)",
+                   ("A1","S1",json.dumps(a),now))
+        db.execute("INSERT INTO player_profiles(uid,server_id,data,updated_at) VALUES(?,?,?,?)",
+                   ("B1","S1",json.dumps(b),now))
+        db.commit(); db.close()
+
+        profile = live_service.friend_profile("A1","S1","B1")
+        self.assertEqual(profile["avatar"], "head_1003")
+        self.assertEqual(profile["lineup"][0]["table_id"], 42001)
+        gift = live_service.friend_gift("A1","S1","B1","44",10)
+        self.assertEqual(gift["gift_left"], 0)
+        self.assertEqual(gift["affection"], 1000)
+        with self.assertRaises(ValueError):
+            live_service.friend_gift("A1","S1","B1","44",1)
+
+        db = live_service._db()
+        rowa = db.execute("SELECT data FROM player_profiles WHERE uid=? AND server_id=?",("A1","S1")).fetchone()
+        rowb = db.execute("SELECT data FROM player_profiles WHERE uid=? AND server_id=?",("B1","S1")).fetchone()
+        aa, bb = json.loads(rowa["data"]), json.loads(rowb["data"])
+        aa["social_affection"]["B1"] = 12000
+        bb["social_affection"]["A1"] = 12000
+        db.execute("UPDATE player_profiles SET data=? WHERE uid=? AND server_id=?",(json.dumps(aa),"A1","S1"))
+        db.execute("UPDATE player_profiles SET data=? WHERE uid=? AND server_id=?",(json.dumps(bb),"B1","S1"))
+        db.commit(); db.close()
+        proposed = live_service.marriage_action("A1","S1","B1","propose")
+        self.assertEqual(proposed["marriage"]["status"], "pending")
+        married = live_service.marriage_action("B1","S1","A1","accept")
+        self.assertEqual(married["marriage"]["status"], "married")
+        db = live_service._db()
+        final = json.loads(db.execute("SELECT data FROM player_profiles WHERE uid=? AND server_id=?",("A1","S1")).fetchone()["data"])
+        db.close()
+        self.assertEqual(final["items"]["45"], 0)
+        self.assertEqual(final["spouse_uid"], "B1")
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -3,7 +3,7 @@
 .sp-frame{position:relative;width:min(100vw,56.25vh);height:100%;overflow:hidden;container-type:inline-size;cursor:pointer;user-select:none}
 .sp-bg{position:absolute;inset:0;background:#000 center/cover no-repeat;opacity:0;transition:opacity .45s}.sp-bg.on{opacity:1}
 .sp-pics{position:absolute;inset:0;pointer-events:none}
-.sp-pic{position:absolute;left:50%;bottom:18%;height:calc(115% * var(--s,1));transform:translateX(calc(-50% + var(--x,0px)));animation:sp-in .3s ease-out}
+.sp-pic{position:absolute;left:50%;bottom:18%;height:calc(84% * min(var(--s,1),1.08));max-width:94%;object-fit:contain;transform:translateX(calc(-50% + var(--x,0px)));transform-origin:center bottom;animation:sp-in .3s ease-out}
 @keyframes sp-in{from{opacity:0;transform:translateX(calc(-50% + var(--x,0px))) translateY(12px)}}
 .sp-cg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}.sp-cgimg{max-width:100%;max-height:100%;animation:sp-in .4s}
 .sp-cg.memory::before{content:'';position:absolute;inset:0;background:url('/assets/story/cg/memory_mask.webp') center/cover no-repeat;opacity:.16;mix-blend-mode:screen}

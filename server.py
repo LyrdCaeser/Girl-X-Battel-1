@@ -511,6 +511,11 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
         if path == '/api/friends':
             ctx = self.auth_context(); account = ctx['account']
             return self.send(200, live_service.friends_snapshot(account['uid'], account['server_id']))
+        if path == '/api/friends/profile':
+            ctx = self.auth_context(); account = ctx['account']
+            target = (parse_qs(parsed.query).get('uid') or [''])[0]
+            return self.send(200, live_service.friend_profile(
+                account['uid'], account['server_id'], target))
         if path == '/api/world/online':
             ctx = self.auth_context()
             server_id = (parse_qs(parsed.query).get('server_id') or [ctx['account']['server_id']])[0]
@@ -1079,6 +1084,51 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                 return self.send(200, live_service.friend_action(
                     account['uid'], account['server_id'], str(data.get('action') or ''),
                     str(data.get('target_uid') or '')))
+            if path == '/api/friends/gift':
+                ctx = self.auth_context(); account = ctx['account']
+                return self.send(200, live_service.friend_gift(
+                    account['uid'], account['server_id'], data.get('target_uid'),
+                    data.get('item_id'), data.get('quantity')))
+            if path == '/api/friends/marriage':
+                ctx = self.auth_context(); account = ctx['account']
+                return self.send(200, live_service.marriage_action(
+                    account['uid'], account['server_id'], data.get('target_uid'),
+                    data.get('action')))
+            if path == '/api/friends/duel':
+                if not self.rate_limit_player('battle'): return
+                ctx = self.auth_context(); account = ctx['account']
+                target_uid = str(data.get('target_uid') or '').strip()
+                if not target_uid or target_uid == str(account['uid']):
+                    raise ValueError('Người chơi không hợp lệ.')
+                server_id = str(account['server_id']).upper()
+                if not live_service.friend_profile(account['uid'], server_id, target_uid).get('friend'):
+                    raise ValueError('Chỉ có thể So Tài với Bạn Bè.')
+                me = live_service.player(account['uid'], server_id)
+                other = live_service.player(target_uid, server_id)
+                if not me or not other: raise ValueError('Không tải được hồ sơ người chơi.')
+                engine_a = self.server.player_engines.get(account['uid'], server_id, me['character_name'])
+                engine_b = self.server.player_engines.get(target_uid, server_id, other['character_name'])
+                snap_a, snap_b = engine_a.pvp_team_snapshot(), engine_b.pvp_team_snapshot()
+                report = simulate_battle(
+                    snap_a['team'], snap_b['team'], battle_id=ONLINE_BATTLE_ID,
+                    seed=normalize_online_seed(secrets.randbelow(233280)+1),
+                    pet_a=snap_a.get('pet'), pet_b=snap_b.get('pet'),
+                    guild_skills_a=snap_a.get('guild_skills') or [],
+                    guild_skills_b=snap_b.get('guild_skills') or [],
+                    chime_bonus_a=snap_a.get('chime_bonus') or [],
+                    chime_bonus_b=snap_b.get('chime_bonus') or [], battle_type=1)
+                arena_row = TABLES['battle'].get(str(ONLINE_BATTLE_ID), {})
+                report['map_asset'] = str(arena_row.get('map') or 'battle_map_26_1').split('|')[0]
+                report['display_units'] = []
+                for side in ('teamA','teamB'):
+                    for unit in report.get(side, []):
+                        tid = int(unit.get('table_id') or 0)
+                        report['display_units'].append({
+                            'pos': int(unit.get('pos') or 0)+(6 if side=='teamB' else 0),
+                            'table_id': tid,
+                            'name': TABLES['names'].get(str(tid), 'Nữ Thần '+str(tid)),
+                            'level': int(unit.get('level') or unit.get('lv') or 1)})
+                return self.send(200, {'report': report, 'opponent': other['character_name']})
             if path == '/api/chat/send':
                 ctx = self.auth_context()
                 account = ctx['account']

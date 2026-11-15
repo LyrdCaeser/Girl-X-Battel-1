@@ -73,11 +73,12 @@ const EventsHub=(()=>{
  const slot=id=>cal()?.events.find(e=>e.id===id);
  const openNow=id=>!cal()||!cal().scheduled.includes(id)||!!slot(id);
  const leftText=at=>{const s=Math.max(0,at-Math.floor(Date.now()/1000));const d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60);return d?d+' ngày '+h+' giờ':h?h+' giờ '+m+' phút':m+' phút';};
- function calendarWin(){const c=cal();if(!c||typeof GirlUI==='undefined')return;const {body}=GirlUI.win({title:'Lịch Sự Kiện',cls:'ev-cal'});const sec=(t)=>{body.append(el('h4','ev-cal-h',t));};const row=(a,b)=>{const r=el('div','ev-cal-row');r.append(el('span','',a),el('b','',b));body.append(r);};
-  sec('Đặt lại');for(const r of c.resets)row(r.label,leftText(r.at));
-  sec('Đang diễn ra');for(const e of c.events)row((e.kind==='month'?'[Tháng] ':'[Tuần] ')+vi(e.title),'còn '+leftText(e.end));
-  sec('Sắp diễn ra');for(const e of c.next)row((e.kind==='month'?'[Tháng] ':'[Tuần] ')+vi(e.title),'sau '+leftText(e.start));
-  body.append(el('p','ev-cal-note',"Lịch game: tuần tính từ Thứ Hai đến Chủ Nhật, tháng bắt đầu từ ngày 1. Sự kiện tạm đóng vẫn giữ nguyên tiến độ cho lần mở tiếp theo."));}
+ const CAL_VI={'Daily reset (Daily Tasks, free draws, Hearts)':'Làm mới hằng ngày · Nhiệm vụ, lượt miễn phí, Tim','Tuần reset (weekly tasks, stores, weekly events)':'Làm mới hằng tuần · Nhiệm vụ, cửa hàng, sự kiện','House Exams season ends':'Khảo Thí Học Viện kết thúc mùa','Fantasy Book season ends':'Sách Kỳ Ảo kết thúc mùa','Junior Varsity season ends':'Đấu Trường Học Viện kết thúc mùa','Tháng reset (Tháng Sự Kiện)':'Làm mới Sự Kiện Tháng'};
+ function calendarWin(){const c=cal();if(!c||typeof GirlUI==='undefined')return;const {body}=GirlUI.win({title:'Lịch Sự Kiện',cls:'ev-cal'});const sec=(t,ic)=>{const h=el('h4','ev-cal-h');h.append(el('span','ev-cal-sec-icon',ic),el('span','',t));body.append(h);};const row=(a,b,kind='')=>{const r=el('div','ev-cal-row '+kind);r.append(el('span','ev-cal-name',CAL_VI[a]||a),el('b','ev-cal-time',b));body.append(r);};
+  sec('Lịch làm mới','↻');for(const r of c.resets)row(r.label,leftText(r.at),'reset');
+  sec('Đang diễn ra','●');for(const e of c.events)row((e.kind==='month'?'Sự Kiện Tháng · ':'Sự Kiện Tuần · ')+vi(e.title),'Còn '+leftText(e.end),'open');
+  sec('Sắp diễn ra','◆');for(const e of c.next)row((e.kind==='month'?'Sự Kiện Tháng · ':'Sự Kiện Tuần · ')+vi(e.title),'Mở sau '+leftText(e.start),'next');
+  body.append(el('p','ev-cal-note',"Tuần mới bắt đầu vào Thứ Hai, tháng mới bắt đầu vào ngày 1. Tiến độ sự kiện được giữ nguyên khi sự kiện tạm nghỉ."));}
  function list(){const all=catalog.activities.filter(a=>inTab(a,tab)&&!(a.id===116&&hub().sevenday.done));const rows=[...all]; /* Full event catalog. */if(pinnedId){const original=catalog.activities.find(a=>a.id===pinnedId);if(original&&!rows.some(a=>a.id===pinnedId))rows.unshift(original);}return rows.sort((a,b)=>(a.id===pinnedId?1:0)-(b.id===pinnedId?1:0)?(b.id===pinnedId?1:0)-(a.id===pinnedId?1:0):(WORKING.has(b.id)-WORKING.has(a.id))||(b.rank-a.rank)||(b.id-a.id));}
  function listAll(){return catalog.activities.filter(a=>inTab(a,tab)&&!(a.id===116&&hub().sevenday.done)).sort((a,b)=>(WORKING.has(b.id)-WORKING.has(a.id))||(b.rank-a.rank)||(b.id-a.id));}
 

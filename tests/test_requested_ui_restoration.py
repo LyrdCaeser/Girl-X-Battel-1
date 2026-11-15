@@ -66,6 +66,26 @@ class RequestedRestorationTests(unittest.TestCase):
         self.assertIn(".hm-goddess-gift>img",css)
         self.assertIn("height:250px",css)
 
+    def test_social_profile_calendar_story_assistant_and_skill_controls(self):
+        home=(WEB/"home-menus.js").read_text(encoding="utf-8")
+        server=(ROOT/"server.py").read_text(encoding="utf-8")
+        events=(WEB/"events.js").read_text(encoding="utf-8")
+        story=(WEB/"story.css").read_text(encoding="utf-8")
+        assistant=(WEB/"game-assistant.css").read_text(encoding="utf-8")
+        girls=(WEB/"girl-ui.js").read_text(encoding="utf-8")
+        self.assertIn("friendAvatar(p.avatar)",home)
+        self.assertIn("Đội Hình Chính",home)
+        self.assertIn("So Tài",home)
+        self.assertIn("/api/friends/gift",home)
+        self.assertIn("Cầu Hôn · 1 Oath Ring",home)
+        self.assertIn("path == '/api/friends/duel'",server)
+        self.assertIn("path == '/api/friends/marriage'",server)
+        self.assertIn("Làm mới hằng ngày",events)
+        self.assertIn("height:calc(84%",story)
+        self.assertIn(".ga2-tab img{width:68%;height:68%",assistant)
+        self.assertIn("gu-ex-up",girls)
+        self.assertIn("'Nâng Cấp'",girls)
+
     def test_missions_appear_in_vietnamese_without_modifying_rules(self):
         newbie=json.loads((ROOT/"data/newbie_camp.json").read_text(encoding="utf-8"))
         diary=json.loads((ROOT/"data/growth_diary.json").read_text(encoding="utf-8"))

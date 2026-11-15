@@ -28,6 +28,10 @@ const HomeMenus=(()=>{
  const info=()=>state.home_systems;
  async function heart(req){try{const r=await api('/api/hearts/action',req);state=r.state;if(r.got&&Object.keys(r.got).length&&typeof CampaignUI!=='undefined')CampaignUI.popup('Hearts',r.got);}catch(e){if(typeof GirlUI!=='undefined')GirlUI.toast(e.message);else console.error('Lỗi thao tác:',e);}render();}
  let friendsData=null,friendsBusy=false;
+ function friendAvatar(key){
+  key=String(key||'head_1001');
+  return typeof profileAsset==='function'?profileAsset(key):('/assets/avatar-hd/profile/'+key+'.webp?v=1.1.2');
+ }
  function loadFriends(){
   if(friendsBusy)return;friendsBusy=true;
   api('/api/friends').then(r=>{friendsData=r;message='';}).catch(e=>{friendsData={players:[]};message=e.message||'Không tải được danh sách Bạn Bè.';})
@@ -38,6 +42,53 @@ const HomeMenus=(()=>{
   try{friendsData=await api('/api/friends/action',{action,target_uid});message='';}
   catch(e){message=e.message||'Không thực hiện được.';}
   finally{friendsBusy=false;render();}
+ }
+ async function friendGift(profile,refresh){
+  const owned=Object.entries(state.items||{}).filter(([id,n])=>Number(n)>0&&!['1','2'].includes(id))
+   .sort((a,b)=>(itemCatalog?.[a[0]]?.name||a[0]).localeCompare(itemCatalog?.[b[0]]?.name||b[0],'vi'));
+  if(!owned.length){GirlUI.toast('Túi Đồ chưa có vật phẩm có thể tặng.');return;}
+  const {body,close}=GirlUI.win({title:'Tặng Vật Phẩm',cls:'hm-social-win',stack:true});
+  body.append(el('p','Còn '+profile.gift_left+'/10 vật phẩm trong 7 ngày.','hm-social-note'));
+  const select=el('select',undefined,'hm-gift-select');
+  for(const [id,n] of owned){const o=el('option',(itemCatalog?.[id]?.name||'Vật phẩm '+id)+' · Có '+number(n));o.value=id;select.append(o);}
+  const qty=el('input',undefined,'hm-gift-qty');qty.type='number';qty.min='1';qty.value='1';
+  const sync=()=>{qty.max=String(Math.max(1,Math.min(Number(state.items?.[select.value]||0),Number(profile.gift_left||0))));if(Number(qty.value)>Number(qty.max))qty.value=qty.max;};select.onchange=sync;sync();
+  const controls=el('div',undefined,'hm-social-form');controls.append(select,qty);body.append(controls);
+  button(body,'Tặng Vật Phẩm',async()=>{
+   try{const out=await api('/api/friends/gift',{target_uid:profile.uid,item_id:select.value,quantity:Number(qty.value)});
+    state.items=out.sender_items;close();GirlUI.toast('Đã tặng quà · Hảo Cảm '+number(out.affection));await refresh();
+   }catch(e){GirlUI.toast(e.message);}
+  },profile.gift_left<1,'hm-social-primary');
+ }
+ async function friendMarriage(profile,action,refresh){
+  try{await api('/api/friends/marriage',{target_uid:profile.uid,action});GirlUI.toast(action==='propose'?'Đã gửi lời cầu hôn.':action==='accept'?'Lễ cưới đã hoàn tất.':'Đã từ chối lời cầu hôn.');await refresh();}
+  catch(e){GirlUI.toast(e.message);}
+ }
+ async function friendDuel(profile,close){
+  try{const out=await api('/api/friends/duel',{target_uid:profile.uid});close();await watchEventBattle(out,'home-systems','So Tài · '+profile.character_name);}
+  catch(e){GirlUI.toast(e.message);}
+ }
+ async function openFriendProfile(player){
+  let profile;
+  try{profile=await api('/api/friends/profile?uid='+encodeURIComponent(player.uid));}
+  catch(e){GirlUI.toast(e.message);return;}
+  const draw=async()=>{profile=await api('/api/friends/profile?uid='+encodeURIComponent(player.uid));open(profile);};
+  const open=p=>{
+   document.querySelector('.hm-social-profile')?.closest('.gs-overlay')?.remove();
+   const {body,close}=GirlUI.win({title:'Hồ Sơ Người Chơi',cls:'hm-social-profile'});
+   const head=el('div',undefined,'hm-profile-head');const av=el('img',undefined,'hm-profile-avatar');av.src=friendAvatar(p.avatar);av.onerror=()=>{av.onerror=null;av.src='/assets/profile/head_1001.png';};
+   const who=el('div');who.append(el('h3',p.character_name),el('p','Cấp '+p.level+' · Lực chiến '+number(p.power)),el('p','Hảo Cảm '+number(p.affection)+' / '+number(p.affection_required),'hm-affection'));head.append(av,who);body.append(head);
+   body.append(el('h4','Đội Hình Chính','hm-profile-title'));const lineup=el('div',undefined,'hm-profile-lineup');
+   for(const h of p.lineup||[]){const c=el('div',undefined,'hm-profile-girl');const im=el('img');const gid=typeof artId==='function'?artId(h.table_id):h.table_id;im.src='/assets/cards/partner_card_'+gid+'.png';im.onerror=()=>im.remove();c.append(im,el('b','Lv.'+h.lv),el('small','Vị trí '+h.pos));lineup.append(c);}
+   if(!lineup.childElementCount)paragraph(lineup,'Người chơi chưa xếp đội hình.');body.append(lineup);
+   const acts=el('div',undefined,'hm-profile-actions');button(acts,'So Tài',()=>friendDuel(p,close),!p.friend,'hm-social-primary');button(acts,'Tặng Vật Phẩm',()=>friendGift(p,draw),!p.friend||p.gift_left<1);
+   const marriage=p.marriage;
+   if(marriage?.status==='married')button(acts,'💍 Đã Kết Hôn',()=>{},true);
+   else if(marriage?.status==='pending'&&marriage.proposer_uid===p.uid){button(acts,'Đồng Ý Kết Hôn',()=>friendMarriage(p,'accept',draw),false,'hm-marriage');button(acts,'Từ Chối',()=>friendMarriage(p,'reject',draw));}
+   else if(marriage?.status==='pending')button(acts,'Đang Chờ Trả Lời',()=>{},true);
+   else button(acts,'Cầu Hôn · 1 Oath Ring',()=>friendMarriage(p,'propose',draw),!p.friend||p.affection<p.affection_required,'hm-marriage');
+   body.append(acts,el('p','Mỗi vật phẩm tặng tăng 100 Hảo Cảm. Cần đủ 12.000 Hảo Cảm và 1 Oath Ring để mở Lễ Đường.','hm-social-note'));
+  };open(profile);
  }
  function friends(parent){
   if(!tab)tab='players';
@@ -53,16 +104,15 @@ const HomeMenus=(()=>{
   const board=el('div',undefined,'hm-friend-board');parent.append(board);
   for(const p of rows){
    const row=el('article',undefined,'hm-friend-row');
-   const avatar=el('img',undefined,'hm-friend-avatar');avatar.src='/assets/home-systems/friend_btn_bg1.png';avatar.alt='';
-   const info=el('div',undefined,'hm-friend-info');
-   info.append(el('b',p.character_name||p.uid),el('small','Cấp '+(p.level||1)+' · Lực chiến '+number(p.power||0)),
-               el('span',p.online?'Đang trực tuyến':'Đang ngoại tuyến',p.online?'hm-online':'hm-offline'));
+   const avatar=el('button',undefined,'hm-friend-avatar-btn');avatar.type='button';avatar.title='Xem hồ sơ và đội hình';const face=el('img',undefined,'hm-friend-avatar');face.src=friendAvatar(p.avatar);face.onerror=()=>{face.onerror=null;face.src='/assets/profile/head_1001.png';};avatar.append(face);avatar.onclick=()=>openFriendProfile(p);
+   const inf=el('button',undefined,'hm-friend-info hm-friend-profile-open');inf.type='button';inf.title='Xem hồ sơ và đội hình';
+   inf.append(el('b',p.character_name||p.uid),el('small','Cấp '+(p.level||1)+' · Lực chiến '+number(p.power||0)),el('span',p.online?'Đang trực tuyến':'Đang ngoại tuyến',p.online?'hm-online':'hm-offline'));inf.onclick=()=>openFriendProfile(p);
    const actions=el('div',undefined,'hm-friend-actions');
    if(p.relation==='none')button(actions,'Kết Bạn',()=>friendAct('request',p.uid));
    else if(p.relation==='outgoing')button(actions,'Đã gửi lời mời',()=>{},false).disabled=true;
    else if(p.relation==='incoming'){button(actions,'Đồng Ý',()=>friendAct('accept',p.uid));button(actions,'Từ Chối',()=>friendAct('reject',p.uid));}
-   else button(actions,'Xóa Bạn',()=>friendAct('remove',p.uid));
-   row.append(avatar,info,actions);board.append(row);
+   else{button(actions,'Hồ Sơ',()=>openFriendProfile(p));button(actions,'Xóa Bạn',()=>friendAct('remove',p.uid));}
+   row.append(avatar,inf,actions);board.append(row);
   }
   if(!rows.length)paragraph(board,tab==='friends'?'Chưa có bạn bè.':tab==='requests'?'Chưa có lời mời nào.':'Chưa có người chơi phù hợp.');
   const reload=button(parent,'Làm mới',()=>{friendsData=null;loadFriends();});reload.disabled=friendsBusy;
