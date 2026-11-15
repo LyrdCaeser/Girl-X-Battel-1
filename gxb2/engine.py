@@ -2572,7 +2572,11 @@ class Engine:
 
     def next_stage(self, state):
         if state['max_stage'] == 0: return 1
-        return int(TABLES['stage'][str(state['max_stage'])]['next']) or state['max_stage']
+        next_id = int(TABLES['stage'][str(state['max_stage'])]['next'])
+        # The original table uses -1 for the terminal stage. Treat every
+        # non-positive sentinel as "stay on the last cleared stage"; exposing
+        # -1 to the UI makes every campaign node appear locked.
+        return next_id if next_id > 0 else int(state['max_stage'])
 
     def level_cap(self, partner, real=False):
         # Partner:getMaxLev(grade, awake) + PartnerTable:getMaxlev(id, grade).

@@ -87,6 +87,9 @@ class SelectedOpponentMailCampaignTests(unittest.TestCase):
             state = engine.developer_action({"action": "campaign_all"}, super_gm=True)
             self.assertEqual(state["max_stage"], max(map(int, TABLES["stage"])))
             self.assertEqual(state["current_stage"], state["max_stage"])
+            self.assertEqual(state["next_stage"], state["max_stage"])
+            self.assertEqual(len(state["stages"]), 530)
+            self.assertTrue(all(stage["unlocked"] for stage in state["stages"]))
         finally:
             engine.close()
 
