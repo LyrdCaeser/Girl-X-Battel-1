@@ -46,9 +46,10 @@ class RequestedRestorationTests(unittest.TestCase):
 
     def test_real_online_people_replaces_fake_recommendations(self):
         home=(WEB/"home-menus.js").read_text(encoding="utf-8")
-        self.assertIn("api('/api/world/online?",home)
-        self.assertIn("if(!tab)tab='online'",home)
-        self.assertIn("Chức năng gửi lời mời kết bạn đang chờ kết nối",home)
+        self.assertIn("api('/api/friends')",home)
+        self.assertIn("if(!tab)tab='players'",home)
+        self.assertIn("friendAct('request'",home)
+        self.assertIn("'Đang ngoại tuyến'",home)
 
     def test_missions_appear_in_vietnamese_without_modifying_rules(self):
         newbie=json.loads((ROOT/"data/newbie_camp.json").read_text(encoding="utf-8"))

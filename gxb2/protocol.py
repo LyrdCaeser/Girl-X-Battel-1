@@ -39,6 +39,11 @@ def normalize(name: str, data: dict, *, strict: bool = True) -> dict:
         data = {k: v for k, v in data.items() if k not in LOCAL_ONLY[name]}
     if strict and set(data) - fields.keys():
         raise ValueError(f'Unexpected {name} fields: {sorted(set(data)-fields.keys())}')
+    # Some original Lua battle effects omit the optional display label,
+    # while the legacy protobuf marks it required. Keep the report valid for
+    # every battle without changing the authoritative effect values.
+    if name == 'battle_buff' and data.get('name') is None:
+        data = {**data, 'name': ''}
     out = {}
     for key, value in data.items():
         if key not in fields or value is None:

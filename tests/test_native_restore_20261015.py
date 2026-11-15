@@ -11,7 +11,7 @@ class NativeRestore20261015Tests(unittest.TestCase):
         ui=self.read('web/events.js')
         self.assertIn('const rows=[...all];',ui)
         self.assertIn('publicGemPacks.filter',ui)
-        self.assertIn('Sự kiện này chưa mở nhận thưởng.',ui)
+        self.assertIn('Sự kiện đang tạm nghỉ. Hẹn gặp lại ở lần mở tiếp theo.',ui)
 
     def test_mail_attachments_reuse_publisher_item_icons(self):
         ui=self.read('web/home-menus.js')

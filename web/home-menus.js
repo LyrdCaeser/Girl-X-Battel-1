@@ -16,60 +16,56 @@ const HomeMenus=(()=>{
  async function send(request){if(pending)return;pending=true;message='Đang lưu…';render();try{const result=await api('/api/home/action',request);state=result.state;message="Đã lưu.";if(result.awards)message="Đã quay xong. Xem kết quả trong lịch sử.";}catch(e){message=e.message;}finally{pending=false;render();}}
  function navigation(parent,entries){const nav=el('nav',undefined,'hm-tabs');for(const [id,label]of entries)button(nav,label,()=>{page=0;change(id);},tab===id,'');parent.append(nav);}
  function link(parent,label,route){button(parent,label,()=>{if(route==='campaign'||route==='capsule'||route==='graduate')showView(route);else openMenu(route,'home-systems');});}
- function launch(key,from){if(key==='giftpacks'&&typeof EventsHub!=='undefined'){EventsHub.openOriginalEvent(2,from||view);return;}if(key==='chat'){chatRows=[];chatLoadedKey='';chatRecipient='';chatTyped='';chatError='';}if(key==='friends')onlinePlayers=null;if(from==='home-systems'&&view==='home-systems')stack.push({root,tab,selected,page,origin});else stack=[];if(from!=='home-systems'||!stack.length)origin=from||'home';root=key;tab='';selected=null;page=0;message='';showView('home-systems');if(!catalog&&!loaded){loaded=api('/assets/home-systems/catalog.json').then(c=>{catalog=c;if(view==='home-systems')render();}).catch(e=>{message=e.message;loaded=null;render();});}}
+ function launch(key,from){if(key==='giftpacks'&&typeof EventsHub!=='undefined'){EventsHub.openOriginalEvent(2,from||view);return;}if(key==='chat'){chatRows=[];chatLoadedKey='';chatRecipient='';chatTyped='';chatError='';}if(key==='friends')friendsData=null;if(from==='home-systems'&&view==='home-systems')stack.push({root,tab,selected,page,origin});else stack=[];if(from!=='home-systems'||!stack.length)origin=from||'home';root=key;tab='';selected=null;page=0;message='';showView('home-systems');if(!catalog&&!loaded){loaded=api('/assets/home-systems/catalog.json').then(c=>{catalog=c;if(view==='home-systems')render();}).catch(e=>{message=e.message;loaded=null;render();});}}
  function back(){if(tab==='detail'||tab==='building'||tab==='adventure'||tab==='training'){change('');return;}if(stack.length){({root,tab,selected,page,origin}=stack.pop());message='';showView('home-systems');render();return;}showView(origin==='home-systems'?'home':origin);}
  function render(){const wrap=$('home-systems-view');if(!wrap||view!=='home-systems')return;wrap.replaceChildren();wrap.dataset.hmRoot=root;
   const top=el('header',undefined,'hm-top');const b=button(top,'',back);b.setAttribute('aria-label',"Back");b.append(image('mail_back_bg','hm-back'));b.replaceChildren();const arrow=el('img');arrow.src='/assets/ui/win_back_btn.png';arrow.alt='';b.append(arrow);top.append(el('h1',titles[root]));const money=el('div',undefined,'hm-money');money.append(el('span',"Vàng "+number(state.items['1'])),el('span',"Kim Cương "+number(state.items['2'])));top.append(money);wrap.append(top);
-  const content=el('div',undefined,'hm-content');wrap.append(content);if(!catalog){paragraph(content,message||"Đang tải tài nguyên gốc…");return;}
+  const content=el('div',undefined,'hm-content');wrap.append(content);if(!catalog){paragraph(content,message||"Đang tải…");return;}
   const status=el('p',message,'hm-status');status.setAttribute('role','status');wrap.append(status);
   if(root==='friends')friends(content);else if(root==='chat')chat(content);else if(root==='mail')mail(content);else if(root==='book')book(content);else if(root==='servant')servant(content);else if(root==='expedition')travel(content);else if(root==='starry-altar')cosmos(content);else if(root==='luvly-castle')castle(content);else if(root==='drift-bottle')drift(content);else if(root==='events')events(content);else gifts(content);
   const nav=el('nav',undefined,'hm-bottom');for(const [label,route]of[["Trang Chủ",'home'],["Nữ Thần",'girls'],["Túi Đồ",'bag'],["Triệu Hồi",'capsule']])button(nav,label,()=>showView(route));wrap.append(nav);
  }
  const info=()=>state.home_systems;
  async function heart(req){try{const r=await api('/api/hearts/action',req);state=r.state;if(r.got&&Object.keys(r.got).length&&typeof CampaignUI!=='undefined')CampaignUI.popup('Hearts',r.got);}catch(e){if(typeof GirlUI!=='undefined')GirlUI.toast(e.message);else console.error('Lỗi thao tác:',e);}render();}
- let onlinePlayers=null,onlinePlayersBusy=false;
- function loadRealPlayers(){
-  if(onlinePlayersBusy)return;
-  onlinePlayersBusy=true;
-  api('/api/world/online?server_id='+encodeURIComponent(state?.server_id||'S1')).then(res=>{
-   onlinePlayers=Array.isArray(res?.players)?res.players:[];
-  }).catch(e=>{
-   onlinePlayers=[];
-   message=e.message||'Không thể tải người chơi trực tuyến.';
-  }).finally(()=>{
-   onlinePlayersBusy=false;
-   if(view==='home-systems'&&root==='friends')render();
-  });
+ let friendsData=null,friendsBusy=false;
+ function loadFriends(){
+  if(friendsBusy)return;friendsBusy=true;
+  api('/api/friends').then(r=>{friendsData=r;message='';}).catch(e=>{friendsData={players:[]};message=e.message||'Không tải được danh sách Bạn Bè.';})
+   .finally(()=>{friendsBusy=false;if(view==='home-systems'&&root==='friends')render();});
+ }
+ async function friendAct(action,target_uid){
+  if(friendsBusy)return;friendsBusy=true;
+  try{friendsData=await api('/api/friends/action',{action,target_uid});message='';}
+  catch(e){message=e.message||'Không thực hiện được.';}
+  finally{friendsBusy=false;render();}
  }
  function friends(parent){
-  // Real server population only. Local contacts and recommended NPCs must never
-  // masquerade as real online people or a successful friend request.
-  if(!tab)tab='online';
-  if(tab==='online'){
-   const header=card(parent,'Người Chơi Trực Tuyến');
-   const refresh=button(header,'Làm mới danh sách',()=>{onlinePlayers=null;loadRealPlayers();});
-   refresh.disabled=onlinePlayersBusy;
-   if(onlinePlayers===null){paragraph(parent,'Đang lấy danh sách người chơi từ máy chủ…');loadRealPlayers();}
-   else if(!onlinePlayers.length)paragraph(parent,'Hiện không có người chơi nào được máy chủ xác nhận đang trực tuyến.');
-   else for(const p of onlinePlayers){
-    const row=el('div',undefined,'hm-rec');
-    row.append(el('b',p.character_name||p.name||p.uid),el('small','Cấp '+(p.level||1)));
-    parent.append(row);
-   }
-   paragraph(parent,'Danh sách này lấy trực tiếp từ máy chủ. Chức năng gửi lời mời kết bạn đang chờ kết nối; không tạo lời mời giả.');
-   return;
-  }
-  if(!tab)tab='list';if(tab==='detail'){const c=info().contacts.find(c=>c.id===selected);if(!c){change('list');return;}const panel=card(parent,c.name);const avatar=el('img',undefined,'hm-avatar');avatar.src=profileAsset(c.avatar);avatar.alt=c.name;panel.append(avatar);paragraph(panel,"Local contact for this save.");const form=el('form');const text=el('textarea');text.maxLength=500;text.placeholder="Message (local draft)";text.setAttribute('aria-label',"Message for "+c.name);form.append(text);button(form,"Save draft",()=>send({action:'draft',recipient:c.name,text:text.value}));panel.append(form);button(panel,"Delete contact",async()=>{await send({action:'contact_delete',id:c.id});change('list');});return;}
-  const nav=el('nav',undefined,'hm-tabs');for(const [id,label]of [['list',"List"],['search',"Search"],['requests','Solicitudes'],['coop','Co-op']]){const b=button(nav,label,()=>{change(id);if(id==='coop')RemainingSystems.openFriendTab();},tab===id);b.setAttribute('aria-current',tab===id?'page':'false');}parent.append(nav);
+  if(!tab)tab='players';
+  const nav=el('nav',undefined,'hm-tabs');
+  for(const [id,label] of [['players','Tìm Bạn'],['friends','Bạn Bè'],['requests','Lời Mời'],['coop','Boss Bạn Bè']])
+   button(nav,label,()=>{tab=id;if(id==='coop')RemainingSystems.openFriendTab();render();},tab===id);
+  parent.append(nav);
   if(tab==='coop'){RemainingSystems.friendPanel(parent);return;}
-  // Hearts (gxb2/hearts.py): one sent to and one claimed from each contact a day, "Claim & Send" for all
-  {const hi=state.hearts_info||{held:0,max:1000,daily_max:30,sent:[],got:[],recommended:[]};const bar=el('div',undefined,'hm-hearts');const ic=el('img');ic.src=(typeof itemPicture==='function'&&itemCatalog?.['11']&&itemPicture(itemCatalog['11']))||'';ic.alt='';ic.onerror=()=>ic.remove();if(!ic.getAttribute('src'))ic.hidden=true;
-   bar.append(ic,el('b',`Hearts ${number(hi.held)}/${hi.max}`),el('small',`Hoy: ${hi.got.length}/${hi.daily_max} reclamados · ${hi.sent.length} sent`));
-   button(bar,'Claim & Send',()=>heart({action:'all'}),false).disabled=!info().contacts.length;parent.append(bar);}
-  if(tab==='requests'){paragraph(parent,"No incoming requests.");return;}
-  const grid=el('div',undefined,'hm-list');parent.append(grid);
-  const draw=q=>{grid.replaceChildren();for(const c of info().contacts.filter(c=>c.name.toLocaleLowerCase().includes(q.toLocaleLowerCase()))){const row=card(grid,c.name);const img=el('img',undefined,'hm-avatar');img.src=profileAsset(c.avatar);img.alt='';row.prepend(img);button(row,"View profile",()=>change('detail',c.id));const hi=state.hearts_info||{sent:[],got:[]};const sb=button(row,hi.sent.includes(c.id)?"Sent ♥":"Send ♥",()=>heart({action:'send',ids:[c.id]}));sb.disabled=hi.sent.includes(c.id);const gb=button(row,hi.got.includes(c.id)?'Reclamado':"Claim ♥",()=>heart({action:'claim',ids:[c.id]}));gb.disabled=hi.got.includes(c.id);}if(!grid.childElementCount)paragraph(grid,"No local contacts.");};
-  if(tab==='search'){const rec=state.hearts_info?.recommended||[];if(rec.length){const rc=card(parent,'Recommended');for(const r of rec){const row=el('div',undefined,'hm-rec');row.append(el('b',r.name),el('small','Lv. '+r.lv));button(row,"Add",()=>heart({action:'add',rid:r.rid}));rc.append(row);}}const search=el('input');search.placeholder="Search contacts by name";search.setAttribute('aria-label',"Search contacts");search.addEventListener('input',()=>draw(search.value));parent.insertBefore(search,grid);const add=card(parent,"Add local contact");const name=el('input');name.maxLength=20;name.placeholder="Contact name";name.setAttribute('aria-label',"Contact name");add.append(name);button(add,"Add",()=>send({action:'contact_add',name:name.value,avatar:state.profile.avatar}));paragraph(add,"Saves a local entry; no request is sent to another person.");}draw('');
+  if(friendsData===null){paragraph(parent,'Đang tải danh sách người chơi…');loadFriends();return;}
+  let rows=friendsData.players||[];
+  if(tab==='friends')rows=rows.filter(p=>p.relation==='friend');
+  else if(tab==='requests')rows=rows.filter(p=>p.relation==='incoming'||p.relation==='outgoing');
+  const board=el('div',undefined,'hm-friend-board');parent.append(board);
+  for(const p of rows){
+   const row=el('article',undefined,'hm-friend-row');
+   const avatar=el('img',undefined,'hm-friend-avatar');avatar.src='/assets/home-systems/friend_btn_bg1.png';avatar.alt='';
+   const info=el('div',undefined,'hm-friend-info');
+   info.append(el('b',p.character_name||p.uid),el('small','Cấp '+(p.level||1)+' · Lực chiến '+number(p.power||0)),
+               el('span',p.online?'Đang trực tuyến':'Đang ngoại tuyến',p.online?'hm-online':'hm-offline'));
+   const actions=el('div',undefined,'hm-friend-actions');
+   if(p.relation==='none')button(actions,'Kết Bạn',()=>friendAct('request',p.uid));
+   else if(p.relation==='outgoing')button(actions,'Đã gửi lời mời',()=>{},false).disabled=true;
+   else if(p.relation==='incoming'){button(actions,'Đồng Ý',()=>friendAct('accept',p.uid));button(actions,'Từ Chối',()=>friendAct('reject',p.uid));}
+   else button(actions,'Xóa Bạn',()=>friendAct('remove',p.uid));
+   row.append(avatar,info,actions);board.append(row);
+  }
+  if(!rows.length)paragraph(board,tab==='friends'?'Chưa có bạn bè.':tab==='requests'?'Chưa có lời mời nào.':'Chưa có người chơi phù hợp.');
+  const reload=button(parent,'Làm mới',()=>{friendsData=null;loadFriends();});reload.disabled=friendsBusy;
  }
 
  let chatRows=[],chatBusy=false,chatSending=false,chatLoadedKey='',chatRecipient='',chatTyped='',chatError='';
@@ -116,11 +112,11 @@ const HomeMenus=(()=>{
  function chat(parent){
   if(!tab)tab='world';
   navigation(parent,[['world','Thế Giới'],['vietnamese','Tiếng Việt'],['english','Tiếng Anh'],['servers','Máy Chủ'],['recruit','Tuyển Thành Viên'],['private','Tin Riêng']]);
-  paragraph(parent,'Trò chuyện trực tuyến trên máy chủ '+(state?.server_id||'S1')+'. Chỉ hiển thị tin nhắn từ tài khoản người chơi thật.');
+  paragraph(parent,'Trò chuyện tại '+(state?.server_id||'S1')+'.');
   if(tab==='private'){
    const search=card(parent,'Trò Chuyện Riêng');
    const uid=el('input');uid.type='text';uid.maxLength=64;uid.autocomplete='off';
-   uid.placeholder='Nhập UID người nhận (cùng máy chủ)';
+   uid.placeholder='Nhập UID người nhận';
    uid.setAttribute('aria-label','UID người nhận');
    uid.value=chatRecipient;search.append(uid);
    button(search,'Xem hội thoại',()=>{
@@ -131,14 +127,14 @@ const HomeMenus=(()=>{
    });
    paragraph(search,chatRecipient?'Đang xem cuộc trò chuyện với '+chatRecipient:'Chưa chọn người nhận: hiển thị lịch sử tin nhắn riêng của chính bạn.');
   }
-  const key=chatKey(),messages=card(parent,'Tin Nhắn Thật · '+({world:'Thế Giới',vietnamese:'Tiếng Việt',english:'Tiếng Anh',servers:'Máy Chủ',recruit:'Tuyển Thành Viên',private:'Tin Riêng'}[tab]||tab));
+  const key=chatKey(),messages=card(parent,'Tin Nhắn · '+({world:'Thế Giới',vietnamese:'Tiếng Việt',english:'Tiếng Anh',servers:'Máy Chủ',recruit:'Tuyển Thành Viên',private:'Tin Riêng'}[tab]||tab));
   const feed=el('div',undefined,'hm-chat-feed');
   feed.setAttribute('aria-live','polite');
   if(chatLoadedKey!==key){
-   paragraph(feed,chatBusy?'Đang tải tin nhắn…':'Đang kết nối máy chủ…');
+   paragraph(feed,chatBusy?'Đang tải tin nhắn…':'Đang kết nối…');
    if(!chatBusy)refreshRealChat();
   }else if(!chatRows.length){
-   paragraph(feed,'Chưa có tin nhắn thật trong kênh này.');
+   paragraph(feed,'Chưa có tin nhắn trong kênh này.');
   }else for(const m of chatRows){
    const row=el('article',undefined,'hm-chat-message');
    if(m.uid===state?.uid)row.classList.add('is-mine');
@@ -238,7 +234,7 @@ const HomeMenus=(()=>{
  function castle(parent){const scene=el('div',undefined,'hm-archive-scene');scene.style.backgroundImage=`url('${asset('activity_lafuli_castle_bg')}')`;parent.append(scene);if(!tab)tab='map';navigation(parent,[['map','Lâu Đài'],['rewards','Phần Thưởng'],['shop','Cửa Hàng']]);paragraph(parent,'Vòng quay của sự kiện hiện chưa mở. Bạn vẫn có thể dùng Xu Sự Kiện trong Cửa Hàng.');
   if(tab==='map'){link(parent,'Tin Nhắn Phiêu Lưu','drift-bottle');link(parent,'Xem sự kiện','events');}else if(tab==='rewards')for(const r of catalog.activity_lafuli_award){const c=card(parent,r.point+' điểm');rewards(c,r.award);paragraph(c,'Phần thưởng sự kiện.');}else for(const r of catalog.activity_lafuli_shop){const c=card(parent,'Ưu đãi '+r.id);rewards(c,r.award);const used=info().castle_shop?.[r.id]||0;paragraph(c,used+' / '+r.limit+' đã mua');costButton(c,'Mua',r.cost,{action:'castle_shop',id:Number(r.id)},used>=Number(r.limit));}}
  function drift(parent){const scene=el('div',undefined,'hm-archive-scene');scene.style.backgroundImage=`url('${asset('activity_lafuli_drift_bg')}')`;parent.append(scene);paragraph(parent,"Recovered Adrift Message board: 21 spaces. Select one to inspect its rewards. Event movement and encounters have not been restored yet.");const board=el('div',undefined,'hm-drift-board');parent.append(board);for(const r of catalog.activity_lafuli_drift)button(board,r.id,()=>{selected=Number(r.id);render();},false,Number(r.id)===selected?'chosen':'');if(selected){const r=catalog.activity_lafuli_drift.find(r=>Number(r.id)===selected),c=card(parent,'Casilla '+r.id,r.icon_png);if(r.award.includes('#'))rewards(c,r.award);else paragraph(c,"Encounter or card choice");for(const n of [1,2,3])if(r['award'+n])rewards(c,r['award'+n]);paragraph(c,"Next: "+r.next_id+" · previous: "+r.back_id);}link(parent,"Back to the castle",'luvly-castle');}
- function events(parent){paragraph(parent,"Danh sách hoạt động gốc được giữ nguyên; một số lịch hoặc xếp hạng của máy chủ gốc hiện chưa có dữ liệu.");for(const [title,key,icon]of[['Daily Quiz','quiz',''],['Tests','tests',''],['Luvly’s Dream Castle','luvly-castle',''],['Adrift Message','drift-bottle','lafuli_drift_card'],['Cosmos Portal','starry-altar','starry_bg_jlxz_1']]){const c=card(parent,title,icon);link(c,'Vào',key);}}
+ function events(parent){paragraph(parent,"Chọn hoạt động bé muốn tham gia.");for(const [title,key,icon]of[['Daily Quiz','quiz',''],['Tests','tests',''],['Luvly’s Dream Castle','luvly-castle',''],['Adrift Message','drift-bottle','lafuli_drift_card'],['Cosmos Portal','starry-altar','starry_bg_jlxz_1']]){const c=card(parent,title,icon);link(c,'Vào',key);}}
  function loadTopupPackages(){
   if(topupPackages!==null||topupLoading)return;
   topupLoading=true;

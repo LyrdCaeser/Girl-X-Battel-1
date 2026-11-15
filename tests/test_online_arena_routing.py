@@ -259,9 +259,9 @@ class OnlineArenaRoutingTests(unittest.TestCase):
         index = (ROOT / "web/index.html").read_text(encoding="utf-8")
         for asset in ("app.js", "arena.js", "arena3v3.js", "online-hub.js", "guild.js",
                       "girl-ui.js", "auth.js", "settings-menu.js", "skins.js"):
-            self.assertRegex(index, rf'<script src="/{asset}\?v=(?:20261112|20261113|20261114|1\.1\.2)-[^" ]+"')
+            self.assertRegex(index, rf'<script src="/{asset}\?v=(?:20261112|20261113|20261114|20261115|1\.1\.2)-[^" ]+"')
         self.assertIn('href="/online-hub.css?v=20261112-live-arena3v3-r2"', index)
-        self.assertIn('href="/guild.css?v=20261113-native-online-r1"', index)
+        self.assertIn('href="/guild.css?v=20261115-original-ui-sync-r1"', index)
         self.assertIn('src="/arena-online-native.js?v=20261114-systemic-r1"', index)
         self.assertIn('href="/shops.css?v=20261114-native-browser-qa-r2"', index)
         self.assertIn('src="/shops.js?v=20261114-player-fix-r2"', index)

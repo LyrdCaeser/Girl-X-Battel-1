@@ -34,7 +34,7 @@ class GuildWebRoutingTests(unittest.TestCase):
         self.assertIn("/api/guild-war?war_id=", guild)
         self.assertIn("/api/guild-war/battle", guild)
         self.assertIn("/api/world-guild/manage", guild)
-        self.assertIn("Thành Viên Thật", guild)
+        self.assertIn("Thành Viên", guild)
         self.assertIn("Xếp Hạng Bang Hội", guild)
         self.assertIn("'guild-dining':'cafeteria'", guild)
         self.assertIn("'guild-gym':'gym'", guild)

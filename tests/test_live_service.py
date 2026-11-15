@@ -105,5 +105,24 @@ class LiveServiceTests(unittest.TestCase):
         self.assertIsNone(live_service.guild_for_player("U2", "S1"))
 
 
+    def test_friend_directory_requests_and_offline_players(self):
+        live_service.register_player("F1", "S1", "Hoa")
+        live_service.register_player("F2", "S1", "Lan")
+        live_service.register_player("F3", "S1", "Mai")
+        live_service.touch_presence("F2", "S1", "Lan", level=20, power=5000)
+        snap = live_service.friends_snapshot("F1", "S1")
+        self.assertEqual({p["uid"] for p in snap["players"]}, {"F2", "F3"})
+        self.assertTrue(next(p for p in snap["players"] if p["uid"] == "F2")["online"])
+        self.assertFalse(next(p for p in snap["players"] if p["uid"] == "F3")["online"])
+        live_service.friend_action("F1", "S1", "request", "F2")
+        incoming = live_service.friends_snapshot("F2", "S1")
+        self.assertEqual(next(p for p in incoming["players"] if p["uid"] == "F1")["relation"], "incoming")
+        accepted = live_service.friend_action("F2", "S1", "accept", "F1")
+        self.assertEqual(next(p for p in accepted["players"] if p["uid"] == "F1")["relation"], "friend")
+        removed = live_service.friend_action("F1", "S1", "remove", "F2")
+        self.assertEqual(next(p for p in removed["players"] if p["uid"] == "F2")["relation"], "none")
+
+
+
 if __name__ == "__main__":
     unittest.main()

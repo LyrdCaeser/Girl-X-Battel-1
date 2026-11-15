@@ -2136,3 +2136,83 @@ def settle_previous_pvp_season(now=None):
             _audit(db,"pvp.season.auto_settle",season_id,{"issued":issued},"SYSTEM")
         db.commit(); db.close()
     return {"season_id":season_id,"issued":issued}
+
+
+def friends_snapshot(uid, server_id):
+    """Real player directory and friendship state for one server."""
+    uid=str(uid); server_id=str(server_id).upper(); now=int(time.time()); cutoff=now-120
+    with _lock:
+        db=_db()
+        rows=db.execute("""SELECT p.uid,p.character_name,
+                                  COALESCE(l.level,1) AS level,COALESCE(l.power,0) AS power,
+                                  COALESCE(pr.last_seen,0) AS last_seen
+                           FROM players p
+                           LEFT JOIN leaderboard l ON l.uid=p.uid AND l.server_id=p.server_id
+                           LEFT JOIN presence pr ON pr.uid=p.uid AND pr.server_id=p.server_id
+                           WHERE p.server_id=? AND p.status='active' AND p.uid<>?
+                           ORDER BY COALESCE(pr.last_seen,0) DESC,COALESCE(l.power,0) DESC,p.character_name""",
+                        (server_id,uid)).fetchall()
+        pairs=db.execute("""SELECT uid_a,uid_b FROM friendships
+                            WHERE server_id=? AND (uid_a=? OR uid_b=?)""",
+                         (server_id,uid,uid)).fetchall()
+        friends={r['uid_b'] if r['uid_a']==uid else r['uid_a'] for r in pairs}
+        reqs=db.execute("""SELECT requester_uid,recipient_uid,status FROM friend_requests
+                           WHERE server_id=? AND status='pending'
+                             AND (requester_uid=? OR recipient_uid=?)""",
+                        (server_id,uid,uid)).fetchall()
+        incoming={r['requester_uid'] for r in reqs if r['recipient_uid']==uid}
+        outgoing={r['recipient_uid'] for r in reqs if r['requester_uid']==uid}
+        result=[]
+        for row in rows:
+            r=dict(row); target=r['uid']
+            r['online']=int(r.pop('last_seen') or 0)>=cutoff
+            r['relation']='friend' if target in friends else 'incoming' if target in incoming else 'outgoing' if target in outgoing else 'none'
+            result.append(r)
+        db.close()
+    return {'server_id':server_id,'players':result}
+
+
+def friend_action(uid, server_id, action, target_uid):
+    uid=str(uid); target_uid=str(target_uid or '').strip(); server_id=str(server_id).upper()
+    if not target_uid or target_uid==uid:
+        raise ValueError('Người chơi không hợp lệ.')
+    now=int(time.time()); a,b=sorted((uid,target_uid))
+    with _lock:
+        db=_db()
+        target=db.execute("SELECT uid FROM players WHERE uid=? AND server_id=? AND status='active'",
+                          (target_uid,server_id)).fetchone()
+        if not target:
+            db.close(); raise ValueError('Không tìm thấy người chơi này.')
+        if action=='request':
+            exists=db.execute("SELECT 1 FROM friendships WHERE uid_a=? AND uid_b=? AND server_id=?",
+                              (a,b,server_id)).fetchone()
+            if not exists:
+                db.execute("""INSERT INTO friend_requests(requester_uid,recipient_uid,server_id,status,created_at,updated_at)
+                              VALUES(?,?,?,'pending',?,?)
+                              ON CONFLICT(requester_uid,recipient_uid,server_id)
+                              DO UPDATE SET status='pending',updated_at=excluded.updated_at""",
+                           (uid,target_uid,server_id,now,now))
+        elif action=='accept':
+            req=db.execute("""SELECT 1 FROM friend_requests WHERE requester_uid=? AND recipient_uid=?
+                              AND server_id=? AND status='pending'""",(target_uid,uid,server_id)).fetchone()
+            if not req:
+                db.close(); raise ValueError('Lời mời này không còn hiệu lực.')
+            db.execute("""INSERT INTO friendships(uid_a,uid_b,server_id,created_at) VALUES(?,?,?,?)
+                          ON CONFLICT(uid_a,uid_b,server_id) DO NOTHING""",(a,b,server_id,now))
+            db.execute("""UPDATE friend_requests SET status='accepted',updated_at=?
+                          WHERE server_id=? AND ((requester_uid=? AND recipient_uid=?)
+                          OR (requester_uid=? AND recipient_uid=?))""",
+                       (now,server_id,uid,target_uid,target_uid,uid))
+        elif action=='reject':
+            db.execute("""UPDATE friend_requests SET status='rejected',updated_at=?
+                          WHERE requester_uid=? AND recipient_uid=? AND server_id=? AND status='pending'""",
+                       (now,target_uid,uid,server_id))
+        elif action=='remove':
+            db.execute("DELETE FROM friendships WHERE uid_a=? AND uid_b=? AND server_id=?",(a,b,server_id))
+            db.execute("""DELETE FROM friend_requests WHERE server_id=? AND
+                          ((requester_uid=? AND recipient_uid=?) OR (requester_uid=? AND recipient_uid=?))""",
+                       (server_id,uid,target_uid,target_uid,uid))
+        else:
+            db.close(); raise ValueError('Thao tác Bạn Bè không hợp lệ.')
+        db.commit(); db.close()
+    return friends_snapshot(uid,server_id)

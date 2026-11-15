@@ -11,7 +11,7 @@ const EventsHub=(()=>{
   'Events':'Sự Kiện','Calendar':'Lịch Sự Kiện','Resets':'Đặt lại','Open now':'Đang diễn ra','Coming next':'Sắp diễn ra',
   'Monthly Events':'Sự Kiện Tháng','Exclusives':'Độc Quyền','Novato':'Tân Thủ','Back':'Quay Lại',
   'Loading events…':'Đang tải sự kiện…','There are no events in this tab.':'Không có sự kiện trong mục này.',
-  'No event data.':'Chưa có dữ liệu sự kiện.','Saved.':'Đã lưu.','Guardando…':'Đang lưu…',
+  'Sự kiện chưa mở.':'Sự kiện đang tạm nghỉ.','Saved.':'Đã lưu.','Guardando…':'Đang lưu…',
   'Capsule':'Triệu Hồi','Enroll':'Chiêu Mộ','Slot Machine':'Máy Quay','Left':'Còn lại',
   'Completed':'Đã hoàn thành','Claimed':'Đã nhận','Day':'Ngày','Item':'Vật phẩm',
   'Check In':'Điểm Danh','Seven Day':'Đăng Nhập 7 Ngày','Seven-day':'Đăng Nhập 7 Ngày',
@@ -78,7 +78,7 @@ const EventsHub=(()=>{
   sec('Đang diễn ra');for(const e of c.events)row((e.kind==='month'?'[Tháng] ':'[Tuần] ')+vi(e.title),'còn '+leftText(e.end));
   sec('Sắp diễn ra');for(const e of c.next)row((e.kind==='month'?'[Tháng] ':'[Tuần] ')+vi(e.title),'sau '+leftText(e.start));
   body.append(el('p','ev-cal-note',"Lịch game: tuần tính từ Thứ Hai đến Chủ Nhật, tháng bắt đầu từ ngày 1. Sự kiện tạm đóng vẫn giữ nguyên tiến độ cho lần mở tiếp theo."));}
- function list(){const all=catalog.activities.filter(a=>inTab(a,tab)&&!(a.id===116&&hub().sevenday.done));const rows=[...all]; /* Full original catalog; rewards remain server-gated. */if(pinnedId){const original=catalog.activities.find(a=>a.id===pinnedId);if(original&&!rows.some(a=>a.id===pinnedId))rows.unshift(original);}return rows.sort((a,b)=>(a.id===pinnedId?1:0)-(b.id===pinnedId?1:0)?(b.id===pinnedId?1:0)-(a.id===pinnedId?1:0):(WORKING.has(b.id)-WORKING.has(a.id))||(b.rank-a.rank)||(b.id-a.id));}
+ function list(){const all=catalog.activities.filter(a=>inTab(a,tab)&&!(a.id===116&&hub().sevenday.done));const rows=[...all]; /* Full event catalog. */if(pinnedId){const original=catalog.activities.find(a=>a.id===pinnedId);if(original&&!rows.some(a=>a.id===pinnedId))rows.unshift(original);}return rows.sort((a,b)=>(a.id===pinnedId?1:0)-(b.id===pinnedId?1:0)?(b.id===pinnedId?1:0)-(a.id===pinnedId?1:0):(WORKING.has(b.id)-WORKING.has(a.id))||(b.rank-a.rank)||(b.id-a.id));}
  function listAll(){return catalog.activities.filter(a=>inTab(a,tab)&&!(a.id===116&&hub().sevenday.done)).sort((a,b)=>(WORKING.has(b.id)-WORKING.has(a.id))||(b.rank-a.rank)||(b.id-a.id));}
 
  function open(from){origin=from||'home';message='';showView('events');if(!catalog&&!loading)loading=Promise.all([api('/assets/events/catalog.json'),typeof ActKit!=='undefined'?ActKit.load():null]).then(([c])=>{catalog=c;if(typeof ActKit!=='undefined')ActKit.ids().forEach(i=>WORKING.add(i));render();}).catch(e=>{message=e.message;loading=null;render();});if(!visited){visited=true;send({action:'visit'},true);}}
@@ -140,7 +140,7 @@ const EventsHub=(()=>{
 
  // Point events (SummonGiftBag / ProphetSummonGiftBag / WishingPoolGiftBag): banner, loop counter, tiers.
  function left(info){const secs=Math.max(0,info.ends_at-(state.server_time||Date.now()/1000));return Math.floor(secs/86400)+' ngày '+Math.floor(secs%86400/3600)+' giờ';}
- function pointEvent(parent,a){const cfg=POINT[a.id],info=state.point_events_info?.[a.id];if(!info){parent.append(el('p','ev-note',"No event data."));return;}
+ function pointEvent(parent,a){const cfg=POINT[a.id],info=state.point_events_info?.[a.id];if(!info){parent.append(el('p','ev-note',"Sự kiện chưa mở."));return;}
   const ban=el('div','pe-banner');ban.style.backgroundImage=`url('${A(cfg.bg)}')`;ban.append(el('h2','pe-title pe-title-vi',({13:'Thưởng Điểm Triệu Hồi',16:'Thưởng Điểm Chiêu Mộ',20:'Thưởng Điểm Máy Quay'})[a.id]||vi(a.title)),el('p','pe-desc',a.id===20?'Mỗi lần quay Máy Quay nhận 1 điểm. Có thể hoàn thành '+info.times+' vòng thưởng trong sự kiện!':cfg.desc));
   const strip=el('div','pe-strip');strip.append(el('b','','Đã hoàn thành ('+info.rounds+'/'+info.times+')'),el('span','pe-left',left(info)),el('span','pe-left-label','Còn lại'));ban.append(strip);
   const go=el('button','pe-go',cfg.go);go.type='button';go.style.backgroundImage=`url('${A('house_icon_1')}')`;go.disabled=!cfg.route;go.title=cfg.route?'':"Máy Quay hiện chưa khả dụng";go.onclick=()=>{if(cfg.route==='capsule')showView('capsule');else if(cfg.route==='enroll'&&typeof Enroll!=='undefined')Enroll.open('events');else if(cfg.route==='slots'&&typeof Slots!=='undefined')Slots.open('events');};ban.append(go);parent.append(ban);
@@ -149,44 +149,19 @@ const EventsHub=(()=>{
   parent.append(list);parent.append(el('p','ev-note',"Phần thưởng được cộng trực tiếp vào Túi Đồ khi đạt từng mốc. Đặt lại hằng tuần vào 00:00 Thứ Hai."));}
 
  function archived(parent,a){
-  const c=el('div','ev-archive');c.append(img(A('icon_'+a.icon),'ev-archive-icon'),el('h2',undefined,vi(a.title.replace(/\n/g,' '))));
+  const c=el('div','ev-archive ev-original-card');
+  const art=img(A('icon_'+a.icon),'ev-archive-icon');
+  c.append(art,el('h2',undefined,vi(a.title.replace(/\\n/g,' '))));
   if(a.desc&&a.desc!=='-1')c.append(el('p',undefined,vi(a.desc)));
-  const packages={2:'MONTHLY_GIFT',3:'WEEKLY_GIFT',6:'MONTHLY_CARD',24:'WEEKLY_CARD',39:'MONTHLY_GIFT',40:'WEEKLY_GIFT'};
-  const paid=Boolean(packages[a.id]||a.type1===1||/giftbag|recharge|month_card|week_card/i.test(a.icon||''));
-  if(paid){
-    // Gift windows remain the original events. Only show the package actually
-    // published by the server; never invent a price, reward, or VIP EXP.
-    const packageId=packages[a.id];
-    if(packageId&&publicGemPacks===null)loadPublicGemPacks();
-    const published=packageId&&publicGemPacks?.find(p=>p.id===packageId);
-    if(published){
-      const offer=el('article','ev-gems-offer');
-      offer.append(img(A('icon_'+a.icon),'ev-item',published.name));
-      const details=el('div','ev-gems-data');
-      details.append(el('b',undefined,published.name));
-      if(published.price_label)details.append(el('span',undefined,published.price_label));
-      if(published.vip_exp)details.append(el('span',undefined,fmt(published.vip_exp)+' EXP VIP khi nhận thư đã duyệt'));
-      if(published.instant_gems)details.append(el('span',undefined,fmt(published.instant_gems)+' Kim Cương'));
-      if(published.manual_reward)details.append(el('small',undefined,'Quà cụ thể do QTV xác nhận trước khi giao qua Hòm Thư.'));
-      offer.append(details);c.append(offer);
-    }else if(packageId){
-      c.append(el('p','ev-note',publicGemPacks===null?'Đang tải gói quà…':'Gói này chưa được QTV mở bán.'));
-    }
-    c.append(el('p','ev-note','Thanh toán và quà tặng theo danh mục đang được QTV công bố; không dùng giá cũ hoặc tạo vật phẩm giả.'));
-    const contact=el('div','ev-original-payment');
-    contact.append(el('span','', 'Thanh toán: Zalo 0856848557'));
-    const z=el('button','ev-native-pay','Liên hệ Zalo / Đặt gói');z.type='button';
-    z.onclick=()=>window.GxbPayment?.open(packages[a.id]||'CUSTOM',
-      vi(a.title.replace(/\n/g,' '))+' · Sự Kiện #'+a.id);
-    contact.append(z);c.append(contact);
-  }else c.append(el('p','ev-note','Sự kiện này chưa mở nhận thưởng.'));
+  c.append(el('p','ev-note','Sự kiện đang tạm nghỉ. Hẹn gặp lại ở lần mở tiếp theo.'));
   parent.append(c);
  }
+
  function gemOffers(parent){
     const original=el('section','ev-original-gems');
-    original.append(el('h3',undefined,'Các Gói Kim Cương Gốc'));
+    original.append(el('h3',undefined,'Các Gói Kim Cương'));
     if(publicGemPacks===null){
-      original.append(el('p','ev-note','Đang tải các gói nạp đã công bố…'));
+      original.append(el('p','ev-note','Đang tải các gói nạp đang mở…'));
       loadPublicGemPacks();
     }else{
       for(const p of publicGemPacks.filter(p=>/^GEMS_/.test(String(p.id)))){

@@ -205,3 +205,6 @@ img.gd2-abs{object-fit:fill}img.gd2-fit{object-fit:contain}.gd2-abs.flip,.gd2-ar
 .gd2-chat-list{max-height:30vh;overflow:auto;display:grid;gap:6px}
 .gd2-directory{max-height:32vh;overflow:auto;display:grid;gap:8px}
 .gd2-ranklist .gd2-mrow{position:relative;min-height:calc(70 * var(--u));padding:calc(10 * var(--u));margin:calc(8 * var(--u));box-sizing:border-box;display:flex;justify-content:space-between;align-items:center;background:#fff9}
+
+.gd2-create{z-index:8;overflow:auto;padding:20px 24px;box-sizing:border-box;background:linear-gradient(#f8fbff,#e3edf8);border:3px solid #91a9c5;border-radius:12px;box-shadow:inset 0 0 0 2px #fff}
+.gd2-create h3{text-align:center;color:#405b82;margin:8px 0 12px}.gd2-create .gd-input{width:100%;box-sizing:border-box;margin:6px 0}.gd2-create textarea{min-height:100px}

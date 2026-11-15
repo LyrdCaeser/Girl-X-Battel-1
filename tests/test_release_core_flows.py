@@ -52,5 +52,14 @@ class ReleaseCoreFlowTests(unittest.TestCase):
         self.assertTrue(packets)
 
 
+    def test_battle_buff_without_display_name_still_encodes(self):
+        from gxb2 import protocol as p
+        normalized = p.normalize('battle_buff', {
+            'pos': 1, 'value': 25, 'type': 3, 'buffOn': 1
+        }, strict=False)
+        self.assertEqual(normalized['name'], '')
+
+
+
 if __name__ == "__main__":
     unittest.main()

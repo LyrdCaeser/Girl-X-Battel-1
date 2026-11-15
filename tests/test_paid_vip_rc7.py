@@ -75,7 +75,7 @@ class PaidVipRC7Tests(unittest.TestCase):
         events=(ROOT/'web/events.js').read_text(encoding='utf-8')
         admin=(ROOT/'web/admin.js').read_text(encoding='utf-8')
         self.assertIn("EventsHub.openOriginalEvent(o.event",home)
-        self.assertIn("GxbPayment?.open(packages[a.id]",events)
+        self.assertNotIn("Thanh toán và quà tặng theo danh mục",events)
         self.assertIn("gm-topup-vip-exp",admin)
         self.assertIn("'999999991'",home)
 

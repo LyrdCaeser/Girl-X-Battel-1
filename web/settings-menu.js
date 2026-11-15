@@ -58,7 +58,7 @@ const SettingsMenu=(()=>{
   const label=el('span','','Tắt dấu chấm đỏ thông báo');
   check.onchange=()=>GxbAudio.dots(check.checked);
   row.append(check,label);body.append(row);
-  body.append(el('p','sm-sound-foot','Tùy chọn được lưu trên thiết bị. Không thay đổi trạng thái nhiệm vụ hoặc phần thưởng trên máy chủ.'));
+  body.append(el('p','sm-sound-foot','Âm lượng đã được lưu.'));
  }
  // Jukebox (local addition): choose the Front Page music among the client's tracks and the ten Music Game songs.
  const TRACK_NAMES={home_bg_music:'Front Page',old_home_bg_music:'Front Page (classic)',campaign_bg_music:'Campaign',battle_bg_music_1:'Battle',main_story_battle:'Story · Battle',main_story_campus:'Story · Campus',story_vow:'Oath'};
@@ -71,16 +71,16 @@ const SettingsMenu=(()=>{
   const big=[[-170,T('SETTING_UP_3'),'setting_icon_memories',()=>openMenu('memories','settings-menu')],[170,T('COLLECTION_TITLE'),'setting_icon_achieve',()=>{screen='collection';draw();}]];
   for(const [x,l,ic,fn]of big){const b=btn(st,x,451,312,128,ic,182,116,l,fn,-60);b.classList.add('big');}
   lace(st,335,T('SETTING_UP_1'));
-  btn(st,-225,239,202,78,'setting_icon_notice',78,72,T('SETTING_UP_5'),soon(T('SETTING_UP_5'),"Notices came from the game server; there are no new notices in the local version."));
+  btn(st,-225,239,202,78,'setting_icon_notice',78,72,T('SETTING_UP_5'),soon(T('SETTING_UP_5'),"Hiện chưa có thông báo mới."));
   btn(st,0,239,202,78,'setting_icon_help',78,72,T('SETTING_UP_6'),()=>help());
   btn(st,225,239,202,78,'setting_icon_enhance',78,72,T('SETTING_UP_7'),()=>openMenu('enhance','settings-menu'));
-  btn(st,-225,141,202,78,'setting_icon_community',78,72,T('SETTING_UP_10'),soon(T('SETTING_UP_10'),"The game's social networks and community are unavailable offline."));
+  btn(st,-225,141,202,78,'setting_icon_community',78,72,T('SETTING_UP_10'),soon(T('SETTING_UP_10'),"Hiện chưa có hoạt động cộng đồng mới."));
   btn(st,225,141,202,78,'setting_icon_comic',78,72,'Music',jukebox);
-  btn(st,0,141,202,78,'setting_icon_gm',78,72,T('CHAT_LABEL_1'),soon(T('CHAT_LABEL_1'),"Chat with GMs required the original server."));
+  btn(st,0,141,202,78,'setting_icon_gm',78,72,T('CHAT_LABEL_1'),soon(T('CHAT_LABEL_1'),"Hiện chưa có cuộc trò chuyện với QTV."));
   lace(st,50,T('SETTING_UP_2'));
   btn(st,-225,-46,202,78,'setting_icon_comic',78,72,T('SETTING_UP_9'),()=>{screen='comic';page=0;draw();});
   btn(st,0,-46,202,78,'setting_icon_background',78,72,T('SETTING_UP_BACKGROUND'),()=>{if(typeof Wallpaper!=='undefined')Wallpaper.open();});
-  btn(st,225,-46,202,78,'setting_icon_award',78,72,T('SETTING_UP_AWARD_1'),soon(T('SETTING_UP_AWARD_1'),"Redeem codes were validated by the game server; there are no local codes."));
+  btn(st,225,-46,202,78,'setting_icon_award',78,72,T('SETTING_UP_AWARD_1'),soon(T('SETTING_UP_AWARD_1'),"Nhập mã quà tặng để nhận thưởng."));
   btn(st,0,-157,405,78,'setting_icon_notice',78,72,'Âm Thanh & Thông Báo',audioAndNotifications,-100).classList.add('sm-sound-entry');}
  // CollectionWindow: seven entrances with their progress (collected / collection.lua rows of that type) and the collect points
  // (item 123 awards of every collected row). Collected = the item is owned; Skins use the Costume Wardrobe count.

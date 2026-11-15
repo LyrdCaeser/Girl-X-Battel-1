@@ -13,14 +13,14 @@ const GameAssistant=(()=>{
  // page → parts → groups → rows: [key, kind ('yn' | 'step'), label, illustration]
  const PAGES=[
   [['Luyện Kim',[['Dùng lượt miễn phí',['midas','yn','','djs1']],['Mua bằng Kim Cương',['midas_buy','step','Giới hạn lượt mua','djs12']]]],
-   ['Nhận thưởng Chiến Dịch',[[null,['campaign','yn','','gj']]]],
-   ['Nhận tài nguyên Ký Túc Xá',[[null,['dorm','yn','','ss']]]],
+   ['Nhận thưởng Chiến Dịch',[['Nhận thưởng',['campaign','yn','CÓ','gj']]]],
+   ['Nhận tài nguyên Ký Túc Xá',[['Nhận tài nguyên',['dorm','yn','CÓ','ss']]]],
    ['Câu Hỏi Hằng Ngày',[['Dùng lượt miễn phí',['quiz','yn','','djs1']]]],
    ['Triệu Hồi',[['Triệu Hồi Cao Cấp',['senior','yn','','nd1']],['Triệu Hồi Thường',['capsule','yn','','nd2']]]],
    ['Đấu Trường Sơ Cấp',[['Hoàn thành 3 trận',['arena','yn','','xyls']]]],
    ['Thực Tập',[['Nhận thưởng Thực Tập hoàn tất',['internship','yn','','xzsp']]]],
    ['Hòm Thư và Nhiệm Vụ',[['Nhận tất cả thư',['mail','yn','','cc']],['Nhận nhiệm vụ hằng ngày',['daily','yn','','xzsp1']]]]],
-  [['Khảo Thí Học Viện',[['Chọn Hệ',['house','houses']],['Số lượt quét bằng Giấy Chứng Nhận',['house_raids','step','','tz_gmsp1']],[null,['exam','yn','Raid','tz_xykh']]]]],
+  [['Khảo Thí Học Viện',[['Chọn Hệ',['house','houses']],['Số lượt quét bằng Giấy Chứng Nhận',['house_raids','step','','tz_gmsp1']],['Quét ải',['exam','yn','CÓ','tz_xykh']]]]],
   [['Thám Hiểm Học Viện',[['Nhận tài nguyên',['excursion','yn','','py_yz1']],['Mua Bánh Mì',['bread','step','Chọn số lượng','py_yz2']]]]],
   [['Văn Phòng',[['Điểm Danh',['guild_sign','yn','','st_qd']]]],['Nhà Ăn',[['Bắt đầu đơn hàng',['guild_order','yn','','st_ct']]]]]];
  const KEYS=PAGES.map(p=>p.flatMap(([,groups])=>groups.map(([,r])=>r).filter(r=>r[1]==='yn').map(r=>r[0])));
@@ -40,12 +40,12 @@ const GameAssistant=(()=>{
   st.append(title,x,help);
   TABS.forEach(([n,ic],i)=>{const b=at(el('button','ga2-tab'+(tab===i?' on':'')),-243+162*i,373,164,116);b.type='button';b.style.backgroundImage=`url('${A(tab===i?'gameAssistant_btn_yxzs_gl':'gameAssistant_btn_yxzs_glzc')}')`;b.append(img(A('gameAssistant_btn_yxzs_'+ic)));b.title=n;b.onclick=()=>{tab=i;render();};st.append(b);});
   st.append(at(el('div','ga2-bg2'),0,-71,630,744),at(el('b','ga2-page',TABS[tab][0]),2,269,300,40));
-  const sc=at(el('div','ga2-scroll'),0,-58,630,610);const lim=limits();
+  const sc=at(el('div','ga2-scroll'),0,-58,630,590);const lim=limits();
   for(const [part,groups]of PAGES[tab]){const pt=el('div','ga2-part');pt.append(img(A('gameAssistant_bg_yxzs_gf12'),'l'),el('b','',part),img(A('gameAssistant_bg_yxzs_gf12'),'r'));sc.append(pt);
    for(const [gname,row]of groups){if(gname){const gt=el('div','ga2-gtitle',gname);gt.style.backgroundImage=`url('${A('gameAssistant_bg_yxzs_gf1')}')`;sc.append(gt);}sc.append(rowOf(row,lim));}}
   st.append(sc);
-  const cur=at(el('button','ga2-btn white','Thực Hiện Trang Này'),-124,-497,211,65);cur.type='button';cur.style.backgroundImage=`url('${A('white_btn70_70')}')`;cur.onclick=()=>run(KEYS[tab]);
-  const all=at(el('button','ga2-btn blue','Thực Hiện Tất Cả'),149,-497,211,65);all.type='button';all.style.backgroundImage=`url('${A('blue_btn70_70')}')`;all.onclick=()=>run(KEYS.flat());
+  const cur=at(el('button','ga2-btn white','Thực Hiện Trang Này'),-124,-482,211,65);cur.type='button';cur.style.backgroundImage=`url('${A('white_btn70_70')}')`;cur.onclick=()=>run(KEYS[tab]);
+  const all=at(el('button','ga2-btn blue','Thực Hiện Tất Cả'),149,-482,211,65);all.type='button';all.style.backgroundImage=`url('${A('blue_btn70_70')}')`;all.onclick=()=>run(KEYS.flat());
   cur.disabled=all.disabled=busy;st.append(cur,all);(window.GxbFrame?.root()||document.body).append(wrap);sc.scrollTop=y;}
  function rowOf([key,kind,label,pic],lim){const r=el('div','ga2-row'+(kind==='step'?' tall':''));
   if(pic)r.append(img(A('gameAssistant_bg_'+(pic.includes('_')&&!pic.startsWith('rc')?pic:'rc_'+pic)),'ga2-pic'));

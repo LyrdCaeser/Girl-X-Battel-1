@@ -294,6 +294,13 @@ def _ensure_live_postgres(db):
             uid TEXT NOT NULL, character_name TEXT NOT NULL,
             recipient_uid TEXT NOT NULL DEFAULT '', message TEXT NOT NULL,
             created_at BIGINT NOT NULL)""",
+        """CREATE TABLE IF NOT EXISTS friend_requests(
+            requester_uid TEXT NOT NULL, recipient_uid TEXT NOT NULL, server_id TEXT NOT NULL,
+            status TEXT NOT NULL DEFAULT 'pending', created_at BIGINT NOT NULL, updated_at BIGINT NOT NULL,
+            PRIMARY KEY(requester_uid,recipient_uid,server_id))""",
+        """CREATE TABLE IF NOT EXISTS friendships(
+            uid_a TEXT NOT NULL, uid_b TEXT NOT NULL, server_id TEXT NOT NULL, created_at BIGINT NOT NULL,
+            PRIMARY KEY(uid_a,uid_b,server_id))""",
         """CREATE TABLE IF NOT EXISTS presence(
             uid TEXT NOT NULL, server_id TEXT NOT NULL, character_name TEXT NOT NULL,
             last_seen BIGINT NOT NULL, PRIMARY KEY(uid,server_id))""",
@@ -439,6 +446,13 @@ def _ensure_live_sqlite(db):
             uid TEXT NOT NULL, character_name TEXT NOT NULL,
             recipient_uid TEXT NOT NULL DEFAULT '', message TEXT NOT NULL,
             created_at INTEGER NOT NULL)""",
+        """CREATE TABLE IF NOT EXISTS friend_requests(
+            requester_uid TEXT NOT NULL, recipient_uid TEXT NOT NULL, server_id TEXT NOT NULL,
+            status TEXT NOT NULL DEFAULT 'pending', created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL,
+            PRIMARY KEY(requester_uid,recipient_uid,server_id))""",
+        """CREATE TABLE IF NOT EXISTS friendships(
+            uid_a TEXT NOT NULL, uid_b TEXT NOT NULL, server_id TEXT NOT NULL, created_at INTEGER NOT NULL,
+            PRIMARY KEY(uid_a,uid_b,server_id))""",
         """CREATE TABLE IF NOT EXISTS presence(
             uid TEXT NOT NULL, server_id TEXT NOT NULL, character_name TEXT NOT NULL,
             last_seen INTEGER NOT NULL, PRIMARY KEY(uid,server_id))""",

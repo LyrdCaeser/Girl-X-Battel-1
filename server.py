@@ -504,6 +504,9 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
             ctx=self.auth_context()
             mode=(parse_qs(parsed.query).get('mode') or ['arena'])[0]
             return self.send_sse(ctx,mode)
+        if path == '/api/friends':
+            ctx = self.auth_context(); account = ctx['account']
+            return self.send(200, live_service.friends_snapshot(account['uid'], account['server_id']))
         if path == '/api/world/online':
             ctx = self.auth_context()
             server_id = (parse_qs(parsed.query).get('server_id') or [ctx['account']['server_id']])[0]
@@ -1067,6 +1070,11 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                 return self.send(200,{'authenticated':True},headers={'Set-Cookie':cookie})
             if not self.require_auth():
                 return
+            if path == '/api/friends/action':
+                ctx = self.auth_context(); account = ctx['account']
+                return self.send(200, live_service.friend_action(
+                    account['uid'], account['server_id'], str(data.get('action') or ''),
+                    str(data.get('target_uid') or '')))
             if path == '/api/chat/send':
                 ctx = self.auth_context()
                 account = ctx['account']

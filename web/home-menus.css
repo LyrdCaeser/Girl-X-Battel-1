@@ -38,3 +38,12 @@
 .hm-original-offers .hm-original-offer button{width:100%;min-height:37px;padding:6px;white-space:normal}
 .hm-original-offers .hm-original-offer .hm-note{font-size:12px}
 @media(max-width:370px){.hm-original-offers{grid-template-columns:1fr}}
+
+/* Bạn Bè: danh sách người chơi của máy chủ, giữ phong cách cửa sổ gốc. */
+.hm-friend-board{display:grid;gap:8px;padding:8px;background:linear-gradient(#eaf5ff,#d8e9fb);border:2px solid #9eb7d2;border-radius:9px}
+.hm-friend-row{display:grid;grid-template-columns:58px minmax(0,1fr) auto;gap:9px;align-items:center;min-height:72px;padding:7px;background:linear-gradient(#fff,#edf4fb);border:1px solid #aabbd0;border-radius:8px;box-shadow:inset 0 0 0 1px #fff}
+.hm-friend-avatar{width:54px;height:54px;object-fit:contain}
+.hm-friend-info{display:grid;gap:2px;min-width:0;color:#344f76}.hm-friend-info>b{overflow:hidden;text-overflow:ellipsis}.hm-friend-info small{color:#6a7e98}
+.hm-friend-info span{font-size:12px;font-weight:800}.hm-online{color:#38a858}.hm-offline{color:#8995a4}
+.hm-friend-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:5px}.hm-friend-actions button{min-width:74px}
+@media(max-width:430px){.hm-friend-row{grid-template-columns:48px minmax(0,1fr)}.hm-friend-avatar{width:46px;height:46px}.hm-friend-actions{grid-column:1/-1}}
