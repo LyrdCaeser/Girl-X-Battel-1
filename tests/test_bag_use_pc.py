@@ -40,6 +40,7 @@ class BagUseTests(unittest.TestCase):
         self.assertGreaterEqual(len(gifts),65)
         self.assertEqual(len(gifts),71)
         self.assertEqual(len(recipes),454)
+        self.assertEqual(bag_use.describe(133)['open_all_threshold'],150)
         self.assertEqual(choices['133']['choices'],{'930187':50,'930188':50})
         # Four legacy boxes have optional rows, but original item type=14
         # and gift IDs make them guaranteed multi-item sets, not choices.
@@ -93,6 +94,23 @@ class BagUseTests(unittest.TestCase):
         r=self.engine.use_bag_item(4102003,930187,1)
         self.assertEqual(r['state']['items']['4102003'],0)
         self.assertEqual(r['state']['items']['930187'],50)
+
+    def test_open_all_uses_every_owned_item_only_above_150(self):
+        state=self.engine._load()
+        state['items']['133']=437
+        self.engine._save_profile(state)
+        self.engine.db.commit()
+        result=self.engine.use_bag_item(133,930187,1,True)
+        self.assertEqual(result['used']['count'],437)
+        self.assertEqual(result['state']['items']['133'],0)
+        self.assertEqual(result['state']['items']['930187'],437*50)
+        state=self.engine._load()
+        state['items']['133']=150
+        self.engine._save_profile(state)
+        self.engine.db.commit()
+        with self.assertRaisesRegex(GameError,'trên 150'):
+            self.engine.use_bag_item(133,930187,1,True)
+        self.assertEqual(self.engine._load()['items']['133'],150)
 
     def test_reject_forged_reward_and_unsupported_box_without_spending(self):
         for item,reward in ((133,930194),(207,930188),(133,9999),(17,930187)):
@@ -166,6 +184,8 @@ class BagUseTests(unittest.TestCase):
         css=(root/'web/desktop-layout.css').read_text(encoding='utf-8')
         self.assertIn('/api/inventory/use',app)
         self.assertIn('id="bag-detail-use"',html)
+        self.assertIn('id="bag-detail-use-all"',html)
+        self.assertIn('open_all:openAll',app)
         self.assertIn('bag-actions.css',html)
         self.assertIn('desktop-layout.css',html)
         self.assertIn('fullscreen=True',windows)

@@ -454,8 +454,8 @@ async function showBagItem(item,count,src){
  $('bag-detail-count').textContent='Số lượng: '+number(count);
  $('bag-detail-description').textContent=bagVi(item.description||'Vật phẩm trong Túi Đồ.');
  const image=$('bag-detail-image');image.src=src||'/assets/ui/item_bg.png';image.alt=item.name;
- const select=$('bag-use-choice'),qty=$('bag-use-count'),button=$('bag-detail-use'),note=$('bag-use-note');
- select.replaceChildren();select.hidden=true;qty.hidden=true;button.hidden=true;
+ const select=$('bag-use-choice'),qty=$('bag-use-count'),button=$('bag-detail-use'),allButton=$('bag-detail-use-all'),note=$('bag-use-note');
+ select.replaceChildren();select.hidden=true;qty.hidden=true;button.hidden=true;allButton.hidden=true;
  const nativeChoices=$('bag-use-native-choices');nativeChoices.replaceChildren();nativeChoices.hidden=true;
  const summon=$('bag-detail-summon'),summonLabel=$('bag-summon-label'),summonQty=$('bag-summon-count');
  const shard=Array.isArray(state.debris)?state.debris.find(x=>String(x.id)===String(item.id)&&Number(x.count)>0):null;
@@ -497,6 +497,7 @@ async function showBagItem(item,count,src){
    qty.value='1';
    qty.hidden=false;
    button.hidden=false;button.disabled=false;
+   allButton.hidden=count<=Number(original.open_all_threshold||150);allButton.disabled=false;
    if(original.kind==='choice'){
      const choices=original.choices||[];
      if(!choices.length){note.textContent='Vật phẩm này hiện chưa có phần thưởng.';button.hidden=true;qty.hidden=true;return;}
@@ -534,13 +535,14 @@ async function showBagItem(item,count,src){
    currentBagUse=null;
  }
 }
-async function useSelectedBagItem(){
+async function useSelectedBagItem(openAll=false){
  const selected=currentBagUse;
  if(!selected||selected.loading||busy)return;
- const id=selected.id,count=Number($('bag-use-count').value);
- const owned=Number(state.items[String(id)]||0);
- if(!Number.isSafeInteger(count)||count<1||count>Math.min(owned,selected.options.max_per_use)){
-   error('Số lượng vật phẩm không hợp lệ');return;
+ const id=selected.id,owned=Number(state.items[String(id)]||0);
+ const count=openAll?owned:Number($('bag-use-count').value);
+ const threshold=Number(selected.options.open_all_threshold||150);
+ if((openAll&&owned<=threshold)||(!openAll&&(!Number.isSafeInteger(count)||count<1||count>Math.min(owned,selected.options.max_per_use)))){
+   error(openAll?'Mở Tất Cả chỉ dùng khi có trên '+number(threshold)+' vật phẩm.':'Số lượng vật phẩm không hợp lệ');return;
  }
  const reward=selected.kind==='choice'?Number($('bag-use-choice').value):null;
  if(selected.kind==='choice'&&!selected.options.choices.some(x=>Number(x.id)===reward)){
@@ -550,17 +552,17 @@ async function useSelectedBagItem(){
    (' nhận '+$('bag-use-choice').selectedOptions[0]?.textContent+' mỗi lần'):
    (selected.options.random?' nhận phần thưởng ngẫu nhiên':' nhận toàn bộ quà');
  const confirmed=typeof GirlUI!=='undefined'&&GirlUI.confirm
-   ? await GirlUI.confirm('Dùng '+count+' × '+bagVi(selected.name)+' để'+message+'?',{title:'Xác nhận sử dụng',ok:'Dùng',cancel:'Hủy'})
-   : confirm('Dùng '+count+' × '+bagVi(selected.name)+' để'+message+'?');
+   ? await GirlUI.confirm((openAll?'Mở tất cả ':'Dùng ')+count+' × '+bagVi(selected.name)+' để'+message+'?',{title:openAll?'Xác nhận Mở Tất Cả':'Xác nhận sử dụng',ok:openAll?'Mở Tất Cả':'Dùng',cancel:'Hủy'})
+   : confirm((openAll?'Mở tất cả ':'Dùng ')+count+' × '+bagVi(selected.name)+' để'+message+'?');
  if(!confirmed)return;
- const button=$('bag-detail-use');button.disabled=true;busy=true;
+ const button=$('bag-detail-use'),allButton=$('bag-detail-use-all');button.disabled=true;allButton.disabled=true;busy=true;
  try{
-   const result=await api('/api/inventory/use',{item_id:id,reward_id:reward,count});
+   const result=await api('/api/inventory/use',{item_id:id,reward_id:reward,count,open_all:openAll});
    state=result.state; $('bag-detail').hidden=true;currentBagUse=null;
    if(typeof GxbAudio!=='undefined')GxbAudio.sfx('gain_window_sound',.75);
    render();error('');
  }catch(e){error(e.message);}
- finally{busy=false;button.disabled=false;}
+ finally{busy=false;button.disabled=false;allButton.disabled=false;}
 }
 function renderBag(){
  $('bag-gold').textContent=number(state.items['1']);$('bag-gems').textContent=number(state.items['2']);
@@ -821,8 +823,9 @@ $('detail-grade-up').addEventListener('click',async()=>{
  await action('PARTNER_GRADEUP',{partner_id:hero.partner_id});
 });
 $('bag-detail-close').addEventListener('click',()=>{$('bag-detail').hidden=true;});
-$('bag-detail-use').addEventListener('click',useSelectedBagItem);
-$('bag-forge').addEventListener('click',()=>{const panel=$('bag-detail');$('bag-detail-use').hidden=true;$('bag-use-choice').hidden=true;$('bag-use-count').hidden=true;$('bag-use-note').hidden=true;currentBagUse=null;$('bag-detail-name').textContent='Forge';$('bag-detail-count').textContent="Forge coming soon";$('bag-detail-description').textContent="The Bag already uses your actual items. Forge recipes and operations will be added when equipment tables are connected.";$('bag-detail-image').src='/assets/ui/quality_6.png';$('bag-detail-image').alt='';panel.hidden=false;});
+$('bag-detail-use').addEventListener('click',()=>useSelectedBagItem(false));
+$('bag-detail-use-all').addEventListener('click',()=>useSelectedBagItem(true));
+$('bag-forge').addEventListener('click',()=>{const panel=$('bag-detail');$('bag-detail-use').hidden=true;$('bag-detail-use-all').hidden=true;$('bag-use-choice').hidden=true;$('bag-use-count').hidden=true;$('bag-use-note').hidden=true;currentBagUse=null;$('bag-detail-name').textContent='Forge';$('bag-detail-count').textContent="Forge coming soon";$('bag-detail-description').textContent="The Bag already uses your actual items. Forge recipes and operations will be added when equipment tables are connected.";$('bag-detail-image').src='/assets/ui/quality_6.png';$('bag-detail-image').alt='';panel.hidden=false;});
 const comingRoutes={"Guild":'guild',"Menu":'settings',"Mail":'mail',"Gift Packs":'original-gifts',"Limited Gift":'original-limited-gift',"Events":'events',"Treasure":'treasure',"Friends":'friends',"Fantasy Book":'book','Servant':'servant',"Excursion":'expedition',"Store":'black-market'};
 document.querySelectorAll('[data-coming]').forEach(b=>b.addEventListener('click',()=>{const key=comingRoutes[b.dataset.coming];if(key){openMenu(key);return;}notice(b.dataset.coming);}));
 $('home-add-gold')?.addEventListener('click',()=>{if(typeof Midas!=='undefined')Midas.open();});

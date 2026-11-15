@@ -517,7 +517,7 @@ class Engine:
         from . import bag_use
         return bag_use.describe(item_id)
 
-    def use_bag_item(self, item_id, reward_id=None, count=1):
+    def use_bag_item(self, item_id, reward_id=None, count=1, open_all=False):
         """Server-authoritative original game reward rules; never trust client data."""
         from . import bag_use
         with self.lock:
@@ -525,7 +525,8 @@ class Engine:
             try:
                 state = self._load()
                 try:
-                    rewards = bag_use.open_in_state(state, item_id, count, reward_id)
+                    used_count = int(state.get('items', {}).get(str(int(item_id)), 0)) if open_all else int(count)
+                    rewards = bag_use.open_in_state(state, item_id, count, reward_id, open_all)
                 except ValueError as exc:
                     raise GameError(str(exc)) from exc
                 self._save_profile(state)
@@ -534,7 +535,7 @@ class Engine:
                 self.db.rollback()
                 raise
         return {'state': self.snapshot(),
-                'used': {'item_id': int(item_id), 'count': int(count)},
+                'used': {'item_id': int(item_id), 'count': used_count},
                 'rewards': rewards}
 
     def growth_diary_action(self, request):

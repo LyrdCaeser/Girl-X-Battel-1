@@ -1165,7 +1165,8 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                 return self.send(200, self.engine.bag_use_options(data.get('item_id')))
             if path == '/api/inventory/use':
                 return self.send(200, self.engine.use_bag_item(
-                    data.get('item_id'), data.get('reward_id'), data.get('count', 1)))
+                    data.get('item_id'), data.get('reward_id'), data.get('count', 1),
+                    data.get('open_all', False)))
             if path == '/api/giftskin/verify':
                 a=self.auth_context()['account']
                 return self.send(200,skin_gifts.view_recipient(

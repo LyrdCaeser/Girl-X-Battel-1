@@ -14,6 +14,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / 'data/recovered/tables'
 MAX_OPEN = 50
+OPEN_ALL_THRESHOLD = 150
 
 
 def _table(name):
@@ -113,9 +114,10 @@ def describe(item_id):
                 'choices': [{'id': int(rid), 'amount': amount,
                              'name': catalog.get(rid, {}).get('name') or 'Vật phẩm #' + rid}
                             for rid, amount in recipe['choices'].items()],
-                'max_per_use': MAX_OPEN}
+                'max_per_use': MAX_OPEN, 'open_all_threshold': OPEN_ALL_THRESHOLD}
     return {'usable': True, 'item_id': item_id, 'kind': 'gift',
-            'random': bool(recipe['pools']), 'max_per_use': MAX_OPEN}
+            'random': bool(recipe['pools']), 'max_per_use': MAX_OPEN,
+            'open_all_threshold': OPEN_ALL_THRESHOLD}
 
 
 @lru_cache(maxsize=1)
@@ -123,19 +125,25 @@ def _catalog():
     return json.loads((ROOT / 'web/assets/items-catalog.json').read_text(encoding='utf-8'))
 
 
-def open_in_state(state, item_id, count, reward_id=None):
+def open_in_state(state, item_id, count, reward_id=None, open_all=False):
     """Mutate only an already transaction-locked state; caller commits atomically."""
     if any(isinstance(v, (bool, float, list, dict)) for v in (item_id, count)):
         raise ValueError('ID hoặc số lượng vật phẩm không hợp lệ')
+    if not isinstance(open_all, bool):
+        raise ValueError('Yêu cầu Mở Tất Cả không hợp lệ')
     if not str(item_id).isdecimal() or not str(count).isdecimal():
         raise ValueError('ID hoặc số lượng vật phẩm không hợp lệ')
     item_id, count = str(int(item_id)), int(count)
     recipe = recipes().get(item_id)
     if not recipe:
         raise ValueError('Vật phẩm này hiện chưa thể Dùng/Mở')
-    if count < 1 or count > MAX_OPEN:
-        raise ValueError('Số lượng sử dụng không hợp lệ')
     old = int(state.get('items', {}).get(item_id, 0))
+    if open_all:
+        if old <= OPEN_ALL_THRESHOLD:
+            raise ValueError('Mở Tất Cả chỉ dành cho vật phẩm có trên 150 món')
+        count = old
+    elif count < 1 or count > MAX_OPEN:
+        raise ValueError('Số lượng sử dụng không hợp lệ')
     if old < count:
         raise ValueError('Không đủ vật phẩm trong Túi Đồ')
     rewards = {}
