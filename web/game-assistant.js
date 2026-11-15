@@ -72,7 +72,7 @@ const GameAssistant=(()=>{
   const h=s.home_systems||{},m=s.missions_info||{},items=s.items||{};
   const affords=cost=>{const pairs=String(cost||'').split('|').filter(x=>x.includes('#'));return pairs.length>0&&pairs.every(x=>{const [k,n]=x.split('#');return Number(items[k]||0)>=Number(n);});};
   const tasks=(m.daily||[]).some(t=>t.tracked&&!t.claimed&&Number(s.level)>=Number(t.lv||0))||(m.trophies||[]).some(t=>t.can);
-  const mail=(h.mail||[]).some(t=>!t.read||(!t.claimed&&t.awards));
+  const mail=(h.mail||[]).some(t=>!t.read||(!t.claimed&&t.awards))||(s.mail_info||[]).some(t=>!t.read);
   const book=(h.missions||[]).some(t=>!t.claimed&&t.progress>=t.goal);
   const servant=Object.values(h.pet_details||{}).some(p=>affords(p.level_cost)||affords(p.grade_cost)||(p.skill_details||[]).some(t=>t.open&&t.lv<t.max&&affords(t.cost)));
   const excursion=(s.explore_info?.chests||[]).some(t=>t.ready)||(h.buildings||[]).some(t=>t.stock>0);

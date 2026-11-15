@@ -20,6 +20,8 @@ function makeContext(){
    {rank:1,uid:'PLAYER-ALPHA',server_id:'S2',character_name:'Người Chơi Thật',rating:1211,wins:3,losses:2,level:51,power:12344},
    {rank:2,uid:'PLAYER-SELF',server_id:'S1',character_name:'Chủ Tài Khoản',rating:1140,wins:4,losses:1,level:61,power:23445}
   ],
+  candidates:[{uid:'PLAYER-ALPHA',server_id:mode==='cross'?'S2':'S1',character_name:'Người Chơi Thật',rating:1211,matches:3,level:51,power:12344,avatar:'head_1001'}],
+  season:{seconds_left:86400},
   pvp:simulatedMatch&&mode===simulatedMatchMode?{status:'matched',match:{...simulatedMatch}}:{status:'idle'},history:[],
   series:simulatedMatch&&mode==='arena3v3'?{paid:seriesAllPaid,all_paid:seriesAllPaid,rounds:[],wins_a:0,wins_b:0,next_round:0}:undefined,
   arena3v3:mode==='arena3v3'?{teams:[
@@ -44,7 +46,7 @@ function makeContext(){
    calls.push({url,body});
    if(url.startsWith('/api/pvp/status'))return dataFor(new URL('https://example.test'+url).searchParams.get('mode'));
    if(url==='/api/pvp/match/heartbeat')return {match:{...simulatedMatch,status:heartbeatReady?'active':'ready'}};
-   if(url==='/api/pvp/queue')return {status:'waiting'};
+   if(url==='/api/pvp/challenge'){simulatedMatchMode=body.mode;simulatedMatch={id:'M-REAL-1',status:'active',player_a:'PLAYER-SELF',player_b:body.target_uid,name_a:'Chủ Tài Khoản',name_b:'Người Chơi Thật',server_a:'S1',server_b:body.target_server};return {status:'matched',match:{...simulatedMatch}};}
    if(url==='/api/pvp/arena3v3/teams')return {ok:true,teams:body.teams};
    if(url==='/api/pvp/match/battle')return {result:{winner_uid:'PLAYER-SELF',battle_report:{total_round:2}}};
    if(url==='/api/pvp/match/replay')return {report:{frames:[{pos:1,round:1,buffs:[]}],isWin:1,display_units:[]}};
@@ -70,10 +72,11 @@ function makeContext(){
         'original 65x65 white sprite is present for reward/history/defense buttons');
  const fight=markup.find(n=>n.className==='ar-fight');
  fight.onclick();
- const join=roots['arena-view'].descendants.find(n=>n.textContent==='Ghép trận');
- assert(join,'native original matchmaking panel');
- await join.onclick();
- assert(calls.some(c=>c.url==='/api/pvp/queue'&&c.body?.action==='join'&&c.body.mode==='arena'));
+ const choose=roots['arena-view'].descendants.find(n=>n.textContent==='So Tài');
+ assert(choose,'selected real-opponent panel');
+ await choose.onclick();
+ assert(calls.some(c=>c.url==='/api/pvp/challenge'&&c.body?.target_uid==='PLAYER-ALPHA'&&c.body.mode==='arena'));
+ assert(!calls.some(c=>c.url==='/api/pvp/queue'),'random matchmaking queue must never be used');
  await vm.runInContext('NativeOnlineArenas',ctx).open('cross','home');
  assert(roots['arena-view'].descendants.some(n=>n.src?.includes('arena-cross.png')),
         'original cross-server Arena art, not generic dark online popup');
@@ -132,5 +135,5 @@ function makeContext(){
  assert(series.calls.some(c=>c.url==='/api/pvp/arena3v3/replay'&&c.body?.round===0));
  assert.equal(series.replays.length,1,'real 3v3 round is replayed exactly once');
  assert.equal(series.replays[0].label.includes('Lượt 1'),true);
- console.log('PASS | original native Junior Varsity, three-team and cross-server screens use only real PVP data and queue APIs');
+ console.log('PASS | original native Junior Varsity, three-team and cross-server screens use only real PVP data and selected-opponent APIs');
 })().catch(e=>{console.error(e);process.exitCode=1;});

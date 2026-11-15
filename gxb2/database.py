@@ -279,7 +279,7 @@ def _ensure_live_postgres(db):
             id TEXT PRIMARY KEY, uid TEXT NOT NULL, server_id TEXT NOT NULL, character_name TEXT NOT NULL,
             title TEXT NOT NULL, body TEXT NOT NULL, attachments TEXT NOT NULL,
             status TEXT NOT NULL DEFAULT 'pending', created_at BIGINT NOT NULL,
-            claimed_at BIGINT NOT NULL DEFAULT 0, operator TEXT NOT NULL DEFAULT 'GM')""",
+            claimed_at BIGINT NOT NULL DEFAULT 0, read_at BIGINT NOT NULL DEFAULT 0, operator TEXT NOT NULL DEFAULT 'GM')""",
         """CREATE TABLE IF NOT EXISTS orders(
             id TEXT PRIMARY KEY, uid TEXT NOT NULL, server_id TEXT NOT NULL, character_name TEXT NOT NULL,
             package TEXT NOT NULL, package_name TEXT NOT NULL DEFAULT '', price_label TEXT NOT NULL DEFAULT '',
@@ -362,7 +362,7 @@ def _ensure_live_postgres(db):
             created_at BIGINT NOT NULL, resolved_at BIGINT NOT NULL DEFAULT 0, seed BIGINT NOT NULL DEFAULT 0,
             snapshot_a TEXT NOT NULL DEFAULT '{}', snapshot_b TEXT NOT NULL DEFAULT '{}',
             battle_report TEXT NOT NULL DEFAULT '{}', rating_delta_a INTEGER NOT NULL DEFAULT 0,
-            rating_delta_b INTEGER NOT NULL DEFAULT 0)""",
+            rating_delta_b INTEGER NOT NULL DEFAULT 0, challenge_uid TEXT NOT NULL DEFAULT '')""",
         """CREATE TABLE IF NOT EXISTS pvp_ratings(
             uid TEXT NOT NULL, server_id TEXT NOT NULL, mode TEXT NOT NULL, season_id TEXT NOT NULL,
             rating INTEGER NOT NULL DEFAULT 1000, wins INTEGER NOT NULL DEFAULT 0,
@@ -392,8 +392,10 @@ def _ensure_live_postgres(db):
         ("snapshot_a", "TEXT NOT NULL DEFAULT '{}'"), ("snapshot_b", "TEXT NOT NULL DEFAULT '{}'"),
         ("battle_report", "TEXT NOT NULL DEFAULT '{}'"), ("rating_delta_a", "INTEGER NOT NULL DEFAULT 0"),
         ("rating_delta_b", "INTEGER NOT NULL DEFAULT 0"),
+        ("challenge_uid", "TEXT NOT NULL DEFAULT ''"),
     ):
         db.execute(f"ALTER TABLE pvp_matches ADD COLUMN IF NOT EXISTS {col} {ddl}")
+    db.execute("ALTER TABLE mail ADD COLUMN IF NOT EXISTS read_at BIGINT NOT NULL DEFAULT 0")
     indexes = [
         "CREATE INDEX IF NOT EXISTS idx_presence_server_seen ON presence(server_id,last_seen DESC)",
         "CREATE INDEX IF NOT EXISTS idx_leaderboard_server_power ON leaderboard(server_id,power DESC,level DESC)",
@@ -431,7 +433,7 @@ def _ensure_live_sqlite(db):
             id TEXT PRIMARY KEY, uid TEXT NOT NULL, server_id TEXT NOT NULL, character_name TEXT NOT NULL,
             title TEXT NOT NULL, body TEXT NOT NULL, attachments TEXT NOT NULL,
             status TEXT NOT NULL DEFAULT 'pending', created_at INTEGER NOT NULL,
-            claimed_at INTEGER NOT NULL DEFAULT 0, operator TEXT NOT NULL DEFAULT 'GM')""",
+            claimed_at INTEGER NOT NULL DEFAULT 0, read_at INTEGER NOT NULL DEFAULT 0, operator TEXT NOT NULL DEFAULT 'GM')""",
         """CREATE TABLE IF NOT EXISTS orders(
             id TEXT PRIMARY KEY, uid TEXT NOT NULL, server_id TEXT NOT NULL, character_name TEXT NOT NULL,
             package TEXT NOT NULL, package_name TEXT NOT NULL DEFAULT '', price_label TEXT NOT NULL DEFAULT '',
@@ -517,7 +519,7 @@ def _ensure_live_sqlite(db):
             created_at INTEGER NOT NULL, resolved_at INTEGER NOT NULL DEFAULT 0, seed INTEGER NOT NULL DEFAULT 0,
             snapshot_a TEXT NOT NULL DEFAULT '{}', snapshot_b TEXT NOT NULL DEFAULT '{}',
             battle_report TEXT NOT NULL DEFAULT '{}', rating_delta_a INTEGER NOT NULL DEFAULT 0,
-            rating_delta_b INTEGER NOT NULL DEFAULT 0)""",
+            rating_delta_b INTEGER NOT NULL DEFAULT 0, challenge_uid TEXT NOT NULL DEFAULT '')""",
         """CREATE TABLE IF NOT EXISTS pvp_ratings(
             uid TEXT NOT NULL, server_id TEXT NOT NULL, mode TEXT NOT NULL, season_id TEXT NOT NULL,
             rating INTEGER NOT NULL DEFAULT 1000, wins INTEGER NOT NULL DEFAULT 0,
@@ -565,9 +567,13 @@ def _ensure_live_sqlite(db):
         ("snapshot_a", "TEXT NOT NULL DEFAULT '{}'"), ("snapshot_b", "TEXT NOT NULL DEFAULT '{}'"),
         ("battle_report", "TEXT NOT NULL DEFAULT '{}'"), ("rating_delta_a", "INTEGER NOT NULL DEFAULT 0"),
         ("rating_delta_b", "INTEGER NOT NULL DEFAULT 0"),
+        ("challenge_uid", "TEXT NOT NULL DEFAULT ''"),
     ):
         if col not in pvp_cols:
             db.execute(f"ALTER TABLE pvp_matches ADD COLUMN {col} {ddl}")
+    mail_cols = {row[1] for row in db.execute("PRAGMA table_info(mail)")}
+    if "read_at" not in mail_cols:
+        db.execute("ALTER TABLE mail ADD COLUMN read_at INTEGER NOT NULL DEFAULT 0")
 
     indexes = [
         "CREATE INDEX IF NOT EXISTS idx_presence_server_seen ON presence(server_id,last_seen DESC)",

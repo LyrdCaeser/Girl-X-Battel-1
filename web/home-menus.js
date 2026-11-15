@@ -260,7 +260,7 @@ const HomeMenus=(()=>{
  }
 
  let mailRefreshBusy=false,mailLastRefresh=0,giftcodeBusy=false,giftcodeTyped='';
- const mailSignature=rows=>JSON.stringify((rows||[]).map(m=>[m.id,m.status,m.created_at]));
+ const mailSignature=rows=>JSON.stringify((rows||[]).map(m=>[m.id,m.status,m.created_at,m.read]));
  async function refreshServerMail(silent=false){
   if(mailRefreshBusy||pending)return;
   const expectedUid=state?.uid,previous=mailSignature(state?.mail_info);let redraw=false;
@@ -270,7 +270,7 @@ const HomeMenus=(()=>{
    if(expectedUid!==state?.uid)return;
    const rows=Array.isArray(result?.mail_info)?result.mail_info:[];
    const changed=mailSignature(rows)!==previous;
-   state={...state,mail_info:rows};mailLastRefresh=Date.now();
+   state={...state,mail_info:rows};mailLastRefresh=Date.now();if(window.GameAssistant)GameAssistant.updateHome();
    if(!silent)message='Hòm Thư đã được cập nhật.';
    redraw=!silent||changed;
   }catch(e){
@@ -298,10 +298,20 @@ const HomeMenus=(()=>{
   try{
    const result=await api('/api/mail/claim',{mail_id:mailId});
    if(result?.state)state=result.state;
-   mailLastRefresh=Date.now();
+   mailLastRefresh=Date.now();if(window.GameAssistant)GameAssistant.updateHome();
    message='Đã nhận vật phẩm đính kèm.';
   }catch(e){message=e.message||'Không thể nhận thư.';}
   finally{pending=false;render();}
+ }
+ async function markServerMailRead(){
+  const unread=(state?.mail_info||[]).some(m=>!m.read);
+  if(!unread)return;
+  try{
+   const result=await api('/api/mail/read',{});
+   if(Array.isArray(result?.mail_info))state={...state,mail_info:result.mail_info};
+   if(window.GameAssistant)GameAssistant.updateHome();
+   if(view==='home-systems'&&root==='mail'&&tab==='server')render();
+  }catch(_){}
  }
  function serverMail(parent){
   const tools=el('div',undefined,'hm-mail-tools');
@@ -317,6 +327,7 @@ const HomeMenus=(()=>{
   parent.append(tools);
   if(!mailRefreshBusy&&Date.now()-mailLastRefresh>4000)queueMicrotask(()=>refreshServerMail(true));
   const rows=Array.isArray(state?.mail_info)?state.mail_info:[];
+  if(rows.some(m=>!m.read))queueMicrotask(markServerMailRead);
   if(!rows.length)paragraph(parent,'Chưa có thư máy chủ.');
   for(const m of rows){
    const claimed=m.status==='claimed';

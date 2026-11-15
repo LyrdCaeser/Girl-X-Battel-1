@@ -17,7 +17,7 @@ window.AdminPanel=(()=>{
     root.append(head);
 
     const nav=el('nav','admin-nav');
-    [['overview','Tổng quan'],['players','Người chơi'],['mail','Gửi thư'],['currency','Tiền tệ'],['items','Vật phẩm'],['shards','Mảnh nhân vật'],['goddess','Gift Nữ Thần'],['orders','Đơn nạp'],['worlds','Server'],['config','Cấu hình'],['audit','Audit']].forEach(([id,label])=>{
+    [['overview','Tổng quan'],['players','Người chơi'],['mail','Gửi thư'],['currency','Tiền tệ'],['items','Vật phẩm'],['shards','Mảnh nhân vật'],['goddess','Gift Nữ Thần'],['orders','Đơn nạp'],['worlds','Server'],['tools','Công cụ'],['config','Cấu hình'],['audit','Audit']].forEach(([id,label])=>{
       const b=btn(label,()=>show(id),'admin-tab');b.dataset.tab=id;nav.append(b);
     });
     root.append(nav);
@@ -30,7 +30,7 @@ window.AdminPanel=(()=>{
   async function refreshDashboard(){dash=await api('/api/admin/dashboard');}
   function show(id){active=id;for(const b of root.querySelectorAll('.admin-tab'))b.classList.toggle('on',b.dataset.tab===id);render();}
   function render(){const body=document.getElementById('admin-body');if(!body)return;body.replaceChildren();
-    const fn={overview:renderOverview,mail:renderMail,currency:renderCurrency,items:renderItems,shards:renderShards,goddess:renderGoddessGift,orders:renderOrders,players:renderPlayers,worlds:renderWorlds,config:renderConfig,audit:renderAudit}[active]||renderOverview;fn(body);
+    const fn={overview:renderOverview,mail:renderMail,currency:renderCurrency,items:renderItems,shards:renderShards,goddess:renderGoddessGift,orders:renderOrders,players:renderPlayers,worlds:renderWorlds,tools:renderTools,config:renderConfig,audit:renderAudit}[active]||renderOverview;fn(body);
   }
   function renderOverview(body){
     const grid=el('div','admin-grid');
@@ -455,6 +455,19 @@ window.AdminPanel=(()=>{
   async function worldPolicy(server_id,registration_open,character_creation_open,message){try{
     await api('/api/admin/world',{action:'policy',server_id,registration_open,character_creation_open,message});status('Đã lưu policy '+server_id+'.');await refreshDashboard();render();
   }catch(e){status(e.message,false);}}
+  function renderTools(body){
+    const c=card('Công cụ SUPER GM');
+    c.append(el('p','admin-note','Quét Sạch Chiến Dịch sẽ mở và đánh dấu hoàn tất toàn bộ ải hiện có cho đúng nhân vật SUPER GM đang đăng nhập. Không thay đổi tài khoản người chơi khác.'));
+    const run=btn('Quét Sạch Chiến Dịch',async()=>{
+      const ok=await GirlUI.confirm('Mở và hoàn tất toàn bộ ải Chiến Dịch cho nhân vật hiện tại?',{title:'Quét Sạch Chiến Dịch',ok:'Xác nhận',cancel:'Hủy'});
+      if(!ok)return;
+      run.disabled=true;status('Đang quét toàn bộ Chiến Dịch…');
+      try{const result=await api('/api/developer',{action:'campaign_all'});if(result?.state)state=result.state;status('Đã mở toàn bộ '+Number(state?.max_stage||0)+' ải Chiến Dịch.');renderGame();}
+      catch(e){status(e.message||'Không thể quét Chiến Dịch',false);}
+      finally{run.disabled=false;}
+    },'primary');
+    c.append(run);body.append(c);
+  }
   function renderConfig(body){
     const grid=el('div','admin-grid');
     const res=card('Tài nguyên & Nữ Thần khởi đầu');const starter=cfg.starting_resources||{};

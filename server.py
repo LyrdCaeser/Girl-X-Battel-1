@@ -565,11 +565,14 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
             ctx = self.auth_context(); account = ctx['account']
             query = parse_qs(parsed.query)
             mode = (query.get('mode') or ['arena'])[0]
+            live_service.settle_previous_pvp_season(mode, account['server_id'])
             pvp = live_service.pvp_status(account['uid'], account['server_id'], mode)
             payload = {
                 'pvp': pvp,
                 'rating': live_service.pvp_rating(account['uid'], account['server_id'], mode),
                 'rating_board': live_service.pvp_rating_board(mode, limit=50, server_id='' if mode == 'cross' else account['server_id']),
+                'candidates': live_service.pvp_candidates(account['uid'], account['server_id'], mode, 20),
+                'season': live_service.pvp_season_window(mode, account['server_id']),
                 'season_reward': live_service.pvp_season_claim_status(account['uid'], account['server_id'], mode),
                 'history': live_service.pvp_history(account['uid'], 20),
             }
@@ -1008,7 +1011,7 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
             if path == '/api/auth/reset-password' and not self.rate_limit('auth_reset'): return
             if path == '/api/auth/recovery-code' and not self.rate_limit('recovery_rotate'): return
             if path == '/api/order/create' and not self.rate_limit('order_create'): return
-            if path in ('/api/pvp/queue','/api/pvp/arena3v3/teams','/api/pvp/arena3v3/pay') and not self.rate_limit_player('pvp_queue'): return
+            if path in ('/api/pvp/queue','/api/pvp/challenge','/api/pvp/arena3v3/teams','/api/pvp/arena3v3/pay') and not self.rate_limit_player('pvp_queue'): return
             if path in ('/api/pvp/match/battle','/api/pvp/match/replay','/api/pvp/arena3v3/round','/api/pvp/arena3v3/replay','/api/guild-war/battle') and not self.rate_limit_player('battle'): return
             if path.startswith('/api/admin/') and not self.rate_limit('admin'): return
             if path == '/api/giftcode/redeem' and not self.rate_limit('giftcode_redeem'): return
@@ -1423,17 +1426,19 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
             if path == '/api/pvp/arena3v3/pay':
                 ctx = self.auth_context(); account = ctx['account']
                 return self.send(200, self.engine.pay_pvp_arena3v3_ticket(data.get('match_id'), account['uid']))
+            if path == '/api/pvp/challenge':
+                ctx = self.auth_context(); account = ctx['account']; player = ctx['player']
+                mode = str(data.get('mode') or 'arena')
+                current = self.engine.pvp_arena3v3_snapshot() if mode == 'arena3v3' else self.engine.snapshot()
+                return self.send(200, live_service.challenge_pvp(
+                    account['uid'], account['server_id'], player['character_name'], mode,
+                    data.get('target_uid'), data.get('target_server'), int(current.get('power',0))))
             if path == '/api/pvp/queue':
                 ctx = self.auth_context(); account = ctx['account']; player = ctx['player']
                 action = str(data.get('action') or 'join')
                 mode = str(data.get('mode') or 'arena')
                 if action == 'join':
-                    if mode == 'arena3v3':
-                        current = self.engine.pvp_arena3v3_snapshot()
-                    else:
-                        current = self.engine.snapshot()
-                    result = live_service.enqueue_pvp(account['uid'], account['server_id'], player['character_name'],
-                                                      mode, int(current.get('power',0)))
+                    raise ValueError('Ghép ngẫu nhiên đã tắt. Hãy chọn đối thủ trong danh sách So Tài.')
                 elif action == 'cancel':
                     result = live_service.cancel_pvp(account['uid'], account['server_id'], mode)
                 else:
@@ -1585,6 +1590,11 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
             if path == '/api/order/create':
                 state = self.engine.snapshot()
                 return self.send(200, live_service.create_order(state.get('uid'), state.get('server_id'), state.get('name'), data.get('package'), data.get('note','')))
+            if path == '/api/mail/read':
+                ctx = self.auth_context(); account = ctx['account']
+                result = live_service.mark_mail_read(account['uid'], account['server_id'], data.get('mail_id'))
+                result['mail_info'] = live_service.mailbox(account['uid'], account['server_id'])
+                return self.send(200, result)
             if path == '/api/mail/claim':
                 return self.send(200, self.engine.claim_live_mail(data.get('mail_id')))
             # require_auth() above already validates the session and active player row.

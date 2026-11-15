@@ -68,12 +68,12 @@ class PvPHttpSessionTests(unittest.TestCase):
         return payload
 
     def ready_match(self,mode):
-        for idx in (0,1):
-            self.call('POST','/api/pvp/queue',{'action':'join','mode':mode},idx)
         status=self.call('GET',f'/api/pvp/status?mode={mode}',user=0)
-        match=status['pvp']['match']
-        for idx in (0,1):
-            self.call('POST','/api/pvp/match/heartbeat',{'match_id':match['id'],'ready':True},idx)
+        rival=next(row for row in status['candidates'] if row['character_name']=='PvP Tester 1')
+        selected=self.call('POST','/api/pvp/challenge',{
+            'mode':mode,'target_uid':rival['uid'],'target_server':rival['server_id']},0)
+        match=selected['match']
+        self.call('POST','/api/pvp/match/heartbeat',{'match_id':match['id'],'ready':True},0)
         return match['id']
 
     def test_http_auth_cookies_real_pvp_and_replay_access(self):
@@ -97,13 +97,16 @@ class PvPHttpSessionTests(unittest.TestCase):
     def test_online_arena_and_guild_rosters_expose_only_public_avatar_ids(self):
         # Registration is NOT an arena result. Create a real authoritative
         # 1v1 before checking public leaderboard avatars.
-        self.assertEqual(self.call('GET','/api/pvp/status?mode=arena',user=0)['rating_board'],[])
+        initial=self.call('GET','/api/pvp/status?mode=arena',user=0)['rating_board']
+        self.assertEqual(len(initial),3)
+        self.assertTrue(all(p['rank_basis']=='power' for p in initial))
         self.ready_match('arena')
         match=self.call('GET','/api/pvp/status?mode=arena',user=0)['pvp']['match']
         self.call('POST','/api/pvp/match/battle',{'match_id':match['id']},0)
         board=self.call('GET','/api/pvp/status?mode=arena',user=0)['rating_board']
-        self.assertEqual(len(board),2)
-        self.assertTrue(all(p['matches']>0 for p in board))
+        self.assertEqual(len(board),3)
+        self.assertTrue(all(p['matches']>0 for p in board[:2]))
+        self.assertEqual(board[2]['matches'],0)
         for player in board:
             self.assertEqual(player['avatar'],'head_1001')  # clean SQLite fallback
             self.assertTrue(set(player).isdisjoint({'data','items','email','password_hash','salt'}))

@@ -641,6 +641,10 @@ class Engine:
                 state['tower'] = {'max_stage': floor - 1, 'tickets': 10, 'at': self.now()}
             elif action == 'campaign':
                 state['max_stage'] = 29; state['current_stage'] = 30
+            elif action == 'campaign_all':
+                last_stage = max(int(stage_id) for stage_id in TABLES['stage'])
+                state['max_stage'] = last_stage
+                state['current_stage'] = last_stage
             else: raise GameError('Herramienta desconocida')
             self._save_profile(state)
             self.db.commit()

@@ -16,6 +16,7 @@ PVP_SEASON_REWARDS = json.loads((ROOT / 'data/pvp_season_rewards.json').read_tex
 GUILD_ONLINE_CONFIG = json.loads((ROOT / 'data/guild_online_config.json').read_text())
 DB_PATH = ROOT / "state" / "live_service.sqlite3"
 _lock = threading.RLock()
+_pvp_settled_cache = set()
 
 
 def _db():
@@ -139,6 +140,7 @@ def send_mail(uid,server_id,character_name,title,body,attachments,operator="GM")
             "title":str(title or "Quà từ GM"),"body":str(body or ''),"attachments":clean,"status":"pending","created_at":now}
 
 
+
 def mailbox(uid,server_id):
     with _lock:
         db=_db()
@@ -146,8 +148,23 @@ def mailbox(uid,server_id):
                         (str(uid),str(server_id).upper())).fetchall()
         out=[]
         for r in rows:
-            d=dict(r); d["attachments"]=json.loads(d["attachments"]); out.append(d)
+            d=dict(r); d["attachments"]=json.loads(d["attachments"])
+            d["read"]=bool(int(d.get("read_at") or 0) or d.get("status")=="claimed")
+            out.append(d)
         db.close(); return out
+
+def mark_mail_read(uid, server_id, mail_id=None):
+    uid=str(uid); server_id=str(server_id).upper(); now=int(time.time())
+    with _lock:
+        db=_db()
+        if mail_id:
+            db.execute("""UPDATE mail SET read_at=? WHERE id=? AND uid=? AND server_id=?""",
+                       (now,str(mail_id),uid,server_id))
+        else:
+            db.execute("""UPDATE mail SET read_at=? WHERE uid=? AND server_id=? AND read_at=0""",
+                       (now,uid,server_id))
+        db.commit(); db.close()
+    return {"ok":True,"read_at":now}
 
 
 def claim_mail(mail_id,uid,server_id,db=None):
@@ -159,8 +176,8 @@ def claim_mail(mail_id,uid,server_id,db=None):
                        (str(mail_id),str(uid),str(server_id).upper())).fetchone()
         if not row: raise ValueError("Không tìm thấy thư thuộc UID/Server này")
         if row["status"]!="pending": raise ValueError("Thư đã được nhận")
-        cur=db.execute("""UPDATE mail SET status='claimed',claimed_at=? WHERE id=? AND uid=? AND server_id=? AND status='pending'""",
-                       (int(time.time()),str(mail_id),str(uid),str(server_id).upper()))
+        cur=db.execute("""UPDATE mail SET status='claimed',claimed_at=?,read_at=? WHERE id=? AND uid=? AND server_id=? AND status='pending'""",
+                       (int(time.time()),int(time.time()),str(mail_id),str(uid),str(server_id).upper()))
         if cur.rowcount!=1: raise ValueError("Thư đã được người khác xử lý")
         _audit(db,"mail.claim",f"{server_id}:{uid}",{"mail_id":mail_id})
         return json.loads(row["attachments"])
@@ -621,6 +638,72 @@ def enqueue_pvp(uid, server_id, character_name, mode, power=0):
         db.commit(); db.close(); return out
 
 
+def pvp_candidates(uid, server_id, mode, limit=20):
+    uid=str(uid); server_id=str(server_id).upper(); mode=str(mode or "arena").lower()
+    own=pvp_rating(uid,server_id,mode); rating=int(own.get("rating",1000))
+    scope="p.server_id<>?" if mode=="cross" else "p.server_id=?"
+    avatar_expr=("COALESCE(NULLIF(pp.data::jsonb #>> '{profile,avatar}', ''), 'head_1001')"
+                 if database.POSTGRES else "'head_1001'")
+    avatar_join=("LEFT JOIN player_profiles pp ON pp.uid=p.uid AND pp.server_id=p.server_id"
+                 if database.POSTGRES else "")
+    season=pvp_season_id(mode,server_id)
+    query=f"""SELECT p.uid,p.server_id,p.character_name,COALESCE(l.level,1) AS level,
+                     COALESCE(l.power,0) AS power,COALESCE(r.rating,1000) AS rating,
+                     COALESCE(r.matches,0) AS matches,{avatar_expr} AS avatar
+              FROM players p
+              LEFT JOIN leaderboard l ON l.uid=p.uid AND l.server_id=p.server_id
+              LEFT JOIN pvp_ratings r ON r.uid=p.uid AND r.server_id=p.server_id
+                   AND r.mode=? AND r.season_id=?
+              {avatar_join}
+              WHERE p.status='active' AND p.uid<>? AND {scope}
+              ORDER BY CASE
+                WHEN COALESCE(r.rating,1000)>=? AND COALESCE(r.rating,1000)<=? THEN 0
+                WHEN COALESCE(r.rating,1000)>=? AND COALESCE(r.rating,1000)<? THEN 1
+                ELSE 2 END,
+                ABS(COALESCE(r.rating,1000)-?),COALESCE(l.power,0) DESC,p.character_name
+              LIMIT ?"""
+    with _lock:
+        db=_db(); rows=db.execute(query,(mode,season,uid,server_id,rating,rating+150,rating-100,rating,rating,
+                                         max(1,min(50,int(limit))))).fetchall()
+        out=[dict(r) for r in rows]; db.close(); return out
+
+def challenge_pvp(uid, server_id, character_name, mode, target_uid, target_server, power=0):
+    uid=str(uid); server_id=str(server_id).upper(); mode=str(mode or "arena").lower()
+    target_uid=str(target_uid); target_server=str(target_server).upper()
+    if mode not in ("arena","cross","arena3v3"): raise ValueError("Chế độ PvP không hợp lệ")
+    valid={(str(x["uid"]),str(x["server_id"]).upper()) for x in pvp_candidates(uid,server_id,mode,50)}
+    if (target_uid,target_server) not in valid: raise ValueError("Đối thủ không còn nằm trong danh sách phù hợp")
+    now=int(time.time())
+    with _lock:
+        db=_db(); db.execute("BEGIN IMMEDIATE")
+        old=db.execute("""SELECT id FROM pvp_matches WHERE challenge_uid=? AND status IN ('ready','active')
+                          ORDER BY created_at DESC LIMIT 1""",(uid,)).fetchone()
+        if old:
+            row=db.execute("SELECT * FROM pvp_matches WHERE id=?",(old["id"],)).fetchone()
+            out={"status":"matched","match":_public_pvp_match(row)}; db.commit(); db.close(); return out
+        db.execute("DELETE FROM pvp_queue WHERE uid=? AND server_id=?",(uid,server_id))
+        target=db.execute("""SELECT p.character_name,COALESCE(l.power,0) AS power FROM players p
+                             LEFT JOIN leaderboard l ON l.uid=p.uid AND l.server_id=p.server_id
+                             WHERE p.uid=? AND p.server_id=? AND p.status='active'""",
+                          (target_uid,target_server)).fetchone()
+        if not target: db.rollback(); db.close(); raise ValueError("Đối thủ không còn hoạt động")
+        match_id="PVP-"+uuid.uuid4().hex[:16].upper(); seed=normalize_online_seed(uuid.uuid4().int)
+        match_server="CROSS" if mode=="cross" else server_id
+        db.execute("""INSERT INTO pvp_matches(
+                      id,mode,server_id,server_a,server_b,player_a,player_b,name_a,name_b,power_a,power_b,
+                      status,winner_uid,created_at,resolved_at,seed,snapshot_a,snapshot_b,battle_report,
+                      rating_delta_a,rating_delta_b,challenge_uid)
+                      VALUES(?,?,?,?,?,?,?,?,?,?,?,'active','',?,0,?,'{}','{}','{}',0,0,?)""",
+                   (match_id,mode,match_server,server_id,target_server,uid,target_uid,character_name,
+                    target["character_name"],max(0,int(power)),int(target["power"]),now,seed,uid))
+        if mode=="arena3v3":
+            db.execute("""INSERT INTO pvp_arena3v3_series(match_id,paid_a,paid_b,rounds,updated_at)
+                          VALUES(?,0,1,'[]',?)""",(match_id,now))
+        _audit(db,"pvp.challenge",match_id,{"mode":mode,"target":target_uid,"target_server":target_server},"SYSTEM")
+        row=db.execute("SELECT * FROM pvp_matches WHERE id=?",(match_id,)).fetchone()
+        db.commit(); out={"status":"matched","match":_public_pvp_match(row)}; db.close(); return out
+
+
 def cancel_pvp(uid, server_id, mode):
     with _lock:
         db=_db()
@@ -636,13 +719,16 @@ def pvp_status(uid, server_id, mode=""):
         db=_db()
         if mode:
             match=db.execute("""SELECT * FROM pvp_matches
-                                WHERE (player_a=? OR player_b=?) AND mode=?
+                                WHERE ((COALESCE(challenge_uid,'')<>'' AND challenge_uid=?)
+                                    OR (COALESCE(challenge_uid,'')='' AND (player_a=? OR player_b=?))) AND mode=?
                                   AND status IN ('ready','active')
-                                ORDER BY created_at DESC LIMIT 1""",(uid,uid,mode)).fetchone()
+                                ORDER BY created_at DESC LIMIT 1""",(uid,uid,uid,mode)).fetchone()
         else:
             match=db.execute("""SELECT * FROM pvp_matches
-                                WHERE (player_a=? OR player_b=?) AND status IN ('ready','active')
-                                ORDER BY created_at DESC LIMIT 1""",(uid,uid)).fetchone()
+                                WHERE ((COALESCE(challenge_uid,'')<>'' AND challenge_uid=?)
+                                    OR (COALESCE(challenge_uid,'')='' AND (player_a=? OR player_b=?)))
+                                  AND status IN ('ready','active')
+                                ORDER BY created_at DESC LIMIT 1""",(uid,uid,uid)).fetchone()
         if match:
             out={"status":"matched","match":_public_pvp_match(match)}
         else:
@@ -944,36 +1030,37 @@ def pvp_match_session(match_id, uid):
         db.close(); return out
 
 
-def current_pvp_season(now=None):
-    t=time.gmtime(int(now or time.time()))
-    return f"{t.tm_year:04d}-{t.tm_mon:02d}"
 
+PVP_SEASON_SECONDS = 30 * 86400
 
-def pvp_season_id(mode, server_id="", now=None):
-    """3v3 uses the original 15-day season length, anchored to the real server creation time."""
-    mode=str(mode or "arena").lower(); now=int(now or time.time())
-    if mode != "arena3v3":
-        return current_pvp_season(now)
-    server_id=str(server_id or "S1").strip().upper()
+def pvp_season_window(mode, server_id="", now=None):
+    mode=str(mode or "arena").lower(); server_id=str(server_id or "S1").upper()
+    now=int(now or time.time())
     with _lock:
         db=_db()
-        row=db.execute("SELECT created_at FROM worlds WHERE server_id=?",(server_id,)).fetchone()
+        if mode=="cross":
+            row=db.execute("SELECT MIN(created_at) AS created_at FROM worlds").fetchone()
+            scope="ALL"
+        else:
+            row=db.execute("SELECT created_at FROM worlds WHERE server_id=?",(server_id,)).fetchone()
+            scope=server_id
         db.close()
-    anchor=int(row["created_at"]) if row else now
-    span=max(1,int(__import__('gxb2.arena3v3',fromlist=['SEASON']).SEASON))
-    index=max(0,(now-anchor)//span)
-    return f"3v3:{server_id}:{index}"
+    anchor=int(row["created_at"] or now) if row else now
+    index=max(0,(now-anchor)//PVP_SEASON_SECONDS)
+    start=anchor+index*PVP_SEASON_SECONDS
+    return {"id":f"{mode}:{scope}:{index}","index":index,"start_at":start,
+            "end_at":start+PVP_SEASON_SECONDS,"seconds_left":max(0,start+PVP_SEASON_SECONDS-now)}
 
+def current_pvp_season(now=None):
+    return pvp_season_window("arena","S1",now)["id"]
+
+def pvp_season_id(mode, server_id="", now=None):
+    return pvp_season_window(mode,server_id,now)["id"]
 
 def previous_pvp_season_id(mode, server_id="", now=None):
-    mode=str(mode or "arena").lower(); now=int(now or time.time())
-    if mode != "arena3v3":
-        return previous_pvp_season(now)
-    current=pvp_season_id(mode,server_id,now)
-    try: index=int(current.rsplit(':',1)[1])
-    except (ValueError,IndexError): return None
-    return current.rsplit(':',1)[0]+f":{index-1}" if index>0 else None
-
+    current=pvp_season_window(mode,server_id,now)
+    if current["index"]<=0: return None
+    return current["id"].rsplit(":",1)[0]+f":{current['index']-1}"
 
 def pvp_rating(uid, server_id, mode, season_id=None):
     season_id=season_id or pvp_season_id(mode,server_id)
@@ -990,55 +1077,45 @@ def pvp_rating(uid, server_id, mode, season_id=None):
         db.close(); return out
 
 
-def pvp_rating_board(mode, season_id=None, limit=100, server_id=None):
-    """Rank ONLY players with authoritative completed battles this season.
 
-    Mere registration/strength is NOT a competitive result. The former LEFT
-    JOIN fabricated ranks #1..N out of all active users tied at 1000 Elo.
-    """
+def pvp_rating_board(mode, season_id=None, limit=100, server_id=None):
+    """Rank by season score; before the first result, rank saved real teams by power."""
     mode=str(mode or "arena").lower()
     season_id=season_id or pvp_season_id(mode,server_id or "S1")
     limit=max(1,min(500,int(limit)))
-    scope=""
-    scope_params=()
+    scope=""; scope_params=()
     if server_id:
-        scope=" AND p.server_id=?"
-        scope_params=(str(server_id).upper(),)
-    # The original leaderboard shows each player's actual portrait. Only the
-    # public avatar key is projected from Neon player profiles; never return
-    # a raw profile JSON, account email, inventory or other private fields.
-    avatar_expr = ("COALESCE(NULLIF(pp.data::jsonb #>> '{profile,avatar}', ''),"
-                   " 'head_1001') AS avatar" if database.POSTGRES
-                   else "'head_1001' AS avatar")
+        scope=" AND p.server_id=?"; scope_params=(str(server_id).upper(),)
+    avatar_expr = ("COALESCE(NULLIF(pp.data::jsonb #>> '{profile,avatar}', ''), 'head_1001') AS avatar"
+                   if database.POSTGRES else "'head_1001' AS avatar")
     avatar_join = (" LEFT JOIN player_profiles pp ON pp.uid=p.uid AND pp.server_id=p.server_id"
                    if database.POSTGRES else "")
-    query="""SELECT p.uid,p.server_id,p.character_name,
-                    ? AS mode,? AS season_id,
-                    r.rating AS rating,
-                    r.wins AS wins,
-                    r.losses AS losses,
-                    r.matches AS matches,
-                    COALESCE(l.level,1) AS level,
-                    COALESCE(l.power,0) AS power,
-                    """ + avatar_expr + """,
-                    COALESCE(r.updated_at,l.updated_at,p.updated_at) AS updated_at
+    query="""SELECT p.uid,p.server_id,p.character_name,? AS mode,? AS season_id,
+                    COALESCE(r.rating,1000) AS rating,COALESCE(r.wins,0) AS wins,
+                    COALESCE(r.losses,0) AS losses,COALESCE(r.matches,0) AS matches,
+                    COALESCE(l.level,1) AS level,COALESCE(l.power,0) AS power,
+                    """+avatar_expr+""",COALESCE(r.updated_at,l.updated_at,p.updated_at) AS updated_at
              FROM players p
              LEFT JOIN leaderboard l ON l.uid=p.uid AND l.server_id=p.server_id
-             JOIN pvp_ratings r ON r.uid=p.uid AND r.server_id=p.server_id
-                  AND r.mode=? AND r.season_id=? AND r.matches>0
-             """ + avatar_join + """
-             WHERE p.status='active'""" + scope + """
-             ORDER BY r.rating DESC,r.wins DESC,
-                      r.matches DESC,COALESCE(l.power,0) DESC,
-                      p.server_id,p.character_name LIMIT ?"""
+             LEFT JOIN pvp_ratings r ON r.uid=p.uid AND r.server_id=p.server_id
+                  AND r.mode=? AND r.season_id=?
+             """+avatar_join+"""
+             WHERE p.status='active'"""+scope+"""
+             ORDER BY CASE WHEN EXISTS(
+                        SELECT 1 FROM pvp_ratings z WHERE z.mode=? AND z.season_id=? AND z.matches>0
+                      ) THEN CASE WHEN COALESCE(r.matches,0)>0 THEN 0 ELSE 1 END ELSE 0 END,
+                      CASE WHEN EXISTS(
+                        SELECT 1 FROM pvp_ratings z WHERE z.mode=? AND z.season_id=? AND z.matches>0
+                      ) THEN COALESCE(r.rating,1000) ELSE COALESCE(l.power,0) END DESC,
+                      COALESCE(r.wins,0) DESC,COALESCE(r.matches,0) DESC,
+                      COALESCE(l.power,0) DESC,p.server_id,p.character_name LIMIT ?"""
+    params=(mode,season_id,mode,season_id,*scope_params,mode,season_id,mode,season_id,limit)
     with _lock:
-        db=_db()
-        rows=db.execute(query,(mode,season_id,mode,season_id,*scope_params,limit)).fetchall()
-        out=[]
+        db=_db(); rows=db.execute(query,params).fetchall(); out=[]
+        fought=any(int(r["matches"] or 0)>0 for r in rows)
         for idx,row in enumerate(rows,1):
-            d=dict(row); d["rank"]=idx; out.append(d)
+            d=dict(row); d["rank"]=idx; d["rank_basis"]="score" if fought else "power"; out.append(d)
         db.close(); return out
-
 
 def _ensure_rating(db, uid, server_id, mode, season_id, now):
     db.execute("""INSERT INTO pvp_ratings(uid,server_id,mode,season_id,rating,wins,losses,matches,updated_at)
@@ -2103,39 +2180,54 @@ def admin_force_settle_guild_war(war_id, operator="SUPER_GM"):
     return result
 
 
-def settle_previous_pvp_season(now=None):
-    now=int(now or time.time())
-    season_id=previous_pvp_season(now)
+def _top3_season_reward(mode, rank):
+    rank=int(rank)
+    if mode=="arena3v3":
+        from . import arena3v3 as rules
+        return rules.arena.pairs(rules.rank_award(rank)["season_awards"]) if 1<=rank<=3 else {}
+    original={
+        1:{"2":600,"14":3000,"16":800},
+        2:{"2":570,"14":2800,"16":720},
+        3:{"2":540,"14":2600,"16":680},
+    }
+    return dict(original.get(rank,{}))
+
+def settle_previous_pvp_season(mode="arena", server_id="S1", now=None):
+    """Idempotently mail original top-3 rewards when a fixed 30-day season closes."""
+    mode=str(mode or "arena").lower(); server_id=str(server_id or "S1").upper()
+    now=int(now or time.time()); season_id=previous_pvp_season_id(mode,server_id,now)
+    if not season_id: return {"season_id":"-","issued":0}
+    cache_key=(str(DB_PATH),mode,server_id,season_id)
+    if cache_key in _pvp_settled_cache: return {"season_id":season_id,"issued":0}
+    board=pvp_rating_board(mode,season_id=season_id,limit=3,
+                            server_id=None if mode=="cross" else server_id)
     issued=0
     with _lock:
         db=_db(); db.execute("BEGIN IMMEDIATE")
-        rows=db.execute("""SELECT r.*,p.character_name
-                           FROM pvp_ratings r
-                           LEFT JOIN players p ON p.uid=r.uid AND p.server_id=r.server_id
-                           WHERE r.season_id=? AND r.matches>0""",(season_id,)).fetchall()
-        for row in rows:
+        for row in board[:3]:
+            rank=int(row["rank"]); reward=_top3_season_reward(mode,rank)
+            if not reward: continue
+            key_server=str(row["server_id"]).upper()
             if db.execute("""SELECT 1 FROM pvp_season_claims
                              WHERE uid=? AND server_id=? AND mode=? AND season_id=?""",
-                          (row["uid"],row["server_id"],row["mode"],season_id)).fetchone():
-                continue
-            reward=pvp_season_reward(row["mode"],int(row["rating"]))
-            if not reward:
+                          (row["uid"],key_server,mode,season_id)).fetchone():
                 continue
             db.execute("""INSERT INTO pvp_season_claims(uid,server_id,mode,season_id,rating,reward,claimed_at)
                           VALUES(?,?,?,?,?,?,?)""",
-                       (row["uid"],row["server_id"],row["mode"],season_id,int(row["rating"]),
+                       (row["uid"],key_server,mode,season_id,int(row["rating"]),
                         json.dumps(reward,ensure_ascii=False),now))
             mail_id="MAIL-"+uuid.uuid4().hex[:16].upper()
             db.execute("""INSERT INTO mail(id,uid,server_id,character_name,title,body,attachments,status,created_at,operator)
-                          VALUES(?,?,?,?,?,?,?,'pending',?,'PVP_SEASON')""",
-                       (mail_id,row["uid"],row["server_id"],row["character_name"] or row["uid"],
-                        f"Phần thưởng PvP mùa {season_id}",
-                        f"Phần thưởng {row['mode']} · Rating {row['rating']} đã được tự động phát.",
+                          VALUES(?,?,?,?,?,?,?,'pending',?,'PVP_SEASON_AUTO')""",
+                       (mail_id,row["uid"],key_server,row["character_name"],
+                        f"Thưởng Top {rank} · {mode} · Mùa {season_id}",
+                        f"Chúc mừng bạn đạt Top {rank}. Phần thưởng mùa 30 ngày đã được gửi tự động.",
                         json.dumps(reward),now))
             issued+=1
-        if issued:
-            _audit(db,"pvp.season.auto_settle",season_id,{"issued":issued},"SYSTEM")
+        if issued: _audit(db,"pvp.season.auto_settle",season_id,
+                          {"mode":mode,"server_id":server_id,"issued":issued},"SYSTEM")
         db.commit(); db.close()
+    _pvp_settled_cache.add(cache_key)
     return {"season_id":season_id,"issued":issued}
 
 

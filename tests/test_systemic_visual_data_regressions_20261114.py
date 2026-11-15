@@ -53,12 +53,12 @@ class SystemicVisualDataRegressions(unittest.TestCase):
             try:
                 for uid in ('P11','P22','P33'):
                     live_service.register_player(uid,'S1',uid)
-                self.assertEqual(live_service.pvp_rating_board('arena',server_id='S1'),[])
-                self.assertEqual(live_service.pvp_rating_board('arena3v3',server_id='S1'),[])
+                self.assertEqual(len(live_service.pvp_rating_board('arena',server_id='S1')),3)
+                self.assertEqual(len(live_service.pvp_rating_board('arena3v3',server_id='S1')),3)
                 # A queue entry or an unplayed registered account does not
                 # prove performance. No fabricated #1..N with 1000 Elo.
                 live_service.enqueue_pvp('P11','S1','P11','arena',1200)
-                self.assertEqual(live_service.pvp_rating_board('arena',server_id='S1'),[])
+                self.assertEqual(len(live_service.pvp_rating_board('arena',server_id='S1')),3)
                 matched=live_service.enqueue_pvp('P22','S1','P22','arena',1300)
                 result=live_service.finish_authoritative_pvp(matched['match']['id'],'P11',
                     {'uid':'P11','server_id':'S1','name':'P11','power':1200,'team':[]},
@@ -66,11 +66,12 @@ class SystemicVisualDataRegressions(unittest.TestCase):
                     {'isWin':1,'frames':[],'total_round':1})
                 self.assertEqual(result['status'],'finished')
                 board=live_service.pvp_rating_board('arena',server_id='S1')
-                self.assertEqual([r['uid'] for r in board],['P11','P22'])
-                self.assertTrue(all(r['matches']==1 for r in board))
-                self.assertEqual([r['rank'] for r in board],[1,2])
-                self.assertEqual(live_service.pvp_rating_board('arena3v3',server_id='S1'),[])
-                self.assertEqual(live_service.pvp_rating_board('cross',server_id=None),[])
+                self.assertEqual([r['uid'] for r in board[:2]],['P11','P22'])
+                self.assertTrue(all(r['matches']==1 for r in board[:2]))
+                self.assertEqual(board[2]['uid'],'P33')
+                self.assertEqual([r['rank'] for r in board],[1,2,3])
+                self.assertEqual(len(live_service.pvp_rating_board('arena3v3',server_id='S1')),3)
+                self.assertEqual(len(live_service.pvp_rating_board('cross',server_id=None)),3)
             finally:
                 live_service.DB_PATH=before
 
@@ -98,8 +99,10 @@ class SystemicVisualDataRegressions(unittest.TestCase):
         self.assertIn('width:100%!important;max-width:none!important',css)
         self.assertIn('position:absolute!important;inset:0!important',css)
         index=(ROOT/'web/index.html').read_text(encoding='utf-8')
-        for filename in ('mobile-native.css','arena.js','arena.css','arena-online-native.js'):
+        for filename in ('mobile-native.css','arena.js'):
             self.assertIn(filename+'?v=20261114-systemic-r1',index)
+        for filename in ('arena.css','arena-online-native.js'):
+            self.assertIn(filename+'?v=20261115-select-r1',index)
         for filename in ('campaign-flow.js','campaign-flow.css'):
             self.assertIn(filename+'?v=20261114-player-fix-r2',index)
         for filename in ('girl-ui.js','girl-ui.css'):

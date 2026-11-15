@@ -1,4 +1,5 @@
 import tempfile
+import time
 import unittest
 from pathlib import Path
 
@@ -187,7 +188,10 @@ class GuildAndSeasonTests(unittest.TestCase):
 
     def test_previous_season_reward_claim(self):
         live_service.register_player("P1","S1","Player")
-        season = live_service.previous_pvp_season()
+        db = live_service._db()
+        db.execute("UPDATE worlds SET created_at=? WHERE server_id='S1'", (int(time.time())-31*86400,))
+        db.commit(); db.close()
+        season = live_service.previous_pvp_season_id("arena", "S1")
         db = live_service._db()
         db.execute("""INSERT INTO pvp_ratings(uid,server_id,mode,season_id,rating,wins,losses,matches,updated_at)
                       VALUES(?,?,?,?,?,?,?, ?,?)""",
@@ -256,17 +260,20 @@ class GuildAndSeasonTests(unittest.TestCase):
 
     def test_auto_settle_previous_pvp_season(self):
         live_service.register_player("AUTO1","S1","AutoPlayer")
-        season=live_service.previous_pvp_season()
+        db=live_service._db()
+        db.execute("UPDATE worlds SET created_at=? WHERE server_id='S1'", (int(time.time())-31*86400,))
+        db.commit(); db.close()
+        season=live_service.previous_pvp_season_id("cross","S1")
         db=live_service._db()
         db.execute("""INSERT INTO pvp_ratings(uid,server_id,mode,season_id,rating,wins,losses,matches,updated_at)
                       VALUES(?,?,?,?,?,?,?,?,?)""",
                    ("AUTO1","S1","cross",season,1250,8,3,11,1))
         db.commit(); db.close()
-        result=live_service.settle_previous_pvp_season()
+        result=live_service.settle_previous_pvp_season("cross","S1")
         self.assertEqual(result["issued"],1)
         status=live_service.pvp_season_claim_status("AUTO1","S1","cross")
         self.assertTrue(status["claimed"])
-        self.assertTrue(any(m["operator"]=="PVP_SEASON" for m in live_service.mailbox("AUTO1","S1")))
+        self.assertTrue(any(m["operator"]=="PVP_SEASON_AUTO" for m in live_service.mailbox("AUTO1","S1")))
 
 
 if __name__ == "__main__":
