@@ -61,8 +61,15 @@ const HomeMenus=(()=>{
   },profile.gift_left<1,'hm-social-primary');
  }
  async function friendMarriage(profile,action,refresh){
-  try{await api('/api/friends/marriage',{target_uid:profile.uid,action});GirlUI.toast(action==='propose'?'Đã gửi lời cầu hôn.':action==='accept'?'Lễ cưới đã hoàn tất.':'Đã từ chối lời cầu hôn.');await refresh();}
-  catch(e){GirlUI.toast(e.message);}
+  try{const out=await api('/api/friends/marriage',{target_uid:profile.uid,action});
+   if(action==='accept'){
+    const {body}=GirlUI.win({title:'Lễ Đường',cls:'hm-wedding-hall'});
+    const couple=el('div',undefined,'hm-wedding-couple');
+    const person=(avatar,name)=>{const p=el('div');const im=el('img');im.src=friendAvatar(avatar);im.onerror=()=>{im.onerror=null;im.src='/assets/profile/head_1001.png';};p.append(im,el('b',name));return p;};
+    couple.append(person(state.profile?.avatar,state.name||'Học viên'),el('span','💍','hm-wedding-ring'),person(out.avatar,out.character_name));
+    body.append(el('p','Chúc mừng hai người đã chính thức kết duyên!','hm-wedding-title'),couple,el('p','Oath Ring đã được sử dụng và ngày cưới đã lưu vào hồ sơ của cả hai người.','hm-social-note'));
+   }else{GirlUI.toast(action==='propose'?'Đã gửi lời cầu hôn.':'Đã từ chối lời cầu hôn.');await refresh();}
+  }catch(e){GirlUI.toast(e.message);}
  }
  async function friendDuel(profile,close){
   try{const out=await api('/api/friends/duel',{target_uid:profile.uid});close();await watchEventBattle(out,'home-systems','So Tài · '+profile.character_name);}
