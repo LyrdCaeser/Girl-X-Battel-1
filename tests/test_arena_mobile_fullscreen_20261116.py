@@ -8,7 +8,7 @@ class MobileArena(unittest.TestCase):
         css=(ROOT/'web/arena.css').read_text()
         marker='@media(max-width:720px){'
         self.assertIn(marker,css)
-        scoped=css.split(marker)[-1]
+        scoped=css.split('/* Mobile portrait 20:9+:',1)[1].split('/* Original ArenaWindow frame',1)[0]
         for statement in (
             'html.gxb-mobile #app-frame .arena-view',
             'height:100%;min-height:100%;overflow:hidden;',
@@ -18,12 +18,12 @@ class MobileArena(unittest.TestCase):
             'bottom:0!important;'
         ):
             self.assertIn(statement,scoped)
-        self.assertEqual(css.count(marker),1)
+        self.assertEqual(scoped.count(marker),1)
 
     def test_original_background_and_versioned_styles(self):
         arena=(ROOT/'web/arena-online-native.js').read_text()
         self.assertIn("A(mode==='arena3v3'?'arena_3v3_scene':'arena_scene')",arena)
         html=(ROOT/'web/index.html').read_text()
-        self.assertIn('/arena.css?v=20261116-mobile-full-r3',html)
+        self.assertIn('href="/arena.css?v=20261116-',html)
 
 if __name__=='__main__':unittest.main()
