@@ -90,7 +90,7 @@ const Dates=(()=>{
   if(!idx)g.append(el('p','dt-empty',"This Girl has no voice lines in the data."));panel.append(g);}
  function attr(h){const rows=data.appointment;const lv=Math.floor((h.love_point||0)/1000);const cur=rows[Math.min(lv,rows.length-1)],next=rows[Math.min(lv+1,rows.length-1)];const fmt=b=>String(b||'—').split('|').map(p=>{const [k,v]=p.split('#');return k?(k==='atkP'?'Attack':k==='hpP'?'HP':k)+' +'+(Number(v)*100).toFixed(1)+'%':'—';}).join(' · ');
   CampaignUI.popup('Thưởng Thân Mật',{});const box=document.querySelector('.cr-overlay .cr-box');const d=el('div','dt-attr');d.append(el('p','',"Level "+lv+': '+fmt(cur.bonus)),el('p','',"Next ("+next.point+'): '+fmt(next.bonus)),el('p','dt-small-note',"These bonuses apply in battle (original HeroAttr)."));box.querySelector('.cr-rewards')?.replaceWith(d);}
- async function pledge(h){if(h.is_vowed){CampaignUI.popup(h.name+": Oath completed. Maximum Intimacy "+GROW()+'.',{});const l=allLines(h).find(x=>x.type===16);play(l?.sound,l?.text);return;}
+ async function pledge(h){if(h.is_vowed){hall(h);return;}
   if((h.love_point||0)<BASE()){CampaignUI.popup("Oath requires "+BASE()+" Intimacy ("+(h.love_point||0)+' ahora).',{});return;}
   if(!(await GirlUI.confirm("Lập lời thề với "+h.name+"? Sẽ tiêu hao 1 Nhẫn.",{title:'Xác Nhận Lời Thề',ok:'Lập Lời Thề'})))return;act({action:'vow',partner_id:h.partner_id}).then(r=>{if(r){const l=allLines(hero()).find(x=>x.type===16);play(l?.sound,l?.text||'♥');note="Oath completed!";render();}});}
  // PartnerNameTag (partner_name_tag prefab 282×80): partner_name_frame_bg, faction at -90,2, stars at 18,17, name at 18,-21.
@@ -137,20 +137,26 @@ const Dates=(()=>{
   // groupPicture (0,-127): the girl's PartnerImg in a 720×1280 frame centred there, clipped to the certificate paper
   const pic=P(el('div','dt-c-pic'),0,-60,600,520);const frame=el('div','dt-c-frame');frame.style.cssText=`left:calc(-60 * var(--c));top:calc(-313 * var(--c));width:calc(720 * var(--c));height:calc(1280 * var(--c))`;pic.append(frame);
   (h.is_vowed?weddingSkin(h):Promise.resolve(0)).then(id=>{const show=id||h.table_id;if(typeof Wallpaper!=='undefined'&&Wallpaper.mountArt)Wallpaper.mountArt(frame,show,'xy').then(v=>{if(!v){const src=(typeof detailImage==='function'&&detailImage(show))||'';if(src)frame.append(img(src));}});});
-  P(img(A('dates_text01_en_en'),'dt-c-title'),0,431,418,70);
-  P(img(A('dates_text02_en_en'),'dt-c-lab'),-131,344,80,34);P(img(A('dates_text03_en_en'),'dt-c-lab'),-131,302,80,34);
+  P(el('h2','dt-c-title-vi','CHỨNG NHẬN THÀNH HÔN'),0,431,500,70);
+  P(el('b','dt-c-lab-vi','Chú Rể'),-131,344,90,34);P(el('b','dt-c-lab-vi','Cô Dâu'),-131,302,90,34);
   P(el('b','dt-c-val',state.name||'Senpai'),48,346,250,30);P(el('b','dt-c-val',h.name),48,302,250,30);P(el('i','dt-c-rule'),43,330,248,2);P(el('i','dt-c-rule'),43,285,248,2);
-  const chip=P(el('span','dt-c-chip','Intimacy'),-217,246,102,32);chip.style.borderImageSource=`url('${A('dates_bg15')}')`;
+  const chip=P(el('span','dt-c-chip','Thân Mật'),-217,246,102,32);chip.style.borderImageSource=`url('${A('dates_bg15')}')`;
   P(el('b','dt-c-num',Math.floor((h.love_point||0)/100)+'/'+Math.floor(maxOf(h)/100)),-120,249,100,28);P(el('i','dt-c-rule'),-118,231,100,2);
-  P(el('b','dt-c-bonus','Bonus:'),-22,249,90,28);P(el('b','dt-c-num left',bonusText(data.appointment[Math.min(Math.floor((h.love_point||0)/1000),data.appointment.length-1)]?.bonus).replace(/ · /g,'  ')),150,249,260,28);P(el('i','dt-c-rule'),150,231,260,2);
+  P(el('b','dt-c-bonus','Chỉ Số:'),-22,249,90,28);P(el('b','dt-c-num left',bonusText(data.appointment[Math.min(Math.floor((h.love_point||0)/1000),data.appointment.length-1)]?.bonus).replace(/ · /g,'  ')),150,249,260,28);P(el('i','dt-c-rule'),150,231,260,2);
   const txt=P(el('div','dt-c-text'),0,-347,616,239);txt.style.borderImageSource=`url('${A('dates_bg11')}')`;txt.append(el('p','','Từ hôm nay, đôi ta cùng sánh bước.\nNguyện luôn ở bên, cùng nhau vượt mọi thử thách.'));
-  if(h.is_vowed){const d=new Date((h.wedding_date||Date.now()/1000)*1000);P(el('b','dt-c-date',d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()),95,-440,200,28);P(img(A('dates_icon42'),'dt-c-seal'),280,-438,130,124).onclick=()=>{const l=allLines(h).find(x=>x.type===16);play(l?.sound,l?.text);ov.remove();render();};}
+  if(h.is_vowed){const d=new Date((h.wedding_date||Date.now()/1000)*1000);P(el('b','dt-c-date',d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()),95,-440,200,28);P(img(A('dates_icon42'),'dt-c-seal'),280,-438,130,124).onclick=()=>{const l=allLines(h).find(x=>x.type===16);play(l?.sound,l?.text);};const hb=P(el('button','dt-c-hall','Vào Lễ Đường'),-40,-445,220,48);hb.type='button';hb.onclick=()=>{ov.remove();hall(h);};}
   else{const b=P(el('button','dt-c-vow'),242,-352,132,132);b.type='button';b.append(img(A('dates_icon41')),el('span','','Kết Duyên'));
    const need=el('b','dt-c-need',(h.love_point||0)>=BASE()?'Nhẫn Lời Thề ×'+number(state.items['45']||0):'Thân Mật '+Math.floor((h.love_point||0)/100)+'/'+Math.floor(BASE()/100));P(need,150,-440,260,28);
    b.onclick=async()=>{if((h.love_point||0)<BASE()){GirlUI.toast('Thân Mật '+Math.floor((h.love_point||0)/100)+' / '+Math.floor(BASE()/100));return;}if(!Number(state.items['45']||0)){GirlUI.toast('Không đủ Nhẫn Lời Thề');return;}
     const accepted=await GirlUI.confirm('Kết duyên với '+h.name+'? Máy chủ sẽ tiêu hao 1 Nhẫn Lời Thề khi đủ điểm Thân Mật.',{title:'Xác nhận Kết Duyên',ok:'Kết Duyên',cancel:'Hủy'});
     if(!accepted)return;
-    const r=await act({action:'vow',partner_id:h.partner_id});if(r){const nh=hero();const l=allLines(nh).find(x=>x.type===16);play(l?.sound,l?.text||'♥');note='Đã kết duyên!';oath(nh);if(r.got)CampaignUI.popup('Nhận trang phục cưới gốc',r.got);}};}
+    const r=await act({action:'vow',partner_id:h.partner_id});if(r){const nh=hero();const l=allLines(nh).find(x=>x.type===16);play(l?.sound,l?.text||'♥');note='Đã kết duyên!';ov.remove();hall(nh);if(r.got)CampaignUI.popup('Nhận trang phục cưới gốc',r.got);}};}
   root().append(ov);}
+ function hall(h){document.querySelector('.dt-hall-ov')?.remove();const ov=el('div','dt-hall-ov');const scene=el('div','dt-hall');ov.append(scene);
+  scene.append(img('/assets/story/bg/yanhui_hall.webp','dt-hall-bg'),el('div','dt-hall-glow'));
+  const head=el('div','dt-hall-head');head.append(el('small','','LỄ ĐƯỜNG'),el('h2','',(state.name||'Senpai')+'  ♥  '+h.name),el('p','','Chúc hai người mãi mãi đồng hành bên nhau.'));scene.append(head);
+  const art=el('div','dt-hall-art');scene.append(art);weddingSkin(h).then(id=>{const show=id||h.table_id;if(typeof Wallpaper!=='undefined'&&Wallpaper.mountArt)Wallpaper.mountArt(art,show,'xy').then(ok=>{if(!ok){const src=typeof detailImage==='function'?detailImage(show):'';if(src)art.append(img(src));}});});
+  const actions=el('div','dt-hall-actions');const cert=el('button','dt-bluebtn static','Xem Chứng Nhận');cert.type='button';cert.onclick=()=>{ov.remove();oath(h);};const close=el('button','dt-bluebtn static','Rời Lễ Đường');close.type='button';close.onclick=()=>ov.remove();actions.append(cert,close);scene.append(actions);
+  ov.onclick=e=>{if(e.target===ov)ov.remove();};root().append(ov);const l=allLines(h).find(x=>x.type===16);play(l?.sound,l?.text);}
  return {open,render,playGirlVoice};
 })();

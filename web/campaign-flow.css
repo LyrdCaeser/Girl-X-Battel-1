@@ -81,3 +81,5 @@
 #app-frame #event-arena{position:absolute;inset:0;height:100%;width:100%;max-width:none;margin:0;padding:0;border:0;border-radius:0;background:#000;display:flex;flex-direction:column}
 #app-frame #event-arena>.section-head,#app-frame #event-arena>.battle-line,#app-frame #event-arena>.rewards,#app-frame #event-arena>.event-battle-continue{display:none}
 #app-frame #event-arena .battlefield{width:100%;max-width:none;height:100%;flex:1;min-height:0;margin:0;border:0;border-radius:0}
+
+.cf-av.portrait{position:absolute!important;left:8%!important;top:8%!important;width:84%!important;height:84%!important;min-width:0!important;border-radius:6%!important;overflow:hidden!important}.cf-av.portrait img,.cf-av.portrait canvas{width:100%!important;height:100%!important;object-fit:cover!important}

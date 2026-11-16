@@ -7,7 +7,7 @@ const Shops=(()=>{
  const el=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;};
  const img=(src,cls,alt='')=>{const i=el('img',cls);i.src=src;i.alt=alt;i.draggable=false;return i;};
  const load=()=>data?Promise.resolve(data):(loading||=api('/assets/shops.json').then(d=>data=d));
- const MAP=[['cafe',11,-165,340,338,305,'Cafe',-47,-138],['skin',0,200,320,307,240,'Skin Store',0,-138],['market',7,-135,50,349,262,'Chợ',-35,-108],['exchange',13,188,-23,356,339,'Lucky Store',0,-118],['artifact',17,-152,-246,323,290,'Cửa Hàng Cổ Vật',-20,-100],['unopen',0,215,-315,311,280,'Coming Soon',0,-115]];
+ const MAP=[['cafe',11,-165,340,338,305,'Quán Cà Phê',-47,-138],['skin',0,200,320,307,240,'Cửa Hàng Trang Phục',0,-138],['market',7,-135,50,349,262,'Chợ',-35,-108],['exchange',13,188,-23,356,339,'Cửa Hàng May Mắn',0,-118],['artifact',17,-152,-246,323,290,'Cửa Hàng Cổ Vật',-20,-100],['unopen',0,215,-315,311,280,'Sắp Ra Mắt',0,-115]];
  const TABS=[2,3,13,5,6,9];
  const SHOP_NAMES_VI={2:'Chuyển Hóa',3:'Máy Xèng',13:'Thánh Điện',5:'Đấu Trường',6:'Bang Hội',9:'Khảo Hạch'};
  function root(){let r=$('shops-view');if(!r){r=el('section','shops-view');r.id='shops-view';r.hidden=true;$('home-systems-view').after(r);}return r;}
@@ -39,7 +39,7 @@ const Shops=(()=>{
   if(!info.open){stage.append(center(el('p','sh-locked',"Mở khóa ở cấp "+info.limit_level),0,CY,600,80));}
   let goods=info.goods.filter(g=>!group||g.group===group);
   if(sid===11||sid===17){const groups=[...new Set(info.goods.map(g=>g.group))].sort((a,b)=>a-b);const gb=px(el('div','sh-groups'),20,tabs?190:118,680,70);const all=el('button','sh-group'+(group?'':' on'),'Tất cả');all.type='button';all.onclick=()=>{group=0;page=0;render();};gb.append(all);
-   for(const g of groups){const b=el('button','sh-group'+(group===g?' on':''));b.type='button';if(sid===11)b.append(img(A(`shop_group${g}_${group===g?2:1}`)));else b.textContent='Set '+g;b.onclick=()=>{group=g;page=0;render();};gb.append(b);}stage.append(gb);}
+   for(const g of groups){const b=el('button','sh-group'+(group===g?' on':''));b.type='button';if(sid===11)b.append(img(A(`shop_group${g}_${group===g?2:1}`)));else b.textContent='Bộ '+g;b.onclick=()=>{group=g;page=0;render();};gb.append(b);}stage.append(gb);}
   const pages=Math.max(1,Math.ceil(goods.length/8));page=Math.min(page,pages-1);
   goods.slice(page*8,page*8+8).forEach((g,i)=>{const cx=-245+(i%4)*162,cy=GY-Math.floor(i/4)*240;cell(stage,g,cx,cy);});
   if(pages>1){for(const [dx,d]of [[-340,-1],[340,1]]){const a=center(el('button','sh-arrow'+(d<0?' left':'')),dx,CY-48,36,112);a.type='button';a.append(img(A('market_arrow')));a.disabled=(d<0&&page===0)||(d>0&&page>=pages-1);a.onclick=()=>{page+=d;render();};stage.append(a);}

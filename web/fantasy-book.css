@@ -64,13 +64,13 @@ html.gxb-mobile .fantasy-book-view .fb-stage{width:100%!important;min-height:100
    real WebView and paint the remaining tall-screen area with the book scene
    instead of exposing the desktop/body background. */
 html.gxb-mobile .fantasy-book-view{
- container-type:size!important;
- --u:min(calc(100cqw / 720),calc(100cqh / 1280))!important;
- display:grid!important;place-items:center!important;
+ container-type:inline-size!important;
+ --u:calc(100cqw / 720)!important;
+ display:block!important;
  background:linear-gradient(#dcecff,#f8eff8)!important
 }
 html.gxb-mobile .fantasy-book-view .fb-stage{
- width:calc(720 * var(--u))!important;
+ width:100%!important;
  height:calc(1280 * var(--u))!important;
  min-height:0!important;max-height:none!important;
  position:relative!important;margin:0 auto!important;overflow:hidden!important
