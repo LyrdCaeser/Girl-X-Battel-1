@@ -47,6 +47,8 @@ html.gxb-mobile #app-frame .fantasy-book-view .fb-wide-bg{
   object-position:left center!important;
 }
 
+/* Mobile owns only the outer Shop page. The original ShopMap prefab keeps
+   its native stage and artwork coordinates without any horizontal override. */
 html.gxb-mobile #app-frame .shops-view:not([hidden]){
   display:block!important;
   width:100%!important;
@@ -55,17 +57,4 @@ html.gxb-mobile #app-frame .shops-view:not([hidden]){
   container-type:inline-size!important;
   --u:calc(100cqw / 720)!important;
   overflow:hidden!important;
-}
-html.gxb-mobile #app-frame .shops-view .sh-stage{
-  width:100%!important;
-  height:100%!important;
-  min-height:100%!important;
-}
-html.gxb-mobile #app-frame .shops-view .sh-map-bg{
-  left:0!important;
-  top:0!important;
-  width:calc(1280 * var(--u))!important;
-  height:100%!important;
-  object-fit:cover!important;
-  object-position:left top!important;
 }

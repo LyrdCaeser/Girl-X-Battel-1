@@ -81,7 +81,7 @@ const FantasyBook=(()=>{
   const nav=at(el('div','fb-shopnav'),0,210,1000,53);nav.style.backgroundImage=`url('${A('bp_mission_yeqina_bg')}')`;const names=TH().names||(T('BP_SHOP_TAGS')||'Dấu Hoa|Lá Pha Lê|Dấu Trang Hoa').split('|');
   for(const [k,x]of [[2,-240],[1,0],[3,240]]){const b=at(btn('fb-stab'+(shopTab===k?' on':''),names[k-1],()=>{shopTab=k;render();}),x,0,232,55);b.style.top='0';b.style.left=`calc(${500+x-116} * var(--u))`;b.style.backgroundImage=`url('${A(shopTab===k?'bp_mission_yeqina_2':'bp_mission_yeqina_1')}')`;nav.append(b);}st.append(nav);
   const cur=info().cur[shopTab===2?1:0];const cost=at(el('div','fb-cost'),0,154,226,60);cost.style.backgroundImage=`url('${A('bp_shop_cost_bg')}')`;cost.append(img(iconOf(cur)),el('b','',number(state.items?.[cur]||0)));st.append(cost);
-  if(shopTab===3){st.append(at(img(A('battle_pass_exchange_flower_bg'),'fb-abs fb-wide-bg'),0,-249,1000,812),at(img(A('bp_flower'),'fb-abs'),0,18,690,590));
+  if(shopTab===3){st.append(at(img(A('battle_pass_exchange_flower_bg'),'fb-abs fb-wide-bg'),0,-249,1000,812),at(img(A('bp_flower'),'fb-abs'),0,-70,690,590));
    const chk=at(btn('fb-check','',odds),160,31,52,52);chk.append(img(A('white_btn_check')));st.append(chk);
    const [ck,cv]=String(window.FB_LOTTERY||'221#50').split('#');for(const [n,x]of [[1,-110],[10,110]]){const b=at(btn('fb-draw','',()=>act({action:'draw',num:n},r=>{if(r?.got)CampaignUI.popup(TH().draw,r.got);})),x,-464,191,60);b.style.backgroundImage=`url('/assets/girl-ui/blue_btn_65_65.png')`;b.append(img(iconOf(ck)),el('b','',number(Number(cv)*n)),el('small','','×'+n));st.append(b);}
    return;}
