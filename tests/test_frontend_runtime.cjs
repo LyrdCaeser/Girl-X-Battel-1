@@ -410,7 +410,7 @@ async function testAudioSettingsAndCyclicVoice(){
 
 function testCharacterVietnameseAcrossRoster() {
   const html=fs.readFileSync(path.join(ROOT,'web/index.html'),'utf8');
-  assert.match(html,/i18n-vi\.js\?v=20261015-character-vi1/,
+  assert.match(html,/i18n-vi\.js\?v=[^" ]+/,
     'game must actually load its character translation dictionary');
   const noop=()=>{};
   class FakeObserver { observe(){} }

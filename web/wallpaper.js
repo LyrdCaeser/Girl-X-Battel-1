@@ -37,6 +37,7 @@ const Wallpaper=(()=>{
   const foot=el('div','wp-foot');foot.append(r,ok);body.append(foot);}
  // Front Page picture: the chosen girls in turn (or at random); falls back to the three default heroes
  function heroSrc(index){const p=state.profile||{};const list=p.wallpapers||[];if(!list.length)return null;const id=p.wallpaper_random?list[Math.floor(Math.random()*list.length)]:list[index%list.length];
+  if(Number(id)===41001)return null; // Hidden on Front Page only; leave ownership and profile untouched.
   const base=typeof artId==='function'?artId(id):id;const pic=typeof GirlUI!=='undefined'&&(GirlUI.picture(id)||GirlUI.picture(base));return pic||(typeof detailImage==='function'?detailImage(id)||detailImage(base):'')||null;}
  // MainMap:updateImg — the Front Page girl is a partnerImg at the screen centre, SetLocalPosition(xy2.x, -xy2.y) and
  // SetLocalScale(scale) (partner_picture_xy2); static pictures at their native size, Spine models 200 lower
@@ -44,7 +45,7 @@ const Wallpaper=(()=>{
  let meta=null,homeKey='',homeView=null;
  async function homeMeta(){if(!meta){try{const [p,l,q]=await Promise.all([api('/assets/partner-pictures.json'),api('/assets/lihui.json'),api('/assets/pictures.json')]);meta={pics:p,lihui:new Set(l),files:new Set(q.map(Number))};}catch{meta={pics:{},lihui:new Set(),files:new Set()};}}return meta;}
  function staticOf(m,id){const chain=typeof hostChain==='function'?hostChain(id):[Number(id)];const f=chain.find(x=>m.files.has(x));return f?'/assets/pictures/'+f+'.webp':'';}
- function pickId(index){const p=state.profile||{};const list=p.wallpapers||[];if(!list.length)return null;return p.wallpaper_random?list[Math.floor(Math.random()*list.length)]:list[index%list.length];}
+ function pickId(index){const p=state.profile||{};const list=p.wallpapers||[];if(!list.length)return null;const id=p.wallpaper_random?list[Math.floor(Math.random()*list.length)]:list[index%list.length];return Number(id)===41001?null:id;}
  function clearHome(){homeKey='';homeView?.destroy?.();homeView=null;document.querySelector('#home-view .wp-home')?.remove();}
  // PartnerImg at the screen centre, SetLocalPosition(x, -y), SetLocalScale(scale): a 720×1280 layer inside `host` with the
  // picture at its native size, or the Spine model 200 lower (GirlsModelLite). coord 'xy' = partner_picture_xy (detail,
