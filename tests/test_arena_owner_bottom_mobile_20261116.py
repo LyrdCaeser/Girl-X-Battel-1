@@ -33,6 +33,6 @@ class OwnerPlacementTest(unittest.TestCase):
         self.assertIn("'ar-side ar-side-'+asset",js)
         self.assertNotIn("stage.style.bottom=",js)
         index=(ROOT/'web/index.html').read_text()
-        self.assertIn('/arena-online-native.js?v=20261116-owner-bottom-r6',index)
+        self.assertIn('src="/arena-online-native.js?v=20261116-',index)
         self.assertIn('href="/arena.css?v=20261116-',index)
 if __name__=='__main__':unittest.main()

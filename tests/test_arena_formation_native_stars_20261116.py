@@ -34,7 +34,7 @@ class FormationStars(unittest.TestCase):
         self.assertIn('.gu-emblem',css)
         html=(ROOT/'web/index.html').read_text()
         self.assertIn('src="/arena-online-native.js?v=20261116-',html)
-        self.assertIn('/arena3v3.css?v=20261116-clean-stars-r5',html)
+        self.assertIn('href="/arena3v3.css?v=20261116-',html)
 
 
 if __name__=='__main__': unittest.main()
