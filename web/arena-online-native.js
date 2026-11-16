@@ -501,6 +501,7 @@ const NativeOnlineArenas=(()=>{
     slot.title=hero?(hero.name||'Nữ Thần')+' · '+(hero.stars||0)+'★':'Đội '+(i+1)+' · Vị trí '+pos;
     if(hero){
      if(typeof portrait==='function')slot.append(portrait(hero.table_id,56,hero));
+     slot.append(nativeCardStars(hero,'a3-slot-native-stars'));
      slot.onclick=()=>{teams[i]=team.filter(x=>Number(x.pos)!==pos);teamIndex=i;render();};
     }else slot.onclick=()=>{teamIndex=i;render();};
     slots.append(slot);
@@ -514,8 +515,8 @@ const NativeOnlineArenas=(()=>{
     if(used.has(Number(hero.partner_id)))continue;
     const b=el('button','a3-cand');b.type='button';
     if(typeof portrait==='function')b.append(portrait(hero.table_id,56,hero));
-    b.append(el('small','',hero.name||'Nữ Thần'));
-    b.title=(hero.name||'Nữ Thần')+' · '+(hero.stars||0)+'★ · Lv.'+(hero.lv||1);
+    b.append(nativeCardStars(hero,'a3-candidate-native-stars'));
+    b.title=(hero.name||'Nữ Thần')+' · '+(hero.stars||0)+'★ · Cấp '+(hero.lv||1);
     b.onclick=()=>{
      const team=teams[teamIndex];if(team.length>=6)return;
      const free=[1,2,3,4,5,6].find(x=>!team.some(y=>Number(y.pos)===x));

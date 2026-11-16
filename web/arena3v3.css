@@ -78,3 +78,42 @@
   height:100%!important;width:100%!important;
 }
 /* No caption on top of the portraits: only original character art and stars. */
+
+
+/* Arena Team: all three teams show the SAME original star and awakening
+   textures as Arena/Cross Server. No level, name, or numeric badges are
+   painted over the Goddess portraits. The original three-team layout stays. */
+.a3-win .a3-slot .ar-native-stars,
+.a3-win .a3-cand .ar-native-stars{
+  position:absolute;bottom:0;left:0;right:0;z-index:8;
+  display:flex;align-items:center;justify-content:center;
+  min-height:calc(14 * var(--u));
+  pointer-events:none;
+  background:linear-gradient(transparent,#192441a6);
+}
+.a3-win .a3-slot .ar-native-stars .gu-stars,
+.a3-win .a3-cand .ar-native-stars .gu-stars{
+  display:flex;align-items:center;justify-content:center;
+  max-width:100%;gap:0;overflow:visible;
+}
+.a3-win .a3-slot .ar-native-stars .gu-star,
+.a3-win .a3-cand .ar-native-stars .gu-star{
+  width:calc(9 * var(--u))!important;
+  height:calc(9 * var(--u))!important;
+  max-width:none!important;object-fit:contain!important;flex:none;
+}
+.a3-win .a3-slot .ar-native-stars .gu-emblem,
+.a3-win .a3-cand .ar-native-stars .gu-emblem{
+  width:auto!important;height:calc(16 * var(--u))!important;
+  max-width:calc(33 * var(--u))!important;
+  object-fit:contain!important;flex:none;
+}
+.a3-win .a3-slot .ar-native-stars .gu-emblem-num,
+.a3-win .a3-cand .ar-native-stars .gu-emblem-num{
+  font-size:calc(9 * var(--u))!important;
+  color:#fff5c4;text-shadow:0 1px 2px #171627;
+}
+.a3-win .a3-slot .ar-native-stars .ar-native-star-fallback,
+.a3-win .a3-cand .ar-native-stars .ar-native-star-fallback{
+  font-size:calc(11 * var(--u));
+}

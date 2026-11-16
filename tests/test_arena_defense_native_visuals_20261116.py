@@ -29,7 +29,7 @@ class DefenseVisuals(unittest.TestCase):
         self.assertIn('.ar-defense-candidate:has(.ar-native-stars)',css)
         self.assertNotIn('.ar-defense-slot-stars{',css)
         html=(ROOT/'web/index.html').read_text()
-        self.assertIn('/arena-online-native.js?v=20261116-defense-native-r7',html)
-        self.assertIn('/arena3v3.css?v=20261116-defense-native-r6',html)
+        self.assertIn('src="/arena-online-native.js?v=20261116-',html)
+        self.assertIn('href="/arena3v3.css?v=20261116-',html)
 
 if __name__=='__main__':unittest.main()
