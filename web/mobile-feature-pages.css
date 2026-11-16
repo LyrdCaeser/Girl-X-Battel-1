@@ -58,3 +58,5 @@ html.gxb-mobile #app-frame .shops-view:not([hidden]){
   --u:calc(100cqw / 720)!important;
   overflow:hidden!important;
 }
+
+html.gxb-mobile #app-frame .shops-view .sh-map-bg{max-width:none!important}
