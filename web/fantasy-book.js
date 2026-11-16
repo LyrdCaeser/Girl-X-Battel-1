@@ -29,10 +29,11 @@ const FantasyBook=(()=>{
  function render(){const r=root();if(view!=='fantasy-book'){clearInterval(timer);return;}r.replaceChildren();if(!info()){clearInterval(timer);const box=el('div','fb-load-error');box.append(el('h2','','Sách Kỳ Ảo'),el('p','',note||'Đang tải dữ liệu Sách Kỳ Ảo…'));const retry=btn('gs-btn','Tải Lại',()=>{window.FB_LEVELS=null;open(origin);});const back=btn('gs-btn','Quay Lại',()=>showView(origin==='fantasy-book'?'home':origin));box.append(retry,back);r.append(box);return;}const st=el('div','fb-stage');r.append(st);
   if(document.documentElement.classList.contains('gxb-mobile')){
    const bounds=r.getBoundingClientRect(),w=Math.max(1,bounds.width||window.innerWidth);
+   const h=Math.max(1,bounds.height||window.innerHeight);
    const scale=w/720;
    st.style.setProperty('--u',scale+'px','important');
    st.style.setProperty('width','100%','important');
-   st.style.setProperty('height',1280*scale+'px','important');
+   st.style.setProperty('height',h+'px','important');
   }
   [progress,tasks,exchange,trophies][tab](st);
   // battle_pass_b_nav_1 with the four tabs (content y 16 + 522)
@@ -49,7 +50,7 @@ const FantasyBook=(()=>{
   const badge=el('div','fb-lvbadge');badge.style.backgroundImage=`url('${A('battle_pass_level_text_bg')}')`;badge.append(el('small','','Lv'),el('b','',String(i.level)));bar.append(badge);
   const mid=el('div','fb-levmid');const head=el('div','fb-levhead');head.append(el('span','',i.theme==='engine'?'Bánh Răng Hiện Có':(T('BP_EXP_CURRENT')||'Trang Hiện Có')),el('b','',i.span?`${i.into}/${i.span}`:'MAX'));const pb=el('div','fb-bar');const fill=el('i');fill.style.width=(i.span?Math.min(100,i.into*100/i.span):100)+'%';pb.append(fill);mid.append(head,pb);bar.append(mid);
   const plus=btn('fb-plus','+',buyLevel,i.level>=i.max);plus.title=T('BP_BUY_LEV_WINDOW')||'Mua Cấp Sách';bar.append(plus);st.append(bar);}
- function header(st,bg,logoX,logoY,tipX,tipY,tip){st.append(at(img(A(bg),'fb-abs'),0,/exchange/.test(bg)?388:433,1000,/exchange/.test(bg)?411:406));
+ function header(st,bg,logoX,logoY,tipX,tipY,tip){st.append(at(img(A(bg),'fb-abs fb-wide-bg'),0,/exchange/.test(bg)?388:433,1000,/exchange/.test(bg)?411:406));
   if(logoX!=null){st.append(at(el('h2','fb-abs fb-logo fb-logo-vi',TH().title),logoX,logoY+(TH().logoH-215)/4,285,TH().logoH));const c=at(el('div','fb-countwrap'),logoX,logoY-92-(TH().logoH-215)/2,190,28);c.style.backgroundImage=`url('${A('battle_pass_logo_bg')}')`;c.append(el('b','fb-count',left()));st.append(c);}
   if(tip)st.append(at(el('p','fb-tip',tip),tipX,tipY,300,null));}
  // ---- Progress (battle_pass_steam_new)
@@ -80,7 +81,7 @@ const FantasyBook=(()=>{
   const nav=at(el('div','fb-shopnav'),0,210,1000,53);nav.style.backgroundImage=`url('${A('bp_mission_yeqina_bg')}')`;const names=TH().names||(T('BP_SHOP_TAGS')||'Dấu Hoa|Lá Pha Lê|Dấu Trang Hoa').split('|');
   for(const [k,x]of [[2,-240],[1,0],[3,240]]){const b=at(btn('fb-stab'+(shopTab===k?' on':''),names[k-1],()=>{shopTab=k;render();}),x,0,232,55);b.style.top='0';b.style.left=`calc(${500+x-116} * var(--u))`;b.style.backgroundImage=`url('${A(shopTab===k?'bp_mission_yeqina_2':'bp_mission_yeqina_1')}')`;nav.append(b);}st.append(nav);
   const cur=info().cur[shopTab===2?1:0];const cost=at(el('div','fb-cost'),0,154,226,60);cost.style.backgroundImage=`url('${A('bp_shop_cost_bg')}')`;cost.append(img(iconOf(cur)),el('b','',number(state.items?.[cur]||0)));st.append(cost);
-  if(shopTab===3){st.append(at(img(A('battle_pass_exchange_flower_bg'),'fb-abs'),0,-249,1000,812),at(img(A('bp_flower'),'fb-abs'),0,18,690,590));
+  if(shopTab===3){st.append(at(img(A('battle_pass_exchange_flower_bg'),'fb-abs fb-wide-bg'),0,-249,1000,812),at(img(A('bp_flower'),'fb-abs'),0,18,690,590));
    const chk=at(btn('fb-check','',odds),160,31,52,52);chk.append(img(A('white_btn_check')));st.append(chk);
    const [ck,cv]=String(window.FB_LOTTERY||'221#50').split('#');for(const [n,x]of [[1,-110],[10,110]]){const b=at(btn('fb-draw','',()=>act({action:'draw',num:n},r=>{if(r?.got)CampaignUI.popup(TH().draw,r.got);})),x,-464,191,60);b.style.backgroundImage=`url('/assets/girl-ui/blue_btn_65_65.png')`;b.append(img(iconOf(ck)),el('b','',number(Number(cv)*n)),el('small','','×'+n));st.append(b);}
    return;}

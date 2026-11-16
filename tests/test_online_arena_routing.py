@@ -265,6 +265,8 @@ class OnlineArenaRoutingTests(unittest.TestCase):
         self.assertIn('src="/arena-online-native.js?v=20261115-replay-r2"', index)
         self.assertIn('href="/shops.css?v=20261116-ui9-r1"', index)
         self.assertIn('src="/shops.js?v=20261116-ui9-r1"', index)
+        self.assertIn('href="/mobile-feature-pages.css?v=20261116-mobile-split-r1"', index)
+        self.assertIn('src="/fantasy-book.js?v=20261116-mobile-split-r1"', index)
 
     def test_original_guild_shop_scales_by_width_and_height(self):
         css = (ROOT / 'web/shops.css').read_text(encoding='utf-8')
@@ -277,6 +279,13 @@ class OnlineArenaRoutingTests(unittest.TestCase):
         shops = (ROOT / 'web/shops.js').read_text(encoding='utf-8')
         self.assertIn('SHOP_NAMES_VI', shops)
         self.assertIn("6:'Bang Hội'", shops)
+        mobile = (ROOT / 'web/mobile-feature-pages.css').read_text(encoding='utf-8')
+        self.assertIn('html.gxb-mobile #app-frame .excursion-view', mobile)
+        self.assertIn('html.gxb-mobile #app-frame .fantasy-book-view', mobile)
+        self.assertIn('html.gxb-mobile #app-frame .shops-view', mobile)
+        self.assertNotIn('gxb-desktop', mobile)
+        self.assertIn('.sh-map-bg', mobile)
+        self.assertIn('left:0!important', mobile)
 
     def test_high_density_avatars_are_served_from_a_confined_webp_asset_root(self):
         server = (ROOT / "server.py").read_text(encoding="utf-8")

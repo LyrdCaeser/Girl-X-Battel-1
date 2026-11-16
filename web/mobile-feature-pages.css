@@ -1,0 +1,71 @@
+/* Dedicated phone layouts for full-screen feature pages.
+   PC keeps the original prefab sizing in each feature stylesheet. */
+html.gxb-mobile #app-frame .excursion-view:not([hidden]){
+  display:block!important;
+  width:100%!important;
+  height:var(--gxb-vh,100dvh)!important;
+  min-height:var(--gxb-vh,100dvh)!important;
+  container-type:inline-size!important;
+  --u:calc(100cqw / 720)!important;
+  overflow:hidden!important;
+}
+html.gxb-mobile #app-frame .excursion-view .ex-map{
+  width:100%!important;
+  height:100%!important;
+  min-height:100%!important;
+}
+html.gxb-mobile #app-frame .excursion-view .ex-bg{
+  left:0!important;
+  top:calc(-108 * var(--u))!important;
+  width:calc(1000 * var(--u))!important;
+  height:calc(100% + 108 * var(--u))!important;
+  object-fit:cover!important;
+  object-position:left top!important;
+}
+
+html.gxb-mobile #app-frame .fantasy-book-view:not([hidden]){
+  display:block!important;
+  width:100%!important;
+  height:var(--gxb-vh,100dvh)!important;
+  min-height:var(--gxb-vh,100dvh)!important;
+  max-height:none!important;
+  container-type:inline-size!important;
+  --u:calc(100cqw / 720)!important;
+  overflow:hidden!important;
+}
+html.gxb-mobile #app-frame .fantasy-book-view .fb-stage{
+  --u:calc(100cqw / 720)!important;
+  width:100%!important;
+  height:100%!important;
+  min-height:100%!important;
+  max-height:none!important;
+  margin:0!important;
+  overflow:hidden!important;
+}
+html.gxb-mobile #app-frame .fantasy-book-view .fb-wide-bg{
+  left:0!important;
+  object-position:left center!important;
+}
+
+html.gxb-mobile #app-frame .shops-view:not([hidden]){
+  display:block!important;
+  width:100%!important;
+  height:var(--gxb-vh,100dvh)!important;
+  min-height:var(--gxb-vh,100dvh)!important;
+  container-type:inline-size!important;
+  --u:calc(100cqw / 720)!important;
+  overflow:hidden!important;
+}
+html.gxb-mobile #app-frame .shops-view .sh-stage{
+  width:100%!important;
+  height:100%!important;
+  min-height:100%!important;
+}
+html.gxb-mobile #app-frame .shops-view .sh-map-bg{
+  left:0!important;
+  top:0!important;
+  width:calc(1280 * var(--u))!important;
+  height:100%!important;
+  object-fit:cover!important;
+  object-position:left top!important;
+}
