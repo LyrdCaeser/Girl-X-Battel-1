@@ -2636,10 +2636,18 @@ class Engine:
         for pid in ids:
             g = owned[pid]; row = TABLES['partner'][str(g['table_id'])]
             if any(g.get('flags') or []): raise GameError('Hay una chica bloqueada en la selección')
-            if int(row['group']) == 7 or int(g['table_id']) in RETURN['puppets']: raise GameError('Las chicas Cosmos y las muñecas no van al Altar')
+            # Dolls use their own native decompose data. Playable Cosmos girls
+            # lack decompose data: use the existing native 10-star reward rule.
+            # Never allow nonplayable group-7 NPCs to be destroyed.
+            cosmos = int(row['group']) == 7
+            if cosmos and not str(row.get('hero_list') or '').strip():
+                raise GameError('Không thể phân giải nhân vật Vũ Trụ không hợp lệ')
             if pid == pending: raise GameError('Resuelve primero el intercambio pendiente')
             star = int(row['max_star']) + int(g.get('awake', 0)); six += star >= 6
-            for k, n in item_pairs(row.get('decompose') or '').items(): add(k, n)
+            decompose = row.get('decompose') or ''
+            if cosmos and not decompose:
+                decompose = TABLES['partner']['751001']['decompose']
+            for k, n in item_pairs(decompose).items(): add(k, n)
             for i in range(1, int(g.get('grade', 0)) + 1):
                 add('10', math.floor(item_pairs(row.get(f'grade_exp{i}') or '').get(10, 0) * 0.7))
             if star < 10:
