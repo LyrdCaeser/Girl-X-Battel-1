@@ -384,14 +384,19 @@ async function testAudioSettingsAndCyclicVoice(){
     pause(){}
     play(){return Promise.resolve();}
   }
-  const db={rules:{},dialogs:{
-    '41001':[{type:1,sound:'110010201',text:'line one'},
-             {type:2,sound:'110010202',text:'line two'},
-             {type:3,sound:'110010203',text:'line three'}]
+  const db={rules:{},dialog_types:{},dialogs:{
+    '41001':[{id:'110010201',type:1,sound:'110010201',text:'line one'},
+             {id:'110010202',type:2,sound:'110010202',text:'line two'},
+             {id:'110010203',type:3,sound:'110010203',text:'line three'}]
+  }};
+  const localized={source_count:3,translations:{
+    '110010201':'Lời thoại một',
+    '110010202':'Lời thoại hai',
+    '110010203':'Lời thoại ba'
   }};
   const voiceContext=vm.createContext({
     window:{addEventListener:(event,fn)=>{voiceChange[event]=fn;}},
-    Audio:VoiceAudio,GxbAudio:settings,api:async()=>db,
+    Audio:VoiceAudio,GxbAudio:settings,api:async url=>url.includes('dialogues-vi.json')?localized:db,
   });
   vm.runInContext(fs.readFileSync(path.join(ROOT,'web/dates.js'),'utf8'),voiceContext);
   const dates=vm.runInContext('Dates',voiceContext);

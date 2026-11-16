@@ -7,12 +7,50 @@ const Dates=(()=>{
  const voiceIndex=new Map();
  window.addEventListener('gxb-audio-volume',e=>{if(e.detail?.channel==='voice'&&audio)audio.volume=e.detail.level/100;});
  const A=n=>'/assets/dates/'+n+'.png';
+ const VOICE_TYPES_VI={
+  1:'Thông Báo',2:'Chạm',3:'Chiến Đấu',4:'Thông Báo',5:'Thất Bại',
+  6:'Kỹ Năng',7:'Tăng Cấp',8:'Tiến Độ',9:'Tiến Hóa',10:'Thức Tỉnh',
+  11:'Trang Bị',12:'Trang Bị',13:'Chiến Thắng',14:'Thất Bại',
+  15:'Thân Mật',16:'Lời Thề',17:'Vào Ký Túc Xá',18:'Ở Ký Túc Xá',
+  19:'Nghỉ Ngơi',20:'Thực Tập',21:'Gợi Ý Nhiệm Vụ',22:'Gợi Ý Chiến Dịch',
+  23:'Quà Không Thích',24:'Quà Bình Thường',25:'Quà Yêu Thích',
+  26:'Chào Mừng',27:'Lựa Chọn',28:'Đội Thu Thập',29:'Nâng Cấp',
+  30:'Trong Ký Túc Xá',31:'Gợi Ý'
+ };
+ const DIALOG_VI_VERSION='20261116-all-dialogues-r1';
+ function installDialogueVietnamese(catalog,pack){
+  const translated=pack?.translations||{};
+  let required=0,missing=0;
+  for(const rows of Object.values(catalog.dialogs||{})){
+   for(const line of rows){
+    if(!line.text||line.text==='-1')continue;
+    required++;
+    const text=translated[String(line.id)];
+    if(typeof text!=='string'||!text.trim()){missing++;continue;}
+    // Translate the on-screen line only. The source ID, clip and type
+    // are immutable, so the original Japanese voice remains playable.
+    line.text=text;
+   }
+  }
+  if(missing||required!==Number(pack?.source_count)){
+   throw Error('Bản thoại tiếng Việt chưa đầy đủ ('+(required-missing)+'/'+required+').');
+  }
+  catalog.dialog_types=Object.fromEntries(
+   Object.entries(catalog.dialog_types||{}).map(([id,name])=>[id,VOICE_TYPES_VI[Number(id)]||name])
+  );
+  return catalog;
+ }
+
  const el=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=typeof GxbVi!=='undefined'?GxbVi.t(text):text;return e;};
  const img=(src,cls,alt='')=>{const i=el('img',cls);i.src=src;i.alt=alt;i.draggable=false;return i;};
- const load=()=>data?Promise.resolve(data):(loading||=api('/assets/relations.json').then(d=>data=d));
+ const load=()=>data?Promise.resolve(data):(loading||=Promise.all([
+  api('/assets/relations.json'),
+  api('/assets/dates/dialogues-vi.json?v='+DIALOG_VI_VERSION)
+ ]).then(([catalog,pack])=>data=installDialogueVietnamese(catalog,pack))
+  .catch(error=>{loading=null;throw error;}));
  const R=()=>data.rules,BASE=()=>Number(R().love_point_max_base),GROW=()=>Number(R().love_point_max_grow);
  function root(){let r=$('dates-view');if(!r){r=el('section','dates-view');r.id='dates-view';r.hidden=true;$('home-systems-view').after(r);}return r;}
- function open(from,partnerId){origin=from||view;pid=partnerId||null;mode=pid?'date':'list';tab='gift';bubble='';note='';load().then(()=>{api('/api/relations/action',{action:'visit'}).then(r=>{state=r.state;render();}).catch(()=>{});showView('dates');render();});}
+ function open(from,partnerId){origin=from||view;pid=partnerId||null;mode=pid?'date':'list';tab='gift';bubble='';note='';load().then(()=>{api('/api/relations/action',{action:'visit'}).then(r=>{state=r.state;render();}).catch(()=>{});showView('dates');render();}).catch(error=>{if(typeof GirlUI!=='undefined')GirlUI.toast('Không thể tải lời thoại tiếng Việt: '+error.message);});}
  function hero(){return state.roster.find(h=>h.partner_id===pid);}
  function maxOf(h){return h?.is_vowed?GROW():BASE();}
  function iconOf(h){if(h?.is_vowed)return A('love_point_icon6');const row=data.appointment[Math.min(data.appointment.length-1,Math.floor((h?.love_point||0)/1000))];return A(row?.icon||'love_point_icon1');}
@@ -54,45 +92,45 @@ const Dates=(()=>{
   art.onclick=()=>{void playGirlVoice(h.table_id).then(ok=>{if(ok&&view==='dates')render();});};
   st.append(at(nameTag(h),-207,588,282,80));
   {const cv=data.cv?.[String(h.table_id)]||(typeof hostChain==='function'?hostChain(h.table_id).map(x=>data.cv?.[String(x)]).find(Boolean):'');if(cv){const c=at(el('div','dt-cv2'),230,600,250,34);c.append(el('span','','CV: '+cv));st.append(c);}}
-  const help=at(el('button','dt-help'),60,535,52,52);help.type='button';help.append(img(A('help_2')));help.onclick=()=>CampaignUI.popup('Send gifts to raise intimacy: a gift she likes gives '+POINTS()[2]+', a normal one '+POINTS()[1]+' and one she dislikes '+POINTS()[0]+'. Every 2000 intimacy fills a heart and unlocks more voice lines. At '+BASE()+' you can form the Oath (1 Oath Ring) and the cap rises to '+GROW()+'. Make Gift turns 10 Gift Shards into the gift you choose; a Gift Box gives a random gift and 3-5 shards.',{});st.append(help);
-  for(const [k,label,x,icon,icon2]of [['gift','Gift',168,'dates_icon07','dates_icon07_2'],['voice','Voice',290,'dates_icon12','dates_icon12_2']]){const b=at(el('button','dt-tab2'+(tab===k?' on':'')),x,537,122,61);b.type='button';b.style.backgroundImage=`url('${A(tab===k?'dates_icon06':'dates_icon05')}')`;b.append(img(A(tab===k?icon2:icon),'dt-tab-ic'),el('span','',label));b.onclick=()=>{tab=k;render();};st.append(b);}
+  const help=at(el('button','dt-help'),60,535,52,52);help.type='button';help.append(img(A('help_2')));help.onclick=()=>CampaignUI.popup('Tặng quà để tăng Thân Mật: quà Nữ Thần thích nhận '+POINTS()[2]+' điểm, quà bình thường '+POINTS()[1]+' điểm và quà không thích '+POINTS()[0]+' điểm. Mỗi 2.000 điểm Thân Mật sẽ thêm một trái tim và mở lời thoại mới. Đạt '+BASE()+' điểm có thể lập lời thề (cần 1 Nhẫn Lời Thề), giới hạn tăng lên '+GROW()+'. Mỗi lần chế tạo quà dùng 10 Mảnh Quà; Hộp Quà mở ngẫu nhiên một món và 3–5 Mảnh Quà.',{});st.append(help);
+  for(const [k,label,x,icon,icon2]of [['gift','Quà Tặng',168,'dates_icon07','dates_icon07_2'],['voice','Giọng Nói',290,'dates_icon12','dates_icon12_2']]){const b=at(el('button','dt-tab2'+(tab===k?' on':'')),x,537,122,61);b.type='button';b.style.backgroundImage=`url('${A(tab===k?'dates_icon06':'dates_icon05')}')`;b.append(img(A(tab===k?icon2:icon),'dt-tab-ic'),el('span','',label));b.onclick=()=>{tab=k;render();};st.append(b);}
   const panel=at(el('div','dt-side'),228,10,258,1000);panel.style.backgroundImage=`url('${A('dates_bg02')}')`;st.append(panel);
   const love=at(el('button','dt-love2'),228,420,128,128);love.type='button';love.append(img(iconOf(h)),el('b','',String(h.love_point||0)));love.title='Kết Duyên · Giấy Chứng Nhận';love.setAttribute('aria-label','Xem và lập lời thề với '+h.name);love.onclick=()=>oath(h);st.append(love);
   for(let i=0;i<5;i++){const w=at(el('span','dt-heart2'),148+40*i,340,40,40);w.append(img(A('dates_icon40')));if((h.love_point||0)>=(i+1)*2000)w.append(img(A('dates_icon39'),'fill'));st.append(w);}
-  if(tab==='gift'){st.append(at(el('p','dt-tip','Tap to send gift'),228,300,220,24));const box=at(el('div','dt-giftbox'),228,-5,216,580);gifts(box,h);st.append(box);
-   const bag=at(el('button','dt-bluebtn'),228,-343,191,60);bag.type='button';bag.append(img(A('icon_43')),el('small','',short(Number(state.items['43']||0))),el('span','','Open'));bag.onclick=async()=>{const n=Number(state.items['43']||0);if(!n){note='Không có hộp quà.';render();return;}const r=await act({action:'open_box',count:many?Math.min(n,10):1});if(r?.got)CampaignUI.popup('Gift Box',r.got);};st.append(bag);
-   const make=at(el('button','dt-bluebtn'),228,-413,191,60);make.type='button';make.append(img(A('icon_44')),el('small','',short(Number(state.items['44']||0))),el('span','','Make Gift'));make.onclick=()=>makeGift();st.append(make);
+  if(tab==='gift'){st.append(at(el('p','dt-tip','Chạm để tặng quà'),228,300,220,24));const box=at(el('div','dt-giftbox'),228,-5,216,580);gifts(box,h);st.append(box);
+   const bag=at(el('button','dt-bluebtn'),228,-343,191,60);bag.type='button';bag.append(img(A('icon_43')),el('small','',short(Number(state.items['43']||0))),el('span','','Mở'));bag.onclick=async()=>{const n=Number(state.items['43']||0);if(!n){note='Không có hộp quà.';render();return;}const r=await act({action:'open_box',count:many?Math.min(n,10):1});if(r?.got)CampaignUI.popup('Hộp Quà',r.got);};st.append(bag);
+   const make=at(el('button','dt-bluebtn'),228,-413,191,60);make.type='button';make.append(img(A('icon_44')),el('small','',short(Number(state.items['44']||0))),el('span','','Chế Tạo Quà'));make.onclick=()=>makeGift();st.append(make);
    const t=at(el('label','dt-many2'),228,-468,160,30);const cb=el('input');cb.type='checkbox';cb.checked=many;cb.onchange=()=>{many=cb.checked;};t.append(cb,el('span','','×10'));st.append(t);}
   else{const box=at(el('div','dt-voicebox'),228,-60,226,780);voices(box,h);st.append(box);}
   if(bubble){const bb=at(el('div','dt-bubble2'),-130,-156,450,null);bb.append(el('span','',bubble),img(A('partner_detail_bubble_arrow'),'dt-bubble-arrow'));st.append(bb);}
-  for(const [label,icon,x,fn]of [['Discuss','dates_icon38',-282,()=>Station.open(h.table_id).then(ok=>{if(!ok){note='Sắp mở';render();}})],['File','dates_icon14',-130,()=>file(h)],['Date','dates_icon13',22,()=>dateStories(h)]]){const b=at(el('button','dt-btn2'),x,-476,143,80);b.type='button';b.style.backgroundImage=`url('${A('dates_btn')}')`;b.append(img(A(icon),'dt-btn-ic'),el('span','',label));b.onclick=fn;st.append(b);}
+  for(const [label,icon,x,fn]of [['Trò Chuyện','dates_icon38',-282,()=>Station.open(h.table_id).then(ok=>{if(!ok){note='Sắp mở';render();}})],['Hồ Sơ','dates_icon14',-130,()=>file(h)],['Hẹn Hò','dates_icon13',22,()=>dateStories(h)]]){const b=at(el('button','dt-btn2'),x,-476,143,80);b.type='button';b.style.backgroundImage=`url('${A('dates_btn')}')`;b.append(img(A(icon),'dt-btn-ic'),el('span','',label));b.onclick=fn;st.append(b);}
   if(note)st.append(at(el('p','dt-note2',note),0,-560,560,40));
   {const src=document.querySelector('.menu-explorer-bottom');if(src){const n=src.cloneNode(true);n.classList.add('dt-nav');n.querySelectorAll('button').forEach(b=>b.classList.remove('current'));r.append(n);}}}
  const POINTS=()=>R().love_gift_point.split('|').map(Number);
  // DatesGiftsWindow: Food / Toy / Accessory / Variety tabs, pick a gift, choose how many (10 Gift Shards each), Make.
  let makeGroup=1,makePick=null,makeNum=1;
- function makeGift(){const {body,close}=GirlUI.win({title:'Make Gift',cls:'dt-make-win'});const tabs=el('div','dt-make-tabs');['Food','Toy','Accessory','Variety'].forEach((l,k)=>{const b=el('button',makeGroup===k+1?'on':'',l);b.type='button';b.onclick=()=>{makeGroup=k+1;makePick=null;close();makeGift();};tabs.append(b);});body.append(tabs);
+ function makeGift(){const {body,close}=GirlUI.win({title:'Chế Tạo Quà',cls:'dt-make-win'});const tabs=el('div','dt-make-tabs');['Thức Ăn','Đồ Chơi','Phụ Kiện','Khác'].forEach((l,k)=>{const b=el('button',makeGroup===k+1?'on':'',l);b.type='button';b.onclick=()=>{makeGroup=k+1;makePick=null;close();makeGift();};tabs.append(b);});body.append(tabs);
   const ids=Object.entries(data.gifts).filter(([,g])=>g.group===makeGroup).map(([id])=>id);if(!makePick||!ids.includes(makePick))makePick=ids[0];
   const grid=el('div','dt-make-grid');for(const id of ids){const b=el('button','dt-gift'+(makePick===id?' on':''));b.type='button';b.append(img(A('icon_'+id)),el('b','',short(Number(state.items[id]||0))));b.title=typeof GxbVi!=='undefined'?GxbVi.t(data.gifts[id].name):data.gifts[id].name;b.onclick=()=>{makePick=id;close();makeGift();};grid.append(b);}body.append(grid);
   const [ck,cn]=R().love_gift_cost.split('#');const max=Math.floor(Number(state.items[ck]||0)/Number(cn));makeNum=Math.max(1,Math.min(makeNum,Math.max(1,max)));
   const row=el('div','dt-make-row');row.append(el('b','dt-make-name',data.gifts[makePick]?.name||''));const minus=el('button','dt-num','−');minus.type='button';minus.onclick=()=>{makeNum=Math.max(1,makeNum-1);close();makeGift();};const plus=el('button','dt-num','+');plus.type='button';plus.onclick=()=>{makeNum=Math.min(Math.max(1,max),makeNum+1);close();makeGift();};const mx=el('button','dt-num','Max');mx.type='button';mx.onclick=()=>{makeNum=Math.max(1,max);close();makeGift();};
   const cost=el('span','dt-make-cost');cost.append(img(A('icon_'+ck)),el('b','',number(makeNum*Number(cn))+' / '+number(Number(state.items[ck]||0))));row.append(minus,el('b','dt-make-n','×'+makeNum),plus,mx,cost);body.append(row);
-  const go=el('button','dt-bluebtn static','Make');go.type='button';go.disabled=max<1;go.onclick=async()=>{const r=await act({action:'compose',count:makeNum,item_id:Number(makePick)});close();if(r?.got)CampaignUI.popup('Success',r.got);};body.append(go);}
+  const go=el('button','dt-bluebtn static','Chế Tạo');go.type='button';go.disabled=max<1;go.onclick=async()=>{const r=await act({action:'compose',count:makeNum,item_id:Number(makePick)});close();if(r?.got)CampaignUI.popup('Thành Công',r.got);};body.append(go);}
  function gifts(panel,h){const [first,count]=R().love_gift_item_num.split('|').map(Number);const g=el('div','dt-gifts');let any=false;
   for(let i=0;i<count;i++){const id=String(first+i),n=Number(state.items[id]||0);if(!n)continue;any=true;const b=el('button','dt-gift');b.type='button';const it=itemCatalog?.[id];b.style.backgroundImage=`url('/assets/ui/quality_${Math.min(Math.max(it?.quality||2,1),7)}.png')`;const src=A('icon_'+id);b.append(img(src),el('b','',short(n)));if(isLiked(h,id))b.append(img(A('dates_favorite'),'dt-fav'));b.title=typeof GxbVi!=='undefined'?GxbVi.t(data.gifts[id]?.name||id):(data.gifts[id]?.name||id);b.onclick=()=>give(h,id,many?Math.min(n,10):1);g.append(b);}
-  if(!any)g.append(el('p','dt-empty','No gifts: open a Gift Box or Make one with Gift Shards.'));panel.append(g);
+  if(!any)g.append(el('p','dt-empty','Chưa có quà tặng. Mở Hộp Quà hoặc dùng Mảnh Quà để chế tạo.'));panel.append(g);
 }
  const short=n=>n>=1e6?Math.floor(n/1e5)/10+'M':n>=1e4?Math.floor(n/1e3)+'K':String(n);
  function isLiked(h,id){return String(h.gift_like||'').split('|').includes(id);}
  async function give(h,id,num){const r=await act({action:'gift',partner_id:h.partner_id,item_id:Number(id),num});if(r){const ls=allLines(hero()).filter(x=>x.type===r.reaction);const pick=ls[Math.floor(Math.random()*ls.length)];play(pick?.sound,pick?.text||('+'+r.delta+' thân mật'));note='+'+r.delta+' thân mật';render();}}
  function voices(panel,h){const all=allLines(h);const love=h.love_point||0;const g=el('div','dt-voices');const types=new Map();for(const x of all){if(!types.has(x.type))types.set(x.type,[]);types.get(x.type).push(x);}
-  let idx=0;for(const [type,ls]of types){const label=(data.dialog_types[type]||'Voice').replace(' {1}','');ls.forEach((x,i)=>{const lockAt=type===15?Math.min(BASE(),(i+1)*2000):type===16?(h.is_vowed?0:Infinity):0;const locked=love<lockAt;const b=el('button','dt-voice'+(locked?' lock':''));b.type='button';b.append(el('span','',label+(ls.length>1?' '+(i+1):'')));b.title=x.text&&x.text!=='-1'?(typeof GxbVi!=='undefined'?GxbVi.t(x.text):x.text):'';b.disabled=locked||!x.sound;b.onclick=()=>{play(x.sound,x.text);render();};g.append(b);idx++;});}
-  if(!idx)g.append(el('p','dt-empty',"This Girl has no voice lines in the data."));panel.append(g);}
- function attr(h){const rows=data.appointment;const lv=Math.floor((h.love_point||0)/1000);const cur=rows[Math.min(lv,rows.length-1)],next=rows[Math.min(lv+1,rows.length-1)];const fmt=b=>String(b||'—').split('|').map(p=>{const [k,v]=p.split('#');return k?(k==='atkP'?'Attack':k==='hpP'?'HP':k)+' +'+(Number(v)*100).toFixed(1)+'%':'—';}).join(' · ');
-  CampaignUI.popup('Thưởng Thân Mật',{});const box=document.querySelector('.cr-overlay .cr-box');const d=el('div','dt-attr');d.append(el('p','',"Level "+lv+': '+fmt(cur.bonus)),el('p','',"Next ("+next.point+'): '+fmt(next.bonus)),el('p','dt-small-note',"These bonuses apply in battle (original HeroAttr)."));box.querySelector('.cr-rewards')?.replaceWith(d);}
+  let idx=0;for(const [type,ls]of types){const label=(data.dialog_types[type]||'Giọng Nói').replace(' {1}','');ls.forEach((x,i)=>{const lockAt=type===15?Math.min(BASE(),(i+1)*2000):type===16?(h.is_vowed?0:Infinity):0;const locked=love<lockAt;const b=el('button','dt-voice'+(locked?' lock':''));b.type='button';b.append(el('span','',label+(ls.length>1?' '+(i+1):'')));b.title=x.text&&x.text!=='-1'?(typeof GxbVi!=='undefined'?GxbVi.t(x.text):x.text):'';b.disabled=locked||!x.sound;b.onclick=()=>{play(x.sound,x.text);render();};g.append(b);idx++;});}
+  if(!idx)g.append(el('p','dt-empty','Nữ Thần này chưa có lời thoại.'));panel.append(g);}
+ function attr(h){const rows=data.appointment;const lv=Math.floor((h.love_point||0)/1000);const cur=rows[Math.min(lv,rows.length-1)],next=rows[Math.min(lv+1,rows.length-1)];const fmt=b=>String(b||'—').split('|').map(p=>{const [k,v]=p.split('#');return k?(k==='atkP'?'Tấn Công':k==='hpP'?'Sinh Lực':k)+' +'+(Number(v)*100).toFixed(1)+'%':'—';}).join(' · ');
+  CampaignUI.popup('Thưởng Thân Mật',{});const box=document.querySelector('.cr-overlay .cr-box');const d=el('div','dt-attr');d.append(el('p','','Cấp '+lv+': '+fmt(cur.bonus)),el('p','','Tiếp Theo ('+next.point+'): '+fmt(next.bonus)),el('p','dt-small-note','Các chỉ số cộng thêm được áp dụng trong chiến đấu.'));box.querySelector('.cr-rewards')?.replaceWith(d);}
  async function pledge(h){if(h.is_vowed){hall(h);return;}
-  if((h.love_point||0)<BASE()){CampaignUI.popup("Oath requires "+BASE()+" Intimacy ("+(h.love_point||0)+' ahora).',{});return;}
-  if(!(await GirlUI.confirm("Lập lời thề với "+h.name+"? Sẽ tiêu hao 1 Nhẫn.",{title:'Xác Nhận Lời Thề',ok:'Lập Lời Thề'})))return;act({action:'vow',partner_id:h.partner_id}).then(r=>{if(r){const l=allLines(hero()).find(x=>x.type===16);play(l?.sound,l?.text||'♥');note="Oath completed!";render();}});}
+  if((h.love_point||0)<BASE()){CampaignUI.popup("Oath requires "+BASE()+" Intimacy ("+(h.love_point||0)+' hiện tại).',{});return;}
+  if(!(await GirlUI.confirm("Lập lời thề với "+h.name+"? Sẽ tiêu hao 1 Nhẫn.",{title:'Xác Nhận Lời Thề',ok:'Lập Lời Thề'})))return;act({action:'vow',partner_id:h.partner_id}).then(r=>{if(r){const l=allLines(hero()).find(x=>x.type===16);play(l?.sound,l?.text||'♥');note='Đã Kết Duyên!';render();}});}
  // PartnerNameTag (partner_name_tag prefab 282×80): partner_name_frame_bg, faction at -90,2, stars at 18,17, name at 18,-21.
  function nameTag(h){const t=el('div','dt-nametag');t.append(img(A('partner_name_frame_bg'),'dt-nt-bg'));const g=girlsCatalog.find(x=>x.id===h.table_id);
   t.append(img('/assets/factions/'+(g?.group||h.group||1)+'.png','dt-nt-group'));const st=el('div','dt-nt-stars');const n=Number(h.stars||g?.stars||1);
@@ -104,20 +142,20 @@ const Dates=(()=>{
  const bonusText=b=>{const parts=String(b||'').split('|').filter(p=>p.includes('#')).map(p=>{const [k,v]=p.split('#');return (k==='atkP'?'ATK':k==='hpP'?'HP':k)+' +'+(Number(v)*100).toFixed(1)+'%';});return parts.length?parts.join(' · '):'Không có hiệu ứng cộng thêm';};
  const PARTNER_GIFTS=h=>[String(h.gift_like||'').split('|').filter(Boolean),String(h.gift_dislike||'').split('|').filter(Boolean)];
  function file(h){const list=data.files?.[String(h.table_id)]||(typeof hostChain==='function'?hostChain(h.table_id).map(x=>data.files?.[String(x)]).find(Boolean):null)||[];const lev=String(R().partner_data_lev).split('|').map(Number);
-  const {body}=GirlUI.win({title:h.name+' · File',cls:'dt-file-win'});if(!list.length){body.append(el('p','dt-empty2','No file'));return;}
-  list.forEach((d,i)=>{const need=i===0?0:lev[i-1]||0;const open=(h.love_point||0)>=need;const c=el('div','dt-file'+(open?'':' lock'));c.append(el('h4','',open?d.title:'🔒 Unlock at '+Math.floor(need/100)+' Intimacy'));if(open){const p=el('p');p.innerHTML=fmt(d.text,h);c.append(p);}body.append(c);});
+  const {body}=GirlUI.win({title:h.name+' · Hồ Sơ',cls:'dt-file-win'});if(!list.length){body.append(el('p','dt-empty2','Chưa có hồ sơ'));return;}
+  list.forEach((d,i)=>{const need=i===0?0:lev[i-1]||0;const open=(h.love_point||0)>=need;const c=el('div','dt-file'+(open?'':' lock'));c.append(el('h4','',open?d.title:'🔒 Mở khi đạt '+Math.floor(need/100)+' Thân Mật'));if(open){const p=el('p');p.innerHTML=fmt(d.text,h);c.append(p);}body.append(c);});
   const rows=data.appointment;const lv=Math.floor((h.love_point||0)/1000);const cur=rows[Math.min(lv,rows.length-1)];const b=el('div','dt-file dt-file-bonus');b.append(el('h4','','Thưởng Thân Mật'),el('p','',bonusText(cur?.bonus)));body.append(b);}
  // DatesStoryWindow ("Date"): the partner_achievement chain; finishing a task unlocks and plays its story (partner_plot).
  function dateStories(h){const key=chainKey(h);const info=key&&state.dates_info?.[String(key)];if(!info){note='Nhân vật này hiện chưa có câu chuyện.';render();return;}
-  const {body,close}=GirlUI.win({title:h.name+' · Date',cls:'dt-story-win'});
+  const {body,close}=GirlUI.win({title:h.name+' · Hẹn Hò',cls:'dt-story-win'});
   info.chain.forEach((id,i)=>{const a=data.achievements[String(id)]||{};const done=i<info.done,cur=i===info.done;const c=el('div','dt-story'+(done?' done':cur?' cur':' lock'));
    const pic=el('div','dt-story-pic');pic.style.backgroundImage=`url('${A((a.bg||'dates_plot_caocao')+(1+i%3))}')`;c.append(pic);
-   const txt=el('div','dt-story-txt');txt.append(el('b','',done?('Story '+(i+1)):cur?'Mission':'Locked'),el('span','',done||cur?a.desc:'Unlock by finishing the story'));
+   const txt=el('div','dt-story-txt');txt.append(el('b','',done?('Câu Chuyện '+(i+1)):cur?'Nhiệm Vụ':'Đã Khóa'),el('span','',done||cur?a.desc:'Hoàn thành câu chuyện trước để mở khóa'));
    if(cur)txt.append(el('small','',info.have+' / '+info.need));c.append(txt);
    const b=el('button','dt-story-btn');b.type='button';
-   if(done){b.textContent='Replay';b.onclick=()=>{close();playPlot(a.plot);};}
-   else if(cur){b.textContent=Number(a.type)===5?'Consume':'Unlock';b.disabled=!info.ready;b.onclick=async()=>{const r=await act({action:'date_step',table_id:key});if(r?.plot){close();playPlot(r.plot);}};if(!info.ready)b.title='Finish this mission to unlock the story.';}
-   else{b.textContent='Locked';b.disabled=true;}c.append(b);body.append(c);});}
+   if(done){b.textContent='Xem Lại';b.onclick=()=>{close();playPlot(a.plot);};}
+   else if(cur){b.textContent=Number(a.type)===5?'Tiêu Hao':'Mở Khóa';b.disabled=!info.ready;b.onclick=async()=>{const r=await act({action:'date_step',table_id:key});if(r?.plot){close();playPlot(r.plot);}};if(!info.ready)b.title='Hoàn thành nhiệm vụ để mở câu chuyện.';}
+   else{b.textContent='Đã Khóa';b.disabled=true;}c.append(b);body.append(c);});}
  function chainKey(h){const ids=typeof hostChain==='function'?hostChain(h.table_id):[h.table_id];return ids.find(x=>state.dates_info?.[String(x)])||[...String((h.show_ids||'')).split('|')].map(Number).find(x=>state.dates_info?.[String(x)])||0;}
  async function playPlot(plot){try{const r=await api('/api/relations/plot',{plot});if(r.lines?.length&&typeof Story!=='undefined')Story.play(plot,{lines:r.lines,title:r.title});}catch(e){note=e.message;render();}}
  // DatesPledgeWindow · Marriage Certificate (dates_pledge_window 660×1042): frame dates_bg09 + dates_bg17 (mirrored halves),

@@ -39,5 +39,5 @@ assert.match(gu,/win\(\{title:'Chuyển Đổi Tiềm Năng'/);
 assert.match(gu,/'Kích Hoạt'/);
 assert.match(gu,/'Đã Kích Hoạt'/);
 assert.match(guCss,/#girl-detail-view \.lb-btns \.lb-small/);
-assert.match(html,/\/girl-ui\.js\?v=20261116-potential-vi-r2/);
+assert.match(html,/\/girl-ui\.js\?v=20261116-potential-choose-vi-r3/);
 console.log('PASS: fitted avatar, small artifact stars, all artifact titles, 15 Potential translations');
