@@ -423,8 +423,47 @@ class Engine:
                 'chime_bonus': chimes.bonus(state),
             }
 
+    @staticmethod
+    def _arena3v3_recovery_draft(state):
+        """Make a read-only, owned-only editor preview of a legacy invalid save.
+
+        Never overwrite or auto-save invalid teams, grant rewards, or make a
+        partial formation eligible for a match before an explicit save.
+        """
+        stored = state.get('arena3v3')
+        raw = stored.get('teams', []) if isinstance(stored, dict) else []
+        owned = {int(x['partner_id']) for x in state.get('partners', [])}
+        preview = [[], [], []]
+        seen = set()
+        if not isinstance(raw, list):
+            return preview
+        for index, members in enumerate(raw[:3]):
+            if not isinstance(members, list):
+                continue
+            positions = set()
+            for member in members:
+                if not isinstance(member, dict):
+                    continue
+                try:
+                    pid = int(member.get('partner_id'))
+                    pos = int(member.get('pos'))
+                except (ValueError, TypeError, OverflowError):
+                    continue
+                if pid not in owned or pid in seen or not 1 <= pos <= 6 or pos in positions:
+                    continue
+                seen.add(pid)
+                positions.add(pos)
+                preview[index].append({'partner_id': pid, 'pos': pos})
+                if len(preview[index]) == 6:
+                    break
+        return preview
+
     def ensure_pvp_arena3v3(self):
-        """Initialize original 3v3 entry rewards exactly once, without creating NPC ladder data."""
+        """Initialize 3v3 once; an invalid saved team must never break PvP status.
+
+        Keep original saved lineups untouched. Expose valid members as an editor
+        draft; combat continues to require three explicitly saved valid teams.
+        """
         with self.lock:
             self.db.execute('BEGIN IMMEDIATE')
             try:
@@ -435,19 +474,23 @@ class Engine:
                         key = str(item_id)
                         state.setdefault('items', {})[key] = int(state['items'].get(key, 0)) + int(amount)
                     self._save_profile(state)
-                    self.db.commit()
-                else:
-                    # Preserve legacy player's previous unlock/ticket grant and stored teams.
-                    state['arena3v3'].setdefault('teams', [])
-                    if not isinstance(state['arena3v3']['teams'], list):
-                        raise GameError('Dữ liệu đội hình 3v3 bị lỗi; vui lòng liên hệ QTV.')
-                    self.db.commit()
-                return {'teams': self.pvp_arena3v3_teams(),
-                        'ticket_cost': arena3v3.COST,
-                        'tickets': int(state.get('items', {}).get('34', 0))}
+                self.db.commit()
             except Exception:
                 self.db.rollback()
                 raise
+            result = {'ticket_cost': arena3v3.COST,
+                      'tickets': int(state.get('items', {}).get('34', 0))}
+            try:
+                result['teams'] = self.pvp_arena3v3_teams()
+                result['needs_repair'] = False
+            except (GameError, ValueError, TypeError, KeyError, AttributeError):
+                result.update(
+                    teams=[],
+                    draft_teams=self._arena3v3_recovery_draft(state),
+                    needs_repair=True,
+                    warning='Đội hình Đấu Trường Đội cần cập nhật. Mở Đội hình, kiểm tra đủ 3 đội và nhấn Lưu. Đội hình cũ vẫn được giữ nguyên.'
+                )
+            return result
 
     def pvp_arena3v3_teams(self):
         """Return the saved three-team formation as owned partner IDs/positions only."""

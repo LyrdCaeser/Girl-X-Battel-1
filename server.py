@@ -16,6 +16,7 @@ import socketserver
 import struct
 import threading
 import time
+import traceback
 from urllib.parse import parse_qs, urlparse
 from gxb2.engine import Engine, GameError, LOCAL_TOKEN, TABLES
 from gxb2.story import catalog as story_catalog
@@ -562,26 +563,36 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
             war_id=(parse_qs(parsed.query).get('war_id') or [''])[0]
             return self.send(200,live_service.guild_war_detail(account['uid'],account['server_id'],war_id))
         if path == '/api/pvp/status':
-            ctx = self.auth_context(); account = ctx['account']
-            query = parse_qs(parsed.query)
-            mode = (query.get('mode') or ['arena'])[0]
-            live_service.settle_previous_pvp_season(mode, account['server_id'])
-            pvp = live_service.pvp_status(account['uid'], account['server_id'], mode)
-            payload = {
-                'pvp': pvp,
-                'rating': live_service.pvp_rating(account['uid'], account['server_id'], mode),
-                'rating_board': live_service.pvp_rating_board(mode, limit=50, server_id='' if mode == 'cross' else account['server_id']),
-                'candidates': live_service.pvp_candidates(account['uid'], account['server_id'], mode, 20),
-                'season': live_service.pvp_season_window(mode, account['server_id']),
-                'season_reward': live_service.pvp_season_claim_status(account['uid'], account['server_id'], mode),
-                'history': live_service.pvp_history(account['uid'], 20),
-                'defense': self.engine.pvp_defense_formation(),
-            }
-            if mode == 'arena3v3':
-                payload['arena3v3'] = self.engine.ensure_pvp_arena3v3()
-                if pvp.get('status') == 'matched' and pvp.get('match'):
-                    payload['series'] = live_service.pvp_arena3v3_series_status(pvp['match']['id'], account['uid'])
-            return self.send(200, payload)
+            try:
+                ctx = self.auth_context(); account = ctx['account']
+                query = parse_qs(parsed.query)
+                mode = (query.get('mode') or ['arena'])[0]
+                live_service.settle_previous_pvp_season(mode, account['server_id'])
+                pvp = live_service.pvp_status(account['uid'], account['server_id'], mode)
+                payload = {
+                    'pvp': pvp,
+                    'rating': live_service.pvp_rating(account['uid'], account['server_id'], mode),
+                    'rating_board': live_service.pvp_rating_board(mode, limit=50, server_id='' if mode == 'cross' else account['server_id']),
+                    'candidates': live_service.pvp_candidates(account['uid'], account['server_id'], mode, 20),
+                    'season': live_service.pvp_season_window(mode, account['server_id']),
+                    'season_reward': live_service.pvp_season_claim_status(account['uid'], account['server_id'], mode),
+                    'history': live_service.pvp_history(account['uid'], 20),
+                    'defense': self.engine.pvp_defense_formation(),
+                }
+                if mode == 'arena3v3':
+                    payload['arena3v3'] = self.engine.ensure_pvp_arena3v3()
+                    if pvp.get('status') == 'matched' and pvp.get('match'):
+                        payload['series'] = live_service.pvp_arena3v3_series_status(pvp['match']['id'], account['uid'])
+                return self.send(200, payload)
+            except (GameError, ValueError) as exc:
+                return self.send(409, {'error': str(exc)})
+            except Exception:
+                # Never terminate an authenticated request with an empty,
+                # non-JSON body: that leaves the game stuck on a blank ladder.
+                traceback.print_exc()
+                return self.send(503, {
+                    'error': 'Đấu Trường tạm thời chưa tải được dữ liệu. Vui lòng thử lại.'
+                })
         if path == '/api/skin-shop/admin/catalog':
             if not self.admin_authorized(): return self.send(403,{'error':'Yêu cầu SUPER GM'})
             return self.send(200,skin_store.catalogue(admin=True))

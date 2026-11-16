@@ -70,8 +70,14 @@ const NativeOnlineArenas=(()=>{
   &&new Set(teams.flat().map(x=>Number(x.partner_id))).size===teams.flat().length;}
  // Original Arena3v3BattleFormationWindow begins with three EMPTY teams
  // until the player explicitly selects Girls. Never auto-create a formation.
- function teamDraft(){if(!draft)draft=validTeams(data?.arena3v3?.teams)?
-    JSON.parse(JSON.stringify(data.arena3v3.teams)):[[],[],[]];return draft;}
+ function teamDraft(){
+  if(!draft){
+   const original=data?.arena3v3?.needs_repair?data?.arena3v3?.draft_teams:data?.arena3v3?.teams;
+   draft=Array.isArray(original)&&original.length===3&&original.every(Array.isArray)
+     ?JSON.parse(JSON.stringify(original)):[[],[],[]];
+  }
+  return draft;
+ }
  async function saveTeams(){
   const teams=teamDraft();
   if(!validTeams(teams)){GirlUI.notice('Cần đủ 3 đội, mỗi đội 1–6 Nữ Thần khác nhau.',{title:title()});return;}
@@ -209,9 +215,10 @@ const NativeOnlineArenas=(()=>{
   const scene=mode==='cross'?'/assets/menus/arena-cross.png':A(mode==='arena3v3'?'arena_3v3_scene':'arena_scene');
   stage.append(center(img(scene,'ar-bg'),0,5,1457,1457));
   Arena.chrome(stage,back);titleArt(stage);
-  const season=data?.rating?.season_id||'—',left=Math.max(0,Number(data?.season?.seconds_left||0));
+  const left=Math.max(0,Number(data?.season?.seconds_left||0));
   const days=Math.floor(left/86400),hours=Math.floor((left%86400)/3600);
-  stage.append(center(el('div','ar-ddl','Mùa 30 ngày · còn '+days+' ngày '+hours+' giờ'),0,448,515,30));
+  stage.append(center(el('div','ar-ddl',
+    !data?'Đang tải mùa Đấu Trường…':'Mùa 30 ngày · còn '+days+' ngày '+hours+' giờ'),0,448,515,30));
   const rank=center(el('div','ar-rank'),0,71,706,681);rank.style.borderImageSource="url('"+A('arena_bg')+"')";
   const rows=el('div','ar-rank-list');rank.append(rows);
   for(const [i,p] of (data?.rating_board||[]).entries()){
@@ -258,7 +265,8 @@ const NativeOnlineArenas=(()=>{
    b.style.backgroundImage="url('"+A('white_btn_65_65')+"')";b.append(img(A(asset)),el('span','',label));
    b.onclick=action;stage.append(b);
   }
-  if(note)stage.append(center(el('p','ar-note',note),0,-555,620,45));
+  const statusNote=note||(mode==='arena3v3'&&data?.arena3v3?.needs_repair?data.arena3v3.warning:'');
+  if(statusNote)stage.append(center(el('p','ar-note',statusNote),0,-555,620,45));
   if(panel)drawPanel(stage);
  }
  function openPlayer(p){
@@ -490,6 +498,8 @@ const NativeOnlineArenas=(()=>{
   // random candidate or fabricated rival exists in this screen.
   const teams=teamDraft(),locked=data?.pvp?.status==='matched',roster=state?.roster||[];
   win.append(el('h3','','Bố Trận 3 Đội'));
+  if(data?.arena3v3?.needs_repair)
+   win.append(el('p','ar-defense-help',data.arena3v3.warning));
   const used=new Set(teams.flat().map(x=>Number(x.partner_id)));
   teams.forEach((team,i)=>{
    const row=el('div','a3-team'+(teamIndex===i?' on':''));
