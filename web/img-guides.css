@@ -5,3 +5,13 @@
 
 .ig-window[data-guide="friend_boss_guide"] .ig-flow{min-height:0;padding:18px;gap:10px;background:linear-gradient(#fff8e7,#f7ead0)}
 .ig-window[data-guide="friend_boss_guide"] .ig-flow>.ig-label{padding:11px 14px;border:1px solid #dfc58b;border-radius:12px;background:#fffdf7;color:#4c5e82;font:700 16px/1.35 system-ui;text-align:left;text-shadow:none}
+
+/* Arena native illustration: Vietnamese button text over the two original
+   pictograms. No image scaling, character art or badges are replaced. */
+.ig-poster>.ig-arena-native-label{position:absolute;display:flex;align-items:center;
+ justify-content:center;white-space:nowrap;font-size:calc(22 * var(--ig-u));
+ font-weight:900;border-radius:calc(9 * var(--ig-u));text-shadow:none}
+.ig-arena-native-label.daily{color:white;background:linear-gradient(#69beff,#388ce3 60%,#2876c7)}
+.ig-arena-native-label.season{color:#343d4e;background:linear-gradient(#fff,#e9edf7 70%,#ced7e6)}
+.ig-window[data-guide="arena_window"] .ig-label{line-height:1.22;
+ overflow-wrap:break-word;color:#506896}
