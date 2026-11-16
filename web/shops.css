@@ -35,3 +35,15 @@
 .sh-locked{z-index:4!important}.sh-note,.sh-locked{margin:0;display:grid;place-items:center;background:#000a;border-radius:calc(14 * var(--u));font-size:calc(24 * var(--u));font-weight:bold;color:#ffd0d0}
 
 @media (max-width:800px){.shops-view{container-type:inline-size;--u:calc(100cqw / 720)}}
+
+/* Mobile-only: the global mobile-native img{max-width:100%} was clamping
+   1559-prefab-pixel scene artwork to the 720-wide stage while the CSS left
+   offset remained -419.5px. This made only the LEFT 300px visible and exposed
+   the solid dark fallback on the RIGHT. Preserve the original large art. */
+html.gxb-mobile #app-frame .shops-view .sh-scene,
+html.gxb-mobile #app-frame .shops-view .sh-map-bg {
+  max-width:none;
+  max-height:none;
+  min-width:0;
+  object-fit:cover;
+}
