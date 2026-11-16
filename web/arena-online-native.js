@@ -373,9 +373,6 @@ const NativeOnlineArenas=(()=>{
   if(typeof GirlUI!=='undefined'&&typeof GirlUI.stars==='function'){
    wrap.append(GirlUI.stars(n,'card'));
   }else wrap.append(el('span','ar-native-star-fallback',n+'★'));
-  // The original emblem's center number is excess stars over 10;
-  // show actual total too so a 25★ Girl never appears as 15★.
-  if(n>=10)wrap.append(el('span','ar-native-total-stars',n+'★'));
   return wrap;
  }
  function drawAttack(win,button){
@@ -420,9 +417,7 @@ const NativeOnlineArenas=(()=>{
    const b=el('button','ar-defense-candidate'+(chosen?' used':''));b.type='button';
    if(typeof portrait==='function')b.append(portrait(hero.table_id,90,hero));
    b.append(nativeCardStars(hero,'ar-attack-candidate-stars'));
-   const meta=el('span','ar-defense-meta');
-   meta.append(el('b','',hero.name||'Nữ Thần'),el('small','','Cấp '+(hero.lv||1)));
-   b.append(meta);
+   b.title=(hero.name||'Nữ Thần')+' · '+(hero.stars||0)+'★ · Cấp '+(hero.lv||1);
    b.onclick=()=>{
     if(chosen){attackDraft=team.filter(x=>Number(x.partner_id)!==id);render();return;}
     attackDraft=team.filter(x=>Number(x.pos)!==attackPos);

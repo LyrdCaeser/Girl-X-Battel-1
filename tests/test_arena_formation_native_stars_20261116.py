@@ -18,7 +18,7 @@ class FormationStars(unittest.TestCase):
         source=(ROOT/'web/arena-online-native.js').read_text()
         section=source.split('function nativeCardStars(hero',1)[1].split('function drawDefense(',1)[0]
         self.assertIn("GirlUI.stars(n,'card')",section)
-        self.assertIn("el('span','ar-native-total-stars',n+'★')",section)
+        self.assertNotIn("ar-native-total-stars",section)
         self.assertIn("slot.append(nativeCardStars(hero,'ar-attack-slot-stars'))",section)
         self.assertIn("b.append(nativeCardStars(hero,'ar-attack-candidate-stars'))",section)
         self.assertNotIn("slot.append(el('span','ar-defense-slot-stars',String(hero.stars||0)+'★'))",section)
@@ -33,8 +33,8 @@ class FormationStars(unittest.TestCase):
         self.assertIn('.gu-star',css)
         self.assertIn('.gu-emblem',css)
         html=(ROOT/'web/index.html').read_text()
-        self.assertIn('/arena-online-native.js?v=20261116-native-stars-r4',html)
-        self.assertIn('/arena3v3.css?v=20261116-native-stars-r4',html)
+        self.assertIn('/arena-online-native.js?v=20261116-clean-stars-r5',html)
+        self.assertIn('/arena3v3.css?v=20261116-clean-stars-r5',html)
 
 
 if __name__=='__main__': unittest.main()
