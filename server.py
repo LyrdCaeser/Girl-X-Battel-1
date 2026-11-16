@@ -1634,6 +1634,15 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                 return self.send(200, self.engine.set_campaign_hang(data))
             if path == '/api/altar/preview':
                 return self.send(200, self.engine.altar_preview(data))
+            if path == '/api/shrine/ranking':
+                from gxb2 import shrine as _shrine
+                account = self.auth_context()['account']
+                season = _shrine.season_of(int(time.time()))[0]
+                return self.send(200, {
+                    'season': season,
+                    'ranking': live_service.shrine_ranking(
+                        account['server_id'], season, account['uid'], limit=100)
+                })
             if path == '/api/rebirth/preview':
                 return self.send(200, self.engine.rebirth_preview(data))
             if path == '/api/chimes/action':

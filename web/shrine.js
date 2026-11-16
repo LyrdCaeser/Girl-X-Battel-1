@@ -5,10 +5,14 @@
 const Shrine=(()=>{
  let origin='league',panel='hub',note='',busyLocal=false,skipReplay=false,timer=null;
  let sel=null,pick=[],route=null,diff=1,tab=0,story=null,storyAuto=false,storyTimer=null,result=null,modal=null;
+ let ranking=null,rankingBusy=false,rankingError='';
+ async function loadRanking(){if(rankingBusy)return;rankingBusy=true;rankingError='';try{const result=await api('/api/shrine/ranking',{});ranking=result.ranking||[];}catch(e){rankingError=e.message||'Không tải được bảng xếp hạng trực tuyến';ranking=null;}finally{rankingBusy=false;if(view==='shrine'&&tab===1&&panel==='board')render();}}
  const A=n=>'/assets/shrine/'+n;
- const TYPE_NAME={1:'Battle Stage',2:'Reward Stage',3:'Store Stage',4:'Recover Stage',5:'Boss Stage'};
+ const VI={"Battle Stage":"Ải Chiến Đấu","Reward Stage":"Ải Phần Thưởng","Store Stage":"Ải Cửa Hàng","Recover Stage":"Ải Hồi Phục","Boss Stage":"Ải Trùm","Loading…":"Đang tải…","Tsuruga Grand Shrine":"Đại Thần Điện Tsuruga","Realm of Trials":"Cảnh Giới Thử Thách","Tree of Chimes":"Cây Chuông Gió","Message Board":"Bảng Tin","Pond of Prayers":"Hồ Cầu Nguyện","Review":"Nhật ký","Season rewards":"Thưởng cuối mùa","Trial Invitation":"Thẻ Mời Thử Thách","Buy 1":"Mua 1","Highest Score":"Điểm Cao Nhất","Difficulty Level":"Độ Khó","Confirm":"Xác Nhận","Environment":"Môi Trường","Buff Obtained":"Hiệu ứng đã nhận","Please select":"Hãy lựa chọn","Give Up":"Bỏ qua phần thưởng","Select":"Chọn","Recovered":"Đã hồi phục","Chưa có hiệu ứng để nâng cấp.":"Chưa có hiệu ứng nào để nâng cấp.","No Data":"Không có dữ liệu","Results":"Kết quả","Trial completed!":"Hoàn thành thử thách!","Trial abandoned":"Đã từ bỏ thử thách","Task":"Nhiệm Vụ","Ranking":"Xếp Hạng","Reward":"Phần Thưởng","Achievement":"Thành Tựu","Claim":"Nhận","Go":"Đến","Current Season":"Mùa hiện tại","Permanent":"Vĩnh viễn","Battle":"Chiến Đấu","Fight":"Chiến Đấu","Auto":"Tự động","Recall":"Xem lại","Season":"Mùa giải","Shop":"Cửa Hàng","Recovered!":"Đã hồi phục!","Buff":"Hiệu ứng","Upgrade":"Nâng cấp","Use":"Sử dụng","Return":"Quay lại","Planetarium":"Đài Thiên Văn","Progress":"Tiến độ"};
+ const vn=t=>typeof t==='string'?(VI[t]||t):t;
+ const TYPE_NAME={1:'Ải Chiến Đấu',2:'Ải Phần Thưởng',3:'Ải Cửa Hàng',4:'Ải Hồi Phục',5:'Ải Trùm'};
  const TYPE_SPINE={1:'shrine_zhandou',2:'shrine_jiangli',3:'shrine_shangdian',4:'shrine_huifu',5:'shrine_zhandou'};
- const el=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;};
+ const el=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=vn(text);return e;};
  const img=(src,cls,alt='')=>{const i=el('img',cls);i.src=src;i.alt=alt;i.draggable=false;return i;};
  const btn=(cls,text,fn)=>{const b=el('button',cls,text);b.type='button';b.onclick=fn;return b;};
  try{skipReplay=localStorage.getItem('gxb2.shrine.skip')==='1';}catch{}
@@ -28,7 +32,7 @@ const Shrine=(()=>{
  function top(st,{title,back,chips=[]}){const bar=el('div','ts-top');const b=btn('ts-back','',back);b.append(img('/assets/ui/win_back_btn.png'));const mid=el('div','ts-topchips');chips.forEach(c=>mid.append(c));bar.append(mid,b);st.append(bar);if(title)st.append(el('h2','ts-title',title));}
  function render(){const r=root();if(view!=='shrine'){clearInterval(timer);timer=null;clearTimeout(storyTimer);return;}loadedAt=performance.now();const info=state.shrine_info;r.replaceChildren();const st=el('div','ts-stage');r.append(st);
   if(!info){st.append(el('p','ts-note',"Loading…"));return;}
-  if(!info.unlocked){top(st,{back:()=>showView(origin==='shrine'?'league':origin)});const box=el('div','ts-note ts-box');box.append(el('b','','Tsuruga Grand Shrine'),el('p','',`Unlocks after clearing Tests floor ${info.open_floor} (current: ${info.tower_floor}) and owning at least one 10★ Girl${info.has_ten_star?' ✓':''}.`));st.append(box);return;}
+  if(!info.unlocked){top(st,{back:()=>showView(origin==='shrine'?'league':origin)});const box=el('div','ts-note ts-box');box.append(el('b','','Đại Thần Điện Tsuruga'),el('p','',`Mở khóa khi vượt Tháp Thử Thách tầng ${info.open_floor} (hiện tại: ${info.tower_floor}) và sở hữu ít nhất một Nữ Thần 10★${info.has_ten_star?' ✓':''}.`));st.append(box);return;}
   if(story){storyView(st);return;}
   if(panel==='run'&&info.run)runView(st,info);else if(panel==='trials'||panel==='run')trialsView(st,info);else if(panel==='board')boardView(st,info);else if(panel==='pond')pondView(st,info);else if(panel==='chimes')chimesView(st);else if(panel==='review')reviewView(st,info);else hubView(st,info);
   if(modal)modal(st,info);
@@ -41,15 +45,15 @@ const Shrine=(()=>{
   top(st,{back:()=>showView(origin==='shrine'?'league':origin),chips:[tk]});
   const side=el('div','ts-side');side.append(btn('ts-round','?',()=>{modal=helpModal;render();}));const rv=btn('ts-round ts-img','',()=>{panel='review';render();});rv.append(img(A('shrine_hurdle_img_1.png')));rv.title='Review';side.append(rv);st.append(side);
   const spot=(cls,label,bg,fn,sub)=>{const b=btn('ts-spot '+cls,'',fn);if(bg)b.append(img(A(bg),'ts-ribbon'));b.append(el('b','',label));if(sub)b.append(sub);st.append(b);};
-  const t=el('small','ts-ends');t.dataset.at=info.fighting?info.fight_end:info.season_end;t.dataset.prefix=info.fighting?'Ends in ':'Starts in ';t.textContent=t.dataset.prefix+left(Number(t.dataset.at));
+  const t=el('small','ts-ends');t.dataset.at=info.fighting?info.fight_end:info.season_end;t.dataset.prefix=info.fighting?'Còn lại ':'Bắt đầu sau ';t.textContent=t.dataset.prefix+left(Number(t.dataset.at));
   spot('trials','Realm of Trials','',()=>{panel=info.run?'run':'trials';render();},t);
   spot('tree','Tree of Chimes','shrine_tree_bg.png',()=>{if(typeof Chimes!=='undefined'){Chimes.open('shrine');return;}panel='chimes';render();});
   spot('board','Message Board','broadcast_bg_en.png',()=>{panel='board';tab=0;render();});
   spot('pond','Pond of Prayers','shrine_wish_bg.png',()=>{panel='pond';tab=0;render();});
   if(info.last_reward&&Object.keys(info.last_reward).length&&!hubView.shown){hubView.shown=true;setTimeout(()=>CampaignUI.popup("Season rewards",info.last_reward),50);}}
- function buyModal(st,info){const w=overlay(st,'Trial Invitation');w.append(el('p','',`Buy Trial Invitations for ${info.ticket_cost} Gems each. Remaining: ${info.ticket_buys_left} purchases this season.`));
+ function buyModal(st,info){const w=overlay(st,'Thẻ Mời Thử Thách');w.append(el('p','',`Buy Trial Invitations for ${info.ticket_cost} Gems each. Remaining: ${info.ticket_buys_left} purchases this season.`));
   const b=btn('ts-go',"Buy 1",async()=>{modal=null;await act({action:'buy_ticket',count:1});});b.disabled=info.ticket_buys_left<1;b.append(chip('2',info.ticket_cost));w.append(b);}
- function helpModal(st,info){const w=overlay(st,'Tsuruga Grand Shrine');w.append(el('div','ts-help',String(info.help||'').replaceAll('|','\n')));}
+ function helpModal(st,info){const w=overlay(st,'Đại Thần Điện Tsuruga');w.append(el('div','ts-help','Đại Thần Điện Tsuruga mở sau khi vượt tầng 500 của Tháp Thử Thách và sở hữu ít nhất một Nữ Thần 10★.\nMỗi mùa có ba tuyến thử thách; vào trận tiêu hao Thẻ Mời. Chọn độ khó, đội hình và hoàn thành ải để nhận điểm, Xu Thử Thách, vật phẩm. Xếp hạng dùng người chơi thật trên máy chủ.'));}
  function overlay(st,title,cls=''){const ov=el('div','ts-overlay');ov.onclick=e=>{if(e.target===ov){modal=null;render();}};const w=el('div','ts-win '+cls);w.append(el('h3','',title),btn('ts-close','✕',()=>{modal=null;render();}));ov.append(w);st.append(ov);return w;}
  // StoryWindow (capture 04): background, picture, name tag, dialog; Auto / Recall / skip.
  async function playStory(textId,plotId){try{const r=await api('/api/shrine/story',{text_id:textId});story={lines:r.lines,i:0,plot:plotId,log:false};storyAuto=false;render();}catch(e){note=e.message;render();}}
@@ -99,7 +103,7 @@ const Shrine=(()=>{
   head.append(icons,el('div','ts-runtitle',''),lantern(run.diff,'ts-lantern ts-lantern-top'));head.querySelector('.ts-runtitle').append(el('b','',run.name),el('span','',`${run.floor}/15`));head.append(pts);st.append(head);
   const main=el('div','ts-runmain');st.append(main);
   if(run.type==null)wayView(main,run);else if(run.type===1||run.type===5)battleView(main,run,info);else if(run.type===2)rewardView(main,run,info);else if(run.type===3)storeView(main,run,info);else if(run.type===4)recoverView(main,run,info);
-  if(run.can_next&&run.type!==3){const n=btn('ts-next','',next);n.append(img(A('shrine_hurdle_next_img.png')),el('b','',run.floor>=15?'Results':'Next'));main.append(n);}
+  if(run.can_next&&run.type!==3){const n=btn('ts-next','',next);n.append(img(A('shrine_hurdle_next_img.png')),el('b','',run.floor>=15?'Kết quả':'Next'));main.append(n);}
   const out=btn('ts-out','',async()=>{if(!await GirlUI.confirm('Từ bỏ thử thách hiện tại?'))return;const r=await act({action:'giveup_trial'});if(r?.end){result=r.end;panel='trials';render();}});out.append(img(A('shrine_hurdle_out_btn.png')));st.append(out);}
  async function next(){const r=await act({action:'next'});if(r?.end){result=r.end;panel='trials';render();}}
  function wayView(main,run){main.append(el('p','ts-prompt','Please select'));const row=el('div','ts-ways');run.types.forEach((t,i)=>{const b=btn('ts-way','',async()=>{const msg={1:'Xác nhận vào Battle?',2:'Xác nhận vào Reward?',3:'Xác nhận vào Store?',4:'Xác nhận vào Recover?'}[t];if(msg&&!await GirlUI.confirm(msg))return;await act({action:'way',index:i});});
@@ -107,7 +111,7 @@ const Shrine=(()=>{
  function battleView(main,run,info){const e=run.enemy||[];const boss=run.type===5;const box=el('div','ts-enemy'+(boss?' boss':''));if(e[0])box.append(chibi(e[0].table_id));
   const lv=el('div','ts-enemylist');for(const u of e){const s=el('span','ts-emini');if(typeof portrait==='function')s.append(portrait(u.table_id,44));s.append(el('small','',`Lv.${u.lv}`));lv.append(s);}box.append(lv);
   if(!run.can_next){const f=btn('ts-fight','',()=>{pick=pick.filter(p=>run.partners.find(x=>x.partner_id===p&&x.hp>0));if(!pick.length)pick=autoTeam(run);modal=teamModal;render();});f.append(img(A('shrine_hurdle_battle_en_en.png')));box.append(f);}
-  box.append(el('p','ts-hint',boss?"Boss Stage: 1 attempt; more damage = more points.":`Battle Stage: 15 rondas · ${number(run.points||0)} points · 90 Trial Tokens`));main.append(box);}
+  box.append(el('p','ts-hint',boss?"Ải Trùm: 1 lượt đánh; gây càng nhiều sát thương càng được nhiều điểm.":`Battle Stage: 15 rondas · ${number(run.points||0)} points · 90 Trial Tokens`));main.append(box);}
  function roster(){return new Map((state.roster||[]).map(h=>[h.partner_id,h]));}
  function autoTeam(run){const by=roster();return run.partners.filter(p=>p.hp>0).sort((a,b)=>(by.get(b.partner_id)?.lv||0)-(by.get(a.partner_id)?.lv||0)).slice(0,6).map(p=>p.partner_id);}
  function hpBar(hp){const b=el('span','ts-hp');const f=el('i','');f.style.width=Math.max(0,Math.min(100,hp))+'%';if(hp<=30)f.classList.add('low');b.append(f);return b;}
@@ -117,7 +121,7 @@ const Shrine=(()=>{
   const pool=el('div','ts-pool');for(const p of [...run.partners].sort((a,b)=>b.hp-a.hp)){const on=pick.includes(p.partner_id);pool.append(girlCard(p,on,()=>{if(p.hp<=0)return;if(on)pick=pick.filter(x=>x!==p.partner_id);else if(pick.length<6)pick.push(p.partner_id);render();}));}w.append(pool);
   const acts=el('div','ts-acts');const sk=el('label','ts-skipcb');const cb=el('input');cb.type='checkbox';cb.checked=skipReplay;cb.onchange=()=>{skipReplay=cb.checked;try{localStorage.setItem('gxb2.shrine.skip',skipReplay?'1':'0');}catch{}};sk.append(cb,' Skip');
   acts.append(btn('ts-small','Auto',()=>{pick=autoTeam(run);render();}),sk,btn('ts-go','Fight',()=>fight(run)));w.append(acts);}
- async function fight(run){if(!pick.length){note="Choose at least one Girl";render();return;}modal=null;const boss=run.type===5;
+ async function fight(run){if(!pick.length){note="Hãy chọn ít nhất một Nữ Thần";render();return;}modal=null;const boss=run.type===5;
   const r=await act({action:'fight',team:pick.map((p,i)=>({partner_id:p,pos:i+1}))});if(!r)return;const label=boss?`Boss · ${number(r.damage||0)} damage · +${number(r.points||0)} points`:(r.win?`Victory · +${number(r.points)} points · +${r.gold} Trial Tokens`:"Defeat: Girls do not recover HP");
   if(!skipReplay&&r.report&&typeof watchEventBattle==='function')await watchEventBattle({report:r.report,rewards:{}},'shrine',run.name);else CampaignUI.result(r.win||boss,{},{event:true,label,report:r.report});
   if(r.end){result=r.end;panel='trials';}else note=boss?'':label;render();}
@@ -131,29 +135,38 @@ const Shrine=(()=>{
  function storeView(main,run,info){const tabs=el('div','ts-tabs');['Purchase','Upgrade'].forEach((t,i)=>tabs.append(btn('ts-tab'+(tab===i?' on':''),t,()=>{tab=i;render();})));main.append(tabs);
   const row=el('div','ts-buffs');if(tab===0){(run.extra.buys||[]).forEach((bid,i)=>{const bought=(run.extra.bought||[]).includes(i);const b=info.buff_info[bid];
     const buy=btn('ts-go ts-buy',bought?'Purchased':'',async()=>{await act({action:'store',mode:'buy',index:i});});if(!bought)buy.append(chip('324',b.cost));buy.disabled=bought||run.gold<b.cost;row.append(buffCard(String(bid),info,1,buy));});}
-  else{if(!(run.extra.upgrades||[]).length)row.append(el('p','ts-note',"You have no buffs to upgrade yet."));(run.extra.upgrades||[]).forEach((bid,i)=>{const lv=run.skills[bid]||1;const b=info.buff_info[bid];const cost=b.up[Math.min(1,lv-1)];
+  else{if(!(run.extra.upgrades||[]).length)row.append(el('p','ts-note',"Chưa có hiệu ứng để nâng cấp."));(run.extra.upgrades||[]).forEach((bid,i)=>{const lv=run.skills[bid]||1;const b=info.buff_info[bid];const cost=b.up[Math.min(1,lv-1)];
     const up=btn('ts-go ts-buy',lv>=3?'Max':'',async()=>{await act({action:'store',mode:'up',index:i});});if(lv<3)up.append(chip('324',cost));up.disabled=lv>=3||run.gold<cost;row.append(buffCard(String(bid),info,lv,up));});}
   main.append(row);const n=btn('ts-next','',next);n.append(img(A('shrine_hurdle_next_img.png')),el('b','','Next'));main.append(n);}
  function recoverView(main,run,info){if(run.can_next){main.append(el('p','ts-prompt','Recovered'));return;}main.append(el('p','ts-prompt','Please select'));const row=el('div','ts-recover');
   for(const k of ['1','2','3']){const t=info.restore[k];const c=btn('ts-heal'+(sel===k?' on':''),'',()=>{sel=k;render();});c.append(img(A('shrine_hurdle_case_img'+k+'.png')),el('b','',t.name),el('p','',t.desc));row.append(c);}main.append(row);
   if(sel==='3'){const pool=el('div','ts-pool');for(const p of [...run.partners].sort((a,b)=>a.hp-b.hp))pool.append(girlCard(p,pick[0]===p.partner_id,()=>{pick=[p.partner_id];render();}));main.append(pool);}
   main.append(btn('ts-go','Select',async()=>{if(!sel){note='Please select';render();return;}const req={action:'recover',choice:Number(sel)};if(sel==='3'){const p=run.partners.find(x=>x.partner_id===pick[0]);if(!p){note="Choose a Girl";render();return;}if(p.hp>60&&!await GirlUI.confirm('Nữ Thần đã chọn còn nhiều HP. Tiếp tục hồi phục?'))return;req.partner_id=p.partner_id;}sel=null;pick=[];await act(req);}));}
- function buffsModal(st,info){const run=info.run;const w=overlay(st,'Buff Obtained');const row=el('div','ts-buffs ts-wrap');const ids=Object.keys(run.skills);if(!ids.length)w.append(el('p','ts-note','No Data'));for(const b of ids)row.append(buffCard(b,info,run.skills[b]));w.append(row);}
+ function buffsModal(st,info){const run=info.run;const w=overlay(st,'Buff Obtained');const row=el('div','ts-buffs ts-wrap');const ids=Object.keys(run.skills);if(!ids.length)w.append(el('p','ts-note','Không có dữ liệu'));for(const b of ids)row.append(buffCard(b,info,run.skills[b]));w.append(row);}
  function hpModal(st,info){const w=overlay(st,'HP Status');const pool=el('div','ts-pool');for(const p of info.run.partners)pool.append(girlCard(p,false,()=>{}));w.append(pool);}
- function resultView(st){const r=result;const ov=el('div','ts-overlay');const w=el('div','ts-win ts-result');w.append(el('h3','','Results'),el('p','ts-big',number(r.score)),el('p','',r.completed?"Trial completed!":"Trial abandoned"),el('p','',`Highest unlocked difficulty: ${r.max_diff}`));
+ function resultView(st){const r=result;const ov=el('div','ts-overlay');const w=el('div','ts-win ts-result');w.append(el('h3','','Kết quả'),el('p','ts-big',number(r.score)),el('p','',r.completed?"Trial completed!":"Trial abandoned"),el('p','',`Độ khó cao nhất đã mở: ${r.max_diff}`));
   w.append(btn('ts-go','OK',()=>{result=null;render();}));ov.append(w);st.append(ov);}
  // ShrineHurdleNoticeWindow: Task / Ranking / Reward / Achievement.
  function boardView(st,info){st.style.backgroundImage=`url('${A('shrine_main_bg.webp')}')`;top(st,{title:'Message Board',back:()=>{panel='hub';render();}});
-  const tabs=el('div','ts-tabs');['Task','Ranking','Reward','Achievement'].forEach((t,i)=>tabs.append(btn('ts-tab'+(tab===i?' on':''),t,()=>{tab=i;render();})));st.append(tabs);
+  const tabs=el('div','ts-tabs');['Nhiệm Vụ','Xếp Hạng','Phần Thưởng','Thành Tựu'].forEach((t,i)=>tabs.append(btn('ts-tab'+(tab===i?' on':''),t,()=>{tab=i;render();if(i===1)void loadRanking();})));st.append(tabs);
   const list=el('div','ts-list');st.append(list);
   const rowOf=(a,claim,done)=>{const r=el('div','ts-mrow'+(done?' done':''));const t=el('div','ts-mtext');t.append(el('span','',a.text+' '),el('em','',`(${number(Math.min(a.value,a.need))}/${number(a.need)})`));r.append(t);
    const bot=el('div','ts-mbot');const aw=el('div','ts-tiles');for(const [k,n] of Object.entries(a.awards))aw.append(tile(k,n));bot.append(aw);
-   if(done)bot.append(img('/assets/echoes/mission_awarded_en_en.png','ts-stamp','Collected'));else{const b=btn(a.claimable?'ts-go':'ts-white',a.claimable?'Claim':'Go',async()=>{if(!a.claimable){panel='trials';render();return;}const res=await act(claim);if(res?.got)CampaignUI.popup(a.text,res.got);});bot.append(b);}r.append(bot);return r;};
-  if(tab===0){const t=el('p','ts-hint','');t.dataset.at=info.fighting?info.fight_end:info.season_end;t.dataset.prefix='Remaining Time: ';t.textContent=t.dataset.prefix+left(Number(t.dataset.at));list.append(t);
+   if(done)bot.append(img('/assets/echoes/mission_awarded_en_en.png','ts-stamp','Collected'));else{const b=btn(a.claimable?'ts-go':'ts-white',a.claimable?'Nhận':'Đến',async()=>{if(!a.claimable){panel='trials';render();return;}const res=await act(claim);if(res?.got)CampaignUI.popup(a.text,res.got);});bot.append(b);}r.append(bot);return r;};
+  if(tab===0){const t=el('p','ts-hint','');t.dataset.at=info.fighting?info.fight_end:info.season_end;t.dataset.prefix='Thời gian còn lại: ';t.textContent=t.dataset.prefix+left(Number(t.dataset.at));list.append(t);
    for(const m of [...info.tasks].sort((a,b)=>(b.claimable-a.claimable)||(a.claimed-b.claimed)||a.id-b.id))list.append(rowOf(m,{action:'claim_task',id:m.id},m.claimed));}
-  else if(tab===1){const box=el('div','ts-box');box.append(el('b','',`Total Score: ${number(info.total)}`));for(const r of info.routes)box.append(el('p','',`${r.name}: ${number(r.best)}`));
-   list.append(box);if(typeof Bots!=='undefined')list.append(Bots.list('shrine'));list.append(el('p','ts-hint',"Ranking with simulated players. Season rewards still depend on your score (Reward tab)."));}
-  else if(tab===2){list.append(el('p','ts-hint',"Season reward based on the total score of all 3 trials (replaces ranking without a server)."));
+  else if(tab===1){const box=el('div','ts-box');box.append(el('b','',`Tổng điểm: ${number(info.total)}`));for(const r of info.routes)box.append(el('p','',`${r.name}: ${number(r.best)}`));
+   list.append(box);
+   if(rankingBusy)list.append(el('p','ts-hint','Đang tải xếp hạng người chơi thật…'));
+   else if(rankingError)list.append(el('p','ts-hint',rankingError));
+   else if(!ranking?.length)list.append(el('p','ts-hint','Chưa có người chơi đạt điểm Thần Điện trong mùa này.'));
+   else for(const row of ranking){const r=el('div','ts-mrow'+(row.me?' me':''));r.append(
+     el('b','','#'+row.rank+' · '+row.character_name),
+     el('span','','Điểm: '+number(row.score)+' · Cấp '+row.level),
+     el('small','','UID: '+row.uid)
+   );list.append(r);}
+   list.append(el('p','ts-hint','Bảng xếp hạng lấy từ hồ sơ người chơi thật của máy chủ. Không sử dụng dữ liệu mô phỏng.'));}
+  else if(tab===2){list.append(el('p','ts-hint',"Phần thưởng theo mốc điểm của ba thử thách trong mùa; bảng xếp hạng người chơi thật chỉ phục vụ tra cứu thứ hạng."));
    for(const r of info.brackets){const row=el('div','ts-mrow');row.append(el('div','ts-mtext',`${r.show} · total ≥ ${number(r.need)}`));const aw=el('div','ts-tiles');for(const [k,n] of Object.entries(r.awards))aw.append(tile(k,n));row.append(aw);list.append(row);}}
   else for(const a of [...info.ach].sort((x,y)=>(y.claimable-x.claimable)||(x.done-y.done)||x.id-y.id))list.append(rowOf(a,{action:'claim_ach',id:a.id},a.done));}
  // ShrineHurdleShopWindow (Pond of Prayers): Current Season / Permanent, paid with Origami Cranes.

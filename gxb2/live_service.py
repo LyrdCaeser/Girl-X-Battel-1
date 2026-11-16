@@ -432,6 +432,50 @@ def galaxy_ranking(server_id, season, current_uid="", limit=100):
         player["me"] = player["uid"] == current_uid
     return board[:limit]
 
+def shrine_ranking(server_id, season, current_uid="", limit=100):
+    """Live, authenticated-world leaderboard from real Neon player profiles."""
+    server_id = str(server_id or "").strip().upper()
+    current_uid = str(current_uid or "").strip()
+    season = int(season or 0)
+    limit = max(1, min(100, int(limit)))
+    if season < 1:
+        return []
+    with _lock:
+        db = _db()
+        rows = db.execute("""SELECT p.uid,p.character_name,
+                                    COALESCE(l.level,1) AS level,
+                                    COALESCE(l.power,0) AS power,pp.data
+                             FROM players p
+                             JOIN player_profiles pp ON pp.uid=p.uid AND pp.server_id=p.server_id
+                             LEFT JOIN leaderboard l ON l.uid=p.uid AND l.server_id=p.server_id
+                             WHERE p.server_id=? AND p.status='active'""",
+                          (server_id,)).fetchall()
+        db.close()
+    result = []
+    for row in rows:
+        try:
+            profile = json.loads(row['data']) if isinstance(row['data'], str) else dict(row['data'])
+            period = ((profile.get('shrine') or {}).get('season') or {})
+            if int(period.get('n') or -1) != season:
+                continue
+            scores = period.get('scores') or {}
+            total = sum(max(0,int(v or 0)) for v in scores.values())
+            if total < 1:
+                continue
+            info = profile.get('profile') or {}
+            result.append({'uid':str(row['uid']),
+                           'character_name':str(row['character_name']),
+                           'level':int(row['level'] or 1), 'power':int(row['power'] or 0),
+                           'score':total,'avatar':info.get('avatar') or 'head_1001',
+                           'frame':info.get('frame') or 'frame_8007'})
+        except (ValueError,TypeError,KeyError):
+            continue
+    result.sort(key=lambda r:(-r['score'],-r['power'],-r['level'],r['uid']))
+    for i,row in enumerate(result,1):
+        row['rank']=i;row['me']=row['uid']==current_uid
+    return result[:limit]
+
+
 def leaderboard(server_id, limit=100):
     limit=max(1,min(5000,int(limit)))
     with _lock:
