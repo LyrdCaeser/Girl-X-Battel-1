@@ -56,3 +56,9 @@
 .hc-fort-text span{color:#fff4cb;font-weight:800}
 .hc-head-name{color:#fff;font-weight:900;background:linear-gradient(90deg,#151a42df,#151a4200);padding:calc(8 * var(--u)) calc(12 * var(--u));border-radius:8px}
 .hc-logo-vi{justify-self:center;font-size:calc(56 * var(--u));font-weight:900;line-height:1.2;text-align:center;color:#fff;text-shadow:0 2px 5px #06162e,0 0 8px #abdcff}
+
+/* A real help dialog replaces the former oversized, clipped help toast. */
+.hc-help-modal{max-height:min(90dvh,950px)}
+.hc-help-body{display:grid;gap:.55rem;max-height:min(72dvh,760px);overflow-y:auto;
+overscroll-behavior:contain;color:#435472;line-height:1.5;font-size:clamp(14px,3.5vw,17px)}
+.hc-help-body p{margin:0;overflow-wrap:anywhere}
