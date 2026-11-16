@@ -30,7 +30,7 @@ class Arena3v3Visuals(unittest.TestCase):
         self.assertIn('position:absolute;bottom:0;left:0;right:0;z-index:8',css)
         html=(ROOT/'web/index.html').read_text()
         self.assertIn('src="/arena-online-native.js?v=20261116-',html)
-        self.assertIn('/arena3v3.css?v=20261116-defense3v3-r7',html)
+        self.assertIn('href="/arena3v3.css?v=20261116-',html)
 
     def test_saves_are_separate_from_one_vs_one_defense(self):
         js=(ROOT/'web/arena-online-native.js').read_text()
