@@ -467,6 +467,53 @@ window.AdminPanel=(()=>{
       finally{run.disabled=false;}
     },'primary');
     c.append(run);body.append(c);
+
+    // Only the signed-in SUPER GM profile is changed; never an arbitrary UID.
+    const expBox=card('Tăng Cấp EXP Tùy Chọn');
+    expBox.append(el('p','admin-note',
+      'Áp dụng cho nhân vật SUPER GM đang đăng nhập. EXP tăng theo bảng cấp gốc (tối đa cấp 400), không giảm cấp và không thay đổi EXP của Nữ Thần.'));
+    const current=el('p','admin-gm-exp-current',
+      'Hiện tại: Cấp '+Number(state?.level||1)+' · Tổng EXP '+Number(state?.items?.['3']||0).toLocaleString('vi-VN'));
+    expBox.append(current);
+    const expAmount=field(expBox,'Cộng thêm EXP','admin-gm-exp-add','number');
+    expAmount.min='1';expAmount.max='1000000000000';expAmount.step='1';
+    expAmount.placeholder='Ví dụ: 1000000';
+    const addButton=btn('Cộng EXP',()=>applyPlayerExp('add',expAmount,addButton),'primary');
+    expBox.append(addButton);
+    const levelTarget=field(expBox,'Tăng đến cấp','admin-gm-exp-level','number');
+    levelTarget.min='1';levelTarget.max='400';levelTarget.step='1';
+    levelTarget.placeholder='Ví dụ: 120';
+    const levelButton=btn('Tăng đến cấp đã nhập',()=>applyPlayerExp('level',levelTarget,levelButton),'primary');
+    expBox.append(levelButton);
+    body.append(expBox);
+  }
+
+  async function applyPlayerExp(mode,input,button){
+    const raw=input.value.trim();
+    const value=Number(raw);
+    const max=mode==='add'?1000000000000:400;
+    if(!raw||!Number.isSafeInteger(value)||value<1||value>max){
+      status(mode==='add'?'Hãy nhập số EXP nguyên dương hợp lệ.':'Cấp muốn đạt phải từ 1 đến 400.',false);return;
+    }
+    if(mode==='level'&&value<=Number(state?.level||1)){
+      status('Cấp mục tiêu phải cao hơn cấp hiện tại.',false);return;
+    }
+    const label=mode==='add'?'cộng '+value.toLocaleString('vi-VN')+' EXP':'tăng lên cấp '+value;
+    const accepted=await GirlUI.confirm('Xác nhận '+label+' cho nhân vật SUPER GM đang đăng nhập? Không áp dụng cho người chơi khác.',
+      {title:'Tăng Cấp EXP Tùy Chọn',ok:'Xác nhận',cancel:'Hủy'});
+    if(!accepted)return;
+    button.disabled=true;
+    try{
+      const result=await api('/api/developer',{action:'player_exp',mode,value});
+      if(!result?.state)throw Error('Máy chủ chưa trả về hồ sơ cập nhật.');
+      state=result.state;
+      status('Đã cập nhật: Cấp '+state.level+' · Tổng EXP '+Number(state.items?.['3']||0).toLocaleString('vi-VN'));
+      renderGame();
+      // Update both buttons and the current value, without remounting the panel.
+      const readout=document.querySelector('.admin-gm-exp-current');
+      if(readout)readout.textContent='Hiện tại: Cấp '+state.level+' · Tổng EXP '+Number(state.items?.['3']||0).toLocaleString('vi-VN');
+    }catch(e){status(e.message||'Không thể tăng EXP',false);}
+    finally{button.disabled=false;}
   }
   function renderConfig(body){
     const grid=el('div','admin-grid');

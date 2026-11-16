@@ -126,6 +126,29 @@ def quiz_day(now=None):
     # The archived client exposes a server end_time. The local replacement resets at the player's local midnight.
     return clock.day(now)
 
+def super_gm_player_exp_update(state, mode, value):
+    """Raise only this profile's player EXP from the original EXP table.
+
+    This cannot lower EXP, grant currency, or alter Goddess levels.
+    """
+    table = TABLES['exp_player']
+    max_level = max(map(int, table))
+    max_exp = int(table[str(max_level)]['all_exp'])
+    before = int(state['items'].get('3', 0))
+    if mode == 'add':
+        amount = integer(value, 'EXP thêm', 1, 10**12)
+        after = min(max_exp, before + amount)
+    elif mode == 'level':
+        target = integer(value, 'Cấp muốn đạt', 1, max_level)
+        after = max(before, int(table[str(target)]['all_exp']))
+    else:
+        raise GameError('Cách tăng EXP không hợp lệ')
+    if after <= before:
+        raise GameError('Cấp / EXP hiện tại đã đạt hoặc vượt mục tiêu')
+    state['items']['3'] = after
+    return after - before
+
+
 def player_level(state):
     exp = state['items'].get('3', 0)
     return max(int(k) for k, row in TABLES['exp_player'].items() if int(row['all_exp']) <= exp)
@@ -674,6 +697,9 @@ class Engine:
                 state['tower'] = {'max_stage': floor - 1, 'tickets': 10, 'at': self.now()}
             elif action == 'campaign':
                 state['max_stage'] = 29; state['current_stage'] = 30
+            elif action == 'player_exp':
+                if not super_gm: raise GameError('Chỉ SUPER GM được tăng EXP nhân vật')
+                super_gm_player_exp_update(state, request.get('mode'), request.get('value'))
             elif action == 'campaign_all':
                 last_stage = max(int(stage_id) for stage_id in TABLES['stage'])
                 state['max_stage'] = last_stage
