@@ -8,6 +8,8 @@ from pathlib import Path
 import sqlite3
 import threading
 import time
+from datetime import datetime
+from zoneinfo import ZoneInfo
 from . import protocol as p
 from .battle import simulate
 from . import pumpkin, chimes
@@ -41,6 +43,14 @@ for _recipe in (*GRADUATE.values(), *(r for r in ASCENSION.values() if r.get('ki
 EXSKILL = json.loads((ROOT / 'data/exskill.json').read_text())  # partner_exskill_cost
 RESONATE = json.loads((ROOT / 'data/resonate.json').read_text())
 RETURN = json.loads((ROOT / 'data/partner_return.json').read_text())
+# Rebirth: old 10★ Diploma (47) remains untouched. The new lower-tier
+# Diploma (47001) uses the same artwork but is a distinct inventory item.
+REBIRTH_FREE_PER_DAY = 5
+REBIRTH_DIPLOMA_LOW = '47001'
+REBIRTH_DIPLOMA_HIGH = '47'
+REBIRTH_DIPLOMA_HIGH_COUNT = 5
+REBIRTH_TZ = ZoneInfo('Asia/Ho_Chi_Minh')
+
 ASTRAL = json.loads((ROOT / 'data/astral.json').read_text())  # Astral Core (star_origin*)  # Reverse / 10★ Exchange  # Skill-Synchronize of the Cosmic girls (skill_resonate_*)
 DAILY_QUIZ = json.loads((ROOT / 'data/daily_quiz.json').read_text())
 TOWER = json.loads((ROOT / 'data/tower.json').read_text())
@@ -2620,6 +2630,107 @@ class Engine:
         if int(row['max_star']) + awake < 10: return base + AWAKE_LEVEL_STEP * awake
         return BREAK_LEVEL_CAP[min(awake, len(BREAK_LEVEL_CAP)) - 1]
 
+    def rebirth_day(self):
+        """Rebirth allowance resets at 00:00 Vietnam time, not VPS UTC."""
+        return datetime.fromtimestamp(self.now(), REBIRTH_TZ).strftime('%Y-%m-%d')
+
+    def rebirth_plan(self, state, pid):
+        """Read-only, deterministic preview; the same result is used on commit.
+
+        The original archive has reverse recipes for 7–15★ only. Native
+        6★, 1–5★, Cosmos and 16–25★ receive explicit, conservative
+        behavior; the 16–25★ reward uses the original 15★ baseline.
+        """
+        pid = integer(pid, 'partner_id', 1)
+        host = next((g for g in state['partners'] if g['partner_id'] == pid), None)
+        if host is None: raise GameError('Không tìm thấy Nữ Thần cần hoàn nguyên')
+        if any(host.get('flags') or []): raise GameError('Hãy mở khóa Nữ Thần trước khi hoàn nguyên')
+        if (state.get('exchange') or {}).get('partner_id') == pid:
+            raise GameError('Hãy hoàn tất giao dịch Nữ Thần đang chờ')
+        row = TABLES['partner'].get(str(host['table_id']))
+        if not row: raise GameError('Dữ liệu Nữ Thần không hợp lệ')
+        group = int(row.get('group') or 0)
+        stars = int(row.get('max_star') or 0) + int(host.get('awake') or 0)
+        if not 1 <= group <= 7 or not 1 <= stars <= 25:
+            raise GameError('Nữ Thần không thuộc phạm vi Hoàn Nguyên')
+        if not str(row.get('hero_list') or '').strip() and int(host['table_id']) not in RETURN['puppets']:
+            raise GameError('Không thể hoàn nguyên nhân vật không có dữ liệu Nữ Thần hợp lệ')
+
+        date = self.rebirth_day()
+        daily = state.get('rebirth') or {}
+        used = max(0, int(daily.get('used') or 0)) if daily.get('day') == date else 0
+        free_left = max(0, REBIRTH_FREE_PER_DAY - used)
+        diploma = REBIRTH_DIPLOMA_HIGH if stars >= 10 else REBIRTH_DIPLOMA_LOW
+        needed = REBIRTH_DIPLOMA_HIGH_COUNT if stars >= 10 else 1
+        cost = {} if free_left else {diploma: needed}
+        available = all(int(state.get('items', {}).get(k, 0)) >= n for k, n in cost.items())
+
+        rule = RETURN['rules'].get(str(min(15, stars))) or {}
+        returns = []
+        def give(tid, count=1, awake=0):
+            tid = int(tid)
+            if str(tid) not in TABLES['partner'] or count < 1:
+                raise GameError('Công thức Hoàn Nguyên chứa nguyên liệu không hợp lệ')
+            returns.append({'table_id': tid, 'count': int(count), 'awake': int(awake)})
+
+        if group == 7:
+            # Native Cosmos Goddesses do not have a 5★ form or house Doll;
+            # reset the SAME Cosmos goddess to her native 10★ form.
+            give(host['table_id'])
+        elif stars <= 5:
+            # No lower-stage recipe exists; return the same native girl at Lv 1.
+            give(host['table_id'])
+        elif stars == 6:
+            # Native 5→6 compose: two namesake 5★ and four faction 5★.
+            # For 6★ house Dolls without a base recipe, give their 5★ Doll.
+            if int(host['table_id']) in RETURN['puppets']:
+                give(560000 + group * 1000 + 1)
+            else:
+                base = str(row.get('material') or '').split('|')[0]
+                if base.isdigit() and int(TABLES['partner'].get(base, {}).get('max_star') or 0) == 5:
+                    give(base, 2)
+                    give(560000 + group * 1000 + 1, 4)
+                else:
+                    # Some re-issued native 6★ characters have no 5★ recipe.
+                    give(host['table_id'])
+        else:
+            for part in str(rule.get('group_' + str(group)) or '').split('|'):
+                if not part or '#' not in part or part.startswith('0'):
+                    continue
+                tid, rest = part.split('#', 1)
+                count, _, awake = rest.partition('@')
+                give(tid, int(count), int(awake or 0))
+            named_count = int(rule.get('award_self') or 0)
+            if int(host['table_id']) in RETURN['puppets']:
+                base_id = 560000 + group * 1000 + 1
+            else:
+                base = str(row.get('material') or '').split('|')[0]
+                base_id = int(base) if base.isdigit() and int(TABLES['partner'].get(base, {}).get('max_star') or 0) == 5 else int(host['table_id'])
+            if named_count: give(base_id, named_count)
+            if not returns: give(host['table_id'])
+
+        exp = int(str(TABLES['exp_partner'][str(host['lv'])]['all_exp']).split('#')[1])
+        ratio = float(rule.get('exp') or 0.65)
+        items = {}
+        if exp and ratio: items['9'] = math.ceil(exp * ratio)
+        for k,n in item_pairs(rule.get('bento_num') or '').items():
+            items[str(k)] = items.get(str(k), 0) + n
+        return {
+            'partner_id':pid,'stars':stars,'free_used':used,'free_left':free_left,
+            'free_limit':REBIRTH_FREE_PER_DAY,'day':date,
+            'cost':cost,'can_afford':available,'returns':returns,
+            'items':items,'is_free':not bool(cost),
+            'limited_recipe':stars > 15,
+            'warning':('Nữ Thần trên 15★ sử dụng phần thưởng Hoàn Nguyên gốc của mốc 15★; '
+                       'nguyên liệu thức tỉnh 16–25★ không được hoàn trả đầy đủ.'
+                       if stars > 15 else ''),
+        }
+
+    def rebirth_preview(self, request):
+        with self.lock:
+            state = self._load()
+        return self.rebirth_plan(state, (request or {}).get('partner_id'))
+
     def altar_returns(self, state, ids):
         """AltarWindow (Campus → Transfer), Partner:getDecompose: the table's `decompose`, 70 % of the Grade Stones of her grades
         (and of her awakens below 10★) and 65 % of the girl EXP of her level; her gear goes back to the bag on retiring
@@ -3214,41 +3325,48 @@ class Engine:
             state['last_decompose'] = got
             return response({'items': [{'item_id': int(k), 'item_num': n} for k, n in sorted(got.items(), key=lambda x: int(x[0]))], 'partner_ids': ids})
         if name == 'ROLLBACK_PARTNER':
-            # PotentialityBackWindow / partner_return_rule2: the girl is removed and returns house dolls ("table#num@awake"),
-            # award_self namesake 5★ copies (partner.material[1]), her gear, and part of the EXP juice / lunch boxes.
-            pid = integer(request.get('partner_id'), 'partner_id', 1)
-            host = next((g for g in state['partners'] if g['partner_id'] == pid), None)
-            if not host: raise GameError('No tienes esa chica')
-            if any(host.get('flags') or []): raise GameError('Desbloquea primero a la chica')
-            row = TABLES['partner'][str(host['table_id'])]
-            stars = int(row['max_star']) + int(host.get('awake', 0)); rule = RETURN['rules'].get(str(stars))
-            if not rule or int(row['group']) == 7 or int(host['table_id']) in RETURN['puppets']: raise GameError('Esta chica no se puede revertir')
-            cost = item_pairs(rule.get('cost') or '')
-            if any(int(state['items'].get(str(k), 0)) < n for k, n in cost.items()): raise GameError('Faltan recursos para revertir')
-            for k, n in cost.items(): state['items'][str(k)] = int(state['items'].get(str(k), 0)) - n
+            plan = self.rebirth_plan(state, request.get('partner_id'))
+            if not plan['can_afford']:
+                item_id = next(iter(plan['cost']), '')
+                label = 'Diploma Hoàn Nguyên 6★–9★' if item_id == REBIRTH_DIPLOMA_LOW else 'Diploma 10★'
+                raise GameError('Không đủ ' + label + ' để Hoàn Nguyên')
+            pid = plan['partner_id']
+            host = next(g for g in state['partners'] if g['partner_id'] == pid)
+            # Deduct only on the transaction path, never during preview.
+            for k,n in plan['cost'].items():
+                state['items'][k] = int(state['items'].get(k, 0)) - n
+            # Defensive against a migrated profile whose next id lags the
+            # current roster; a duplicate ID would remove returned girls too.
+            state['next_partner_id'] = max(
+                int(state.get('next_partner_id') or 1),
+                max((int(g['partner_id']) for g in state['partners']), default=0) + 1,
+            )
             back = []
-            def give(tid, awake=0):
-                nid = state['next_partner_id']; state['next_partner_id'] += 1
-                state['partners'].append({'partner_id': nid, 'table_id': int(tid), 'lv': 1, 'grade': 0, 'awake': int(awake), 'equips': [], 'pos': 0, 'show_skin': 1})
-                back.append(nid)
-            for part in str(rule.get('group_' + str(row['group'])) or '').split('|'):
-                if '#' not in part or part.startswith('0'): continue
-                tid, rest = part.split('#'); num, _, awake = rest.partition('@')
-                for _ in range(int(num)): give(tid, int(awake or 0))
-            namesake = int(str(row.get('material') or '').split('|')[0] or 0) if int(row['max_star']) > 5 else int(host['table_id'])
-            for _ in range(int(rule.get('award_self') or 0)): give(namesake or host['table_id'])
-            if back: next(g for g in state['partners'] if g['partner_id'] == back[-1])['love_point'] = int(host.get('love_point', 0))
-            exp = int(str(TABLES['exp_partner'][str(host['lv'])]['all_exp']).split('#')[1]); ratio = float(rule.get('exp') or 0)
-            gained = {}
-            if exp and ratio: gained['9'] = math.ceil(exp * ratio)
-            for k, n in item_pairs(rule.get('bento_num') or '').items(): gained[str(k)] = gained.get(str(k), 0) + n
-            for k, n in gained.items(): state['items'][k] = int(state['items'].get(k, 0)) + n
+            for part in plan['returns']:
+                for _ in range(part['count']):
+                    nid = state['next_partner_id']
+                    state['next_partner_id'] += 1
+                    state['partners'].append({
+                        'partner_id':nid,'table_id':part['table_id'],
+                        'lv':1,'grade':0,'awake':part['awake'],
+                        'equips':[],'pos':0,'show_skin':1,
+                    })
+                    back.append(nid)
+            if back:
+                next(g for g in state['partners'] if g['partner_id'] == back[-1])['love_point'] = int(host.get('love_point', 0))
+            for k,n in plan['items'].items():
+                state['items'][k] = int(state['items'].get(k, 0)) + n
             equipment.release(state, host)
             state['partners'] = [g for g in state['partners'] if g['partner_id'] != pid]
             state['formation'] = [x for x in state['formation'] if x['partner_id'] != pid]
-            # returned girls / items travel in the state snapshot (the wire rollback_partner_res only needs the id here)
-            state['last_rollback'] = {'partner_ids': back, 'items': gained}
-            return response({'partner_id': pid})
+            state['campaign_hang'] = [x for x in state.get('campaign_hang') or [] if x['partner_id'] != pid]
+            state['rebirth'] = {'day':plan['day'], 'used':plan['free_used']+int(plan['is_free'])}
+            state['last_rollback'] = {
+                'partner_id':pid,'partner_ids':back,'items':plan['items'],
+                'free_left':max(0, REBIRTH_FREE_PER_DAY-state['rebirth']['used']),
+                'cost':plan['cost'],'stars':plan['stars'],
+            }
+            return response({'partner_id':pid})
         if name == 'PARTNER_GRADEUP':
             pid = integer(request.get('partner_id'), 'partner_id', 1)
             host = next((g for g in state['partners'] if g['partner_id'] == pid), None)

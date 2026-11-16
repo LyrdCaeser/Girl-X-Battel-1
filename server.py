@@ -1634,6 +1634,8 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                 return self.send(200, self.engine.set_campaign_hang(data))
             if path == '/api/altar/preview':
                 return self.send(200, self.engine.altar_preview(data))
+            if path == '/api/rebirth/preview':
+                return self.send(200, self.engine.rebirth_preview(data))
             if path == '/api/chimes/action':
                 return self.send(200, self.engine.chimes_action(data))
             if path == '/api/pumpkin/action':

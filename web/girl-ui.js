@@ -223,13 +223,72 @@ const GirlUI=(()=>{
   // ---- Reverse (PotentialityBackWindow), Exchange (TenStarExchangeWindow), Switch (PotentialitySwitchWindow) ----
  let ret=null;
  const card=(tid,cls='')=>{const c=el('span','lb-card '+cls);if(cardIds.has(tid))c.append(img('/assets/cards/partner_card_'+tid+'.png'));else{/* house dolls (561001…766001) share partner_avatar_661001 */const i=img('/assets/original-ui/portraits/partner_avatar_'+tid+'.png');i.onerror=()=>{i.onerror=null;i.src='/assets/original-ui/portraits/partner_avatar_661001.png';};c.append(i);}return c;};
- async function reverse(hero){if(!ret)ret=await api('/assets/partner-return.json');const rule=ret.rules[String(hero.stars)];const {body,close}=win({title:'Reverse',cls:'lb-rev',help:"Rebirth returns the Girl as faction Dolls and named 5★ copies, along with equipment and part of her EXP. This cannot be undone."});
-  if(!rule||hero.group===7||hero.stars===6){body.append(el('p','',"This Girl cannot be reborn."));return;}
-  body.append(el('b','lb-sub','Preview'));const grid=el('div','lb-mats');
-  for(const part of String(rule['group_'+hero.group]||'').split('|')){if(!part.includes('#'))continue;const [tid,rest]=part.split('#');const [n,aw]=rest.split('@');const c=el('div','lb-mat ok');c.append(card(Number(tid)),el('small','','×'+n+' · '+(girlsCatalog.find(g=>g.id===Number(tid))?'':'')+(Number(aw||0)+Number(String(tid).startsWith('7')?10:String(tid).startsWith('6')?6:5))+'★'));grid.append(c);}
-  const self=Number(rule.award_self||0);if(self){const c=el('div','lb-mat ok');c.append(card(hero.namesake||hero.table_id),el('small','','×'+self+' · 5★'));grid.append(c);}
-  body.append(grid,el('p','detail-note',"Equipment, Antique, and 65% of spent Girl EXP are also returned to the Bag."));const c=el('div','lb-cost');const ok=cost(c,Object.fromEntries(String(rule.cost||'').split('|').filter(x=>x.includes('#')).map(x=>x.split('#').map(Number))));body.append(c);
-  const a=el('div','gs-btns');const b=el('button','gs-btn red','Reverse');b.type='button';b.disabled=!ok||hero.flags?.[0];if(hero.flags?.[0])body.append(el('p','detail-note',"Unlock the Girl first (padlock)."));b.onclick=async()=>{if(!await confirmGame('Thao tác này không thể hoàn tác. Bạn có chắc muốn Hoàn Nguyên Nữ Thần này không?',{title:'Xác Nhận Hoàn Nguyên',ok:'Hoàn Nguyên',danger:true}))return;close();await action('ROLLBACK_PARTNER',{partner_id:hero.partner_id});const r=state.last_rollback;if(r){toast('Revertida: '+r.partner_ids.length+" Girls returned");const next=state.roster[0];if(next){selectedGirlPartnerId=next.partner_id;showView('girls');}}};a.append(b);body.append(a);}
+ async function reverse(hero){
+  let plan;
+  try {plan=await api('/api/rebirth/preview',{partner_id:hero.partner_id});}
+  catch(e){toast(e.message||'Không thể xem công thức Hoàn Nguyên');return;}
+  const {body,close}=win({
+   title:'Hoàn Nguyên Nữ Thần',cls:'lb-rev',
+   help:'Mỗi ngày 5 lượt Hoàn Nguyên miễn phí (làm mới lúc 00:00 giờ Việt Nam). Hết lượt miễn phí: Nữ Thần 10★ trở lên dùng Diploma 10★; Nữ Thần dưới 10★ dùng Diploma Hoàn Nguyên 6★–9★. Bắt buộc xác nhận trước khi thực hiện.'
+  });
+  body.append(el('b','lb-sub','Phần thưởng Hoàn Nguyên'),el('p','detail-note',
+   'Còn '+plan.free_left+'/'+plan.free_limit+' lượt miễn phí hôm nay (giờ Việt Nam).'));
+  const grid=el('div','lb-mats wrap');
+  for(const part of plan.returns||[]){
+   const r=el('div','lb-mat ok');
+   const row=girlsCatalog.find(g=>g.id===part.table_id);
+   const base=row?.stars||((Number(part.table_id)>=700000)?10:(Number(part.table_id)>=600000)?6:5);
+   r.append(card(part.table_id),el('small','', '×'+part.count+' · '+(base+part.awake)+'★'));
+   grid.append(r);
+  }
+  body.append(grid);
+  if(Object.keys(plan.items||{}).length){
+   body.append(el('b','lb-sub','Tài nguyên trả lại'));
+   const refund=el('div','lb-cost');
+   for(const [key,count] of Object.entries(plan.items)){
+    const item=itemCatalog?.[key],entry=el('span','gu-cost');
+    const src=item&&itemIcons.has(item.icon)?'/assets/item-icons/'+item.icon+'.png':'';
+    if(src)entry.append(img(src));
+    entry.append(el('b','',number(count)));
+    entry.title=item?.name||'Vật phẩm '+key;
+    refund.append(entry);
+   }
+   body.append(refund);
+  }
+  body.append(el('p','detail-note','Trang bị được trả lại Túi. Nữ Thần gốc sẽ được xóa sau khi Hoàn Nguyên thành công.'));
+  if(plan.warning)body.append(el('p','detail-note lb-rev-warning',plan.warning));
+  body.append(el('b','lb-sub',plan.is_free?'Chi phí: Miễn phí (1 lượt)':'Chi phí: Diploma'));
+  const costBox=el('div','lb-cost');
+  if(plan.is_free)costBox.append(el('span','lb-free','Miễn phí · '+plan.free_left+' lượt còn lại'));
+  else cost(costBox,plan.cost);
+  body.append(costBox);
+  if(!plan.can_afford){
+   const id=Object.keys(plan.cost||{})[0],name=itemCatalog[id]?.name||'Diploma';
+   body.append(el('p','detail-note','Không đủ '+name+'. Đang có '+number(state.items[id]||0)+'/'+plan.cost[id]+'.'));
+  }
+  const actions=el('div','gs-btns'),button=el('button','gs-btn red','Hoàn Nguyên');
+  button.type='button';
+  button.disabled=!plan.can_afford||hero.flags?.some(Boolean);
+  button.onclick=async()=>{
+   if(!await confirmGame(
+    'Hoàn Nguyên '+hero.stars+'★'+(plan.is_free?' bằng 1 lượt miễn phí':'. Tiêu hao '+Object.entries(plan.cost).map(([id,n])=>n+' × '+(itemCatalog[id]?.name||id)).join(', '))+
+    '. Nữ Thần gốc sẽ mất và không thể khôi phục.'+(plan.warning?' LƯU Ý: '+plan.warning:'')+' Tiếp tục?',
+    {title:'Xác Nhận Hoàn Nguyên',ok:'Xác Nhận',danger:true}
+   ))return;
+   button.disabled=true;
+   const originalId=hero.partner_id;
+   await action('ROLLBACK_PARTNER',{partner_id:originalId});
+   if(state?.last_rollback?.partner_id===originalId){
+    close();
+    toast('Hoàn Nguyên thành công. Còn '+state.last_rollback.free_left+' lượt miễn phí.');
+    if(view==='detail'){
+     selectedGirlPartnerId=state.roster[0]?.partner_id||null;
+     showView('girls');
+    }else if(view==='altar'&&typeof Altar!=='undefined')Altar.render();
+   }else button.disabled=false;
+  };
+  actions.append(button);body.append(actions);
+ }
  async function exchange(hero){if(!ret)ret=await api('/assets/partner-return.json');if(hero.group===7){toast("Cosmos Girls cannot be exchanged.");return;}
   const need=ret.replace_cost_hero[Math.min(ret.replace_cost_hero.length,hero.stars-9)-1];let pick=null;
   const options=[...new Map(state.roster.filter(g=>g.stars===5&&g.group===hero.group&&g.star_10&&g.star_10!==hero.table_id&&!g.flags?.some(Boolean)).map(g=>[g.table_id,g])).values()];
