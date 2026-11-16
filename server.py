@@ -1634,6 +1634,16 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                 return self.send(200, self.engine.set_campaign_hang(data))
             if path == '/api/altar/preview':
                 return self.send(200, self.engine.altar_preview(data))
+            if path == '/api/house-exam/ranking':
+                from gxb2 import house_exam as _house_exam
+                account = self.auth_context()['account']
+                season = _house_exam.season_of(int(time.time()))[0]
+                fort = int(data.get('fort') or 0)
+                return self.send(200, {
+                    'season': season, 'fort': fort,
+                    'ranking': live_service.house_exam_ranking(
+                        account['server_id'],season,account['uid'],fort,100)
+                })
             if path == '/api/shrine/ranking':
                 from gxb2 import shrine as _shrine
                 account = self.auth_context()['account']

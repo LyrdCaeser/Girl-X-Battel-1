@@ -3,6 +3,15 @@
 // Rules: gxb2/house_exam.py. Layout follows docs/references/2026-09-29-b/07-demon-exam-list.webp.
 const HouseExam=(()=>{
  let origin='league',fort=0,panel=null,note='',busyLocal=false,data=null,team=[],enemies=null,sweepStage=0,sweepTimes=1,skipReplay=false,timer=null;
+ let rankFort=0,rankingRows=null,rankingBusy=false,rankingError='';
+ async function fetchRanking(f=rankFort){
+  rankFort=f;rankingRows=null;rankingBusy=true;rankingError='';
+  try{const r=await api('/api/house-exam/ranking',{fort:f});
+      if(rankFort===f)rankingRows=r.ranking||[];
+  }catch(e){if(rankFort===f)rankingError=e.message||'Không tải được bảng xếp hạng.';}
+  finally{if(rankFort===f){rankingBusy=false;if(view==='house-exam'&&panel==='ranking')render();}}
+ }
+
  const A=n=>'/assets/house-exam/'+n+'.png';
  const el=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;};
  const img=(src,cls,alt='')=>{const i=el('img',cls);i.src=src;i.alt=alt;i.draggable=false;return i;};
@@ -38,7 +47,7 @@ const HouseExam=(()=>{
  let open_=0;
  function clock(info){const s=Math.max(0,(info.open?info.exam_end:info.season_end)-(state.server_time||Math.floor(Date.now()/1000))-Math.floor((performance.now()-loadedAt)/1000));const d=Math.floor(s/86400),h=Math.floor(s%86400/3600);return d?`${d}D ${h}H`:[h,Math.floor(s%3600/60),s%60].map(n=>String(n).padStart(2,'0')).join(':');}
  function list(st,info){const head=el('div','he-head');
-  const side=el('div','he-side l');side.append(btn('he-ico','',help),btn('he-ico','',()=>{note="Chưa có bảng xếp hạng trực tuyến. Không hiển thị thứ hạng giả.";render();}),btn('he-ico award','',()=>{panel='season';render();}));
+  const side=el('div','he-side l');side.append(btn('he-ico','',help),btn('he-ico','',()=>{rankFort=0;panel='ranking';void fetchRanking(0);render();}),btn('he-ico award','',()=>{panel='season';render();}));
   [['help_2','Hướng dẫn'],['btn_rank_2','Xếp hạng'],['btn_award','Thưởng mùa']].forEach(([n,t],i)=>{const b=side.children[i];b.title=t;b.append(img(A(n)));});
   const title=el('div','he-title');title.append(img(A('academy_assessment_title_bg_new'),'he-tbg l'),img(A('academy_assessment_title_bg_new'),'he-tbg r'),el('h1','he-logo-vi','Kỳ Thi Nhà'));
   const tm=el('div','he-time');tm.append(el('span','',info.open?T('ACADEMY_ASSESSMENT_END_TIME'):T('SCHOOL_PRACTICE_DISPLAY')+':'),el('b','he-clock',clock(info)));title.append(tm);
@@ -46,7 +55,7 @@ const HouseExam=(()=>{
   const star=btn('he-star','',()=>{panel='season';render();});star.title='Điểm Thi';star.append(img(A('dress_show_score_icon')));rs.append(shop,star);
   head.append(side,title,rs);st.append(head);
   const w=el('div','he-list');
-  if(info.last_award&&Object.keys(info.last_award.got).length){const la=el('p','he-note he-last',"Season "+info.last_award.season+" completed with "+info.last_award.score+" points: ");for(const [k,n]of Object.entries(info.last_award.got))la.append(chip(k,n));w.append(la);}
+  if(info.last_award&&Object.keys(info.last_award.got).length){const la=el('p','he-note he-last',"Mùa "+info.last_award.season+" kết thúc với "+info.last_award.score+" điểm: ");for(const [k,n]of Object.entries(info.last_award.got))la.append(chip(k,n));w.append(la);}
   for(const f of info.forts){const item=el('div','he-item-wrap'+(open_===f.fort?' open':''));const b=btn('he-house','',()=>{fort=f.fort;panel=null;render();setTimeout(()=>root().querySelector('.he-row.current')?.scrollIntoView({block:'center'}),50);});
    b.append(img(A('btn_academy_assessment_'+f.fort+'_new'),'he-house-bg'),img(A('academy_assessment_right_bg_new'),'he-house-right'),el('b','he-house-title',T('SCHOOL_PRACTICE_TITLE_0'+f.fort)),el('span','he-house-desc',T('SCHOOL_PRACTICE_TEXT_0'+f.fort)));
    b.append(el('span','he-prog',(T('ACADEMY_ASSESSMENT_CURRENT_TEXT')||'Current Progress: {1}/{2}').replace('{1}',f.done).replace('{2}',f.total)));
@@ -86,7 +95,32 @@ const HouseExam=(()=>{
   if(r.cert_up)note=`Đã nhận ${r.cert_up} Chứng Chỉ mỗi ngày!`;
   if(!r.win){note="Đấu lại: bấm Chiến Đấu và giữ nguyên đội hình.";}render();}
  function popup(st,info){const ov=el('div','he-overlay');ov.onclick=e=>{if(e.target===ov){panel=null;render();}};const w=el('div','he-win');ov.append(w);const close=btn('he-close','✕',()=>{panel=null;render();});
-  if(panel.startsWith('fight:')){const stage=Number(panel.slice(6));w.append(el('h2','',T('ACADEMY_ASSESSMENT_BATTLE_FORMATION_WINDOW')+' · '+T('SCHOOL_PRACTICE_TITLE_0'+fort)),close);
+  if(panel==='ranking'){
+   w.classList.add('he-rankwin');
+   w.append(el('h2','','Bảng Xếp Hạng Kỳ Thi · Mùa '+info.season),close);
+   const tabs=el('div','he-ranktabs');
+   for(let f=0;f<=6;f++){
+     const name=f?T('SCHOOL_PRACTICE_TITLE_0'+f):'Tổng Điểm';
+     tabs.append(btn('he-ranktab'+(rankFort===f?' on':''),name,()=>{void fetchRanking(f);render();}));
+   }
+   w.append(tabs);
+   const board=el('div','he-rankrows');
+   if(rankingBusy)board.append(el('p','','Đang tải bảng xếp hạng…'));
+   else if(rankingError)board.append(el('p','he-rankerror',rankingError));
+   else if(!rankingRows?.length)board.append(el('p','he-rankempty','Chưa có kết quả thi đấu ở mục này trong mùa hiện tại.'));
+   else for(const p of rankingRows){
+      const row=el('div','he-rankrow'+(p.me?' mine':'')),badge=el('strong','he-rankplace','#'+p.rank);
+      const avatar=img('/assets/profile/'+(String(p.avatar||'head_1001').replace(/[^a-zA-Z0-9_-]/g,''))+'.png','he-rankavatar');
+      avatar.onerror=()=>{avatar.onerror=null;avatar.src='/assets/profile/head_1001.png';};
+      const name=el('div','he-rankname');name.append(el('b','',p.character_name),el('small','','Cấp '+p.level+' · Lực Chiến '+number(p.power)));
+      const score=el('div','he-rankscore');
+      score.append(el('b','',rankFort? p.progress+'/100':number(p.score)),
+                   el('small','',rankFort?'Ải đã vượt':'Điểm Thi'));
+      row.append(badge,avatar,name,score);board.append(row);
+   }
+   w.append(board);
+  }
+  else if(panel.startsWith('fight:')){const stage=Number(panel.slice(6));w.append(el('h2','',T('ACADEMY_ASSESSMENT_BATTLE_FORMATION_WINDOW')+' · '+T('SCHOOL_PRACTICE_TITLE_0'+fort)),close);
    const mine=(state.roster||[]).filter(h=>h.group===fort).sort((a,b)=>b.lv-a.lv);const byId=new Map(mine.map(h=>[h.partner_id,h]));team=team.filter(t=>byId.has(t.partner_id));
    const opts=el('div','he-fopts');const sk=btn('he-skip'+(skipReplay?' on':''),'',()=>{skipReplay=!skipReplay;try{localStorage.setItem('gxb2.houseExam.skip',skipReplay?'1':'0');}catch{};render();});sk.append(el('i','',skipReplay?'✓':''),el('span','','Bỏ qua'));opts.append(sk);w.append(opts);
    const grid=el('div','he-formation');for(const [label,poss]of [['Hàng trước',[1,2]],['Hàng sau',[3,4,5,6]]]){const line=el('div','he-line');line.append(el('b','he-line-name '+label.toLowerCase(),label));for(const p of poss){const t=team.find(x=>x.pos===p);const slot=btn('he-slot','',()=>{if(t){team=team.filter(x=>x!==t);render();}});if(t){const h=byId.get(t.partner_id);slot.append(typeof portrait==='function'?portrait(h.table_id,72):el('span'),el('small','',String(h.lv)));}line.append(slot);}grid.append(line);}w.append(grid);

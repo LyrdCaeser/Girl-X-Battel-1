@@ -432,6 +432,72 @@ def galaxy_ranking(server_id, season, current_uid="", limit=100):
         player["me"] = player["uid"] == current_uid
     return board[:limit]
 
+def house_exam_ranking(server_id, season, current_uid="", fort=0, limit=100):
+    """Xếp hạng Kỳ Thi Nhà theo hồ sơ người chơi thật cùng máy chủ và cùng mùa.
+
+    Tổng điểm dùng trường score hiện có. Xếp hạng theo hệ dựa vào số ải
+    đã vượt trong hệ, không tự dựng điểm riêng khi máy chủ chưa lưu.
+    """
+    from . import house_exam
+    server_id = str(server_id or "").strip().upper()
+    current_uid = str(current_uid or "").strip()
+    season = int(season or 0)
+    fort = int(fort or 0)
+    if fort not in (0, 1, 2, 3, 4, 5, 6):
+        raise ValueError("Hệ thi đấu không hợp lệ.")
+    limit = max(1, min(100, int(limit)))
+    if season < 1:
+        return []
+    with _lock:
+        db = _db()
+        rows = db.execute("""SELECT p.uid,p.character_name,
+                                    COALESCE(l.level,1) AS level,
+                                    COALESCE(l.power,0) AS power,pp.data
+                             FROM players p
+                             JOIN player_profiles pp ON pp.uid=p.uid AND pp.server_id=p.server_id
+                             LEFT JOIN leaderboard l ON l.uid=p.uid AND l.server_id=p.server_id
+                             WHERE p.server_id=? AND p.status='active'""",
+                          (server_id,)).fetchall()
+        db.close()
+    board = []
+    for row in rows:
+        try:
+            profile = json.loads(row["data"]) if isinstance(row["data"], str) else dict(row["data"])
+            exam = profile.get("house_exam") or {}
+            if int(exam.get("season") or 0) != season:
+                continue
+            score = max(0, int(exam.get("score") or 0))
+            cur = exam.get("current") or {}
+            done = {}
+            for f, stages in house_exam.FORTS.items():
+                stage_id = int(cur.get(str(f), house_exam.FIRST[f]))
+                done[str(f)] = (len(stages) if stage_id == -1 else
+                                max(0, house_exam.sort_of(stage_id)-1) if stage_id in house_exam.STAGES else 0)
+            # Zero-score entrants are still shown if they attempted at least one
+            # exam. Empty/new accounts do not fabricate ranking entries.
+            if score == 0 and max(done.values(), default=0) == 0:
+                continue
+            view = profile.get("profile") or {}
+            board.append({"uid":str(row["uid"]),
+                          "character_name":str(row["character_name"]),
+                          "level":int(row["level"] or 1),
+                          "power":int(row["power"] or 0),
+                          "avatar":view.get("avatar") or "head_1001",
+                          "frame":view.get("frame") or "frame_8007",
+                          "score":score,"done":done,
+                          "progress":done.get(str(fort),0) if fort else sum(done.values())})
+        except (ValueError, TypeError, KeyError, AttributeError):
+            continue
+    if fort:
+        board.sort(key=lambda r:(-r["progress"],-r["score"],-r["power"],r["uid"]))
+    else:
+        board.sort(key=lambda r:(-r["score"],-r["progress"],-r["power"],r["uid"]))
+    for i, row in enumerate(board,1):
+        row["rank"]=i
+        row["me"]=row["uid"]==current_uid
+    return board[:limit]
+
+
 def shrine_ranking(server_id, season, current_uid="", limit=100):
     """Live, authenticated-world leaderboard from real Neon player profiles."""
     server_id = str(server_id or "").strip().upper()
