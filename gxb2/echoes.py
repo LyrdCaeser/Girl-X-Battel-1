@@ -356,29 +356,29 @@ def can_upgrade(e, t, black, prog):
     w = int(t['cloister'])
     lv = tec_lv(e, t['id'])
     if lv >= int(t['max_lvl']):
-        return 'Nivel máximo'
+        return 'Đã đạt cấp tối đa'
     if int(t['type']) in (9, 11, 12):
-        return 'Support Girl / Crystals: no disponible offline'
+        return 'Nhánh hỗ trợ này chưa mở trong mùa hiện tại'
     pre, pre_lv = ids(t['pre_id']), ids(t['pre_lv'])
     if any(tec_lv(e, p) < (pre_lv[i] if i < len(pre_lv) else pre_lv[-1] if pre_lv else 1) for i, p in enumerate(pre)):
-        return 'Requiere la tecnología anterior'
+        return 'Cần nâng cấp công nghệ trước đó'
     ut = str(t.get('unlock_type') or '')
     need = nums(t['unlock_num'])
     c = counters(e, w)
     if ut == '1' and any(a < b for a, b in zip(black, need)):  # SELF_BASE (black attributes)
-        return 'Requiere más Courage / Charisma / Knowledge'
+        return 'Cần thêm Dũng Khí / Sức Hấp Dẫn / Tri Thức'
     if ut == '2' and int(c['enc'].get(str(int(need[0])), 0)) < need[1]:  # EVENT_NUM
-        return DATA['tec_text'].get(str(t['id']), {}).get('unlock') or 'Requiere más Encounters'
+        return DATA['tec_text'].get(str(t['id']), {}).get('unlock') or 'Cần kích hoạt thêm Thẻ Kỳ Ngộ'
     if ut == '3':  # ACHIEVEMENT: that achievement type claimed past step need[1]
         at = next(a for a in DATA['ach_type'] if int(a['id']) == int(need[0]))
         steps = ach_steps(at)
         claimed = int(e['ach_claimed'].get(str(int(need[0])), 0))
         if claimed <= (steps.index(int(need[1])) if int(need[1]) in steps else len(steps)):
-            return DATA['tec_text'].get(str(t['id']), {}).get('unlock') or 'Requiere un logro'
+            return DATA['tec_text'].get(str(t['id']), {}).get('unlock') or 'Cần hoàn thành thành tựu'
     if ut == '4' and prog < need[0]:  # PROGRESS
-        return f"Requiere {round(need[0] * 100)}% de progreso de observación"
+        return f"Cần đạt {round(need[0] * 100)}% tiến độ Quan Sát"
     if ut == '5' and int(c.get('fights', {}).get(str(int(need[0])), 0)) < need[1]:  # ENCOUNTER_FIGHT
-        return DATA['tec_text'].get(str(t['id']), {}).get('unlock') or 'Requiere más desafíos'
+        return DATA['tec_text'].get(str(t['id']), {}).get('unlock') or 'Cần hoàn thành thêm thử thách'
     return None
 
 
@@ -485,7 +485,7 @@ def action(state, request, now=None, fight=None, rng_seed=None):
         tid = int(request.get('tec', 0))
         t = TEC.get(tid)
         if not t or int(t['cloister']) != w:
-            raise ValueError('Tecnología no válida')
+            raise ValueError('Công nghệ không hợp lệ')
         why = can_upgrade(e, t, black_attrs(e, w, outfit(state)), progress(e, w))
         if why:
             raise ValueError(why)
@@ -493,7 +493,7 @@ def action(state, request, now=None, fight=None, rng_seed=None):
         cost = [pairs(x) for x in str(t['upgrade_cost']).split('|') if x][lv]
         for k, n in cost.items():
             if int(items.get(k, 0)) < n:
-                raise ValueError('Faltan Time Shards')
+                raise ValueError('Không đủ Mảnh Thời Gian')
         for k, n in cost.items():
             items[k] = int(items[k]) - n
         e['tec'][str(tid)] = lv + 1

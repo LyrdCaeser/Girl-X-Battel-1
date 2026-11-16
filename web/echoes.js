@@ -10,7 +10,7 @@ const Echoes=(()=>{
  const VI={"Loading…":"Đang tải…","Echoes of Time":"Dư Âm Thời Gian","Achievements":"Thành Tựu","Stages":"Các Ải","Progress":"Tiến độ","Observe":"Quan Sát","Continue":"Tiếp Tục","Planetarium":"Đài Thiên Văn","Thẻ Tiếp Tế":"Thẻ Tiếp Tế","Thẻ Thử Thách":"Thẻ Thử Thách","Thẻ Kỳ Ngộ":"Thẻ Kỳ Ngộ","Thẻ Tiếp Tếs":"Các Thẻ Tiếp Tế","Thẻ Thử Tháchs":"Các Thẻ Thử Thách","Thẻ Kỳ Ngộs":"Các Thẻ Kỳ Ngộ","Claim":"Nhận","End Observation":"Kết Thúc Quan Sát","Record":"Nhật Ký","Tăng Tốc":"Tăng Tốc","Use":"Sử Dụng","Upgrade":"Nâng Cấp","Passed":"Đã Vượt","Battle":"Chiến Đấu","Time Vortex":"Vòng Xoáy Thời Gian","Maximum level":"Cấp tối đa","Total Progress":"Tổng Tiến Độ","Collected":"Đã Nhận","Go":"Đến","Technology":"Công Nghệ","Courage":"Dũng Khí","Charisma":"Sức Hấp Dẫn","Knowledge":"Tri Thức"};
  const vn=v=>typeof v==='string'?(VI[v]||v):v;
  const ROMAN=['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
- const ATTR=[['Courage','#e0763a'],['Charisma','#3aa35b'],['Knowledge','#3b7fd1']];
+ const ATTR=[['Dũng Khí','#e0763a'],['Sức Hấp Dẫn','#3aa35b'],['Tri Thức','#3b7fd1']];
  const el=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=vn(text);return e;};
  const img=(src,cls,alt='')=>{const i=el('img',cls);i.src=src;i.alt=alt;i.draggable=false;return i;};
  const btn=(cls,text,fn)=>{const b=el('button',cls,text);b.type='button';b.onclick=fn;return b;};
@@ -31,7 +31,7 @@ const Echoes=(()=>{
   const back=btn('ec-back','',()=>{if(panel){panel=null;render();return;}showView(origin==='echoes'?'league':origin);});back.append(img('/assets/ui/win_back_btn.png'));
   const top=el('div','ec-top');top.append(back,btn('ec-round','?',()=>say('Echoes of Time',(info?.help||[]).join('\n\n').replaceAll('|','\n'))));st.append(top);
   if(!info){st.append(el('p','ec-note',"Loading…"));return;}
-  if(!info.unlocked){st.append(el('p','ec-note ec-box',`Echoes of Time unlocks after clearing stage ${info.unlock_stage}.`));return;}
+  if(!info.unlocked){st.append(el('p','ec-note ec-box',`Dư Âm Thời Gian mở sau khi vượt ải ${info.unlock_stage}.`));return;}
   const o=info.obs;
   if(o&&o.world===world&&panel!=='clock')board(st,info,o);else clock(st,info,o);
   if(note)st.append(el('p','ec-note ec-err',note));
@@ -49,7 +49,7 @@ const Echoes=(()=>{
   const row=el('div','ec-row');const ach=btn('ec-icon','',()=>{panel='ach';render();});ach.append(img(A('time_cloister_btn_ach')),el('b','','Achievements'));const stg=btn('ec-icon','',()=>{panel='stages';render();});stg.append(img(A('time_cloister_btn_battle')),el('b','','Stages'));
   const mid=el('div','ec-mid');mid.append(el('small','ec-prog',`Tiến độ:${detail?.progress??w?.progress??0} %`));
   if(!w?.open)mid.append(el('p','ec-note',"Đạt 85% tiến độ ở thế giới trước để mở khóa thế giới này."));
-  else if(o&&o.world!==world)mid.append(el('p','ec-note',`An observation is in progress in ${info.worlds.find(x=>x.id===o.world)?.name}.`),btn('ec-go','Continue',()=>{world=o.world;panel=null;act({action:'detail',world});}));
+  else if(o&&o.world!==world)mid.append(el('p','ec-note',`Đang Quan Sát tại ${info.worlds.find(x=>x.id===o.world)?.name}.`),btn('ec-go','Continue',()=>{world=o.world;panel=null;act({action:'detail',world});}));
   else if(o){mid.append(btn('ec-go','Continue',()=>{panel=null;render();}));const t=el('div','ec-timer');t.append(el('b','ec-left',''),btn('ec-x','✕',async()=>{if(await GirlUI.confirm("Kết thúc quan sát ngay bây giờ?",{title:'Xác Nhận Kết Thúc',ok:'Kết Thúc'}))await act({action:'stop'});}));mid.append(t);}
   else mid.append(btn('ec-go','Observe',()=>{pickFor='obs';pick=(o?.partners)||[];panel='pick';render();}));
   row.append(ach,mid,stg);card.append(row);main.append(card);
@@ -69,15 +69,15 @@ const Echoes=(()=>{
   const rec=btn('ec-record','',()=>{panel='record';render();});rec.append(img(A('time_cloister_btn_record')),el('b','',`Nhật Ký (${o.cards.length})`));decks.append(rec);b.append(decks);
   const foot=el('div','ec-foot');const tec=btn('ec-tec','',async()=>{panel='tec';render();});tec.append(img(A('time_cloister_btn_tec')),el('b','','Planetarium'));
   const team=el('div','ec-team');team.append(attrs(o.attrs,o.green));const faces=el('div','ec-faces');for(const pid of o.partners){const h=(state.roster||[]).find(x=>x.partner_id===pid);if(h&&typeof portrait==='function')faces.append(portrait(h.table_id,56));}team.append(faces);foot.append(tec,team);b.append(foot);
-  const end=el('div','ec-endrow');if(o.ended)end.append(btn('ec-go','Claim',claim));else end.append(btn('ec-small','End Observation',async()=>{if(await GirlUI.confirm("Kết thúc quan sát ngay? Bạn vẫn có thể nhận các phần thưởng đã kiếm được.",{title:'Xác Nhận Kết Thúc',ok:'Kết Thúc'}))await act({action:'stop'});}));b.append(end);st.append(b);}
+  const end=el('div','ec-endrow');if(o.ended)end.append(btn('ec-go','Nhận',claim));else end.append(btn('ec-small','Kết Thúc Quan Sát',async()=>{if(await GirlUI.confirm("Kết thúc quan sát ngay? Bạn vẫn có thể nhận các phần thưởng đã kiếm được.",{title:'Xác Nhận Kết Thúc',ok:'Kết Thúc'}))await act({action:'stop'});}));b.append(end);st.append(b);}
  async function claim(){const r=await act({action:'claim'});if(r?.got)CampaignUI.popup(`Hoàn thành quan sát · ${r.cards} thẻ · ${r.points} điểm`,r.got);}
  function cardFace(c){const f=el('div','ec-face t'+c.type);const lv=c.level>1?'_level_'+Math.min(3,c.level):'';f.append(img(A('time_cloister_card_bg'+(c.type===1?lv:'')),'ec-fbg'),img(A(c.img),'ec-fimg'),el('b','ec-fname',c.name));f.title=c.name+'\n'+c.desc;f.onclick=e=>{e.stopPropagation();say(c.name,c.desc);};return f;}
  function overlay(st,title,cls){const ov=el('div','ec-overlay');ov.onclick=e=>{if(e.target===ov){panel=null;render();}};const w=el('div','ec-win '+(cls||''));w.append(el('h2','',title),btn('ec-close','✕',()=>{panel=null;render();}));ov.append(w);st.append(ov);return w;}
  // TimeCloisterCardPreivewWindow: every card of this World for Supply (1) / Challenge (2) / Encounter (3,6,7).
- function deck(st,k){const w=overlay(st,['','Thẻ Tiếp Tếs','Thẻ Thử Tháchs','Thẻ Kỳ Ngộs'][k]);const cards=(detail?.cards||[]).filter(c=>k===1?c.type===1:k===2?c.type===2:[3,6,7].includes(c.type));
+ function deck(st,k){const w=overlay(st,['','Thẻ Tiếp Tế','Thẻ Thử Thách','Thẻ Kỳ Ngộ'][k]);const cards=(detail?.cards||[]).filter(c=>k===1?c.type===1:k===2?c.type===2:[3,6,7].includes(c.type));
   if(!cards.length)w.append(el('p','ec-note',"Loading…"));const list=el('div','ec-list');for(const c of cards){const row=el('div','ec-crow'+(c.unlocked?'':' locked'));row.append(cardFace(c));const t=el('div','');t.append(el('b','',c.name),el('p','',c.desc));if(c.base)t.append(attrs(c.base));if(!c.unlocked)t.append(el('small','ec-lockt',c.unlock||"Locked: upgrade the Planetarium"));row.append(t);list.append(row);}w.append(list);}
  function record(st,o){const w=overlay(st,'Record');if(!o)return;const list=el('div','ec-list');[...o.cards].reverse().forEach(c=>{const row=el('div','ec-crow');row.append(cardFace(c));const t=el('div','');t.append(el('b','',c.name),el('p','',c.desc));row.append(t);list.append(row);});if(!o.cards.length)list.append(el('p','ec-note',"No cards have been activated yet (1 every 5 min)."));w.append(list);}
- function speed(st,info,o){const w=overlay(st,'Tăng Tốc');w.append(el('p','',`Each Time Essence advances ${info.essence_s/60} min (also consumes the corresponding Memory Clockwork).`));w.append(chip('287',info.essence));
+ function speed(st,info,o){const w=overlay(st,'Tăng Tốc');w.append(el('p','',`Mỗi Tinh Hoa Thời Gian tăng ${info.essence_s/60} phút (vẫn tiêu hao Đồng Hồ Ký Ức tương ứng).`));w.append(chip('287',info.essence));
   const max=Math.max(1,Math.min(info.essence,Math.ceil(obsLeft(o)/info.essence_s)));let n=Math.min(1,max);const inp=el('input','ec-num-in');inp.type='number';inp.min=1;inp.max=max;inp.value=n;w.append(inp);
   w.append(btn('ec-go','Use',async()=>{n=Math.max(1,Math.min(max,Number(inp.value)||1));panel=null;await act({action:'speed',count:n});}));}
  // TimeCloisterTechWindow: Planetarium I / II; nodes at the table xy, lines to their prerequisites.
@@ -85,39 +85,39 @@ const Echoes=(()=>{
   if(!detail){w.append(el('p','ec-note',"Loading…"));return;}const nodes=detail.tecs.filter(t=>t.group===tecGroup);const xs=nodes.map(t=>t.xy[0]),ys=nodes.map(t=>t.xy[1]);const x0=Math.min(...xs)-60,x1=Math.max(...xs)+60,y0=Math.min(...ys)-60,y1=Math.max(...ys)+60;
   const map=el('div','ec-tree');const P=t=>[(t.xy[0]-x0)/(x1-x0)*100,(y1-t.xy[1])/(y1-y0)*100];const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 100 100');svg.setAttribute('preserveAspectRatio','none');
   const byId=new Map(detail.tecs.map(t=>[t.id,t]));for(const t of nodes)for(const p of t.pre){const q=byId.get(p);if(!q||q.group!==t.group)continue;const [a,b]=P(t),[c,d]=P(q);const l=document.createElementNS('http://www.w3.org/2000/svg','line');l.setAttribute('x1',a);l.setAttribute('y1',b);l.setAttribute('x2',c);l.setAttribute('y2',d);l.setAttribute('class',q.lv>0?'on':'');svg.append(l);}
-  map.append(svg);for(const t of nodes){const [x,y]=P(t);const s=t.lv>0?1:!t.why||t.why==="Maximum level"?2:3;const n=btn('ec-node s'+s+(tecSel===t.id?' sel':''),'',()=>{tecSel=t.id;render();});n.style.left=x+'%';n.style.top=y+'%';n.append(img(A('time_cloister_tec_bg_'+s),'ec-nbg'),img(A(t.img+'_'+s),'ec-nimg'));if(t.lv)n.append(el('small','',`${t.lv}/${t.max}`));n.title=t.name;map.append(n);}
+  map.append(svg);for(const t of nodes){const [x,y]=P(t);const s=t.lv>0?1:!t.why||t.why==="Đã đạt cấp tối đa"?2:3;const n=btn('ec-node s'+s+(tecSel===t.id?' sel':''),'',()=>{tecSel=t.id;render();});n.style.left=x+'%';n.style.top=y+'%';n.append(img(A('time_cloister_tec_bg_'+s),'ec-nbg'),img(A(t.img+'_'+s),'ec-nimg'));if(t.lv)n.append(el('small','',`${t.lv}/${t.max}`));n.title=t.name;map.append(n);}
   w.append(map);const shard=W()?.shard;w.append(chip(String(shard),W()?.shards||0));
-  const t=detail.tecs.find(x=>x.id===tecSel);if(t){const d=el('div','ec-tecd');d.append(el('b','',`${t.name} (${t.lv}/${t.max})`),el('p','',t.desc));if(t.why&&t.why!=="Maximum level")d.append(el('small','ec-lockt',t.unlock||t.why));
+  const t=detail.tecs.find(x=>x.id===tecSel);if(t){const d=el('div','ec-tecd');d.append(el('b','',`${t.name} (${t.lv}/${t.max})`),el('p','',t.desc));if(t.why&&t.why!=="Đã đạt cấp tối đa")d.append(el('small','ec-lockt',t.unlock||t.why));
    if(t.cost){const c=el('div','ec-cost');for(const [k,n] of Object.entries(t.cost))c.append(chip(k,n));const up=btn('ec-go','Upgrade',async()=>{await act({action:'upgrade',tec:t.id});});up.disabled=!!t.why;c.append(up);d.append(c);}
-   if(state.echoes_info?.obs)d.append(el('small','',"Upgrades made during an observation take effect in the next one."));w.append(d);}
-  else w.append(el('p','ec-hint',`Use 「Time Shard: ${W()?.name}」 to upgrade the Planetarium in Echoes of Time.`));}
+   if(state.echoes_info?.obs)d.append(el('small','',"Nâng cấp thực hiện khi đang Quan Sát sẽ có hiệu lực từ lượt tiếp theo."));w.append(d);}
+  else w.append(el('p','ec-hint',`Dùng Mảnh Thời Gian: ${W()?.name} để nâng cấp Đài Thiên Văn trong Dư Âm Thời Gian.`));}
  // TimeCloisterBattleWindow: 10 Stages with attribute references + Time Vortex (damage record).
  function stages(st,info){const w=overlay(st,'Ải: '+(W()?.name||''));w.append(el('div','ec-chips'));w.lastChild.append(chip('289',`${info.chips}/${info.chip_max}`));if(info.chips<info.chip_max)w.lastChild.append(el('small','ec-left2',"+1 mỗi 30 phút"));
   if(!detail){w.append(el('p','ec-note',"Loading…"));return;}const list=el('div','ec-list');
-  for(const s of [...detail.stages].sort((a,b)=>b.special-a.special)){const row=el('div','ec-srow'+(s.open?'':' locked')+(s.special?' vortex':''));const t=el('div','');t.append(el('b','',s.special?'Time Vortex':`Ải ${s.n}`));
+  for(const s of [...detail.stages].sort((a,b)=>b.special-a.special)){const row=el('div','ec-srow'+(s.open?'':' locked')+(s.special?' vortex':''));const t=el('div','');t.append(el('b','',s.special?'Vòng Xoáy Thời Gian':`Ải ${s.n}`));
    if(s.special)t.append(el('small','',`Sát thương cao nhất: ${number(detail.best_damage||0)}`));else{t.append(attrs(s.base));const aw=el('div','ec-aw');for(const [k,n] of Object.entries(s.awards))aw.append(chip(k,n));t.append(aw);}
-   row.append(t);const b=btn('ec-go',s.passed?'Passed':'Battle',()=>{pickFor='stage:'+s.n;pick=[];panel='pick';render();});b.disabled=!s.open||(s.passed&&!s.special)||info.chips<1;row.append(b);if(!s.open)row.title="Clear the previous stage and upgrade Ải Unlock in the Planetarium";list.append(row);}w.append(list);}
+   row.append(t);const b=btn('ec-go',s.passed?'Đã Vượt':'Chiến Đấu',()=>{pickFor='stage:'+s.n;pick=[];panel='pick';render();});b.disabled=!s.open||(s.passed&&!s.special)||info.chips<1;row.append(b);if(!s.open)row.title="Clear the previous stage and upgrade Ải Unlock in the Planetarium";list.append(row);}w.append(list);}
  // TimeCloisterAchievementWindow (capture 2026-09-29-g/03): Total Progress = claimed steps; rows with the current step's
  // text (value/need in green), item tiles, and Go / Claim / "Collected" stamp. Claimable first, finished last.
  function achievements(st){const w=overlay(st,'Thành Tựu: '+(W()?.name||''),'ec-achwin');if(!detail){w.append(el('p','ec-note',"Loading…"));return;}
   const head=el('div','ec-achhead');head.append(el('p','','Hoàn thành thành tựu khi Quan Sát để tăng Tiến Độ. Khi đạt 85%, thế giới thời gian tiếp theo sẽ được mở khóa.'));
-  const [d,t]=detail.progress_steps||[0,0];const tp=el('div','ec-achtotal');tp.append(el('b','','Total Progress'),el('span','',`${detail.progress}% (${d}/${t})`));head.append(tp);w.append(head);
+  const [d,t]=detail.progress_steps||[0,0];const tp=el('div','ec-achtotal');tp.append(el('b','','Tổng Tiến Độ'),el('span','',`${detail.progress}% (${d}/${t})`));head.append(tp);w.append(head);
   const rank=a=>a.done?-10:a.claimable?10:0;const list=el('div','ec-list');
   for(const a of [...detail.ach].sort((x,y)=>rank(y)-rank(x)||x.id-y.id)){const row=el('div','ec-arow'+(a.done?' done':''));const top=el('div','ec-atext');top.append(el('span','',a.text+' '),el('em','',`(${number(a.value)}/${number(a.need)})`));
-   const info=btn('ec-ainfo','!',()=>say(a.text,`Step ${Math.min(a.claimed+1,a.steps)}/${a.steps} · Progress ${number(a.value)}/${number(a.need)}`));top.append(info);row.append(top);
+   const info=btn('ec-ainfo','!',()=>say(a.text,`Bước ${Math.min(a.claimed+1,a.steps)}/${a.steps} · Tiến độ ${number(a.value)}/${number(a.need)}`));top.append(info);row.append(top);
    const bot=el('div','ec-abot');const aw=el('div','ec-tiles');for(const [k,n] of Object.entries(a.awards)){const tile=el('span','ec-tile');const src=icon(k);if(src)tile.append(img(src));tile.append(el('b','',number(n)));aw.append(tile);}bot.append(aw);
-   if(a.done)bot.append(img(A('mission_awarded_en_en'),'ec-stamp','Collected'));
-   else if(a.claimable)bot.append(btn('ec-go','Claim',async()=>{const r=await act({action:'claim_ach',ach:a.id});if(r?.got)CampaignUI.popup('Achievement',r.got);}));
-   else bot.append(btn('ec-gobtn','Go',()=>{if(a.go==='tec'||a.go==='stages'){panel=a.go;render();}else{panel=null;const o=state.echoes_info?.obs;if(o){world=o.world;render();}else{pickFor='obs';pick=[];panel='pick';render();}}}));
+   if(a.done)bot.append(el('b','ec-claimed-vi','ĐÃ NHẬN'));
+   else if(a.claimable)bot.append(btn('ec-go','Nhận',async()=>{const r=await act({action:'claim_ach',ach:a.id});if(r?.got)CampaignUI.popup('Thành Tựu',r.got);}));
+   else bot.append(btn('ec-gobtn','Đến',()=>{if(a.go==='tec'||a.go==='stages'){panel=a.go;render();}else{panel=null;const o=state.echoes_info?.obs;if(o){world=o.world;render();}else{pickFor='obs';pick=[];panel='pick';render();}}}));
    row.append(bot);list.append(row);}w.append(list);}
  // Girl picker for the Observation (attributes) and for Stages (positions 1-6 in order).
- function picker(st){const isObs=pickFor==='obs';const w=overlay(st,isObs?'Send Girls to Observe':'Ải team');const slots=el('div','ec-pslots');for(let i=0;i<6;i++){const pid=pick[i];const h=(state.roster||[]).find(x=>x.partner_id===pid);const s=btn('ec-pslot','',()=>{if(pid){pick=pick.filter(x=>x!==pid);render();}});if(h&&typeof portrait==='function')s.append(portrait(h.table_id,56));slots.append(s);}w.append(slots);
-  if(isObs){const lv=pick.reduce((a,p)=>a+((state.roster||[]).find(h=>h.partner_id===p)?.lv||0),0);w.append(el('p','ec-hint',`Green Boost from assigned Girls: +${Math.round(lv/3)} a Courage / Charisma / Knowledge`));}
+ function picker(st){const isObs=pickFor==='obs';const w=overlay(st,isObs?'Cử Nữ Thần Quan Sát':'Đội Hình Vượt Ải');const slots=el('div','ec-pslots');for(let i=0;i<6;i++){const pid=pick[i];const h=(state.roster||[]).find(x=>x.partner_id===pid);const s=btn('ec-pslot','',()=>{if(pid){pick=pick.filter(x=>x!==pid);render();}});if(h&&typeof portrait==='function')s.append(portrait(h.table_id,56));slots.append(s);}w.append(slots);
+  if(isObs){const lv=pick.reduce((a,p)=>a+((state.roster||[]).find(h=>h.partner_id===p)?.lv||0),0);w.append(el('p','ec-hint',`Thuộc tính cộng thêm từ Nữ Thần được cử đi: +${Math.round(lv/3)} vào Dũng Khí / Sức Hấp Dẫn / Tri Thức`));}
   const pool=el('div','ec-pool');for(const h of [...(state.roster||[])].sort((a,b)=>b.lv-a.lv||b.stars-a.stars)){const on=pick.includes(h.partner_id);const c=btn('ec-cand'+(on?' on':''),'',()=>{if(on)pick=pick.filter(x=>x!==h.partner_id);else if(pick.length<6)pick.push(h.partner_id);render();});if(typeof portrait==='function')c.append(portrait(h.table_id,52));c.append(el('small','',`Lv.${h.lv}`));c.title=h.name;pool.append(c);}w.append(pool);
-  const acts=el('div','ec-acts');acts.append(btn('ec-small','Auto',()=>{pick=[...(state.roster||[])].sort((a,b)=>b.lv-a.lv).slice(0,6).map(h=>h.partner_id);render();}));
+  const acts=el('div','ec-acts');acts.append(btn('ec-small','Tự Chọn',()=>{pick=[...(state.roster||[])].sort((a,b)=>b.lv-a.lv).slice(0,6).map(h=>h.partner_id);render();}));
   if(!isObs){const sk=el('label','ec-skip');const cb=el('input');cb.type='checkbox';cb.checked=skipReplay;cb.onchange=()=>{skipReplay=cb.checked;try{localStorage.setItem('gxb2.echoes.skip',skipReplay?'1':'0');}catch{}};sk.append(cb,' Skip');acts.append(sk);}
-  acts.append(btn('ec-go',isObs?'Observe':'Fight',async()=>{if(!pick.length){note="Choose at least one Girl";render();return;}if(isObs){panel=null;await act({action:'start',partners:pick});return;}
-   const n=Number(pickFor.split(':')[1]);panel='stages';const r=await act({action:'fight',stage:n,team:pick.map((p,i)=>({partner_id:p,pos:i+1}))});if(!r)return;const label=n===11||r.damage!==undefined?`Time Vortex · ${number(r.damage||0)} damage`:`Echoes of Time · Ải ${n}`;
+  acts.append(btn('ec-go',isObs?'Observe':'Chiến Đấu',async()=>{if(!pick.length){note="Hãy chọn ít nhất một Nữ Thần";render();return;}if(isObs){panel=null;await act({action:'start',partners:pick});return;}
+   const n=Number(pickFor.split(':')[1]);panel='stages';const r=await act({action:'fight',stage:n,team:pick.map((p,i)=>({partner_id:p,pos:i+1}))});if(!r)return;const label=n===11||r.damage!==undefined?`Vòng Xoáy Thời Gian · ${number(r.damage||0)} damage`:`Echoes of Time · Ải ${n}`;
    if(!skipReplay&&r.report&&typeof watchEventBattle==='function')await watchEventBattle({report:r.report,rewards:r.got||{}},'echoes',label);else CampaignUI.result(r.win,r.got||{},{event:true,label,report:r.report});}));w.append(acts);}
  return {open,render};
 })();
