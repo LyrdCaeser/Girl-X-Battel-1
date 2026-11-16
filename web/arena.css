@@ -86,3 +86,22 @@
   bottom:0!important;
  }
 }
+
+
+/* Original ArenaWindow frame, shared across all live Arena, 3v3 and
+   cross-server modes. Both the ranking and player information panel use
+   the same original arena_bg 9-slice rather than a plain gradient. */
+.arena-view .ar-rank,
+.arena-view .ar-detail{
+  box-sizing:border-box;
+  border:calc(26 * var(--u)) solid transparent;
+  border-image-source:url('/assets/arena/arena_bg.png');
+  border-image-slice:30 fill;
+  border-image-width:calc(26 * var(--u));
+  border-image-repeat:stretch;
+}
+.arena-view .ar-detail{
+  background:none;
+  border-radius:0;
+  box-shadow:none;
+}
