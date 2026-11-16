@@ -365,6 +365,19 @@ const NativeOnlineArenas=(()=>{
   }
   stage.append(ov);
  }
+ function nativeCardStars(hero,extraClass=''){
+  const n=Number(hero?.stars)||0;
+  const wrap=el('span','ar-native-stars'+(extraClass?' '+extraClass:''));
+  wrap.setAttribute('aria-label',n+' sao');
+  // Use the exact original card star textures / awakening emblem.
+  if(typeof GirlUI!=='undefined'&&typeof GirlUI.stars==='function'){
+   wrap.append(GirlUI.stars(n,'card'));
+  }else wrap.append(el('span','ar-native-star-fallback',n+'★'));
+  // The original emblem's center number is excess stars over 10;
+  // show actual total too so a 25★ Girl never appears as 15★.
+  if(n>=10)wrap.append(el('span','ar-native-total-stars',n+'★'));
+  return wrap;
+ }
  function drawAttack(win,button){
   const match=data?.pvp?.match;
   if(!match){win.append(el('p','ar-empty','Chưa có trận được xác nhận.'));return;}
@@ -389,7 +402,7 @@ const NativeOnlineArenas=(()=>{
     slot.title=hero?'Gỡ '+(hero.name||'Nữ Thần'):'Vị trí '+pos;
     if(hero){
      if(typeof portrait==='function')slot.append(portrait(hero.table_id,72,hero));
-     slot.append(el('span','ar-defense-slot-stars',String(hero.stars||0)+'★'));
+     slot.append(nativeCardStars(hero,'ar-attack-slot-stars'));
     }else slot.append(el('span','','+'),el('small','',String(pos)));
     slot.onclick=()=>{
      attackPos=pos;
@@ -406,8 +419,9 @@ const NativeOnlineArenas=(()=>{
    const id=Number(hero.partner_id),chosen=used.has(id);
    const b=el('button','ar-defense-candidate'+(chosen?' used':''));b.type='button';
    if(typeof portrait==='function')b.append(portrait(hero.table_id,90,hero));
+   b.append(nativeCardStars(hero,'ar-attack-candidate-stars'));
    const meta=el('span','ar-defense-meta');
-   meta.append(el('b','',hero.name||'Nữ Thần'),el('small','','Cấp '+(hero.lv||1)+' · '+(hero.stars||0)+'★'));
+   meta.append(el('b','',hero.name||'Nữ Thần'),el('small','','Cấp '+(hero.lv||1)));
    b.append(meta);
    b.onclick=()=>{
     if(chosen){attackDraft=team.filter(x=>Number(x.partner_id)!==id);render();return;}
