@@ -2508,9 +2508,9 @@ class Engine:
         used = saved.get('used', {}) if saved.get('day') == today else {}
         cleared = saved.get('cleared', {})
         categories = []
-        for quiz_type, label, artwork in ((1, 'Recursos', 'quiz_mana'),
-                                          (2, 'Experiencia', 'quiz_exp'),
-                                          (3, 'Fragmentos', 'quiz_hero')):
+        for quiz_type, label, artwork in ((1, 'Tài Nguyên', 'quiz_mana'),
+                                          (2, 'Kinh Nghiệm', 'quiz_exp'),
+                                          (3, 'Mảnh Nữ Thần', 'quiz_hero')):
             tiers = []
             for row in sorted((v for v in DAILY_QUIZ['quizzes'].values() if v['type'] == quiz_type), key=lambda v: v['id']):
                 tiers.append({'id': row['id'], 'level': row['level'], 'difficulty': row['difficulty'],
