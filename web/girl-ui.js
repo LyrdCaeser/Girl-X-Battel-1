@@ -142,16 +142,16 @@ const GirlUI=(()=>{
   box.append(img(S+'partner_potential_bg_big.png','lb-wing l'),img(S+'partner_potential_bg_big.png','lb-wing r'));
   for(let i=0;i<4;i++){const [x1,y1]=LB_POS[i],[x2,y2]=LB_POS[i+1];const len=Math.hypot(x2-x1,y2-y1),ang=Math.atan2(-(y2-y1),x2-x1)*180/Math.PI;const ln=img(S+(done>i+1?'partner_potential_light_big':'partner_potential_dark_big')+'.png','lb-line');
    ln.style.cssText=`left:calc(${340+(x1+x2)/2-len/2} * var(--u));top:calc(${150-(y1+y2)/2-5} * var(--u));width:calc(${len} * var(--u));transform:rotate(${ang}deg)`;box.append(ln);}
-  for(let i=1;i<=5;i++){const pick=chosen[i-1]||0,skill=pick&&hero.potential_options?.[i-1]?.[pick-1],info=skill&&pots.skills[String(skill)];
+  for(let i=1;i<=5;i++){const pick=chosen[i-1]||0,skill=pick&&hero.potential_options?.[i-1]?.[pick-1],info=skill&&potentialInfo(skill);
    const n=el(live?'button':'span','lb-node n'+i+(i<=done?' open':i===done+1?' next':''));if(live)n.type='button';const [px,py]=LB_POS[i-1];n.style.left=`calc(${340+px} * var(--u))`;n.style.top=`calc(${150-py} * var(--u))`;
    if(info?.icon)n.append(img('/assets/skills/'+info.icon+'.png','lb-skill'));else if(i<=done)n.append(el('b','','?'));else n.append(img(S+'academy_assessment_lock.png','lb-lock'));
-   n.title=info?info.name:i<=done?"Choose a Potential":'Mở ở bậc Đột Phá '+i;
+   n.title=info?info.name:i<=done?'Chọn Tiềm Năng':'Mở ở bậc Đột Phá '+i;
    if(live)n.onclick=()=>{if(i<=done)choosePotential(hero,i);else if(i===done+1)limitBreak(hero);else toast('Mở ở bậc Đột Phá '+i);};box.append(n);}
   return box;}
  // PotentialityChooseWindow ("Select Potential" / Activate)
- function choosePotential(hero,stage){const opts=hero.potential_options?.[stage-1]||[];let sel=(hero.potentials||[])[stage-1]||0;const {body,close}=win({title:'Select Potential',cls:'lb-choose'});
-  const list=el('div','lb-choose-list');const paint=()=>{list.replaceChildren();opts.forEach((id,k)=>{const info=pots.skills[String(id)]||{};const b=el('button','lb-opt'+(sel===k+1?' on':''));b.type='button';
-   if(info.icon)b.append(img('/assets/skills/'+info.icon+'.png'));const t=el('div');t.append(el('b','',info.name||('Potencial '+id)),rich('p','',info.desc||''));b.append(t);if((hero.potentials||[])[stage-1]===k+1)b.append(el('span','lb-active','Activo'));b.onclick=()=>{sel=k+1;paint();};list.append(b);});};
+ function choosePotential(hero,stage){const opts=hero.potential_options?.[stage-1]||[];let sel=(hero.potentials||[])[stage-1]||0;const {body,close}=win({title:'Chọn Tiềm Năng',cls:'lb-choose'});
+  const list=el('div','lb-choose-list');const paint=()=>{list.replaceChildren();opts.forEach((id,k)=>{const info=potentialInfo(id);const b=el('button','lb-opt'+(sel===k+1?' on':''));b.type='button';
+   if(info.icon)b.append(img('/assets/skills/'+info.icon+'.png'));const t=el('div');t.append(el('b','',info.name||('Tiềm Năng '+id)),rich('p','',info.desc||''));b.append(t);if((hero.potentials||[])[stage-1]===k+1)b.append(el('span','lb-active','Đã Kích Hoạt'));b.onclick=()=>{sel=k+1;paint();};list.append(b);});};
   paint();body.append(list);const a=el('div','gs-btns');const ok=el('button','gs-btn','Kích Hoạt');ok.type='button';ok.onclick=async()=>{if(!sel)return;close();await action('CHOOSE_PARTNER_POTENTIAL',{partner_id:hero.partner_id,awake_index:stage,index:sel});};a.append(ok);body.append(a);}
  function awake(hero){const box=$('detail-awake-status');if(!box)return;box.replaceChildren();const tab=document.querySelector('[data-detail-tab=awake]');if(tab)tab.textContent='Thức Tỉnh';
   if(hero.local_promotion&&hero.stars>=10&&!hero.next_awake){box.className='lb-low';box.append(el('p','gu-awake-head',hero.stars+'★'),el('p','detail-note','Nữ Thần này đã đạt bậc cao nhất hiện có.'));return;}
@@ -329,7 +329,7 @@ const GirlUI=(()=>{
     b.onclick=()=>{if(i>done){toast('Mở ở bậc Đột Phá '+i);return;}close();switchPotentials(hero,[i,k+1]);};row.append(b);});grid.append(row);}
   body.append(grid);
   const det=el('div','sw-detail');if(sel){const id=hero.potential_options?.[sel[0]-1]?.[sel[1]-1],info=potentialInfo(id);if(info.icon)det.append(img('/assets/skills/'+info.icon+'.png'));const t=el('div');t.append(el('b','',info.name||''),rich('p','',info.desc||''));det.append(t);}else det.append(el('p','',"Chưa mở khóa bậc Đột Phá nào."));body.append(det);
-  const a=el('div','gs-btns');const ok=el('button','gs-btn','Activate');ok.type='button';const active=sel&&(hero.potentials||[])[sel[0]-1]===sel[1];ok.disabled=!sel||active;if(active)ok.textContent='Đã Kích Hoạt';
+  const a=el('div','gs-btns');const ok=el('button','gs-btn','Kích Hoạt');ok.type='button';const active=sel&&(hero.potentials||[])[sel[0]-1]===sel[1];ok.disabled=!sel||active;if(active)ok.textContent='Đã Kích Hoạt';
   ok.onclick=async()=>{close();await action('CHOOSE_PARTNER_POTENTIAL',{partner_id:hero.partner_id,awake_index:sel[0],index:sel[1]});const h=state.roster.find(x=>x.partner_id===hero.partner_id);if(h)switchPotentials(h,sel);};a.append(ok);body.append(a);}
 
  // ---- Astral Core (tab_5, StarOriginDetailWindow; capture fb/54): 15★ girls with partner.star_origin; 10 nodes placed with
