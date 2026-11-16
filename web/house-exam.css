@@ -86,3 +86,7 @@
 .he-side{z-index:2}
 .he-head{background:url('/assets/house-exam/academy_assessment_bg.png') center 18%/cover}
 .he-list{scrollbar-width:none}.he-list::-webkit-scrollbar{display:none}
+
+.he-logo-vi{position:relative;z-index:2;align-self:center;flex:1;margin:0;text-align:center;color:#fff5ce;font-size:calc(48 * var(--u));font-weight:900;line-height:1.15;white-space:nowrap;-webkit-text-stroke:calc(1 * var(--u)) #bd754b;text-shadow:0 calc(4 * var(--u)) calc(3 * var(--u)) #9e4e40}
+.he-ban-logo-vi{display:block;color:#fff5ce;text-shadow:0 1px 3px #71484a,0 0 4px #b65a65;font-size:calc(34 * var(--u));font-weight:900;text-align:center}
+.he-done-vi{position:absolute;right:calc(16 * var(--u));top:calc(9 * var(--u));padding:calc(4 * var(--u));background:#296947d9;color:#fff;border-radius:6px;font-size:calc(20 * var(--u));font-weight:800}
