@@ -14,7 +14,7 @@ const WishCapsule=(()=>{
  function picture(id,cls){const i=img('/assets/pictures/'+id+'.webp',cls);i.onerror=()=>{i.onerror=null;i.src='/assets/cards/partner_card_'+id+'.png';i.classList.add('card');};return i;}
  function icon(id){id=String(id);if(id==='1'||id==='2')return '/assets/currency/icon_'+id+'_small.png';const it=itemCatalog?.[id];if(it&&typeof itemPicture==='function'){const p=itemPicture(it);if(p)return p;}return it&&itemIcons.has(it.icon)?'/assets/item-icons/'+it.icon+'.png':'';}
  function chips(text){const w=el('span','wc-chips');for(const p of String(text||'').split('|')){if(!p.includes('#'))continue;const [k,v]=p.split('#');const c=el('span','wc-chip');const s=icon(k);if(s)c.append(img(s));c.append(el('b','',number(Number(v))));c.title=itemCatalog?.[k]?.name||k;w.append(c);}return w;}
- async function load(){if(!data)data=await api('/assets/wish.json');return data;}
+ async function load(){if(!data)data=await api('/assets/wish.json?v=20261116-diploma-sources-r1');return data;}
  async function act(req,msg){try{const r=await api('/api/wish/action',req);state=r.state;if(msg)GirlUI.toast(msg);return r;}catch(e){GirlUI.toast(e.message);return null;}finally{if(typeof render==='function')render();}}
  const hms=s=>{const h=Math.floor(s/3600),m=Math.floor(s%3600/60);return h+'h '+String(m).padStart(2,'0')+'m';};
  // --- Capsule page: Advanced ⇄ Wish share the middle slot (SummonWindow groupMiddle, btnLeft_ / btnRight_, dotGroup) ----

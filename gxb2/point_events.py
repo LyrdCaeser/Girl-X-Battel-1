@@ -75,5 +75,5 @@ def snapshot(state, now=None):
         done = ev['rounds'] >= cfg['round'][1]
         out[aid] = {'period': ev['period'], 'ends_at': clock.week_end(ev['period']), 'point': cfg['round'][0] if done else ev['point'], 'rounds': ev['rounds'], 'times': cfg['round'][1],
                     'done': done, 'tiers': [{'point': t['point'], 'awards': t['awards'], 'got': done or i in ev['got']}
-                                            for i, t in enumerate(cfg['table'])]}
+                                            for i, t in sorted(enumerate(cfg['table']), key=lambda pair: pair[1]['point'])]}
     return out
