@@ -3,7 +3,7 @@
 // rankings, scores, lineups and results come from authenticated online services.
 // Never call local arena simulators, seed fake rivals, or forge match outcomes.
 const NativeOnlineArenas=(()=>{
- let mode='arena',origin='home',data=null,panel='',note='',busy=false,draft=null,teamIndex=0,defenseDraft=null,defensePos=1;
+ let mode='arena',origin='home',data=null,panel='',note='',busy=false,draft=null,teamIndex=0,defenseDraft=null,defensePos=1,attackDraft=null,attackPos=1;
  let timer=null,sequence=0,lastMatchResult=null;
  const A=n=>'/assets/arena/'+n+'.png';
  const el=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=String(text);return n;};
@@ -27,7 +27,7 @@ const NativeOnlineArenas=(()=>{
  async function open(which='arena',from='home'){
   if(!state?.items){GirlUI.notice('Hồ sơ người chơi đang tải. Vui lòng thử lại.',{title:'Đấu Trường'});return;}
   mode=['arena','cross','arena3v3'].includes(which)?which:'arena';origin=from||view||'home';
-  data=null;panel='';note='';lastMatchResult=null;draft=null;teamIndex=0;defenseDraft=null;defensePos=1;stop();
+  data=null;panel='';note='';lastMatchResult=null;draft=null;teamIndex=0;defenseDraft=null;defensePos=1;attackDraft=null;attackPos=1;stop();
   root();showView(activeView());render();await refresh();beginPoll();
  }
  function back(){stop();data=null;panel='';showView(origin===activeView()?'home':origin);}
@@ -63,7 +63,7 @@ const NativeOnlineArenas=(()=>{
  async function challenge(player){
   if(mode==='arena3v3'&&!validTeams(data?.arena3v3?.teams)){panel='teams';render();return;}
   const r=await post('/api/pvp/challenge',{mode,target_uid:player.uid,target_server:player.server_id});
-  if(r?.match){data.pvp=r;panel='match';render();}
+  if(r?.match){data.pvp=r;attackDraft=null;attackPos=1;panel=mode==='arena3v3'?'match':'attack';render();}
  }
  function validTeams(teams){return Array.isArray(teams)&&teams.length===3
   &&teams.every(t=>Array.isArray(t)&&t.length>=1&&t.length<=6)
@@ -93,21 +93,68 @@ const NativeOnlineArenas=(()=>{
   const r=await post('/api/pvp/defense',{formation});
   if(r){data.defense=r.formation;defenseDraft=null;panel='';GirlUI.toast('Đã lưu đội hình phòng thủ riêng.');}
  }
+ function attackTeam(){
+  if(!attackDraft){
+   const roster=new Set((state?.roster||[]).map(h=>Number(h.partner_id)));
+   const seen=new Set(),used=new Set();
+   attackDraft=[];
+   for(const x of state?.formation||[]){
+    const id=Number(x.partner_id),pos=Number(x.pos);
+    if(!roster.has(id)||!Number.isInteger(pos)||pos<1||pos>6||seen.has(id)||used.has(pos))continue;
+    attackDraft.push({partner_id:id,pos});seen.add(id);used.add(pos);
+   }
+  }
+  return attackDraft;
+ }
+ function validAttack(team){
+  const owned=new Set((state?.roster||[]).map(h=>Number(h.partner_id)));
+  if(!Array.isArray(team)||team.length<1||team.length>6)return false;
+  const ids=new Set(),positions=new Set();
+  for(const entry of team){
+   const id=Number(entry.partner_id),pos=Number(entry.pos);
+   if(!owned.has(id)||!Number.isSafeInteger(id)||!Number.isInteger(pos)||pos<1||pos>6
+      ||ids.has(id)||positions.has(pos))return false;
+   ids.add(id);positions.add(pos);
+  }
+  return true;
+ }
  async function fightSingle(match){
   if(!match)return;
+  const formation=attackTeam().map(x=>({partner_id:Number(x.partner_id),pos:Number(x.pos)}));
+  if(!validAttack(formation)){
+   GirlUI.notice('Hãy chọn từ 1 đến 6 Nữ Thần của mình và sắp xếp đúng vị trí trước khi chiến đấu.',
+     {title:'Đội Hình Tấn Công'});panel='attack';render();return;
+  }
   const session=await post('/api/pvp/match/heartbeat',{match_id:match.id,ready:true});
   if(!session)return;
-  if((session.match?.status||match.status)!=='active'){note='Đang đợi đối thủ vào trận.';panel='match';render();return;}
-  const r=await post('/api/pvp/match/battle',{match_id:match.id});
-  if(r?.result){
-   lastMatchResult=r.result;panel='result';render();
-   // Only play the original, stored LuaJIT combat frames. The server orients
-   // all HP, targets, actors and FX for this authenticated viewer.
-   const playback=await post('/api/pvp/match/replay',{match_id:match.id});
-   if(playback?.report&&typeof watchEventBattle==='function'){
-    try{await watchEventBattle({report:playback.report},activeView(),title());}
-    catch(error){note=error.message||'Không thể phát lại báo cáo trận thật';showView(activeView());render();}
-   }
+  if((session.match?.status||match.status)!=='active'){
+   note='Đang đợi đối thủ vào trận.';panel='match';render();return;
+  }
+  panel='replay-loading';render();
+  const r=await post('/api/pvp/match/battle',{match_id:match.id,formation});
+  if(!r?.result){panel='attack';render();return;}
+  lastMatchResult=r.result;
+  // The server has finalized an authentic match. Do not display the winner
+  // until the saved, server-authenticated battle frames have been played.
+  const playback=await post('/api/pvp/match/replay',{match_id:match.id});
+  if(!playback?.report||!Array.isArray(playback.report.frames)||!playback.report.frames.length){
+   note='Máy chủ đã ghi nhận trận đấu nhưng không tải được hình chiến đấu. Có thể thử xem lại.';
+   panel='replay-error';render();return;
+  }
+  if(typeof watchEventBattle!=='function'){
+   note='Không tìm thấy trình phát trận chiến. Hãy tải lại giao diện để xem trận.';
+   panel='replay-error';render();return;
+  }
+  try{
+   stop();
+   await watchEventBattle({report:playback.report},activeView(),title());
+   panel='result';
+   // The original replay's "Tiếp tục" button returns to this Arena view.
+   // Result appears only on return, never in front of the battle animation.
+   if(selected())render();
+  }catch(error){
+   note=error.message||'Không thể phát báo cáo trận đấu thật';
+   showView(activeView());panel='replay-error';render();
   }
  }
  async function pay3v3(match){const r=await post('/api/pvp/arena3v3/pay',{match_id:match.id});if(r){panel='match';render();}}
@@ -196,7 +243,7 @@ const NativeOnlineArenas=(()=>{
   fight.style.backgroundImage="url('"+A('blue_btn_65_65')+"')";
   fight.textContent=status==='matched'?'Vào Trận':'Chiến đấu';
   fight.disabled=!data||busy;
-  fight.onclick=()=>{panel=status==='matched'?'match':
+  fight.onclick=()=>{panel=status==='matched'?(mode==='arena3v3'?'match':'attack'):
     mode==='arena3v3'&&!validTeams(data?.arena3v3?.teams)?'teams':'opponents';render();};
   stage.append(fight);
   const choices=[
@@ -222,7 +269,7 @@ const NativeOnlineArenas=(()=>{
  }
  function drawPanel(stage){
   const ov=el('div','ar-overlay');ov.onclick=e=>{if(e.target===ov){if(panel==='defense')defenseDraft=null;panel='';render();}};
-  const win=el('div','ar-win'+((panel==='teams'||panel==='defense')?' a3-win':''));ov.append(win);
+  const win=el('div','ar-win'+((panel==='teams'||panel==='defense'||panel==='attack')?' a3-win':''));ov.append(win);
   const x=el('button','ar-close','✕');x.type='button';x.onclick=()=>{if(panel==='defense')defenseDraft=null;panel='';render();};
   const heading=el('h2','',title());win.append(heading,x);
   const paragraph=text=>win.append(el('p','ar-empty',text));
@@ -263,10 +310,23 @@ const NativeOnlineArenas=(()=>{
      else if(!series?.all_paid)button('Tải lại trạng thái vé',()=>refresh());
      else if(series?.complete)button('Nhận Kết Quả Loạt Đấu',()=>round3v3(m,Number(series.next_round||0)));
      else button('Thi đấu lượt '+(Number(series.next_round||0)+1),()=>round3v3(m,Number(series.next_round||0)));
-    }else if(m.status==='active')button('Vào trận với đối thủ thật',()=>fightSingle(m));
+    }else if(m.status==='active')button('Chọn Đội Hình Tấn Công',()=>{panel='attack';render();});
     else{paragraph('Đang chờ đối thủ thật xác nhận sẵn sàng.');button('Sẵn Sàng Vào Trận',()=>refresh());}
     button('Tải lại',()=>refresh());
    }
+  }else if(panel==='attack'){
+   drawAttack(win,button);
+  }else if(panel==='replay-loading'){
+   paragraph('Đang tải khung hình chiến đấu từ máy chủ…');
+  }else if(panel==='replay-error'){
+   paragraph(note||'Không thể tải trận chiến.');
+   const m=p.match||lastMatchResult;
+   if(m?.id)button('▶ Phát Lại Trận Đấu',async()=>{
+     const replay=await post('/api/pvp/match/replay',{match_id:m.id});
+     if(!replay?.report)return;
+     try{stop();await watchEventBattle({report:replay.report},activeView(),title());panel='result';if(selected())render();}
+     catch(e){note=e.message||'Không phát được trận đấu';panel='replay-error';render();}
+   });
   }else if(panel==='rewards'){
    const r=data?.season_reward;
    if(!r)paragraph('Máy chủ chưa trả dữ liệu thưởng mùa.');
@@ -304,6 +364,63 @@ const NativeOnlineArenas=(()=>{
    button('Xem bảng xếp hạng',()=>{panel='';lastMatchResult=null;refresh();});
   }
   stage.append(ov);
+ }
+ function drawAttack(win,button){
+  const match=data?.pvp?.match;
+  if(!match){win.append(el('p','ar-empty','Chưa có trận được xác nhận.'));return;}
+  if(String(match.player_a)!==own()){
+    win.append(el('p','ar-empty','Đang chờ người thách đấu chọn đội hình và bắt đầu trận.'));
+    button('Làm mới trận đấu',()=>refresh());return;
+  }
+  const team=attackTeam(),roster=state?.roster||[],used=new Set(team.map(x=>Number(x.partner_id)));
+  win.append(el('h3','ar-defense-title','Đội Hình Tấn Công'));
+  win.append(el('p','ar-defense-help',
+    'Chọn Nữ Thần từ danh sách bên dưới. Hai vị trí hàng trước và bốn vị trí hàng sau; chạm Nữ Thần trên ô để tháo ra. Đội hình chỉ dùng cho trận này.'));
+  const board=el('div','ar-defense-board');
+  for(const [label,positions,kind] of [['Hàng Trước',[1,2],'front'],['Hàng Sau',[3,4,5,6],'back']]){
+   const row=el('section','ar-defense-row '+kind);
+   row.append(el('b','ar-defense-label',label));
+   const slots=el('div','ar-defense-slots');
+   for(const pos of positions){
+    const member=team.find(x=>Number(x.pos)===pos);
+    const hero=member&&roster.find(h=>Number(h.partner_id)===Number(member.partner_id));
+    const slot=el('button','ar-defense-slot'+(hero?' full':'')+(attackPos===pos?' active':''));
+    slot.type='button';
+    slot.title=hero?'Gỡ '+(hero.name||'Nữ Thần'):'Vị trí '+pos;
+    if(hero){
+     if(typeof portrait==='function')slot.append(portrait(hero.table_id,72,hero));
+     slot.append(el('span','ar-defense-slot-stars',String(hero.stars||0)+'★'));
+    }else slot.append(el('span','','+'),el('small','',String(pos)));
+    slot.onclick=()=>{
+     attackPos=pos;
+     if(member)attackDraft=team.filter(x=>Number(x.pos)!==pos);
+     render();
+    };
+    slots.append(slot);
+   }
+   row.append(slots);board.append(row);
+  }
+  win.append(board);
+  const pool=el('div','ar-defense-pool');
+  for(const hero of roster){
+   const id=Number(hero.partner_id),chosen=used.has(id);
+   const b=el('button','ar-defense-candidate'+(chosen?' used':''));b.type='button';
+   if(typeof portrait==='function')b.append(portrait(hero.table_id,90,hero));
+   const meta=el('span','ar-defense-meta');
+   meta.append(el('b','',hero.name||'Nữ Thần'),el('small','','Cấp '+(hero.lv||1)+' · '+(hero.stars||0)+'★'));
+   b.append(meta);
+   b.onclick=()=>{
+    if(chosen){attackDraft=team.filter(x=>Number(x.partner_id)!==id);render();return;}
+    attackDraft=team.filter(x=>Number(x.pos)!==attackPos);
+    attackDraft.push({partner_id:id,pos:attackPos});
+    const next=[1,2,3,4,5,6].find(pos=>!attackDraft.some(x=>Number(x.pos)===pos));
+    if(next)attackPos=next;
+    render();
+   };
+   pool.append(b);
+  }
+  win.append(pool);
+  button('Chiến Đấu',()=>fightSingle(match),!validAttack(team));
  }
  function drawDefense(win,button){
   const team=defenseTeam(),roster=state?.roster||[];

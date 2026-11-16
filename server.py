@@ -1553,7 +1553,15 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                     raise ValueError('Không thể tải hồ sơ một trong hai người chơi')
                 engine_a = self.server.player_engines.get(match['player_a'], server_a, pa['character_name'])
                 engine_b = self.server.player_engines.get(match['player_b'], server_b, pb['character_name'])
-                snap_a = engine_a.pvp_team_snapshot()
+                if str(account['uid']) != str(match['player_a']):
+                    return self.send(403,{'error':'Chỉ người thách đấu được bắt đầu trận chiến.'})
+                if not isinstance(data.get('formation'),list):
+                    return self.send(400,{'error':'Hãy chọn đội hình tấn công trước khi chiến đấu.'})
+                # Never select the attack party on behalf of the player.
+                # Formation is validated against the attacker's actual profile,
+                # used only for this match; the permanent formation is unchanged.
+                snap_a = engine_a.pvp_team_snapshot(
+                    formation_override=data.get('formation'))
                 snap_b = engine_b.pvp_team_snapshot(defense=True)
                 ready = live_service.heartbeat_pvp_match(match['id'], account['uid'], True)
                 if ready['match'].get('status') != 'active':

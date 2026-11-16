@@ -374,12 +374,29 @@ class Engine:
                 self.db.rollback()
                 raise
 
-    def pvp_team_snapshot(self, defense=False):
+    def pvp_team_snapshot(self, defense=False, formation_override=None):
         with self.lock:
             state = self._load()
             by_id = {int(p['partner_id']): p for p in state.get('partners', [])}
             team = []
             formation = (state.get('pvp_defense') or state.get('formation', [])) if defense else state.get('formation', [])
+            if formation_override is not None:
+                if defense:
+                    raise GameError('Không thể dùng đội hình tấn công để thay thế đội hình phòng thủ')
+                if not isinstance(formation_override, list) or not 1 <= len(formation_override) <= 6:
+                    raise GameError('Đội hình tấn công cần 1 đến 6 Nữ Thần')
+                normalized = []
+                used_ids, used_positions = set(), set()
+                for entry in formation_override:
+                    if not isinstance(entry, dict):
+                        raise GameError('Dữ liệu đội hình tấn công không hợp lệ')
+                    partner_id = integer(entry.get('partner_id'), 'Nữ Thần', 1)
+                    pos = integer(entry.get('pos'), 'Vị trí', 1, 6)
+                    if partner_id in used_ids or pos in used_positions or partner_id not in by_id:
+                        raise GameError('Đội hình trùng vị trí hoặc chứa Nữ Thần không sở hữu')
+                    used_ids.add(partner_id);used_positions.add(pos)
+                    normalized.append({'partner_id':partner_id,'pos':pos})
+                formation = normalized
             for slot in sorted(formation, key=lambda x: int(x.get('pos', 0))):
                 partner = by_id.get(int(slot.get('partner_id', 0)))
                 if not partner:
@@ -387,7 +404,7 @@ class Engine:
                 unit = copy.deepcopy(partner)
                 unit['pos'] = int(slot.get('pos', unit.get('pos', 0) or 0))
                 team.append(unit)
-            if not team:
+            if not team and formation_override is None:
                 team = [copy.deepcopy(p) for p in state.get('partners', [])[:6]]
                 for i, unit in enumerate(team, 1):
                     unit['pos'] = i
