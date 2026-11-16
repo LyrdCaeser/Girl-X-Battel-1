@@ -380,3 +380,18 @@ html.gxb-mobile #app-frame .gs-win.lb-win .gs-win-body{min-height:0;max-height:c
 #girl-detail-view .lb-inline-cost{position:relative;z-index:2;display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:calc(8 * var(--u));max-height:calc(50 * var(--u));overflow:auto}
 
 .gu-ex-skill{padding-bottom:28px!important;aspect-ratio:auto!important;min-height:116px}.gu-ex-skill img{height:78px!important}.gu-ex-up{position:absolute;left:4px;right:4px;bottom:4px;min-height:22px;display:grid;place-items:center;border-radius:7px;background:linear-gradient(#69baf2,#347ecb);color:#fff;font-size:11px;font-weight:800;text-shadow:0 1px #24568e}.gu-ex-skill:disabled .gu-ex-up{background:#8993a4}
+
+
+/* Native three-button Limit Break row: no duplicated or squeezed captions. */
+#girl-detail-view .lb-btns .lb-small{
+  white-space:nowrap;
+  font-size:calc(21 * var(--u))!important;
+  line-height:1.2!important;
+  padding-inline:calc(8 * var(--u));
+  text-align:center;
+}
+.gs-win.lb-switch .sw-detail{min-width:0}
+.gs-win.lb-switch .sw-detail>div{min-width:0}
+.gs-win.lb-switch .sw-detail b{line-height:1.2;overflow-wrap:anywhere}
+.gs-win.lb-switch .sw-detail p{line-height:1.45;overflow-wrap:anywhere}
+.gs-win.lb-switch .gs-btn{line-height:1.1!important}

@@ -4,6 +4,27 @@
 // grade hexagons + grade up (PARTNER_GRADEUP), Awake tab for 6–15★ (AWAKE_PARTNER) and unique skills (UPGRADE_PARTNER_EX_SKILL).
 const GirlUI=(()=>{
  let pictures=null,lihui=null,loading=null,pots={skills:{},lv_cap:[260,270,290,310,330],attr_up:[0.14,0.1]},mounted={key:'',view:null},awakeSel={};
+ const POTENTIAL_VI={
+ '100101':['Tiềm Năng: Sinh Lực','Tăng Sinh Lực thêm 12%.'],
+ '100102':['Tiềm Năng: Tấn Công','Tăng Tấn Công thêm 8%.'],
+ '100103':['Tiềm Năng: Tốc Độ','Tăng 20 Tốc Độ, 5% Sinh Lực và 3% Tấn Công.'],
+ '100201':['Tiềm Năng: Kháng Bạo Kích','Giảm 15% sát thương bạo kích phải chịu.'],
+ '100202':['Tiềm Năng: Phản Công','Gây thêm 12% sát thương khi tấn công mục tiêu có tỷ lệ Sinh Lực hiện tại cao hơn bản thân, không tính sát thương theo thời gian.'],
+ '100203':['Tiềm Năng: Hào Quang Trị Liệu','Khi được hồi máu, lượng hồi máu nhận tăng 15%.'],
+ '100301':['Tiềm Năng: Phúc Lành Thánh','Cuối mỗi hiệp, hồi phục 15% lượng Sinh Lực đã mất.'],
+ '100302':['Tiềm Năng: Đồng Tâm','Cuối hiệp, tăng Tấn Công bằng số Nữ Thần đồng minh còn sống nhân 1,2%, kéo dài 1 hiệp.'],
+ '100303':['Tiềm Năng: Thanh Tẩy','Cuối mỗi hiệp xóa 1 hiệu ứng bất lợi gồm sát thương theo thời gian, giảm thuộc tính, dấu ấn hoặc khống chế.'],
+ '100401':['Tiềm Năng: Sinh Lực','Tăng Sinh Lực thêm 12%.'],
+ '100402':['Tiềm Năng: Tấn Công','Tăng Tấn Công thêm 8%.'],
+ '100403':['Tiềm Năng: Tốc Độ','Tăng 20 Tốc Độ, 5% Sinh Lực và 3% Tấn Công.'],
+ '100501':['Tiềm Năng: Phối Hợp','Mỗi đòn đánh thường hoặc kỹ năng chủ động gây thêm sát thương bằng 100% Tấn Công lên mục tiêu, đồng thời gây ngẫu nhiên Chảy Máu, Trúng Độc hoặc Thiêu Đốt bằng 100% Tấn Công trong 2 hiệp.'],
+ '100502':['Tiềm Năng: Lá Chắn','Khi chịu sát thương chí mạng, nhận lá chắn chặn 3 lần sát thương trực tiếp hoặc sát thương theo thời gian.'],
+ '100503':['Tiềm Năng: Ý Chí','Mỗi khi chịu sát thương từ bất kỳ nguồn nào, hồi 4% Sinh Lực tối đa; kích hoạt nhiều nhất 3 lần mỗi hiệp.']
+ };
+ const potentialInfo=id=>{
+  const base=pots.skills[String(id)]||{},vi=POTENTIAL_VI[String(id)];
+  return vi?{...base,name:vi[0],desc:vi[1]}:base;
+ };
  const el=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=typeof GxbVi!=='undefined'?GxbVi.t(text):text;return e;};
  const img=(src,cls,alt='')=>{const i=el('img',cls);i.src=src;i.alt=alt;return i;};
  let pics=new Set();
@@ -124,14 +145,14 @@ const GirlUI=(()=>{
   for(let i=1;i<=5;i++){const pick=chosen[i-1]||0,skill=pick&&hero.potential_options?.[i-1]?.[pick-1],info=skill&&pots.skills[String(skill)];
    const n=el(live?'button':'span','lb-node n'+i+(i<=done?' open':i===done+1?' next':''));if(live)n.type='button';const [px,py]=LB_POS[i-1];n.style.left=`calc(${340+px} * var(--u))`;n.style.top=`calc(${150-py} * var(--u))`;
    if(info?.icon)n.append(img('/assets/skills/'+info.icon+'.png','lb-skill'));else if(i<=done)n.append(el('b','','?'));else n.append(img(S+'academy_assessment_lock.png','lb-lock'));
-   n.title=info?info.name:i<=done?"Choose a Potential":'Unlocks at Limit-Break Stage '+i;
-   if(live)n.onclick=()=>{if(i<=done)choosePotential(hero,i);else if(i===done+1)limitBreak(hero);else toast('Unlocks at Limit-Break Stage '+i);};box.append(n);}
+   n.title=info?info.name:i<=done?"Choose a Potential":'Mở ở bậc Đột Phá '+i;
+   if(live)n.onclick=()=>{if(i<=done)choosePotential(hero,i);else if(i===done+1)limitBreak(hero);else toast('Mở ở bậc Đột Phá '+i);};box.append(n);}
   return box;}
  // PotentialityChooseWindow ("Select Potential" / Activate)
  function choosePotential(hero,stage){const opts=hero.potential_options?.[stage-1]||[];let sel=(hero.potentials||[])[stage-1]||0;const {body,close}=win({title:'Select Potential',cls:'lb-choose'});
   const list=el('div','lb-choose-list');const paint=()=>{list.replaceChildren();opts.forEach((id,k)=>{const info=pots.skills[String(id)]||{};const b=el('button','lb-opt'+(sel===k+1?' on':''));b.type='button';
    if(info.icon)b.append(img('/assets/skills/'+info.icon+'.png'));const t=el('div');t.append(el('b','',info.name||('Potencial '+id)),rich('p','',info.desc||''));b.append(t);if((hero.potentials||[])[stage-1]===k+1)b.append(el('span','lb-active','Activo'));b.onclick=()=>{sel=k+1;paint();};list.append(b);});};
-  paint();body.append(list);const a=el('div','gs-btns');const ok=el('button','gs-btn','Activate');ok.type='button';ok.onclick=async()=>{if(!sel)return;close();await action('CHOOSE_PARTNER_POTENTIAL',{partner_id:hero.partner_id,awake_index:stage,index:sel});};a.append(ok);body.append(a);}
+  paint();body.append(list);const a=el('div','gs-btns');const ok=el('button','gs-btn','Kích Hoạt');ok.type='button';ok.onclick=async()=>{if(!sel)return;close();await action('CHOOSE_PARTNER_POTENTIAL',{partner_id:hero.partner_id,awake_index:stage,index:sel});};a.append(ok);body.append(a);}
  function awake(hero){const box=$('detail-awake-status');if(!box)return;box.replaceChildren();const tab=document.querySelector('[data-detail-tab=awake]');if(tab)tab.textContent='Thức Tỉnh';
   if(hero.local_promotion&&hero.stars>=10&&!hero.next_awake){box.className='lb-low';box.append(el('p','gu-awake-head',hero.stars+'★'),el('p','detail-note','Nữ Thần này đã đạt bậc cao nhất hiện có.'));return;}
   if(hero.stars<10&&!hero.next_awake){box.className='lb-low';box.append(el('p','gu-awake-head',hero.stars+'★'),el('p','detail-note','Nữ Thần này chưa thể nâng sao. Hãy vào Học Viện → Tiến Hóa để xem điều kiện tiếp theo.'));return;}
@@ -161,7 +182,7 @@ const GirlUI=(()=>{
   }
   const top=el('button','lb-banner');top.type='button';top.append(stars(hero.stars,'tag'));if(r&&requirementsAvailable(r,hero)&&cost(el('span'),r.cost||{}))top.append(img(S+'alert_icon.png','lb-red'));top.onclick=()=>limitBreak(hero);top.title='Mở Thức Tỉnh';top.setAttribute('aria-label','Mở Thức Tỉnh Nữ Thần');box.append(top);
   box.append(nodes(hero,'tab'));
-  const bar=el('div','lb-btns');for(const [label,fn]of [['Reverse',()=>reverse(hero)],['Replace',()=>exchange(hero)],['Switch',()=>switchPotentials(hero)]]){const b=el('button','gs-btn lb-small',label);b.type='button';b.onclick=fn;bar.append(b);}box.append(bar);}
+  const bar=el('div','lb-btns');for(const [label,fn]of [['Hoàn Nguyên',()=>reverse(hero)],['Hoán Đổi',()=>exchange(hero)],['Tiềm Năng',()=>switchPotentials(hero)]]){const b=el('button','gs-btn lb-small',label);b.type='button';b.onclick=fn;bar.append(b);}box.append(bar);}
  function limitBreak(hero){
    const r=hero.next_awake,{body,close}=win({title:'Thức Tỉnh',cls:'lb-win'});
    const picked=r?pick(r,hero):null,chosen=r?selectedMaterials(r,picked):[];
@@ -301,14 +322,14 @@ const GirlUI=(()=>{
   paint();}
  // PotentialitySwitchWindow (capture fb/119): one row per Limit-Break stage (star badge + its 3 skills, the active one lit),
  // the tapped skill's detail at the bottom and Activate
- function switchPotentials(hero,sel){const done=Math.max(0,hero.stars-10);const {body,close}=win({title:'Switch',cls:'lb-switch',help:"1. After each Limit Break, activate one of three Potentials.\n2. Tap a Potential to see its details and press Activate; only one is active per stage."});
+ function switchPotentials(hero,sel){const done=Math.max(0,hero.stars-10);const {body,close}=win({title:'Chuyển Đổi Tiềm Năng',cls:'lb-switch',help:'Sau mỗi lần Đột Phá, hãy chọn một trong ba Tiềm Năng. Chạm vào biểu tượng để xem mô tả và nhấn Kích Hoạt. Mỗi bậc chỉ có một Tiềm Năng được kích hoạt.'});
   sel=sel||(()=>{for(let i=1;i<=done;i++){const p=(hero.potentials||[])[i-1];if(p)return [i,p];}return done?[1,1]:null;})();
   const grid=el('div','sw-grid');for(let i=1;i<=5;i++){const row=el('div','sw-row'+(i<=done?'':' locked'));row.append(el('b','sw-star',String(i)));
-   (hero.potential_options?.[i-1]||[]).forEach((id,k)=>{const info=pots.skills[String(id)]||{};const b=el('button','sw-skill'+((hero.potentials||[])[i-1]===k+1?' on':'')+(sel&&sel[0]===i&&sel[1]===k+1?' sel':''));b.type='button';if(info.icon)b.append(img('/assets/skills/'+info.icon+'.png'));b.title=info.name||'';
-    b.onclick=()=>{if(i>done){toast('Unlocks at Limit-Break Stage '+i);return;}close();switchPotentials(hero,[i,k+1]);};row.append(b);});grid.append(row);}
+   (hero.potential_options?.[i-1]||[]).forEach((id,k)=>{const info=potentialInfo(id);const b=el('button','sw-skill'+((hero.potentials||[])[i-1]===k+1?' on':'')+(sel&&sel[0]===i&&sel[1]===k+1?' sel':''));b.type='button';if(info.icon)b.append(img('/assets/skills/'+info.icon+'.png'));b.title=info.name||'';
+    b.onclick=()=>{if(i>done){toast('Mở ở bậc Đột Phá '+i);return;}close();switchPotentials(hero,[i,k+1]);};row.append(b);});grid.append(row);}
   body.append(grid);
-  const det=el('div','sw-detail');if(sel){const id=hero.potential_options?.[sel[0]-1]?.[sel[1]-1],info=pots.skills[String(id)]||{};if(info.icon)det.append(img('/assets/skills/'+info.icon+'.png'));const t=el('div');t.append(el('b','',info.name||''),rich('p','',info.desc||''));det.append(t);}else det.append(el('p','',"No Limit Break stages unlocked yet."));body.append(det);
-  const a=el('div','gs-btns');const ok=el('button','gs-btn','Activate');ok.type='button';const active=sel&&(hero.potentials||[])[sel[0]-1]===sel[1];ok.disabled=!sel||active;if(active)ok.textContent='Activo';
+  const det=el('div','sw-detail');if(sel){const id=hero.potential_options?.[sel[0]-1]?.[sel[1]-1],info=potentialInfo(id);if(info.icon)det.append(img('/assets/skills/'+info.icon+'.png'));const t=el('div');t.append(el('b','',info.name||''),rich('p','',info.desc||''));det.append(t);}else det.append(el('p','',"Chưa mở khóa bậc Đột Phá nào."));body.append(det);
+  const a=el('div','gs-btns');const ok=el('button','gs-btn','Activate');ok.type='button';const active=sel&&(hero.potentials||[])[sel[0]-1]===sel[1];ok.disabled=!sel||active;if(active)ok.textContent='Đã Kích Hoạt';
   ok.onclick=async()=>{close();await action('CHOOSE_PARTNER_POTENTIAL',{partner_id:hero.partner_id,awake_index:sel[0],index:sel[1]});const h=state.roster.find(x=>x.partner_id===hero.partner_id);if(h)switchPotentials(h,sel);};a.append(ok);body.append(a);}
 
  // ---- Astral Core (tab_5, StarOriginDetailWindow; capture fb/54): 15★ girls with partner.star_origin; 10 nodes placed with
