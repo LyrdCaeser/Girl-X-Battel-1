@@ -172,3 +172,25 @@
    top:auto!important;bottom:calc(335 * var(--u))!important;
  }
 }
+
+
+/* MOBILE ONLY: the leaderboard keeps its original top/header and extends
+   DOWN to the owner card instead of stopping at the 1280px prefab boundary.
+   Gap: ranking bottom 334u / card top (132u+190u)=322u => 12u. */
+@media(max-width:720px){
+ html.gxb-mobile #app-frame .arena-view .ar-stage>.ar-rank{
+   top:calc(228.5 * var(--u))!important;
+   bottom:calc(334 * var(--u))!important;
+   height:auto!important;
+   min-height:0!important;
+   max-height:none!important;
+   overflow:hidden;
+ }
+ html.gxb-mobile #app-frame .arena-view .ar-stage>.ar-rank .ar-rank-list{
+   box-sizing:border-box;
+   height:100%;
+   min-height:0;
+   overflow-y:auto;
+   overflow-x:hidden;
+ }
+}
