@@ -26,6 +26,7 @@ const ctx=vm.createContext({
  document:{createElement:tag=>new Element(tag)},
  api:async(url,body)=>{
   if(url==='/api/souls/catalog')return catalog;
+  if(url==='/api/state')return {uid:state.uid,server_id:state.server_id,roster:state.roster,souls_info:state.souls_info};
   assert.equal(url,'/api/souls/action');
   req.push(body);
   const bucket=state.souls_info.plans['7']||{};
@@ -68,7 +69,7 @@ function match(text){return latest().descendants.find(x=>x.textContent===text)}
  assert(match('Bộ 1 · Chưa lưu'),'Deleted plan must disappear');
  assert.match(css,/\.ag-plan-pieces/);
  assert.match(css,/\.gs-win\.ag-win/,'Anima header clipping must be fixed on Mobile');
- assert.match(html,/\/souls\.js\?v=20261116-anima-vi-r2/);
- assert.match(html,/\/souls\.css\?v=20261116-anima-vi-r2/);
+ assert.match(html,/\/souls\.js\?v=20261116-anima-refresh-r3/);
+ assert.match(html,/\/souls\.css\?v=20261116-anima-refresh-r3/);
  console.log('PASS | Anima: Vietnamese titles and 3 server-backed saved sets (save/apply/delete)');
 })().catch(err=>{console.error(err);process.exitCode=1});

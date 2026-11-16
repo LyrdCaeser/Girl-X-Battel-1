@@ -153,3 +153,12 @@ html.gxb-mobile #app-frame #bag-view .ag-ritual{
   padding:5px 12px;
   white-space:nowrap;
 }
+
+
+/* Real inventory diagnostic and explicit server refresh in the Anima picker. */
+.ag-inventory-warning{padding:calc(8 * var(--u));margin:calc(6 * var(--u)) 0;
+ border:calc(2 * var(--u)) solid #d5c59f;border-radius:calc(7 * var(--u));
+ background:#fffbf0;color:#6a5a41;line-height:1.4;font-size:calc(18 * var(--u))}
+.ag-sync{display:flex;justify-content:flex-end;margin:calc(4 * var(--u)) 0}
+.ag-sync .gs-btn{font-size:calc(18 * var(--u));line-height:1.2!important;
+ min-width:calc(175 * var(--u));height:calc(47 * var(--u))}

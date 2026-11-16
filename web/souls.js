@@ -92,7 +92,29 @@ const Souls=(()=>{
   else if(hero.stars!==6&&hero.group!==7)add('ex','/assets/detail/sheet/partner_detail_btn_zjht.png','Reverse',()=>GirlUI.reverse(hero));}
 
  // ---- SoulEquipInfoWindow ----
- async function open(pid,slot){await load();sel=slot||sel;filter=0;tab='overview';paint(pid);}
+ async function refreshInventory(pid){
+  // Only use the authenticated player's own fresh server state. Do not
+  // manufacture soul serials or silently replace unrelated client state.
+  const fresh=await api('/api/state');
+  if(!fresh?.souls_info?.items||!Array.isArray(fresh.roster))
+   throw Error('Chưa nhận được dữ liệu Trang Bị Linh Hồn từ máy chủ.');
+  if(state.uid&&fresh.uid&&String(fresh.uid)!==String(state.uid))
+   throw Error('Hồ sơ trả về không khớp tài khoản đang sử dụng.');
+  if(state.server_id&&fresh.server_id&&String(fresh.server_id)!==String(state.server_id))
+   throw Error('Máy chủ trả về không đúng khu vực tài khoản.');
+  const current=state.roster.find(h=>String(h.partner_id)===String(pid));
+  const updated=fresh.roster.find(h=>String(h.partner_id)===String(pid));
+  if(!updated||!current)throw Error('Không tìm thấy Nữ Thần trong hồ sơ hiện tại.');
+  state.souls_info=fresh.souls_info;
+  current.souls=Array.isArray(updated.souls)?updated.souls.slice():[0,0,0,0,0];
+  current.soul_infos=Array.isArray(updated.soul_infos)?updated.soul_infos.slice():[];
+  return Object.keys(fresh.souls_info.items).length;
+ }
+ async function open(pid,slot){
+  await load();
+  try{await refreshInventory(pid);}catch(e){GirlUI.toast('Chưa đồng bộ được Trang Bị Linh Hồn: '+e.message);}
+  sel=slot||sel;filter=0;tab='overview';paint(pid);
+ }
  function paint(pid){const hero=state.roster.find(h=>h.partner_id===pid);if(!hero)return;const {body,win}=GirlUI.win({title:'Trang Bị Linh Hồn',cls:'ag-win',help:'Nữ Thần từ cấp 200 có thể sử dụng Trang Bị Linh Hồn. Ô vuông giữa là Bảo Vật Linh Hồn, bốn ô tròn là Đá Linh Hồn. Trang bị đủ bốn viên cùng bộ sẽ kích hoạt kỹ năng bộ.'});
   const souls=(hero.souls||[]).concat([0,0,0,0,0]).slice(0,5);
   const top=el('div','ag-top');top.append(img(A('soul_equip_bg_lx'),'ag-bg'));
@@ -141,6 +163,19 @@ const Souls=(()=>{
   else box.append(el('p','ag-set dim',"Trang bị 4 Đá Linh Hồn cùng bộ để kích hoạt kỹ năng bộ."));}
  function replace(box,hero,souls){const all=Object.entries(items()).map(([id,r])=>({id:Number(id),r})).filter(({r})=>posOf(r)===sel&&(!filter||qltOf(r)===filter)).sort((a,b)=>(a.r.owner===hero.partner_id)-(b.r.owner===hero.partner_id)||starOf(b.r)-starOf(a.r)||qltOf(b.r)-qltOf(a.r)||b.r.lv-a.r.lv);
   const grid=el('div','ag-grid');for(const {id,r}of all){const b=btn('ag-cell'+(souls[sel-1]===id?' on':''),'',()=>detail(id,hero.partner_id));b.append(icon(r));grid.append(b);}
+  if(!Object.keys(items()).length){
+   box.append(el('p','ag-inventory-warning',
+    'Hồ sơ trên máy chủ hiện chưa có Trang Bị Linh Hồn. Đây là số vật phẩm thật đã lưu, không phải số đồ trong ảnh cũ.'));
+  }
+  const syncBar=el('div','ag-sync');
+  syncBar.append(btn('gs-btn white','Làm Mới Túi Linh Hồn',async()=>{
+   try{
+    const count=await refreshInventory(hero.partner_id);
+    GirlUI.toast('Đã đồng bộ: '+count+' món Trang Bị Linh Hồn.');
+    paint(hero.partner_id);
+   }catch(e){GirlUI.toast('Không thể đồng bộ: '+e.message);}
+  }));
+  box.append(syncBar);
   const totalForSlot=Object.values(items()).filter(r=>posOf(r)===sel).length;
   const totalInBag=Object.keys(items()).length;
   box.append(el('p','ag-slot-count','Ô '+sel+': '+all.length+' món phù hợp · '+totalForSlot+' món tại vị trí này · Tổng '+totalInBag+' món'));
