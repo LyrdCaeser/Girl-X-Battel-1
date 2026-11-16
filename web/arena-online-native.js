@@ -321,7 +321,7 @@ const NativeOnlineArenas=(()=>{
     slot.type='button';slot.title=hero?'Chạm để bỏ '+(hero.name||'Nữ Thần'):'Chọn vị trí '+pos;
     if(hero){
      if(typeof portrait==='function')slot.append(portrait(hero.table_id,72,hero));
-     slot.append(el('small','',String(pos)));
+     slot.append(el('span','ar-defense-slot-stars',(hero.stars||0)+'★'),el('small','',String(pos)));
     }else slot.append(el('span','','+'),el('small','',String(pos)));
     slot.onclick=()=>{
      defensePos=pos;
@@ -341,8 +341,10 @@ const NativeOnlineArenas=(()=>{
   for(const hero of roster){
    const b=el('button','ar-defense-candidate'+(used.has(Number(hero.partner_id))?' used':''));
    b.type='button';b.disabled=used.has(Number(hero.partner_id));
-   if(typeof portrait==='function')b.append(portrait(hero.table_id,64,hero));
-   b.append(el('small','',hero.name||'Nữ Thần'));
+   if(typeof portrait==='function')b.append(portrait(hero.table_id,96,hero));
+   const meta=el('span','ar-defense-meta');
+   meta.append(el('b','',hero.name||'Nữ Thần'),el('small','',('Lv.'+(hero.lv||1))+' · '+(hero.stars||0)+'★'));
+   b.append(meta);
    b.title=(hero.name||'Nữ Thần')+' · '+(hero.stars||0)+'★ · Lv.'+(hero.lv||1);
    b.onclick=()=>{
     const pid=Number(hero.partner_id);
