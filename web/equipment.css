@@ -113,3 +113,25 @@
  #smithy-view .sm-info .eq-cost{display:flex;flex-wrap:wrap;gap:7px}
  #smithy-view .sm-grid .eq-icon{max-width:66px;max-height:66px;aspect-ratio:1}
 }
+
+
+/* Item list in the Cổ Vật smithy shares sm-item with Settings. Higher-specificity
+   rules prevent Settings' broad .sm-item img {width:90%;height:90%} from
+   enlarging tiny publisher star sprites over the item artwork. */
+#smithy-view .sm-grid .sm-item{display:flex;flex-direction:column;align-items:center;aspect-ratio:auto}
+#smithy-view .sm-grid .sm-item .eq-icon{display:block;position:relative}
+#smithy-view .sm-grid .sm-item .eq-icon>img{inset:8%;width:84%;height:84%;object-fit:contain}
+#smithy-view .sm-grid .sm-item .eq-stars{
+  position:absolute;left:0;right:0;bottom:1px;display:flex;
+  justify-content:center;align-items:center;overflow:visible;
+}
+#smithy-view .sm-grid .sm-item .eq-stars img{
+  position:static!important;width:11px!important;height:11px!important;
+  max-width:11px!important;max-height:11px!important;
+  object-fit:contain!important;flex:0 0 11px!important;
+}
+/* Same immutable star sprite scale for preview's 1★ -> 2★ comparison. */
+#smithy-view .sm-top.art .eq-stars img{
+  position:static!important;width:11px!important;height:11px!important;
+  max-width:11px!important;max-height:11px!important;object-fit:contain!important;
+}

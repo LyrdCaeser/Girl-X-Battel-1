@@ -2,6 +2,84 @@
 // Equipment UI: Gear tab of the girl sheet, real attributes (HeroAttr), Smithy forge and antique upgrade.
 // Sources: PartnerDetailWindow.lua, SmithyWindow.lua (+ smithy_window.prefab), ArtifactUpWindow.lua.
 const Equipment=(()=>{
+ const ARTVI={
+  'AI Teddy Staff':'Trượng Gấu Bông AI','Advance Magic Guide':'Sách Ma Thuật Cao Cấp',
+  'Afterglow':'Dư Quang','Alarm Lamp':'Đèn Báo Động','Angel Twig':'Cành Thiên Sứ',
+  'Axe of Snow':'Rìu Tuyết','Balance':'Cân Bằng','Baseball Bat':'Gậy Bóng Chày',
+  'Beach Volleyball':'Bóng Chuyền Bãi Biển','Black Belt':'Đai Đen',
+  'Black Magic Hat':'Mũ Hắc Thuật','Bow of Snow':'Cung Tuyết',
+  'Brave Heart':'Trái Tim Dũng Cảm','Burning Blades':'Song Đao Rực Lửa',
+  'Carnival Staff':'Trượng Lễ Hội','Cat Hood':'Mũ Trùm Mèo',
+  'Chainblade Axe':'Rìu Xích Đao','Chalk':'Phấn Trắng',
+  'Cherry Blossoms':'Hoa Anh Đào','Christmas Tree':'Cây Giáng Sinh',
+  'Clover':'Cỏ Bốn Lá','Crossbow':'Nỏ','Cunning Lizard':'Thằn Lằn Tinh Ranh',
+  'Dancing Mask':'Mặt Nạ Vũ Hội','Deception':'Lừa Dối',
+  'Demonic Blade':'Ma Đao','Demonic Book':'Ma Thư','Demonic Wings':'Cánh Quỷ',
+  'Dice of Destiny':'Xúc Xắc Định Mệnh','Dragon Teeth':'Nanh Rồng',
+  'Echoes':'Dư Âm','Eternal Dawn':'Bình Minh Vĩnh Cửu','Evil Machete':'Ma Đao Cắt',
+  'Fairy Crown':'Vương Miện Tinh Linh','Fate Cross':'Thánh Giá Định Mệnh',
+  'Fate Crystal':'Pha Lê Định Mệnh','Fate Guide':'Sách Dẫn Lối Định Mệnh',
+  'Fate Mirror':'Gương Định Mệnh','Fiery Qilin':'Kỳ Lân Lửa',
+  'Flame Feather':'Lông Vũ Rực Lửa','Floating Jellyfish':'Sứa Trôi Nổi',
+  'Fruit Cake':'Bánh Trái Cây','Fusion Umbrella':'Ô Dung Hợp',
+  "Gabriel's Song":'Khúc Ca Gabriel','Galaxy Paintbrush':'Cọ Ngân Hà',
+  "Geisha's Blessing":'Phúc Lành Geisha','Gentle Knight':'Kỵ Sĩ Dịu Dàng',
+  'Ghostly Goat':'Dê Ma','Golden Cube':'Khối Lập Phương Vàng',
+  'Guardian Gauntlet':'Găng Hộ Vệ','Heart Earring':'Hoa Tai Trái Tim',
+  'Holy Grail':'Chén Thánh','Hosiery':'Vớ Dài','Invisible Cloak':'Áo Choàng Tàng Hình',
+  'Judgment Sword':'Kiếm Phán Xét','Judo Headband':'Băng Đô Nhu Đạo',
+  'Kagura Bell':'Chuông Kagura','Katana':'Kiếm Katana',
+  'Key of Mind':'Chìa Khóa Tâm Trí','Key to Heaven':'Chìa Khóa Thiên Đường',
+  'Kiss of Snow':'Nụ Hôn Tuyết','Lace Stockings':'Vớ Ren',
+  'Leather Shoes':'Giày Da','Lighting Rune':'Phù Văn Ánh Sáng',
+  'Lucky Goldfish':'Cá Vàng May Mắn','Magic Brick':'Gạch Phép Thuật',
+  'Magic Guide Book':'Sách Chỉ Dẫn Ma Thuật','Magic Hat':'Mũ Phép Thuật',
+  'Majestic Phoenix':'Phượng Hoàng Uy Nghi','Midnight Star':'Sao Nửa Đêm',
+  'Muramasa':'Muramasa','Nebula Slasher':'Đao Tinh Vân',
+  'Necronomicon':'Cấm Thư Necronomicon','Neutron Blades':'Lưỡi Đao Neutron',
+  'Nightshade':'Bóng Đêm Độc','Nine-Tailed Fox':'Cáo Chín Đuôi',
+  'Oil Tank':'Thùng Dầu','Opposite':'Đối Cực',
+  'Peacock Tambourine':'Trống Lắc Khổng Tước',
+  'Perception Watch':'Đồng Hồ Tri Giác','Poker Queen':'Nữ Hoàng Bài',
+  'Power of Wind':'Sức Mạnh Gió','Punishment Sword':'Kiếm Trừng Phạt',
+  "Queen's Crown":'Vương Miện Nữ Hoàng','Rage of Flame':'Cơn Thịnh Nộ Lửa',
+  'Raven Scepter':'Quyền Trượng Quạ',"Reaper's Voice":'Tiếng Gọi Tử Thần',
+  'Recovery All':'Hồi Phục Toàn Bộ','Rock Crab':'Cua Đá',
+  'Sacred Handbell':'Chuông Tay Thần Thánh','Sacred Vial':'Lọ Thánh',
+  'Samurai Helmet':'Mũ Samurai','Sand of Time':'Cát Thời Gian',
+  'Seals Book':'Sách Phong Ấn','Secret Keys':'Chìa Khóa Bí Mật',
+  'Silver Crown':'Vương Miện Bạc','Silver Mirage':'Ảo Ảnh Bạc',
+  'Slingshot':'Ná','Snow Chime':'Chuông Tuyết','Snowball':'Quả Cầu Tuyết',
+  'Soul Censer':'Lư Hương Linh Hồn','Soul Destruction':'Hủy Diệt Linh Hồn',
+  'Soul Pendant':'Mặt Dây Chuyền Linh Hồn','Stinger':'Ngòi Độc',
+  'Stool':'Ghế Đẩu','Super Potion':'Siêu Dược','Swiss Army Knife':'Dao Đa Năng',
+  'The Wings of Icarus':'Đôi Cánh Icarus',"Thorn's Heart":'Trái Tim Gai',
+  'Thunder Heart':'Trái Tim Sấm Sét','Tool of Trade':'Dụng Cụ Nghề Nghiệp',
+  'Torch of Despair':'Đuốc Tuyệt Vọng','Universal Bag':'Túi Vạn Năng',
+  "Warg's Bite":'Vết Cắn Sói Ma','Weaver Kitty':'Mèo Dệt Vải',
+  'Windbringer':'Sứ Giả Gió','Witch Curse':'Lời Nguyền Phù Thủy',
+  'Yume Lantern':'Đèn Lồng Yume'
+ };
+ const FCTVI={'Angel':'Ánh Sáng','Demon':'Bóng Tối','Fairy':'Tinh Linh','Ghost':'U Linh Ma','Human':'Nhân Tộc','Monster':'Ma Thú'};
+ const ARTGROUPVI={'Demon Blood':'Máu Quỷ','Seal Sword':'Kiếm Phong Ấn','Sealed Heart':'Trái Tim Phong Ấn','Shackle of Pain':'Xiềng Xích Đau Đớn','Spike Shield':'Khiên Gai'};
+ function antiqueName(raw){
+  const name=String(raw||'');
+  const stripped=name.replace(/ \(Test\)$/,'');
+  if(ARTVI[stripped])return ARTVI[stripped]+(stripped!==name?' (Thử Nghiệm)':'');
+  const [group,fac]=stripped.split('·');
+  if(fac&&ARTGROUPVI[group]&&FCTVI[fac])return ARTGROUPVI[group]+' · '+FCTVI[fac];
+  return name;
+ }
+ const ATTRVI={
+  'DMG Dep.':'Giảm Sát Thương','Attack':'Tấn Công','Armor Brk':'Xuyên Giáp',
+  'DMG vs Assassin':'Sát Thương lên Sát Thủ','Crit':'Bạo Kích','Crit DMG':'Sát Thương Bạo Kích',
+  'DMG Red.':'Giảm Sát Thương','CC Immune':'Miễn Khống Chế',
+  'DMG vs Mage':'Sát Thương lên Pháp Sư','Precision':'Chính Xác','HP':'Sinh Lực',
+  'Block':'Chặn Đòn','DMG vs Priest':'Sát Thương lên Hỗ Trợ',
+  'Skill DMG':'Sát Thương Kỹ Năng','Speed':'Tốc Độ','Holy Dmg':'Sát Thương Thánh',
+  'Crit Resist':'Kháng Bạo Kích','Control Rate':'Tỷ Lệ Khống Chế',
+  'DMG vs Ranger':'Sát Thương lên Xạ Thủ','DMG vs Warrior':'Sát Thương lên Chiến Binh'
+ };
  const SLOTS=[[1,'Vũ khí','partner_weapon'],[2,'Áo','partner_cloth'],[3,'Phụ kiện','partner_pants'],[4,'Giày','partner_shoes'],[5,'Bảo vật','partner_treasure'],[6,'Cổ vật','partner_artifact']];
  const SMITHY_TABS=[[1,'Vũ khí'],[2,'Áo'],[3,'Phụ kiện'],[4,'Giày']];
  const STAT_KEYS=[['hp','HP','attr_hp_icon'],['atk','ATK','attr_atk_icon'],['arm','DEF','attr_def_icon'],['spd','SPD','attr_spd_icon']];
@@ -14,9 +92,9 @@ const Equipment=(()=>{
  const row=id=>data.items[String(id)];
  const have=id=>Number(state.items[String(id)]||0);
  function pairs(text){return String(text||'').split('|').filter(s=>s.includes('#')).map(s=>s.split('#'));}
- function attrText(key,value){const name=data.attr_names[key]||key;const v=Number(value);return name+' +'+(v<1&&v>0||key.endsWith('P')||['zs','fs','yx','ck','ms'].includes(key)?(v*100).toFixed(v*100%1?1:0)+'%':fmt(v));}
+ function attrText(key,value,localize=false){const original=data.attr_names[key]||key;const name=localize?(ATTRVI[original]||original):original;const v=Number(value);return name+' +'+(v<1&&v>0||key.endsWith('P')||['zs','fs','yx','ck','ms'].includes(key)?(v*100).toFixed(v*100%1?1:0)+'%':fmt(v));}
  function icon(id,extra=''){const r=row(id),w=el('span','eq-icon '+extra);w.style.backgroundImage=`url('/assets/ui/quality_${Math.min(r?.qlt||0,7)}.png')`;if(r)w.append(img(data.icons[String(id)]||'/assets/ui/item_bg.png','',r.name));if(r&&r.pos!==5&&r.star){const st=el('span','eq-stars');for(let i=0;i<Math.min(r.star,6);i++)st.append(img('/assets/equipment/equip_star.png'));w.append(st);}return w;}
- function lines(parent,id,partner){const r=row(id);if(!r)return;const list=el('ul','eq-lines');for(const k of ['base1','base2','base3','base4'])for(const [a,v]of pairs(r[k]))list.append(el('li','',attrText(a,v)));
+ function lines(parent,id,partner,localize=false){const r=row(id);if(!r)return;const list=el('ul','eq-lines');for(const k of ['base1','base2','base3','base4'])for(const [a,v]of pairs(r[k]))list.append(el('li','',attrText(a,v,localize)));
   if(r.act){const ok=partner&&((r.job&&r.job===jobOf(partner))||(r.group&&r.group===groupOf(partner)));const li=el('li','eq-act'+(ok?' on':''),(r.job?'Clase '+data.jobs[r.job]:"Faction "+r.group)+': '+pairs(r.act).map(([a,v])=>attrText(a,v)).join(', '));list.append(li);}
   if(r.form){const pieces=String(r.form).split('|').map(Number),worn=partner?pieces.filter(p=>partner.equips?.includes(p)).length:0;for(const [n,k]of [[2,'suit1'],[3,'suit2'],[4,'suit3']])if(r[k])list.append(el('li','eq-suit'+(worn>=n?' on':''),'Conjunto '+n+'/4: '+pairs(r[k]).map(([a,v])=>attrText(a,v)).join(', ')));}
   if(r.suit_skill_names)list.append(el('li','eq-suit',"Set Skill: "+r.suit_skill_names.join(' / ')));
@@ -121,11 +199,11 @@ const Equipment=(()=>{
  function openArtifact(id,partnerId){artifactTarget={id,partnerId};feed={};message='';smithyBack=view;load().then(()=>{showView('smithy');renderSmithy();});}
  function artifactView(root){const {id,partnerId}=artifactTarget,r=row(id);const top=el('header','eq-top');const back=el('button','eq-back');back.type='button';back.append(img('/assets/ui/win_back_btn.png'));back.onclick=()=>{artifactTarget=null;showView(smithyBack);};top.append(back,el('h1','','Nâng cấp Cổ vật'),money());root.append(top);
   const head=el('div','sm-top art');head.append(icon(id),img('/assets/equipment/mergeArrow.png','sm-arrow'),icon(r.artifact_next,'sm-result'));root.append(head);
-  const info=el('div','sm-info');info.append(el('strong','',r.name+' → '+row(r.artifact_next).name));lines(info,r.artifact_next);root.append(info);
+  const info=el('div','sm-info');info.append(el('strong','',antiqueName(r.name)+' → '+antiqueName(row(r.artifact_next).name)));lines(info,r.artifact_next,null,true);root.append(info);
   const exp=Object.entries(feed).reduce((s,[k,n])=>s+Number(row(k).artifact_exp)*n,0),need=Number(r.artifact_upg);const pr=el('div','sm-bar wide');pr.style.backgroundImage="url('/assets/equipment/bp_bar_bg.png')";const fill=el('i');fill.style.width=Math.min(100,exp/need*100)+'%';fill.style.backgroundImage=`url('/assets/equipment/${exp>=need?'bp_bar_green':'bp_bar_blue'}.png')`;pr.append(fill,el('span','',fmt(exp)+'/'+fmt(need)));root.append(pr);
-  const acts=el('div','sm-actions');btn(acts,'Auto',()=>{feed={};let left=need;for(const m of mats(id,partnerId).sort((a,b)=>a.r.item_lv-b.r.item_lv||a.r.artifact_exp-b.r.artifact_exp)){while(left>0&&(feed[m.id]||0)<m.n){feed[m.id]=(feed[m.id]||0)+1;left-=Number(m.r.artifact_exp);}if(left<=0)break;}renderSmithy();},false,'sm-btn white');
-  btn(acts,"Upgrade",()=>send({action:'artifact_upgrade',item_id:id,materials:feed,...(partnerId?{partner_id:partnerId}:{})},x=>{artifactTarget=row(x.upgraded)?.artifact_next?{id:x.upgraded,partnerId}:null;feed={};return "Upgraded to "+row(x.upgraded).name+(x.returned?" · returned: "+x.returned+'× '+row(6000).name:'');}),exp<need,'sm-btn blue');root.append(acts);
-  btn(acts,"Clear",()=>{feed={};renderSmithy();},!Object.keys(feed).length,'sm-step');root.append(el('h4','',"Materials (tap to add; right-click or Clear to remove)"));const grid=el('div','sm-grid');for(const m of mats(id,partnerId)){const b=el('button','sm-item'+(feed[m.id]?' on':''));b.type='button';b.append(icon(m.id));b.append(el('small','',(feed[m.id]||0)+'/'+m.n));b.title=m.r.name+' · '+m.r.artifact_exp+' exp';b.onclick=()=>{if((feed[m.id]||0)<m.n){feed[m.id]=(feed[m.id]||0)+1;renderSmithy();}};b.oncontextmenu=e=>{e.preventDefault();if(feed[m.id]){feed[m.id]--;if(!feed[m.id])delete feed[m.id];renderSmithy();}};grid.append(b);}root.append(grid);
+  const acts=el('div','sm-actions');btn(acts,'Tự Chọn',()=>{feed={};let left=need;for(const m of mats(id,partnerId).sort((a,b)=>a.r.item_lv-b.r.item_lv||a.r.artifact_exp-b.r.artifact_exp)){while(left>0&&(feed[m.id]||0)<m.n){feed[m.id]=(feed[m.id]||0)+1;left-=Number(m.r.artifact_exp);}if(left<=0)break;}renderSmithy();},false,'sm-btn white');
+  btn(acts,"Nâng Cấp",()=>send({action:'artifact_upgrade',item_id:id,materials:feed,...(partnerId?{partner_id:partnerId}:{})},x=>{artifactTarget=row(x.upgraded)?.artifact_next?{id:x.upgraded,partnerId}:null;feed={};return "Đã nâng cấp: "+antiqueName(row(x.upgraded).name)+(x.returned?" · hoàn lại: "+x.returned+'× '+antiqueName(row(6000).name):'');}),exp<need,'sm-btn blue');root.append(acts);
+  btn(acts,"Xóa Chọn",()=>{feed={};renderSmithy();},!Object.keys(feed).length,'sm-step');root.append(el('h4','',"Nguyên liệu (chạm để chọn; chạm lại hoặc nhấn Xóa Chọn để bỏ)"));const grid=el('div','sm-grid');for(const m of mats(id,partnerId)){const b=el('button','sm-item'+(feed[m.id]?' on':''));b.type='button';b.append(icon(m.id));b.append(el('small','',(feed[m.id]||0)+'/'+m.n));b.title=m.r.name+' · '+m.r.artifact_exp+' exp';b.onclick=()=>{if((feed[m.id]||0)<m.n){feed[m.id]=(feed[m.id]||0)+1;renderSmithy();}};b.oncontextmenu=e=>{e.preventDefault();if(feed[m.id]){feed[m.id]--;if(!feed[m.id])delete feed[m.id];renderSmithy();}};grid.append(b);}root.append(grid);
   if(!mats(id,partnerId).length)root.append(el('p','detail-note','Không có Cổ vật nào để dùng làm nguyên liệu.'));root.append(el('p','eq-status',message));}
  function mats(id,partnerId){return Object.entries(state.items).filter(([k,n])=>Number(n)>0&&row(k)?.pos===6&&row(k).artifact_exp).map(([k,n])=>({id:Number(k),n:Number(n)-(!partnerId&&Number(k)===id?1:0),r:row(k)})).filter(m=>m.n>0);}
 

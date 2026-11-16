@@ -257,3 +257,30 @@
   align-items:center;
   justify-content:center;
 }
+
+
+/* Home profile: contain the entire selected picture and ornate frame.
+   A frame with outward petals must not be cropped by the thumbnail's cover. */
+#home-view .home-profile{box-sizing:border-box;overflow:visible!important}
+#home-view .home-profile-portrait{
+  inset:7%!important;
+  background-size:contain!important;
+  background-position:center center!important;
+  background-repeat:no-repeat!important;
+  border-radius:8px;
+}
+#home-view .home-profile-frame{
+  inset:0!important;
+  width:100%!important;height:100%!important;
+  object-fit:contain!important;object-position:center center!important;
+  border-radius:inherit;
+}
+#home-view .home-profile #home-level{
+  z-index:3;left:50%!important;bottom:1px!important;
+  transform:translateX(-50%);
+  min-width:25px;max-width:88%;
+  padding:1px 5px;border-radius:9px;
+  color:#fff;background:#172844bf;
+  font:800 clamp(10px,2.35vw,13px)/1.05 system-ui;
+  text-align:center;text-shadow:0 1px 2px #000;
+}
