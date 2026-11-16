@@ -229,3 +229,31 @@
 #profile-view .profile-photo-tools small{width:100%;color:#596a81;font-size:10px;line-height:1.15}
 #profile-view .profile-photo-choice img{width:100%;height:100%;object-fit:cover}
 #profile-view #profile-picker-message{flex:none;height:auto;min-height:14px;max-height:40px;margin:0 2px;overflow:auto;font-size:11px;color:#7e3450}
+
+/* SUPER GM controls occupy their own row BELOW the level / EXP bar.
+   Target: marked rectangle on the left, not the level/EXP display. */
+#profile-view #profile-info-page:has(#gxb3-profile-supergm){
+  grid-template-rows:32px 88px 25px 40px 48px minmax(0,1fr);
+  grid-template-areas:'vip name' 'avatar signature' '. metadata' 'level level'
+                      'gm gm' 'senpai senpai';
+}
+#profile-view #gxb3-profile-supergm{
+  grid-area:gm;
+  position:relative;
+  z-index:2;
+  box-sizing:border-box;
+  justify-self:start;
+  align-self:start;
+  margin:0 0 0 clamp(12px,4%,36px);
+  width:clamp(130px,26%,190px);
+  height:43px;
+  min-height:0;
+  padding:5px 12px;
+  font-size:17px;
+  line-height:1.15;
+  white-space:nowrap;
+  text-align:center;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}

@@ -104,7 +104,7 @@ window.GxbAuth=(()=>{
     const infoPage=document.getElementById('profile-info-page');
     const oldGM=document.getElementById('gxb3-profile-supergm');oldGM?.remove();
     if(isSuperGM&&infoPage){
-      const gm=el('button','profile-primary gxb3-supergm-entry','GM Tools (QTV · SUPER GM)');
+      const gm=el('button','profile-primary gxb3-supergm-entry','GM Tools');
       gm.id='gxb3-profile-supergm';gm.type='button';
       gm.onclick=async()=>{try{await window.AdminPanel?.open();}catch(e){window.GirlUI?.notice?.(e.message,{title:'Quản trị'});}};
       infoPage.append(gm);
