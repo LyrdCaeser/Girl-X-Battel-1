@@ -1496,7 +1496,13 @@ class Engine:
     def galaxy_action(self, request):
         """Galaxy Voyage (gxb2/galaxy.py): enemies keep their HP between attempts (status per position), the Ruler is
         weakened through galaxy_info and the battles use GALAXY_TRIP_BATTLE (66)."""
-        if not isinstance(request, dict): raise GameError('Datos inválidos')
+        if not isinstance(request, dict): raise GameError('Dữ liệu không hợp lệ')
+        if request.get('action') == 'ranking':
+            with self.lock:
+                state = self._load()
+            season = galaxy.season_of(self.now())[0]
+            rank_uid, rank_server = self.identity or (state.get('uid', ''), state.get('server_id', 'S1'))
+            return {'ranking': live_service.galaxy_ranking(rank_server, season, rank_uid, limit=100)}
         with self.lock:
             self.db.execute('BEGIN IMMEDIATE')
             try:

@@ -37,3 +37,5 @@
 .sa-rates b{display:block;margin-top:calc(10 * var(--u));color:#2f5fa8;font-size:calc(26 * var(--u))}.sa-rates p{margin:calc(4 * var(--u)) 0;font-size:calc(22 * var(--u))}
 #app-frame .stellar-altar-view:not([hidden]){height:100%;overflow:hidden}
 .stellar-altar-view .sa-stage{height:max(100%,calc(1280 * var(--u)))}
+
+.sa-logo-text{position:absolute;left:50%;top:calc(118 * var(--u));width:calc(520 * var(--u));margin:0;transform:translateX(-50%);text-align:center;color:#fff;font-size:calc(52 * var(--u));font-weight:900;letter-spacing:.02em;text-shadow:0 0 8px #8d7dff,0 0 18px #61a8ff,0 3px 3px #17216c}

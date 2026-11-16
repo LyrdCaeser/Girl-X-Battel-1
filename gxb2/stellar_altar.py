@@ -60,18 +60,18 @@ def snapshot(state, developer=False):
 def action(state, request, add_girl, developer=False, rng=None):
     rng = rng or random.SystemRandom()
     s = data(state); act = request.get('action')
-    if not snapshot(state, developer)['open']: raise AltarError('Stellar Altar se abre al superar la fase 15-10 de la campaña')
+    if not snapshot(state, developer)['open']: raise AltarError('Cổng Vũ Trụ mở khóa sau khi vượt ải Chiến Dịch 15-10')
     if act == 'mode':
         mode = int(request.get('mode') or 1)
-        if mode not in (SURPRISE, ACCUMULATE): raise AltarError('Modo inválido')
+        if mode not in (SURPRISE, ACCUMULATE): raise AltarError('Chế độ không hợp lệ')
         s['mode'] = mode
         if request.get('target'):
-            if int(request['target']) not in GIRLS: raise AltarError('Chica inválida')
+            if int(request['target']) not in GIRLS: raise AltarError('Nữ Thần không hợp lệ')
             s['target'] = int(request['target'])
         return {}
     if act == 'draw':
         times = 10 if int(request.get('times') or 1) >= 10 else 1
-        if int(state['items'].get(TOKEN, 0)) < times: raise AltarError('Faltan Star Tokens')
+        if int(state['items'].get(TOKEN, 0)) < times: raise AltarError('Không đủ Xu Tinh Tú')
         state['items'][TOKEN] = int(state['items'][TOKEN]) - times
         row = ROWS[str(s['mode'])]; chances = [float(x) for x in str(row['wight']).split('|')]
         got, girls = {}, []
@@ -93,8 +93,8 @@ def action(state, request, add_girl, developer=False, rng=None):
         return {'got': got, 'girls': girls}
     if act == 'compose':
         tid = int(request.get('target') or s['target'])
-        if tid not in GIRLS: raise AltarError('Chica inválida')
-        if int(state['items'].get(SHARD, 0)) < SHARDS_FOR_GIRL: raise AltarError(f'Necesitas {SHARDS_FOR_GIRL} fragmentos')
+        if tid not in GIRLS: raise AltarError('Nữ Thần không hợp lệ')
+        if int(state['items'].get(SHARD, 0)) < SHARDS_FOR_GIRL: raise AltarError(f'Cần {SHARDS_FOR_GIRL} mảnh để ghép Nữ Thần')
         state['items'][SHARD] = int(state['items'][SHARD]) - SHARDS_FOR_GIRL
         return {'girls': [add_girl(tid)]}
-    raise AltarError('Acción del Stellar Altar desconocida')
+    raise AltarError('Thao tác Cổng Vũ Trụ không hợp lệ')

@@ -394,6 +394,44 @@ def online_players(server_id="", max_age=120):
         out=[dict(r) for r in rows]; db.close(); return out
 
 
+
+def galaxy_ranking(server_id, season, current_uid="", limit=100):
+    """Bảng xếp hạng Hành Trình Ngân Hà từ hồ sơ người chơi thật của mùa hiện tại."""
+    server_id = str(server_id or "").strip().upper()
+    current_uid = str(current_uid or "").strip()
+    season = max(1, int(season or 1))
+    limit = max(1, min(200, int(limit)))
+    with _lock:
+        db = _db()
+        rows = db.execute("""SELECT p.uid,p.server_id,p.character_name,
+                                   COALESCE(l.level,1) AS level,COALESCE(l.power,0) AS power,
+                                   pp.data
+                            FROM players p
+                            JOIN player_profiles pp ON pp.uid=p.uid AND pp.server_id=p.server_id
+                            LEFT JOIN leaderboard l ON l.uid=p.uid AND l.server_id=p.server_id
+                            WHERE p.server_id=? AND p.status='active'""",
+                          (server_id,)).fetchall()
+        db.close()
+    board = []
+    for row in rows:
+        try:
+            profile = json.loads(row["data"]) if isinstance(row["data"], str) else dict(row["data"])
+        except (TypeError, ValueError, json.JSONDecodeError):
+            continue
+        current = (profile.get("galaxy") or {}).get("season") or {}
+        points = int(current.get("points") or 0) if int(current.get("n") or 0) == season else 0
+        public = profile.get("profile") or {}
+        board.append({"uid": str(row["uid"]), "server_id": str(row["server_id"]),
+                      "character_name": str(row["character_name"]), "level": int(row["level"] or 1),
+                      "power": int(row["power"] or 0), "points": max(0, points),
+                      "avatar": public.get("avatar") or "head_1001",
+                      "frame": public.get("frame") or "frame_8007"})
+    board.sort(key=lambda p: (-p["points"], -p["power"], -p["level"], p["character_name"].casefold(), p["uid"]))
+    for rank, player in enumerate(board, 1):
+        player["rank"] = rank
+        player["me"] = player["uid"] == current_uid
+    return board[:limit]
+
 def leaderboard(server_id, limit=100):
     limit=max(1,min(5000,int(limit)))
     with _lock:
