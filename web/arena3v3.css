@@ -21,7 +21,7 @@
 .ar-defense-slots{display:flex;justify-content:center;gap:calc(10 * var(--u))}
 .ar-defense-slot{position:relative;width:calc(86 * var(--u));height:calc(86 * var(--u));padding:0;border:calc(3 * var(--u)) dashed #aebbd0;border-radius:calc(12 * var(--u));background:#fff;color:#8aa1c2;font-size:calc(38 * var(--u));overflow:hidden;cursor:pointer}
 .ar-defense-slot.full{border-style:solid;border-color:#dfb65b}.ar-defense-slot.active{box-shadow:0 0 0 calc(4 * var(--u)) #58a6ef}
-.ar-defense-slot .portrait{width:100%!important;height:100%!important}.ar-defense-slot-stars{position:absolute;left:0;bottom:0;padding:0 calc(3 * var(--u));background:#713e08cc;color:#ffe071;font-weight:900;font-size:calc(16 * var(--u));text-shadow:0 1px #532}.ar-defense-slot>small{position:absolute;right:0;bottom:0;min-width:calc(23 * var(--u));background:#253c65cc;color:#fff;font-size:calc(16 * var(--u))}
+.ar-defense-slot .portrait{width:100%!important;height:100%!important}.ar-defense-slot>small{position:absolute;right:0;bottom:0;min-width:calc(23 * var(--u));background:#253c65cc;color:#fff;font-size:calc(16 * var(--u))}
 .ar-defense-pool{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:calc(8 * var(--u));max-height:calc(460 * var(--u));overflow:auto;padding:calc(6 * var(--u));border-radius:calc(10 * var(--u));background:#edf2f8}
 .ar-defense-candidate{position:relative;display:grid;grid-template-rows:calc(118 * var(--u)) auto;min-width:0;padding:calc(3 * var(--u));border:calc(2 * var(--u)) solid #9eb4d1;border-radius:calc(9 * var(--u));background:linear-gradient(#fff8db,#fff);overflow:hidden;cursor:pointer}
 .ar-defense-candidate .portrait{width:100%!important;height:calc(118 * var(--u))!important;display:block;border-radius:calc(6 * var(--u));background:#eaf0fa}
@@ -68,13 +68,13 @@
 .ar-native-star-fallback{
   color:#ffe18c;font-size:calc(15 * var(--u));font-weight:900;
 }
-.ar-defense-candidate:has(.ar-attack-candidate-stars){
+.ar-defense-candidate:has(.ar-native-stars){
   grid-template-rows:minmax(0,1fr);
   aspect-ratio:1/1;
   height:calc(118 * var(--u));
   display:block;position:relative;
 }
-.ar-defense-candidate:has(.ar-attack-candidate-stars)>.portrait{
+.ar-defense-candidate:has(.ar-native-stars)>.portrait{
   height:100%!important;width:100%!important;
 }
 /* No caption on top of the portraits: only original character art and stars. */
