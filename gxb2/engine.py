@@ -2623,27 +2623,31 @@ class Engine:
     def altar_returns(self, state, ids):
         """AltarWindow (Campus → Transfer), Partner:getDecompose: the table's `decompose`, 70 % of the Grade Stones of her grades
         (and of her awakens below 10★) and 65 % of the girl EXP of her level; her gear goes back to the bag on retiring
-        (equipment.release). Returns ({item: n}, number of 6★+ girls: altar_6up_day_limit allows 5 a day)."""
+        (equipment.release). Returns ({item: n}, number of ordinary 6★+ girls counted toward the daily limit)."""
         if not isinstance(ids, list) or not 1 <= len(ids) <= 12 or len(set(ids)) != len(ids) or any(type(i) is not int for i in ids):
-            raise GameError('Elige entre 1 y 12 chicas')
+            raise GameError('Chọn từ 1 đến 12 Nữ Thần để phân giải')
         owned = {g['partner_id']: g for g in state['partners']}
-        if any(i not in owned for i in ids): raise GameError('No tienes esa chica')
-        if len(ids) >= len(state['partners']): raise GameError('No puedes retirar a todas tus chicas')
+        if any(i not in owned for i in ids): raise GameError('Không tìm thấy Nữ Thần đã chọn')
+        if len(ids) >= len(state['partners']): raise GameError('Không thể phân giải toàn bộ Nữ Thần đang sở hữu')
         pending = (state.get('exchange') or {}).get('partner_id')
         got, six = {}, 0
         def add(k, n):
             if n > 0: got[str(k)] = got.get(str(k), 0) + int(n)
         for pid in ids:
             g = owned[pid]; row = TABLES['partner'][str(g['table_id'])]
-            if any(g.get('flags') or []): raise GameError('Hay una chica bloqueada en la selección')
+            if any(g.get('flags') or []): raise GameError('Nữ Thần đang khóa không thể phân giải')
             # Dolls use their own native decompose data. Playable Cosmos girls
             # lack decompose data: use the existing native 10-star reward rule.
             # Never allow nonplayable group-7 NPCs to be destroyed.
             cosmos = int(row['group']) == 7
             if cosmos and not str(row.get('hero_list') or '').strip():
                 raise GameError('Không thể phân giải nhân vật Vũ Trụ không hợp lệ')
-            if pid == pending: raise GameError('Resuelve primero el intercambio pendiente')
-            star = int(row['max_star']) + int(g.get('awake', 0)); six += star >= 6
+            if pid == pending: raise GameError('Hãy hoàn tất trao đổi Nữ Thần đang chờ trước khi phân giải')
+            # Keep the 5/day quota for ordinary 6★+ girls only.
+            # Dolls (including native 6★/10★) and playable Cosmos are exempt.
+            is_doll = int(g['table_id']) in RETURN['puppets']
+            star = int(row['max_star']) + int(g.get('awake', 0))
+            six += int(star >= 6 and not is_doll and not cosmos)
             decompose = row.get('decompose') or ''
             if cosmos and not decompose:
                 decompose = TABLES['partner']['751001']['decompose']
@@ -3198,7 +3202,7 @@ class Engine:
             got, six = self.altar_returns(state, ids)
             day = clock.day(self.now()); alt = state.setdefault('altar', {})
             if alt.get('day') != day: alt.update(day=day, six=0)
-            if six and alt['six'] + six > 5: raise GameError('Solo puedes retirar 5 chicas de 6★ o más al día')
+            if six and alt['six'] + six > 5: raise GameError('Mỗi ngày chỉ được phân giải tối đa 5 Nữ Thần thường từ 6★ trở lên')
             alt['six'] += six
             owned = {g['partner_id']: g for g in state['partners']}
             for pid in ids: equipment.release(state, owned[pid])

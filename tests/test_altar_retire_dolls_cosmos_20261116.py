@@ -36,7 +36,7 @@ class AltarDollsCosmosTests(unittest.TestCase):
             rewards, six = self.engine.altar_returns(self.state, [pid])
             expected = {str(k): v for k, v in item_pairs(TABLES['partner'][str(tid)]['decompose']).items()}
             self.assertEqual(rewards, expected, tid)
-            self.assertEqual(six, int(int(TABLES['partner'][str(tid)]['max_star']) >= 6))
+            self.assertEqual(six, 0, 'Dolls must not count toward daily quota')
             self.state['partners'].pop()
 
     def test_three_playable_cosmos_girls_use_existing_native_10star_recipe(self):
@@ -46,7 +46,7 @@ class AltarDollsCosmosTests(unittest.TestCase):
             pid = self.add(tid)
             rewards, six = self.engine.altar_returns(self.state, [pid])
             self.assertEqual(rewards, native)
-            self.assertEqual(six, 1)
+            self.assertEqual(six, 0, 'Cosmos must not count toward daily quota')
             self.state['partners'].pop()
 
     def test_nonplayable_cosmos_npc_is_not_deletable(self):
@@ -64,7 +64,7 @@ class AltarDollsCosmosTests(unittest.TestCase):
     def test_pending_exchange_and_last_girl_stay_protected(self):
         pid = self.add(757001)
         self.state['exchange'] = {'partner_id': pid}
-        with self.assertRaisesRegex(GameError, 'intercambio'):
+        with self.assertRaisesRegex(GameError, 'trao đổi'):
             self.engine.altar_returns(self.state, [pid])
         self.state['exchange'] = {}
         self.state['partners'] = [self.state['partners'][-1]]
@@ -88,12 +88,53 @@ class AltarDollsCosmosTests(unittest.TestCase):
         self.assertFalse({d, c}.intersection(x['partner_id'] for x in self.state['campaign_hang']))
 
     def test_six_star_daily_cap_still_rejects_six_in_one_action(self):
-        ids = [self.add(tid) for tid in RETURN['puppets'][6:12]]
+        ids = [self.add(651001) for _ in range(6)]
         before = len(self.state['partners'])
         with self.assertRaises(GameError):
             self.engine._dispatch('DECOMPOSE_PARTNERS', {'partner_ids': ids}, self.state)
         self.assertEqual(len(self.state['partners']), before)
 
+
+    def test_specials_ignore_fully_used_quota_without_incrementing_it(self):
+        from gxb2 import clock
+        ids = [self.add(tid) for tid in (
+            561001, 561001, 661001, 761001, 757001, 757002, 757003,
+        )]
+        self.state['altar'] = {'day': clock.day(self.engine.now()), 'six': 5}
+        expected, quota = self.engine.altar_returns(self.state, ids)
+        self.assertTrue(expected)
+        self.assertEqual(quota, 0)
+        packets, _ = self.engine._dispatch(
+            'DECOMPOSE_PARTNERS', {'partner_ids': ids}, self.state)
+        self.assertTrue(packets)
+        self.assertEqual(self.state['altar']['six'], 5)
+        self.assertEqual(self.state['last_decompose'], expected)
+        self.assertTrue(set(ids).isdisjoint(
+            x['partner_id'] for x in self.state['partners']))
+
+    def test_regular_six_star_remains_limited_after_five(self):
+        from gxb2 import clock
+        regular = self.add(651001)
+        self.state['altar'] = {'day': clock.day(self.engine.now()), 'six': 5}
+        count = len(self.state['partners'])
+        with self.assertRaisesRegex(GameError, 'Mỗi ngày'):
+            self.engine._dispatch(
+                'DECOMPOSE_PARTNERS', {'partner_ids': [regular]}, self.state)
+        self.assertEqual(count, len(self.state['partners']))
+
+    def test_mixed_batch_counts_only_regular_six_star(self):
+        from gxb2 import clock
+        dolls = [self.add(661001) for _ in range(5)]
+        cosmos = self.add(757001)
+        regular = self.add(651001)
+        ids = dolls + [cosmos, regular]
+        reward, quota = self.engine.altar_returns(self.state, ids)
+        self.assertTrue(reward)
+        self.assertEqual(quota, 1)
+        self.state['altar'] = {'day': clock.day(self.engine.now()), 'six': 4}
+        self.engine._dispatch(
+            'DECOMPOSE_PARTNERS', {'partner_ids': ids}, self.state)
+        self.assertEqual(self.state['altar']['six'], 5)
 
 if __name__ == '__main__':
     unittest.main()
