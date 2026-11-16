@@ -319,12 +319,35 @@ class Engine:
         newbie_camp.observe(state, self.missions_probe(dict(state)), player_level(state), self.now())
         self.db.execute('UPDATE profile SET data=? WHERE id=1', (json.dumps(state, ensure_ascii=False),))
 
-    def pvp_team_snapshot(self):
+    def pvp_defense_formation(self):
+        """Return the separately saved ArenaFormationWindow defence team."""
+        with self.lock:
+            state = self._load()
+            raw = state.get('pvp_defense') or state.get('formation') or []
+            return self.validate_formation(state, raw)
+
+    def save_pvp_defense_formation(self, formation):
+        """Persist the authenticated player's defence formation, apart from PvE."""
+        with self.lock:
+            self.db.execute('BEGIN IMMEDIATE')
+            try:
+                state = self._load()
+                clean = self.validate_formation(state, formation)
+                state['pvp_defense'] = clean
+                self._save_profile(state)
+                self.db.commit()
+                return {'formation': clean, 'goddess_count': len(clean)}
+            except Exception:
+                self.db.rollback()
+                raise
+
+    def pvp_team_snapshot(self, defense=False):
         with self.lock:
             state = self._load()
             by_id = {int(p['partner_id']): p for p in state.get('partners', [])}
             team = []
-            for slot in sorted(state.get('formation', []), key=lambda x: int(x.get('pos', 0))):
+            formation = (state.get('pvp_defense') or state.get('formation', [])) if defense else state.get('formation', [])
+            for slot in sorted(formation, key=lambda x: int(x.get('pos', 0))):
                 partner = by_id.get(int(slot.get('partner_id', 0)))
                 if not partner:
                     continue

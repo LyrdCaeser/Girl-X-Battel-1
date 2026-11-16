@@ -10,3 +10,19 @@
 .a3-acts{display:flex;justify-content:center;margin-top:10px}.a3-acts .ar-go{position:static;width:180px;height:52px}
 .ar-3v3-entry{position:absolute;border:0;padding:0;background:none;cursor:pointer}.ar-3v3-entry img{width:100%;height:100%;object-fit:contain}
 .a3-pool{grid-auto-rows:62px;align-content:start}.a3-cand{aspect-ratio:auto;height:62px;width:100%}.a3-cand>*:first-child{width:100%;height:100%;object-fit:cover;display:block}
+
+
+/* Original ArenaFormationWindow: a separate six-position defence formation. */
+.ar-defense-title{text-align:center;color:#355279}
+.ar-defense-help{margin:0;text-align:center;color:#6c7890;font-size:calc(19 * var(--u))}
+.ar-defense-board{display:grid;gap:calc(10 * var(--u));padding:calc(12 * var(--u));border:calc(2 * var(--u)) solid #cad6e7;border-radius:calc(14 * var(--u));background:linear-gradient(#f8fbff,#e7eef8)}
+.ar-defense-row{display:grid;grid-template-columns:calc(115 * var(--u)) 1fr;align-items:center;gap:calc(8 * var(--u))}
+.ar-defense-label{text-align:center;font-size:calc(20 * var(--u))}.ar-defense-row.front .ar-defense-label{color:#d46d43}.ar-defense-row.back .ar-defense-label{color:#41945a}
+.ar-defense-slots{display:flex;justify-content:center;gap:calc(10 * var(--u))}
+.ar-defense-slot{position:relative;width:calc(86 * var(--u));height:calc(86 * var(--u));padding:0;border:calc(3 * var(--u)) dashed #aebbd0;border-radius:calc(12 * var(--u));background:#fff;color:#8aa1c2;font-size:calc(38 * var(--u));overflow:hidden;cursor:pointer}
+.ar-defense-slot.full{border-style:solid;border-color:#dfb65b}.ar-defense-slot.active{box-shadow:0 0 0 calc(4 * var(--u)) #58a6ef}
+.ar-defense-slot .portrait{width:100%!important;height:100%!important}.ar-defense-slot>small{position:absolute;right:0;bottom:0;min-width:calc(23 * var(--u));background:#253c65cc;color:#fff;font-size:calc(16 * var(--u))}
+.ar-defense-pool{display:grid;grid-template-columns:repeat(6,1fr);gap:calc(6 * var(--u));max-height:calc(390 * var(--u));overflow:auto;padding:calc(6 * var(--u));border-radius:calc(10 * var(--u));background:#edf2f8}
+.ar-defense-candidate{position:relative;min-width:0;padding:0;border:calc(2 * var(--u)) solid #9eb4d1;border-radius:calc(9 * var(--u));background:#fff;overflow:hidden;cursor:pointer}
+.ar-defense-candidate .portrait{width:100%!important;aspect-ratio:1;display:block}.ar-defense-candidate small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:calc(2 * var(--u));font-size:calc(15 * var(--u))}
+.ar-defense-candidate.used{filter:grayscale(.7);opacity:.42}

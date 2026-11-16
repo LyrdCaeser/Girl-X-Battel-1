@@ -103,7 +103,7 @@ class SystemicVisualDataRegressions(unittest.TestCase):
         for filename in ('mobile-native.css','arena.js'):
             self.assertIn(filename+'?v=20261114-systemic-r1',index)
         self.assertIn('arena.css?v=20261115-select-r1',index)
-        self.assertIn('arena-online-native.js?v=20261115-replay-r2',index)
+        self.assertIn('arena-online-native.js?v=20261116-defense-r1',index)
         for filename in ('campaign-flow.js','campaign-flow.css'):
             self.assertIn(filename+'?v=20261116-ui9-r1',index)
         for filename in ('girl-ui.js','girl-ui.css'):

@@ -575,6 +575,7 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                 'season': live_service.pvp_season_window(mode, account['server_id']),
                 'season_reward': live_service.pvp_season_claim_status(account['uid'], account['server_id'], mode),
                 'history': live_service.pvp_history(account['uid'], 20),
+                'defense': self.engine.pvp_defense_formation(),
             }
             if mode == 'arena3v3':
                 payload['arena3v3'] = self.engine.ensure_pvp_arena3v3()
@@ -1011,7 +1012,7 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
             if path == '/api/auth/reset-password' and not self.rate_limit('auth_reset'): return
             if path == '/api/auth/recovery-code' and not self.rate_limit('recovery_rotate'): return
             if path == '/api/order/create' and not self.rate_limit('order_create'): return
-            if path in ('/api/pvp/queue','/api/pvp/challenge','/api/pvp/arena3v3/teams','/api/pvp/arena3v3/pay') and not self.rate_limit_player('pvp_queue'): return
+            if path in ('/api/pvp/queue','/api/pvp/challenge','/api/pvp/defense','/api/pvp/arena3v3/teams','/api/pvp/arena3v3/pay') and not self.rate_limit_player('pvp_queue'): return
             if path in ('/api/pvp/match/battle','/api/pvp/match/replay','/api/pvp/arena3v3/round','/api/pvp/arena3v3/replay','/api/guild-war/battle') and not self.rate_limit_player('battle'): return
             if path.startswith('/api/admin/') and not self.rate_limit('admin'): return
             if path == '/api/giftcode/redeem' and not self.rate_limit('giftcode_redeem'): return
@@ -1111,7 +1112,7 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                 if not me or not other: raise ValueError('Không tải được hồ sơ người chơi.')
                 engine_a = self.server.player_engines.get(account['uid'], server_id, me['character_name'])
                 engine_b = self.server.player_engines.get(target_uid, server_id, other['character_name'])
-                snap_a, snap_b = engine_a.pvp_team_snapshot(), engine_b.pvp_team_snapshot()
+                snap_a, snap_b = engine_a.pvp_team_snapshot(), engine_b.pvp_team_snapshot(defense=True)
                 report = simulate_battle(
                     snap_a['team'], snap_b['team'], battle_id=ONLINE_BATTLE_ID,
                     seed=normalize_online_seed(secrets.randbelow(233280)+1),
@@ -1419,6 +1420,10 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                 ctx = self.auth_context(); account = ctx['account']; player = ctx['player']
                 return self.send(200, live_service.claim_pvp_season_reward(
                     account['uid'], account['server_id'], player['character_name'], data.get('mode','arena')))
+            if path == '/api/pvp/defense':
+                self.auth_context()
+                saved = self.engine.save_pvp_defense_formation(data.get('formation'))
+                return self.send(200, {'ok': True, **saved})
             if path == '/api/pvp/arena3v3/teams':
                 ctx = self.auth_context(); account = ctx['account']
                 saved = self.engine.save_pvp_arena3v3_teams(data.get('teams'))
@@ -1549,7 +1554,7 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                 engine_a = self.server.player_engines.get(match['player_a'], server_a, pa['character_name'])
                 engine_b = self.server.player_engines.get(match['player_b'], server_b, pb['character_name'])
                 snap_a = engine_a.pvp_team_snapshot()
-                snap_b = engine_b.pvp_team_snapshot()
+                snap_b = engine_b.pvp_team_snapshot(defense=True)
                 ready = live_service.heartbeat_pvp_match(match['id'], account['uid'], True)
                 if ready['match'].get('status') != 'active':
                     return self.send(409, {'error': 'Đang chờ đối thủ sẵn sàng', 'session': ready})

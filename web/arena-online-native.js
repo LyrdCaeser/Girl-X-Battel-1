@@ -3,7 +3,7 @@
 // rankings, scores, lineups and results come from authenticated online services.
 // Never call local arena simulators, seed fake rivals, or forge match outcomes.
 const NativeOnlineArenas=(()=>{
- let mode='arena',origin='home',data=null,panel='',note='',busy=false,draft=null,teamIndex=0;
+ let mode='arena',origin='home',data=null,panel='',note='',busy=false,draft=null,teamIndex=0,defenseDraft=null,defensePos=1;
  let timer=null,sequence=0,lastMatchResult=null;
  const A=n=>'/assets/arena/'+n+'.png';
  const el=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=String(text);return n;};
@@ -27,7 +27,7 @@ const NativeOnlineArenas=(()=>{
  async function open(which='arena',from='home'){
   if(!state?.items){GirlUI.notice('Hồ sơ người chơi đang tải. Vui lòng thử lại.',{title:'Đấu Trường'});return;}
   mode=['arena','cross','arena3v3'].includes(which)?which:'arena';origin=from||view||'home';
-  data=null;panel='';note='';lastMatchResult=null;draft=null;teamIndex=0;stop();
+  data=null;panel='';note='';lastMatchResult=null;draft=null;teamIndex=0;defenseDraft=null;defensePos=1;stop();
   root();showView(activeView());render();await refresh();beginPoll();
  }
  function back(){stop();data=null;panel='';showView(origin===activeView()?'home':origin);}
@@ -77,6 +77,21 @@ const NativeOnlineArenas=(()=>{
   if(!validTeams(teams)){GirlUI.notice('Cần đủ 3 đội, mỗi đội 1–6 Nữ Thần khác nhau.',{title:title()});return;}
   const r=await post('/api/pvp/arena3v3/teams',{teams});
   if(r){draft=null;panel='';GirlUI.toast('Đã lưu ba đội hình thật trên máy chủ.');}
+ }
+ function defenseTeam(){
+  if(!defenseDraft){
+   const raw=Array.isArray(data?.defense)&&data.defense.length?data.defense:(state?.formation||[]);
+   defenseDraft=JSON.parse(JSON.stringify(raw)).map(x=>({partner_id:Number(x.partner_id),pos:Number(x.pos)}));
+  }
+  return defenseDraft;
+ }
+ async function saveDefense(){
+  const formation=defenseTeam();
+  if(!Array.isArray(formation)||formation.length<1||formation.length>6){
+   GirlUI.notice('Đội hình phòng thủ cần từ 1 đến 6 Nữ Thần.',{title:'Đội Hình Phòng Thủ'});return;
+  }
+  const r=await post('/api/pvp/defense',{formation});
+  if(r){data.defense=r.formation;defenseDraft=null;panel='';GirlUI.toast('Đã lưu đội hình phòng thủ riêng.');}
  }
  async function fightSingle(match){
   if(!match)return;
@@ -206,9 +221,9 @@ const NativeOnlineArenas=(()=>{
     {title:'Hồ sơ đối thủ thật'});
  }
  function drawPanel(stage){
-  const ov=el('div','ar-overlay');ov.onclick=e=>{if(e.target===ov){panel='';render();}};
-  const win=el('div','ar-win'+(panel==='teams'?' a3-win':''));ov.append(win);
-  const x=el('button','ar-close','✕');x.type='button';x.onclick=()=>{panel='';render();};
+  const ov=el('div','ar-overlay');ov.onclick=e=>{if(e.target===ov){if(panel==='defense')defenseDraft=null;panel='';render();}};
+  const win=el('div','ar-win'+((panel==='teams'||panel==='defense')?' a3-win':''));ov.append(win);
+  const x=el('button','ar-close','✕');x.type='button';x.onclick=()=>{if(panel==='defense')defenseDraft=null;panel='';render();};
   const heading=el('h2','',title());win.append(heading,x);
   const paragraph=text=>win.append(el('p','ar-empty',text));
   const button=(label,action,disabled=false)=>{
@@ -274,13 +289,7 @@ const NativeOnlineArenas=(()=>{
    }
    if(!rows.length)paragraph('Chưa có trận nào trong lịch sử thực.');
   }else if(panel==='defense'){
-   paragraph('Đội hình phòng thủ lấy từ đội hình Nữ Thần đã lưu trên máy chủ; không sử dụng đối thủ hoặc đội hình NPC.');
-   const wrap=el('div','ar-ins-team');
-   const used=new Set((state?.formation||[]).map(x=>Number(x.partner_id)));
-   for(const h of (state?.roster||[]).filter(x=>used.has(Number(x.partner_id))).slice(0,6)){
-    const slot=el('div','ar-ins-slot');slot.append(portrait(h.table_id,56));wrap.append(slot);
-   }
-   win.append(wrap);
+   drawDefense(win,button);
   }else if(panel==='teams'){
    drawTeams(win,button);
   }else if(panel==='result'){
@@ -295,6 +304,58 @@ const NativeOnlineArenas=(()=>{
    button('Xem bảng xếp hạng',()=>{panel='';lastMatchResult=null;refresh();});
   }
   stage.append(ov);
+ }
+ function drawDefense(win,button){
+  const team=defenseTeam(),roster=state?.roster||[];
+  win.append(el('h3','ar-defense-title','Đội Hình Phòng Thủ'));
+  win.append(el('p','ar-defense-help','Chạm vị trí muốn xếp, sau đó chọn Nữ Thần. Đội này được lưu riêng và dùng khi người khác thách đấu.'));
+  const board=el('div','ar-defense-board');
+  const makeRow=(label,positions,kind)=>{
+   const row=el('section','ar-defense-row '+kind);
+   row.append(el('b','ar-defense-label',label));
+   const slots=el('div','ar-defense-slots');
+   for(const pos of positions){
+    const member=team.find(x=>Number(x.pos)===pos);
+    const hero=member&&roster.find(x=>Number(x.partner_id)===Number(member.partner_id));
+    const slot=el('button','ar-defense-slot'+(hero?' full':'')+(defensePos===pos?' active':''));
+    slot.type='button';slot.title=hero?'Chạm để bỏ '+(hero.name||'Nữ Thần'):'Chọn vị trí '+pos;
+    if(hero){
+     if(typeof portrait==='function')slot.append(portrait(hero.table_id,72,hero));
+     slot.append(el('small','',String(pos)));
+    }else slot.append(el('span','','+'),el('small','',String(pos)));
+    slot.onclick=()=>{
+     defensePos=pos;
+     if(member)defenseDraft=team.filter(x=>Number(x.pos)!==pos);
+     render();
+    };
+    slots.append(slot);
+   }
+   row.append(slots);board.append(row);
+  };
+  makeRow('Hàng Trước',[1,2],'front');
+  makeRow('Hàng Sau',[3,4,5,6],'back');
+  win.append(board);
+
+  const used=new Set(team.map(x=>Number(x.partner_id)));
+  const pool=el('div','ar-defense-pool');
+  for(const hero of roster){
+   const b=el('button','ar-defense-candidate'+(used.has(Number(hero.partner_id))?' used':''));
+   b.type='button';b.disabled=used.has(Number(hero.partner_id));
+   if(typeof portrait==='function')b.append(portrait(hero.table_id,64,hero));
+   b.append(el('small','',hero.name||'Nữ Thần'));
+   b.title=(hero.name||'Nữ Thần')+' · '+(hero.stars||0)+'★ · Lv.'+(hero.lv||1);
+   b.onclick=()=>{
+    const pid=Number(hero.partner_id);
+    defenseDraft=team.filter(x=>Number(x.pos)!==defensePos&&Number(x.partner_id)!==pid);
+    defenseDraft.push({partner_id:pid,pos:defensePos});
+    const free=[1,2,3,4,5,6].find(pos=>!defenseDraft.some(x=>Number(x.pos)===pos));
+    if(free)defensePos=free;
+    render();
+   };
+   pool.append(b);
+  }
+  win.append(pool);
+  button('Lưu Đội Hình Phòng Thủ',saveDefense,team.length<1);
  }
  function drawTeams(win,button){
   // Original Arena3v3BattleFormationWindow layout: three native team badges
