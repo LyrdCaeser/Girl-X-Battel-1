@@ -2643,9 +2643,17 @@ def friend_gift(uid, server_id, target_uid, item_id, quantity):
             s.setdefault("items", {})[item_id] = int(s["items"].get(item_id, 0))-quantity
             r.setdefault("items", {})[item_id] = int(r["items"].get(item_id, 0))+quantity
             gain = social_gift_affection(meta, quantity)
-            s.setdefault("social_affection", {})[target_uid] = min(
+            # Python evaluates the right-hand side of an assignment before its
+            # subscript target. Using setdefault(...) on the left alone raised
+            # KeyError('social_affection') for older player profiles, rolling
+            # back the entire gift transaction.
+            if not isinstance(s.get("social_affection"), dict):
+                s["social_affection"] = {}
+            if not isinstance(r.get("social_affection"), dict):
+                r["social_affection"] = {}
+            s["social_affection"][target_uid] = min(
                 SOCIAL_MARRIAGE_AFFECTION, int(s["social_affection"].get(target_uid, 0))+gain)
-            r.setdefault("social_affection", {})[uid] = min(
+            r["social_affection"][uid] = min(
                 SOCIAL_MARRIAGE_AFFECTION, int(r["social_affection"].get(uid, 0))+gain)
             db.execute("UPDATE player_profiles SET data=?,updated_at=? WHERE uid=? AND server_id=?",
                        (json.dumps(s, ensure_ascii=False), now, uid, server_id))
