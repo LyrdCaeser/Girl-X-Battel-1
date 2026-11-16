@@ -133,7 +133,11 @@ const HouseExam=(()=>{
    const go=btn('he-fight','Quét',async()=>{panel=null;const r=await act({action:'sweep',stage:sweepStage,times:sweepTimes});if(r?.got)CampaignUI.popup(`Quét ×${r.times}`,r.got);});go.prepend(img(A('icon_63_small')));go.append(el('small','',` −${sweepTimes}`));w.append(go);}
   else if(panel==='enemies'&&enemies){w.append(el('h2','',`Địch · ${enemies.stage%1000}`),close,el('p','',`Lực chiến ${number(enemies.power)}`));const g=el('div','he-enemies');for(const e of enemies.enemies.sort((a,b)=>a.pos-b.pos)){const c=el('div','he-cand');c.append(typeof portrait==='function'?portrait(e.table_id,64):el('span'),el('small','',`Lv.${e.lv}`));c.title=e.name;g.append(c);}w.append(g);}
   else if(panel==='season'){w.append(el('h2','',`Mùa ${info.season}`),close,el('p','',`Điểm thi: ${info.score} · Kỷ lục: ${info.history_score||0}`),el('p','',"Phần thưởng cuối mùa:"));const row=el('div','he-rewards-line');for(const [k,n]of Object.entries(info.season_award))row.append(chip(k,n));w.append(row);}
-  else if(panel==='buy-ticket'){w.append(el('h2','','Vé Dự Thi'),close,el('p','',`Giá: ${info.ticket_cost['2']} Kim Cương/vé.`));const sel=el('div','he-times');for(const n of [1,5,10])sel.append(btn('he-small',`×${n} · ${n*info.ticket_cost['2']}💎`,async()=>{panel=null;await act({action:'buy_tickets',count:n});}));w.append(sel);}
+  else if(panel==='buy-ticket'){w.append(el('h2','','Vé Dự Thi'),close,el('p','',`Giá: ${info.ticket_cost['2']} Kim Cương/vé.`));const sel=el('div','he-times');for(const n of [1,5,10]){
+     const buy=btn('he-small','',async()=>{panel=null;await act({action:'buy_tickets',count:n});});
+     buy.append(el('span','',`×${n} · ${n*info.ticket_cost['2']}`),img(icon('2'),'he-diamond-native'));
+     sel.append(buy);
+   }w.append(sel);}
   else if(panel==='buy-cert'){w.append(el('h2','','Chứng Chỉ'),close);if(!info.cert_cost)w.append(el('p','',"Đã mua đủ 10 Chứng Chỉ hôm nay."));else{w.append(el('p','',`Còn ${info.cert_left} lượt mua hôm nay. Lượt tiếp theo: ${info.cert_cost['2']} Kim Cương (giá tăng dần).`));w.append(btn('he-fight',"Mua 1",async()=>{panel=null;await act({action:'buy_certs',count:1});}));}}
   st.append(ov);}
  return {open,render};
