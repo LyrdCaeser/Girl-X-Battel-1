@@ -116,3 +116,11 @@
 .ec-tile img{width:80%;height:80%;object-fit:contain}.ec-tile b{position:absolute;right:4px;bottom:0;color:#fff;font-size:calc(19 * var(--u));text-shadow:0 0 2px #000,0 0 2px #000}
 .ec-gobtn{border:2px solid #8aa6d6;border-radius:10px;background:linear-gradient(#fff,#dfe7f6);color:#2a4f9a;font-weight:800;font-size:calc(26 * var(--u));padding:calc(10 * var(--u)) calc(60 * var(--u));cursor:pointer}
 .ec-stamp{width:calc(150 * var(--u))}
+
+/* Mobile: extend original artwork to the entire usable screen; do not stretch
+   the turntable, cards or character assets. PC retains the fixed design. */
+@media (max-width:720px) {
+ .echoes-view{min-height:calc(100dvh - 48px)}
+ .ec-stage,.ec-main,.ec-board{min-height:max(calc(1280 * var(--u)), calc(100dvh - 48px))}
+ .ec-main,.ec-board{background-size:cover;background-position:center center}
+}
