@@ -105,3 +105,70 @@
   border-radius:0;
   box-shadow:none;
 }
+
+
+/* MOBILE ONLY: use the extra portrait-height room to put the native owner
+   frame directly above the bottom menu. PC remains on original coordinates.
+   All three online modes share NativeOnlineArenas.render(). */
+@media(max-width:720px){
+ html.gxb-mobile #app-frame .arena-view .ar-stage{
+   --ar-bottom-nav-h:calc(120 * var(--u));
+   --ar-owner-bottom:calc(132 * var(--u));
+   --ar-owner-height:calc(190 * var(--u));
+ }
+ html.gxb-mobile #app-frame .arena-view .ar-stage>.ar-nav{
+   height:var(--ar-bottom-nav-h)!important;
+   min-height:0!important;
+ }
+ html.gxb-mobile #app-frame .arena-view .ar-stage>.ar-detail{
+   top:auto!important;bottom:var(--ar-owner-bottom)!important;
+   height:var(--ar-owner-height)!important;
+ }
+ html.gxb-mobile #app-frame .arena-view .ar-stage>.ar-me-icon{
+   top:auto!important;bottom:calc(198 * var(--u))!important;
+   left:calc(26 * var(--u))!important;
+   width:calc(104 * var(--u))!important;height:calc(112 * var(--u))!important;
+ }
+ html.gxb-mobile #app-frame .arena-view .ar-stage>.ar-power{
+   top:auto!important;bottom:calc(225 * var(--u))!important;
+   left:calc(133 * var(--u))!important;
+   height:calc(56 * var(--u))!important;
+ }
+ html.gxb-mobile #app-frame .arena-view .ar-stage>.ar-stat{
+   top:auto!important;height:calc(27 * var(--u))!important;
+ }
+ html.gxb-mobile #app-frame .arena-view .ar-stage>.ar-stat-rank{
+   bottom:calc(187 * var(--u))!important;
+ }
+ html.gxb-mobile #app-frame .arena-view .ar-stage>.ar-stat-score{
+   bottom:calc(149 * var(--u))!important;
+ }
+ html.gxb-mobile #app-frame .arena-view .ar-stage>.ar-deco{
+   top:auto!important;bottom:calc(138 * var(--u))!important;
+   height:calc(145 * var(--u))!important;
+ }
+ html.gxb-mobile #app-frame .arena-view .ar-stage>.ar-res{
+   top:auto!important;bottom:calc(273 * var(--u))!important;
+   height:calc(32 * var(--u))!important;
+ }
+ html.gxb-mobile #app-frame .arena-view .ar-stage>.ar-fight{
+   top:auto!important;bottom:calc(160 * var(--u))!important;
+   height:calc(73 * var(--u))!important;
+ }
+ html.gxb-mobile #app-frame .arena-view .ar-stage>.ar-side{
+   top:auto!important;height:calc(48 * var(--u))!important;
+   font-size:calc(21 * var(--u));
+ }
+ html.gxb-mobile #app-frame .arena-view .ar-stage>.ar-side-arena_award_s{
+   bottom:calc(262 * var(--u))!important;
+ }
+ html.gxb-mobile #app-frame .arena-view .ar-stage>.ar-side-arena_record{
+   bottom:calc(208 * var(--u))!important;
+ }
+ html.gxb-mobile #app-frame .arena-view .ar-stage>.ar-side-arena_defence{
+   bottom:calc(154 * var(--u))!important;
+ }
+ html.gxb-mobile #app-frame .arena-view .ar-stage>.ar-note{
+   top:auto!important;bottom:calc(335 * var(--u))!important;
+ }
+}

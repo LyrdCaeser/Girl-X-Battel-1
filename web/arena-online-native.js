@@ -231,7 +231,7 @@ const NativeOnlineArenas=(()=>{
   power.append(img(A('force_icon')),el('b','',fmt(state?.power||0)));stage.append(power);
   const myRow=(data?.rating_board||[]).find(p=>String(p.uid)===own());
   for(const [label,value,y] of [['Xếp hạng',myRow?.rank||'—',-421],['Điểm',Number(data?.rating?.matches||0)>0?data.rating.rating:'Chưa đấu',-465]]){
-   const field=center(el('div','ar-stat'),-230,y,170,30);field.append(el('span','',label),el('b','',value));stage.append(field);
+   const field=center(el('div','ar-stat '+(label==='Xếp hạng'?'ar-stat-rank':'ar-stat-score')),-230,y,170,30);field.append(el('span','',label),el('b','',value));stage.append(field);
   }
   stage.append(center(img(A('arena_decoration'),'ar-deco'),0,-411,270,164));
   const res=center(el('div','ar-res'),0,-333,220,36);
@@ -254,7 +254,7 @@ const NativeOnlineArenas=(()=>{
    }]
   ];
   for(const [label,asset,y,action] of choices){
-   const b=center(el('button','ar-side'),242,y,170,54);b.type='button';
+   const b=center(el('button','ar-side ar-side-'+asset),242,y,170,54);b.type='button';
    b.style.backgroundImage="url('"+A('white_btn_65_65')+"')";b.append(img(A(asset)),el('span','',label));
    b.onclick=action;stage.append(b);
   }

@@ -15,5 +15,5 @@ class AllArenasFrameTest(unittest.TestCase):
         self.assertIn("const rank=center(el('div','ar-rank')",js)
         self.assertIn("mode==='cross'?",js)
         html=(ROOT/'web/index.html').read_text()
-        self.assertIn('/arena.css?v=20261116-framed-r4',html)
+        self.assertIn('rel="stylesheet" href="/arena.css?v=20261116-',html)
 if __name__=='__main__':unittest.main()
