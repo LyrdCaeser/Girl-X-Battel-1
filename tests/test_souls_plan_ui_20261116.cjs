@@ -69,7 +69,7 @@ function match(text){return latest().descendants.find(x=>x.textContent===text)}
  assert(match('Bộ 1 · Chưa lưu'),'Deleted plan must disappear');
  assert.match(css,/\.ag-plan-pieces/);
  assert.match(css,/\.gs-win\.ag-win/,'Anima header clipping must be fixed on Mobile');
- assert.match(html,/\/souls\.js\?v=20261116-anima-refresh-r3/);
- assert.match(html,/\/souls\.css\?v=20261116-anima-refresh-r3/);
+ assert.match(html,/\/souls\.js\?v=20261117-anima-split-r4/);
+ assert.match(html,/\/souls\.css\?v=20261117-anima-split-r4/);
  console.log('PASS | Anima: Vietnamese titles and 3 server-backed saved sets (save/apply/delete)');
 })().catch(err=>{console.error(err);process.exitCode=1});

@@ -12,10 +12,10 @@ assert.match(profileCss,/#home-view \.home-profile-portrait\{[\s\S]*?background-
 assert.match(profileCss,/#home-view \.home-profile-frame\{[\s\S]*?object-fit:contain!important/);
 assert.match(profileCss,/#home-view \.home-profile #home-level\{[\s\S]*?font:800 clamp\(10px/);
 assert.match(html,/\/skin-collection\.css\?v=20261116-profile-fit-r4/);
-assert.match(html,/\/app\.js\?v=20261116-profile-fit-r3/);
+assert.match(html,/\/app\.js\?v=20261117-anima-convert-r4/);
 assert.match(eqCss,/#smithy-view \.sm-grid \.sm-item \.eq-stars img\{[\s\S]*?width:11px!important/);
 assert.match(eqCss,/#smithy-view \.sm-top\.art \.eq-stars img\{[\s\S]*?height:11px!important/);
-assert.match(html,/\/equipment\.css\?v=20261116-artifact-star-fit-r3/);
+assert.match(html,/\/equipment\.css\?v=20261117-forge-alert-size-r4/);
 assert.match(html,/\/equipment\.js\?v=20261116-antique-vi-r4/);
 assert.match(eq,/"Nguyên liệu \(chạm để chọn; chạm lại hoặc nhấn Xóa Chọn để bỏ\)"/);
 assert.match(eq,/antiqueName\(r\.name\)\+' → '\+antiqueName\(row\(r\.artifact_next\)\.name\)/);

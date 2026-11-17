@@ -239,10 +239,20 @@ const Souls=(()=>{
 
  // ---- Bag tab "Anima Gear" (capture l/01): pieces + boxes, quality circles, count / limit, Anima Stone Ritual ----
  async function bag(){if(bagTab!==7)return;await load();if(bagTab!==7)return;const grid=$('bag-grid');const list=Object.entries(items()).map(([id,r])=>({id:Number(id),r})).filter(({r})=>!bagQuality||qltOf(r)===bagQuality).sort((a,b)=>starOf(b.r)-starOf(a.r)||qltOf(b.r)-qltOf(a.r)||b.r.lv-a.r.lv||a.id-b.id);
-  // the pieces first, then the boxes / tokens rendered by renderBag
-  const frag=document.createDocumentFragment();for(const {id,r}of list){const b=btn('bag-item ag-bag','',()=>detail(id,null));b.title=nameOf(r);b.append(icon(r));frag.append(b);}grid.prepend(frag);
-  $('bag-empty').hidden=grid.childElementCount>0;
-  const acts=document.querySelector('.bag-actions');acts.querySelector('.ag-bag-info')?.remove();const info=el('div','ag-bag-info');info.append(el('b','',Object.keys(items()).length+'/'+(state.souls_info?.limit||1000)),btn('ag-ritual','Anima Stone Ritual',ritual));acts.append(info);}
+  // Separate real serialized equip pieces from old stacked SoulEquip item IDs
+  // so 10/1000 cannot be mistaken for the total number of unconverted stones.
+  const firstStack=grid.firstElementChild;
+  const frag=document.createDocumentFragment();for(const {id,r}of list){const b=btn('bag-item ag-bag','',()=>detail(id,null));b.title=nameOf(r);b.append(icon(r));frag.append(b);}
+  if(list.length){
+    grid.prepend(el('div','ag-bag-section','Trang Bị Linh Hồn · '+list.length+' món'),frag);
+  }
+  if(firstStack&&firstStack.isConnected){
+    const oldCount=Array.from(grid.querySelectorAll('.bag-item:not(.ag-bag)')).length;
+    grid.insertBefore(el('div','ag-bag-section','Đá và Bảo Vật Linh Hồn đang xếp chồng · '+oldCount+' loại'),firstStack);
+  }
+  $('bag-empty').hidden=grid.querySelectorAll('.bag-item').length>0;
+  const acts=document.querySelector('.bag-actions');acts.querySelector('.ag-bag-info')?.remove();const info=el('div','ag-bag-info');
+  info.append(el('b','','Đã nhận: '+Object.keys(items()).length+'/'+(state.souls_info?.limit||1000)),btn('ag-ritual','Nghi Thức Linh Hồn',ritual));acts.append(info);}
  function ritual(){const {body}=GirlUI.win({title:'Nghi Thức Linh Hồn',cls:'ag-ritual-win'});const lv=state.souls_info?.level||1;body.append(el('p','','Cấp nghi thức: '+lv+' (triệu hồi nhiều lần để tăng cấp, mở cơ hội nhận sao cao hơn).'));
   for(const [g,label,item]of [[1,'Soul Token','423'],[2,'Shiny Soul Token','424']]){const row=el('div','ag-gacha');row.append(img(A(cat.icons[item]||'icon_'+item)),el('b','',vi(label)+' · đang có: '+number(state.items[item]||0)));const r=el('div','ag-row');for(const t of [1,10])r.append(btn('gs-btn','×'+t,()=>act({action:'summon',gacha:g,times:t},res=>{GirlUI.toast('Obtenidas '+res.got.length+' Anima Stones');if(view==='bag')renderBag();})));row.append(r);body.append(row);}
   const boxes=el('div','ag-row');for(const [iid,label]of [[435,"Anima Artifact Chest"],[5200104,'Đá Linh Hồn 4★']]){if(Number(state.items[iid]||0)>0)boxes.append(btn('gs-btn white','Mở '+vi(label)+' ('+number(state.items[iid])+')',()=>act({action:'open',item_id:iid,count:1},res=>{GirlUI.toast("Piece obtained");if(view==='bag')renderBag();})));}body.append(boxes);}

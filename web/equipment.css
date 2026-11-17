@@ -143,7 +143,7 @@
  width:13px!important;height:13px!important;
  min-width:0!important;max-width:13px!important;
  min-height:0!important;max-height:13px!important;
- object-fit:contain!important;inset:auto 6px auto auto!important;
+ object-fit:contain!important;
  pointer-events:none;
 }
 #smithy-view .sm-grid .sm-item>img.eq-red{

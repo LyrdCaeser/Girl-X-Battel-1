@@ -454,12 +454,12 @@ let currentBagUse=null;
 const bagVi=word=>window.GxbBagVi?GxbBagVi.t(word):(window.GxbVi?GxbVi.t(word):String(word||''));
 async function showBagItem(item,count,src){
  const panel=$('bag-detail');
- $('bag-detail-name').textContent=bagVi(item.name);
+ $('bag-detail-name').textContent=bagVi(item.name)+(Number(item.category)===7&&[39,40,41,42].includes(Number(item.type))?' · '+(Number(item.id)%10)+'★':'');
  $('bag-detail-count').textContent='Số lượng: '+number(count);
  $('bag-detail-description').textContent=bagVi(item.description||'Vật phẩm trong Túi Đồ.');
  const image=$('bag-detail-image');image.src=src||'/assets/ui/item_bg.png';image.alt=item.name;
  const select=$('bag-use-choice'),qty=$('bag-use-count'),button=$('bag-detail-use'),allButton=$('bag-detail-use-all'),note=$('bag-use-note');
- select.replaceChildren();select.hidden=true;qty.hidden=true;button.hidden=true;allButton.hidden=true;
+ select.replaceChildren();select.hidden=true;qty.hidden=true;button.hidden=true;button.textContent='Dùng';allButton.hidden=true;
  const nativeChoices=$('bag-use-native-choices');nativeChoices.replaceChildren();nativeChoices.hidden=true;
  const summon=$('bag-detail-summon'),summonLabel=$('bag-summon-label'),summonQty=$('bag-summon-count');
  const shard=Array.isArray(state.debris)?state.debris.find(x=>String(x.id)===String(item.id)&&Number(x.count)>0):null;
@@ -494,6 +494,21 @@ async function showBagItem(item,count,src){
    const original=await api('/api/inventory/options',{item_id:item.id});
    if(!currentBagUse||String(currentBagUse.id)!==String(item.id)||panel.hidden)return;
    if(!original.usable){
+     // Source SoulEquip1/2 pieces may also be stored as old stackable
+     // item IDs. Convert only when requested, and debit 1 source per
+     // serialized piece in a single server transaction.
+     if(Number(item.category)===7&&[38,39,40,41,42].includes(Number(item.type))){
+       const space=Math.max(0,Number(state.souls_info?.limit||1000)-Object.keys(state.souls_info?.items||{}).length);
+       const max=Math.min(10,count,space);
+       note.textContent=max>0
+        ?'Vật phẩm này đang xếp chồng. Chọn số lượng và nhận thành Trang Bị Linh Hồn riêng lẻ để nâng cấp, trang bị cho Nữ Thần. Mỗi món nhận sẽ trừ đúng 1 vật phẩm gốc; thuộc tính Đá Linh Hồn được tạo ngẫu nhiên.'
+        :'Túi Trang Bị Linh Hồn đã đầy. Hãy dọn chỗ trước khi nhận thêm.';
+       qty.max=String(Math.max(1,max));qty.value='1';qty.hidden=max<=0;
+       button.textContent='Nhận Trang Bị';button.hidden=max<=0;
+       button.disabled=max<=0;
+       currentBagUse={id:item.id,name:item.name,kind:'soul_receive',loading:false,options:{max_per_use:max}};
+       return;
+     }
      note.textContent=shard?(shard.can_compose?'Đã đủ mảnh để Triệu Hồi.':'Cần '+number(shard.need)+' mảnh để Triệu Hồi; hiện có '+number(shard.count)+'.'):(original.reason||'Vật phẩm này hiện chưa thể sử dụng.');
      return;
    }
@@ -544,6 +559,26 @@ async function useSelectedBagItem(openAll=false){
  if(!selected||selected.loading||busy)return;
  const id=selected.id,owned=Number(state.items[String(id)]||0);
  const count=openAll?owned:Number($('bag-use-count').value);
+ if(selected.kind==='soul_receive'){
+   if(openAll){error('Hãy chọn từ 1 đến 10 món mỗi lần.');return;}
+   if(!Number.isSafeInteger(count)||count<1||count>Math.min(10,owned,selected.options.max_per_use)){
+     error('Số lượng Trang Bị Linh Hồn không hợp lệ.');return;
+   }
+   const msg='Nhận '+count+' × '+bagVi(selected.name)+' thành Trang Bị Linh Hồn riêng lẻ? Mỗi món nhận sẽ trừ 1 vật phẩm đang xếp chồng. Đá Linh Hồn có thuộc tính ngẫu nhiên.';
+   const confirmed=typeof GirlUI!=='undefined'&&GirlUI.confirm?
+     await GirlUI.confirm(msg,{title:'Xác Nhận Nhận Trang Bị',ok:'Nhận Trang Bị',cancel:'Hủy'}):confirm(msg);
+   if(!confirmed)return;
+   if(!currentBagUse||String(currentBagUse.id)!==String(id)||busy)return;
+   const button=$('bag-detail-use');button.disabled=true;busy=true;
+   try{
+     const result=await api('/api/souls/action',{action:'receive_inventory_gear',item_id:id,count});
+     state=result.state;$('bag-detail').hidden=true;currentBagUse=null;
+     render();error('');
+     if(typeof GirlUI!=='undefined')GirlUI.toast('Đã nhận '+number(result.got?.length||count)+' Trang Bị Linh Hồn.');
+   }catch(e){error(e.message);}
+   finally{busy=false;button.disabled=false;}
+   return;
+ }
  const threshold=Number(selected.options.open_all_threshold||150);
  if((openAll&&owned<=threshold)||(!openAll&&(!Number.isSafeInteger(count)||count<1||count>Math.min(owned,selected.options.max_per_use)))){
    error(openAll?'Mở Tất Cả chỉ dùng khi có trên '+number(threshold)+' vật phẩm.':'Số lượng vật phẩm không hợp lệ');return;

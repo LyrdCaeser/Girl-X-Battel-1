@@ -55,7 +55,7 @@ async function testSavedWallpaper(){
  ctx.state.profile.wallpapers=[42001];
  assert.equal(vm.runInContext('Wallpaper.heroSrc(0)',ctx),'/assets/pictures/42001.webp');
  assert.deepEqual(before,[41001], 'the saved wallpaper list is not mutated');
- assert.equal(html.includes('/app.js?v=20261116-profile-fit-r3'),true);
+ assert.equal(html.includes('/app.js?v=20261117-anima-convert-r4'),true);
  assert.equal(html.includes('/wallpaper.js?v=20261116-remove-home-41001-r3'),true);
 }
 

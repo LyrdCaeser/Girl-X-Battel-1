@@ -123,9 +123,62 @@ window.GxbBagVi=(()=>{
   [/\bMonster\b/gi,'Yêu tộc'],[/\bFairy\b/gi,'Tiên tộc'],
   [/\bResource\b/gi,'tài nguyên'],[/\bItem\b/gi,'vật phẩm']
  ];
+ const SOUL_SETS=Object.freeze({
+  'Lucky Goldfish':'Cá Vàng May Mắn','Floating Jellyfish':'Sứa Trôi Nổi',
+  'Rock Crab':'Cua Đá','Ghostly Goat':'Dê Ma','Fiery Qilin':'Kỳ Lân Lửa',
+  'Cunning Lizard':'Thằn Lằn Tinh Ranh','Nine-Tailed Fox':'Cáo Chín Đuôi',
+  'Weaver Kitty':'Mèo Dệt Vải','Majestic Phoenix':'Phượng Hoàng Uy Nghi'
+ });
+ const SOUL_ARTIFACTS=Object.freeze({
+  'Emerald Quill':'Bút Lông Ngọc Lục',
+  'Dreamy Antlers':'Sừng Mộng Mơ',
+  'Acorn of Plenty':'Hạt Sồi Trù Phú',
+  'Scaled Cleaver':'Đao Vảy Rồng',
+  'Fungirite':'Nấm Linh Thạch',
+  'Buried Fossil':'Hóa Thạch Chôn Vùi',
+  'Bottle of Sand':'Bình Cát',
+  'Mystical Butterfly':'Bướm Huyền Bí',
+  'Unearthly Tentacle':'Xúc Tu Dị Giới',
+  'Kitsune Mask':'Mặt Nạ Hồ Ly',
+  'Singing Shell':'Vỏ Sò Ca Hát',
+  "Predator's Gaze":'Ánh Nhìn Thợ Săn',
+  'Abyssal Amulet':'Bùa Vực Sâu',
+  'Force of Nature':'Sức Mạnh Thiên Nhiên',
+  'Kitty Claws':'Vuốt Mèo',
+  'Dream Catcher':'Lưới Bắt Mộng',
+  "Viper's Curse":'Lời Nguyền Rắn Độc',
+  "Lovebird's Potion":'Thuốc Uyên Ương',
+  'Horned Headdress':'Mũ Sừng',
+  'Ancient Coin':'Đồng Tiền Cổ',
+  'Thunder Potion':'Thuốc Sấm Sét',
+  'Objeto 5100022':'Bảo Vật Linh Hồn #5100022',
+  'Objeto 5100023':'Bảo Vật Linh Hồn #5100023',
+  'Objeto 5100024':'Bảo Vật Linh Hồn #5100024'
+ });
+ const SOUL_PRIMARY=Object.freeze({
+  1:'Tấn Công',
+  2:'Sinh Lực',
+  3:'Bạo Kích / Chính Xác / Lượng Hồi Máu / Khống Chế / Sát Thương Thánh / Sát Thương Kỹ Năng',
+  4:'Kháng Bạo Kích / Chặn Đòn / Hồi Máu Nhận / Miễn Khống Chế / Sát Thương Thánh / Sát Thương Kỹ Năng'
+ });
+ const originalStoneName=s=>{
+  const m=String(s).match(/^(.+?)\s*·\s*([1-4])$/);
+  return m&&SOUL_SETS[m[1]]?(SOUL_SETS[m[1]]+' · '+['I','II','III','IV'][Number(m[2])-1]):null;
+ };
+ const originalStoneDescription=s=>{
+  const m=String(s).match(/^Slot\s+([1-4])\s+Anima Stone of ["“](.+?)["”] set, Primary Attribute provides/i);
+  if(!m||!SOUL_SETS[m[2]])return null;
+  const pos=Number(m[1]);
+  return 'Đá Linh Hồn thuộc bộ '+SOUL_SETS[m[2]]+' · Ô '+pos+
+    '. Thuộc tính chính: '+SOUL_PRIMARY[pos]+
+    (pos>2?' (nhận ngẫu nhiên một thuộc tính).':'.')+
+    ' Có thể nhận thành Trang Bị Linh Hồn riêng lẻ, dùng cho Nữ Thần cấp 200 trở lên.';
+ };
  const t=value=>{
   const s=String(value??'').trim();
   if(!s)return s;
+  const stone=SOUL_ARTIFACTS[s]||originalStoneName(s)||originalStoneDescription(s);
+  if(stone)return stone;
   if(Object.prototype.hasOwnProperty.call(exact,s))return exact[s];
 
   // Descriptions from the original optional reward table include label*amount
