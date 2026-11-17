@@ -32,6 +32,6 @@ class WishVietnameseTests(unittest.TestCase):
   js=(ROOT/'web/wish.js').read_text()
   html=(ROOT/'web/index.html').read_text()
   self.assertIn("T('WISH_GACHA_TIPS_3')",js)
-  self.assertIn('/assets/wish.json?v=20261117-full-vi-r1',js)
-  self.assertIn('/wish.js?v=20261117-full-vi-r1',html)
+  self.assertIn('/assets/wish.json?v=20261117-wish-localization-r3',js)
+  self.assertIn('/wish.js?v=20261117-localization-cacheguard-r3',html)
 if __name__=='__main__':unittest.main()
