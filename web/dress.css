@@ -69,3 +69,13 @@
 .dr-dollbox{padding-bottom:calc(100 * var(--u))}
 .dr-tri{margin:calc(70 * var(--u)) 0 calc(70 * var(--u));max-width:calc(260 * var(--u))}
 .dr-tv.left{left:-18%;bottom:-30%}.dr-tv.right{right:-18%;bottom:-30%}.dr-tv.top{top:-30%}
+
+
+/* Outfit integrity: unavailable source art is not represented as an owned,
+   usable outfit. Retain the original card/slot layout and native art. */
+.dr-card.dr-unavailable{display:flex;align-items:center;justify-content:center;
+ color:#65718a;background:#e3e7ed;font-size:calc(20 * var(--u));
+ font-weight:700;padding:calc(8 * var(--u));text-align:center;cursor:default;
+ opacity:.7;box-sizing:border-box}
+.dr-drawbtn:disabled{opacity:.55;filter:grayscale(.85);cursor:not-allowed}
+.dr-tab{font-size:calc(23 * var(--u));line-height:1.2;min-width:0;overflow-wrap:break-word}
