@@ -173,6 +173,28 @@ def action(state, request, rng=None):
         rec = items.get(str(request.get('soul_id')))
         if not rec: raise SoulError('Không tìm thấy Trang Bị Linh Hồn')
         return rec
+    if act == 'receive_inventory_gear':
+        # Older rewards also exist as stackable item IDs. Claiming them is
+        # explicit: the original item stack is debited once and replaced by
+        # individually owned SoulEquip records, in the surrounding Neon
+        # transaction. No automatic migration and no invented equipment.
+        try:
+            tid = int(request.get('item_id'))
+            count = int(request.get('count'))
+        except (TypeError, ValueError, OverflowError):
+            raise SoulError('Mã hoặc số lượng Trang Bị Linh Hồn không hợp lệ') from None
+        if str(tid) not in E1 and str(tid) not in E2:
+            raise SoulError('Vật phẩm này không phải Trang Bị Linh Hồn hợp lệ')
+        if not 1 <= count <= 10:
+            raise SoulError('Mỗi lần chỉ được nhận từ 1 đến 10 Trang Bị Linh Hồn')
+        stock = state.setdefault('items', {})
+        if int(stock.get(str(tid), 0)) < count:
+            raise SoulError('Không đủ Đá hoặc Bảo Vật Linh Hồn trong túi')
+        if len(items) + count > LIMIT:
+            raise SoulError('Túi Trang Bị Linh Hồn không đủ chỗ trống')
+        charge(state, {str(tid): count})
+        received = [int(new_soul(state, tid, rng)) for _ in range(count)]
+        return {'got': received, 'item_id': tid, 'count': count}
     if act in ('plan_save', 'plan_apply', 'plan_delete'):
         p = partner()
         if int(p.get('lv', 0)) < OPEN_LV:
