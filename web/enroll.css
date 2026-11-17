@@ -72,3 +72,11 @@
 .ex2-pstars{position:absolute;left:0;right:0;bottom:2%;display:flex;justify-content:center}.ex2-pstars img{width:16%}
 .ex2-empty{grid-column:1/-1;text-align:center;color:#7a86a6;font-size:calc(20 * var(--u))}
 .ex2-border{inset:0;border-style:solid;border-color:transparent;border-width:0 calc(8 * var(--u)) 0 calc(46 * var(--u));border-image:url('/assets/enroll/partner_large_card.png') 0 8 0 46 fill / 0 calc(8 * var(--u)) 0 calc(46 * var(--u)) stretch;pointer-events:none}
+
+.en-vi-help-content{max-height:min(65dvh,620px);overflow-y:auto;touch-action:pan-y;padding:10px 12px;color:#42536d}
+.en-vi-help-line{font-size:15px;line-height:1.5;overflow-wrap:anywhere;margin:0 0 12px}
+
+
+/* Long official Vietnamese faction names fit without overlapping the stamp. */
+.en-group.on{min-width:calc(320 * var(--u));max-width:calc(335 * var(--u))}
+.en-group-name{font-size:calc(24 * var(--u));line-height:1.15;min-width:0;max-width:calc(195 * var(--u));white-space:normal;overflow-wrap:break-word}
