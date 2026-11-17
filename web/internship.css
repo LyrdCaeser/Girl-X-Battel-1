@@ -76,3 +76,22 @@
 /* TavernWindow choosePart/btnContent/btnRefresh: switch_btn, right of the seven star filters. */
 .in-refresh-native{flex:none;width:38px;height:38px;padding:0;border:0;background:none;cursor:pointer}.in-refresh-native img{width:100%;height:100%;object-fit:contain}
 .in-refresh-cost{display:flex;align-items:center;gap:8px;justify-content:center;margin:12px 0}
+
+
+/* Vietnamese header text in place of the original English-only title bitmap.
+   Preserve the 720×1280 TavernWindow geometry and navigation position. */
+.in-title-vi{
+ display:flex;align-items:center;justify-content:center;
+ height:calc(80 * var(--u));max-width:calc(500 * var(--u));
+ color:#28689a;font:900 calc(68 * var(--u))/1 system-ui;
+ letter-spacing:calc(1 * var(--u));white-space:nowrap;
+ -webkit-text-stroke:calc(5 * var(--u)) #fff;
+ paint-order:stroke fill;
+ text-shadow:0 calc(4 * var(--u)) calc(2 * var(--u)) #213e6c;
+}
+.in-helpwin .gs-body,.in-helpwin .gs-window-body{
+ max-height:60dvh;overflow-y:auto;touch-action:pan-y;
+}
+
+.in-help-content{max-height:min(64dvh,600px);overflow:auto;touch-action:pan-y;padding:8px 12px;color:#405474}
+.in-help-paragraph{margin:0 0 12px;line-height:1.5;font-size:15px;overflow-wrap:anywhere}
