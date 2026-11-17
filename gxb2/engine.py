@@ -1178,6 +1178,9 @@ class Engine:
             'friend_hearts': state['items'].get('11', 0),
             'egg_points': state['items'].get('12', 0),
             'egg_cost': int(item_pairs(TABLES['summon']['9']['cost'])[12]),
+            'egg_vip_required': 3,
+            'egg_starter_available': not bool(state.get('egg_starter_used')),
+            'egg_vip_unlocked': vip.level_for(vip.exp(state)) >= 3,
         }
         state['debris'] = []
         for item_id, item in DEBRIS.items():
@@ -3163,6 +3166,12 @@ class Engine:
             prophet = summon_id in PROPHET_SUMMONS
             if summon_id not in (1, 2, 3, 4, 5, 6, 7, 8, 9, 15, 16) + wish.SUMMONS and not prophet and not fragment_summon: raise GameError('Tipo de invocación no disponible')
             if summon_id in wish.SUMMONS and not wish.data(state)['select']: raise GameError('Please choose your Wish Girl')
+            # Original Egg requires VIP 3. The 1,000 starter Egg Points permit
+            # exactly one first claim, without paid VIP or granting extra items.
+            if summon_id == 9 and not state.get('egg_starter_used') and int(state['items'].get('12', 0)) >= 1000:
+                pass
+            elif summon_id == 9 and vip.level_for(vip.exp(state)) < 3:
+                raise GameError('Trứng Vàng yêu cầu VIP 3 sau lượt mở đầu tiên')
             config = TABLES['summon'][str(summon_id)]
             times = integer(request.get('times', 1), 'times', 1, 50 if fragment_summon else 10)
             # Publisher summon data determines every per-draw cost and reward; bulk
@@ -3225,6 +3234,8 @@ class Engine:
                 new.append(partner)
                 state['partners'].append(partner)
             state['next_partner_id'] = next_id
+            if summon_id == 9:
+                state['egg_starter_used'] = True
             # Original summon.award grants BAODI_ENERGY (12), distinct from FRIEND_LOVE (11).
             for key, amount in item_pairs(config.get('award')).items():
                 if key and amount: state['items'][str(key)] = int(state['items'].get(str(key), 0)) + amount

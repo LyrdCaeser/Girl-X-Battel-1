@@ -417,3 +417,26 @@ body:has(#girls-view:not([hidden])){background:#d4dfeb}#girls-return{margin-righ
 .battlefield .unit.dead .hp,
 .battlefield .unit.dead .unit-status,
 .battlefield .unit.dead .unit-buffs {visibility:hidden!important}
+
+
+/* Capsule artwork is unchanged; only the English title sprites are replaced
+   with Vietnamese labels in the same original panels. No new frame images. */
+#capsule-view{width:min(490px,100%);box-sizing:border-box;overflow-x:clip}
+#capsule-view .capsule-banner{width:calc(100% - 16px);box-sizing:border-box;
+ grid-template-columns:minmax(0,39fr) minmax(0,61fr);overflow:hidden}
+#capsule-view .capsule-banner-art,#capsule-view .capsule-banner-controls{min-width:0;max-width:100%}
+#capsule-view .capsule-banner .capsule-real-title{display:none}
+#capsule-view .capsule-title-vi{display:block;max-width:100%;align-self:start;
+ font:900 clamp(13px,3vw,19px)/1.12 system-ui;color:#2b7a9b;text-shadow:0 1px #fff,1px 1px #fff;
+ overflow-wrap:anywhere}
+#capsule-view .capsule-banner.regular .capsule-title-vi,
+#capsule-view .capsule-banner.bff .capsule-title-vi{order:-1}
+#capsule-view .capsule-banner.advanced .capsule-title-vi{order:-1;align-self:center;color:#a87519}
+#capsule-view .capsule-banner.bff .capsule-title-vi{color:#478a3d}
+#capsule-view .capsule-buttons{min-width:0;grid-template-columns:repeat(2,minmax(0,1fr))}
+#capsule-view .capsule-draw{min-width:0;max-width:100%;white-space:normal;overflow-wrap:anywhere}
+#capsule-view .capsule-egg{box-sizing:border-box;min-width:0;align-items:center;padding:3px 12px;height:66px}
+#capsule-view .capsule-egg-meter{min-width:0}
+#capsule-view .capsule-egg button{display:flex;flex-direction:column;align-items:center;justify-content:center;height:60px;flex:0 0 70px}
+#capsule-view .capsule-egg button:disabled{filter:grayscale(.65);opacity:.7}
+#capsule-view .capsule-banner.advanced{aspect-ratio:auto}

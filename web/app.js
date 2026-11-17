@@ -706,6 +706,7 @@ function render(){
  if(view==='girls')renderGirls();
  if(view==='detail')renderGirlDetail();
  if(view==='bag')renderBag();
+ if(view==='capsule')renderCapsule();
  if(view==='events'&&typeof EventsHub!=='undefined')EventsHub.render();
  if(view==='smithy'&&typeof Equipment!=='undefined')Equipment.renderSmithy();
  if(typeof Enroll!=='undefined')Enroll.render();
@@ -776,6 +777,52 @@ async function action(message,data){if(busy)return;busy=true;error('');render();
   }
  }
  return res;}catch(e){summonWaitStop?.();error(e.message);if(view==='capsule')$('capsule-result').textContent=e.message;}finally{busy=false;render();}}
+// Render actual inventory / cooldown / VIP entitlement in the original
+// three capsule panels. Keep the native panel art and button textures.
+function renderCapsule(){
+ const q=state.summon||{},stock=state.items||{},vip=Number(state.vip_info?.level||0);
+ const assign=(id,value)=>{const el=$(id);if(el)el.textContent=String(value);};
+ const mark=(id,text,cost,available)=>{
+  const button=$(id);if(!button)return;
+  const first=button.firstChild;
+  if(first?.nodeType===3)first.nodeValue=text;else button.prepend(document.createTextNode(text));
+  const strong=button.querySelector('strong');
+  if(strong){const node=strong.firstChild;if(node?.nodeType===3)node.nodeValue=cost;else strong.prepend(document.createTextNode(cost));}
+  button.disabled=busy||!available;
+ };
+ assign('capsule-gold',number(stock['1']||0));assign('capsule-gems',number(stock['2']||0));
+ assign('regular-count',number(stock['33']||0));assign('advanced-count',number(stock['36']||0));
+ assign('bff-count',number(stock['11']||0));assign('regular-stock','Vé thường: '+number(stock['33']||0));
+ assign('regular-free',q.free_ready?'Đang có lượt miễn phí':'Chưa đến lượt miễn phí');
+ assign('advanced-free',q.senior_free_ready?'Đang có lượt cao cấp miễn phí':'Chưa đến lượt cao cấp miễn phí');
+ const eggPoints=Number(q.egg_points??stock['12']??0),eggCost=Number(q.egg_cost)||1000;
+ assign('capsule-egg-points',number(eggPoints)+' / '+number(eggCost));
+ const fill=$('capsule-egg-fill');if(fill)fill.style.width=Math.max(0,Math.min(100,eggPoints/eggCost*100))+'%';
+ const starter=q.egg_starter_available===true,vipAllowed=q.egg_vip_unlocked===true;
+ const egg=$('summon-egg');egg.disabled=busy||eggPoints<eggCost||!(starter||vipAllowed);
+ egg.title=starter?'Lượt mở đầu bằng 1.000 Điểm Trứng Vàng':
+   vipAllowed?'Mở Trứng Vàng bằng Điểm Trứng Vàng':'Yêu cầu VIP 3 sau lượt mở đầu';
+ egg.setAttribute('aria-label',egg.title);
+ const eggText=egg.querySelector('small');
+ if(eggText)eggText.textContent=starter?'Mở đầu · 5★':vipAllowed?'Mở · 5★':'VIP 3';
+ mark('summon-free','Miễn Phí','1 lượt',q.free_ready===true);
+ mark('summon-one','Triệu Hồi 1','1 vé',Number(stock['33']||0)>=1);
+ mark('summon-ten','Triệu Hồi 10','10 vé',Number(stock['33']||0)>=10);
+ mark('summon-senior-free','Miễn Phí','1 lượt',q.senior_free_ready===true);
+ mark('summon-senior-one','Triệu Hồi 1','1 vé',Number(stock['36']||0)>=1);
+ mark('summon-senior-ten','Triệu Hồi 10','10 vé',Number(stock['36']||0)>=10);
+ mark('summon-senior-gem-one','Dùng Kim Cương ×1','250 ',Number(stock['2']||0)>=250);
+ mark('summon-senior-gem-ten','Dùng Kim Cương ×10','2.200 ',Number(stock['2']||0)>=2200);
+ mark('summon-bff-one','Triệu Hồi 1','10 Tim',Number(stock['11']||0)>=10);
+ mark('summon-bff-ten','Triệu Hồi 10','100 Tim',Number(stock['11']||0)>=100);
+ for(const [cls,label] of [['regular','Triệu Hồi Thường'],['advanced','Triệu Hồi Cao Cấp'],['bff','Triệu Hồi Bạn Bè']]){
+  const banner=document.querySelector('#capsule-view .capsule-banner.'+cls);
+  if(!banner||banner.querySelector('.capsule-title-vi'))continue;
+  const text=document.createElement('span');text.className='capsule-title-vi';text.textContent=label;
+  const target=cls==='advanced'?banner.querySelector('.capsule-banner-controls'):banner.querySelector('.capsule-banner-art');
+  if(target)target.append(text);
+ }
+}
 function renderSummon(partners){$('capsule-result').replaceChildren();for(const partner of partners){const card=node('div','capsule-result-card'),name=state.roster.find(v=>v.partner_id===partner.partner_id)?.name||String(partner.table_id);card.append(portrait(partner.table_id,74),node('strong','',name));$('capsule-result').append(card);}}
 function renderShardSummon(partners){$('shard-draw-result').replaceChildren();if(!partners.length)return;$('shard-draw-result').append(node('h3','',"Đã chiêu mộ Nữ Thần mới!"));const grid=node('div','shard-new-girls');for(const partner of partners){const h=state.roster.find(v=>v.partner_id===partner.partner_id);if(typeof SummonResult!=='undefined')grid.append(SummonResult.heroIcon({table_id:partner.table_id,star:h?.stars||partner.star,name:h?.name}));else grid.append(portrait(partner.table_id,74));}$('shard-draw-result').append(grid);}
 
