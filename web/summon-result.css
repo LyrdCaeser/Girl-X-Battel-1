@@ -20,3 +20,6 @@
 .shard-new-girls{--u:0.7px;display:flex;flex-wrap:wrap;gap:18px;padding:12px}
 
 .sr-stars.red{color:#ff5e86;font-size:calc(22 * var(--u));font-weight:900;text-shadow:0 1px 2px #5e1530}
+
+.sr-av.sr-av-unavailable{visibility:hidden}
+.sr-btn.draw{font-size:calc(23 * var(--u));line-height:1.05;text-align:center}
