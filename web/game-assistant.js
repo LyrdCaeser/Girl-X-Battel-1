@@ -36,7 +36,16 @@ const GameAssistant=(()=>{
  function render(){const y=(tab===lastRenderedTab?wrap?.querySelector('.ga2-scroll')?.scrollTop:0)||0;lastRenderedTab=tab;wrap?.remove();wrap=el('div','ga2-wrap');wrap.onclick=e=>{if(e.target===wrap)close();};const st=el('div','ga2-stage');wrap.append(st);
   st.append(at(el('div','ga2-bg'),0,0,680,1127));
   const title=at(el('b','ga2-title','Trợ Lý Trò Chơi'),0,457,350,40);const x=at(el('button','ga2-x'),307,456,40,40);x.type='button';x.setAttribute('aria-label',"Đóng Trợ Lý Trò Chơi");x.style.backgroundImage=`url('${A('close_btn_2')}')`;x.onclick=close;
-  const help=at(el('button','ga2-help'),-306,456,42,42);help.type='button';help.setAttribute('aria-label',"Hướng Dẫn Trợ Lý Trò Chơi");help.style.backgroundImage=`url('${A('btn_tips')}')`;help.onclick=()=>CampaignUI.popup("Trợ Lý Trò Chơi\n\nHằng ngày: Luyện Kim, nhận thưởng Chiến Dịch, Câu Hỏi Hằng Ngày, Triệu Hồi, Đấu Trường, Thực Tập, Hòm Thư và Nhiệm Vụ.\nThử Thách: Khảo Thí Học Viện bằng Giấy Chứng Nhận (quét ải cao nhất đã vượt).\nPhát Triển: nhận tài nguyên Thám Hiểm và mua Bánh Mì.\nBang Hội: điểm danh và nhận nhiệm vụ Nhà Ăn khi có thể.\n\nTrợ Lý sẽ thực hiện lần lượt từng việc. Việc nào chưa mở sẽ tự động bỏ qua.",{});
+  const help=at(el('button','ga2-help'),-306,456,42,42);
+  help.type='button';help.setAttribute('aria-label','Hướng Dẫn Trợ Lý Trò Chơi');
+  help.style.backgroundImage="url('"+A('btn_tips')+"')";
+  help.onclick=()=>assistantNotice('Hướng Dẫn Trợ Lý',[
+   'Hằng Ngày: Luyện Kim, nhận thưởng Chiến Dịch, Câu Hỏi Hằng Ngày, Triệu Hồi, Đấu Trường, Thực Tập, Hòm Thư và Nhiệm Vụ.',
+   'Thử Thách: Khảo Thí Học Viện bằng Giấy Chứng Nhận, quét ải cao nhất đã vượt qua.',
+   'Phát Triển: nhận tài nguyên Thám Hiểm và mua Bánh Mì.',
+   'Bang Hội: điểm danh và bắt đầu đơn hàng Nhà Ăn khi có thể.',
+   'Trợ Lý thực hiện từng việc theo điều kiện hiện tại. Những việc chưa đủ điều kiện sẽ được ghi rõ trong Tổng Kết.'
+  ]);
   st.append(title,x,help);
   TABS.forEach(([n,ic],i)=>{const b=at(el('button','ga2-tab'+(tab===i?' on':'')),-243+162*i,373,164,116);b.type='button';b.style.backgroundImage=`url('${A(tab===i?'gameAssistant_btn_yxzs_gl':'gameAssistant_btn_yxzs_glzc')}')`;b.append(img(A('gameAssistant_btn_yxzs_'+ic)));b.title=n;b.onclick=()=>{tab=i;render();};st.append(b);});
   st.append(at(el('div','ga2-bg2'),0,-71,630,744),at(el('b','ga2-page',TABS[tab][0]),2,269,300,40));
@@ -57,16 +66,108 @@ const GameAssistant=(()=>{
   else if(kind==='houses'){const hs=el('div','ga2-houses');HOUSES.forEach((n,i)=>{const b=el('button','ga2-house'+(Number(cfg.opts.house||1)===i+1?' on':''));b.type='button';b.title='Hệ '+n;b.append(img('/assets/factions/'+(i+1)+'.png'));b.onclick=()=>{cfg.opts.house=i+1;save();render();};hs.append(b);});r.append(hs);}
   return r;}
  async function run(keys){const steps=keys.filter(k=>cfg.on[k]);const o=cfg.opts;if(o.midas_buy>0&&cfg.on.midas!==undefined&&keys.includes('midas'))steps.includes('midas')||steps.push('midas');
-  if(keys.includes('exam')&&cfg.on.exam&&!o.house_raids){CampaignUI.popup("Chọn số lượt quét bằng Giấy Chứng Nhận.",{});return;}
-  if(!steps.length){CampaignUI.popup('Hiện chưa có thao tác nào có thể thực hiện',{});return;}
+  if(keys.includes('exam')&&cfg.on.exam&&!o.house_raids){assistantNotice('Thông Báo','Hãy chọn số lượt quét ải bằng Giấy Chứng Nhận.');return;}
+  if(!steps.length){assistantNotice('Thông Báo','Hiện chưa có thao tác nào có thể thực hiện.');return;}
   busy=true;render();try{const r=await api('/api/assistant/run',{steps,opts:{midas_buy:keys.includes('midas_buy')||keys.includes('midas')?o.midas_buy:0,house:o.house,house_raids:o.house_raids,bread:keys.includes('excursion')?o.bread:0}});state=r.state;if(typeof render==='function'&&window.render)window.render();busy=false;close();overview(r.report);}
-  catch(e){busy=false;render();CampaignUI.popup(e.message,{});}}
- // GameAssistantResultWindow: "Overview · Completed", one titled block per step with its rewards
- function overview(report){const w=el('div','ga2-wrap');const box=el('div','ga2-over');w.append(box);box.append(el('b','ga2-otitle','Tổng Kết'),el('p','ga2-done','⌛ Hoàn tất'));const list=el('div','ga2-olist');
-  for(const s of report){const b=el('div','ga2-res'+(s.ok?'':' skip'));b.append(el('b','',s.label));
-   if(s.ok){const g=el('div','ga2-items');for(const [k,v]of Object.entries(s.got||{})){if(k==='battles'||k==='orders'){g.append(el('small','',v+(k==='battles'?' trận':' đơn hàng')));continue;}const c=el('span','ga2-item');const ic=icon(k);if(ic)c.append(img(ic));c.append(el('small','',number(v)));c.title=itemCatalog?.[k]?.name||k;g.append(c);}if(!g.childElementCount)g.append(el('small','','Hoàn tất'));b.append(g);}
-   else b.append(el('small','ga2-skip',s.error||'Đã bỏ qua'));list.append(b);}
-  box.append(list);const ok=el('button','ga2-btn blue','Xác Nhận');ok.type='button';ok.style.backgroundImage=`url('${A('blue_btn70_70')}')`;ok.onclick=()=>w.remove();box.append(ok);(window.GxbFrame?.root()||document.body).append(w);}
+  catch(e){busy=false;render();assistantNotice('Thông Báo',resultError(e.message));}}
+ // Assistant help/validation dialogs share the original window frame.
+ // A complete set of instructions must not become a giant title popup.
+ function assistantNotice(title,content){
+  const w=el('div','ga2-wrap ga2-result-wrap'),box=el('section','ga2-over ga2-help-over');
+  box.setAttribute('role','dialog');box.setAttribute('aria-modal','true');
+  box.setAttribute('aria-label',title);w.append(box);
+  box.append(el('h2','ga2-otitle',title));
+  const list=el('div','ga2-olist ga2-help-list');
+  list.setAttribute('role','region');list.setAttribute('aria-label','Nội dung hướng dẫn');
+  list.setAttribute('tabindex','0');
+  for(const item of (Array.isArray(content)?content:[content])){
+   list.append(el('p','ga2-help-text',String(item)));
+  }
+  box.append(list);
+  const foot=el('div','ga2-over-foot'),ok=el('button','ga2-confirm','Đóng');
+  ok.type='button';ok.onclick=()=>w.remove();
+  foot.append(ok);box.append(foot);
+  (window.GxbFrame?.root()||document.body).append(w);
+  return w;
+ }
+ // GameAssistantResultWindow: reuse the original 9gongge21 window skin.
+ // The reward list alone scrolls; title and confirmation stay visible.
+ const RESULT_NAMES={
+  'Alchemy':'Luyện Kim',
+  'Alchemy · Purchase with Gems':'Luyện Kim · Mua bằng Kim Cương',
+  'Dorm Resource':'Nhận tài nguyên Ký Túc Xá',
+  'Daily Quiz Reward':'Câu Hỏi Hằng Ngày',
+  'House Exam Raid Reward':'Khảo Thí Học Viện · Quét Ải',
+  'Excursion - Resource Collection':'Thám Hiểm · Nhận tài nguyên',
+  'Excursion - Tasty Bread Purchase':'Thám Hiểm · Mua Bánh Mì',
+  'Guild - Sign in':'Bang Hội · Điểm Danh',
+  'Cafeteria - Start Order':'Nhà Ăn · Bắt Đầu Đơn Hàng',
+  'Claim Campaign Loot':'Nhận thưởng Chiến Dịch',
+  'Regular Capsule':'Triệu Hồi Thường','Adv. Capsule':'Triệu Hồi Cao Cấp',
+  'Mail':'Nhận Thư','Internship':'Thực Tập','Junior Varsity':'Đấu Trường Sơ Cấp',
+  'Daily Tasks':'Nhiệm Vụ Hằng Ngày'
+ };
+ const RESULT_ERRORS={
+  'Ya usada hoy':'Đã sử dụng lượt miễn phí hôm nay',
+  'Ninguna terminada':'Chưa có lượt Thực Tập nào hoàn tất',
+  'Sin batallas gratis':'Đã hết lượt Đấu Trường miễn phí',
+  'Nada que reclamar':'Chưa có phần thưởng để nhận',
+  'Nada que hacer':'Không có thao tác có thể thực hiện',
+  'Sin intentos o sin dificultades superadas':'Không còn lượt hoặc chưa vượt qua độ khó nào',
+  'Stage not cleared yet':'Chưa vượt qua ải Khảo Thí này',
+  'Elige cuántos Raids':'Hãy chọn số lượt quét ải',
+  'Todavía no hay recursos para recoger':'Chưa có tài nguyên để thu thập',
+  'No hay pedidos por empezar':'Không có đơn hàng nào để bắt đầu'
+ };
+ const resultLabel=s=>RESULT_NAMES[String(s?.label||'')]||({
+  midas:'Luyện Kim',dorm:'Nhận tài nguyên Ký Túc Xá',
+  quiz:'Câu Hỏi Hằng Ngày',exam:'Khảo Thí Học Viện',excursion:'Thám Hiểm',
+  guild_sign:'Bang Hội · Điểm Danh',guild_order:'Nhà Ăn · Bắt Đầu Đơn Hàng',
+  campaign:'Nhận thưởng Chiến Dịch',capsule:'Triệu Hồi Thường',
+  senior:'Triệu Hồi Cao Cấp',mail:'Nhận Thư',internship:'Thực Tập',
+  arena:'Đấu Trường Sơ Cấp',daily:'Nhiệm Vụ Hằng Ngày'
+ })[s?.key]||String(s?.label||'Hoạt động');
+ const resultError=s=>{
+  const raw=String(s||'Đã bỏ qua');
+  const localized=RESULT_ERRORS[raw]||window.GxbVi?.t?.(raw)||raw;
+  return localized;
+ };
+ function overview(report){
+  const w=el('div','ga2-wrap ga2-result-wrap');
+  const box=el('section','ga2-over');box.setAttribute('role','dialog');box.setAttribute('aria-modal','true');box.setAttribute('aria-label','Tổng Kết Trợ Lý Trò Chơi');
+  w.append(box);
+  box.append(el('h2','ga2-otitle','Tổng Kết'),el('p','ga2-done','Hoàn Tất'));
+  const list=el('div','ga2-olist');list.setAttribute('role','region');list.setAttribute('aria-label','Danh sách kết quả');list.setAttribute('tabindex','0');
+  for(const s of (Array.isArray(report)?report:[])){
+   const b=el('div','ga2-res'+(s.ok?'':' skip'));
+   b.append(el('b','ga2-res-label',resultLabel(s)));
+   if(s.ok){
+    const g=el('div','ga2-items');
+    for(const [k,v] of Object.entries(s.got||{})){
+     if(k==='battles'||k==='orders'){
+      g.append(el('small','ga2-count',number(v)+(k==='battles'?' trận':' đơn hàng')));
+      continue;
+     }
+     const c=el('span','ga2-item'),ic=icon(k);
+     if(ic)c.append(img(ic));c.append(el('small','',number(v)));
+     c.title=window.GxbBagVi?.t?.(itemCatalog?.[k]?.name||k)||itemCatalog?.[k]?.name||k;
+     g.append(c);
+    }
+    if(!g.childElementCount)g.append(el('small','','Đã hoàn thành'));
+    b.append(g);
+   }else b.append(el('small','ga2-skip',resultError(s.error)));
+   list.append(b);
+  }
+  if(!list.childElementCount)list.append(el('p','ga2-empty','Chưa có hoạt động nào được thực hiện.'));
+  box.append(list);
+  const foot=el('div','ga2-over-foot');
+  const ok=el('button','ga2-confirm','Xác Nhận');ok.type='button';
+  ok.onclick=()=>w.remove();foot.append(ok);box.append(foot);
+  // Keep within the game's own frame; independent scrolling avoids the
+  // clipped/overlapping footer that older overview dialogs suffered.
+  (window.GxbFrame?.root()||document.body).append(w);
+  return w;
+ }
  document.addEventListener('DOMContentLoaded',()=>{const side=document.querySelector('#home-view .home-stage');if(side&&!$('ga-open')){const b=el('button','ga-open');b.id='ga-open';b.type='button';b.title='Trợ Lý Trò Chơi';b.setAttribute('aria-label','Trợ Lý Trò Chơi');b.append(img('/assets/assistant/gameAssistant_icon_yxzs.png'),el('small','','Trợ Lý'));b.onclick=open;side.append(b);}});
  function homeSignals(s){
   const h=s.home_systems||{},m=s.missions_info||{},items=s.items||{};
