@@ -18,13 +18,16 @@ const SenpaiDoll=(()=>{
   const segOf={};for(const [kind,fig] of Object.entries(figs)){let seg='';for(const slot of fig.skeleton.drawOrder){const name=slot.data.name;if(/_layer\d*$/.test(name))seg=name;segOf[kind+':'+name]=seg;const target=layers.get(kind+':'+seg)||layers.get(kind+':');const c=fig.slotContainers[slot.data.index];if(c&&target)target.addChild(c);}}
   // headwear on the head skeleton, accessory on the body skeleton (SenpaiModel:initSlot: slot image + offset / scale /
   // rotation). The slot usually has no attachment (pixi-spine hides it), so a holder follows the slot's bone each frame.
+  // Use original head/body/legs to fit the chibi. Mũ/phụ kiện can extend
+  // far outside the skeleton; including them in bounds shrank every outfit.
+  const bodyBounds=root.getLocalBounds();
   const holders=[];
   for(const [pos,kind] of [[4,'head'],[5,'body']]){const st=cat.styles[String(styles[pos-1])];const fig=figs[kind];if(!st||!st.slot||!fig)continue;const slot=fig.skeleton.findSlot(st.slot);if(!slot)continue;
    const holder=new PIXI.Container();const sp=PIXI.Sprite.from('/assets/dress/slot/'+st.res+'.png');sp.anchor.set(.5);sp.position.set(st.offset[0]||0,st.offset[1]||0);sp.scale.set(st.scale[0]||1,-(st.scale[1]||1));sp.rotation=-(st.rotation||0)*Math.PI/180;/* Spine data is y-up, pixi-spine bones are y-down: flip the image and the angle *//* same convention as pixi-spine region attachments (yDown) */holder.addChild(sp);
    const layer=layers.get(kind+':'+(segOf[kind+':'+st.slot]||''))||root;const idx=fig.slotContainers[slot.data.index];layer.addChildAt(holder,Math.min(layer.children.length,idx&&idx.parent===layer?layer.getChildIndex(idx)+1:layer.children.length));holders.push([holder,slot]);}
   const follow=()=>{for(const [h,slot] of holders){const m=slot.bone.matrix||new PIXI.Matrix(slot.bone.a,slot.bone.c,slot.bone.b,slot.bone.d,slot.bone.worldX,slot.bone.worldY);h.transform.setFromMatrix(m);}};
   app.ticker.add(follow);follow();
-  const frame=()=>{root.scale.set(1);root.position.set(0,0);follow();const b=root.getLocalBounds();const s=Math.min(width*fit/Math.max(1,b.width),height*fit/Math.max(1,b.height));root.scale.set(s);root.x=width/2-(b.x+b.width/2)*s;root.y=height*.97-(b.y+b.height)*s;};
+  const frame=()=>{root.scale.set(1);root.position.set(0,0);follow();const b=bodyBounds.width>0&&bodyBounds.height>0?bodyBounds:root.getLocalBounds();const s=Math.min(width*fit/Math.max(1,b.width),height*fit/Math.max(1,b.height));root.scale.set(s);root.x=width/2-(b.x+b.width/2)*s;root.y=height*.97-(b.y+b.height)*s;};
   frame();app.stage.addChild(root);for(const [h] of holders){const t=h.children[0].texture;if(!t.baseTexture.valid)t.baseTexture.once('loaded',frame);}
   const handle={app,dead:false,idle:0,figures:figs,destroy(){if(handle.dead)return;handle.dead=true;GxbSpine.live.delete(handle);try{app.destroy(true,{children:true,texture:false,baseTexture:false});}catch{}}};GxbSpine.live.add(handle);return handle;}
 return {mount};
@@ -50,7 +53,13 @@ const Dress=(()=>{
     'Hat':'Mũ','Noble Badge':'Huy Hiệu Quý Tộc','Sacred Halo':'Hào Quang',
     'Surfing Board':'Ván Lướt Sóng','Animal Headband':'Băng Đô Thú',
     'Bell':'Chuông','Angel Wings':'Cánh Thiên Thần'};
-  return name.replace(/^([^()]+)(?= \()/,n=>labels[n]||n)||('Trang Phục '+did);
+  const m=/^(.+?) \(([^)]+)\)$/.exec(name);
+  if(m){
+    const groupId=cat.pieces[String(did)]?.group;
+    const translatedSet=cat.groups?.[String(groupId)]?.name||m[2];
+    return (labels[m[1]]||m[1])+' ('+translatedSet+')';
+  }
+  return labels[name]||name||('Trang Phục '+did);
  }
  function styleOf(did){const p=cat.pieces[String(did)];if(!p)return 0;const chosen=info()?.style?.[String(did)];return p.styles.includes(chosen)?chosen:(p.styles[0]||0);}
  function itemFor(did,star){const p=cat.pieces[String(did)];if(!p?.items?.length)return null;return cat.items[String(p.items[Math.max(1,Math.min(star,p.items.length))-1])]||null;}
@@ -86,7 +95,7 @@ const Dress=(()=>{
    if(!grid.children.length)grid.append(el('p','dr-note',"Chưa có trang phục thuộc loại này. Có thể nhận tại Cửa Hàng Trang Phục."));st.append(grid);return;}
   const panel=el('div','dr-panel');const at=el('div','dr-attr');at.append(el('b','dr-ph','Thuộc Tính Cộng Thêm'));at.append(triangle(I.attrs));at.append(btn('dr-btn blue','Cường Hóa Thuộc Tính',()=>{tab='closet';gallery=false;render();}));
   const sk=el('div','dr-skills');sk.append(el('b','dr-ph','Hiệu Ứng Đặc Biệt'));if(!I.skills.length){sk.append(el('p','dr-note','Chưa có hiệu ứng cộng thêm'));}
-  for(const id of I.skills){const t=(cat.skill_text[String(id)]||'').replace(/%%/g,'%');const row=el('div','dr-skill');row.append(el('span','',t),btn('dr-info','!',()=>{note=t;render();}));sk.append(row);}
+  for(const id of I.skills){const t=(cat.skill_text[String(id)]||'').replace(/%%/g,'%');const row=el('div','dr-skill');row.append(el('span','',t),btn('dr-info','!',()=>GirlUI.notice(t,{title:'Hiệu Ứng Đặc Biệt'})));sk.append(row);}
   panel.append(at,sk);st.append(panel);}
  function triangle(v){const w=el('div','dr-tri');const [c,ch,k]=v;const max=Math.max(1,...v);const pt=(i,val)=>{const a=[-90,150,30][i]*Math.PI/180,r=60*val/max;return [80+r*Math.cos(a),78+r*Math.sin(a)];};
   const svg=`<svg viewBox="0 0 160 150"><polygon points="80,18 28,108 132,108" fill="rgba(120,170,230,.18)" stroke="#8fb3e0" stroke-width="2"/><polygon points="${[0,1,2].map(i=>pt(i,v[i]).join(',')).join(' ')}" fill="rgba(90,150,225,.65)"/></svg>`;w.innerHTML=svg;

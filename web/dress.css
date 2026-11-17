@@ -79,3 +79,13 @@
  opacity:.7;box-sizing:border-box}
 .dr-drawbtn:disabled{opacity:.55;filter:grayscale(.85);cursor:not-allowed}
 .dr-tab{font-size:calc(23 * var(--u));line-height:1.2;min-width:0;overflow-wrap:break-word}
+
+
+/* Keep all three outfit bonus labels inside the left panel on narrow phones;
+   the prior negative offsets caused clipping and overlapped the action button. */
+.dr-attr{min-width:0;overflow:hidden}
+.dr-tri{width:100%;margin:calc(70 * var(--u)) 0 calc(95 * var(--u))}
+.dr-tv.left{left:0;bottom:-26%}
+.dr-tv.right{right:0;bottom:-26%}
+.dr-attr>.dr-btn{max-width:95%;white-space:normal}
+.dr-skill span{overflow-wrap:anywhere}

@@ -24,6 +24,7 @@ import copy, json, random, secrets, time
 from pathlib import Path
 
 DATA = json.loads((Path(__file__).resolve().parents[1] / 'data/dress.json').read_text())
+VI = json.loads((Path(__file__).resolve().parents[1] / 'data/dress-vi.json').read_text())
 M = DATA['misc']
 PIECES = {int(d['id']): d for d in DATA['dress']}
 ITEMS = {int(i['id']): i for i in DATA['items']}
@@ -38,7 +39,7 @@ PITY = int(M['dress_gacha_max_drop'])
 BOXES = {1: (int(M['dress_gacha_dropbox4']), int(M['dress_gacha_dropbox1'])), 2: (int(M['dress_gacha_dropbox5']), int(M['dress_gacha_dropbox2']))}
 COST = {1: '258', 2: '259'}
 FREE = {1: int(str(M['dress_gacha_free1']).split('|')[0]), 2: int(str(M['dress_gacha_free2']).split('|')[0])}
-POS_NAMES = {1: 'Head', 2: 'Body', 3: 'Legs', 4: 'Headwear', 5: 'Accessories'}
+POS_NAMES = {1: 'Đầu', 2: 'Thân', 3: 'Chân', 4: 'Mũ', 5: 'Phụ Kiện'}
 
 
 def ids(text):
@@ -321,7 +322,7 @@ def catalog():
             'styles': {str(k): {'pos': int(v['pos']), 'dress': int(v['dress_id']), 'image': v['image'], 'res': v['resource'], 'slot': v.get('slot') or '',
                                 'offset': [float(x) for x in str(v.get('offset') or '0|0').split('|')], 'scale': [float(x) for x in str(v.get('scale') or '1|1').split('|')],
                                 'rotation': float(v.get('rotation') or 0)} for k, v in STYLES.items()},
-            'groups': {str(k): {'name': DATA['group_names'].get(str(k), ''), 'unit': ids(v['unit']), 'skills': ids(v['skills']), 'need': ids(v['unlock_stars'])}
+            'groups': {str(k): {'name': VI['group_names'].get(str(k), DATA['group_names'].get(str(k), '')), 'unit': ids(v['unit']), 'skills': ids(v['skills']), 'need': ids(v['unlock_stars'])}
                        for k, v in GROUPS.items()},
-            'skill_text': DATA['skill_text'], 'slots': {str(k): {'can_rm': int(v['can_rm']), 'default': int(v['default_style'] or 0), 'name': POS_NAMES[k]} for k, v in SLOTS.items()},
-            'common': COMMON, 'item_names': DATA['item_names'], 'shard_names': DATA['shard_names']}
+            'skill_text': VI['skill_text'], 'slots': {str(k): {'can_rm': int(v['can_rm']), 'default': int(v['default_style'] or 0), 'name': POS_NAMES[k]} for k, v in SLOTS.items()},
+            'common': COMMON, 'item_names': VI['item_names'], 'shard_names': VI['shard_names']}
