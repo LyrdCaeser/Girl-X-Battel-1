@@ -2181,11 +2181,11 @@ class Engine:
         now = self.now
         def capsule(sid):
             with self.lock: st = self._load()
-            if now() < int(st.get('summon_free_at' if sid == 3 else 'senior_summon_free_at', 0)): raise GameError('Ya usada hoy')
+            if now() < int(st.get('summon_free_at' if sid == 3 else 'senior_summon_free_at', 0)): raise GameError('Đã sử dụng lượt miễn phí hôm nay')
             self.handle('SUMMON', {'summon_id': sid}); return {}
         def internships():
             done = [m for m in self.snapshot()['internship_info']['missions'] if m.get('end') and m['end'] <= now()]
-            if not done: raise GameError('Ninguna terminada')
+            if not done: raise GameError('Chưa có lượt Thực Tập nào hoàn tất')
             got = {}
             for m in done:
                 for k, n in (self.internship_action({'action': 'complete', 'id': m['id']}).get('got') or {}).items(): got[k] = got.get(k, 0) + n
@@ -2195,7 +2195,7 @@ class Engine:
             if not info.get('enemies'): self.arena_action({'action': 'open'}); info = self.snapshot()['arena_info']
             while info.get('free', 0) > 0 and info.get('enemies') and n < 5:
                 self.arena_action({'action': 'fight', 'id': info['enemies'][-1]['id']}); n += 1; info = self.snapshot()['arena_info']
-            if not n: raise GameError('Sin batallas gratis')
+            if not n: raise GameError('Đã hết lượt Đấu Trường miễn phí')
             return {'battles': n}
         def daily():
             got = {}
@@ -2204,7 +2204,7 @@ class Engine:
                     try:
                         for k, n in (self.missions_action({'action': 'daily', 'id': t['id']}).get('got') or {}).items(): got[k] = got.get(k, 0) + n
                     except Exception: pass
-            if not got: raise GameError('Nada que reclamar')
+            if not got: raise GameError('Chưa có phần thưởng để nhận')
             return got
         def merge(into, got):
             for k, n in (got or {}).items(): into[k] = into.get(k, 0) + n
@@ -2216,7 +2216,7 @@ class Engine:
                 except Exception:
                     if not done: raise
                     break
-            if not done: raise GameError('Nada que hacer')
+            if not done: raise GameError('Không có thao tác có thể thực hiện')
             return got
         def quiz():
             # Daily Quiz "Use Free Chance": sweep the highest cleared difficulty of each quiz with the day's remaining chances
@@ -2227,7 +2227,7 @@ class Engine:
                     if not top: break
                     try: merge(got, self.run_daily_quiz({'quiz_id': top}, sweep=True).get('rewards')); n += 1
                     except Exception: break
-            if not n: raise GameError('Sin intentos o sin dificultades superadas')
+            if not n: raise GameError('Không còn lượt hoặc chưa vượt qua độ khó nào')
             return got
         def exam():
             # House Exams: the chosen house's highest stage cleared this season, raided with certificates
@@ -2235,8 +2235,8 @@ class Engine:
             with self.lock: st = self._load()
             h = (st.get('house_exam') or {})
             ok = [int(r['id']) for r in house_exam.FORTS[fort] if h and house_exam.passed(h, fort, int(r['id']))]
-            if not ok: raise GameError('Stage not cleared yet')
-            if not n: raise GameError('Elige cuántos Raids')
+            if not ok: raise GameError('Chưa vượt qua ải Khảo Thí này')
+            if not n: raise GameError('Hãy chọn số lượt quét ải')
             r = self.house_exam_action({'action': 'sweep', 'stage': max(ok, key=house_exam.sort_of), 'times': n})
             return r.get('got') or {}
         def excursion():
@@ -2245,16 +2245,16 @@ class Engine:
                 if b.get('stock', 0) > 0:
                     try: merge(got, self.home_action({'action': 'travel_collect', 'id': b['id']}).get('got'))
                     except Exception: pass
-            if not got: raise GameError('Todavía no hay recursos para recoger')
+            if not got: raise GameError('Chưa có tài nguyên để thu thập')
             return got
-        step('midas', 'Alchemy', lambda: self.midas_action({'action': 'free'}).get('got'))
-        if count('midas_buy'): step('midas', 'Alchemy · Purchase with Gems', lambda: repeat(lambda: self.midas_action({'action': 'buy'}).get('got'), count('midas_buy', 20), 'buy'))
-        step('dorm', 'Dorm Resource', lambda: self.house_dress_action({'action': 'hang_collect'}).get('got'))
-        step('quiz', 'Daily Quiz Reward', quiz)
-        step('exam', 'House Exam Raid Reward', exam)
-        step('excursion', 'Excursion - Resource Collection', excursion)
-        if count('bread'): step('excursion', 'Excursion - Tasty Bread Purchase', lambda: self.explore_action({'action': 'buy_bread', 'count': count('bread', 50)}).get('got') or {'203': 0})
-        step('guild_sign', 'Guild - Sign in', lambda: self.guild_action({'action': 'checkin'}).get('got'))
+        step('midas', 'Luyện Kim', lambda: self.midas_action({'action': 'free'}).get('got'))
+        if count('midas_buy'): step('midas', 'Luyện Kim · Mua bằng Kim Cương', lambda: repeat(lambda: self.midas_action({'action': 'buy'}).get('got'), count('midas_buy', 20), 'buy'))
+        step('dorm', 'Nhận tài nguyên Ký Túc Xá', lambda: self.house_dress_action({'action': 'hang_collect'}).get('got'))
+        step('quiz', 'Câu Hỏi Hằng Ngày', quiz)
+        step('exam', 'Khảo Thí Học Viện · Quét Ải', exam)
+        step('excursion', 'Thám Hiểm · Nhận tài nguyên', excursion)
+        if count('bread'): step('excursion', 'Thám Hiểm · Mua Bánh Mì', lambda: self.explore_action({'action': 'buy_bread', 'count': count('bread', 50)}).get('got') or {'203': 0})
+        step('guild_sign', 'Bang Hội · Điểm Danh', lambda: self.guild_action({'action': 'checkin'}).get('got'))
         def orders():
             gi = self.snapshot().get('guild_info') or {}
             lst = (gi.get('orders') or {}).get('list') or []
@@ -2263,16 +2263,16 @@ class Engine:
                 if not o.get('start'):
                     try: self.guild_action({'action': 'order_start', 'slot': i}); n += 1
                     except Exception: pass
-            if not n: raise GameError('No hay pedidos por empezar')
+            if not n: raise GameError('Không có đơn hàng nào để bắt đầu')
             return {'orders': n}
-        step('guild_order', 'Cafeteria - Start Order', orders)
-        step('campaign', 'Claim Campaign Loot', lambda: self.campaign_action({'action': 'collect'}).get('awards'))
-        step('capsule', 'Regular Capsule', lambda: capsule(3))
-        step('senior', 'Adv. Capsule', lambda: capsule(8))
-        step('mail', 'Mail', lambda: self.home_action({'action': 'mail_claim_all'}).get('got'))
-        step('internship', 'Internship', internships)
-        step('arena', 'Junior Varsity', arena)
-        step('daily', 'Daily Tasks', daily)
+        step('guild_order', 'Nhà Ăn · Bắt Đầu Đơn Hàng', orders)
+        step('campaign', 'Nhận thưởng Chiến Dịch', lambda: self.campaign_action({'action': 'collect'}).get('awards'))
+        step('capsule', 'Triệu Hồi Thường', lambda: capsule(3))
+        step('senior', 'Triệu Hồi Cao Cấp', lambda: capsule(8))
+        step('mail', 'Nhận Thư', lambda: self.home_action({'action': 'mail_claim_all'}).get('got'))
+        step('internship', 'Thực Tập', internships)
+        step('arena', 'Đấu Trường Sơ Cấp', arena)
+        step('daily', 'Nhiệm Vụ Hằng Ngày', daily)
         return {'state': self.snapshot(), 'report': report}
 
     def souls_action(self, request):
