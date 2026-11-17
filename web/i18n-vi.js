@@ -843,6 +843,22 @@
     const trimmed = normalized.trim();
     if (!trimmed) return normalized;
     if (TEXT.has(trimmed)) return normalized.replace(trimmed, TEXT.get(trimmed));
+    // Numeric combat attributes occur in combined text nodes (e.g. Crit +2.000).
+    // Translate only the label before a signed number; never Goddess names.
+    const statLabels=[
+      ['Crit DMG','ST Bạo Kích'],['Crit Resist','Kháng Bạo Kích'],
+      ['Crit','Bạo Kích'],['DMG Red.','Giảm Sát Thương'],
+      ['CC Immune','Miễn Khống Chế'],['Control Rate','Tỉ Lệ Khống Chế'],
+      ['Block','Đỡ Đòn'],['Precision','Chính Xác'],
+      ['Skill DMG','ST Kỹ Năng'],['Holy DMG','ST Thánh'],
+      ['Armor Brk','Xuyên Giáp']
+    ];
+    let stats=trimmed;
+    for(const [label,vi] of statLabels){
+      const escaped=label.replace(/\./g,'\\.');
+      stats=stats.replace(new RegExp('(^|[\\s·])'+escaped+'(?=\\s*\\+[\\d.,]+)','g'),'$1'+vi);
+    }
+    if(stats!==trimmed)return normalized.replace(trimmed,stats);
     if (/^Touch\s+(\d+)$/i.test(trimmed)) return normalized.replace(trimmed,trimmed.replace(/^Touch\s+(\d+)$/i,'Chạm $1'));
     if (/^Level\s+(\d+):\s*(.+)$/i.test(trimmed)) return normalized.replace(trimmed,trimmed.replace(/^Level\s+(\d+):\s*(.+)$/i,(_,n,rest)=>'Cấp '+n+': '+translateText(rest)));
     if (/^Next\s*\((\d+)\):\s*(.+)$/i.test(trimmed)) return normalized.replace(trimmed,trimmed.replace(/^Next\s*\((\d+)\):\s*(.+)$/i,(_,n,rest)=>'Tiếp theo ('+n+'): '+translateText(rest)));

@@ -5,7 +5,7 @@ const Skins=(()=>{
  let cat=null,liveOffers=null,sel=null,note='',chibiView=null;
  const el=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;};
  const btn=(cls,text,fn)=>{const b=el('button',cls,text);b.type='button';b.onclick=fn;return b;};
- const NAMES={hpP:'HP',atkP:'Attack',decDmg:'DMG Red.',crit:'Crit',critTime:'Crit DMG',hit:'Precision',miss:'Block',spd:'Speed',sklP:'Skill DMG',free:'CC Immune',unfree:'Control Rate',brk:'Armor Brk',unCrit:'Crit Resist',trueAtk:'Holy Dmg',allHarmDec:'DMG Dep.',hp:'HP',atk:'Attack'};
+ const NAMES={hpP:'HP',atkP:'Attack',decDmg:'Giảm Sát Thương',crit:'Bạo Kích',critTime:'ST Bạo Kích',hit:'Chính Xác',miss:'Đỡ Đòn',spd:'Speed',sklP:'ST Kỹ Năng',free:'Miễn Khống Chế',unfree:'Tỉ Lệ Khống Chế',brk:'Xuyên Giáp',unCrit:'Kháng Bạo Kích',trueAtk:'ST Thánh',allHarmDec:'DMG Dep.',hp:'HP',atk:'Attack'};
  // hpP/atkP are fractions (0.03 = 3%), spd/hp/atk flat, the rest per mille (crit#40 = 4%, sklP#100 = 10%)
  function attr(text){const [k,v]=String(text).split('#');const n=Number(v);return (NAMES[k]||k)+' +'+(n<1?Math.round(n*1000)/10+'%':['spd','hp','atk'].includes(k)?n:Math.round(n)/10+'%');}
  async function load(){if(!cat){try{cat=await api('/api/skins/catalog',{});}catch{cat={skins:{}};}}if(!liveOffers){try{liveOffers=(await api('/api/skin-shop/catalog',{})).offers||[];}catch{liveOffers=[];}}return cat;}

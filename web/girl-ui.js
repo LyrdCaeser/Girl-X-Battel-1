@@ -335,7 +335,7 @@ const GirlUI=(()=>{
  // ---- Astral Core (tab_5, StarOriginDetailWindow; capture fb/54): 15★ girls with partner.star_origin; 10 nodes placed with
  // star_origin_node xy (Unity y up), lines to their unlock node, "Node Upgrade" window (level, effect now → next, cost).
  let astral=null;
- const ROMAN=['I','II','III','IV','V','VI','VII','VIII','IX','X'],AN={hp:'HP',atk:'Attack',arm:'Armor',spd:'Speed',hpP:'HP %',atkP:'Attack %',crit:'Crit',critTime:'Crit DMG',hit:'Precision',miss:'Block',sklP:'Skill DMG',trueAtk:'Holy DMG',decDmg:'DMG Red.',free:'CC Immune',unfree:'Control Rate',brk:'Armor Brk',unCrit:'Crit Resist'};
+ const ROMAN=['I','II','III','IV','V','VI','VII','VIII','IX','X'],AN={hp:'HP',atk:'Attack',arm:'Armor',spd:'Speed',hpP:'HP %',atkP:'Attack %',crit:'Bạo Kích',critTime:'ST Bạo Kích',hit:'Chính Xác',miss:'Đỡ Đòn',sklP:'ST Kỹ Năng',trueAtk:'ST Thánh',decDmg:'Giảm Sát Thương',free:'Miễn Khống Chế',unfree:'Tỉ Lệ Khống Chế',brk:'Xuyên Giáp',unCrit:'Kháng Bạo Kích'};
  const effOf=t=>Object.fromEntries(String(t||'').split('|').filter(x=>x.includes('#')).map(x=>{const [k,v]=x.split('#');return [k,Number(v)];}));
  const fmtA=(k,v)=>k.endsWith('P')?(v*100).toFixed(1)+'%':number(Math.round(v));
  async function astralTab(hero){const nav=document.querySelector('#girl-detail-view>.detail-tabs');let tab=nav.querySelector('[data-detail-tab=astral]');
@@ -375,7 +375,7 @@ const GirlUI=(()=>{
  let reso=null;
  // NGUI rich text: [c][rrggbb]text[-][/c] → coloured span (text escaped first)
  function rich(tag,cls,text){const e=el(tag,cls);const safe=String(text||'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'})[c]);e.innerHTML=safe.replace(/\[c\]\[([0-9a-fA-F]{6})\]([\s\S]*?)\[-\]\[\/c\]/g,'<span style="color:#$1">$2</span>').replace(/\[\/?[a-z-]*\]/g,'');return e;}
- const RN={crit:'Crit',critTime:'Crit DMG',hit:'Precision'};
+ const RN={crit:'Bạo Kích',critTime:'ST Bạo Kích',hit:'Chính Xác'};
  async function resonate(hero){if(!reso)reso=await api('/assets/resonate.json');const host=sheetRoot();host.querySelector('.gs-overlay')?.remove();const ov=el('div','gs-overlay rs-ov');ov.onclick=e=>{if(e.target===ov)ov.remove();};
   const w=el('div','rs-win');ov.append(w);host.append(ov);const skills=(hero.ex_skills||[0,0,0,0]).concat([0,0,0,0]).slice(0,4);const level=skills.reduce((a,b)=>a+b,0)+4;
   w.append(img('/assets/souls/skill_resonate_effect_bg4.png','rs-ring'));
