@@ -395,3 +395,7 @@ html.gxb-mobile #app-frame .gs-win.lb-win .gs-win-body{min-height:0;max-height:c
 .gs-win.lb-switch .sw-detail b{line-height:1.2;overflow-wrap:anywhere}
 .gs-win.lb-switch .sw-detail p{line-height:1.45;overflow-wrap:anywhere}
 .gs-win.lb-switch .gs-btn{line-height:1.1!important}
+
+/* Let taps on static or Spine skin art reach the native art wrapper,
+   which triggers the canonical voice and translated dialogue. */
+#girl-detail-view .gu-lihui,#girl-detail-view .gu-lihui-canvas{pointer-events:none}

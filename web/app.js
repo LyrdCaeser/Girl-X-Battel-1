@@ -244,7 +244,18 @@ function renderGirlDetail(){
  let lockButton=$('detail-lock');const sheetScene=document.querySelector('#girl-detail-view .detail-scene');if(!lockButton){lockButton=node('button','gs-side lock');lockButton.id='detail-lock';lockButton.type='button';sheetScene.append(lockButton);
   /* partner_zoom_btn hides the sheet UI to look at the illustration; tapping the girl shows her line in the bubble */
   const zoom=node('button','gs-side zoom');zoom.type='button';zoom.title="View illustration";zoom.style.backgroundImage="url('/assets/detail/sheet/partner_zoom_btn.png')";zoom.onclick=()=>$('girl-detail-view').classList.toggle('gs-zoom');sheetScene.append(zoom);
-  sheetScene.querySelector('.detail-art-wrap').addEventListener('click',()=>{const h=state.roster.find(x=>x.partner_id===selectedGirlPartnerId);if(h&&typeof Dates!=='undefined')void Dates.playGirlVoice(h.table_id);const q=$('detail-quote');if(!q.textContent)return;q.classList.add('show');clearTimeout(q._t);q._t=setTimeout(()=>q.classList.remove('show'),4000);});}
+  sheetScene.querySelector('.detail-art-wrap').addEventListener('click',()=>{
+   const h=state.roster.find(x=>x.partner_id===selectedGirlPartnerId),q=$('detail-quote');
+   if(!h||typeof Dates==='undefined')return;
+   const clickedPartner=h.partner_id;
+   void Dates.playGirlVoice(h.table_id,line=>{
+     if(view!=='detail'||selectedGirlPartnerId!==clickedPartner)return;
+     if(line){q.textContent=line;q.hidden=false;}
+     if(!q.textContent)return;
+     q.classList.add('show');clearTimeout(q._t);
+     q._t=setTimeout(()=>q.classList.remove('show'),4000);
+   });
+  });}
  const locked=Boolean(hero.flags?.[0]);lockButton.textContent='';lockButton.title=locked?"Unlock":'Bloquear';lockButton.style.backgroundImage=`url('/assets/detail/sheet/${locked?'partner_lock_btn':'partner_unlock_btn'}.png')`;lockButton.disabled=busy;lockButton.onclick=()=>action('LOCK_PARTNER',{partner_id:hero.partner_id,is_lock:locked?0:1});
  const meta=girlDetails[String(hero.table_id)]||{job:'',quote:'',stats:{},skills:[]};
  const jobVi={Warrior:'Chiến Binh',Mage:'Pháp Sư',Ranger:'Xạ Thủ',Assassin:'Sát Thủ',Priest:'Linh Mục'};

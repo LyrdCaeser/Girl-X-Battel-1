@@ -55,10 +55,20 @@ const Dates=(()=>{
  function maxOf(h){return h?.is_vowed?GROW():BASE();}
  function iconOf(h){if(h?.is_vowed)return A('love_point_icon6');const row=data.appointment[Math.min(data.appointment.length-1,Math.floor((h?.love_point||0)/1000))];return A(row?.icon||'love_point_icon1');}
  function play(sound,text){if(text&&text!=='-1')bubble=typeof GxbVi!=='undefined'?GxbVi.t(text):text;try{audio?.pause();if(sound){audio=new Audio('/assets/voices/'+sound+'.mp3');audio.volume=typeof GxbAudio!=='undefined'?GxbAudio.volume('voice')/100:.9;audio.play().catch(()=>{});}}catch{}}
- function allLines(h){const base=[String(h.table_id),String(h.table_id%100000),String(h.table_id%10000+50000)];for(const k of base)if(data.dialogs[k])return data.dialogs[k];return [];}
+ function allLines(h){
+  // Upgraded/reissued girls and skins share their canonical Goddess's voice.
+  // Resolve the native host chain before declaring the sound/dialogue missing.
+  const id=Number(h.table_id),hostIds=typeof hostChain==='function'?hostChain(id):[id];
+  for(const n of [...new Set([id,...hostIds])]){
+    for(const key of [String(n),String(n%100000),String(n%10000+50000)]){
+      if(data.dialogs[key]?.length)return data.dialogs[key];
+    }
+  }
+  return [];
+ }
  // One canonical sound mapping for both Girl detail and the original summon reveal.
  // Only source-defined voice clips are playable: never synthesize replacement dialogue.
- async function playGirlVoice(tableId){
+ async function playGirlVoice(tableId,onLine){
    try{
      await load();
      const id=Number(tableId);
@@ -68,6 +78,9 @@ const Dates=(()=>{
      const chosen=lines[next%lines.length];
      voiceIndex.set(key,(next+1)%lines.length);
      play(chosen.sound,chosen.text);
+     // Preserve the established boolean API for the summon and Dates callers,
+     // while offering the translated caption to the Girl detail sheet.
+     if(typeof onLine==='function')onLine(chosen.text);
      return true;
    }catch{return false;}
  }
