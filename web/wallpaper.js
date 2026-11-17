@@ -36,8 +36,8 @@ const Wallpaper=(()=>{
   const ok=el('button','gs-btn','OK');ok.type='button';ok.onclick=async()=>{try{const res=await api('/api/profile',{wallpapers:pick,wallpaper_random:rnd});state=res.state||res;close();render();GirlUI.toast("Wallpaper saved");}catch(e){GirlUI.toast(e.message);}};
   const foot=el('div','wp-foot');foot.append(r,ok);body.append(foot);}
  // Front Page picture: the chosen girls in turn (or at random); falls back to the three default heroes
- function heroSrc(index){const p=state.profile||{};const list=p.wallpapers||[];if(!list.length)return null;const id=p.wallpaper_random?list[Math.floor(Math.random()*list.length)]:list[index%list.length];
-  if(Number(id)===41001)return null; // Hidden on Front Page only; leave ownership and profile untouched.
+ function heroSrc(index,chosen){const p=state.profile||{};const list=p.wallpapers||[];if(!list.length)return null;const id=chosen===undefined?pickId(index):chosen;
+  if(!id||Number(id)===41001)return null; // Hidden on Front Page only; leave ownership and profile untouched.
   const base=typeof artId==='function'?artId(id):id;const pic=typeof GirlUI!=='undefined'&&(GirlUI.picture(id)||GirlUI.picture(base));return pic||(typeof detailImage==='function'?detailImage(id)||detailImage(base):'')||null;}
  // MainMap:updateImg — the Front Page girl is a partnerImg at the screen centre, SetLocalPosition(xy2.x, -xy2.y) and
  // SetLocalScale(scale) (partner_picture_xy2); static pictures at their native size, Spine models 200 lower
@@ -58,10 +58,17 @@ const Wallpaper=(()=>{
   if(spine&&!own){const [x,y]=pic[coord]||pic.xy;const sh=el('div','wp-home-spine');layer.append(sh);try{view=await GxbSpine.mount(sh,'/assets/lihui/'+spine,{width:720,height:1280,scale:pic.scale,origin:[(360+x)/720,(640+y+200*pic.scale)/1280],className:'wp-home-canvas'});}catch{layer.remove();return null;}}
   else{let usePic=pic;if(!own){const m2=/\/assets\/pictures\/(\d+)\.webp/.exec(staticSrc);if(m2&&m.pics[m2[1]])usePic=m.pics[m2[1]];}const [ux,uy]=usePic[coord]||usePic.xy;const im=img(staticSrc,'wp-home-pic');const put=()=>{im.style.setProperty('--pw',im.naturalWidth*usePic.scale);im.style.setProperty('--px',ux);im.style.setProperty('--py',uy);};if(im.complete&&im.naturalWidth)put();else im.onload=put;layer.append(im);}
   return {layer,destroy(){view?.destroy?.();layer.remove();}};}
- async function mountHome(index){mountScene();const id=pickId(index);const stage=document.querySelector('#home-view .home-stage');if(!id||!stage){clearHome();return false;}
+ async function mountHome(index,chosen){mountScene();const id=chosen===undefined?pickId(index):chosen;const stage=document.querySelector('#home-view .home-stage');if(!id||!stage){clearHome();return false;}
   const key=String(id);if(homeKey===key&&document.querySelector('#home-view .wp-home'))return true;clearHome();homeKey=key;
   const tmp=el('div');const h=await mountArt(tmp,id,'xy2');if(!h||homeKey!==key){h?.destroy();if(homeKey===key)homeKey='';return !!h&&false;}
   stage.querySelector('.home-background')?.after(h.layer);homeView=h;return true;}
  document.addEventListener('DOMContentLoaded',()=>{const page=$('profile-info-page');if(page&&!$('wp-open')){const b=el('button','secondary wp-open','Wallpaper Girls');b.id='wp-open';b.type='button';b.onclick=open;page.append(b);}});
- return {open,heroSrc,mountHome,clearHome,mountArt};
+ function voiceId(id){
+  if(!id)return null;
+  if(state.roster.some(h=>h.table_id===Number(id)))return Number(id);
+  const skin=skinCat?.[String(id)];
+  if(skin?.partners?.length)return Number(skin.partners[0]);
+  return Number(state.roster.find(h=>Number(h.equips?.[6])===Number(id))?.table_id)||null;
+ }
+ return {open,heroSrc,mountHome,clearHome,mountArt,activeId:pickId,voiceId};
 })();

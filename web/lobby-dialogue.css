@@ -1,3 +1,9 @@
 /* Use the game's original StoryPlayer (.sp-dialog) and character-detail panels.
    There is no extra dialogue box covering the original lobby artwork. */
 #dev-open{display:none!important}
+
+/* Speech over the existing MainMap art; no replacement frame and no touch blocker. */
+#home-view .home-stage .lb-quote{position:absolute;z-index:6;left:18%;right:18%;bottom:22%;max-height:19%;overflow:hidden;
+ padding:8px 12px;border-radius:14px;background:#f8f6f2ef;color:#414260;font:700 clamp(12px,2.5vw,16px)/1.42 system-ui;
+ text-align:center;box-shadow:0 4px 16px #24364d55;opacity:0;transition:opacity .2s;pointer-events:none}
+#home-view .home-stage .lb-quote.show{opacity:1}
