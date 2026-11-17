@@ -1,0 +1,24 @@
+'use strict';
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
+const js=fs.readFileSync('web/wish.js','utf8'),html=fs.readFileSync('web/index.html','utf8');
+const cut=js.slice(js.indexOf('function releaseWishChibi(){'),js.indexOf(' async function load()'));
+assert(cut.includes('async function mountWishChibi('));
+let count=0, lastView=null,backdrop={isConnected:true},portrait={hidden:false};
+const catalog={'51019':{model:'luolanweiya',animations:['idle']}};
+const ctx=vm.createContext({ChibiBattle:{catalogue:async()=>catalog},GxbSpine:{mount:async(host,model,config)=>{count++;return {host,model,config,destroy(){this.destroyed=true}}}},console});
+vm.runInContext('let wishChibi=null,wishChibiGeneration=0;'+cut,ctx);
+(async()=>{
+ const start=vm.runInContext('mountWishChibi',ctx);
+ const stop=vm.runInContext('releaseWishChibi',ctx);
+ await start(backdrop,51019,portrait);
+ assert.equal(portrait.hidden,true);
+ const view=vm.runInContext('wishChibi',ctx);
+ assert.equal(view.model,'/assets/chibis/luolanweiya');
+ assert.equal(view.config.sequence[0][0],'idle');
+ stop();assert.equal(view.destroyed,true);
+ assert.equal(count,1);
+ assert(html.includes('wish.js?v=20261117-original-chibi-r2'));
+ assert(html.includes('wish.css?v=20261117-original-chibi-r2'));
+ assert(js.includes('if(s.select&&chibiHost&&page===1)void mountWishChibi'));
+ console.log('PASS: native Wish chibi idle, centred, portrait fallback, WebGL cleanup, published versions');
+})().catch(e=>{console.error(e);process.exitCode=1});

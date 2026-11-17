@@ -5,6 +5,33 @@
 // draw-count rewards). Rules: gxb2/wish.py. Prefix wc-.
 const WishCapsule=(()=>{
  let data=null;
+ // Keep at most one living Spine model; repeated capsule renders must not
+ // accumulate WebGL contexts or leave a ghost chibi after switching pages.
+ let wishChibi=null,wishChibiGeneration=0;
+ function releaseWishChibi(){
+  wishChibiGeneration++;
+  if(wishChibi){wishChibi.destroy();wishChibi=null;}
+ }
+ async function mountWishChibi(host,id,portrait){
+  const generation=++wishChibiGeneration;
+  try{
+   const catalog=await ChibiBattle.catalogue();
+   const model=catalog?.[String(id)];
+   if(!model||generation!==wishChibiGeneration||!host.isConnected)return;
+   const idle=model.animations?.includes('idle')?'idle':model.animations?.includes('houseidle')?'houseidle':null;
+   if(!idle)return;
+   const spine=await GxbSpine.mount(host,'/assets/chibis/'+model.model,{
+    width:340,height:420,fit:.9,y:.61,className:'wc-chibi-canvas',
+    sequence:[[idle,true]]
+   });
+   if(generation!==wishChibiGeneration||!host.isConnected){spine.destroy();return;}
+   wishChibi=spine;
+   portrait.hidden=true;
+  }catch(error){
+   // Keep the authentic portrait if a device cannot allocate a WebGL context.
+   if(generation===wishChibiGeneration)console.warn('Wish chibi unavailable',error);
+  }
+ }
  const A=n=>'/assets/wish/'+n+'.png';
  const el=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;};
  const img=(src,cls)=>{const i=el('img',cls);i.src=src;i.alt='';i.draggable=false;return i;};
@@ -21,11 +48,18 @@ const WishCapsule=(()=>{
  let page=0;
  function arrow(dir){const b=btn('wc-arrow '+dir,'',()=>{page=dir==='right'?1:0;capsule();});b.append(img(A('wish_capsule_arrow_'+dir)));b.setAttribute('aria-label',dir==='right'?'Triệu Hồi Ước Nguyện':'Triệu Hồi Cao Cấp');return b;}
  function dots(){const d=el('div','wc-dots');for(let i=0;i<2;i++)d.append(img(A('wish_capsule_dot'+(i===page?1:0))));return d;}
- async function capsule(){await load();const s=state.wish_info;if(!s)return;const adv=document.querySelector('#capsule-view .capsule-banner.advanced');if(!adv)return;
+ async function capsule(){await load();const s=state.wish_info;if(!s){releaseWishChibi();return;}
+ const adv=document.querySelector('#capsule-view .capsule-banner.advanced');if(!adv){releaseWishChibi();return;}
+ releaseWishChibi();
   adv.querySelectorAll(':scope>.wc-arrow,:scope>.wc-dots').forEach(e=>e.remove());adv.append(arrow('right'),dots());adv.hidden=page!==0;
   let box=$('wish-banner');if(!box){box=el('div','capsule-banner wc-banner');box.id='wish-banner';adv.after(box);}box.replaceChildren();box.hidden=page!==1;
   const art=el('div','capsule-banner-art wc-art');
-  if(s.select)art.append(picture(s.select,'wc-girl'));else art.append(btn('wc-empty',T('WISH_GACHA_TIPS_2')||'Chạm để chọn Nữ Thần Ước Nguyện',()=>select()));
+  let chibiHost=null,portrait=null;
+  if(s.select){
+   chibiHost=el('div','wc-chibi');
+   portrait=picture(s.select,'wc-girl wc-fallback');
+   art.append(chibiHost,portrait);
+  }else art.append(btn('wc-empty',T('WISH_GACHA_TIPS_2')||'Chạm để chọn Nữ Thần Ước Nguyện',()=>select()));
   const g=girl(s.select);if(g)art.append(el('b','wc-name',g.name));art.append(btn('wc-help','?',()=>tips()));
   const ctl=el('div','capsule-banner-controls wc-controls');ctl.append(img(A('wish_capsule_summon_text01_en_en'),'wc-logo'));
   const prog=el('div','wc-progress');const rate=el('span','wc-rate');rate.append(img(A('wish_capsule_icon2')),el('b','',(s.rate*100).toFixed(s.rate<0.001?3:2)+'%'));
@@ -38,7 +72,9 @@ const WishCapsule=(()=>{
   const tk=n=>{const f=document.createDocumentFragment();f.append(n+' ');f.append(img('/assets/currency/icon_36.png','cost-token'));return f;};
   const gm=n=>{const f=document.createDocumentFragment();f.append(n+' ');f.append(img('/assets/currency/icon_2_small.png','cost-token'));return f;};
   buttons.append(draw(26,"Miễn Phí",'1',s.free_in>0),draw(24,"Triệu Hồi 1",tk(1),scroll<1),draw(25,"Triệu Hồi 10",tk(10),scroll<10),draw(22,"Dùng Kim Cương ×1",gm(250),gems<250,' gem-draw'),draw(23,"Dùng Kim Cương ×10",gm(2200),gems<2200,' gem-draw'));
-  ctl.append(buttons);box.append(art,ctl,arrow('left'),dots());}
+  ctl.append(buttons);box.append(art,ctl,arrow('left'),dots());
+  if(s.select&&chibiHost&&page===1)void mountWishChibi(chibiHost,s.select,portrait);
+ }
  function select(){const s=state.wish_info;const {body,close}=GirlUI.win({title:T('WISH_GACHA_SELECT_PARTNER_WINDOW')||'Chọn Nữ Thần Ước Nguyện',cls:'wc-select'});
   body.append(el('p','wc-note',T('WISH_GACHA_TIPS_3')));const grid=el('div','wc-grid');
   for(const id of data.partners){const g=girl(id);const c=btn('wc-card'+(id===s.select?' on':''),'',async()=>{if(id===s.select){close();return;}if(s.select&&!await GirlUI.confirm('Đổi Nữ Thần Ước Nguyện đã chọn?',{title:'Đổi Nữ Thần',ok:'Đổi'}))return;close();await act({action:'select',partner:id});capsule();});
