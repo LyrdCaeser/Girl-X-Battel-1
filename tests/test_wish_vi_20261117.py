@@ -27,7 +27,7 @@ class WishVietnameseTests(unittest.TestCase):
   for key in ('WISH_GACHA_NUM1','WISH_GACHA_NUM2','WISH_GACHA_NUM3','WISH_GACHA_NUM4','WISH_GACHA_NUM5',
               'WISH_GACHA_NUM6','WISH_GACHA_NUM7','WISH_GACHA_NUM8','WISH_GACHA_NUM9',
               'WISH_GACHA_TEXT7','WISH_GACHA_TEXT8'):
-   self.assertRegex(text[key],r'^(?:[0-9x{} ]+)$')
+   self.assertRegex(text[key],r'^(?:[0-9x{}/ ]+)$')
  def test_frontend_uses_current_asset_version(self):
   js=(ROOT/'web/wish.js').read_text()
   html=(ROOT/'web/index.html').read_text()
