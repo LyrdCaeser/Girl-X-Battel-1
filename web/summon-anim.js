@@ -34,12 +34,42 @@ const SummonAnim=(()=>{
 
  // PartnerSummonEffect:initEffect hides zhiye/cv/name (placeholder text art) and updateStar the "Nxing" slots above the
  // girl's stars; an empty texture keeps them hidden whatever the animation keys.
- function hideStars(fig,star){const names=['zhiye','cv','name'];for(let s=star+1;s<=5;s++)names.push(s+'xing');
-  for(const n of names){if(fig.skeleton.findSlotIndex(n)>=0)try{fig.hackTextureBySlotName(n,PIXI.Texture.EMPTY,{width:1,height:1});}catch{}}return ()=>{};}
- function caption(p,star){
+ // Match PartnerSummonEffect: overlay the girl's name and star icons on
+ // the ORIGINAL animated name/star bones, not in an unrelated bottom label.
+ // The native 'name' attachment is the white nameplate and must NOT be hidden.
+ function nativeNameStars(fig,p,star){
+  const slot=name=>{const i=fig.skeleton.findSlotIndex(name);return i>=0?fig.slotContainers?.[i]:null;};
+  for(const n of ['zhiye','cv','1xing','2xing','3xing','3xing2','3xing3','3xing4','4xing','5xing',
+                   'xing6','xing7','xing8','xing9','xing10','xing11','xing12','xing13','xing14']){
+   if(fig.skeleton.findSlotIndex(n)>=0)try{fig.hackTextureBySlotName(n,PIXI.Texture.EMPTY,{width:1,height:1});}catch{}
+  }
+  const nameLayer=slot('name');
+  if(!nameLayer)return false;
+  const label=new PIXI.Text(String(p.name||''),{fontFamily:'Arial, sans-serif',fontSize:27,fontWeight:'bold',fill:0x34486b,align:'center'});
+  label.anchor.set(.5);label.scale.y=-1;
+  if(label.width>150)label.scale.x=150/label.width;
+  nameLayer.addChild(label);
+  // The original 1xing..5xing bones follow the animated diagonal star bar.
+  const count=star>=10?1:star>5?Math.min(star-5,4):Math.min(star,5);
+  const positions=count===1?[3]:count===2?[2,4]:count===3?[2,3,4]:count===4?[1,2,4,5]:[1,2,3,4,5];
+  const image=star>=10?'potentiality_nametag_star'+(star>=15?'_max':'')+'.png':
+       star>5?'partner_star_red.png':'partner_star_yellow.png';
+  for(const n of positions){
+   const host=slot(n+'xing');if(!host)continue;
+   const sprite=PIXI.Sprite.from('/assets/girl-ui/'+image);
+   sprite.anchor.set(.5);sprite.scale.set(star>=10?.7:.95,-(star>=10?.7:.95));
+   host.addChild(sprite);
+   if(star>=10){
+    const num=new PIXI.Text(String(star),{fontFamily:'Arial, sans-serif',fontSize:24,fontWeight:'900',fill:0xffffff,stroke:0x77393d,strokeThickness:3});
+    num.anchor.set(.5);num.scale.y=-1;host.addChild(num);
+   }
+  }
+  return true;
+ }
+ function caption(p,star,insideNative){
   const c=overlay.querySelector('.sa-caption');
   c.replaceChildren(el('b','',p.name||''));
-  c.hidden=false;
+  c.hidden=insideNative;
   const voice=overlay.querySelector('.sa-voice');
   if(voice){
     voice.hidden=typeof Dates==='undefined';
@@ -50,10 +80,10 @@ const SummonAnim=(()=>{
  }
  async function reveal(p,i,summon){const star=Number(p.star)||5;
   if(star>=5){if(summon){const m=await layer('/assets/spine/fx_ui_gacha_revision',1.2,.66);sfx('vd_egg_5star');await run(m.fig,'222');m.done();if(skipped)return;}
-   const e=await layer('/assets/spine/fx_ui_newgirl_gaino');await attachGirl(e.fig,p.table_id);const unhide=hideStars(e.fig,Math.min(star,5));const uncap=caption(p,star);sfx('ui_gain_hero_5star_bg');setTimeout(()=>sfx('ui_gain_hero_5star'),1000);
-   const s=Math.min(star,11);await run(e.fig,ANIM1[s]||'texiao01');if(!skipped){run(e.fig,ANIM2[s]||'texiao04',true);await tapOrSkip();}unhide();uncap();e.done();}
-  else{const e=await layer('/assets/spine/fx_ui_newgirl_gainp');await attachGirl(e.fig,p.table_id);const unhide=hideStars(e.fig,star);const uncap=caption(p,star);const left=summon&&i%2===1;sfx(left?'ui_gain_hero_left':'ui_gain_hero_right');
-   await run(e.fig,left?'texiao03':'texiao01');unhide();uncap();e.done();}}
+   const e=await layer('/assets/spine/fx_ui_newgirl_gaino');await attachGirl(e.fig,p.table_id);const placed=nativeNameStars(e.fig,p,star);const uncap=caption(p,star,placed);sfx('ui_gain_hero_5star_bg');setTimeout(()=>sfx('ui_gain_hero_5star'),1000);
+   const s=Math.min(star,11);await run(e.fig,ANIM1[s]||'texiao01');if(!skipped){run(e.fig,ANIM2[s]||'texiao04',true);await tapOrSkip();}uncap();e.done();}
+  else{const e=await layer('/assets/spine/fx_ui_newgirl_gainp');await attachGirl(e.fig,p.table_id);const placed=nativeNameStars(e.fig,p,star);const uncap=caption(p,star,placed);const left=summon&&i%2===1;sfx(left?'ui_gain_hero_left':'ui_gain_hero_right');
+   await run(e.fig,left?'texiao03':'texiao01');uncap();e.done();}}
  // partners: [{table_id, star, name}] in draw order. Resolves when the sequence ends or is skipped.
  function waiting(summonId){
   document.querySelector('.sa-waiting')?.remove();
