@@ -135,3 +135,22 @@
   position:static!important;width:11px!important;height:11px!important;
   max-width:11px!important;max-height:11px!important;object-fit:contain!important;
 }
+
+/* Smithy readiness markers use the tiny publisher alert sprite.
+   Settings .sm-item img rules must never stretch these dots over the gear. */
+#smithy-view .eq-nav button>img.eq-red{
+ position:absolute!important;top:4px!important;right:6px!important;
+ width:13px!important;height:13px!important;
+ min-width:0!important;max-width:13px!important;
+ min-height:0!important;max-height:13px!important;
+ object-fit:contain!important;inset:auto 6px auto auto!important;
+ pointer-events:none;
+}
+#smithy-view .sm-grid .sm-item>img.eq-red{
+ position:absolute!important;top:2px!important;right:2px!important;
+ width:14px!important;height:14px!important;
+ min-width:0!important;max-width:14px!important;
+ min-height:0!important;max-height:14px!important;
+ object-fit:contain!important;inset:2px 2px auto auto!important;
+ pointer-events:none;z-index:2;
+}
