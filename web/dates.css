@@ -141,3 +141,6 @@
 .dates-view .dt-stage .dt-art>.wp-home .wp-home-pic{
   max-width:none;object-fit:contain;
 }
+
+.dt-quick-gift{position:absolute!important;display:flex!important;align-items:center;justify-content:center;z-index:3;font-size:calc(23 * var(--u))!important;white-space:nowrap}
+.dt-quick-gift:disabled{opacity:.56;filter:grayscale(.75);cursor:not-allowed}

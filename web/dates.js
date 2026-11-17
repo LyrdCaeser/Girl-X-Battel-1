@@ -115,6 +115,15 @@ const Dates=(()=>{
    const make=at(el('button','dt-bluebtn'),228,-413,191,60);make.type='button';make.append(img(A('icon_44')),el('small','',short(Number(state.items['44']||0))),el('span','','Chế Tạo Quà'));make.onclick=()=>makeGift();st.append(make);
    const t=at(el('label','dt-many2'),228,-468,160,30);const cb=el('input');cb.type='checkbox';cb.checked=many;cb.onchange=()=>{many=cb.checked;};t.append(cb,el('span','','×10'));st.append(t);}
   else{const box=at(el('div','dt-voicebox'),228,-60,226,780);voices(box,h);st.append(box);}
+  if(tab==='gift'){
+   const isVip=Number(state.vip_info?.level||0)>=4;
+   const quick=at(el('button','dt-bluebtn dt-quick-gift'),-130,-360,204,62);
+   quick.type='button';quick.textContent=isVip?'Tặng Nhanh · VIP 4':'VIP 4 · Tặng Nhanh';
+   quick.disabled=!isVip||busyLocal;
+   quick.title=isVip?'Ưu tiên quà Nữ Thần yêu thích, tặng đủ đến giới hạn Thân Mật':'Mở khóa ở VIP 4';
+   quick.onclick=()=>quickGift(h);
+   st.append(quick);
+  }
   if(bubble){const bb=at(el('div','dt-bubble2'),-130,-156,450,null);bb.append(el('span','',bubble),img(A('partner_detail_bubble_arrow'),'dt-bubble-arrow'));st.append(bb);}
   for(const [label,icon,x,fn]of [['Trò Chuyện','dates_icon38',-282,()=>Station.open(h.table_id).then(ok=>{if(!ok){note='Sắp mở';render();}})],['Hồ Sơ','dates_icon14',-130,()=>file(h)],['Hẹn Hò','dates_icon13',22,()=>dateStories(h)]]){const b=at(el('button','dt-btn2'),x,-476,143,80);b.type='button';b.style.backgroundImage=`url('${A('dates_btn')}')`;b.append(img(A(icon),'dt-btn-ic'),el('span','',label));b.onclick=fn;st.append(b);}
   if(note)st.append(at(el('p','dt-note2',note),0,-560,560,40));
@@ -136,6 +145,18 @@ const Dates=(()=>{
  const short=n=>n>=1e6?Math.floor(n/1e5)/10+'M':n>=1e4?Math.floor(n/1e3)+'K':String(n);
  function isLiked(h,id){return String(h.gift_like||'').split('|').includes(id);}
  async function give(h,id,num){const r=await act({action:'gift',partner_id:h.partner_id,item_id:Number(id),num});if(r){const ls=allLines(hero()).filter(x=>x.type===r.reaction);const pick=ls[Math.floor(Math.random()*ls.length)];play(pick?.sound,pick?.text||('+'+r.delta+' thân mật'));note='+'+r.delta+' thân mật';render();}}
+ async function quickGift(h){
+  if(busyLocal)return;
+  if(Number(state.vip_info?.level||0)<4){note='Tặng Nhanh yêu cầu VIP 4';render();return;}
+  const max=h.is_vowed?GROW():BASE();
+  if(Number(h.love_point||0)>=max){note='Nữ Thần đã đạt giới hạn Thân Mật';render();return;}
+  const available=Object.keys(data.gifts||{}).some(id=>Number(state.items?.[id]||0)>0);
+  if(!available){note='Không có quà hảo cảm trong Túi Đồ';render();return;}
+  const yes=await GirlUI.confirm('Ưu tiên quà yêu thích, sau đó dùng quà thường để tăng Thân Mật cho '+h.name+' tới giới hạn hoặc khi hết quà. Quà không thích sẽ không bị tiêu hao.',{title:'Tặng Nhanh · VIP 4',ok:'Tặng Nhanh',cancel:'Hủy'});
+  if(!yes||view!=='dates'||hero()?.partner_id!==h.partner_id)return;
+  const r=await act({action:'gift_quick',partner_id:h.partner_id});
+  if(r){note='Tặng Nhanh thành công: +'+number(r.delta)+' Thân Mật · '+Object.values(r.used||{}).reduce((a,n)=>a+Number(n),0)+' món quà';render();}
+ }
  function voices(panel,h){const all=allLines(h);const love=h.love_point||0;const g=el('div','dt-voices');const types=new Map();for(const x of all){if(!types.has(x.type))types.set(x.type,[]);types.get(x.type).push(x);}
   let idx=0;for(const [type,ls]of types){const label=(data.dialog_types[type]||'Giọng Nói').replace(' {1}','');ls.forEach((x,i)=>{const lockAt=type===15?Math.min(BASE(),(i+1)*2000):type===16?(h.is_vowed?0:Infinity):0;const locked=love<lockAt;const b=el('button','dt-voice'+(locked?' lock':''));b.type='button';b.append(el('span','',label+(ls.length>1?' '+(i+1):'')));b.title=x.text&&x.text!=='-1'?(typeof GxbVi!=='undefined'?GxbVi.t(x.text):x.text):'';b.disabled=locked||!x.sound;b.onclick=()=>{play(x.sound,x.text);render();};g.append(b);idx++;});}
   if(!idx)g.append(el('p','dt-empty','Nữ Thần này chưa có lời thoại.'));panel.append(g);}
