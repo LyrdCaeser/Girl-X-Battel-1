@@ -38,3 +38,32 @@
  max-width:none!important;max-height:none!important;
  transform:none!important;object-fit:fill!important;pointer-events:none!important;
 }
+
+/* 8080 purple-floral frame: the actual profile photo must fill the flower
+   wreath's opening. The earlier "contain" artwork left white side gutters
+   (most visible with portrait/vertical uploads). Only this frame uses cover:
+   no changes to original file bytes, other frames, or the flower overlay. */
+#home-view .home-profile[data-avatar-frame="8080"]>.home-profile-portrait{
+  position:absolute!important;
+  inset:3%!important;
+  width:94%!important;height:94%!important;
+  background-size:cover!important;
+  background-position:center 40%!important;
+  background-repeat:no-repeat!important;
+  background-color:#18253b;
+  border-radius:3%!important;
+  box-sizing:border-box!important;
+}
+#profile-view .profile-avatar[data-avatar-frame="8080"]>img:first-child,
+#profile-view .profile-preview-avatar[data-avatar-frame="8080"]>img:first-child{
+  position:absolute!important;
+  inset:3%!important;
+  width:94%!important;height:94%!important;
+  max-width:none!important;max-height:none!important;
+  object-fit:cover!important;
+  object-position:center 40%!important;
+  border-radius:3%!important;
+  box-sizing:border-box!important;
+}
+/* The floral wreath remains the foreground, including when its Spine
+   animation is active, and still allows taps on the underlying avatar. */

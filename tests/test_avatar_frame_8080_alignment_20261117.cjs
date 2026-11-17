@@ -6,7 +6,7 @@ const css=read('web/hero-glow.css'),html=read('web/index.html'),src=read('web/he
 const frames=JSON.parse(read('web/assets/spine/frame-effects.json'));
 assert.equal(frames['8080'],'frame_maya','purple floral native animated frame must be the selected target');
 assert(fs.existsSync(path.join(root,'web/assets/profile/frame_8080.png')));
-assert.match(html,/\/hero-glow\.css\?v=20261117-frame8080-fit-r1/);
+assert.match(html,/\/hero-glow\.css\?v=20261117-frame8080-photo-cover-r2/);
 assert.match(html,/\/hero-glow\.js\?v=20261117-frame8080-fit-r1/);
 assert.match(css,/#home-view \.home-profile\[data-avatar-frame="8080"\]>\.home-profile-frame/);
 assert.match(css,/#profile-view \.profile-avatar\[data-avatar-frame="8080"\]>\.profile-frame-image/);
@@ -19,7 +19,7 @@ assert.match(css,/width:126%!important;height:126%!important/);
 assert(Math.abs((-6 + 112/2) - 50)<1e-8,'static art must center on blue outline');
 assert(Math.abs((-13 + 126/2) - 50)<1e-8,'Spine art must center on blue outline');
 assert.match(css,/pointer-events:none!important/);
-assert(!/\.home-profile-portrait\s*\{/.test(css),'must not crop or modify uploaded portraits');
+assert(!/^#home-view \\.home-profile-portrait\\s*\\{/m.test(css),'do not override the shared avatar portrait styles for other frames');
 async function run(){
   class Observer{observe(){}unobserve(){}}
   const calls=[];
