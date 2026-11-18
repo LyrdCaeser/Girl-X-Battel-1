@@ -120,3 +120,14 @@
 }
 @media(prefers-reduced-motion:reduce){.hm-s4-skin-card{animation:none}}
 @media(max-width:390px){.hm-s4-skin-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
+
+/* Non-transferable milestone VIP15 key, not a drawable Android emoji. */
+.hm-s4-key-preview{display:flex;align-items:center;gap:12px;
+ background:linear-gradient(120deg,#fff4ca,#e8ddff);border:2px solid #dcb55e;
+ border-radius:12px;padding:10px;margin:10px 0;color:#433a6c}
+.hm-s4-key-preview img{width:76px;height:76px;object-fit:contain;flex:none}
+.hm-s4-key-preview div{display:grid;gap:4px;min-width:0}
+.hm-s4-key-preview strong{font-size:14px;color:#925b16;line-height:1.3}
+.hm-s4-key-preview small{font-size:12px;line-height:1.4}
+@media(max-width:380px){.hm-s4-key-preview img{width:57px;height:57px}}

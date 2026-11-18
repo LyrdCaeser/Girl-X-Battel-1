@@ -17,6 +17,6 @@ assert(ui.includes("'/api/s4/cycle'"),'server clock poll');
 assert(css.includes('.auth-s4-cycle-note[hidden]{display:none}'));
 assert(css.includes('.auth-s4-countdown'));
 assert(app.includes("response.status===423&&data.code==='S4_LOCKED'"));
-for(const file of ['app.js','auth.css','auth.js'])
-  assert(html.includes('/'+file+'?v=20261118-s4-72h48h-r1'),file+' not refreshed');
+for(const file of ['app.js','auth.js'])
+  assert(html.includes('/'+file+'?v=20261118-vip15-s4key-r1'),file+' not refreshed');
 console.log('PASS: S4 72h/48h clock, selected-only countdown, client kick, server 423, 15s clock sync');

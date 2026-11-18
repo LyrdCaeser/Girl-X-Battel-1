@@ -276,6 +276,7 @@ def login(username, password, server_id="S1", remote="", user_agent=""):
             try:
                 s4_exclusive.ensure_open(server_id)
                 s4_exclusive.ensure_vip15(row["uid"], server_id)
+                s4_exclusive.ensure_key_claimed(row["uid"], server_id)
             except Exception:
                 # Failed VIP logins must release their auth DB connection.
                 db.close()
@@ -315,7 +316,9 @@ def session(token):
     if not player or player["status"] == "banned": return None
     if str(row["server_id"]).upper() == "S4":
         from . import s4_exclusive
-        try: s4_exclusive.ensure_vip15(row["uid"], "S4")
+        try:
+            s4_exclusive.ensure_vip15(row["uid"], "S4")
+            s4_exclusive.ensure_key_claimed(row["uid"], "S4")
         except ValueError: return None
     return {"account": _public_account(row, row["server_id"]), "character_name": player["character_name"], "player": player}
 
@@ -334,6 +337,7 @@ def switch_server(token, server_id):
         from . import s4_exclusive
         s4_exclusive.ensure_open(server_id)
         s4_exclusive.ensure_vip15(current["account"]["uid"], server_id)
+        s4_exclusive.ensure_key_claimed(current["account"]["uid"], server_id)
     player = live_service.player(current["account"]["uid"], server_id)
     if not player: raise ValueError("Chưa có nhân vật ở server này")
     if player["status"] == "banned": raise ValueError("Nhân vật ở server này đang bị khóa")
@@ -361,6 +365,7 @@ def create_character(token, server_id, character_name):
         from . import s4_exclusive
         s4_exclusive.ensure_open(server_id)
         s4_exclusive.ensure_vip15(uid, server_id)
+        s4_exclusive.ensure_key_claimed(uid, server_id)
     character_name = str(character_name or "").strip()
     if not 2 <= len(character_name) <= 20 or any(ord(c) < 32 for c in character_name):
         raise ValueError("Tên Nhân Vật phải dài 2–20 ký tự")

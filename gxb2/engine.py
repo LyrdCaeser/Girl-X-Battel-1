@@ -631,13 +631,32 @@ class Engine:
                     from . import s4_exclusive
                     s4_rewards = s4_exclusive.grant_bundle(state, s4_marker, self.level_cap)
                 vip.claim_reward(state, inventory)
+                from . import s4_exclusive
+                key_marker = inventory.pop(s4_exclusive.ACCESS_KEY, None)
+                if key_marker is not None:
+                    if (str(mail_id) != s4_exclusive.access_key_mail_id(uid)
+                            or server_id == "S4" or int(key_marker) != 1):
+                        raise GameError("Chìa Khóa S4 không hợp lệ")
+                    state['s4_exclusive_key_claimed'] = True
+                    # Display as a tangible permanent item in the Vật Phẩm tab.
+                    # VIP access still checks the UID-scoped claimed Neon mail,
+                    # not a client-editable item count.
+                    state.setdefault('items', {})['990004'] = 1
                 for item_id, amount in inventory.items():
                     state['items'][str(item_id)] = int(state['items'].get(str(item_id), 0)) + int(amount)
+                # Neon: insert VIP15 key mail into the same atomic transaction
+                # that claimed the paid VIP EXP. No partial gifts or duplicate keys.
+                if live_db is not None:
+                    s4_exclusive.ensure_key_mail(state, db=live_db)
                 self._save_profile(state)
                 self.db.commit()
             except Exception:
                 self.db.rollback()
                 raise
+        if live_db is None:
+            # SQLite test/local backend cannot share the game/mail transaction.
+            # Only issue after the paid VIP reward has been committed.
+            s4_exclusive.ensure_key_mail(state)
         return {'state': self.snapshot(), 'attachments': attachments,
                 'goddess': gifted, 's4_rewards': s4_rewards}
 
@@ -1109,6 +1128,17 @@ class Engine:
             if state['server_id'] == 'S4' and not state.get('s4_exclusive_claimed'):
                 from . import s4_exclusive
                 s4_exclusive.ensure_welcome(state['uid'], 'S4', state['name'])
+            elif state['server_id'] != 'S4' and not getattr(self, '_s4_key_mail_checked', False):
+                from . import s4_exclusive
+                if vip.level_for(vip.exp(state)) >= s4_exclusive.REQUIRED_VIP:
+                    try:
+                        s4_exclusive.ensure_key_mail(state)
+                        self._s4_key_mail_checked = True
+                    except Exception:
+                        # A temporary mail-service failure must not hide
+                        # the player's original inbox/world list.
+                        import logging
+                        logging.exception("S4 VIP15: deferred milestone key mail")
             state['mail_info'] = live_service.mailbox(state['uid'], state['server_id'])
             state['worlds'] = live_service.worlds()
         except Exception:

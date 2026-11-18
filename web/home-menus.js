@@ -349,7 +349,9 @@ const HomeMenus=(()=>{
    celebration=result?.s4_rewards||null;
    message=celebration
      ? 'Quà độc quyền S4 đã được nhận. Đang mở hiệu ứng Wish!'
-     : 'Đã nhận vật phẩm đính kèm.';
+     : result?.attachments?.__s4_exclusive_key__
+       ? 'Chúc mừng VIP 15! Chìa Khóa S4 đã mở khóa máy chủ S4 cho tài khoản.'
+       : 'Đã nhận vật phẩm đính kèm.';
   }catch(e){message=e.message||'Không thể nhận thư.';}
   finally{pending=false;render();}
   if(celebration)await revealS4Bundle(celebration);
@@ -385,6 +387,16 @@ const HomeMenus=(()=>{
    const c=card(parent,m.title||'Thư Máy Chủ',claimed?'mail_sys02':'mail_gm01');
    if(m.created_at)paragraph(c,new Date(Number(m.created_at)*1000).toLocaleString('vi-VN'));
    if(m.body)paragraph(c,m.body,'hm-text');
+   if(m.attachments?.__s4_exclusive_key__){
+     const preview=el('div',undefined,'hm-s4-key-preview');
+     const img=el('img');img.src='/assets/ui/s4-exclusive-key.svg';
+     img.alt='Chìa Khóa S4 • Độc Quyền';
+     const detail=el('div');
+     detail.append(el('strong','Chìa Khóa S4 • Độc Quyền ×1'),
+       el('small','Mở khóa máy chủ S4 khi nhận • Vĩnh viễn • Không tiêu hao'),
+       el('small','Chìa khóa nằm trong Túi Đồ → Vật phẩm sau khi nhận'));
+     preview.append(img,detail);c.append(preview);
+   }
    if(m.attachments?.__s4_exclusive_bundle__){
     const gift=el('div',undefined,'hm-s4-gift-preview');
     gift.append(el('b','★ S4 • QUÀ WISH LIMITED 25★'),el('small',
@@ -403,7 +415,8 @@ const HomeMenus=(()=>{
    const items=Object.entries(m.attachments||{}).filter(([id,count])=>/^[0-9]+$/.test(id)&&Number(count)>0);
    if(items.length)rewards(c,items.map(([id,count])=>id+'#'+count).join('|'));
    if(m.status==='pending')button(c,
-     m.attachments?.__s4_exclusive_bundle__?'Nhận Quà & Triệu Hồi Wish':'Nhận Đính Kèm',
+     m.attachments?.__s4_exclusive_key__?'Nhận Chìa Khóa S4':
+       m.attachments?.__s4_exclusive_bundle__?'Nhận Quà & Triệu Hồi Wish':'Nhận Đính Kèm',
      ()=>claimServerMail(m.id),pending);
    else if(claimed)paragraph(c,'Đã nhận đính kèm.');
   }

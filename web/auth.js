@@ -30,7 +30,8 @@ window.GxbAuth=(()=>{
       el('strong','',locked?'🔒 S4 tạm khóa • 48 giờ':'★ S4 Độc Quyền VIP 15 • Đang mở'),
       el('span','',locked?'Mở lại sau '+clock:
         'Khóa sau '+clock+' (chơi 72 giờ, nghỉ 48 giờ)'),
-      ...(locked?[el('small','','S4 sẽ tự mở lại khi hết thời gian. Hãy chọn máy chủ khác để tiếp tục chơi.')]:[])
+      ...(locked?[el('small','','S4 sẽ tự mở lại khi hết thời gian. Hãy chọn máy chủ khác để tiếp tục chơi.')]:[]),
+      el('small','','Yêu cầu VIP 15 và Chìa Khóa S4 • Độc Quyền đã nhận trong Hòm Thư của tài khoản.')
     );
   }
   function showS4Badge(){

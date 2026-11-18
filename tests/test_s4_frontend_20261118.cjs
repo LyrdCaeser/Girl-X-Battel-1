@@ -13,8 +13,8 @@ assert(home.includes("celebration=result?.s4_rewards||null"));
 assert(css.includes(".hm-s4-skin-grid"));
 assert(events.includes("c.featured_30_days||[]"));
 assert(events.includes("!cal()?.exclusive_s4"));
-for(const name of ['home-menus.js?v=20261118-s4-wish-bundle-r1',
- 'home-menus.css?v=20261118-s4-wish-bundle-r1',
- 'auth.js?v=20261118-s4-72h48h-r1','events.js?v=20261118-s4-calendar-r1'])
+for(const name of ['home-menus.js?v=20261118-vip15-s4key-r1',
+ 'home-menus.css?v=20261118-vip15-s4key-r1',
+ 'auth.js?v=20261118-vip15-s4key-r1','events.js?v=20261118-s4-calendar-r1'])
  assert(html.includes(name),name);
 console.log('PASS S4: visible VIP gate, scoped mail, native Wish gacha, 76 original skins, 30-day event calendar');

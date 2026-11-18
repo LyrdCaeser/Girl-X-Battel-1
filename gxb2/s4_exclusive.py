@@ -17,6 +17,8 @@ WORLD = "S4"
 NAME = "S4 • Thời Không Sai Lệch (Độc Quyền)"
 REQUIRED_VIP = 15
 KEY = "__s4_exclusive_bundle__"
+ACCESS_KEY = "__s4_exclusive_key__"
+ACCESS_OPERATOR = "S4-VIP15-KEY"
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -121,8 +123,98 @@ def ensure_vip15(uid, server_id):
         return 0
     earned = paid_exp_in_other_worlds(uid)
     if vip.level_for(earned) < REQUIRED_VIP:
-        raise ValueError("S4 • Thời Không Sai Lệch là máy chủ độc quyền VIP 15. Tài khoản cần có nhân vật đạt VIP 15 tại S1–S3 trước khi vào S4.")
+        raise ValueError("S4 • Thời Không Sai Lệch là máy chủ độc quyền VIP 15. Tài khoản cần có nhân vật đạt VIP 15 tại một máy chủ khác S4 trước khi vào.")
     return earned
+
+
+def access_key_mail_id(uid):
+    """One deterministic, UID-wide reward ID across all current/future worlds."""
+    return "S4-KEY-" + hashlib.sha256(str(uid).encode("utf-8")).hexdigest()[:24].upper()
+
+
+def key_claimed(uid):
+    """Non-consumable entitlement tied to verified, claimed account mail."""
+    if not str(uid or "").strip():
+        return False
+    from . import live_service
+    db = live_service._db()
+    try:
+        row = db.execute(
+            """SELECT 1 FROM mail WHERE id=? AND uid=? AND status='claimed'
+               AND server_id<>? AND operator=?""",
+            (access_key_mail_id(uid), str(uid), WORLD, ACCESS_OPERATOR)
+        ).fetchone()
+        return bool(row)
+    finally:
+        db.close()
+
+
+def ensure_key_claimed(uid, server_id):
+    if str(server_id or "").upper() != WORLD:
+        return True
+    if not key_claimed(uid):
+        raise ValueError(
+            "Tài khoản chưa mở khóa S4. Hãy vào Hòm Thư tại máy chủ đã đạt "
+            "VIP 15, nhận Chìa Khóa S4 • Độc Quyền rồi quay lại."
+        )
+    return True
+
+
+def ensure_key_mail(state, db=None):
+    """Issue once on a real non-S4 world after paid VIP EXP reaches level 15.
+
+    When db is the borrowed Neon mail transaction, the award is committed
+    together with the paid VIP claim and character profile; no phantom mails.
+    Older VIP15 accounts receive the mail on their next profile snapshot.
+    """
+    from . import live_service
+    uid = str(state.get("uid") or "").strip()
+    server_id = str(state.get("server_id") or "").upper()
+    name = str(state.get("name") or "").strip()
+    if not uid or not server_id or server_id == WORLD or not name:
+        return False
+    if vip.level_for(vip.exp(state)) < REQUIRED_VIP:
+        return False
+    owned_db = db is None
+    if owned_db:
+        db = live_service._db()
+    try:
+        mid = access_key_mail_id(uid)
+        # Source server is determined only by the saved character state,
+        # never by a request body; must be a registered real UID/world.
+        row = db.execute(
+            "SELECT 1 FROM players WHERE uid=? AND server_id=? AND status='active'",
+            (uid, server_id)
+        ).fetchone()
+        if not row:
+            raise ValueError("Chưa xác nhận nhân vật của máy chủ nhận chìa khóa S4")
+        result = db.execute(
+            """INSERT INTO mail
+              (id,uid,server_id,character_name,title,body,attachments,
+               status,created_at,operator)
+              VALUES(?,?,?,?,?,?,?,'pending',?,?)
+              ON CONFLICT(id) DO NOTHING""",
+            (mid, uid, server_id, name,
+             "Chúc Mừng VIP 15 • Chìa Khóa S4 Độc Quyền",
+             "Chúc mừng bạn đã đạt VIP 15! Bạn được trao Chìa Khóa S4 • "
+             "Độc Quyền để mở cửa Thời Không Sai Lệch. "
+             "Nhấn Nhận Chìa Khóa để mở quyền vào S4 vĩnh viễn. "
+             "S4 hoạt động theo chu kỳ 72 giờ mở, 48 giờ nghỉ; "
+             "hãy theo dõi đồng hồ khi chọn S4. "
+             "Chìa khóa gắn với tài khoản, không tiêu hao và chỉ cấp một lần.",
+             json.dumps({ACCESS_KEY: 1}, ensure_ascii=False),
+             int(time.time()), ACCESS_OPERATOR)
+        )
+        if owned_db:
+            db.commit()
+        return result.rowcount == 1
+    except Exception:
+        if owned_db:
+            db.rollback()
+        raise
+    finally:
+        if owned_db:
+            db.close()
 
 
 def mail_id(uid):
