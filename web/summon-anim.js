@@ -13,13 +13,70 @@ const SummonAnim=(()=>{
  // partnerAnimationName1/2 by star (5…11) in SummonEffectResWindow.lua.
  const ANIM1={5:'texiao01',6:'texiao02',7:'texiao07',8:'texiao08',9:'texiao09',10:'texiao03',11:'texiao10'};
  const ANIM2={5:'texiao04',6:'texiao05',7:'texiao11',8:'texiao12',9:'texiao13',10:'texiao06',11:'texiao14'};
- let pics=null,pictures=null,skipped=false,overlay=null;
+ let pics=null,pictures=null,skipped=false,overlay=null,s4Sequence=false;
  const el=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;};
  const sfx=n=>{try{GxbAudio.sfx(n);}catch{}};
  const wait=ms=>new Promise(r=>setTimeout(r,ms));
- async function assets(){if(!pics){const [q,p]=await Promise.all([api('/assets/pictures.json').catch(()=>[]),api('/assets/partner-pictures.json').catch(()=>({}))]);pics=new Set(q);pictures=p;}}
- function run(fig,name,loop=false){return new Promise(res=>{if(!fig.spineData.findAnimation(name)){res();return;}const entry=fig.state.setAnimation(0,name,loop);if(loop){res();return;}entry.listener={complete:()=>res()};});}
- async function layer(base,scale=1,oy=.5){const host=el('div','sa-layer');overlay.querySelector('.sa-stage').append(host);const h=await GxbSpine.mount(host,base,{width:720,height:1280,scale,origin:[.5,oy],className:'sa-canvas',sequence:[['__none__',false]]});return {host,h,fig:h.figure,done(){h.destroy();host.remove();}};}
+ async function assets(){
+  if(pics)return;
+  // Picture metadata is optional for S4; a slow API must not block the Wish sequence.
+  const request=Promise.all([
+   api('/assets/pictures.json').catch(()=>[]),
+   api('/assets/partner-pictures.json').catch(()=>({}))
+  ]);
+  const [q,p]=s4Sequence?await Promise.race([
+   request,new Promise(resolve=>setTimeout(()=>resolve([[],{}]),4500))
+  ]):await request;
+  pics=new Set(q);pictures=p;
+ }
+ function run(fig,name,loop=false){
+  return new Promise((resolve,reject)=>{
+   if(skipped){resolve();return;}
+   const anim=fig.spineData?.findAnimation(name);
+   if(!anim){resolve();return;}
+   let entry;
+   try{entry=fig.state.setAnimation(0,name,loop);}catch(e){reject(e);return;}
+   if(loop){resolve();return;}
+   let done=false;
+   const finish=()=>{
+    if(done)return;
+    done=true;
+    clearTimeout(timer);clearInterval(skipPoll);
+    if(entry)entry.listener=null;
+    resolve();
+   };
+   // Original 25★ sequences last ~3.1s. A missing Spine complete event
+   // or WebGL context pause must not hold a player's claimed mail hostage.
+   const duration=Math.max(800,Math.min(9000,(Number(anim.duration)||2)*1000+1400));
+   const timer=setTimeout(finish,duration);
+   const skipPoll=setInterval(()=>{if(skipped)finish();},80);
+   entry.listener={complete:finish,end:finish,dispose:finish};
+  });
+ }
+ async function layer(base,scale=1,oy=.5){
+  const host=el('div','sa-layer');
+  const current=overlay;
+  current.querySelector('.sa-stage').append(host);
+  const mounting=GxbSpine.mount(host,base,{
+   width:720,height:1280,scale,origin:[.5,oy],
+   className:'sa-canvas',resolution:s4Sequence?1:null,
+   sequence:[['__none__',false]]
+  });
+  let timeoutId,expired=false;
+  try{
+   const h=await (s4Sequence?Promise.race([
+    mounting,new Promise((_,reject)=>{timeoutId=setTimeout(()=>{
+     expired=true;reject(Error('Quá thời gian tải hiệu ứng Wish S4'));
+    },6500);})
+   ]):mounting);
+   if(expired||!current.isConnected||skipped){h.destroy();host.remove();throw Error('Đã bỏ qua hiệu ứng');}
+   return {host,h,fig:h.figure,done(){h.destroy();host.remove();}};
+  }catch(e){
+   host.remove();
+   if(expired)void mounting.then(h=>h.destroy(),()=>{});
+   throw e;
+  }finally{clearTimeout(timeoutId);}
+ }
  function tapOrSkip(){return new Promise(res=>{const t=overlay.querySelector('.sa-touch');t.hidden=false;const go=()=>{t.hidden=true;t.onclick=null;clearInterval(k);res();};t.onclick=go;const k=setInterval(()=>{if(skipped)go();},100);});}
  function swipe(){return new Promise(res=>{const t=overlay.querySelector('.sa-touch');const hint=overlay.querySelector('.sa-hint');t.hidden=false;hint.hidden=false;let y0=null;
   const end=()=>{t.hidden=true;hint.hidden=true;t.onpointerdown=t.onpointerup=t.onclick=null;clearInterval(k);res();};
@@ -28,7 +85,14 @@ const SummonAnim=(()=>{
  // The girl's picture follows the "juese" slot (PartnerSummonEffect:replacePartner, partner_picture_xy / scale).
  async function attachGirl(fig,tableId){const i=fig.skeleton.findSlotIndex('juese');const box=fig.slotContainers?.[i];if(!box)return;
   const showId=hostChain(tableId).find(id=>pics.has(Number(id)));const full=showId!==undefined;const url=full?'/assets/pictures/'+showId+'.webp':girlIconSource(tableId);if(!url)return;
-  const image=await new Promise(resolve=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=()=>resolve(null);im.src=url;});if(!image)return;
+  const image=await new Promise(resolve=>{
+   const im=new Image();let settled=false;
+   const done=value=>{if(settled)return;settled=true;im.onload=null;im.onerror=null;clearTimeout(limit);clearInterval(skipPoll);resolve(value);};
+   const limit=setTimeout(()=>done(null),s4Sequence?3600:9000);
+   const skipPoll=setInterval(()=>{if(skipped)done(null);},80);
+   im.onload=()=>done(im);im.onerror=()=>done(null);im.src=url;
+  });
+  if(!image||skipped)return;
   const p=full?(pictures?.[String(showId)]||{}):{};const sp=new PIXI.Sprite(PIXI.Texture.from(image));sp.anchor.set(.5);const scale=full?(p.summon_static_scale||1):280/Math.max(image.naturalWidth,image.naturalHeight);sp.scale.set(scale,-scale);sp.position.set(p.xy?.[0]||0,150-(p.xy?.[1]||0));box.addChild(sp);
  }
 
@@ -135,11 +199,34 @@ const SummonAnim=(()=>{
   return ()=>{c.hidden=true;if(voice)voice.hidden=true;};
  }
  async function reveal(p,i,summon){const star=Number(p.star)||5;
-  if(star>=5){if(summon){const m=await layer('/assets/spine/fx_ui_gacha_revision',1.2,.66);sfx('vd_egg_5star');await run(m.fig,'222');m.done();if(skipped)return;}
-   const e=await layer('/assets/spine/fx_ui_newgirl_gaino');await attachGirl(e.fig,p.table_id);const placed=nativeNameStars(e.fig,p,star);const uncap=caption(p,star,placed);sfx('ui_gain_hero_5star_bg');setTimeout(()=>sfx('ui_gain_hero_5star'),1000);
-   const s=Math.min(star,11);await run(e.fig,ANIM1[s]||'texiao01');if(!skipped){run(e.fig,ANIM2[s]||'texiao04',true);await wait(900);if(!skipped)await tapOrSkip();}uncap();e.done();}
-  else{const e=await layer('/assets/spine/fx_ui_newgirl_gainp');await attachGirl(e.fig,p.table_id);const placed=nativeNameStars(e.fig,p,star);const uncap=caption(p,star,placed);const left=summon&&i%2===1;sfx(left?'ui_gain_hero_left':'ui_gain_hero_right');
-   await run(e.fig,left?'texiao03':'texiao01');if(!skipped)await wait(900);uncap();e.done();}}
+  if(star>=5){
+   if(summon){
+    const m=await layer('/assets/spine/fx_ui_gacha_revision',1.2,.66);
+    try{sfx('vd_egg_5star');await run(m.fig,'222');}finally{m.done();}
+    if(skipped)return;
+   }
+   const e=await layer('/assets/spine/fx_ui_newgirl_gaino');
+   let uncap=()=>{};
+   try{
+    await attachGirl(e.fig,p.table_id);
+    if(skipped)return;
+    const placed=nativeNameStars(e.fig,p,star);uncap=caption(p,star,placed);
+    sfx('ui_gain_hero_5star_bg');setTimeout(()=>{if(!skipped&&overlay)sfx('ui_gain_hero_5star');},1000);
+    const s=Math.min(star,11);await run(e.fig,ANIM1[s]||'texiao01');
+    if(!skipped){run(e.fig,ANIM2[s]||'texiao04',true);await wait(900);if(!skipped)await tapOrSkip();}
+   }finally{uncap();e.done();}
+  }else{
+   const e=await layer('/assets/spine/fx_ui_newgirl_gainp');let uncap=()=>{};
+   try{
+    await attachGirl(e.fig,p.table_id);
+    if(skipped)return;
+    const placed=nativeNameStars(e.fig,p,star);uncap=caption(p,star,placed);
+    const left=summon&&i%2===1;sfx(left?'ui_gain_hero_left':'ui_gain_hero_right');
+    await run(e.fig,left?'texiao03':'texiao01');
+    if(!skipped)await wait(900);
+   }finally{uncap();e.done();}
+  }
+ }
  // partners: [{table_id, star, name}] in draw order. Resolves when the sequence ends or is skipped.
  function waiting(summonId){
   document.querySelector('.sa-waiting')?.remove();
@@ -149,14 +236,28 @@ const SummonAnim=(()=>{
   assets().catch(()=>{});
   return ()=>o.remove();
  }
- async function play(summonId,partners){document.querySelector('.sa-waiting')?.remove();if(typeof PIXI==='undefined'||!partners?.length)return;await assets();skipped=false;
+ async function play(summonId,partners,options={}){document.querySelector('.sa-waiting')?.remove();if(typeof PIXI==='undefined'||!partners?.length)return;
+  skipped=false;s4Sequence=options.s4===true;
+  await assets();
   overlay=el('div','sa-overlay');const stage=el('div','sa-stage');const bg=el('img','sa-bg');bg.src='/assets/summon/summon_scene.png';bg.alt='';stage.append(bg);overlay.append(stage);
   const touch=el('div','sa-touch');touch.hidden=true;const hint=el('button','sa-hint','Vuốt xuống để tiếp tục ▼');hint.type='button';hint.hidden=true;const cap=el('div','sa-caption');cap.hidden=true;
   const skip=el('button','sa-skip','Bỏ Qua');skip.type='button';skip.onclick=()=>{skipped=true;};const voice=el('button','sa-voice','♪ Nghe giọng');voice.type='button';voice.hidden=true;voice.setAttribute('aria-label','Phát giọng Nữ Thần');overlay.append(touch,hint,cap,skip,voice);(window.GxbFrame?.root()||document.body).append(overlay);
   try{const kind=KIND[summonId];
-   if(kind){const m=await layer('/assets/spine/fx_ui_gacha_revision',1.2,.66);run(m.fig,kind+'04',true);await swipe();if(!skipped){sfx('vd_egg');await run(m.fig,kind+'01');}if(!skipped)await run(m.fig,kind+'02');if(!skipped){sfx('gacha_obtain');await run(m.fig,kind+'03');}m.done();}
-   for(let i=0;i<partners.length&&!skipped;i++)await reveal(partners[i],i,!!kind);
+   if(kind){const m=await layer('/assets/spine/fx_ui_gacha_revision',1.2,.66);
+    try{
+     run(m.fig,kind+'04',true);await swipe();
+     if(!skipped){sfx('vd_egg');await run(m.fig,kind+'01');}
+     if(!skipped)await run(m.fig,kind+'02');
+     if(!skipped){sfx('gacha_obtain');await run(m.fig,kind+'03');}
+    }finally{m.done();}
+   }
+   // S4 is a long 24-goddess sequence. Recover per portrait instead of
+   // aborting the entire gift on one damaged image or stalled animation.
+   for(let i=0;i<partners.length&&!skipped;i++){
+    try{await reveal(partners[i],i,!!kind);}
+    catch(e){console.warn('Wish bỏ qua lượt hiển thị lỗi:',partners[i]?.name,e);}
+   }
   }catch(e){console.warn("Summon animation unavailable",e);}
-  finally{overlay.remove();overlay=null;}}
+  finally{overlay?.remove();overlay=null;s4Sequence=false;}}
  return {play,waiting};
 })();

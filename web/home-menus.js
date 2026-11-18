@@ -333,7 +333,7 @@ const HomeMenus=(()=>{
    table_id:Number(g.table_id),name:g.name,star:Number(g.stars)
   }));
   if(girls.length&&typeof SummonAnim!=='undefined'){
-   try{await SummonAnim.play(26,girls);}
+   try{await SummonAnim.play(26,girls,{s4:true});}
    catch(e){console.warn('Hiệu ứng Wish S4:',e);}
   }
   await revealS4Skins(prize);
