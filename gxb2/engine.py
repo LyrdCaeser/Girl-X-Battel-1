@@ -1125,10 +1125,17 @@ class Engine:
                 state['account_status'] = player.get('status','active') if player else 'active'
             else:
                 state['account_status'] = 'active'  # current account status is enforced by auth_context()
-            if state['server_id'] == 'S4' and not state.get('s4_exclusive_claimed'):
+            if state['server_id'] == 'S4':
                 from . import s4_exclusive
-                s4_exclusive.ensure_welcome(state['uid'], 'S4', state['name'])
-            elif state['server_id'] != 'S4' and not getattr(self, '_s4_key_mail_checked', False):
+                if not state.get('s4_exclusive_claimed'):
+                    s4_exclusive.ensure_welcome(state['uid'], 'S4', state['name'])
+                elif (int(state.get('s4_catalog_version') or 0)
+                      < s4_exclusive.CATALOG_VERSION
+                      and not getattr(self, '_s4_catalog_mail_checked', False)):
+                    s4_exclusive.ensure_catalog_upgrade(
+                        state['uid'], 'S4', state['name'])
+                    self._s4_catalog_mail_checked = True
+            elif not getattr(self, '_s4_key_mail_checked', False):
                 from . import s4_exclusive
                 if vip.level_for(vip.exp(state)) >= s4_exclusive.REQUIRED_VIP:
                     try:

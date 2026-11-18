@@ -19,6 +19,8 @@ REQUIRED_VIP = 15
 KEY = "__s4_exclusive_bundle__"
 ACCESS_KEY = "__s4_exclusive_key__"
 ACCESS_OPERATOR = "S4-VIP15-KEY"
+CATALOG_VERSION = 2
+CATALOG_OPERATOR = "S4-EXPANSION-V2"
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -242,8 +244,8 @@ def ensure_welcome(uid, server_id, character_name):
                ON CONFLICT(id) DO NOTHING""",
             (mid, str(uid), WORLD, str(character_name),
              "Độc Quyền S4 • Quà Nữ Thần Wish Limited 25★",
-             "Gói độc quyền S4: 24 Nữ Thần Wish Limited 25★, cấp 1, "
-             "không trang bị; các trang phục Nữ Thần tương ứng và bộ Outfit "
+             "Gói độc quyền S4: 104 dòng Nữ Thần 25★, cấp 1, "
+             "không trang bị; 324 skin gốc và bộ Outfit khả dụng "
              "đầy đủ. Nhận thư để mở màn triệu hồi Wish đặc biệt. "
              "Quà chỉ có hiệu lực tại S4.",
              json.dumps({KEY: 1}), int(time.time()))
@@ -257,59 +259,122 @@ def ensure_welcome(uid, server_id, character_name):
         db.close()
 
 
+def catalog_upgrade_mail_id(uid):
+    return "S4-EXPAND2-" + hashlib.sha256(str(uid).encode("utf-8")).hexdigest()[:24].upper()
+
+
+def ensure_catalog_upgrade(uid, server_id, character_name):
+    """Issue one S4-only compensation mail to a claimed legacy welcome.
+
+    Called only after the verified S4 player snapshot; never touches other
+    worlds or writes player inventory outside the authenticated mail claim.
+    """
+    if str(server_id).upper() != WORLD:
+        return False
+    from . import live_service
+    db = live_service._db()
+    try:
+        row = db.execute(
+            "SELECT 1 FROM players WHERE uid=? AND server_id=? AND status='active'",
+            (str(uid), WORLD)
+        ).fetchone()
+        if not row:
+            return False
+        db.execute(
+            """INSERT INTO mail
+             (id,uid,server_id,character_name,title,body,attachments,
+              status,created_at,operator)
+             VALUES(?,?,?,?,?,?,?,'pending',?,?)
+             ON CONFLICT(id) DO NOTHING""",
+            (catalog_upgrade_mail_id(uid),str(uid),WORLD,str(character_name),
+             "Bổ Sung S4 • Toàn Bộ Nữ Thần 25★ Và Trang Phục",
+             "Đã mở rộng quà độc quyền S4: đủ 104 dòng Nữ Thần đạt 25★, "
+             "324 trang phục Nữ Thần có dữ liệu gốc và 242 món Outfit khả dụng. "
+             "Nhấn Nhận để bổ sung chính xác phần còn thiếu. "
+             "Nữ Thần và trang phục đã sở hữu được giữ nguyên. "
+             "Chỉ có hiệu lực trong máy chủ S4.",
+             json.dumps({KEY: 3}),int(time.time()),CATALOG_OPERATOR)
+        )
+        db.commit()
+        return True
+    except Exception:
+        db.rollback()
+        raise
+    finally:
+        db.close()
+
+
 def _source_goddesses():
-    from . import wish, goddess_gifts
-    return tuple(int(x) for x in wish.D['partners']
-                 if goddess_gifts.resolve(int(x), 25))
+    """Canonical 10★ forms only, without their 5★/6★ duplicate incarnations.
+
+    Wish Capsule's 24 featured choices are NOT the complete goddess roster.
+    The original guide has 104 unique 10★ forms eligible for 25★.
+    """
+    from . import goddess_gifts
+    result = []
+    for girl in goddess_gifts.GIRLS:
+        tid = int(girl['id'])
+        row = goddess_gifts.PARTNERS.get(str(tid), {})
+        if int(row.get('max_star') or 0) != 10:
+            continue
+        try:
+            target, _ = goddess_gifts.resolve(tid,25)
+        except ValueError:
+            continue
+        if target == tid:
+            result.append(tid)
+    return tuple(sorted(set(result)))
 
 
 def _skin_ids(goddesses):
-    from . import goddess_gifts, skins
-    family = set()
-    for source in goddesses:
-        target, _ = goddess_gifts.resolve(source, 25)
-        family.add(source)
-        family.add(target)
-        current = source
-        for _ in range(3):
-            candidate = goddess_gifts.COMPOSE.get(current)
-            if not candidate or candidate in family:
-                break
-            family.add(candidate)
-            current = candidate
-        for tid in (source, target):
-            for piece in str(goddess_gifts.PARTNERS.get(str(tid), {}).get('skin_ids') or '').split('|'):
-                if piece.isdecimal() and int(piece) in skins.SKINS:
-                    family.add(int(piece))
-    # SKINS partners are original character form IDs. Do not accidentally
-    # gift skins of unrelated heroines that merely share the same faction.
-    resolved = {
+    """All real original skins, not just the 24 Wish-goddess families.
+
+    12 catalogue placeholders have no compatible character; those are not
+    wearable assets and must never be represented as gifts.
+    """
+    from . import skins
+    return tuple(sorted(
         sid for sid, row in skins.SKINS.items()
-        if set(map(int, row.get('partners', []))) & family
-    }
-    return sorted(resolved | {k for k in family if k in skins.SKINS})
+        if row.get('partners') and row.get('model')
+    ))
 
 
 def grant_bundle(state, marker, level_cap):
-    """Redeem exactly once while caller holds its player/mail transaction."""
-    if state.get('server_id') != WORLD or int(marker) not in (1, 2):
+    """Atomic S4-only full gift, GM giftcode, or once-only legacy expansion.
+
+    All gifts are attached to the authenticated UID/S4 mail transaction.
+    Never remove, downgrade, or overwrite any existing partner/skin/outfit.
+    """
+    if state.get('server_id') != WORLD or int(marker) not in (1,2,3):
         raise ValueError('Quà độc quyền này chỉ dành cho S4')
-    # Marker 1 is the immutable one-time welcome. Marker 2 is issued only
-    # by the dedicated SUPER GM S4 giftcode factory (one redemption per UID/code).
-    # The mail's claimed transition and grants share one Neon transaction.
     if int(marker) == 1 and state.get('s4_exclusive_claimed'):
         raise ValueError('Gói quà độc quyền S4 đã nhận')
+    if int(marker) == 3:
+        if not state.get('s4_exclusive_claimed'):
+            raise ValueError('Thư bổ sung chỉ dành cho người đã nhận quà S4 cũ')
+        if int(state.get('s4_catalog_version') or 0) >= CATALOG_VERSION:
+            raise ValueError('Quà bổ sung S4 đã nhận')
     from . import goddess_gifts, skins, dress
     original = _source_goddesses()
+    # Every canonical 25★ goddess appears at most once in the S4 welcome
+    # or legacy supplement. GM giftcodes retain independent reward semantics.
+    existing = {
+        int(p.get('table_id') or 0) for p in state.get('partners', [])
+        if int(p.get('awake') or 0) >= 15
+    }
     prizes = []
     for tid in original:
+        if int(marker) != 2 and tid in existing:
+            continue
         prizes.append(goddess_gifts.grant(
             state, {'girl_id': tid, 'stars': 25, 'level': 1,
                     'max_stellar': False, 'max_red6': False,
                     'stats': {}}, level_cap))
+        existing.add(tid)
     ids = _skin_ids(original)
     have = skins.collected(state)
-    state['skins']['collected'] = sorted(have | set(ids))
+    new_ids = sorted(set(ids)-have)
+    state['skins']['collected'] = sorted(have|set(ids))
     wardrobe = dress.saved(state)
     obtained = 0
     for did in dress.PIECES:
@@ -319,14 +384,18 @@ def grant_bundle(state, marker, level_cap):
             wardrobe['owned'][str(did)] = max(before, newstar)
             if newstar > before:
                 obtained += 1
-    # A GM campaign must not consume the original one-time S4 welcome.
-    # Keep the original welcome available even if a code is redeemed first.
     if int(marker) == 1:
         state['s4_exclusive_claimed'] = True
-    # Return the exact ORIGINAL skin labels/art identifiers to the S4 Wish
-    # presentation (no new inventory writes, and no additional DB requests).
-    # The frontend receives these only on a successful, atomic S4 mail claim.
-    return {'goddesses': prizes, 'skin_count': len(ids), 'skin_ids': ids,
-            'skin_details': [{'id': sid, 'name': skins.SKINS[sid]['name']} for sid in ids],
-            'outfit_count': obtained, 'outfit_total': len(wardrobe['owned']),
-            'wish_count': len(prizes)}
+    state['s4_catalog_version'] = CATALOG_VERSION
+    # Return only newly collected skins so supplementary mail doesn't
+    # replay the previous 76 outfits as if they were newly awarded.
+    display_ids = ids if int(marker)==2 else new_ids
+    return {'goddesses': prizes,'skin_count': len(display_ids),
+            'skin_ids': list(display_ids),
+            'skin_details': [{'id': sid, 'name': skins.SKINS[sid]['name']}
+                             for sid in display_ids],
+            'outfit_count': obtained,'outfit_total': len(wardrobe['owned']),
+            'wish_count': len(prizes),
+            'catalog_total': len(original),
+            'skin_catalog_total': len(ids),
+            'catalog_version': CATALOG_VERSION}

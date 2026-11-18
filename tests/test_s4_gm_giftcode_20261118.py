@@ -61,9 +61,9 @@ class S4GMGiftcodeTests(unittest.TestCase):
         giftcodes.redeem(created['code'],'USER-A','S4')
         code_mail=next(m for m in live_service.mailbox('USER-A','S4') if m['attachments']=={s4_exclusive.KEY:2})
         result=engine.claim_live_mail(code_mail['id'])
-        self.assertEqual(result['s4_rewards']['wish_count'],24)
-        self.assertEqual(result['s4_rewards']['skin_count'],76)
-        self.assertEqual(len(engine._load()['partners']),len(state['partners'])+24)
+        self.assertEqual(result['s4_rewards']['wish_count'],104)
+        self.assertEqual(result['s4_rewards']['skin_count'],324)
+        self.assertEqual(len(engine._load()['partners']),len(state['partners'])+104)
         with self.assertRaisesRegex(ValueError,'được nhận'):
             engine.claim_live_mail(code_mail['id'])
 
@@ -73,10 +73,10 @@ class S4GMGiftcodeTests(unittest.TestCase):
         state['server_id']='S4'
         self.assertFalse(state.get('s4_exclusive_claimed'))
         result=s4_exclusive.grant_bundle(state,2,lambda *args,**kw:666)
-        self.assertEqual(result['wish_count'],24)
+        self.assertEqual(result['wish_count'],104)
         self.assertFalse(state.get('s4_exclusive_claimed'))
         original=s4_exclusive.grant_bundle(state,1,lambda *args,**kw:666)
-        self.assertEqual(original['wish_count'],24)
+        self.assertEqual(original['wish_count'],0)
         self.assertTrue(state['s4_exclusive_claimed'])
 
     def test_vip_and_key_both_required(self):
