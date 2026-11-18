@@ -20,6 +20,9 @@ window.GxbBagVi=(()=>{
   'Customized Class Set Chest':'Rương tự chọn bộ trang bị theo hệ',
   'Mugwort Customized Chest':'Rương Ngải Cứu tự chọn',
   'Lantern Customization Chest':'Rương Lồng Đèn tự chọn',
+  'Customized Celestial Outfit Chest':'Rương tự chọn Trang Phục Tinh Tú',
+  'You can select to get an Outfit piece of "Celestial" Set for opening this chest':
+   'Mở rương để chọn một món trang phục thuộc bộ Tinh Tú.',
   'Customized Anima Stone Set Chest':'Rương tự chọn bộ Đá Linh hồn',
   'Customized 6-star Blue Anima Stone Chest':'Rương tự chọn Đá Linh hồn xanh 6 sao',
   'Random Anima Stone Set Chest':'Rương bộ Đá Linh hồn ngẫu nhiên',

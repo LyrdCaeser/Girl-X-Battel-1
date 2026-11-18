@@ -550,9 +550,10 @@ async function showBagItem(item,count,src){
        const tile=node('button','bag-native-choice');tile.type='button';tile.dataset.rewardId=String(option.id);
        tile.setAttribute('aria-label',bagVi(option.name)+' ×'+number(option.amount));
        const art=node('span','bag-native-choice-art');
-       art.style.backgroundImage="url('/assets/ui/quality_"+Math.min(7,Math.max(1,Number(reward?.quality)||1))+".png')";
-       const picture=reward&&itemPicture(reward);
-       if(picture){const image=node('img');image.src=picture;image.alt='';image.loading='lazy';art.append(image);}
+       art.style.backgroundImage="url('/assets/ui/quality_"+Math.min(7,Math.max(1,Number(option.quality||reward?.quality)||1))+".png')";
+       const originalOutfit=typeof option.image==='string'&&/^\/assets\/dress\/ui\/icon_dress_[a-zA-Z0-9_]+\.png$/.test(option.image);
+       const picture=originalOutfit?option.image:(reward&&itemPicture(reward));
+       if(picture){const image=node('img');image.src=picture;image.alt='';image.loading='lazy';image.onerror=()=>{image.onerror=null;image.remove();};art.append(image);}
        tile.append(art,node('span','bag-native-choice-name',bagVi(option.name)),node('b','bag-native-choice-amount','×'+number(option.amount)));
        tile.onclick=()=>choose(option.id);native.append(tile);
      }

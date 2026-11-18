@@ -73,3 +73,9 @@
 .bag-summon-label{display:inline-flex;align-items:center;gap:8px;color:#355779;font-weight:700;font-size:14px}
 .bag-summon-label[hidden]{display:none!important}
 .bag-summon-label input{box-sizing:border-box;width:72px;max-width:22vw;min-height:40px;border:1px solid #a7b9ca;border-radius:9px;text-align:center;font-size:17px;background:#fff;color:#30435e}
+
+/* Source-defined choice rewards, including Senpai Outfit item IDs that are
+   absent from the regular Bag item catalogue. Keep every original icon whole. */
+.bag-native-choice-art img{width:88%;height:88%;object-fit:contain}
+.bag-native-choice-name{overflow-wrap:break-word;word-break:normal;white-space:normal}
+.bag-native-choice{grid-template-rows:auto minmax(2.6em,auto) auto}

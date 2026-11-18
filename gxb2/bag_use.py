@@ -101,6 +101,37 @@ def recipes():
     return compiled
 
 
+
+def _choice_option(reward_id, amount, catalog):
+    # The original item table contains type 30 Outfit pieces, but those
+    # records are not in the general inventory display catalogue.
+    # Read ONLY the source-defined SenpaiDressItem and its Vietnamese set.
+    item = catalog.get(str(reward_id))
+    if item:
+        return {'id': int(reward_id), 'amount': amount, 'name': item.get('name') or 'Phần thưởng',
+                'image': '', 'quality': int(item.get('quality') or 1)}
+    from . import dress
+    part = dress.ITEMS.get(int(reward_id))
+    if part:
+        dress_id = int(part['dress_id'])
+        piece = dress.PIECES.get(dress_id, {})
+        group_id = str(piece.get('group') or '')
+        group = dress.VI['group_names'].get(group_id) or 'Trang Phục'
+        base_name = str(dress.DATA['names'].get(str(reward_id)) or '').split(' (', 1)[0]
+        parts_vi = {'Head':'Đầu', 'Body':'Thân', 'Legs':'Chân',
+                    'Headwear':'Mũ', 'Accessories':'Phụ Kiện',
+                    'Angel Wings':'Cánh Thiên Thần'}
+        part_name = parts_vi.get(base_name) or dress.POS_NAMES.get(int(piece.get('pos') or 0), 'Trang Phục')
+        name = f"{part_name} ({group}) · {int(part['star'])}★"
+        icon = str(part.get('icon') or '').split('|')[0]
+        path = ROOT / 'web/assets/dress/ui' / (icon + '.png')
+        image = '/assets/dress/ui/' + icon + '.png' if icon and path.is_file() else ''
+        return {'id': int(reward_id), 'amount': amount, 'name': name,
+                'image': image, 'quality': int(part.get('qlt') or 1)}
+    return {'id': int(reward_id), 'amount': amount, 'name': 'Phần thưởng chưa có hình',
+            'image': '', 'quality': 1}
+
+
 def describe(item_id):
     """UI is given only source-derived choices, never a free-form reward ID."""
     item_id = str(item_id)
@@ -111,8 +142,7 @@ def describe(item_id):
     if recipe['kind'] == 'choice':
         catalog = _catalog()
         return {'usable': True, 'item_id': item_id, 'kind': 'choice',
-                'choices': [{'id': int(rid), 'amount': amount,
-                             'name': catalog.get(rid, {}).get('name') or 'Vật phẩm #' + rid}
+                'choices': [_choice_option(rid, amount, catalog)
                             for rid, amount in recipe['choices'].items()],
                 'max_per_use': MAX_OPEN, 'open_all_threshold': OPEN_ALL_THRESHOLD}
     return {'usable': True, 'item_id': item_id, 'kind': 'gift',
@@ -170,7 +200,15 @@ def open_in_state(state, item_id, count, reward_id=None, open_all=False):
                         break
                     roll -= weight
     state['items'][item_id] = old - count
+    # Source item type=30 is a Senpai Outfit part, not an ordinary Bag item.
+    # Store it in the owned Outfit collection; otherwise the reward is hidden
+    # because the Bag catalogue intentionally excludes type-30 item rows.
+    from . import dress
     for rid, amount in rewards.items():
+        if int(rid) in dress.ITEMS:
+            for _ in range(amount):
+                dress.grant(state, int(rid))  # original duplicate -> shard rule
+            continue
         key = str(rid)
         state['items'][key] = int(state['items'].get(key, 0)) + amount
     return {str(rid): amount for rid, amount in rewards.items()}
