@@ -4,6 +4,11 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.Manifest;
 import android.content.Intent;
+import android.content.Context;
+import android.media.projection.MediaProjectionManager;
+import android.webkit.JavascriptInterface;
+import org.json.JSONObject;
+import java.lang.ref.WeakReference;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
@@ -32,7 +37,92 @@ public final class MainActivity extends Activity {
     private WebView webView;
     private boolean notificationPermissionAsked;
     private static final int PROFILE_PHOTO_PICK_REQUEST = 3612;
+    private static final int WISH_CAPTURE_CONSENT_REQUEST = 3613;
+    private static final int WISH_GALLERY_PERMISSION_REQUEST = 3614;
+    private static WeakReference<MainActivity> visibleActivity = new WeakReference<>(null);
+    private boolean wishCapturePermissionPending;
     private ValueCallback<Uri[]> profilePhotoCallback;
+
+    /** Origin restricted: this JS bridge must never be available to untrusted pages. */
+    private boolean isTrustedGamePage() {
+        Uri current = Uri.parse(webView == null || webView.getUrl() == null
+                ? "" : webView.getUrl());
+        return "https".equalsIgnoreCase(current.getScheme())
+                && "180-93-111-99.sslip.io".equalsIgnoreCase(current.getHost());
+    }
+
+    public final class WishRecorderBridge {
+        @JavascriptInterface public boolean isSupported() { return true; }
+        @JavascriptInterface public boolean isRecording() {
+            return WishCaptureService.isRecording();
+        }
+        @JavascriptInterface public void start() {
+            runOnUiThread(() -> {
+                if (!isTrustedGamePage() || wishCapturePermissionPending
+                        || WishCaptureService.isRecording()) return;
+                beginWishScreenRecording();
+            });
+        }
+        @JavascriptInterface public void stop() {
+            runOnUiThread(() -> {
+                if (!isTrustedGamePage() || !WishCaptureService.isRecording()) return;
+                Intent stop=new Intent(MainActivity.this,WishCaptureService.class);
+                stop.setAction(WishCaptureService.ACTION_STOP);
+                startService(stop);
+            });
+        }
+    }
+
+    static void wishRecorderEvent(String state,String message) {
+        MainActivity activity=visibleActivity.get();
+        if (activity == null) return;
+        activity.runOnUiThread(() -> {
+            if (!activity.isTrustedGamePage()) return;
+            String js="window.dispatchEvent(new CustomEvent('gxb3-wish-recording', "
+                    + "{detail:{state:"+JSONObject.quote(state)
+                    + ",message:"+JSONObject.quote(message)+"}}));";
+            activity.webView.evaluateJavascript(js,null);
+        });
+    }
+
+    private void beginWishScreenRecording() {
+        if (Build.VERSION.SDK_INT <= 28 &&
+                checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+            wishCapturePermissionPending=true;
+            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    WISH_GALLERY_PERMISSION_REQUEST);
+            return;
+        }
+        launchProjectionConsent();
+    }
+
+    private void launchProjectionConsent() {
+        wishCapturePermissionPending=true;
+        try {
+            MediaProjectionManager manager=(MediaProjectionManager)
+                    getSystemService(Context.MEDIA_PROJECTION_SERVICE);
+            startActivityForResult(manager.createScreenCaptureIntent(),
+                    WISH_CAPTURE_CONSENT_REQUEST);
+            wishRecorderEvent("requesting","Đang chờ quyền quay màn hình của Android.");
+        } catch (Exception error) {
+            wishCapturePermissionPending=false;
+            wishRecorderEvent("error","Không mở được quyền ghi màn hình.");
+        }
+    }
+
+    @Override public void onRequestPermissionsResult(int requestCode,
+                    String[] permissions,int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode,permissions,grantResults);
+        if (requestCode != WISH_GALLERY_PERMISSION_REQUEST) return;
+        wishCapturePermissionPending=false;
+        if (grantResults.length>0 &&
+                grantResults[0]==PackageManager.PERMISSION_GRANTED) {
+            launchProjectionConsent();
+        } else {
+            wishRecorderEvent("error","Cần quyền lưu Video vào thư viện trên Android 8–9.");
+        }
+    }
 
     private static final String LOADING_HTML =
         "<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>"
@@ -54,6 +144,7 @@ public final class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle state) {
         super.onCreate(state);
+        visibleActivity = new WeakReference<>(this);
 
         webView = new WebView(this);
         webView.setBackgroundColor(Color.rgb(9, 11, 18));
@@ -62,6 +153,9 @@ public final class MainActivity extends Activity {
 
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
+        // User-consented native recorder; the bridge performs an HTTPS origin
+        // check again on the UI thread before every start/stop operation.
+        webView.addJavascriptInterface(new WishRecorderBridge(),"GXB3WishRecorder");
         settings.setDomStorageEnabled(true);
         settings.setDatabaseEnabled(true);
         settings.setMediaPlaybackRequiresUserGesture(false);
@@ -285,6 +379,24 @@ public final class MainActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == WISH_CAPTURE_CONSENT_REQUEST) {
+            wishCapturePermissionPending=false;
+            if (resultCode == RESULT_OK && data != null && isTrustedGamePage()) {
+                try {
+                    Intent start=new Intent(this,WishCaptureService.class);
+                    start.setAction(WishCaptureService.ACTION_START);
+                    start.putExtra(WishCaptureService.EXTRA_RESULT_CODE,resultCode);
+                    start.putExtra(WishCaptureService.EXTRA_RESULT_DATA,data);
+                    if (Build.VERSION.SDK_INT>=26) startForegroundService(start);
+                    else startService(start);
+                } catch (Exception error) {
+                    wishRecorderEvent("error","Không khởi động được ứng dụng quay Wish.");
+                }
+            } else {
+                wishRecorderEvent("cancelled","Đã hủy cấp quyền quay màn hình.");
+            }
+            return;
+        }
         if (requestCode != PROFILE_PHOTO_PICK_REQUEST) return;
         if (profilePhotoCallback != null) {
             Uri photo = resultCode == RESULT_OK && data != null ? data.getData() : null;
@@ -295,6 +407,7 @@ public final class MainActivity extends Activity {
 
     @Override
     protected void onDestroy() {
+        if (visibleActivity.get() == this) visibleActivity.clear();
         if (profilePhotoCallback != null) {
             profilePhotoCallback.onReceiveValue(null);
             profilePhotoCallback = null;
