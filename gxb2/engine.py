@@ -660,6 +660,12 @@ class Engine:
         return {'state': self.snapshot(), 'attachments': attachments,
                 'goddess': gifted, 's4_rewards': s4_rewards}
 
+    def s4_wish_replay(self):
+        """Read-only replay; rewards can never be claimed by playing a video."""
+        from . import s4_exclusive
+        with self.lock:
+            return s4_exclusive.replay_payload(self._load())
+
     def bag_use_options(self, item_id):
         from . import bag_use
         return bag_use.describe(item_id)

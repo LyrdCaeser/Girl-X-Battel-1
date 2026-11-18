@@ -47,7 +47,9 @@ const SummonAnim=(()=>{
    };
    // Original 25★ sequences last ~3.1s. A missing Spine complete event
    // or WebGL context pause must not hold a player's claimed mail hostage.
-   const duration=Math.max(800,Math.min(9000,(Number(anim.duration)||2)*1000+1400));
+   const playback=s4Sequence?Math.max(1,Number(fig.state?.timeScale)||1):1;
+   const duration=Math.max(700,Math.min(9000,
+    (Number(anim.duration)||2)*1000/playback+(s4Sequence?900:1400)));
    const timer=setTimeout(finish,duration);
    const skipPoll=setInterval(()=>{if(skipped)finish();},80);
    entry.listener={complete:finish,end:finish,dispose:finish};
@@ -115,7 +117,7 @@ const SummonAnim=(()=>{
    im.onload=()=>done(im);im.onerror=()=>done(null);im.src=url;
   });
   if(!image||skipped)return;
-  const p=full?(pictures?.[String(showId)]||{}):{};const sp=new PIXI.Sprite(PIXI.Texture.from(image));sp.anchor.set(.5);const scale=full?(p.summon_static_scale||1):280/Math.max(image.naturalWidth,image.naturalHeight);sp.scale.set(scale,-scale);sp.position.set(p.xy?.[0]||0,150-(p.xy?.[1]||0));box.addChild(sp);
+  const p=full?(pictures?.[String(showId)]||{}):{};const sp=new PIXI.Sprite(PIXI.Texture.from(image));if(s4Sequence)sp.__s4WishTexture=sp.texture;sp.anchor.set(.5);const scale=full?(p.summon_static_scale||1):280/Math.max(image.naturalWidth,image.naturalHeight);sp.scale.set(scale,-scale);sp.position.set(p.xy?.[0]||0,150-(p.xy?.[1]||0));box.addChild(sp);
  }
 
  // PartnerSummonEffect:initEffect hides zhiye/cv/name (placeholder text art) and updateStar the "Nxing" slots above the
@@ -249,6 +251,206 @@ const SummonAnim=(()=>{
    }finally{uncap();e.done();}
   }
  }
+ // S4 native Wish: present EVERY original goddess and skin with the
+ // original Spine fx_ui_gacha_revision + fx_ui_newgirl_gaino animations.
+ // One canvas is reused per reward type. Never replace Wish with a 12-card grid.
+ function s4Slot(fig,name){
+  const id=fig.skeleton.findSlotIndex(name);
+  return id<0?null:fig.slotContainers?.[id]||null;
+ }
+ function s4SlotChildren(fig){
+  const result=[];
+  for(const name of ['juese','name']){
+   const slot=s4Slot(fig,name);
+   if(slot)result.push({slot,original:new Set(slot.children)});
+  }
+  return result;
+ }
+ function s4CleanupArt(slots){
+  for(const {slot,original} of slots){
+   for(const child of [...slot.children]){
+    if(original.has(child))continue;
+    try{
+     // Destroy only TEMPORARY WebGL textures created from this Wish image.
+     // Original game star/skeleton shared sprites must retain their textures.
+     const transient=child.__s4WishTexture||null;
+     const ownText=typeof PIXI.Text==='function'&&child instanceof PIXI.Text;
+     slot.removeChild(child);
+     child.destroy({children:true,texture:ownText,baseTexture:ownText});
+     if(transient)transient.destroy(true);
+    }catch(e){console.warn('Wish cleanup:',e);}
+   }
+  }
+ }
+ function s4SkinLabel(fig,name){
+  const slot=s4Slot(fig,'name');
+  if(!slot)return false;
+  const plaque=new PIXI.Graphics();
+  plaque.beginFill(0xfafcff,.99).drawRoundedRect(-115,-31,230,62,7).endFill();
+  slot.addChild(plaque);
+  const text=new PIXI.Text(String(name||'Trang phục Nữ Thần'),{
+   fontFamily:'Arial, sans-serif',fontSize:24,fontWeight:'bold',
+   fill:0x34486b,align:'center',
+  });
+  text.anchor.set(.5);text.scale.y=-1;
+  if(text.width>218)text.scale.x=218/text.width;
+  slot.addChild(text);
+  const tag=new PIXI.Text('TRANG PHỤC',{
+   fontFamily:'Arial, sans-serif',fontSize:18,fontWeight:'bold',
+   fill:0xffe6a1,stroke:0x6a386d,strokeThickness:4,align:'center',
+  });
+  tag.anchor.set(.5);tag.position.set(0,92);tag.scale.y=-1;slot.addChild(tag);
+  // Remove baked star placeholders from the original reward skeleton.
+  for(const bone of ['1xing','2xing','3xing','3xing2','3xing3',
+                     '3xing4','4xing','5xing','xing6','xing7']){
+   if(fig.skeleton.findSlotIndex(bone)>=0){
+    try{fig.hackTextureBySlotName(bone,PIXI.Texture.EMPTY,{width:1,height:1});}catch{}
+   }
+  }
+  return true;
+ }
+ function s4LoadImage(url){
+  return new Promise(resolve=>{
+   const img=new Image();let settled=false;
+   const done=ok=>{
+    if(settled)return;
+    settled=true;clearTimeout(limit);clearInterval(aborted);
+    img.onload=null;img.onerror=null;resolve(ok?img:null);
+   };
+   const limit=setTimeout(()=>done(false),3500);
+   const aborted=setInterval(()=>{if(skipped)done(false);},90);
+   img.onload=()=>done(true);img.onerror=()=>done(false);img.src=url;
+  });
+ }
+ async function s4AttachSkin(fig,skin){
+  const slot=s4Slot(fig,'juese');
+  if(!slot)return false;
+  const sid=Number(skin.id);
+  const original='/assets/skins/cards/'+sid+'.webp';
+  const parents=Array.isArray(skin.partners)?skin.partners:[];
+  let img=await s4LoadImage(original);
+  if(!img&&!skipped){
+   const family=parents.map(Number).reverse().find(Number.isSafeInteger);
+   const sourced=family && typeof girlIconSource==='function'?
+    girlIconSource(family):'';
+   const fallback=sourced||(family?'/assets/cards/partner_card_'+family+'.png':'');
+   if(fallback)img=await s4LoadImage(fallback);
+  }
+  if(!img||skipped)return false;
+  const pic=new PIXI.Sprite(PIXI.Texture.from(img));
+  // At 324 skins, keeping all WebGL textures alive would exhaust GPU RAM.
+  // This one-off Image is not shared with the original game assets.
+  pic.__s4WishTexture=pic.texture;
+  pic.anchor.set(.5);
+  const scale=Math.min(1.9,430/Math.max(img.naturalWidth,img.naturalHeight));
+  pic.scale.set(scale,-scale);pic.position.set(0,145);
+  slot.addChild(pic);
+  return true;
+ }
+ function s4Pause(ms){
+  return new Promise(resolve=>{
+   if(skipped){resolve();return;}
+   const touch=overlay?.querySelector('.sa-touch');
+   if(touch)touch.hidden=false;
+   let done=false,poll=null,timer=null;
+   const finish=()=>{
+    if(done)return;done=true;clearTimeout(timer);clearInterval(poll);
+    if(touch){touch.hidden=true;touch.onclick=null;}
+    resolve();
+   };
+   if(touch)touch.onclick=finish;
+   timer=setTimeout(finish,ms);
+   poll=setInterval(()=>{if(skipped)finish();},80);
+  });
+ }
+ async function s4RevealSequence(items,type,progress){
+  if(!items?.length||skipped)return;
+  progress.textContent=type==='girls'?'NỮ THẦN • TRIỆU HỒI WISH':
+                                      'TRANG PHỤC • TRIỆU HỒI WISH';
+  // Original gacha egg burst at each new phase; no swipe deadlock.
+  try{
+   const machine=await layer('/assets/spine/fx_ui_gacha_revision',1.2,.66);
+   try{sfx('vd_egg_5star');await run(machine.fig,'222');}
+   finally{machine.done();}
+  }catch(error){console.warn('S4 Wish: bỏ qua hiệu ứng trứng lỗi',error);}
+  if(skipped)return;
+  const e=await layer('/assets/spine/fx_ui_newgirl_gaino');
+  try{
+   const fig=e.fig;
+   // Avoid 104+324 repeated WebGL mounts; speed up native Spine playback.
+   fig.state.timeScale=1.8;
+   for(let i=0;i<items.length&&!skipped;i++){
+    const entry=items[i];
+    const owned=s4SlotChildren(fig);
+    progress.textContent=(type==='girls'?'NỮ THẦN ':'TRANG PHỤC ')+
+                         (i+1)+' / '+items.length;
+    let uncap=()=>{};
+    try{
+     if(type==='girls'){
+      await attachGirl(fig,entry.table_id);
+      if(skipped)break;
+      const placed=nativeNameStars(fig,entry,25);
+      uncap=caption(entry,25,placed);
+     }else{
+      await s4AttachSkin(fig,entry);
+      if(skipped)break;
+      const placed=s4SkinLabel(fig,entry.name);
+      if(!placed){
+       const text=overlay.querySelector('.sa-caption');
+       text.replaceChildren(el('b','',String(entry.name||'Trang phục')));
+       text.hidden=false;
+       uncap=()=>{text.hidden=true;};
+      }
+      sfx('ui_gain_hero_5star_bg');
+     }
+     await run(fig,'texiao10');
+     if(skipped)break;
+     sfx('ui_gain_hero_5star');
+     await s4Pause(900);
+    }catch(error){
+     console.warn('S4 Wish: lỗi một lượt hiển thị',i+1,error);
+    }finally{
+     uncap();s4CleanupArt(owned);
+    }
+   }
+  }finally{e.done();}
+ }
+ async function playS4Rewards(partners,skins){
+  const girls=Array.isArray(partners)?partners:[];
+  const costumes=Array.isArray(skins)?skins:[];
+  if(overlay||(!girls.length&&!costumes.length))return;
+  if(typeof PIXI==='undefined'||typeof GxbSpine==='undefined')return;
+  skipped=false;s4Sequence=true;
+  document.querySelector('.sa-waiting')?.remove();
+  try{
+   await assets();
+   if(skipped)return;
+   overlay=el('div','sa-overlay sa-s4-native-wish');
+   const stage=el('div','sa-stage');
+   const bg=el('img','sa-bg');bg.src='/assets/summon/summon_scene.png';
+   bg.alt='Máy triệu hồi Wish nguyên bản';stage.append(bg);overlay.append(stage);
+   const touch=el('div','sa-touch');touch.hidden=true;
+   const hint=el('button','sa-hint','Chạm để tiếp tục');hint.type='button';hint.hidden=true;
+   const cap=el('div','sa-caption');cap.hidden=true;
+   const skip=el('button','sa-skip','Bỏ Qua');skip.type='button';
+   skip.onclick=()=>{skipped=true;};
+   const voice=el('button','sa-voice','♪ Nghe giọng');voice.type='button';
+   voice.hidden=true;
+   const progress=el('div','sa-s4-progress','Đang mở Wish S4…');
+   const instruction=el('div','sa-s4-instruction','Hiệu ứng Wish nguyên bản · Chạm để chuyển nhanh');
+   overlay.append(touch,hint,cap,skip,voice,progress,instruction);
+   (window.GxbFrame?.root()||document.body).append(overlay);
+   try{await s4RevealSequence(girls,'girls',progress);}
+   catch(error){console.warn('S4 Wish: pha Nữ Thần gặp lỗi',error);}
+   // A damaged heroine asset must not prevent skins from getting their
+   // own native Wish reveals.
+   if(!skipped)try{await s4RevealSequence(costumes,'skins',progress);}
+   catch(error){console.warn('S4 Wish: pha Skin gặp lỗi',error);}
+  }catch(error){console.warn('Không phát được một phần Wish S4',error);}
+  finally{
+   overlay?.remove();overlay=null;s4Sequence=false;skipped=false;
+  }
+ }
  // partners: [{table_id, star, name}] in draw order. Resolves when the sequence ends or is skipped.
  function waiting(summonId){
   document.querySelector('.sa-waiting')?.remove();
@@ -281,5 +483,5 @@ const SummonAnim=(()=>{
    }
   }catch(e){console.warn("Summon animation unavailable",e);}
   finally{overlay?.remove();overlay=null;s4Sequence=false;}}
- return {play,waiting};
+ return {play,playS4Rewards,waiting};
 })();

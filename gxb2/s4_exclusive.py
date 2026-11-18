@@ -392,10 +392,70 @@ def grant_bundle(state, marker, level_cap):
     display_ids = ids if int(marker)==2 else new_ids
     return {'goddesses': prizes,'skin_count': len(display_ids),
             'skin_ids': list(display_ids),
-            'skin_details': [{'id': sid, 'name': skins.SKINS[sid]['name']}
-                             for sid in display_ids],
+            'skin_details': [
+                {'id': sid, 'name': skins.SKINS[sid]['name'],
+                 'partners': skins.SKINS[sid].get('partners', [])}
+                for sid in display_ids],
             'outfit_count': obtained,'outfit_total': len(wardrobe['owned']),
             'wish_count': len(prizes),
             'catalog_total': len(original),
             'skin_catalog_total': len(ids),
             'catalog_version': CATALOG_VERSION}
+
+
+
+def replay_payload(state):
+    """Read-only S4 Wish replay for rewards the player actually owns.
+
+    No grants, duplicate mail claims, or cross-world access. Player identity
+    comes exclusively from the authenticated engine state.
+    """
+    if str(state.get('server_id') or '').upper() != WORLD:
+        raise ValueError('Chỉ có thể xem lại Wish tại máy chủ S4')
+    if not (state.get('s4_exclusive_claimed') or
+            int(state.get('s4_catalog_version') or 0) >= CATALOG_VERSION):
+        raise ValueError('Chưa nhận quà Wish độc quyền S4')
+    from . import goddess_gifts, skins
+    canonical = set(_source_goddesses())
+    rewarded = {}
+    for p in state.get('partners', []):
+        try:
+            tid = int(p.get('table_id') or 0)
+            stars = 10 + int(p.get('awake') or 0)
+        except (ValueError, TypeError):
+            continue
+        if tid in canonical and stars >= 25 and tid not in rewarded:
+            metadata = goddess_gifts.BY_ID.get(tid, {})
+            rewarded[tid] = {
+                'table_id': tid, 'name': str(metadata.get('name') or tid),
+                'stars': 25,
+            }
+    # Unlike skins.collected(), reading the replay must not migrate or write
+    # saved ownership. Inspect historical bags/equipped IDs without mutation.
+    saved_skins = state.get('skins') or {}
+    owned = {int(x) for x in saved_skins.get('collected', [])
+             if str(x).isdigit() and int(x) in skins.SKINS}
+    for item_id, amount in (state.get('items') or {}).items():
+        if str(item_id).isdigit() and int(item_id) in skins.SKINS and int(amount)>0:
+            owned.add(int(item_id))
+    for hero in state.get('partners', []):
+        equipped = hero.get('equips') or []
+        if len(equipped)>=7 and int(equipped[6] or 0) in skins.SKINS:
+            owned.add(int(equipped[6]))
+    valid = set(_skin_ids(canonical))
+    ids = sorted(owned & valid)
+    catalog = [{
+        'id': sid,
+        'name': skins.SKINS[sid]['name'],
+        'partners': skins.SKINS[sid].get('partners', []),
+    } for sid in ids]
+    outfit = state.get('dress') or {}
+    return {
+        'goddesses': list(rewarded.values()),
+        'wish_count': len(rewarded),
+        'skin_ids': ids, 'skin_details': catalog, 'skin_count': len(ids),
+        'outfit_total': len(outfit.get('owned', {})),
+        'catalog_total': len(canonical),
+        'skin_catalog_total': len(valid),
+        'replay': True, 'granted': False,
+    }

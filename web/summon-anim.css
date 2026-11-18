@@ -36,3 +36,24 @@
  border-radius:calc(24 * var(--u));font-weight:800;font-size:calc(22 * var(--u));cursor:pointer}
 .sa-voice[hidden]{display:none!important}
 @media(prefers-reduced-motion:reduce){.sa-hint{animation:none}}
+
+/* Original S4 Wish cinematic: one full-screen Spine reward at a time.
+   Progress is a HUD, not a grid or a replacement for native summoning. */
+.sa-s4-native-wish .sa-stage{z-index:0}
+.sa-s4-progress{
+ position:absolute;left:50%;top:clamp(190px,22dvh,270px);
+ transform:translateX(-50%);
+ z-index:6;max-width:86%;padding:8px 18px;
+ border:2px solid #ffe5a0;border-radius:35px;
+ background:linear-gradient(120deg,#1d1948de,#624d8bdd);
+ color:#fff1b6;text-shadow:0 1px 4px #201137;
+ font-weight:900;font-size:clamp(13px,3.4cqw,23px);
+ letter-spacing:.03em;text-align:center;pointer-events:none
+}
+.sa-s4-instruction{
+ position:absolute;left:50%;bottom:max(70px,7dvh);
+ transform:translateX(-50%);z-index:5;max-width:90%;
+ padding:8px 14px;border-radius:18px;background:#201531a9;
+ color:#fff5d3;font-weight:700;font-size:clamp(11px,2.7cqw,17px);
+ text-align:center;text-shadow:0 1px 3px #120820;pointer-events:none
+}

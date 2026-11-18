@@ -723,6 +723,12 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                 return self.send(200,(ROOT/'localization'/'vi.json').read_bytes(),'application/json; charset=utf-8')
             return self.send(404, {'error':'Chỉ hỗ trợ Tiếng Việt'})
         if path == '/health': return self.send(200, {'ok': True, 'scope': 'gxb3-private', 'database': database.backend_name(), 'schema_messages': len(p.SCHEMA)})
+        if path == '/api/s4/wish/replay':
+            # require_auth() has already validated this precise UID/world.
+            if self.auth_context()['account']['server_id'] != 'S4':
+                return self.send(403, {'error': 'Chỉ có thể xem lại Wish tại S4'})
+            return self.send(200, self.engine.s4_wish_replay(),
+                             headers={'Cache-Control': 'no-store'})
         if path == '/api/state': return self.send(200, self.engine.snapshot())
         if path == '/api/bootstrap': return self.send(200, {'payload': self.bootstrap()})
         if path == '/assets/characters.json': return self.send(200, sorted(CHARACTER_ART))
