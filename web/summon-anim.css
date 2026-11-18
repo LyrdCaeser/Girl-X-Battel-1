@@ -57,3 +57,111 @@
  color:#fff5d3;font-weight:700;font-size:clamp(11px,2.7cqw,17px);
  text-align:center;text-shadow:0 1px 3px #120820;pointer-events:none
 }
+
+/* S4 filming presentation: no large progress bar, hint bar, GIRLS banner,
+   floating countdown or recorder widget across the player's footage. */
+.gxb-s4-cinematic .auth-s4-countdown,
+.gxb-s4-cinematic .gxb-wish-record-widget,
+.gxb-s4-cinematic .gxb-mute,
+.gxb-s4-cinematic .sa-s4-progress,
+.gxb-s4-cinematic .sa-s4-instruction,
+.gxb-s4-cinematic .sa-hint,
+.gxb-s4-cinematic .sa-voice {
+ display:none!important
+}
+.sa-s4-native-wish{
+ isolation:isolate;
+ background:#dfe5f2;
+}
+.sa-s4-native-wish .sa-bg{
+ filter:saturate(1.08);
+}
+/* This native gacha Spine provides the genuine animated rays/particles, not
+   the Goddess name/CV/star skeleton that caused the 19:08 screenshot. */
+.sa-s4-native-wish .sa-s4-gacha-aura{
+ opacity:.66;
+ filter:saturate(1.1);
+}
+.sa-s4-skin-scene{
+ position:absolute;inset:0;z-index:3;display:flex;
+ align-items:center;justify-content:center;flex-direction:column;
+ overflow:hidden;pointer-events:none;
+}
+.sa-s4-skin-radiance{
+ position:absolute;left:50%;top:46%;width:135%;height:92%;
+ transform:translate(-50%,-50%) rotate(0);
+ border-radius:50%;pointer-events:none;
+ background:
+ radial-gradient(ellipse at 50% 50%,#fff9e9c7 0%,#f5d6ff96 29%,
+                 #9dcffb7a 48%,transparent 73%);
+ filter:blur(17px);
+ opacity:.68;
+ animation:sa-s4-cinematic-aura 4s ease-in-out infinite alternate;
+}
+.sa-s4-skin-portrait{
+ position:relative;z-index:2;
+ display:block;
+ width:88%;height:74%;
+ max-width:710px;max-height:1080px;
+ object-fit:contain;object-position:center center;
+ border:0;border-radius:0;background:transparent;
+ box-shadow:none;
+ filter:drop-shadow(0 12px 27px #32234f75);
+ opacity:0;
+ transform:translateY(28px) scale(.87);
+}
+.sa-s4-skin-scene.sa-s4-skin-visible .sa-s4-skin-portrait{
+ animation:sa-s4-cinematic-reveal 1.15s cubic-bezier(.19,.82,.24,1) both;
+}
+.sa-s4-skin-portrait[hidden]{display:none!important}
+.sa-s4-skin-title{
+ position:absolute;z-index:4;bottom:9%;left:12%;right:12%;
+ color:#fff9e4;font-size:clamp(17px,4.5cqw,34px);
+ font-weight:900;text-align:center;line-height:1.3;
+ letter-spacing:.015em;text-shadow:
+ 0 2px 3px #28194b,0 0 12px #29154f,0 0 26px #28194f;
+ opacity:0;transform:translateY(12px);
+}
+.sa-s4-skin-scene.sa-s4-skin-visible .sa-s4-skin-title{
+ animation:sa-s4-cinematic-title .6s ease-out .45s both;
+}
+.sa-s4-native-wish .sa-skip{
+ right:12px;top:12px;
+ border:0!important;border-radius:8px;
+ padding:5px 8px;min-height:28px;
+ font-size:clamp(11px,2.3cqw,15px);
+ background:#211b3980;box-shadow:none;opacity:.45;
+ text-shadow:0 1px 3px #000;
+}
+.sa-s4-native-wish .sa-skip:focus-visible,
+.sa-s4-native-wish .sa-skip:active{opacity:1;outline:2px solid #fff}
+@keyframes sa-s4-cinematic-reveal{
+ 0%{opacity:0;transform:translateY(28px) scale(.84);filter:brightness(2.2) drop-shadow(0 5px 30px #fff)}
+ 42%{opacity:1;filter:brightness(1.25) drop-shadow(0 0 29px #ffefc6)}
+ 100%{opacity:1;transform:translateY(0) scale(1);filter:brightness(1) drop-shadow(0 12px 27px #32234f75)}
+}
+@keyframes sa-s4-cinematic-title{
+ from{opacity:0;transform:translateY(12px)}
+ to{opacity:1;transform:translateY(0)}
+}
+@keyframes sa-s4-cinematic-aura{
+ from{opacity:.45;transform:translate(-50%,-50%) scale(.92)}
+ to{opacity:.86;transform:translate(-50%,-50%) scale(1.08)}
+}
+/* PC and mobile retain distinct proportions; don't squish portraits to
+   the 720x1280 rig or use the old cropped juese slot for skins. */
+@media (min-width:800px){
+ .sa-s4-skin-portrait{width:73%;height:79%;max-width:700px;max-height:1050px}
+ .sa-s4-skin-title{bottom:7%}
+}
+@media (max-width:799px){
+ .sa-s4-skin-portrait{width:92%;height:72%;max-width:none;max-height:none}
+ .sa-s4-skin-title{bottom:10%;left:5%;right:5%}
+}
+@media (prefers-reduced-motion:reduce){
+ .sa-s4-skin-radiance{animation:none}
+ .sa-s4-skin-scene.sa-s4-skin-visible .sa-s4-skin-portrait,
+ .sa-s4-skin-scene.sa-s4-skin-visible .sa-s4-skin-title{
+  animation:none;opacity:1;transform:none;
+ }
+}

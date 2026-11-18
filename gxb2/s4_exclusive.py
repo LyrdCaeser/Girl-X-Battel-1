@@ -394,7 +394,12 @@ def grant_bundle(state, marker, level_cap):
             'skin_ids': list(display_ids),
             'skin_details': [
                 {'id': sid, 'name': skins.SKINS[sid]['name'],
-                 'partners': skins.SKINS[sid].get('partners', [])}
+                 'partners': skins.SKINS[sid].get('partners', []),
+                 'picture_model': (
+                     str(skins.SKINS[sid].get('model', ''))
+                     if (ROOT / 'web/assets/pictures' /
+                         (str(skins.SKINS[sid].get('model', '')) + '.webp')).is_file()
+                     else '')}
                 for sid in display_ids],
             'outfit_count': obtained,'outfit_total': len(wardrobe['owned']),
             'wish_count': len(prizes),
@@ -448,6 +453,11 @@ def replay_payload(state):
         'id': sid,
         'name': skins.SKINS[sid]['name'],
         'partners': skins.SKINS[sid].get('partners', []),
+        'picture_model': (
+            str(skins.SKINS[sid].get('model', ''))
+            if (ROOT / 'web/assets/pictures' /
+                (str(skins.SKINS[sid].get('model', '')) + '.webp')).is_file()
+            else ''),
     } for sid in ids]
     outfit = state.get('dress') or {}
     return {

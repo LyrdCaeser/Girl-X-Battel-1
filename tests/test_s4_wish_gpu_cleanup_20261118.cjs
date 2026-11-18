@@ -2,7 +2,7 @@
 const fs=require('fs'),vm=require('node:vm'),assert=require('node:assert/strict');
 const js=fs.readFileSync('web/summon-anim.js','utf8');
 const from=js.indexOf(' function s4CleanupArt(slots){');
-const to=js.indexOf(' function s4SkinLabel(fig,name){',from);
+const to=js.indexOf(' // Use actual original Gacha effects',from);
 assert(from>0&&to>from);
 let tempDestroyed=0,sharedDestroyed=0,textDestroyed=0;
 class NativeText {

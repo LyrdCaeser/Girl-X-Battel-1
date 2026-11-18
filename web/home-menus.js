@@ -305,7 +305,8 @@ const HomeMenus=(()=>{
     const original=String(detail.get(id)?.name||'Trang phục Nữ Thần');
     const translated=window.GxbBagVi?.t?.(original);
     return {id,name:typeof translated==='string'&&translated.trim()?
-             translated:original,partners:detail.get(id)?.partners||[]};
+             translated:original,partners:detail.get(id)?.partners||[],
+             picture_model:String(detail.get(id)?.picture_model||'')};
    });
   // Both phases are the original fullscreen Spine Wish, never a grid.
   // Granting was committed by the server before animation begins.

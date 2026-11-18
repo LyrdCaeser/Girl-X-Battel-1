@@ -282,70 +282,84 @@ const SummonAnim=(()=>{
    }
   }
  }
- function s4SkinLabel(fig,name){
-  const slot=s4Slot(fig,'name');
-  if(!slot)return false;
-  const plaque=new PIXI.Graphics();
-  plaque.beginFill(0xfafcff,.99).drawRoundedRect(-115,-31,230,62,7).endFill();
-  slot.addChild(plaque);
-  const text=new PIXI.Text(String(name||'Trang phục Nữ Thần'),{
-   fontFamily:'Arial, sans-serif',fontSize:24,fontWeight:'bold',
-   fill:0x34486b,align:'center',
-  });
-  text.anchor.set(.5);text.scale.y=-1;
-  if(text.width>218)text.scale.x=218/text.width;
-  slot.addChild(text);
-  const tag=new PIXI.Text('TRANG PHỤC',{
-   fontFamily:'Arial, sans-serif',fontSize:18,fontWeight:'bold',
-   fill:0xffe6a1,stroke:0x6a386d,strokeThickness:4,align:'center',
-  });
-  tag.anchor.set(.5);tag.position.set(0,92);tag.scale.y=-1;slot.addChild(tag);
-  // Remove baked star placeholders from the original reward skeleton.
-  for(const bone of ['1xing','2xing','3xing','3xing2','3xing3',
-                     '3xing4','4xing','5xing','xing6','xing7']){
-   if(fig.skeleton.findSlotIndex(bone)>=0){
-    try{fig.hackTextureBySlotName(bone,PIXI.Texture.EMPTY,{width:1,height:1});}catch{}
+ // Use actual original Gacha effects but NEVER overlay a skin on the
+ // Goddess-only 'fx_ui_newgirl_gaino' skeleton: it bakes in GIRLS, CV,
+ // name plaques and star artwork (the exact screenshot regression).
+ async function s4RevealSkinCinema(items,progress){
+  if(!items?.length||skipped)return;
+  let effect=null;
+  try{
+   effect=await layer('/assets/spine/fx_ui_gacha_revision',1.05,.58);
+   effect.host.classList.add('sa-s4-gacha-aura');
+  }catch(error){console.warn('Gacha VFX chưa tải được',error);}
+  const stage=overlay.querySelector('.sa-stage');
+  const scene=el('div','sa-s4-skin-scene');
+  scene.setAttribute('aria-label','Trang phục Wish độc quyền S4');
+  scene.append(el('div','sa-s4-skin-radiance'));
+  const poster=el('img','sa-s4-skin-portrait');
+  poster.alt='';poster.draggable=false;
+  const title=el('div','sa-s4-skin-title');
+  title.setAttribute('aria-live','off');
+  scene.append(poster,title);
+  stage.append(scene);
+  try{
+   for(let i=0;i<items.length&&!skipped;i++){
+    const skin=items[i];
+    const sid=Number(skin.id);
+    progress.textContent='Trang phục '+(i+1)+' / '+items.length;
+    // 53 skin artworks have original full-size picture resources;
+    // the other verified originals retain their portrait crop.
+    const model=String(skin.picture_model||'');
+    const full=/^[0-9]{1,12}$/.test(model)?
+      '/assets/pictures/'+model+'.webp':'';
+    const card='/assets/skins/cards/'+sid+'.webp';
+    const family=(skin.partners||[]).map(Number).reverse()
+      .find(Number.isSafeInteger);
+    const fallback=family?'/assets/cards/partner_card_'+family+'.png':'';
+    let img=null;
+    for(const url of [full,card,fallback].filter(Boolean)){
+     img=await s4LoadImage(url);
+     if(img||skipped)break;
+    }
+    if(skipped)break;
+    scene.classList.remove('sa-s4-skin-visible');
+    poster.removeAttribute('src');
+    title.textContent=String(skin.name||'Trang phục Nữ Thần');
+    if(img){
+     // Decode/copy a loaded native image rather than a thumbnail CSS background.
+     poster.src=img.src;
+     poster.alt=String(skin.name||'Trang phục Nữ Thần');
+     poster.hidden=false;
+    }else{
+     poster.hidden=true;
+    }
+    // The recovered publisher gacha/burst Spine, plus the original art
+    // entering the central reveal stage, replaces all fake 12-card grids.
+    try{
+     if(effect){
+      effect.fig.state.timeScale=1.8;
+      await run(effect.fig,'222');
+     }
+    }catch(error){console.warn('Wish skin: lỗi một hiệu ứng',sid,error);}
+    if(skipped)break;
+    void scene.offsetWidth; // Restart entrance animation for each reward.
+    scene.classList.add('sa-s4-skin-visible');
+    sfx('ui_gain_hero_5star');
+    await s4Pause(1800);
    }
+  }finally{
+   scene.remove();
+   effect?.done();
   }
-  return true;
  }
- function s4LoadImage(url){
-  return new Promise(resolve=>{
-   const img=new Image();let settled=false;
-   const done=ok=>{
-    if(settled)return;
-    settled=true;clearTimeout(limit);clearInterval(aborted);
-    img.onload=null;img.onerror=null;resolve(ok?img:null);
-   };
-   const limit=setTimeout(()=>done(false),3500);
-   const aborted=setInterval(()=>{if(skipped)done(false);},90);
-   img.onload=()=>done(true);img.onerror=()=>done(false);img.src=url;
-  });
- }
- async function s4AttachSkin(fig,skin){
-  const slot=s4Slot(fig,'juese');
-  if(!slot)return false;
-  const sid=Number(skin.id);
-  const original='/assets/skins/cards/'+sid+'.webp';
-  const parents=Array.isArray(skin.partners)?skin.partners:[];
-  let img=await s4LoadImage(original);
-  if(!img&&!skipped){
-   const family=parents.map(Number).reverse().find(Number.isSafeInteger);
-   const sourced=family && typeof girlIconSource==='function'?
-    girlIconSource(family):'';
-   const fallback=sourced||(family?'/assets/cards/partner_card_'+family+'.png':'');
-   if(fallback)img=await s4LoadImage(fallback);
+ function s4SuppressBakedGirlHeading(fig){
+  // Original visual art remains; only the baked English GIRLS heading and
+  // CV placeholder are hidden in S4 cinematic, never in regular summons.
+  for(const name of ['girls','cv']){
+   if(fig.skeleton.findSlotIndex(name)>=0)
+    try{fig.hackTextureBySlotName(name,PIXI.Texture.EMPTY,{width:1,height:1});}
+    catch{}
   }
-  if(!img||skipped)return false;
-  const pic=new PIXI.Sprite(PIXI.Texture.from(img));
-  // At 324 skins, keeping all WebGL textures alive would exhaust GPU RAM.
-  // This one-off Image is not shared with the original game assets.
-  pic.__s4WishTexture=pic.texture;
-  pic.anchor.set(.5);
-  const scale=Math.min(1.9,430/Math.max(img.naturalWidth,img.naturalHeight));
-  pic.scale.set(scale,-scale);pic.position.set(0,145);
-  slot.addChild(pic);
-  return true;
  }
  function s4Pause(ms){
   return new Promise(resolve=>{
@@ -374,9 +388,14 @@ const SummonAnim=(()=>{
    finally{machine.done();}
   }catch(error){console.warn('S4 Wish: bỏ qua hiệu ứng trứng lỗi',error);}
   if(skipped)return;
+  if(type==='skins'){
+   await s4RevealSkinCinema(items,progress);
+   return;
+  }
   const e=await layer('/assets/spine/fx_ui_newgirl_gaino');
   try{
    const fig=e.fig;
+   s4SuppressBakedGirlHeading(fig);
    // Avoid 104+324 repeated WebGL mounts; speed up native Spine playback.
    fig.state.timeScale=1.8;
    for(let i=0;i<items.length&&!skipped;i++){
@@ -391,19 +410,9 @@ const SummonAnim=(()=>{
       if(skipped)break;
       const placed=nativeNameStars(fig,entry,25);
       uncap=caption(entry,25,placed);
-     }else{
-      await s4AttachSkin(fig,entry);
-      if(skipped)break;
-      const placed=s4SkinLabel(fig,entry.name);
-      if(!placed){
-       const text=overlay.querySelector('.sa-caption');
-       text.replaceChildren(el('b','',String(entry.name||'Trang phục')));
-       text.hidden=false;
-       uncap=()=>{text.hidden=true;};
-      }
-      sfx('ui_gain_hero_5star_bg');
      }
      await run(fig,'texiao10');
+     s4SuppressBakedGirlHeading(fig);
      if(skipped)break;
      sfx('ui_gain_hero_5star');
      await s4Pause(900);
@@ -425,6 +434,7 @@ const SummonAnim=(()=>{
   try{
    await assets();
    if(skipped)return;
+   document.documentElement.classList.add('gxb-s4-cinematic');
    overlay=el('div','sa-overlay sa-s4-native-wish');
    const stage=el('div','sa-stage');
    const bg=el('img','sa-bg');bg.src='/assets/summon/summon_scene.png';
@@ -437,7 +447,7 @@ const SummonAnim=(()=>{
    const voice=el('button','sa-voice','♪ Nghe giọng');voice.type='button';
    voice.hidden=true;
    const progress=el('div','sa-s4-progress','Đang mở Wish S4…');
-   const instruction=el('div','sa-s4-instruction','Hiệu ứng Wish nguyên bản · Chạm để chuyển nhanh');
+   const instruction=el('div','sa-s4-instruction','');
    overlay.append(touch,hint,cap,skip,voice,progress,instruction);
    (window.GxbFrame?.root()||document.body).append(overlay);
    try{await s4RevealSequence(girls,'girls',progress);}
@@ -449,6 +459,7 @@ const SummonAnim=(()=>{
   }catch(error){console.warn('Không phát được một phần Wish S4',error);}
   finally{
    overlay?.remove();overlay=null;s4Sequence=false;skipped=false;
+   document.documentElement.classList.remove('gxb-s4-cinematic');
   }
  }
  // partners: [{table_id, star, name}] in draw order. Resolves when the sequence ends or is skipped.

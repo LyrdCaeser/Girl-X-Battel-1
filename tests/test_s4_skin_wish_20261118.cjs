@@ -1,6 +1,6 @@
 'use strict';
-/** Regression: S4 Wish MUST be original fullscreen Spine, one awarded reward
- * per native reveal, NEVER a paginated 12-card CSS slideshow.
+/** Regression: S4 Wish has an actual full-screen animation for every
+ * Goddess & skin, never the old 12-tile list or a baked GIRLS/CV strip.
  */
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
 const anim=fs.readFileSync('web/summon-anim.js','utf8');
@@ -24,16 +24,16 @@ const scope=vm.createContext({
  },
  run:async(fig,name)=>actions.push(['spine-animation',name]),
  s4SlotChildren:()=>[],
+ s4SuppressBakedGirlHeading:()=>actions.push(['hide-baked-girls']),
  attachGirl:async(fig,id)=>actions.push(['goddess-image',id]),
  nativeNameStars:(fig,entry,star)=>{
   actions.push(['native-name-and-stars',entry.name,star]);
   return true;
  },
  caption:(entry)=>()=>{},
- s4AttachSkin:async(fig,entry)=>actions.push(['skin-image',entry.id]),
- s4SkinLabel:(fig,name)=>{
-  actions.push(['native-skin-name',name]);
-  return true;
+ s4RevealSkinCinema:async(items)=>{
+  actions.push(['skin-cinema',items.length]);
+  items.forEach((item)=>actions.push(['skin-frame',item.id]));
  },
  s4Pause:async()=>{},
  s4CleanupArt:()=>{}
@@ -46,30 +46,44 @@ const run=vm.runInContext('s4RevealSequence',scope);
  const counter={textContent:''};
  await run(girls,'girls',counter);
  await run(skins,'skins',counter);
- assert.equal(actions.filter(a=>a[0]==='goddess-image').length,104,'Each goddess receives its own Wish reveal');
- assert.equal(actions.filter(a=>a[0]==='skin-image').length,248,'Every skin receives its own native Wish reveal');
+ assert.equal(actions.filter(a=>a[0]==='goddess-image').length,104);
+ assert.equal(actions.filter(a=>a[0]==='skin-frame').length,248);
+ assert.equal(actions.filter(a=>a[0]==='hide-baked-girls').length,105);
  assert.equal(actions.filter(a=>a[0]==='native-name-and-stars').length,104);
- assert.equal(actions.filter(a=>a[0]==='native-skin-name').length,248);
+ assert.equal(actions.filter(a=>a[0]==='skin-cinema').length,1);
  assert.equal(actions.filter(a=>a[0]==='spine-animation'&&a[1]==='222').length,2,
-  'Original gacha egg animation for each phase');
- assert.equal(actions.filter(a=>a[0]==='spine-animation'&&a[1]==='texiao10').length,352,
-  'Original native goddess reveal effect repeated for each item');
+  'Original gacha egg animation should introduce both phases');
+ assert.equal(actions.filter(a=>a[0]==='spine-animation'&&a[1]==='texiao10').length,104,
+  'Native Goddess effect belongs to Goddesses only');
  assert.deepEqual(mounts,[
   '/assets/spine/fx_ui_gacha_revision',
   '/assets/spine/fx_ui_newgirl_gaino',
-  '/assets/spine/fx_ui_gacha_revision',
-  '/assets/spine/fx_ui_newgirl_gaino'
- ],'Reuse only one native Spine canvas per phase to avoid Android GPU freezes');
- assert(counter.textContent.includes('248 / 248'));
- assert(!home.includes('function revealS4Skins('),'Fake 12-card Wish grid must be removed');
- assert(!homeCss.includes('.hm-s4-wish-cards'),'Fake carousel CSS must be removed');
+  '/assets/spine/fx_ui_gacha_revision'
+ ],'No Goddess-only skeleton mounted during the skin phase');
+ assert(!home.includes('function revealS4Skins('),'Old paginated gallery removed');
+ assert(!homeCss.includes('.hm-s4-wish-cards'),'Fake carousel CSS removed');
  assert(home.includes('SummonAnim.playS4Rewards(girls,skins)'));
  assert(home.includes("'/api/s4/wish/replay'"));
  assert(home.includes('Xem Lại Wish (Không Nhận Quà Lần Nữa)'));
  assert(home.includes('WishRecorder.finishWish()'));
- assert(style.includes('.sa-s4-native-wish'));
- assert(style.includes('.sa-s4-progress'));
- assert(html.includes('summon-anim.js?v=20261118-native-wish-r1'));
- assert(html.includes('home-menus.js?v=20261118-native-wish-r1'));
- console.log('PASS: 104+248 original Wish Spine reveals, no static grid, one GPU canvas per phase, replay & recorder');
+ for(const css of ('.sa-s4-skin-scene','.sa-s4-skin-portrait',
+                   '.gxb-s4-cinematic .auth-s4-countdown',
+                   '.gxb-s4-cinematic .gxb-wish-record-widget')){
+   assert(style.includes(css),css);
+ }
+ assert(style.includes('.gxb-s4-cinematic .sa-s4-progress'));
+ assert(style.includes('.gxb-s4-cinematic .sa-s4-instruction'));
+ assert(style.includes('width:92%;height:72%'),
+  'Mobile portrait must be large, not a natural 208px card in the center');
+ assert(style.includes('object-fit:contain;object-position:center center'),
+  'Never crop the skin portrait for video');
+ assert(style.includes('width:73%;height:79%'),
+  'PC layout must remain separate from mobile');
+ assert(style.includes('.sa-s4-skin-portrait[hidden]'),
+  'Graceful fallback for missing art must not reveal a broken image');
+ assert(anim.includes("document.documentElement.classList.add('gxb-s4-cinematic')"));
+ assert(anim.includes("document.documentElement.classList.remove('gxb-s4-cinematic')"));
+ assert(html.includes('summon-anim.js?v=20261118-s4-cinema-clean-r1'));
+ assert(html.includes('home-menus.js?v=20261118-s4-cinema-clean-r1'));
+ console.log('PASS: 104+248 Wish cinematic frames, original Gacha FX, no baked skin labels or film-blocking HUD');
 })().catch(e=>{console.error(e);process.exitCode=1;});
