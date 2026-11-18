@@ -273,7 +273,12 @@ def login(username, password, server_id="S1", remote="", user_agent=""):
         player = live_service.player(row["uid"], server_id)
         if server_id == "S4":
             from . import s4_exclusive
-            s4_exclusive.ensure_vip15(row["uid"], server_id)
+            try:
+                s4_exclusive.ensure_vip15(row["uid"], server_id)
+            except Exception:
+                # Failed VIP logins must release their auth DB connection.
+                db.close()
+                raise
         if not player:
             db.close(); raise ValueError("Tài khoản chưa có nhân vật ở server này")
         if player["status"] == "banned":
