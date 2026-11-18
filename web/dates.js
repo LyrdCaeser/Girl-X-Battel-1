@@ -224,11 +224,106 @@ const Dates=(()=>{
     if(!accepted)return;
     const r=await act({action:'vow',partner_id:h.partner_id});if(r){const nh=hero();const l=allLines(nh).find(x=>x.type===16);play(l?.sound,l?.text||'♥');note='Đã kết duyên!';ov.remove();hall(nh);if(r.got)CampaignUI.popup('Nhận trang phục cưới gốc',r.got);}};}
   root().append(ov);}
- function hall(h){document.querySelector('.dt-hall-ov')?.remove();const ov=el('div','dt-hall-ov');const scene=el('div','dt-hall');ov.append(scene);
+ // Marriage ceremony replay is presentational only: never invokes the vow
+ // endpoint, spends a second ring, or alters Neon marriage data.
+ function hall(h){
+  document.querySelector('.dt-hall-ov')?.remove();
+  const ov=el('div','dt-hall-ov');
+  const scene=el('div','dt-hall dt-hall-ceremony phase-entrance');
+  ov.append(scene);
   scene.append(img('/assets/story/bg/yanhui_hall.webp','dt-hall-bg'),el('div','dt-hall-glow'));
-  const head=el('div','dt-hall-head');head.append(el('small','','LỄ ĐƯỜNG'),el('h2','',(state.name||'Senpai')+'  ♥  '+h.name),el('p','','Chúc hai người mãi mãi đồng hành bên nhau.'));scene.append(head);
-  const art=el('div','dt-hall-art');scene.append(art);weddingSkin(h).then(id=>{const show=id||h.table_id;if(typeof Wallpaper!=='undefined'&&Wallpaper.mountArt)Wallpaper.mountArt(art,show,'xy').then(ok=>{if(!ok){const src=typeof detailImage==='function'?detailImage(show):'';if(src)art.append(img(src));}});});
-  const actions=el('div','dt-hall-actions');const cert=el('button','dt-bluebtn static','Xem Chứng Nhận');cert.type='button';cert.onclick=()=>{ov.remove();oath(h);};const close=el('button','dt-bluebtn static','Rời Lễ Đường');close.type='button';close.onclick=()=>ov.remove();actions.append(cert,close);scene.append(actions);
-  ov.onclick=e=>{if(e.target===ov)ov.remove();};root().append(ov);const l=allLines(h).find(x=>x.type===16);play(l?.sound,l?.text);}
+  const head=el('div','dt-hall-head');
+  head.append(el('small','','LỄ THÀNH HÔN'),el('h2','',(state.name||'Senpai')+' ♥ '+h.name));
+  scene.append(head);
+  const bride=el('div','dt-hall-art');
+  scene.append(bride);
+  const groom=el('div','dt-hall-groom');
+  scene.append(groom);
+  const name=el('div','dt-hall-groom-name',state.name||'Senpai');
+  groom.append(name);
+  const ring=img(A('icon_45'),'dt-hall-ring');
+  ring.alt='Nhẫn Lời Thề';
+  scene.append(ring);
+  const bond=el('div','dt-hall-bond');
+  bond.append(img(A('dates_icon39')),el('span','','Nắm tay · Trọn đời bên nhau'));
+  scene.append(bond);
+  const step=el('p','dt-hall-step','Cô dâu bước lên lễ đường…');
+  scene.append(step);
+  const actions=el('div','dt-hall-actions');
+  const next=el('button','dt-bluebtn static','');
+  next.type='button';
+  const cert=el('button','dt-bluebtn static','Xem Chứng Nhận');
+  cert.type='button';
+  const close=el('button','dt-bluebtn static','Rời Lễ Đường');
+  close.type='button';
+  const replay=el('button','dt-bluebtn static','Xem Lại Nghi Lễ');
+  replay.type='button';
+  actions.append(next,cert,close,replay);
+  scene.append(actions);
+  let phase='entrance',closed=false,brideHandle=null,groomHandle=null,delay=0;
+  const stop=()=>{
+   if(closed)return;
+   closed=true;
+   clearTimeout(delay);
+   brideHandle?.destroy?.();
+   groomHandle?.destroy?.();
+   ov.remove();
+  };
+  const setPhase=(key,description)=>{
+   if(closed)return;
+   phase=key;
+   scene.className='dt-hall dt-hall-ceremony phase-'+key;
+   step.textContent=description;
+   next.hidden=key==='hands'||key==='finished'||key==='entrance';
+   next.textContent=key==='ring-ready'?'Trao Nhẫn Lời Thề':'Nắm Tay';
+   cert.hidden=key!=='finished';
+   replay.hidden=key!=='finished';
+  };
+  const finish=()=>setPhase('finished','Hai người đã kết duyên, cùng nhau sánh bước.');
+  const ringGiven=()=>{
+   if(phase!=='ring-ready')return;
+   setPhase('ring','Đang trao và đeo Nhẫn Lời Thề…');
+   delay=setTimeout(()=>setPhase('hands-ready','Hãy nắm tay cô dâu.'),2100);
+  };
+  next.onclick=()=>{
+   if(phase==='ring-ready')ringGiven();
+   else if(phase==='hands-ready'){
+    setPhase('hands','Hai người nắm tay, cùng trao lời hẹn ước.');
+    delay=setTimeout(finish,2100);
+   }
+  };
+  cert.onclick=()=>{stop();oath(h);};
+  close.onclick=stop;
+  replay.onclick=()=>{stop();hall(h);};
+  ov.onclick=e=>{if(e.target===ov)stop();};
+  root().append(ov);
+  setPhase('entrance','Cô dâu bước lên lễ đường…');
+  // Use the existing wedding outfit illustration, not a new replacement image.
+  void weddingSkin(h).then(async id=>{
+   if(closed)return;
+   const show=id||h.table_id;
+   if(typeof Wallpaper!=='undefined'&&Wallpaper.mountArt){
+    const mounted=await Wallpaper.mountArt(bride,show,'xy').catch(()=>null);
+    if(closed){mounted?.destroy?.();return;}
+    brideHandle=mounted;
+   }
+   if(!brideHandle){
+    const src=typeof detailImage==='function'?detailImage(show):'';
+    if(src&&!closed)bride.append(img(src));
+   }
+  }).catch(()=>{});
+  // Original player outfit model serves as the groom.
+  if(typeof SenpaiDoll!=='undefined'&&state.dress_info?.equipped?.length){
+   void api('/api/dress/catalog',{}).then(cat=>SenpaiDoll.mount(groom,state.dress_info.equipped,cat,{
+    width:260,height:430,anim:'idle',fit:.92
+   })).then(handle=>{if(closed){handle?.destroy?.();return;}groomHandle=handle;})
+    .catch(()=>{});
+  }
+  // Entrance is animated before exposing the ring interaction.
+  delay=setTimeout(()=>setPhase('ring-ready','Cô dâu đã đến. Hãy trao Nhẫn Lời Thề.'),3000);
+  const vow=allLines(h).find(x=>x.type===16);
+  play(vow?.sound,vow?.text);
+ }
+
  return {open,render,playGirlVoice};
 })();
