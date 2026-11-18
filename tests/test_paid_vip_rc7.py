@@ -48,16 +48,22 @@ class PaidVipRC7Tests(unittest.TestCase):
         }]})
         self.assertEqual(example['packages'][0]['reward'][vip.VIP_EXP_REWARD_ID],150)
 
-    def test_paid_package_amounts_match_archived_game_records(self):
+    def test_original_card_rates_preserved_and_explicit_new_gem_economy(self):
+        # Archived game data must never be rewritten to conceal an economy
+        # change. Manual cards still follow original reward rates.
         giftbag=json.loads((ROOT/'data/recovered/tables/giftbag.json').read_text(encoding='utf-8'))
         idx=giftbag['keys']['vip_exp']-1
-        pairs={'MONTHLY_CARD':1,'WEEKLY_CARD':3,'GEMS_250':4,'GEMS_500':5,
-               'GEMS_1000':6,'GEMS_2500':7,'GEMS_5000':8}
-        for package_id,original_id in pairs.items():
+        for package_id,original_id in {'MONTHLY_CARD':1,'WEEKLY_CARD':3}.items():
             with self.subTest(package_id=package_id):
-                configured=topup.package(package_id)
-                self.assertEqual(configured['reward'][vip.VIP_EXP_REWARD_ID],
+                self.assertEqual(topup.package(package_id)['reward'][vip.VIP_EXP_REWARD_ID],
                                  giftbag['rows'][str(original_id)][idx])
+        for package_id,original_id in {'GEMS_250':4,'GEMS_500':5,
+                                        'GEMS_1000':6,'GEMS_2500':7,
+                                        'GEMS_5000':8}.items():
+            with self.subTest(package_id=package_id):
+                original=int(giftbag['rows'][str(original_id)][idx])
+                self.assertEqual(topup.package(package_id)['reward'][vip.VIP_EXP_REWARD_ID],
+                                 original*25)
         public=topup.public_catalog()['packages']
         self.assertIn('vip_exp',public[0])
         self.assertIn('instant_gems',public[0])

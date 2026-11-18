@@ -3,10 +3,10 @@
     {
       "id": "GEMS_5000",
       "name": "Gói 5.000 Kim Cương",
-      "price_label": "Liên hệ Zalo để xác nhận giá",
+      "price_label": "600.000 VNĐ",
       "reward": {
         "2": 5000,
-        "999999991": 5000
+        "999999991": 125000
       },
       "manual_reward": false,
       "enabled": true
@@ -14,10 +14,10 @@
     {
       "id": "GEMS_2500",
       "name": "Gói 2.500 Kim Cương",
-      "price_label": "Liên hệ Zalo để xác nhận giá",
+      "price_label": "300.000 VNĐ",
       "reward": {
         "2": 2500,
-        "999999991": 2500
+        "999999991": 62500
       },
       "manual_reward": false,
       "enabled": true
@@ -25,10 +25,10 @@
     {
       "id": "GEMS_1000",
       "name": "Gói 1.000 Kim Cương",
-      "price_label": "Liên hệ Zalo để xác nhận giá",
+      "price_label": "120.000 VNĐ",
       "reward": {
         "2": 1000,
-        "999999991": 1000
+        "999999991": 25000
       },
       "manual_reward": false,
       "enabled": true
@@ -36,10 +36,10 @@
     {
       "id": "GEMS_500",
       "name": "Gói 500 Kim Cương",
-      "price_label": "Liên hệ Zalo để xác nhận giá",
+      "price_label": "60.000 VNĐ",
       "reward": {
         "2": 500,
-        "999999991": 500
+        "999999991": 12500
       },
       "manual_reward": false,
       "enabled": true
@@ -47,10 +47,10 @@
     {
       "id": "GEMS_250",
       "name": "Gói 250 Kim Cương",
-      "price_label": "Liên hệ Zalo để xác nhận giá",
+      "price_label": "30.000 VNĐ",
       "reward": {
         "2": 250,
-        "999999991": 250
+        "999999991": 6250
       },
       "manual_reward": false,
       "enabled": true
