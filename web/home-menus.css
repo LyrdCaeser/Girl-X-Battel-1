@@ -242,3 +242,11 @@
  .hm-s4-wish-cards:not(.all){grid-template-columns:repeat(3,minmax(0,1fr))}
  .hm-s4-wish-actions button{font-size:11px}
 }
+
+/* S4 Wish extended collection: 104 distinct 25★ goddesses, no duplicate forms. */
+.hm-s4-wish-goddess .hm-s4-wish-card-frame img{aspect-ratio:1;object-fit:contain}
+.hm-s4-wish-girl-stars{position:absolute;bottom:2px;right:2px;
+ background:#4c1f5fe8;border:1px solid #f3cc7a;border-radius:5px;
+ color:#fff4bd;text-shadow:0 1px 2px #190f36;font-size:clamp(10px,2.5cqw,14px);
+ padding:1px 5px;pointer-events:none}
+.hm-s4-wish-cards:not(.all){grid-template-columns:repeat(4,minmax(0,1fr))}

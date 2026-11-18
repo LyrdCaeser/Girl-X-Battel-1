@@ -293,15 +293,18 @@ const HomeMenus=(()=>{
   }catch(e){message=e.message||'Không thể đổi Giftcode.';}
   finally{giftcodeBusy=false;if(view==='home-systems'&&root==='mail'&&tab==='server')render();}
  }
- function revealS4Skins(prize){
+ function revealS4Skins(prize,mode='skins'){
   // Separate S4 Wish PHASE 2: unlock the original Limited skins with a
   // visible gacha reveal, not a static end-of-mail grid. All ownership was
   // committed in the S4 mail transaction before this client-only scene.
   if(state?.server_id!=='S4')return Promise.resolve();
-  const valid=(prize.skin_ids||[]).map(Number).filter(Number.isSafeInteger);
+  const isGirls=mode==='goddesses';
+  const valid=isGirls?(prize.goddesses||[]).filter(g=>Number.isSafeInteger(Number(g.table_id))):
+   (prize.skin_ids||[]).map(Number).filter(Number.isSafeInteger);
   if(!valid.length)return Promise.resolve();
   const labels=new Map((prize.skin_details||[]).map(s=>[Number(s.id),String(s.name||'')]));
-  const pageSize=6;
+  // 104 canonical 25-star lines and 324 real skins fit into paginated Wish.
+  const pageSize=12;
   const nameFor=id=>{
    const original=labels.get(id)||'Trang phục Limited';
    const translated=window.GxbBagVi?.t?.(original);
@@ -315,7 +318,8 @@ const HomeMenus=(()=>{
    const head=el('header',undefined,'hm-s4-wish-head');
    const heading=el('div');heading.append(
     el('strong','S4 • TRIỆU HỒI WISH','hm-s4-wish-title'),
-    el('span','Trang Phục Nữ Thần Limited • Độc Quyền S4','hm-s4-wish-subtitle'));
+    el('span',isGirls?'Toàn Bộ Nữ Thần 25★ • Độc Quyền S4':
+       'Toàn Bộ Trang Phục Nữ Thần • Độc Quyền S4','hm-s4-wish-subtitle'));
    const progress=el('span','','hm-s4-wish-progress');
    head.append(heading,progress);
    const body=el('section',undefined,'hm-s4-wish-body');
@@ -323,7 +327,9 @@ const HomeMenus=(()=>{
    const light=el('div',undefined,'hm-s4-wish-flare');
    const cards=el('div',undefined,'hm-s4-wish-cards');
    portal.append(light,cards);
-   const instruction=el('p','Trang phục Limited đã được mở khóa vĩnh viễn tại S4.','hm-s4-wish-note');
+   const instruction=el('p',isGirls?
+    'Các Nữ Thần 25★ cấp 1 không trang bị đã được nhận tại S4.':
+    'Các skin gốc đã được mở khóa vĩnh viễn tại S4.','hm-s4-wish-note');
    body.append(portal,instruction);
    const foot=el('footer',undefined,'hm-s4-wish-actions');
    const next=el('button','Triệu Hồi Tiếp','hm-s4-wish-next');
@@ -335,17 +341,30 @@ const HomeMenus=(()=>{
     if(finished)return;finished=true;
     overlay.remove();resolve();
    };
-   const cardFor=(sid,i,all=false)=>{
-    const item=el('article',undefined,'hm-s4-wish-card');
-    item.style.animationDelay=all?'0ms':(i*115)+'ms';
+   const cardFor=(entry,i,all=false)=>{
+    const item=el('article',undefined,'hm-s4-wish-card'+(isGirls?' hm-s4-wish-goddess':''));
+    item.style.animationDelay=all?'0ms':(i*60)+'ms';
     const frame=el('div',undefined,'hm-s4-wish-card-frame');
-    const art=el('img');art.src='/assets/skins/cards/'+sid+'.webp';
-    art.alt='Trang phục '+nameFor(sid);
+    const art=el('img');
+    if(isGirls){
+     const tid=Number(entry.table_id);
+     const fallback='/assets/cards/partner_card_'+tid+'.png';
+     art.src=typeof girlIconSource==='function'?
+      (girlIconSource(tid)||fallback):fallback;
+     art.alt='Nữ Thần '+String(entry.name||'');
+     art.onerror=()=>{art.onerror=null;art.src='/assets/ui/item_bg.png';};
+     const stars=el('b','25★','hm-s4-wish-girl-stars');
+     frame.append(art,stars);
+    }else{
+     art.src='/assets/skins/cards/'+entry+'.webp';
+     art.alt='Trang phục '+nameFor(entry);
+     art.onerror=()=>{art.onerror=null;art.src='/assets/ui/item_bg.png';};
+     frame.append(art);
+    }
     art.loading=all&&i>=12?'lazy':'eager';
-    art.onerror=()=>{art.onerror=null;art.src='/assets/skins/'+sid+'.png';};
-    frame.append(art);
     const text=el('div',undefined,'hm-s4-wish-card-title');
-    text.append(el('span',nameFor(sid)),el('small','Trang Phục Limited • Đã Sở Hữu'));
+    text.append(el('span',isGirls?String(entry.name||'Nữ Thần'):nameFor(entry)),
+       el('small',isGirls?'25★ · Cấp 1 · Không Trang Bị':'Skin · Đã Sở Hữu'));
     item.append(frame,text);
     return item;
    };
@@ -354,9 +373,10 @@ const HomeMenus=(()=>{
     cards.classList.remove('all');
     const upto=Math.min(offset+pageSize,valid.length);
     valid.slice(offset,upto).forEach((id,i)=>cards.append(cardFor(id,i)));
-    progress.textContent='Trang phục '+upto+' / '+valid.length;
-    instruction.textContent='Wish đã mở khóa '+upto+' / '+valid.length+
-     ' trang phục. Chạm “Triệu Hồi Tiếp” để xem lượt tiếp theo.';
+    progress.textContent=(isGirls?'Nữ Thần ':'Skin ')+upto+' / '+valid.length;
+    instruction.textContent='Wish đã hiện '+upto+' / '+valid.length+
+     (isGirls?' Nữ Thần 25★.':' skin gốc.')+
+     ' Chạm “Triệu Hồi Tiếp” để xem lượt tiếp theo.';
     next.textContent=upto>=valid.length?'Xem Kết Quả':'Triệu Hồi Tiếp';
     next.focus({preventScroll:true});
    };
@@ -364,9 +384,12 @@ const HomeMenus=(()=>{
     cards.replaceChildren();cards.classList.add('all');
     valid.forEach((id,i)=>cards.append(cardFor(id,i,true)));
     progress.textContent='Đã nhận '+valid.length+' / '+valid.length;
-    instruction.textContent='Hoàn tất! '+Number(prize.wish_count||0)+
-     ' Nữ Thần Wish Limited 25★ · '+valid.length+' trang phục · '+
-     Number(prize.outfit_total||0)+' món Outfit, chỉ tại S4.';
+    instruction.textContent='Hoàn tất! Đã nhận thêm '+
+     Number(prize.wish_count||0)+' Nữ Thần 25★ và '+
+     Number(prize.skin_count||0)+' skin trong gói này. Danh mục S4: '+
+     Number(prize.catalog_total||104)+' Nữ Thần · '+
+     Number(prize.skin_catalog_total||324)+' skin · '+
+     Number(prize.outfit_total||0)+' Outfit, chỉ tại S4.';
     next.textContent='Hoàn Tất';
     next.focus({preventScroll:true});
    };
@@ -388,11 +411,15 @@ const HomeMenus=(()=>{
   const girls=(prize.goddesses||[]).map(g=>({
    table_id:Number(g.table_id),name:g.name,star:Number(g.stars)
   }));
+  // A full 104-goddess cinematic would last many minutes and overload
+  // entry-level Android GPUs. Preview four in the original Wish machine;
+  // the second Wish stage reveals EVERY remaining goddess in batches.
   if(girls.length&&typeof SummonAnim!=='undefined'){
-   try{await SummonAnim.play(26,girls,{s4:true});}
+   try{await SummonAnim.play(26,girls.slice(0,4),{s4:true});}
    catch(e){console.warn('Hiệu ứng Wish S4:',e);}
   }
-  await revealS4Skins(prize);
+  await revealS4Skins(prize,'goddesses');
+  await revealS4Skins(prize,'skins');
  }
  async function claimServerMail(mailId){
   if(pending)return;
@@ -455,9 +482,13 @@ const HomeMenus=(()=>{
    }
    if(m.attachments?.__s4_exclusive_bundle__){
     const gift=el('div',undefined,'hm-s4-gift-preview');
-    gift.append(el('b','★ S4 • QUÀ WISH LIMITED 25★'),el('small',
-      '24 Nữ Thần Wish 25★ · Cấp 1 · Không trang bị'),
-      el('small','76 trang phục Nữ Thần Limited · Trọn bộ Outfit'));
+    const supplement=Number(m.attachments?.__s4_exclusive_bundle__)===3;
+    gift.append(el('b',supplement?'★ S4 • THƯ BỔ SUNG ĐỘC QUYỀN':
+      '★ S4 • QUÀ WISH 25★'),el('small',
+      supplement?'Bù những Nữ Thần 25★ và skin còn thiếu':
+       'Nhận Nữ Thần 25★ · Cấp 1 · Không trang bị'),
+      el('small',supplement?'Giữ nguyên vật phẩm đã nhận ở thư trước':
+       'Mở trang phục Nữ Thần và Outfit riêng tại S4'));
     c.append(gift);
    }
    const goddess=m.attachments?.__gxb3_goddess__;

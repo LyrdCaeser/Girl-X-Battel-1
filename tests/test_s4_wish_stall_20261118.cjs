@@ -58,10 +58,10 @@ function fig(){
  assert(source.includes('finally{m.done();}'));
  assert(source.includes('finally{overlay?.remove();overlay=null;s4Sequence=false;}'));
  const home=fs.readFileSync('web/home-menus.js','utf8');
- assert(home.includes('await SummonAnim.play(26,girls,{s4:true})'));
+ assert(home.includes('await SummonAnim.play(26,girls.slice(0,4),{s4:true})'));
  const html=fs.readFileSync('web/index.html','utf8');
  assert(html.includes('/summon-anim.js?v=20261118-s4-wish-skins-r2'));
- assert(html.includes('/home-menus.js?v=20261118-s4-skin-wish-r2'));
+ assert(html.includes('/home-menus.js?v=20261118-s4-complete-v2'));
 
  // A 25-star result in S4 can pause at tapOrSkip: automatically continue
  // after 3 seconds instead of silently waiting for an invisible tap.
