@@ -30,7 +30,7 @@ assert.match(app,/GirlUI\.confirm\(msg,\{title:'Xác Nhận Nhận Trang Bị'/)
 for(const v of [
 '\/equipment.css?v=20261117-forge-alert-size-r4',
 '\/bag-vi.js?v=20261118-outfit-chest-vi-r1',
-'\/app.js?v=20261118-vip15-s4key-r1',
+'\/app.js?v=20261118-vip15-s4key-r2',
 '\/souls.js?v=20261117-anima-split-r4',
 '\/souls.css?v=20261117-anima-split-r4'])assert(html.includes(v),v);
 console.log('PASS: tiny forge red dots, localized 216 stones and 24 artifacts, separated Anima inventory and confirmed conversion');

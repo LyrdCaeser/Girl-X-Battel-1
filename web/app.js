@@ -457,7 +457,7 @@ function girlIconSource(id){
  return '';
 }
 function itemPicture(item){
- if(String(item?.id)==='990004')return '/assets/ui/s4-exclusive-key.svg';
+ if(String(item?.id)==='990004')return '/s4-exclusive-key.svg';
  if(String(item?.id)==='930220')return girlIconSource(757001);
  if(String(item?.id)==='930235')return girlIconSource(55014);
  const icon=String(item?.icon||'');if(icon.startsWith('partner_avatar_')){const src=girlIconSource(Number(icon.slice('partner_avatar_'.length)));if(src)return src;}

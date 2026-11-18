@@ -389,7 +389,7 @@ const HomeMenus=(()=>{
    if(m.body)paragraph(c,m.body,'hm-text');
    if(m.attachments?.__s4_exclusive_key__){
      const preview=el('div',undefined,'hm-s4-key-preview');
-     const img=el('img');img.src='/assets/ui/s4-exclusive-key.svg';
+     const img=el('img');img.src='/s4-exclusive-key.svg';
      img.alt='Chìa Khóa S4 • Độc Quyền';
      const detail=el('div');
      detail.append(el('strong','Chìa Khóa S4 • Độc Quyền ×1'),
