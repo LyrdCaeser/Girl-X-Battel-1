@@ -418,8 +418,14 @@ const HomeMenus=(()=>{
    try{await SummonAnim.play(26,girls.slice(0,4),{s4:true});}
    catch(e){console.warn('Hiệu ứng Wish S4:',e);}
   }
-  await revealS4Skins(prize,'goddesses');
-  await revealS4Skins(prize,'skins');
+  try {
+   await revealS4Skins(prize,'goddesses');
+   await revealS4Skins(prize,'skins');
+  } finally {
+   // A claim is committed before animation. Always close the video correctly,
+   // even if the player skips the scene or an artwork fails to load.
+   if(typeof WishRecorder!=='undefined')WishRecorder.finishWish();
+  }
  }
  async function claimServerMail(mailId){
   if(pending)return;
@@ -458,6 +464,8 @@ const HomeMenus=(()=>{
   code.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();giftcodeTyped=code.value;redeemGiftcode();}});
   gift.append(code);button(gift,giftcodeBusy?'Đang đổi…':'Đổi mã',()=>{giftcodeTyped=code.value;redeemGiftcode();},giftcodeBusy);
   tools.append(gift);
+  if(state?.server_id==='S4' && typeof WishRecorder!=='undefined')
+   WishRecorder.mount(parent);
   button(tools,'Mở trang Giftcode',openGiftcode);
   button(tools,mailRefreshBusy?'Đang làm mới…':'↻ Làm mới',()=>refreshServerMail(false),mailRefreshBusy);
   parent.append(tools);

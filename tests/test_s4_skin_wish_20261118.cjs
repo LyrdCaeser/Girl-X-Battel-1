@@ -62,7 +62,7 @@ const prize={
  await reveal(prize,'goddesses');await reveal(prize,'skins');
  assert.equal(root.children.length,old,'Never show S4 exclusive gifts in other worlds');
  const html=fs.readFileSync('web/index.html','utf8');
- assert(html.includes('home-menus.js?v=20261118-s4-complete-v2'));
+ assert(html.includes('home-menus.js?v=20261118-wish-capture-r1'));
  assert(html.includes('home-menus.css?v=20261118-s4-complete-v2'));
  const css=fs.readFileSync('web/home-menus.css','utf8');
  assert(css.includes('summon_scene.png'));

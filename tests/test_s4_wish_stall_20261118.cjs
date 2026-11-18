@@ -61,7 +61,7 @@ function fig(){
  assert(home.includes('await SummonAnim.play(26,girls.slice(0,4),{s4:true})'));
  const html=fs.readFileSync('web/index.html','utf8');
  assert(html.includes('/summon-anim.js?v=20261118-s4-wish-skins-r2'));
- assert(html.includes('/home-menus.js?v=20261118-s4-complete-v2'));
+ assert(html.includes('/home-menus.js?v=20261118-wish-capture-r1'));
 
  // A 25-star result in S4 can pause at tapOrSkip: automatically continue
  // after 3 seconds instead of silently waiting for an invisible tap.
