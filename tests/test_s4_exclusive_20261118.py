@@ -69,6 +69,9 @@ class S4Tests(unittest.TestCase):
         self.assertTrue(all(p['lv']==1 and p['awake']==15 and not any(p['equips']) for p in gifted))
         self.assertTrue(all(p.get('pos')==0 for p in gifted))
         self.assertEqual(got['skin_count'],76)
+        self.assertEqual(len(got['skin_details']),76)
+        self.assertEqual({x['id'] for x in got['skin_details']},set(got['skin_ids']))
+        self.assertTrue(all(isinstance(x['name'],str) and x['name'] for x in got['skin_details']))
         self.assertEqual(len(state['skins']['collected']),76)
         self.assertEqual(len(state['dress']['owned']),242)
         self.assertTrue(all(

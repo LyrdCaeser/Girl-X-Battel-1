@@ -60,7 +60,37 @@ function fig(){
  const home=fs.readFileSync('web/home-menus.js','utf8');
  assert(home.includes('await SummonAnim.play(26,girls,{s4:true})'));
  const html=fs.readFileSync('web/index.html','utf8');
- assert(html.includes('/summon-anim.js?v=20261118-s4-wish-stall-r1'));
- assert(html.includes('/home-menus.js?v=20261118-s4-wish-stall-r1'));
- console.log('PASS: 25-star frame complete/timeout/skip, GPU budget, per-girl failure recovery');
+ assert(html.includes('/summon-anim.js?v=20261118-s4-wish-skins-r2'));
+ assert(html.includes('/home-menus.js?v=20261118-s4-skin-wish-r2'));
+
+ // A 25-star result in S4 can pause at tapOrSkip: automatically continue
+ // after 3 seconds instead of silently waiting for an invisible tap.
+ const tapSource=source.slice(source.indexOf(' function tapOrSkip(){'),source.indexOf(' function swipe(){'));
+ const tapTimers=[],tapIntervals=[];
+ let touch={hidden:true,onclick:null},hint={hidden:true,textContent:'',onclick:null};
+ const tapCtx=vm.createContext({
+  overlay:{querySelector:name=>name==='.sa-touch'?touch:hint},
+  skipped:false,s4Sequence:true,
+  setTimeout(fn,ms){tapTimers.push({fn,ms});return 1;},
+  setInterval(fn,ms){tapIntervals.push({fn,ms});return 2;},
+  clearTimeout(){},clearInterval(){}
+ });
+ vm.runInContext(tapSource,tapCtx);
+ const tap=vm.runInContext('tapOrSkip',tapCtx);
+ const p=tap();
+ assert.equal(tapTimers.at(-1).ms,3000);
+ assert.equal(hint.hidden,false);
+ assert(hint.textContent.includes('Tự chuyển'));
+ tapTimers.at(-1).fn();
+ await p;
+ assert.equal(touch.hidden,true);
+ assert.equal(hint.hidden,true);
+ assert.equal(touch.onclick,null);
+ tapCtx.s4Sequence=false;
+ const numTimers=tapTimers.length;
+ const ordinary=tap();
+ assert.equal(tapTimers.length,numTimers,'Other worlds must retain original manual tap');
+ touch.onclick();await ordinary;
+
+ console.log('PASS: 25-star frames bounded, S4 auto-advance 3s, skip, GPU budget, original standard behavior');
 })().catch(e=>{console.error(e);process.exitCode=1;});

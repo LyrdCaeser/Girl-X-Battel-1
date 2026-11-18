@@ -30,5 +30,5 @@ for(const n of [1,2,3,4,5,6,9,10,15,25]){
  starTimers.forEach(([ms,fn])=>fn());
  assert(icons.every(o=>o.visible===true&&o.alpha===1),'Each star animates into place');
 }
-assert(fs.readFileSync('web/index.html','utf8').includes('/summon-anim.js?v=20261118-s4-wish-stall-r1'));
+assert(fs.readFileSync('web/index.html','utf8').includes('/summon-anim.js?v=20261118-s4-wish-skins-r2'));
 console.log('PASS: 1-25★ above CV, staggered original asset sprites, responsive scale animation');

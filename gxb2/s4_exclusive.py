@@ -323,6 +323,10 @@ def grant_bundle(state, marker, level_cap):
     # Keep the original welcome available even if a code is redeemed first.
     if int(marker) == 1:
         state['s4_exclusive_claimed'] = True
+    # Return the exact ORIGINAL skin labels/art identifiers to the S4 Wish
+    # presentation (no new inventory writes, and no additional DB requests).
+    # The frontend receives these only on a successful, atomic S4 mail claim.
     return {'goddesses': prizes, 'skin_count': len(ids), 'skin_ids': ids,
+            'skin_details': [{'id': sid, 'name': skins.SKINS[sid]['name']} for sid in ids],
             'outfit_count': obtained, 'outfit_total': len(wardrobe['owned']),
             'wish_count': len(prizes)}

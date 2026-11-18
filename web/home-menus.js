@@ -294,37 +294,93 @@ const HomeMenus=(()=>{
   finally{giftcodeBusy=false;if(view==='home-systems'&&root==='mail'&&tab==='server')render();}
  }
  function revealS4Skins(prize){
+  // Separate S4 Wish PHASE 2: unlock the original Limited skins with a
+  // visible gacha reveal, not a static end-of-mail grid. All ownership was
+  // committed in the S4 mail transaction before this client-only scene.
+  if(state?.server_id!=='S4')return Promise.resolve();
+  const valid=(prize.skin_ids||[]).map(Number).filter(Number.isSafeInteger);
+  if(!valid.length)return Promise.resolve();
+  const labels=new Map((prize.skin_details||[]).map(s=>[Number(s.id),String(s.name||'')]));
+  const pageSize=6;
+  const nameFor=id=>{
+   const original=labels.get(id)||'Trang phục Limited';
+   const translated=window.GxbBagVi?.t?.(original);
+   return typeof translated==='string'&&translated.trim()?translated:original;
+  };
   return new Promise(resolve=>{
-   const overlay=el('div',undefined,'hm-s4-reveal');
-   const pane=el('section',undefined,'hm-s4-reveal-pane');
-   const h=el('h2','S4 • Thời Không Sai Lệch','');
-   const sub=el('p',
-    'Triệu hồi hoàn tất! Đã mở khóa '+Number(prize.wish_count||0)+
-    ' Nữ Thần Wish Limited 25★, '+Number(prize.skin_count||0)+
-    ' trang phục Nữ Thần và '+Number(prize.outfit_total||0)+
-    ' món Outfit. Quà thuộc riêng S4.','hm-s4-reveal-desc');
-   const heading=el('h3','Bộ Trang Phục Nữ Thần Limited · Triệu Hồi Ước Nguyện');
-   const grid=el('div',undefined,'hm-s4-skin-grid');
-   const names=Array.isArray(prize.skin_ids)?prize.skin_ids:[];
-   for(const [i,sid] of names.entries()){
-    const item=el('div',undefined,'hm-s4-skin-card');
-    item.style.animationDelay=Math.min(i*65,1100)+'ms';
-    const art=el('img');
-    art.src='/assets/skins/cards/'+Number(sid)+'.webp';
-    art.alt='Trang phục Nữ Thần';
-    art.loading=i<12?'eager':'lazy';
-    item.append(art,el('span','Đã mở khóa','hm-s4-skin-label'));
-    grid.append(item);
-   }
-   const done=el('button','Hoàn Tất','hm-s4-done');
-   done.type='button';
-   const close=()=>{overlay.remove();resolve();};
-   done.onclick=close;
-   overlay.onclick=e=>{if(e.target===overlay)close();};
-   pane.append(h,sub,heading,grid,done);
-   overlay.append(pane);
-   (window.GxbFrame?.root()||document.body).append(overlay);
-   done.focus();
+   const root=window.GxbFrame?.root()||document.body;
+   // Exclusively one S4 cinematic at a time, including after rapid claims.
+   root.querySelector('.hm-s4-wish-overlay')?.remove();
+   const overlay=el('div',undefined,'hm-s4-wish-overlay');
+   const head=el('header',undefined,'hm-s4-wish-head');
+   const heading=el('div');heading.append(
+    el('strong','S4 • TRIỆU HỒI WISH','hm-s4-wish-title'),
+    el('span','Trang Phục Nữ Thần Limited • Độc Quyền S4','hm-s4-wish-subtitle'));
+   const progress=el('span','','hm-s4-wish-progress');
+   head.append(heading,progress);
+   const body=el('section',undefined,'hm-s4-wish-body');
+   const portal=el('div',undefined,'hm-s4-wish-portal');
+   const light=el('div',undefined,'hm-s4-wish-flare');
+   const cards=el('div',undefined,'hm-s4-wish-cards');
+   portal.append(light,cards);
+   const instruction=el('p','Trang phục Limited đã được mở khóa vĩnh viễn tại S4.','hm-s4-wish-note');
+   body.append(portal,instruction);
+   const foot=el('footer',undefined,'hm-s4-wish-actions');
+   const next=el('button','Triệu Hồi Tiếp','hm-s4-wish-next');
+   const overview=el('button','Xem Tất Cả','hm-s4-wish-overview');
+   const skip=el('button','Bỏ Qua','hm-s4-wish-skip');
+   for(const btn of [next,overview,skip])btn.type='button';
+   let offset=0,finished=false;
+   const close=()=>{
+    if(finished)return;finished=true;
+    overlay.remove();resolve();
+   };
+   const cardFor=(sid,i,all=false)=>{
+    const item=el('article',undefined,'hm-s4-wish-card');
+    item.style.animationDelay=all?'0ms':(i*115)+'ms';
+    const frame=el('div',undefined,'hm-s4-wish-card-frame');
+    const art=el('img');art.src='/assets/skins/cards/'+sid+'.webp';
+    art.alt='Trang phục '+nameFor(sid);
+    art.loading=all&&i>=12?'lazy':'eager';
+    art.onerror=()=>{art.onerror=null;art.src='/assets/skins/'+sid+'.png';};
+    frame.append(art);
+    const text=el('div',undefined,'hm-s4-wish-card-title');
+    text.append(el('span',nameFor(sid)),el('small','Trang Phục Limited • Đã Sở Hữu'));
+    item.append(frame,text);
+    return item;
+   };
+   const draw=()=>{
+    cards.replaceChildren();
+    cards.classList.remove('all');
+    const upto=Math.min(offset+pageSize,valid.length);
+    valid.slice(offset,upto).forEach((id,i)=>cards.append(cardFor(id,i)));
+    progress.textContent='Trang phục '+upto+' / '+valid.length;
+    instruction.textContent='Wish đã mở khóa '+upto+' / '+valid.length+
+     ' trang phục. Chạm “Triệu Hồi Tiếp” để xem lượt tiếp theo.';
+    next.textContent=upto>=valid.length?'Xem Kết Quả':'Triệu Hồi Tiếp';
+    next.focus({preventScroll:true});
+   };
+   const summary=()=>{
+    cards.replaceChildren();cards.classList.add('all');
+    valid.forEach((id,i)=>cards.append(cardFor(id,i,true)));
+    progress.textContent='Đã nhận '+valid.length+' / '+valid.length;
+    instruction.textContent='Hoàn tất! '+Number(prize.wish_count||0)+
+     ' Nữ Thần Wish Limited 25★ · '+valid.length+' trang phục · '+
+     Number(prize.outfit_total||0)+' món Outfit, chỉ tại S4.';
+    next.textContent='Hoàn Tất';
+    next.focus({preventScroll:true});
+   };
+   next.onclick=()=>{
+    if(cards.classList.contains('all')){close();return;}
+    if(offset+pageSize>=valid.length){summary();return;}
+    offset+=pageSize;draw();
+   };
+   overview.onclick=summary;
+   skip.onclick=summary; // Never suppress an already-granted skin.
+   foot.append(next,overview,skip);
+   overlay.append(head,body,foot);
+   root.append(overlay);
+   draw();
   });
  }
  async function revealS4Bundle(prize){

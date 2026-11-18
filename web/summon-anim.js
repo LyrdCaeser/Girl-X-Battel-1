@@ -77,7 +77,29 @@ const SummonAnim=(()=>{
    throw e;
   }finally{clearTimeout(timeoutId);}
  }
- function tapOrSkip(){return new Promise(res=>{const t=overlay.querySelector('.sa-touch');t.hidden=false;const go=()=>{t.hidden=true;t.onclick=null;clearInterval(k);res();};t.onclick=go;const k=setInterval(()=>{if(skipped)go();},100);});}
+ function tapOrSkip(){
+  return new Promise(res=>{
+   const t=overlay.querySelector('.sa-touch');
+   const hint=overlay.querySelector('.sa-hint');
+   t.hidden=false;
+   // With 24 S4 rewards, each manual-only tap was mistaken for a hang.
+   // Normal capsule animation stays manual; exclusive S4 advances after 3s.
+   if(s4Sequence&&hint){
+    hint.textContent='Chạm để tiếp tục • Tự chuyển sau 3 giây';
+    hint.hidden=false;
+   }
+   let done=false,timer=null,poll=null;
+   const go=()=>{
+    if(done)return;done=true;t.hidden=true;t.onclick=null;
+    clearTimeout(timer);clearInterval(poll);
+    if(hint){hint.hidden=true;hint.onclick=null;hint.textContent='Vuốt xuống để tiếp tục ▼';}
+    res();
+   };
+   t.onclick=go;
+   if(s4Sequence){hint.onclick=go;timer=setTimeout(go,3000);}
+   poll=setInterval(()=>{if(skipped)go();},80);
+  });
+ }
  function swipe(){return new Promise(res=>{const t=overlay.querySelector('.sa-touch');const hint=overlay.querySelector('.sa-hint');t.hidden=false;hint.hidden=false;let y0=null;
   const end=()=>{t.hidden=true;hint.hidden=true;t.onpointerdown=t.onpointerup=t.onclick=null;clearInterval(k);res();};
   t.onpointerdown=e=>{y0=e.clientY;};t.onpointerup=e=>{const r=overlay.getBoundingClientRect();if(y0!=null&&(e.clientY-y0)>r.height*100/1280)end();y0=null;};
