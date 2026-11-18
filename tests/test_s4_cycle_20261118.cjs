@@ -1,0 +1,22 @@
+'use strict';
+const fs=require('node:fs'),assert=require('node:assert/strict');
+const read=x=>fs.readFileSync(x,'utf8');
+const ui=read('web/auth.js'), css=read('web/auth.css'), app=read('web/app.js'), html=read('web/index.html');
+assert(ui.includes("'S4'&&s4Cycle?.phase==='locked'"),'kicks on new page during locked phase');
+assert(ui.includes("kickToServerLobby(s4Cycle)"),'client kicks at end-of-window');
+assert(ui.includes("setInterval(()=>"),'repeated countdown');
+assert(ui.includes("},1000)"),'one-second UI timer');
+assert(ui.includes("},15000)"),'time re-synced against server');
+assert(ui.includes("performance.now()"),'counter uses monotonic elapsed clock');
+assert(ui.includes("if(!selected)return;"),'non-S4 selection suppresses clock UI');
+assert(ui.includes("note.hidden=!selected;"));
+assert(ui.includes("selector.value==='S4'&&locked"),'disables entry to closed S4');
+assert(ui.includes("'Chọn S1–S3 để tiếp tục chơi'"),'valid session can switch to other worlds');
+assert(ui.includes("'/api/auth/switch-server'"),'uses existing server-side validation');
+assert(ui.includes("'/api/s4/cycle'"),'server clock poll');
+assert(css.includes('.auth-s4-cycle-note[hidden]{display:none}'));
+assert(css.includes('.auth-s4-countdown'));
+assert(app.includes("response.status===423&&data.code==='S4_LOCKED'"));
+for(const file of ['app.js','auth.css','auth.js'])
+  assert(html.includes('/'+file+'?v=20261118-s4-72h48h-r1'),file+' not refreshed');
+console.log('PASS: S4 72h/48h clock, selected-only countdown, client kick, server 423, 15s clock sync');

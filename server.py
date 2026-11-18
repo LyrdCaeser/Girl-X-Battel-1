@@ -23,7 +23,7 @@ from gxb2.story import catalog as story_catalog
 from gxb2.dress import catalog as dress_catalog
 from gxb2.skins import catalog as skins_catalog
 from gxb2.souls import catalog as souls_catalog
-from gxb2 import protocol as p, local_promotion, local_config, world_live_config, topup, live_service, auth, database, gm_catalog, giftcodes, studio_sso, skin_store, skin_bank, skin_gifts, owner_recovery, profile_photos
+from gxb2 import protocol as p, local_promotion, local_config, world_live_config, topup, live_service, auth, database, gm_catalog, giftcodes, studio_sso, skin_store, skin_bank, skin_gifts, owner_recovery, profile_photos, s4_exclusive
 from gxb2.player_engines import PlayerEnginePool
 from gxb2.battle import simulate as simulate_battle, ONLINE_BATTLE_ID, normalize_online_seed
 from gxb2.security import FixedWindowRateLimiter, DEFAULT_LIMITS, env_bool, validate_production_config
@@ -268,6 +268,13 @@ class HTTPHandler(BaseHTTPRequestHandler):
         if not ctx:
             self.send(401, {'error': 'AUTH_REQUIRED'})
             return None
+        if ctx['account']['server_id'] == 'S4':
+            cycle = s4_exclusive.cycle()
+            if cycle['phase'] == 'locked':
+                self.send(423, {
+                    'error': 'S4 đang tạm khóa. Quay lại sau khi hết 48 giờ.',
+                    'code': 'S4_LOCKED', 's4_cycle': cycle})
+                return None
         return ctx
 
     @property
@@ -353,6 +360,12 @@ class HTTPHandler(BaseHTTPRequestHandler):
         last_payload=None
         for _ in range(20):
             try:
+                if account['server_id']=='S4':
+                    phase=s4_exclusive.cycle()
+                    if phase['phase']=='locked':
+                        self.wfile.write(('event: s4_lock\ndata: '+json.dumps(phase)+'\n\n').encode())
+                        self.wfile.flush()
+                        break
                 pvp=live_service.pvp_status(account['uid'],account['server_id'],mode)
                 if pvp.get('status')=='matched' and pvp.get('match'):
                     try:
@@ -406,9 +419,13 @@ class HTTPHandler(BaseHTTPRequestHandler):
                 return self.send(200,{'ready':True,'database':database.backend_name(),'worlds':len(worlds)})
             except Exception:
                 return self.send(503,{'ready':False,'database':database.backend_name()})
+        if path == '/api/s4/cycle':
+            return self.send(200, s4_exclusive.cycle())
         if path == '/api/auth/me':
             ctx = self.auth_context()
-            return self.send(200, {'authenticated': bool(ctx), 'session': ctx, 'worlds': live_service.worlds(), 'is_super_gm': self.is_super_gm()})
+            return self.send(200, {'authenticated': bool(ctx), 'session': ctx,
+                                   'worlds': live_service.worlds(), 'is_super_gm': self.is_super_gm(),
+                                   's4_cycle': s4_exclusive.cycle()})
         if path == '/api/auth/sessions':
             ctx = self.require_auth()
             if not ctx: return
@@ -1077,8 +1094,11 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                 self._auth_context = None
                 return self.send(200, {'ok': True}, headers={'Set-Cookie': 'gxb3_session=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0'})
             if path == '/api/auth/switch-server':
-                ctx = self.require_auth()
-                if not ctx: return
+                # Leaving locked S4 remains possible with the valid session cookie.
+                # Never grant gameplay access to locked S4; the destination is
+                # validated by auth.switch_server / s4_exclusive.ensure_open.
+                ctx = self.auth_context()
+                if not ctx: return self.send(401, {'error': 'AUTH_REQUIRED'})
                 updated = auth.switch_server(self.session_token(), data.get('server_id'))
                 self._auth_context = updated
                 return self.send(200, {'session': updated})

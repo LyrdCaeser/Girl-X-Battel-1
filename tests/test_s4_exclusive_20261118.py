@@ -23,6 +23,7 @@ class S4Tests(unittest.TestCase):
     def test_create_character_blocks_nonvip_before_player_write(self):
         current={'account':{'uid':'U-TEST','server_id':'S1'},'character_name':'Hero'}
         with patch.object(auth, 'session', return_value=current), \
+             patch.object(s4_exclusive,'ensure_open',return_value={}), \
              patch.object(s4_exclusive,'ensure_vip15',side_effect=ValueError('VIP 15')), \
              patch.object(live_service,'register_player') as register:
             with self.assertRaisesRegex(ValueError,'VIP 15'):

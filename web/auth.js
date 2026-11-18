@@ -1,6 +1,95 @@
 'use strict';
 window.GxbAuth=(()=>{
   let overlay=null,session=null,worlds=[],isSuperGM=false;
+  let s4Cycle=null,s4SyncedAt=0,s4PollBusy=false,s4Kicked=false,s4Badge=null;
+  const s4Time=()=>s4Cycle?Math.max(0,Math.ceil(Number(s4Cycle.phase_end)-(
+    Number(s4Cycle.server_now)+(performance.now()-s4SyncedAt)/1000))):0;
+  function s4Clock(seconds){
+    seconds=Math.max(0,Math.floor(seconds));
+    return [Math.floor(seconds/3600),Math.floor(seconds%3600/60),seconds%60]
+      .map(x=>String(x).padStart(2,'0')).join(':');
+  }
+  function selectedS4(){
+    return [...document.querySelectorAll('#auth-login-server,#auth-reg-server,#auth-account-server')]
+      .some(x=>x.isConnected&&x.value==='S4');
+  }
+  function selectorNote(select){
+    if(!select?.isConnected)return;
+    let note=select.parentElement?.querySelector('.auth-s4-cycle-note');
+    if(!note){
+      note=el('div','auth-s4-cycle-note');
+      select.insertAdjacentElement('afterend',note);
+    }
+    const selected=select.value==='S4';
+    note.hidden=!selected;
+    if(!selected)return;
+    const locked=s4Cycle?.phase==='locked';
+    const clock=s4Cycle?s4Clock(s4Time()):'Đang đồng bộ…';
+    note.classList.toggle('locked',!!locked);
+    note.replaceChildren(
+      el('strong','',locked?'🔒 S4 tạm khóa • 48 giờ':'★ S4 Độc Quyền VIP 15 • Đang mở'),
+      el('span','',locked?'Mở lại sau '+clock:
+        'Khóa sau '+clock+' (chơi 72 giờ, nghỉ 48 giờ)'),
+      ...(locked?[el('small','','S4 sẽ tự mở lại khi hết thời gian. Hãy chọn máy chủ khác để tiếp tục chơi.')]:[])
+    );
+  }
+  function showS4Badge(){
+    const active=session?.account?.server_id==='S4'&&!s4Kicked&&!overlay;
+    if(!active||!s4Cycle||s4Cycle.phase!=='open'){
+      s4Badge?.remove();s4Badge=null;return;
+    }
+    if(!s4Badge){
+      s4Badge=el('div','auth-s4-countdown');
+      s4Badge.setAttribute('aria-label','Thời gian mở cửa còn lại của S4');
+      document.body.append(s4Badge);
+    }
+    s4Badge.textContent='S4 • Khóa sau '+s4Clock(s4Time());
+  }
+  function updateS4Clock(){
+    for(const select of document.querySelectorAll(
+      '#auth-login-server,#auth-reg-server,#auth-account-server'))selectorNote(select);
+    const locked=Boolean(s4Cycle?.phase==='locked');
+    for(const [id,buttonId] of [['auth-login-server','auth-login-submit'],
+                               ['auth-reg-server','auth-reg-submit']]){
+      const selector=document.getElementById(id),button=document.getElementById(buttonId);
+      if(selector&&button&&!button.dataset.requestBusy)
+        button.disabled=selector.value==='S4'&&locked;
+    }
+    if(session?.account?.server_id==='S4'&&!s4Kicked&&s4Cycle&&
+       (locked||s4Time()===0))kickToServerLobby(s4Cycle);
+    showS4Badge();
+  }
+  async function syncS4Cycle(){
+    if(s4PollBusy)return;
+    s4PollBusy=true;
+    try{
+      const info=await request('/api/s4/cycle');
+      if(info.server_id!=='S4')return;
+      s4Cycle=info;s4SyncedAt=performance.now();
+      updateS4Clock();
+    }catch(e){console.warn('Không cập nhật được đồng hồ S4',e);}
+    finally{s4PollBusy=false;}
+  }
+  function kickToServerLobby(cycle){
+    if(session?.account?.server_id!=='S4'||s4Kicked)return;
+    if(cycle?.server_id==='S4'){
+      s4Cycle=cycle;s4SyncedAt=performance.now();
+    }
+    s4Kicked=true;
+    s4Badge?.remove();s4Badge=null;
+    show();
+  }
+  function startS4Timers(){
+    setInterval(()=>{
+      updateS4Clock();
+      if(s4Cycle&&s4Time()===0&&!s4PollBusy&&
+         (session?.account?.server_id==='S4'||selectedS4()))void syncS4Cycle();
+    },1000);
+    setInterval(()=>{
+      if(session?.account?.server_id==='S4'||selectedS4())void syncS4Cycle();
+    },15000);
+  }
+
   const REMEMBER_KEY='gxb3:remember-login:v1';
   function remembered(){
     try {const saved=JSON.parse(localStorage.getItem(REMEMBER_KEY)||'null');
@@ -23,20 +112,21 @@ window.GxbAuth=(()=>{
     return data;
   }
   function worldSelect(id){
-    const s=document.createElement('select');s.id=id;
+    const select=document.createElement('select');select.id=id;
     for(const w of worlds.filter(x=>x.status!=='closed')){
       const special=w.server_id==='S4';
-      const label=w.name+' · '+w.server_id+
-        (special?' · 🔒 Yêu cầu VIP 15':'')+
+      const label=w.name+' · '+w.server_id+(special?' · VIP 15':'')+
         (w.status==='maintenance'?' · Bảo trì':'');
       const option=el('option','',label);
-      option.value=w.server_id;option.disabled=w.status!=='online';s.append(option);
+      option.value=w.server_id;option.disabled=w.status!=='online';select.append(option);
     }
-    s.addEventListener('change',()=>{
-      if(s.value==='S4'&&typeof GirlUI!=='undefined')
-       GirlUI.notice('S4 • Thời Không Sai Lệch chỉ dành cho tài khoản có nhân vật VIP 15 trên S1–S3. Chưa đủ VIP 15 sẽ không được phép vào.',{title:'🔒 Server Độc Quyền VIP 15'});
+    select.addEventListener('change',()=>{
+      selectorNote(select);
+      updateS4Clock();
+      if(select.value==='S4')void syncS4Cycle();
     });
-    return s;
+    queueMicrotask(()=>selectorNote(select));
+    return select;
   }
   function field(parent,label,id,type='text',placeholder=''){
     const l=el('label','auth-field',label),i=document.createElement('input');i.id=id;i.type=type;i.placeholder=placeholder;i.autocomplete=type==='password'?'current-password':'username';i.addEventListener('input',()=>{l.classList.remove('typing');void l.offsetWidth;l.classList.add('typing');});l.append(i);parent.append(l);return i;
@@ -58,14 +148,34 @@ window.GxbAuth=(()=>{
       pass.autocomplete='current-password';
       const saved=remembered();if(saved)user.value=saved.username;
       const wl=el('label','auth-field','Máy Chủ');const world=worldSelect('auth-login-server');
-      if(saved&&Array.from(world.options).some(x=>x.value===saved.server_id&&!x.disabled))world.value=saved.server_id;
-      wl.append(world);body.append(wl);
+      if(s4Kicked&&session?.account?.server_id==='S4')world.value='S4';
+      else if(saved&&Array.from(world.options).some(x=>x.value===saved.server_id&&!x.disabled))world.value=saved.server_id;
+      wl.append(world);body.append(wl);selectorNote(world);
       const saveLabel=el('label','auth-remember');const save=document.createElement('input');
       save.id='auth-remember-login';save.type='checkbox';save.checked=!!saved;
       saveLabel.append(save,el('span','','Lưu đăng nhập'));
       body.append(saveLabel);
-      const submit=el('button','auth-primary','Đăng nhập');submit.onclick=async()=>{submit.disabled=true;status.textContent='Đang đăng nhập…';try{await request('/api/auth/login',{username:user.value,password:pass.value,server_id:world.value,remember_login:save.checked});storeRemember(save.checked,user.value,world.value);location.reload();}catch(e){status.textContent=e.message;submit.disabled=false;}};
+      const submit=el('button','auth-primary','Đăng nhập');submit.id='auth-login-submit';
+      submit.onclick=async()=>{
+        if(world.value==='S4'&&s4Cycle?.phase==='locked'){selectorNote(world);return;}
+        submit.disabled=true;submit.dataset.requestBusy='1';status.textContent='Đang đăng nhập…';
+        try{await request('/api/auth/login',{username:user.value,password:pass.value,server_id:world.value,remember_login:save.checked});storeRemember(save.checked,user.value,world.value);location.reload();}
+        catch(e){status.textContent=e.message;submit.disabled=false;}
+        finally{delete submit.dataset.requestBusy;}
+      };
       const forgot=el('button','auth-link','Quên mật khẩu?');forgot.onclick=renderRecovery;body.append(submit,forgot);
+      if(s4Kicked&&session?.account?.server_id==='S4'){
+        const leave=el('button','auth-s4-switch','Chọn S1–S3 để tiếp tục chơi');
+        leave.type='button';
+        leave.onclick=async()=>{
+          if(world.value==='S4'){status.textContent='S4 đang tạm khóa. Hãy chọn S1, S2 hoặc S3.';return;}
+          leave.disabled=true;
+          try{await request('/api/auth/switch-server',{server_id:world.value});location.reload();}
+          catch(e){status.textContent=e.message;leave.disabled=false;}
+        };
+        body.append(leave);
+      }
+      updateS4Clock();
       pass.onkeydown=e=>{if(e.key==='Enter')submit.click();};
     }
     function renderRegister(){
@@ -76,7 +186,7 @@ window.GxbAuth=(()=>{
       const pass=field(body,'Mật khẩu','auth-reg-pass','password','Ít nhất 8 ký tự');pass.autocomplete='new-password';
       const confirm=field(body,'Nhập lại mật khẩu','auth-reg-confirm','password','Nhập lại mật khẩu');confirm.autocomplete='new-password';
       const wl=el('label','auth-field','Server đầu tiên');wl.append(worldSelect('auth-reg-server'));body.append(wl);
-      const submit=el('button','auth-primary','Tạo tài khoản');
+      const submit=el('button','auth-primary','Tạo tài khoản');submit.id='auth-reg-submit';
       submit.onclick=async()=>{if(pass.value!==confirm.value){status.textContent='Mật khẩu nhập lại không khớp.';return;}submit.disabled=true;status.textContent='Đang tạo tài khoản…';try{
         const result=await request('/api/auth/register',{username:user.value,email:email.value,character_name:name.value,password:pass.value,server_id:document.getElementById('auth-reg-server').value});
         body.replaceChildren();loginTab.classList.remove('on');registerTab.classList.remove('on');
@@ -100,13 +210,19 @@ window.GxbAuth=(()=>{
     }
     loginTab.onclick=renderLogin;registerTab.onclick=renderRegister;renderLogin();
     overlay.append(panel);document.body.append(overlay);
+    updateS4Clock();
   }
   async function init(){
     try{
       const data=await request('/api/auth/me');worlds=data.worlds||[];session=data.session||null;isSuperGM=!!data.is_super_gm;
+      if(data.s4_cycle?.server_id==='S4'){
+        s4Cycle=data.s4_cycle;s4SyncedAt=performance.now();
+      }
       if(!data.authenticated){show();return false;}
-      remove();
-      queueMicrotask(installAccountControls);
+      if(session?.account?.server_id==='S4'&&s4Cycle?.phase==='locked'){
+        s4Kicked=true;show();return false;
+      }
+      remove();queueMicrotask(installAccountControls);updateS4Clock();
       return true;
     }catch(e){worlds=[];show();return false;}
   }
@@ -160,5 +276,8 @@ window.GxbAuth=(()=>{
   }
 
   window.GxbAuthReady=init();
-  return{request,session:()=>session,isSuperGM:()=>isSuperGM,worlds:()=>worlds,logout:async()=>{await request('/api/auth/logout',{});location.reload();}};
+  startS4Timers();
+  return{request,session:()=>session,isSuperGM:()=>isSuperGM,worlds:()=>worlds,
+         kickToServerLobby,refreshS4Cycle:syncS4Cycle,
+         logout:async()=>{await request('/api/auth/logout',{});location.reload();}};
 })();

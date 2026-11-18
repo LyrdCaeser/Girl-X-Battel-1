@@ -21,3 +21,25 @@ html.auth-locked #app-frame{filter:blur(8px);pointer-events:none;user-select:non
 @keyframes gxb3-brand-float{0%,100%{transform:translateY(0);text-shadow:0 0 10px #adc9ff66}50%{transform:translateY(-3px);text-shadow:0 0 15px #adc9ff99}}
 @keyframes gxb3-keypress{0%{box-shadow:0 0 0 2px #a1b8ff55}100%{box-shadow:0 0 0 0 transparent}}
 @media(prefers-reduced-motion:reduce){.auth-brand small,.auth-brand h1,.auth-field.typing input{animation:none!important}}
+
+
+/* S4-only two-phase server clock: never rendered for S1/S2/S3. */
+.auth-s4-cycle-note{display:grid;gap:4px;margin-top:8px;padding:10px 12px;
+ border:1px solid #b49cf4;border-radius:12px;background:#262145;color:#f3edff;
+ font-size:12px;line-height:1.45;max-width:100%;box-sizing:border-box}
+.auth-s4-cycle-note[hidden]{display:none}
+.auth-s4-cycle-note strong{font-size:13px;color:#ffe6a3}
+.auth-s4-cycle-note span{font-variant-numeric:tabular-nums;font-weight:800;font-size:16px}
+.auth-s4-cycle-note.locked{background:#46212d;border-color:#dc8397;color:#ffe9eb}
+.auth-s4-cycle-note.locked strong{color:#ffd1bd}
+.auth-s4-cycle-note small{font-size:11px;line-height:1.5;color:#f0cad1}
+.auth-s4-countdown{position:fixed;top:calc(53px + env(safe-area-inset-top,0px));left:50%;
+ transform:translateX(-50%);z-index:100;max-width:90vw;pointer-events:none;
+ border:1px solid #edc175;border-radius:18px;padding:6px 14px;
+ background:#33234fea;color:#fff5d9;font:800 12px/1.35 system-ui,sans-serif;
+ box-shadow:0 3px 15px #0005;white-space:nowrap;letter-spacing:.2px;
+ font-variant-numeric:tabular-nums}
+.auth-s4-switch{background:linear-gradient(#97d0fc,#4487d6);border:1px solid #bedaf8;
+ padding:11px 12px;border-radius:10px;color:#fff;font-weight:800}
+.auth-s4-switch:disabled{opacity:.5}
+@media(max-width:390px){.auth-s4-countdown{font-size:11px;top:calc(50px + env(safe-area-inset-top,0px))}}

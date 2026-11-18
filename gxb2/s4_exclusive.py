@@ -20,6 +20,59 @@ KEY = "__s4_exclusive_bundle__"
 ROOT = Path(__file__).resolve().parents[1]
 
 
+
+# The cycle is global to S4, anchored to the world's immutable Neon
+# created_at, not to each player's login time or their device clock.
+OPEN_SECONDS = 72 * 3600
+LOCK_SECONDS = 48 * 3600
+CYCLE_SECONDS = OPEN_SECONDS + LOCK_SECONDS
+_s4_epoch = None
+
+
+def cycle(now=None, created_at=None):
+    """Public schedule: 72h open, 48h locked, repeating every five days."""
+    global _s4_epoch
+    if created_at is None:
+        if _s4_epoch is None:
+            from . import live_service
+            world = next((w for w in live_service.worlds() if w['server_id'] == WORLD), None)
+            if world is None:
+                raise ValueError('S4 chưa được khởi tạo')
+            _s4_epoch = int(world['created_at'])
+        created_at = _s4_epoch
+    now = int(time.time()) if now is None else int(now)
+    created_at = int(created_at)
+    elapsed = max(0, now-created_at)
+    index, offset = divmod(elapsed, CYCLE_SECONDS)
+    opened_at = created_at + index*CYCLE_SECONDS
+    open_phase = offset < OPEN_SECONDS
+    phase_end = opened_at + (OPEN_SECONDS if open_phase else CYCLE_SECONDS)
+    return {
+        'server_id': WORLD,
+        'phase': 'open' if open_phase else 'locked',
+        'server_now': now,
+        'started_at': created_at,
+        'phase_end': phase_end,
+        'remaining_seconds': max(0, phase_end-now),
+        'open_seconds': OPEN_SECONDS,
+        'lock_seconds': LOCK_SECONDS,
+        'cycle_index': index,
+        'next_open_at': opened_at if open_phase else opened_at+CYCLE_SECONDS,
+    }
+
+
+def ensure_open(server_id, now=None):
+    if str(server_id or '').upper() != WORLD:
+        return None
+    current = cycle(now)
+    if current['phase'] != 'open':
+        raise ValueError(
+            'S4 • Thời Không Sai Lệch đang khóa 48 giờ. '
+            'Hãy quay lại khi đồng hồ đếm ngược kết thúc.'
+        )
+    return current
+
+
 def paid_exp_in_other_worlds(uid):
     """Return paid VIP EXP only from the authenticated UID's other worlds.
 

@@ -274,6 +274,7 @@ def login(username, password, server_id="S1", remote="", user_agent=""):
         if server_id == "S4":
             from . import s4_exclusive
             try:
+                s4_exclusive.ensure_open(server_id)
                 s4_exclusive.ensure_vip15(row["uid"], server_id)
             except Exception:
                 # Failed VIP logins must release their auth DB connection.
@@ -331,6 +332,7 @@ def switch_server(token, server_id):
     server_id = str(server_id or "").strip().upper()
     if server_id == "S4":
         from . import s4_exclusive
+        s4_exclusive.ensure_open(server_id)
         s4_exclusive.ensure_vip15(current["account"]["uid"], server_id)
     player = live_service.player(current["account"]["uid"], server_id)
     if not player: raise ValueError("Chưa có nhân vật ở server này")
@@ -357,6 +359,7 @@ def create_character(token, server_id, character_name):
     server_id = str(server_id or "").strip().upper()
     if server_id == "S4":
         from . import s4_exclusive
+        s4_exclusive.ensure_open(server_id)
         s4_exclusive.ensure_vip15(uid, server_id)
     character_name = str(character_name or "").strip()
     if not 2 <= len(character_name) <= 20 or any(ord(c) < 32 for c in character_name):
