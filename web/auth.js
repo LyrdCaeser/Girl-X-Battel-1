@@ -24,7 +24,18 @@ window.GxbAuth=(()=>{
   }
   function worldSelect(id){
     const s=document.createElement('select');s.id=id;
-    for(const w of worlds.filter(x=>x.status!=='closed')){const o=el('option','',`${w.name} · ${w.server_id}${w.status==='maintenance'?' · Bảo trì':''}`);o.value=w.server_id;o.disabled=w.status!=='online';s.append(o);}
+    for(const w of worlds.filter(x=>x.status!=='closed')){
+      const special=w.server_id==='S4';
+      const label=w.name+' · '+w.server_id+
+        (special?' · 🔒 Yêu cầu VIP 15':'')+
+        (w.status==='maintenance'?' · Bảo trì':'');
+      const option=el('option','',label);
+      option.value=w.server_id;option.disabled=w.status!=='online';s.append(option);
+    }
+    s.addEventListener('change',()=>{
+      if(s.value==='S4'&&typeof GirlUI!=='undefined')
+       GirlUI.notice('S4 • Thời Không Sai Lệch chỉ dành cho tài khoản có nhân vật VIP 15 trên S1–S3. Chưa đủ VIP 15 sẽ không được phép vào.',{title:'🔒 Server Độc Quyền VIP 15'});
+    });
     return s;
   }
   function field(parent,label,id,type='text',placeholder=''){

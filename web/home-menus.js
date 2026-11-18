@@ -293,16 +293,66 @@ const HomeMenus=(()=>{
   }catch(e){message=e.message||'Không thể đổi Giftcode.';}
   finally{giftcodeBusy=false;if(view==='home-systems'&&root==='mail'&&tab==='server')render();}
  }
+ function revealS4Skins(prize){
+  return new Promise(resolve=>{
+   const overlay=el('div',undefined,'hm-s4-reveal');
+   const pane=el('section',undefined,'hm-s4-reveal-pane');
+   const h=el('h2','S4 • Thời Không Sai Lệch','');
+   const sub=el('p',
+    'Triệu hồi hoàn tất! Đã mở khóa '+Number(prize.wish_count||0)+
+    ' Nữ Thần Wish Limited 25★, '+Number(prize.skin_count||0)+
+    ' trang phục Nữ Thần và '+Number(prize.outfit_total||0)+
+    ' món Outfit. Quà thuộc riêng S4.','hm-s4-reveal-desc');
+   const heading=el('h3','Bộ Trang Phục Nữ Thần Limited · Triệu Hồi Ước Nguyện');
+   const grid=el('div',undefined,'hm-s4-skin-grid');
+   const names=Array.isArray(prize.skin_ids)?prize.skin_ids:[];
+   for(const [i,sid] of names.entries()){
+    const item=el('div',undefined,'hm-s4-skin-card');
+    item.style.animationDelay=Math.min(i*65,1100)+'ms';
+    const art=el('img');
+    art.src='/assets/skins/cards/'+Number(sid)+'.webp';
+    art.alt='Trang phục Nữ Thần';
+    art.loading=i<12?'eager':'lazy';
+    item.append(art,el('span','Đã mở khóa','hm-s4-skin-label'));
+    grid.append(item);
+   }
+   const done=el('button','Hoàn Tất','hm-s4-done');
+   done.type='button';
+   const close=()=>{overlay.remove();resolve();};
+   done.onclick=close;
+   overlay.onclick=e=>{if(e.target===overlay)close();};
+   pane.append(h,sub,heading,grid,done);
+   overlay.append(pane);
+   (window.GxbFrame?.root()||document.body).append(overlay);
+   done.focus();
+  });
+ }
+ async function revealS4Bundle(prize){
+  if(!prize||state?.server_id!=='S4')return;
+  const girls=(prize.goddesses||[]).map(g=>({
+   table_id:Number(g.table_id),name:g.name,star:Number(g.stars)
+  }));
+  if(girls.length&&typeof SummonAnim!=='undefined'){
+   try{await SummonAnim.play(26,girls);}
+   catch(e){console.warn('Hiệu ứng Wish S4:',e);}
+  }
+  await revealS4Skins(prize);
+ }
  async function claimServerMail(mailId){
   if(pending)return;
   pending=true;message='';
+  let celebration=null;
   try{
    const result=await api('/api/mail/claim',{mail_id:mailId});
    if(result?.state)state=result.state;
    mailLastRefresh=Date.now();if(window.GameAssistant)GameAssistant.updateHome();
-   message='Đã nhận vật phẩm đính kèm.';
+   celebration=result?.s4_rewards||null;
+   message=celebration
+     ? 'Quà độc quyền S4 đã được nhận. Đang mở hiệu ứng Wish!'
+     : 'Đã nhận vật phẩm đính kèm.';
   }catch(e){message=e.message||'Không thể nhận thư.';}
   finally{pending=false;render();}
+  if(celebration)await revealS4Bundle(celebration);
  }
  async function markServerMailRead(){
   const unread=(state?.mail_info||[]).some(m=>!m.read);
@@ -335,6 +385,13 @@ const HomeMenus=(()=>{
    const c=card(parent,m.title||'Thư Máy Chủ',claimed?'mail_sys02':'mail_gm01');
    if(m.created_at)paragraph(c,new Date(Number(m.created_at)*1000).toLocaleString('vi-VN'));
    if(m.body)paragraph(c,m.body,'hm-text');
+   if(m.attachments?.__s4_exclusive_bundle__){
+    const gift=el('div',undefined,'hm-s4-gift-preview');
+    gift.append(el('b','★ S4 • QUÀ WISH LIMITED 25★'),el('small',
+      '24 Nữ Thần Wish 25★ · Cấp 1 · Không trang bị'),
+      el('small','76 trang phục Nữ Thần Limited · Trọn bộ Outfit'));
+    c.append(gift);
+   }
    const goddess=m.attachments?.__gxb3_goddess__;
    if(goddess&&/^\/assets\/(?:cards|characters|original-ui)\//.test(String(goddess.image||''))){
      const tile=el('div',undefined,'hm-goddess-gift'),face=el('img');face.src=goddess.image;face.alt=goddess.name||'Nữ Thần';face.loading='lazy';
@@ -343,9 +400,11 @@ const HomeMenus=(()=>{
      if(goddess.max_stellar)tile.append(el('small','Lõi Tinh Tú tối đa'));
      c.append(tile);
    }
-   const items=Object.entries(m.attachments||{}).filter(([,count])=>Number(count)>0);
+   const items=Object.entries(m.attachments||{}).filter(([id,count])=>/^[0-9]+$/.test(id)&&Number(count)>0);
    if(items.length)rewards(c,items.map(([id,count])=>id+'#'+count).join('|'));
-   if(m.status==='pending')button(c,'Nhận Đính Kèm',()=>claimServerMail(m.id),pending);
+   if(m.status==='pending')button(c,
+     m.attachments?.__s4_exclusive_bundle__?'Nhận Quà & Triệu Hồi Wish':'Nhận Đính Kèm',
+     ()=>claimServerMail(m.id),pending);
    else if(claimed)paragraph(c,'Đã nhận đính kèm.');
   }
  }

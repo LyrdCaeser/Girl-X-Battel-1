@@ -304,6 +304,13 @@ class Engine:
                 state['server_id'] = str(server_id).upper(); changed = True
             if character_name and state.get('name') != str(character_name):
                 state['name'] = str(character_name); changed = True
+            if str(server_id).upper() == "S4":
+                from . import s4_exclusive
+                paid = s4_exclusive.ensure_vip15(uid, "S4")
+                if int(state.get('vip_paid_exp', 0)) < paid:
+                    # Display the verified VIP tier on the new S4 character.
+                    # S1-S3 paid EXP and their inventories are unchanged.
+                    state['vip_paid_exp'] = paid; changed = True
             if changed:
                 self._save_profile(state)
                 self.db.commit()
@@ -614,10 +621,15 @@ class Engine:
                     db=live_db)
                 inventory = dict(attachments)
                 special_gift = inventory.pop('__gxb3_goddess__', None)
+                s4_marker = inventory.pop('__s4_exclusive_bundle__', None)
                 gifted = None
+                s4_rewards = None
                 if special_gift is not None:
                     from . import goddess_gifts
                     gifted = goddess_gifts.grant(state, special_gift, self.level_cap)
+                if s4_marker is not None:
+                    from . import s4_exclusive
+                    s4_rewards = s4_exclusive.grant_bundle(state, s4_marker, self.level_cap)
                 vip.claim_reward(state, inventory)
                 for item_id, amount in inventory.items():
                     state['items'][str(item_id)] = int(state['items'].get(str(item_id), 0)) + int(amount)
@@ -627,7 +639,7 @@ class Engine:
                 self.db.rollback()
                 raise
         return {'state': self.snapshot(), 'attachments': attachments,
-                'goddess': gifted}
+                'goddess': gifted, 's4_rewards': s4_rewards}
 
     def bag_use_options(self, item_id):
         from . import bag_use
@@ -1094,6 +1106,9 @@ class Engine:
                 state['account_status'] = player.get('status','active') if player else 'active'
             else:
                 state['account_status'] = 'active'  # current account status is enforced by auth_context()
+            if state['server_id'] == 'S4' and not state.get('s4_exclusive_claimed'):
+                from . import s4_exclusive
+                s4_exclusive.ensure_welcome(state['uid'], 'S4', state['name'])
             state['mail_info'] = live_service.mailbox(state['uid'], state['server_id'])
             state['worlds'] = live_service.worlds()
         except Exception:
@@ -1227,7 +1242,7 @@ class Engine:
                    {'key': 'arena', 'label': 'Junior Varsity season ends', 'at': (state.get('arena_info') or {}).get('season_end', 0)},
                    {'key': 'arena3v3', 'label': 'Varsity season ends', 'at': (state.get('arena3v3_info') or {}).get('season_end', 0)},
                    {'key': 'exam', 'label': 'House Exams season ends', 'at': (state.get('house_exam_info') or {}).get('season_end', 0)}]
-        state['calendar_info'] = game_calendar.snapshot(self.now(), _resets)
+        state['calendar_info'] = game_calendar.snapshot(self.now(), _resets, state.get('server_id','S1'))
         state['bots_info'] = bots.snapshot(state, player_level(state), self.now())  # simulated players: rankings and chat (LOCAL-085)
         if not self.developer:
             try:

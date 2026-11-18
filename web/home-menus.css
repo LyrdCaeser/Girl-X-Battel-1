@@ -85,3 +85,38 @@
 .hm-gift-item span{display:grid;gap:1px;min-width:0}.hm-gift-item b{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.hm-gift-item small{font-size:10px;color:#697d96}.hm-gift-item em{font-size:10px;color:#bd6b24;font-style:normal;font-weight:800}
 .hm-gift-controls{display:grid;grid-template-columns:auto 110px;justify-content:end;align-items:center;gap:8px;margin-top:8px;color:#4b6281;font-weight:800}.hm-gift-controls .hm-gift-qty{width:110px;box-sizing:border-box}
 @media(max-width:390px){.hm-gift-list{grid-template-columns:1fr;max-height:290px}}
+
+
+/* S4 Wish-Limited welcome: uses only the original client Skin card artwork. */
+.hm-s4-gift-preview{display:grid;gap:3px;margin:10px 0;padding:12px;
+ border:2px solid #e1b15e;border-radius:10px;background:linear-gradient(135deg,#fff4cf,#fae3ff);
+ color:#644978;text-align:center}
+.hm-s4-gift-preview b{color:#985b17;font-size:14px}
+.hm-s4-gift-preview small{font-size:12px;line-height:1.4}
+.hm-s4-reveal{position:absolute;inset:0;z-index:300;
+ display:flex;align-items:center;justify-content:center;padding:10px;
+ box-sizing:border-box;background:#170e36d9}
+.hm-s4-reveal-pane{width:min(100%,620px);max-height:92%;overflow:hidden;
+ display:flex;flex-direction:column;gap:8px;padding:12px;
+ border:3px solid #e9b85e;border-radius:16px;background:linear-gradient(#fff8e1,#e7dcfb);
+ box-shadow:0 14px 42px #000a;color:#65436d;box-sizing:border-box}
+.hm-s4-reveal-pane h2,.hm-s4-reveal-pane h3{margin:0;text-align:center}
+.hm-s4-reveal-pane h2{font-size:19px;color:#ae762e}
+.hm-s4-reveal-pane h3{font-size:14px}
+.hm-s4-reveal-desc{margin:0;text-align:center;font-size:12px;line-height:1.45}
+.hm-s4-skin-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+ gap:6px;overflow:auto;flex:1;min-height:0;max-height:64dvh;
+ padding:6px;overscroll-behavior:contain;touch-action:pan-y}
+.hm-s4-skin-card{min-width:0;position:relative;padding:3px;
+ border:2px solid #d9b56a;border-radius:10px;background:#fff4dc;
+ animation:hm-s4-wish-appear .55s both}
+.hm-s4-skin-card img{width:100%;aspect-ratio:3/4;object-fit:contain}
+.hm-s4-skin-label{display:block;text-align:center;font-size:10px;font-weight:900;color:#846033}
+.hm-s4-done{align-self:center;min-height:42px;padding:8px 32px;border-radius:11px;
+ border:2px solid #fff;color:#fff;font-weight:900;background:linear-gradient(#8fbff8,#3977cb)}
+@keyframes hm-s4-wish-appear{
+ from{opacity:0;transform:translateY(16px) scale(.8);filter:brightness(1.8)}
+ to{opacity:1;transform:translateY(0) scale(1);filter:brightness(1)}
+}
+@media(prefers-reduced-motion:reduce){.hm-s4-skin-card{animation:none}}
+@media(max-width:390px){.hm-s4-skin-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
