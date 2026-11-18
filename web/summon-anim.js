@@ -37,6 +37,32 @@ const SummonAnim=(()=>{
  // Match PartnerSummonEffect: overlay the girl's name and star icons on
  // the ORIGINAL animated name/star bones, not in an unrelated bottom label.
  // The native 'name' attachment is the white nameplate and must NOT be hidden.
+ function revealStarsOneByOne(icons){
+  // The old sprite placement sat BELOW the CV. The native star track is
+  // above the name plaque (1xing y=154 vs name y=83 in original Spine).
+  // Animate each original star from left to right without relying on a
+  // hidden attachment animation to keep it visible.
+  icons.forEach((icon,i)=>{
+   const sx=icon.scale.x, sy=icon.scale.y;
+   icon.alpha=0;icon.visible=false;
+   const stagger=setTimeout(()=>{
+    if(icon.destroyed)return;
+    icon.visible=true;
+    const start=performance.now();
+    const animate=(now)=>{
+     if(icon.destroyed)return;
+     const t=Math.min(1,(now-start)/260);
+     const ease=1-Math.pow(1-t,3);
+     icon.alpha=ease;
+     const factor=.45+.55*ease+(.12*Math.sin(t*Math.PI));
+     icon.scale.set(sx*factor,sy*factor);
+     if(t<1)requestAnimationFrame(animate);
+     else icon.scale.set(sx,sy);
+    };
+    requestAnimationFrame(animate);
+   },1000+i*180);
+  });
+ }
  function nativeNameStars(fig,p,star){
   // A 1xing/3xing slot can be disabled by its current Spine animation;
   // attach ALL real labels to the permanently visible native 'name' slot.
@@ -56,6 +82,7 @@ const SummonAnim=(()=>{
   label.scale.y=-1;
   if(label.width>164)label.scale.x=164/label.width;
   bar.addChild(label);
+  const starIcons=[];
   const normal=star<=5;
   if(normal){
    const count=Math.max(1,Math.min(5,star));
@@ -63,25 +90,28 @@ const SummonAnim=(()=>{
    for(let i=0;i<count;i++){
     const x=(i-(count-1)/2)*space;
     const icon=PIXI.Sprite.from('/assets/girl-ui/partner_star_yellow.png');
-    icon.anchor.set(.5);icon.position.set(x,-61);icon.scale.set(1.12,-1.12);
-    bar.addChild(icon);
+    icon.anchor.set(.5);icon.position.set(x,78);icon.scale.set(1.12,-1.12);
+    bar.addChild(icon);starIcons.push(icon);
    }
   }else if(star<10){
    const count=Math.min(5,star-5);
    for(let i=0;i<count;i++){
     const x=(i-(count-1)/2)*37;
     const icon=PIXI.Sprite.from('/assets/girl-ui/partner_star_red.png');
-    icon.anchor.set(.5);icon.position.set(x,-61);icon.scale.set(1.12,-1.12);
-    bar.addChild(icon);
+    icon.anchor.set(.5);icon.position.set(x,78);icon.scale.set(1.12,-1.12);
+    bar.addChild(icon);starIcons.push(icon);
    }
   }else{
    const wing=PIXI.Sprite.from('/assets/girl-ui/potentiality_nametag_star'+(star>=15?'_max':'')+'.png');
-   wing.anchor.set(.5);wing.position.set(0,-62);wing.scale.set(.6,-.6);
-   bar.addChild(wing);
+   wing.anchor.set(.5);wing.position.set(0,78);wing.scale.set(.6,-.6);
+   bar.addChild(wing);starIcons.push(wing);
    const num=new PIXI.Text(String(star),{fontFamily:'Arial, sans-serif',
       fontSize:22,fontWeight:'bold',fill:0xffffff,stroke:0x71383b,strokeThickness:3});
-   num.anchor.set(.5);num.position.set(0,-62);num.scale.y=-1;bar.addChild(num);
+   num.anchor.set(.5);num.position.set(0,78);num.scale.y=-1;bar.addChild(num);
+   num.alpha=0;
+   setTimeout(()=>{if(!num.destroyed)num.alpha=1;},1250);
   }
+  revealStarsOneByOne(starIcons);
   // Hide only the baked default star textures. Custom original star icons
   // above remain visible because they live under the stable name slot.
   for(const n of ['1xing','2xing','3xing','3xing2','3xing3','3xing4','4xing','5xing',
