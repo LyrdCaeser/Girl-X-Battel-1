@@ -162,6 +162,60 @@ def create_goddess(config: dict, operator: str) -> dict:
                    'server_id':'ALL'},operator)
 
 
+def create_s4_exclusive(operator, code='', max_uses=0, days=30):
+    """GM-only: complete 24-goddess/76-skin/outfit S4 Wish gift via mail.
+
+    Only S4, once per UID per code. A redeemed S4 welcome does not block a
+    deliberate new GM campaign; VIP15 + claimed S4 key remain prerequisites.
+    """
+    from . import s4_exclusive
+    raw=str(code or '').strip()
+    if raw and len(raw)>24:
+        raise ValueError('Giftcode S4 tối đa 24 ký tự')
+    code=_normalize(raw or ('S4WISH-'+secrets.token_hex(6).upper()))
+    try:
+        max_uses=int(max_uses)
+        days=int(days)
+    except (TypeError,ValueError):
+        raise ValueError('Lượt sử dụng hoặc số ngày không hợp lệ') from None
+    if not 0<=max_uses<=100000:
+        raise ValueError('Số lượt tối đa từ 0 (không giới hạn) đến 100.000')
+    if not 1<=days<=365:
+        raise ValueError('Thời hạn giftcode S4 từ 1 đến 365 ngày')
+    if not any(w['server_id']==s4_exclusive.WORLD for w in live_service.worlds()):
+        raise ValueError('S4 chưa được khởi tạo')
+    now=int(time.time())
+    title='Độc Quyền S4 • Quà Nữ Thần Wish Limited 25★'
+    message=('Giftcode SUPER GM S4: 24 Nữ Thần Wish Limited 25★, cấp 1, '
+             'không trang bị; 76 trang phục và trọn bộ Outfit Limited. '
+             'Nhấn nhận thư để xem hiệu ứng triệu hồi Wish. '
+             'Quà chỉ nhận tại máy chủ S4.')
+    rewards={s4_exclusive.KEY:2}
+    db=_connection()
+    try:
+        if db.execute('SELECT 1 FROM giftcodes WHERE code=?',(code,)).fetchone():
+            raise ValueError('Giftcode đã tồn tại')
+        db.execute("""INSERT INTO giftcodes
+          (code,title,message,rewards,server_id,max_uses,used_count,
+           expires_at,active,created_at,created_by,target_uid,effect)
+          VALUES(?,?,?,?,?, ?,0,?,1,?,?,?,?)""",
+          (code,title,message,json.dumps(rewards,ensure_ascii=False),s4_exclusive.WORLD,
+           max_uses,now+days*86400,now,str(operator)[:100],'','s4_wish_bundle'))
+        live_service._audit(db,'giftcode.create.s4_exclusive',code,
+            {'server_id':'S4','max_uses':max_uses,'duration_days':days,
+             'bundle':'24 x 25star + 76 skins + full outfits'},str(operator))
+        db.commit()
+        return {'code':code,'title':title,'message':message,'rewards':rewards,
+                'server_id':'S4','max_uses':max_uses,'used_count':0,
+                'expires_at':now+days*86400,'remaining':None if max_uses==0 else max_uses,
+                'unlimited':max_uses==0,'active':True,'effect':'s4_wish_bundle'}
+    except Exception:
+        db.rollback()
+        raise
+    finally:
+        db.close()
+
+
 def create_campaign_clear(uid, server_id, operator, code=''):
     """Create one private, one-use code bound to one exact character."""
     uid=str(uid or '').strip()
@@ -262,8 +316,15 @@ def redeem(code,uid,server_id):
             raise ValueError('Giftcode đã hết lượt sử dụng')
         rewards=json.loads(row['rewards'])
         effect=str(row['effect'] or '')
+        if effect=='s4_wish_bundle':
+            from . import s4_exclusive
+            if (server_id!='S4' or row['server_id']!='S4'
+                    or rewards!={s4_exclusive.KEY:2}):
+                raise ValueError('Giftcode Wish Limited chỉ dành cho S4')
+            s4_exclusive.ensure_vip15(uid,'S4')
+            s4_exclusive.ensure_key_claimed(uid,'S4')
         state_changed=False
-        if effect:
+        if effect and effect!='s4_wish_bundle':
             if effect!='campaign_all':
                 raise ValueError('Hiệu lực Giftcode không được hỗ trợ')
             lock=" FOR UPDATE" if db.backend=='postgres' else ""
@@ -303,7 +364,10 @@ def redeem(code,uid,server_id):
                     'max_stage':LAST_CAMPAIGN_STAGE,
                     'message':f'Kích hoạt thành công! Đã mở đủ {LAST_CAMPAIGN_STAGE} ải Chiến Dịch.'}
         return {'ok':True,'mail_id':mail_id,'title':row['title'],
-                'message':'Đổi mã thành công! Mở Hòm Thư để nhận đính kèm.'}
+                'message':('Đã gửi Quà Wish Limited 25★ vào Hòm Thư S4. '
+                           'Nhận thư để xem hiệu ứng Triệu Hồi Wish!'
+                           if effect=='s4_wish_bundle' else
+                           'Đổi mã thành công! Mở Hòm Thư để nhận đính kèm.')}
     except Exception:
         db.rollback()
         raise

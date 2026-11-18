@@ -1262,6 +1262,16 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                 if path == '/api/giftcode/admin/revoke':
                     return self.send(200,giftcodes.revoke(data.get('code'),operator))
                 return self.send(404,{'error':'Đường dẫn giftcode không tồn tại'})
+            if path == '/api/admin/s4/giftcode/create':
+                if not self.admin_authorized():
+                    return self.send(403, {'error':'Chỉ SUPER GM được tạo quà S4'})
+                if not self.gm_key_authorized():
+                    return self.send(403, {'error':'Khóa hành động QTV không hợp lệ'})
+                if not self.rate_limit_player('admin_goddess_gift'):
+                    return
+                return self.send(200,giftcodes.create_s4_exclusive(
+                    self.auth_context()['account']['uid'],
+                    data.get('code'),data.get('max_uses',0),data.get('days',30)))
             if path == '/api/admin/goddess-gift/create':
                 if not self.admin_authorized():
                     return self.send(403, {'error':'Chỉ SUPER GM được tạo Gift Nữ Thần'})

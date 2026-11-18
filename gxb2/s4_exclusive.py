@@ -292,9 +292,12 @@ def _skin_ids(goddesses):
 
 def grant_bundle(state, marker, level_cap):
     """Redeem exactly once while caller holds its player/mail transaction."""
-    if state.get('server_id') != WORLD or int(marker) != 1:
+    if state.get('server_id') != WORLD or int(marker) not in (1, 2):
         raise ValueError('Quà độc quyền này chỉ dành cho S4')
-    if state.get('s4_exclusive_claimed'):
+    # Marker 1 is the immutable one-time welcome. Marker 2 is issued only
+    # by the dedicated SUPER GM S4 giftcode factory (one redemption per UID/code).
+    # The mail's claimed transition and grants share one Neon transaction.
+    if int(marker) == 1 and state.get('s4_exclusive_claimed'):
         raise ValueError('Gói quà độc quyền S4 đã nhận')
     from . import goddess_gifts, skins, dress
     original = _source_goddesses()

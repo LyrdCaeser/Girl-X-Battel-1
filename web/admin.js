@@ -468,6 +468,30 @@ window.AdminPanel=(()=>{
     },'primary');
     c.append(run);body.append(c);
 
+    const s4Gift=card('Giftcode Quà Độc Quyền S4 • Wish Limited 25★');
+    s4Gift.append(el('p','admin-note',
+      'Gửi vào Hòm Thư S4: 24 Nữ Thần Wish Limited 25★ cấp 1, không trang bị; 76 skin Limited và trọn bộ Outfit Limited. Một UID chỉ dùng mỗi mã một lần. Chỉ người có VIP 15 và Chìa Khóa S4 đã nhận mới đổi được. Mã mới vẫn có thể dùng sau khi đã nhận quà chào mừng S4.'));
+    field(s4Gift,'Mã tùy chọn (để trống để máy chủ tạo tự động)','gm-s4-giftcode').placeholder='S4WISH-...';
+    const uses=field(s4Gift,'Tổng số lượt sử dụng · 0 là không giới hạn','gm-s4-giftcode-uses','number');
+    uses.value='0';uses.min='0';uses.max='100000';
+    const days=field(s4Gift,'Số ngày có hiệu lực','gm-s4-giftcode-days','number');
+    days.value='30';days.min='1';days.max='365';
+    const output=el('div','admin-note');s4Gift.append(output);
+    const issue=btn('Tạo Giftcode Độc Quyền S4',async()=>{
+      issue.disabled=true;
+      try{
+        const created=await gmAction('/api/admin/s4/giftcode/create',{
+          code:document.getElementById('gm-s4-giftcode').value.trim(),
+          max_uses:Number(uses.value),days:Number(days.value)});
+        output.replaceChildren(el('strong','','Giftcode: '+created.code),
+          el('p','',created.unlimited?'Số lượt: không giới hạn (mỗi UID 1 lần)':'Tối đa '+created.max_uses+' tài khoản'),
+          btn('Sao chép Giftcode',()=>navigator.clipboard?.writeText(created.code),'admin-secondary'));
+        status('Đã tạo Giftcode Wish S4: '+created.code+'.');
+      }catch(e){status(e.message||'Không tạo được Giftcode S4',false);}
+      finally{issue.disabled=false;}
+    },'primary');
+    s4Gift.append(issue);body.append(s4Gift);
+
     // Only the signed-in SUPER GM profile is changed; never an arbitrary UID.
     const expBox=card('Tăng Cấp EXP Tùy Chọn');
     expBox.append(el('p','admin-note',
