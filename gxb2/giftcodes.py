@@ -296,6 +296,14 @@ def redeem(code,uid,server_id):
         # to serialize before checking and incrementing available slots.
         if db.backend=='sqlite':
             db.execute("BEGIN IMMEDIATE")
+        # Serialize giftcode mail creation against S4 character deletion.
+        # An earlier verified session cannot leave orphaned gift mail.
+        player_sql="SELECT status FROM players WHERE uid=? AND server_id=?"
+        if db.backend=='postgres':
+            player_sql+=" FOR UPDATE"
+        current=db.execute(player_sql,(uid,server_id)).fetchone()
+        if not current or current["status"]!="active":
+            raise ValueError("Nhân vật không còn tồn tại hoặc không hoạt động")
         sql="SELECT * FROM giftcodes WHERE code=?"
         if db.backend=='postgres':
             sql+=" FOR UPDATE"

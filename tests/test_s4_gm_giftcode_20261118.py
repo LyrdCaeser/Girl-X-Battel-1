@@ -67,6 +67,18 @@ class S4GMGiftcodeTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'được nhận'):
             engine.claim_live_mail(code_mail['id'])
 
+    def test_gm_code_does_not_consume_original_welcome(self):
+        from gxb2.engine import new_state
+        state=new_state()
+        state['server_id']='S4'
+        self.assertFalse(state.get('s4_exclusive_claimed'))
+        result=s4_exclusive.grant_bundle(state,2,lambda *args,**kw:666)
+        self.assertEqual(result['wish_count'],24)
+        self.assertFalse(state.get('s4_exclusive_claimed'))
+        original=s4_exclusive.grant_bundle(state,1,lambda *args,**kw:666)
+        self.assertEqual(original['wish_count'],24)
+        self.assertTrue(state['s4_exclusive_claimed'])
+
     def test_vip_and_key_both_required(self):
         created=giftcodes.create_s4_exclusive('GM')
         with patch.object(s4_exclusive,'ensure_vip15',side_effect=ValueError('VIP 15')):

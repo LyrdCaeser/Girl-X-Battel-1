@@ -33,6 +33,20 @@ class PlayerEnginePool:
                 engine.bind_identity(uid, server_id, character_name)
             return engine
 
+    def run_exclusive(self, uid, server_id, operation):
+        """Evict a target engine before an admin S4 deletion, preventing a
+        cached save from recreating the deleted character. Other worlds stay.
+        """
+        key=(self._safe(uid),self._safe(server_id).upper())
+        with self._lock:
+            engine=self._engines.get(key)
+            if engine is None:
+                return operation()
+            with engine.lock:
+                engine.close()
+                del self._engines[key]
+                return operation()
+
     def close(self):
         with self._lock:
             engines = list(self._engines.values())

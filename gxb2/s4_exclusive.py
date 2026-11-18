@@ -319,7 +319,10 @@ def grant_bundle(state, marker, level_cap):
             wardrobe['owned'][str(did)] = max(before, newstar)
             if newstar > before:
                 obtained += 1
-    state['s4_exclusive_claimed'] = True
+    # A GM campaign must not consume the original one-time S4 welcome.
+    # Keep the original welcome available even if a code is redeemed first.
+    if int(marker) == 1:
+        state['s4_exclusive_claimed'] = True
     return {'goddesses': prizes, 'skin_count': len(ids), 'skin_ids': ids,
             'outfit_count': obtained, 'outfit_total': len(wardrobe['owned']),
             'wish_count': len(prizes)}

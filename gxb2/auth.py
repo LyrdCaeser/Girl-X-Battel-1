@@ -472,6 +472,29 @@ def revoke_session(token, session_id):
     return {"ok": True}
 
 
+def revoke_world_sessions(uid, server_id):
+    """Only invalidate the sessions opened on one world; preserve S1–S3."""
+    uid=str(uid or "").strip()
+    server_id=str(server_id or "").strip().upper()
+    if not uid or server_id!="S4":
+        raise ValueError("Chỉ được thu hồi phiên S4")
+    with _lock:
+        db=_db()
+        try:
+            row=db.execute("SELECT id FROM accounts WHERE uid=?",(uid,)).fetchone()
+            if not row:
+                raise ValueError("Không tìm thấy tài khoản")
+            cur=db.execute("DELETE FROM sessions WHERE account_id=? AND server_id=?",
+                           (int(row["id"]),server_id))
+            db.commit()
+            return {"uid":uid,"server_id":server_id,"revoked":int(cur.rowcount)}
+        except Exception:
+            db.rollback()
+            raise
+        finally:
+            db.close()
+
+
 def account_sessions(uid):
     with _lock:
         db=_db()

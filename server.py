@@ -23,7 +23,7 @@ from gxb2.story import catalog as story_catalog
 from gxb2.dress import catalog as dress_catalog
 from gxb2.skins import catalog as skins_catalog
 from gxb2.souls import catalog as souls_catalog
-from gxb2 import protocol as p, local_promotion, local_config, world_live_config, topup, live_service, auth, database, gm_catalog, giftcodes, studio_sso, skin_store, skin_bank, skin_gifts, owner_recovery, profile_photos, s4_exclusive
+from gxb2 import protocol as p, local_promotion, local_config, world_live_config, topup, live_service, auth, database, gm_catalog, giftcodes, studio_sso, skin_store, skin_bank, skin_gifts, owner_recovery, profile_photos, s4_exclusive, s4_gm
 from gxb2.player_engines import PlayerEnginePool
 from gxb2.battle import simulate as simulate_battle, ONLINE_BATTLE_ID, normalize_online_seed
 from gxb2.security import FixedWindowRateLimiter, DEFAULT_LIMITS, env_bool, validate_production_config
@@ -1262,6 +1262,30 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                 if path == '/api/giftcode/admin/revoke':
                     return self.send(200,giftcodes.revoke(data.get('code'),operator))
                 return self.send(404,{'error':'Đường dẫn giftcode không tồn tại'})
+            if path in ('/api/admin/s4/character/preview','/api/admin/s4/character/delete'):
+                if not self.admin_authorized():
+                    return self.send(403,{'error':'Chỉ SUPER GM được quản lý nhân vật S4'})
+                if not self.gm_key_authorized():
+                    return self.send(403,{'error':'Khóa hành động QTV không hợp lệ'})
+                if not self.rate_limit_player('admin_goddess_gift'):
+                    return
+                if path.endswith('/preview'):
+                    return self.send(200,s4_gm.preview(data.get('uid')))
+                uid=str(data.get('uid') or '').strip()
+                op=self.auth_context()['account']['uid']
+                result=self.server.player_engines.run_exclusive(
+                    uid,'S4',lambda: s4_gm.delete(
+                        uid,data.get('character_name'),data.get('nonce'),
+                        data.get('confirm'),op))
+                try:
+                    result['sessions']=auth.revoke_world_sessions(uid,'S4')['revoked']
+                except Exception:
+                    # Missing player row already invalidates S4 logins; the archive
+                    # and deletion were committed, so do not retry deletion.
+                    import logging
+                    logging.exception('S4 GM: post-deletion session cleanup deferred')
+                    result['sessions']='invalidated_by_missing_character'
+                return self.send(200,result)
             if path == '/api/admin/s4/giftcode/create':
                 if not self.admin_authorized():
                     return self.send(403, {'error':'Chỉ SUPER GM được tạo quà S4'})

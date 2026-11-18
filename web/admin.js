@@ -416,6 +416,14 @@ window.AdminPanel=(()=>{
       row.append(btn('Gửi quà',()=>{recipient=p;catalogSearch='';show('currency');},'primary'),
         btn('Gửi thư',()=>{recipient=p;show('mail');},'primary'),
         btn('Phiên',()=>viewSessions(p.uid)),btn('Thu hồi phiên',()=>revokeSessions(p.uid)));
+      if(p.server_id==='S4'){
+        row.append(btn('Xóa nhân vật S4',()=>{
+          show('tools');
+          const input=document.getElementById('gm-s4-remove-uid');
+          if(input){input.value=p.uid;input.focus();}
+          status('Đã chọn '+p.character_name+' · UID '+p.uid+' tại S4. Hãy kiểm tra dữ liệu trước khi xóa.');
+        },'danger'));
+      }
       holder.append(row);
     }
   }
@@ -456,6 +464,12 @@ window.AdminPanel=(()=>{
     await api('/api/admin/world',{action:'policy',server_id,registration_open,character_creation_open,message});status('Đã lưu policy '+server_id+'.');await refreshDashboard();render();
   }catch(e){status(e.message,false);}}
   function renderTools(body){
+    if(!giftKey){
+      const authNote=card('Xác thực khóa QTV trước khi thao tác S4');
+      authNote.append(el('p','admin-note','Hai công cụ S4 yêu cầu quyền SUPER GM và khóa hành động QTV. Chọn Gửi Thư để xác thực khóa trước; khóa chỉ giữ trong phiên GM Tools, không lưu vào trình duyệt.'));
+      authNote.append(btn('Đến Gửi Thư để xác thực khóa',()=>show('mail'),'admin-secondary'));
+      body.append(authNote);
+    }
     const c=card('Công cụ SUPER GM');
     c.append(el('p','admin-note','Quét Sạch Chiến Dịch sẽ mở và đánh dấu hoàn tất toàn bộ ải hiện có cho đúng nhân vật SUPER GM đang đăng nhập. Không thay đổi tài khoản người chơi khác.'));
     const run=btn('Quét Sạch Chiến Dịch',async()=>{
@@ -491,6 +505,69 @@ window.AdminPanel=(()=>{
       finally{issue.disabled=false;}
     },'primary');
     s4Gift.append(issue);body.append(s4Gift);
+
+    const removeBox=card('Xóa Nhân Vật S4 • Có Sao Lưu');
+    removeBox.append(el('p','admin-note',
+      'Chỉ xóa nhân vật và hồ sơ S4 của đúng UID. Giữ tài khoản, VIP 15, chìa khóa mở S4, nhân vật các server khác và lịch sử nạp. Trước khi xóa, máy chủ lưu hồ sơ S4 vào bản sao có mã tra cứu. Sau khi xóa, có thể tạo lại nhân vật S4 và nhận lại thư chào mừng để quay cảnh Triệu Hồi Wish. Không tự động xóa bất kỳ nhân vật nào.'));
+    const uidInput=field(removeBox,'UID nội bộ của nhân vật S4 (trong bảng Người chơi)','gm-s4-remove-uid');
+    uidInput.placeholder='Chọn một nhân vật S4 trong tab Người chơi';
+    const previewDetails=el('div','admin-note');removeBox.append(previewDetails);
+    let deletionPreview=null;
+    const erase=btn('Xác nhận xóa nhân vật S4',async()=>{
+      const rec=deletionPreview;
+      if(!rec?.nonce||!rec.can_delete||uidInput.value.trim()!==rec.uid){
+        status('Cần xem trước hồ sơ S4 hiện tại.',false);return;
+      }
+      const phrase=await GirlUI.promptText(
+        'Xóa nhân vật '+rec.character_name+' trên S4? S1–S3 không thay đổi. Nhập XOA S4 để tiếp tục.',
+        {title:'Xác nhận xóa nhân vật S4',value:'',maxLength:6,minLength:6});
+      if(phrase!=='XOA S4'){status('Đã hủy xóa nhân vật S4.',false);return;}
+      const accepted=await GirlUI.confirm(
+        'XÓA NHÂN VẬT S4: '+rec.character_name+' · '+rec.uid+'\n'
+        +'Hồ sơ sẽ được lưu bản sao Neon trước. Nhân vật, Hòm Thư, Nữ Thần và vật phẩm S4 cũ sẽ bị xóa. Tiếp tục?',
+        {title:'Xóa Nhân Vật S4 • Xác Nhận Cuối',ok:'Xóa nhân vật S4',cancel:'Hủy'});
+      if(!accepted)return;
+      erase.disabled=true;
+      try{
+        const response=await gmAction('/api/admin/s4/character/delete',{
+          uid:rec.uid,character_name:rec.character_name,
+          nonce:rec.nonce,confirm:'XOA S4'});
+        deletionPreview=null;
+        status('Đã xóa đúng nhân vật '+rec.character_name+' tại S4. Bản sao: '+response.archive_id+
+          '. Đăng nhập lại để tạo nhân vật S4 và nhận quà Wish.');
+        previewDetails.replaceChildren(el('strong','','Đã lưu bản sao: '+response.archive_id),
+          el('p','','Nhân vật S4 đã được xóa. Tài khoản và các server khác không thay đổi.'));
+        await refreshDashboard();
+        if(state?.server_id==='S4'&&state?.uid===rec.uid){
+          window.location.reload();
+          return;
+        }
+      }catch(e){status(e.message||'Không thể xóa nhân vật S4.',false);}
+      finally{erase.disabled=true;}
+    },'danger');
+    erase.disabled=true;
+    uidInput.addEventListener('input',()=>{deletionPreview=null;erase.disabled=true;previewDetails.replaceChildren();});
+    const inspect=btn('Kiểm tra nhân vật S4 (chỉ đọc)',async()=>{
+      inspect.disabled=true;erase.disabled=true;deletionPreview=null;previewDetails.replaceChildren();
+      try{
+        const result=await gmAction('/api/admin/s4/character/preview',{uid:uidInput.value.trim()});
+        deletionPreview=result;
+        previewDetails.append(el('strong','',result.character_name+' · '+result.server_id+' · '+result.uid));
+        previewDetails.append(el('p','',
+          'Dữ liệu lưu trữ: '+Object.entries(result.counts||{}).map(([k,n])=>k+': '+n).join(' · ')));
+        previewDetails.append(el('p','',result.notice));
+        if(result.blockers?.length){
+          previewDetails.append(el('strong','','Không được xóa vì: '+
+            result.blockers.map(x=>x.reason+' ('+x.count+')').join(', ')));
+        }else{
+          previewDetails.append(el('strong','','Đủ điều kiện • Xác nhận trong 120 giây'));
+          erase.disabled=false;
+        }
+        status(result.can_delete?'Đã xác minh UID S4. Chưa xóa dữ liệu.':'Nhân vật S4 còn dữ liệu liên kết cần xử lý.',result.can_delete);
+      }catch(e){status(e.message||'Không kiểm tra được hồ sơ S4.',false);}
+      finally{inspect.disabled=false;}
+    },'admin-secondary');
+    removeBox.append(inspect,erase);body.append(removeBox);
 
     // Only the signed-in SUPER GM profile is changed; never an arbitrary UID.
     const expBox=card('Tăng Cấp EXP Tùy Chọn');
