@@ -28,7 +28,7 @@ assert(home.includes("'Nhận Quà S4 & Triệu Hồi Wish'"),'replay native gac
 assert(home.includes('SummonAnim.playS4Rewards(girls,skins)'),'original Wish reused');
 assert(engine.includes("s4_trial_reward = inventory.pop('__s4_trial_gm_reward__', None)"));
 assert(engine.includes('s4_trial_gm_gifts.grant('),'real server-side persistent reward');
-assert(!key.includes('s4_trial_gm_gifts.grant('),'NO auto grant upon key use');
-assert(html.includes('/admin.js?v=20261119-s4-gm-trial-gift-r1'));
+assert(engine.includes('s4_trial_gm_gifts.unlock_on_activation('),'key activation unlocks matching gift');
+assert(html.includes('/admin.js?v=20261119-s4-trial-autogift-code-r2'));
 assert(html.includes('/home-menus.js?v=20261119-s4-gm-trial-gift-r1'));
-console.log('PASS S4 trial GM: separate owner-only UID gift tab, five tiers, atomic grant mail, no auto key gifts');
+console.log('PASS S4 trial GM: private key giftcodes, automatic activation rewards, five tiers');

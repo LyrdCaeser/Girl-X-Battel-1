@@ -316,6 +316,17 @@ class Engine:
             if changed:
                 self._save_profile(state)
                 self.db.commit()
+        if str(server_id).upper() == 'S4':
+            # Rewards are delivered on S4 entry, even if the S4 character
+            # was created AFTER the source-world key was consumed.
+            from . import s4_trial_gm_gifts
+            for mail_id in s4_trial_gm_gifts.ready_mails(uid):
+                try:
+                    self.claim_live_mail(mail_id)
+                except ValueError as exc:
+                    # Another same-UID S4 session may have claimed it first.
+                    if 'đã được nhận' not in str(exc):
+                        raise
         return None
 
     def close(self):
@@ -700,6 +711,14 @@ class Engine:
                                 'SELECT pg_advisory_xact_lock(hashtext(%s))',
                                 ('gxb3:s4trial:'+str(state['uid']),))
                         trial = s4_trial.activate(state,item_id)
+                        from . import s4_trial_gm_gifts
+                        live_db = (self.db.borrowed_live_transaction()
+                                   if isinstance(self.db, ScopedPostgresPlayerDB)
+                                   else None)
+                        trial['gift_mail_id'] = s4_trial_gm_gifts.unlock_on_activation(
+                            state['uid'],state['server_id'],trial['hours'],
+                            db=live_db,activated_at=trial['activated_at'])
+                        trial['gift_status'] = 'auto_on_s4_entry'
                         rewards = {}
                     else:
                         trial = None

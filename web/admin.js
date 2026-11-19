@@ -163,7 +163,7 @@ window.AdminPanel=(()=>{
       'Chỉ SUPER GM được gửi. Chọn đúng UID và nhân vật máy chủ thường. '
       +'Một lần xác nhận gửi thư chìa khóa tại server thường (nếu tích chọn) '
       +'và thư Nữ Thần/skin/Outfit ở S4. Có thể gửi trước khi tạo nhân vật S4. '
-      +'Quà không tự phát khi người chơi kích hoạt chìa khóa.'));
+      +'Quà tự mở đúng mốc khi chìa khóa được kích hoạt và tự cấp khi vào S4.'));
     if(!giftKey)c.append(btn('Xác thực khóa QTV tại Gửi Thư',()=>show('mail'),'admin-secondary'));
     const uid=field(c,'UID người chơi (đúng UID trong tab Người Chơi)','gm-s4-trial-uid');
     uid.placeholder='GB3-000000001';
@@ -232,7 +232,7 @@ window.AdminPanel=(()=>{
         +'Nhân vật: '+target.character_name+' · '+target.server_id+'\n'
         +'Gói '+h+' giờ · '+summary+'\n'
         +(include.checked?'Kèm 1 Chìa Khóa S4 dùng thử.':'CHỈ GỬI QUÀ: không phát chìa khóa.')+
-        '\nQuà sẽ gửi vào Hòm Thư S4 của cùng UID. Không thể thu hồi quà đã nhận.',
+        '\nQuà S4 sẽ được tự cấp sau khi chìa được kích hoạt. Không thể thu hồi quà đã nhận.',
         {title:'SUPER GM · Xác Nhận Quà S4',ok:'Gửi Đúng UID',cancel:'Hủy'});
       if(!confirmed)return;
       const fingerprint=[target.uid,target.server_id,h,include.checked].join('|');
@@ -254,8 +254,8 @@ window.AdminPanel=(()=>{
             result.outfit_set_count+' bộ Outfit'),
           el('p','','Thư Chìa Khóa: '+(result.key_mail_id||'Không gửi thêm')),
           el('p','','Thư Quà S4: '+result.gift_mail_id));
-        status('Đã gửi Gói S4 '+h+' giờ cho '+target.uid+
-          '. Quà nhận ở Hòm Thư S4. '+(result.key_mail_id?'Chìa nhận tại '+target.server_id+'.':''));
+        status('Đã chuẩn bị gói S4 '+h+' giờ cho '+target.uid+
+          '. Kích hoạt đúng chìa để tự nhận quà khi vào S4. '+(result.key_mail_id?'Chìa nhận tại '+target.server_id+'.':''));
         trialSendNonce='';trialSendFingerprint='';
         await refreshDashboard();
       }catch(e){
@@ -291,7 +291,79 @@ window.AdminPanel=(()=>{
       grid.append(tile);
     }
     featured.append(grid,btn('Gửi Thư Chìa Khóa S4',()=>show('mail'),'admin-secondary'));
-    body.append(featured);
+    const codeBox=card('Tạo Giftcode • Chìa Khóa S4 Dùng Thử Theo UID');
+    codeBox.append(el('p','admin-note',
+      'Mã riêng của đúng một UID, chỉ đổi một lần tại server thường. '
+      +'Người chơi tự nhập Giftcode trong Hòm Thư, nhận chìa khóa rồi kích hoạt. '
+      +'Khi vào S4, máy chủ tự trao đúng gói Quà Tri Ân theo thời lượng chìa.'));
+    const codeUid=field(codeBox,'UID người chơi nhận Giftcode','gm-s4-code-uid');
+    codeUid.value=(recipient?.server_id!=='S4'&&recipient?.uid)||'';
+    codeUid.placeholder='UID người chơi';
+    const serverLabel=el('label','admin-field','Nhân vật nhận chìa ở máy chủ thường');
+    const codeServer=document.createElement('select');codeServer.id='gm-s4-code-server';
+    serverLabel.append(codeServer);codeBox.append(serverLabel);
+    const hourLabel=el('label','admin-field','Loại Chìa Khóa S4');
+    const codeHours=document.createElement('select');codeHours.id='gm-s4-code-hours';
+    for(const hrs of [24,48,72,96,120]){
+      const opt=el('option','',hrs+' giờ • '+(hrs>=96?
+        '48 Nữ Thần 25★ + 24 skin + 10 Outfit Limited':
+        '24 Nữ Thần Wish Capsule 25★'));
+      opt.value=String(hrs);codeHours.append(opt);
+    }
+    hourLabel.append(codeHours);codeBox.append(hourLabel);
+    const validDays=field(codeBox,'Giftcode có hiệu lực (ngày)','gm-s4-code-days','number');
+    validDays.value='30';validDays.min='1';validDays.max='365';
+    const customCode=field(codeBox,'Mã tùy chọn (có thể để trống)','gm-s4-code-custom');
+    customCode.placeholder='Để trống để máy chủ tự tạo mã bảo mật';
+    const codeVerify=el('p','admin-note');codeBox.append(codeVerify);
+    const codeResult=el('div','admin-note');codeBox.append(codeResult);
+    const found=()=>((dash?.players||[]).filter(p=>p.uid===codeUid.value.trim()&&
+      p.server_id!=='S4'&&p.status==='active'));
+    const refreshCodePlayers=()=>{
+      const previous=codeServer.value;
+      const candidates=found();codeServer.replaceChildren();
+      for(const p of candidates){
+        const opt=el('option','',p.server_id+' · '+p.character_name);
+        opt.value=p.server_id;codeServer.append(opt);
+      }
+      codeServer.value=candidates.some(p=>p.server_id===previous)?previous:
+        (candidates.find(p=>p.server_id===recipient?.server_id)?.server_id||
+          candidates[0]?.server_id||'');
+      codeVerify.textContent=candidates.length?
+        'UID đã xác minh. Mã chỉ dành cho đúng nhân vật được chọn.':
+        'UID chưa có nhân vật hoạt động tại máy chủ thường.';
+      generate.disabled=!candidates.length||!giftKey;
+    };
+    codeUid.addEventListener('input',refreshCodePlayers);
+    const generate=btn('Tạo Giftcode Chìa Khóa S4 Theo UID',async()=>{
+      const p=found().find(x=>x.server_id===codeServer.value);
+      if(!p||!giftKey){status('Cần UID đúng và khóa SUPER GM đã xác thực.',false);return;}
+      const hrs=Number(codeHours.value);
+      const ok=await GirlUI.confirm(
+        'Tạo 1 Giftcode cho UID '+p.uid+' · '+p.character_name+' ('+p.server_id+')\n'+
+        'Chìa khóa '+hrs+' giờ.\n'+
+        'Giftcode chỉ được một UID nhập một lần. Quà tự phát khi vào S4 sau khi kích hoạt chìa.',
+        {title:'SUPER GM · Xác Nhận Tạo Giftcode',ok:'Tạo Mã',cancel:'Hủy'});
+      if(!ok)return;
+      generate.disabled=true;
+      try{
+        const result=await gmAction('/api/admin/s4/trial/giftcode/create',{
+          uid:p.uid,server_id:p.server_id,character_name:p.character_name,
+          hours:hrs,days:Number(validDays.value),code:customCode.value.trim()
+        });
+        codeResult.replaceChildren(
+          el('strong','','Giftcode: '+result.code),
+          el('p','','UID '+result.target_uid+' · Chìa '+result.hours+' giờ · '+result.goddess_count+
+             ' Nữ Thần 25★ · '+result.skin_count+' skin · '+
+             result.outfit_set_count+' bộ Outfit'),
+          btn('Sao chép Giftcode',()=>navigator.clipboard?.writeText(result.code),'admin-secondary'));
+        status('Đã tạo Giftcode riêng cho UID '+p.uid+'. Chưa gửi hoặc phát quà trước khi nhập mã.');
+        customCode.value='';
+      }catch(e){status(e.message||'Không tạo được Giftcode S4',false);}
+      finally{generate.disabled=!found().length||!giftKey;}
+    },'primary');
+    codeBox.append(generate);refreshCodePlayers();
+    body.append(featured,codeBox);
     giftCards(body,'items');
   }
   const renderShards=body=>giftCards(body,'shards');

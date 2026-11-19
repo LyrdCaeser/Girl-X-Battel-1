@@ -7,7 +7,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from gxb2 import database, live_service, s4_trial_gm_gifts as gifts
+from gxb2 import database, live_service, giftcodes, s4_trial_gm_gifts as gifts
 from gxb2 import s4_exclusive, s4_trial, wish, goddess_gifts, skins, dress
 from gxb2.engine import Engine
 from server import HTTPHandler
@@ -113,11 +113,12 @@ class S4TrialGMGiftsTests(unittest.TestCase):
         self.assertEqual(live_service.mailbox('OTHER-UID','S1'),[])
         self.assertEqual(live_service.mailbox('OTHER-UID','S4'),[])
 
-    def test_no_automatic_gift_and_gift_only_option(self):
+    def test_locked_until_activation_and_gift_only_option(self):
         result=self.issue(24,send_key=False)
         self.assertIsNone(result['key_mail_id'])
         self.assertEqual(live_service.mailbox('GM-GIFT-UID','S1'),[])
         self.assertEqual(len(live_service.mailbox('GM-GIFT-UID','S4')),1)
+        self.assertEqual(gifts.ready_mails('GM-GIFT-UID'),[])
         with self.assertRaisesRegex(ValueError,'không kèm chìa'):
             self.issue(24,send_key=True)
         self.assertEqual(len(live_service.mailbox('GM-GIFT-UID','S4')),1)
@@ -158,10 +159,9 @@ class S4TrialGMGiftsTests(unittest.TestCase):
                       identity=('GM-GIFT-UID','S4'))
         self.addCleanup(engine.close)
         engine.bind_identity('GM-GIFT-UID','S4','Nhân Vật Mới')
-        result=engine.claim_live_mail(sent['gift_mail_id'])
-        self.assertEqual(result['s4_rewards']['wish_count'],24)
-        self.assertEqual(result['s4_rewards']['skin_count'],0)
-        self.assertEqual(result['s4_rewards']['outfit_set_count'],0)
+        self.assertEqual(live_service.mailbox('GM-GIFT-UID','S4')[0]['status'],'claimed')
+        with self.assertRaisesRegex(ValueError,'đã được nhận'):
+            engine.claim_live_mail(sent['gift_mail_id'])
         saved=engine._load()
         girls=[p for p in saved['partners']
                if int(p.get('table_id') or 0) in gifts.wish_goddesses()
@@ -182,10 +182,7 @@ class S4TrialGMGiftsTests(unittest.TestCase):
                       identity=('GM-GIFT-UID','S4'))
         self.addCleanup(engine.close)
         engine.bind_identity('GM-GIFT-UID','S4','Nhân Vật Mới')
-        result=engine.claim_live_mail(sent['gift_mail_id'])
-        self.assertEqual(result['s4_rewards']['wish_count'],48)
-        self.assertEqual(result['s4_rewards']['skin_count'],24)
-        self.assertEqual(result['s4_rewards']['outfit_set_count'],10)
+        self.assertEqual(live_service.mailbox('GM-GIFT-UID','S4')[0]['status'],'claimed')
         saved=engine._load()
         girls=[p for p in saved['partners'] if int(p.get('awake') or 0)==15]
         self.assertEqual(len(girls),48)
@@ -195,11 +192,68 @@ class S4TrialGMGiftsTests(unittest.TestCase):
         owned=saved['dress']['owned']
         for did in gifts.outfit_pieces():
             self.assertEqual(owned[str(did)],6)
-        self.assertEqual(result['s4_rewards']['outfit_count'],50)
+        self.assertEqual(len([x for x in gifts.outfit_pieces() if saved['dress']['owned'].get(str(x))==6]),50)
         self.assertFalse(saved.get('s4_exclusive_claimed'))
         replay=s4_exclusive.replay_payload(saved)
         self.assertEqual(replay['wish_count'],48)
         self.assertEqual(replay['skin_count'],24)
+
+    def test_regular_gm_key_automatically_generates_matching_s4_reward(self):
+        from gxb2 import s4_trial_gm_gifts as gifts
+        key_mail=live_service.send_mail(
+            'GM-GIFT-UID','S1','Người Thử','GM S4','Chìa thử',
+            {'990055':1},'SUPER_GM')
+        source=Engine(self.base/'direct-source.sqlite3',
+                      identity=('GM-GIFT-UID','S1'))
+        self.addCleanup(source.close)
+        source.bind_identity('GM-GIFT-UID','S1','Người Thử')
+        source.claim_live_mail(key_mail['id'])
+        patcher=patch.object(s4_trial,'_all_other_profiles',
+            side_effect=lambda uid:[json.dumps(source._load())])
+        patcher.start();self.addCleanup(patcher.stop)
+        key=source.use_bag_item('990055')['s4_trial']
+        self.assertEqual(key['hours'],120)
+        self.assertEqual(key['gift_status'],'auto_on_s4_entry')
+        pending=live_service.mailbox('GM-GIFT-UID','S4')
+        self.assertEqual(len(pending),1)
+        self.assertEqual(pending[0]['attachments'][gifts.MARKER]['hours'],120)
+        self.assertEqual(len(gifts.ready_mails('GM-GIFT-UID')),1)
+        live_service.register_player('GM-GIFT-UID','S4','Nhân Vật Mới')
+        target=Engine(self.base/'direct-s4.sqlite3',
+                      identity=('GM-GIFT-UID','S4'))
+        self.addCleanup(target.close)
+        target.bind_identity('GM-GIFT-UID','S4','Nhân Vật Mới')
+        self.assertEqual(live_service.mailbox('GM-GIFT-UID','S4')[0]['status'],'claimed')
+        self.assertEqual(len([x for x in target._load()['partners']
+                              if int(x.get('awake') or 0)==15]),48)
+        target.bind_identity('GM-GIFT-UID','S4','Nhân Vật Mới')
+        self.assertEqual(len([x for x in target._load()['partners']
+                              if int(x.get('awake') or 0)==15]),48)
+
+    def test_private_trial_giftcode_redemption_requires_exact_uid_and_activation(self):
+        previous=giftcodes._READY
+        giftcodes._READY=False
+        self.addCleanup(setattr,giftcodes,'_READY',previous)
+        created=giftcodes.create_s4_trial_key(
+            'GM-GIFT-UID','S1','Người Thử',72,'SUPER-GM',days=15)
+        self.assertEqual(created['hours'],72)
+        with self.assertRaisesRegex(ValueError,'UID khác'):
+            giftcodes.redeem(created['code'],'OTHER-UID','S1')
+        redeemed=giftcodes.redeem(created['code'],'GM-GIFT-UID','S1')
+        with self.assertRaisesRegex(ValueError,'đã sử dụng'):
+            giftcodes.redeem(created['code'],'GM-GIFT-UID','S1')
+        self.assertEqual(live_service.mailbox('GM-GIFT-UID','S4'),[])
+        source=Engine(self.base/'giftcode-source.sqlite3',
+                      identity=('GM-GIFT-UID','S1'))
+        self.addCleanup(source.close)
+        source.bind_identity('GM-GIFT-UID','S1','Người Thử')
+        source.claim_live_mail(redeemed['mail_id'])
+        patcher=patch.object(s4_trial,'_all_other_profiles',
+            side_effect=lambda uid:[json.dumps(source._load())])
+        patcher.start();self.addCleanup(patcher.stop)
+        result=source.use_bag_item('990053')
+        self.assertEqual(result['s4_trial']['hours'],72)
+        self.assertEqual(len(live_service.mailbox('GM-GIFT-UID','S4')),1)
 
     def test_forged_marker_cannot_use_normal_gm_mail(self):
         self.issue(96,send_key=False)

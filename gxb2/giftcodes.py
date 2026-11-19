@@ -216,6 +216,61 @@ def create_s4_exclusive(operator, code='', max_uses=0, days=30):
         db.close()
 
 
+
+def create_s4_trial_key(uid, server_id, character_name, hours, operator,
+                        code='', days=30):
+    """SUPER GM: one-use, one-UID code for a matching consumable S4 key."""
+    from . import s4_trial_gm_gifts
+    cfg=s4_trial_gm_gifts.package(hours)
+    uid=str(uid or '').strip()
+    server_id=str(server_id or '').strip().upper()
+    character_name=str(character_name or '').strip()
+    person=live_service.player(uid,server_id)
+    if (not person or person['status']!='active' or server_id=='S4'
+            or person['character_name'].casefold()!=character_name.casefold()):
+        raise ValueError('UID, máy chủ hoặc tên nhân vật thường không hợp lệ')
+    try:days=int(days)
+    except (TypeError,ValueError):
+        raise ValueError('Số ngày dùng mã không hợp lệ') from None
+    if not 1<=days<=365:
+        raise ValueError('Giftcode có hạn từ 1 đến 365 ngày')
+    raw=str(code or '').strip()
+    if raw and len(raw)>24:
+        raise ValueError('Mã tùy chọn tối đa 24 ký tự')
+    code=_normalize(raw or ('S4TRY-'+secrets.token_hex(7).upper()))
+    now=int(time.time())
+    expires_at=now+days*86400
+    rewards={cfg['key_item_id']:1}
+    title=f'Quà Tri Ân Nạp Giá Trị Cao • Chìa Khóa S4 {cfg["hours"]} Giờ'
+    message=('Mã độc quyền cho UID của bạn. Nhận chìa trong Hòm Thư, '
+             'dùng trong Túi Đồ để tự mở gói Quà Tri Ân tương ứng trên S4. '
+             'Đăng nhập S4 để nhận quà tự động.')
+    db=_connection()
+    try:
+        if db.execute('SELECT 1 FROM giftcodes WHERE code=?',(code,)).fetchone():
+            raise ValueError('Giftcode đã tồn tại')
+        db.execute("""INSERT INTO giftcodes
+            (code,title,message,rewards,server_id,max_uses,used_count,
+             expires_at,active,created_at,created_by,target_uid,effect)
+             VALUES(?,?,?,?,?,1,0,?,1,?,?,?,?)""",
+             (code,title,message,json.dumps(rewards),server_id,
+              expires_at,now,str(operator)[:100],uid,'s4_trial_key'))
+        live_service._audit(db,'giftcode.create.s4_trial',code,
+            {'target_uid':uid,'source_server':server_id,'hours':cfg['hours'],
+             'key_item_id':cfg['key_item_id'],'expires_at':expires_at},str(operator))
+        db.commit()
+        return {'code':code,'title':title,'target_uid':uid,'server_id':server_id,
+                'hours':cfg['hours'],'key_item_id':cfg['key_item_id'],
+                'goddess_count':cfg['goddess_count'],
+                'skin_count':len(cfg['skin_ids']),
+                'outfit_set_count':len(cfg['outfit_sets']),
+                'expires_at':expires_at,'max_uses':1}
+    except Exception:
+        db.rollback()
+        raise
+    finally:
+        db.close()
+
 def create_campaign_clear(uid, server_id, operator, code=''):
     """Create one private, one-use code bound to one exact character."""
     uid=str(uid or '').strip()
@@ -331,8 +386,15 @@ def redeem(code,uid,server_id):
                 raise ValueError('Giftcode Wish Limited chỉ dành cho S4')
             s4_exclusive.ensure_vip15(uid,'S4')
             s4_exclusive.ensure_key_claimed(uid,'S4')
+        if effect=='s4_trial_key':
+            from . import s4_trial
+            if (row['server_id']!=server_id or
+                    row['target_uid']!=uid or int(row['max_uses'])!=1 or
+                    len(rewards)!=1 or next(iter(rewards),None) not in s4_trial.KEY_IDS or
+                    next(iter(rewards.values()),None)!=1):
+                raise ValueError('Giftcode Chìa Khóa S4 không đúng UID hoặc loại chìa')
         state_changed=False
-        if effect and effect!='s4_wish_bundle':
+        if effect and effect not in ('s4_wish_bundle','s4_trial_key'):
             if effect!='campaign_all':
                 raise ValueError('Hiệu lực Giftcode không được hỗ trợ')
             lock=" FOR UPDATE" if db.backend=='postgres' else ""
@@ -372,7 +434,10 @@ def redeem(code,uid,server_id):
                     'max_stage':LAST_CAMPAIGN_STAGE,
                     'message':f'Kích hoạt thành công! Đã mở đủ {LAST_CAMPAIGN_STAGE} ải Chiến Dịch.'}
         return {'ok':True,'mail_id':mail_id,'title':row['title'],
-                'message':('Đã gửi Quà Wish Limited 25★ vào Hòm Thư S4. '
+                'message':('Đã gửi Chìa Khóa S4 đúng mốc vào Hòm Thư! '
+                           'Nhận chìa, kích hoạt ở Túi Đồ để được tự phát Quà Tri Ân S4.'
+                           if effect=='s4_trial_key' else
+                           'Đã gửi Quà Wish Limited 25★ vào Hòm Thư S4. '
                            'Nhận thư để xem hiệu ứng Triệu Hồi Wish!'
                            if effect=='s4_wish_bundle' else
                            'Đổi mã thành công! Mở Hòm Thư để nhận đính kèm.')}

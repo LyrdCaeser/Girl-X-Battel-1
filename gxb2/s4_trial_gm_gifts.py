@@ -3,7 +3,7 @@
 One verified SUPER GM action atomically creates two separate, auditable mails:
  - normal world: the consumable S4 trial key
  - S4: the matching reward, held for the UID even before S4 character creation.
-Nothing automatically awards trial gifts when a user activates a key.
+Activation unlocks the matching S4 reward. It is applied automatically when the UID enters S4.
 """
 from __future__ import annotations
 
@@ -165,8 +165,8 @@ def issue(uid,server_id,character_name,hours,request_id,operator,send_key=True):
                  f'Quà Tri Ân • Chìa Khóa S4 Dùng Thử {cfg["hours"]} Giờ',
                  'SUPER GM đã gửi tặng bạn Chìa Khóa S4 Dùng Thử. '
                  'Nhận thư rồi vào Túi Đồ để kích hoạt. '
-                 'Quà Nữ Thần và trang phục tương ứng đã được SUPER GM '
-                 'gửi riêng vào Hòm Thư S4 của UID này; hãy tạo nhân vật S4 để nhận.',
+                 'Khi vào S4, Nữ Thần và trang phục đúng gói sẽ tự được trao; '
+                 'không cần nhận thư quà lần nữa.',
                  json.dumps({cfg['key_item_id']:1}),now,OPERATOR))
         db.execute(
             """INSERT INTO mail(id,uid,server_id,character_name,title,body,
@@ -202,6 +202,111 @@ def issue(uid,server_id,character_name,hours,request_id,operator,send_key=True):
         db.close()
 
 
+def _new_marker(cfg):
+    """Server-owned immutable package; VIP 15 random girls are fixed once."""
+    from . import s4_exclusive
+    original=list(cfg['wish_goddesses'])
+    extras=[]
+    if cfg['random_count']:
+        candidates=sorted(set(s4_exclusive._source_goddesses())-set(original))
+        if len(candidates)<24:
+            raise ValueError('Danh mục VIP 15 chưa đủ Nữ Thần')
+        extras=secrets.SystemRandom().sample(candidates,24)
+    return {'hours':cfg['hours'],'wish_goddesses':original,
+            'extra_goddesses':extras,'skin_ids':cfg['skin_ids'],
+            'outfit_sets':cfg['outfit_sets']}
+
+
+def unlock_on_activation(uid, source_server, hours, db=None, activated_at=None):
+    """Entitle exactly one S4 reward for each consumed key, atomic with Neon key use.
+
+    Existing owner-issued S4 gift mail is unlocked first, preserving its random
+    roster. Standalone GM item keys and UID-bound giftcodes receive the same
+    server-owned bundle. Do not allow mail claim before this step.
+    """
+    uid=str(uid or '').strip()
+    source_server=str(source_server or '').strip().upper()
+    cfg=package(hours)
+    if not uid or source_server=='S4':
+        raise ValueError('Nguồn kích hoạt S4 không hợp lệ')
+    now=int(time.time()) if activated_at is None else int(activated_at)
+    own=db is None
+    db=db or live_service._db()
+    try:
+        if own: db.execute('BEGIN IMMEDIATE')
+        sql=("SELECT id,attachments FROM mail "
+             "WHERE uid=? AND server_id='S4' AND operator=? "
+             "AND status='pending' ORDER BY created_at,id")
+        if db.backend=='postgres': sql+=' FOR UPDATE'
+        eligible=None
+        for row in db.execute(sql,(uid,OPERATOR)).fetchall():
+            marker=json.loads(row['attachments']).get(MARKER)
+            if (isinstance(marker,dict) and
+                    marker.get('hours')==cfg['hours'] and
+                    not marker.get('activated_at')):
+                eligible=(row,marker)
+                break
+        if eligible:
+            row,marker=eligible
+            mail_id=row['id']
+            marker={**marker,'activated_at':now,
+                    'activated_key_id':cfg['key_item_id'],
+                    'source_server':source_server}
+            db.execute('UPDATE mail SET attachments=? WHERE id=? AND uid=?',
+                       (json.dumps({MARKER:marker},ensure_ascii=False,
+                                   separators=(',',':')),mail_id,uid))
+        else:
+            marker={**_new_marker(cfg),'activated_at':now,
+                    'activated_key_id':cfg['key_item_id'],
+                    'source_server':source_server}
+            mail_id='S4TRYG-'+secrets.token_hex(12).upper()
+            recipient=db.execute(
+                'SELECT character_name FROM players WHERE uid=? AND server_id=?',
+                (uid,'S4')).fetchone()
+            if not recipient:
+                recipient=db.execute(
+                    'SELECT character_name FROM players WHERE uid=? AND server_id=?',
+                    (uid,source_server)).fetchone()
+            target_name=recipient['character_name'] if recipient else uid
+            db.execute("""INSERT INTO mail
+                (id,uid,server_id,character_name,title,body,attachments,
+                 status,created_at,operator)
+                 VALUES(?,?,'S4',?,?,?,?,'pending',?,?)""",
+                (mail_id,uid,target_name,
+                 f'★ Quà Tri Ân S4 • Chìa Khóa {cfg["hours"]} Giờ',
+                 ('Quà tự động mở khi kích hoạt Chìa Khóa S4. '
+                  'Đăng nhập S4 để Nữ Thần và trang phục được trao tự động.'),
+                 json.dumps({MARKER:marker},ensure_ascii=False,
+                            separators=(',',':')),now,OPERATOR))
+        live_service._audit(db,'s4.trial.reward.unlock',f'S4:{uid}',
+                            {'mail_id':mail_id,'hours':cfg['hours'],
+                             'source_server':source_server},OPERATOR)
+        if own:db.commit()
+        return mail_id
+    except Exception:
+        if own:db.rollback()
+        raise
+    finally:
+        if own:db.close()
+
+
+def ready_mails(uid):
+    """S4 can auto-grant only verified, already-activated owner rewards."""
+    db=live_service._db()
+    try:
+        rows=db.execute("""SELECT id,attachments FROM mail
+          WHERE uid=? AND server_id='S4' AND operator=?
+          AND status='pending' ORDER BY created_at,id""",
+          (str(uid),OPERATOR)).fetchall()
+        result=[]
+        for row in rows:
+            marker=json.loads(row['attachments']).get(MARKER)
+            if isinstance(marker,dict) and int(marker.get('activated_at') or 0)>0:
+                result.append(row['id'])
+        return result
+    finally:
+        db.close()
+
 def grant(state, marker, level_cap, mail_id, db):
     """Materialize only genuine signed GM-issued S4 mail, in player txn."""
     from . import s4_exclusive, goddess_gifts, skins, dress
@@ -215,7 +320,7 @@ def grant(state, marker, level_cap, mail_id, db):
         db=live_service._db()
     try:
         row=db.execute(
-            "SELECT operator FROM mail WHERE id=? AND uid=? AND server_id='S4' AND status='claimed'",
+            "SELECT operator,attachments FROM mail WHERE id=? AND uid=? AND server_id='S4' AND status='claimed'",
             (str(mail_id),uid)).fetchone()
     finally:
         if owned_db:
@@ -224,6 +329,13 @@ def grant(state, marker, level_cap, mail_id, db):
         raise ValueError('Thư Quà Tri Ân S4 không do SUPER GM cấp hợp lệ')
     if not isinstance(marker,dict):
         raise ValueError('Dữ liệu quà S4 bị lỗi')
+    if (not marker.get('activated_at') or
+            str(marker.get('activated_key_id')) !=
+            str(next((k for k,v in s4_trial.KEY_HOURS.items()
+                      if v==marker.get('hours')),''))):
+        raise ValueError('Cần kích hoạt đúng Chìa Khóa S4 trước khi nhận quà')
+    if json.loads(row['attachments']).get(MARKER) != marker:
+        raise ValueError('Gói quà không khớp thư đã phát hành')
     hours=marker.get('hours')
     cfg=package(hours)
     wish_ids=marker.get('wish_goddesses')

@@ -1347,6 +1347,17 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                     data.get('request_id'),
                     self.auth_context()['account']['uid'],
                     data.get('send_key',True)))
+            if path == '/api/admin/s4/trial/giftcode/create':
+                if not self.admin_authorized():
+                    return self.send(403,{'error':'Chỉ SUPER GM được tạo mã Chìa Khóa S4'})
+                if not self.gm_key_authorized():
+                    return self.send(403,{'error':'Khóa hành động QTV không hợp lệ'})
+                if not self.rate_limit_player('admin_goddess_gift'):
+                    return
+                return self.send(200,giftcodes.create_s4_trial_key(
+                    data.get('uid'),data.get('server_id'),data.get('character_name'),
+                    data.get('hours'),self.auth_context()['account']['uid'],
+                    data.get('code',''),data.get('days',30)))
             if path == '/api/admin/s4/giftcode/create':
                 if not self.admin_authorized():
                     return self.send(403, {'error':'Chỉ SUPER GM được tạo quà S4'})
