@@ -447,6 +447,7 @@ def replay_payload(state):
     if str(state.get('server_id') or '').upper() != WORLD:
         raise ValueError('Chỉ có thể xem lại Wish tại máy chủ S4')
     if not (state.get('s4_exclusive_claimed') or
+            state.get('s4_trial_reward_claimed') or
             int(state.get('s4_catalog_version') or 0) >= CATALOG_VERSION):
         raise ValueError('Chưa nhận quà Wish độc quyền S4')
     from . import goddess_gifts, skins

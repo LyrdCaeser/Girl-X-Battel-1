@@ -306,11 +306,13 @@ class Engine:
                 state['name'] = str(character_name); changed = True
             if str(server_id).upper() == "S4":
                 from . import s4_exclusive
-                paid = s4_exclusive.ensure_vip15(uid, "S4")
-                if int(state.get('vip_paid_exp', 0)) < paid:
-                    # Display the verified VIP tier on the new S4 character.
-                    # S1-S3 paid EXP and their inventories are unchanged.
-                    state['vip_paid_exp'] = paid; changed = True
+                mode = s4_exclusive.ensure_access(uid, "S4")
+                if mode == 'permanent':
+                    paid = s4_exclusive.ensure_vip15(uid, "S4")
+                    if int(state.get('vip_paid_exp', 0)) < paid:
+                        # Only real VIP15 receives mirrored VIP EXP on S4.
+                        # Trial-key accounts retain their actual VIP level.
+                        state['vip_paid_exp'] = paid; changed = True
             if changed:
                 self._save_profile(state)
                 self.db.commit()
@@ -622,6 +624,9 @@ class Engine:
                 inventory = dict(attachments)
                 special_gift = inventory.pop('__gxb3_goddess__', None)
                 s4_marker = inventory.pop('__s4_exclusive_bundle__', None)
+                s4_trial_reward = inventory.pop('__s4_trial_gm_reward__', None)
+                if s4_marker is not None and s4_trial_reward is not None:
+                    raise GameError('Một thư S4 không thể chứa cả hai gói độc quyền')
                 gifted = None
                 s4_rewards = None
                 if special_gift is not None:
@@ -630,6 +635,11 @@ class Engine:
                 if s4_marker is not None:
                     from . import s4_exclusive
                     s4_rewards = s4_exclusive.grant_bundle(state, s4_marker, self.level_cap)
+                if s4_trial_reward is not None:
+                    from . import s4_trial_gm_gifts
+                    s4_rewards = s4_trial_gm_gifts.grant(
+                        state, s4_trial_reward, self.level_cap,
+                        str(mail_id), live_db)
                 vip.claim_reward(state, inventory)
                 from . import s4_exclusive
                 key_marker = inventory.pop(s4_exclusive.ACCESS_KEY, None)

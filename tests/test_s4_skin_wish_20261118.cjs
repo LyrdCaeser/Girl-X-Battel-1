@@ -84,6 +84,6 @@ const run=vm.runInContext('s4RevealSequence',scope);
  assert(anim.includes("document.documentElement.classList.add('gxb-s4-cinematic')"));
  assert(anim.includes("document.documentElement.classList.remove('gxb-s4-cinematic')"));
  assert(html.includes('summon-anim.js?v=20261118-s4-cinema-clean-r1'));
- assert(html.includes('home-menus.js?v=20261118-s4-cinema-clean-r1'));
+ assert(html.includes('home-menus.js?v=20261119-s4-gm-trial-gift-r1'));
  console.log('PASS: 104+248 Wish cinematic frames, original Gacha FX, no baked skin labels or film-blocking HUD');
 })().catch(e=>{console.error(e);process.exitCode=1;});

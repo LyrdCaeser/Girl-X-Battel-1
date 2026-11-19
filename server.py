@@ -23,7 +23,7 @@ from gxb2.story import catalog as story_catalog
 from gxb2.dress import catalog as dress_catalog
 from gxb2.skins import catalog as skins_catalog
 from gxb2.souls import catalog as souls_catalog
-from gxb2 import protocol as p, local_promotion, local_config, world_live_config, topup, live_service, auth, database, gm_catalog, giftcodes, studio_sso, skin_store, skin_bank, skin_gifts, owner_recovery, profile_photos, s4_exclusive, s4_gm, s4_trial
+from gxb2 import protocol as p, local_promotion, local_config, world_live_config, topup, live_service, auth, database, gm_catalog, giftcodes, studio_sso, skin_store, skin_bank, skin_gifts, owner_recovery, profile_photos, s4_exclusive, s4_gm, s4_trial, s4_trial_gm_gifts
 from gxb2.player_engines import PlayerEnginePool
 from gxb2.battle import simulate as simulate_battle, ONLINE_BATTLE_ID, normalize_online_seed
 from gxb2.security import FixedWindowRateLimiter, DEFAULT_LIMITS, env_bool, validate_production_config
@@ -1334,6 +1334,19 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                     logging.exception('S4 GM: post-deletion session cleanup deferred')
                     result['sessions']='invalidated_by_missing_character'
                 return self.send(200,result)
+            if path == '/api/admin/s4/trial/send':
+                if not self.admin_authorized():
+                    return self.send(403,{'error':'Chỉ SUPER GM được gửi Quà S4 Dùng Thử'})
+                if not self.gm_key_authorized():
+                    return self.send(403,{'error':'Khóa hành động QTV không hợp lệ'})
+                if not self.rate_limit_player('admin_goddess_gift'):
+                    return
+                return self.send(200,s4_trial_gm_gifts.issue(
+                    data.get('uid'),data.get('server_id'),
+                    data.get('character_name'),data.get('hours'),
+                    data.get('request_id'),
+                    self.auth_context()['account']['uid'],
+                    data.get('send_key',True)))
             if path == '/api/admin/s4/giftcode/create':
                 if not self.admin_authorized():
                     return self.send(403, {'error':'Chỉ SUPER GM được tạo quà S4'})

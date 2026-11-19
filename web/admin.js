@@ -3,6 +3,7 @@ window.AdminPanel=(()=>{
   let root=null,cfg=null,dash=null,worldCfg=null,topupCfg=null,active='overview';
   let giftCatalog=null,giftBasket={},giftKey='',recipient=null,catalogSearch='',catalogPage=0;
   let goddessCatalog=null,goddessSelected=null,goddessGroup=0,goddessSearch='',goddessPage=0;
+  let trialSendNonce='',trialSendFingerprint='';
   const el=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n;};
   const field=(parent,label,id,type='text',step=null)=>{const l=el('label','admin-field',label),i=document.createElement('input');i.id=id;i.type=type;if(step)i.step=step;l.append(i);parent.append(l);return i;};
   const textarea=(parent,label,id,placeholder='')=>{const l=el('label','admin-field',label),i=document.createElement('textarea');i.id=id;i.placeholder=placeholder;l.append(i);parent.append(l);return i;};
@@ -17,7 +18,7 @@ window.AdminPanel=(()=>{
     root.append(head);
 
     const nav=el('nav','admin-nav');
-    [['overview','Tổng quan'],['players','Người chơi'],['mail','Gửi thư'],['currency','Tiền tệ'],['items','Vật phẩm'],['shards','Mảnh nhân vật'],['goddess','Gift Nữ Thần'],['orders','Đơn nạp'],['worlds','Server'],['tools','Công cụ'],['config','Cấu hình'],['audit','Audit']].forEach(([id,label])=>{
+    [['overview','Tổng quan'],['players','Người chơi'],['mail','Gửi thư'],['currency','Tiền tệ'],['items','Vật phẩm'],['shards','Mảnh nhân vật'],['goddess','Gift Nữ Thần'],['s4trial','Quà S4 Dùng Thử'],['orders','Đơn nạp'],['worlds','Server'],['tools','Công cụ'],['config','Cấu hình'],['audit','Audit']].forEach(([id,label])=>{
       const b=btn(label,()=>show(id),'admin-tab');b.dataset.tab=id;nav.append(b);
     });
     root.append(nav);
@@ -30,7 +31,7 @@ window.AdminPanel=(()=>{
   async function refreshDashboard(){dash=await api('/api/admin/dashboard');}
   function show(id){active=id;for(const b of root.querySelectorAll('.admin-tab'))b.classList.toggle('on',b.dataset.tab===id);render();}
   function render(){const body=document.getElementById('admin-body');if(!body)return;body.replaceChildren();
-    const fn={overview:renderOverview,mail:renderMail,currency:renderCurrency,items:renderItems,shards:renderShards,goddess:renderGoddessGift,orders:renderOrders,players:renderPlayers,worlds:renderWorlds,tools:renderTools,config:renderConfig,audit:renderAudit}[active]||renderOverview;fn(body);
+    const fn={overview:renderOverview,mail:renderMail,currency:renderCurrency,items:renderItems,shards:renderShards,goddess:renderGoddessGift,s4trial:renderS4TrialGift,orders:renderOrders,players:renderPlayers,worlds:renderWorlds,tools:renderTools,config:renderConfig,audit:renderAudit}[active]||renderOverview;fn(body);
   }
   function renderOverview(body){
     const grid=el('div','admin-grid');
@@ -155,6 +156,116 @@ window.AdminPanel=(()=>{
       }catch(e){status(e.message,false);}
     },'primary'));
     vip.append(tile);body.append(vip);giftCards(body,'currency');
+  }
+  function renderS4TrialGift(body){
+    const c=card('Gửi Quà S4 Dùng Thử Theo UID · SUPER GM');
+    c.append(el('p','admin-note',
+      'Chỉ SUPER GM được gửi. Chọn đúng UID và nhân vật máy chủ thường. '
+      +'Một lần xác nhận gửi thư chìa khóa tại server thường (nếu tích chọn) '
+      +'và thư Nữ Thần/skin/Outfit ở S4. Có thể gửi trước khi tạo nhân vật S4. '
+      +'Quà không tự phát khi người chơi kích hoạt chìa khóa.'));
+    if(!giftKey)c.append(btn('Xác thực khóa QTV tại Gửi Thư',()=>show('mail'),'admin-secondary'));
+    const uid=field(c,'UID người chơi (đúng UID trong tab Người Chơi)','gm-s4-trial-uid');
+    uid.placeholder='GB3-000000001';
+    uid.value=recipient?.uid||'';
+    const serverBox=el('label','admin-field','Máy chủ thường nhận chìa khóa');
+    const server=document.createElement('select');server.id='gm-s4-trial-server';
+    serverBox.append(server);c.append(serverBox);
+    const verify=el('div','admin-note');c.append(verify);
+    const hoursBox=el('label','admin-field','Chọn gói Quà Tri Ân');
+    const time=document.createElement('select');time.id='gm-s4-trial-hours';
+    for(const h of [24,48,72,96,120]){
+      const op=el('option','',h+' giờ · '+(h>=96?
+        '48 Nữ Thần 25★ + 24 skin + 10 bộ Outfit Limited':'24 Nữ Thần Wish Capsule 25★'));
+      op.value=String(h);time.append(op);
+    }
+    hoursBox.append(time);c.append(hoursBox);
+    const sendKey=el('label','admin-check');
+    const include=document.createElement('input');
+    include.type='checkbox';include.checked=true;include.id='gm-s4-trial-include-key';
+    sendKey.append(include,document.createTextNode(
+      'Gửi kèm Chìa Khóa S4 tương ứng (bỏ chọn nếu đã gửi chìa từ trước)'));
+    c.append(sendKey);
+    const description=el('p','admin-note');c.append(description);
+    const output=el('div','admin-note');c.append(output);
+    const matches=()=>((dash?.players||[]).filter(p=>
+      String(p.uid).trim()===uid.value.trim()&&p.server_id!=='S4'&&p.status==='active'));
+    const updateServers=()=>{
+      const previous=server.value;
+      const found=matches();
+      server.replaceChildren();
+      for(const p of found){
+        const option=el('option','',p.server_id+' · '+p.character_name);
+        option.value=p.server_id;server.append(option);
+      }
+      const preferred=found.some(x=>x.server_id===previous)?previous:
+        (found.find(x=>x.server_id===recipient?.server_id)?.server_id||found[0]?.server_id||'');
+      server.value=preferred;
+      verify.textContent=found.length?
+        'Đã xác minh UID có '+found.length+' nhân vật ở máy chủ thường. '
+        +'Quà S4 chỉ dành cho đúng UID này.':
+        'Chưa xác minh được UID. Chọn người chơi trong tab Người Chơi hoặc nhập UID có nhân vật server thường.';
+      button.disabled=!found.length||!giftKey;
+    };
+    const updateSummary=()=>{
+      const h=Number(time.value);
+      description.textContent=h>=96?
+        'S4 nhận 48 Nữ Thần 25★: 24 Wish Capsule + 24 dòng VIP 15 bốc ngẫu nhiên không trùng; '
+        +'24 skin gốc tương thích Wish Capsule, 10 bộ Outfit cao cấp hoàn chỉnh (50 món). '
+        +'Chỉ 21/24 Nữ Thần Wish hiện có skin gốc tương thích.':
+        'S4 nhận đúng 24 Nữ Thần Wish Capsule 25★, cấp 1, không trang bị. Không kèm skin/Outfit.';
+    };
+    uid.addEventListener('input',()=>{trialSendNonce='';trialSendFingerprint='';updateServers();});
+    server.addEventListener('change',()=>{trialSendNonce='';trialSendFingerprint='';});
+    time.addEventListener('change',()=>{trialSendNonce='';trialSendFingerprint='';updateSummary();});
+    include.addEventListener('change',()=>{trialSendNonce='';trialSendFingerprint='';});
+    const button=btn('Xác Nhận Gửi Quà S4 Theo UID',async()=>{
+      const target=matches().find(p=>p.server_id===server.value);
+      if(!target||!giftKey){
+        status('Cần UID có nhân vật ở server thường và khóa SUPER GM đã xác thực.',false);return;
+      }
+      const h=Number(time.value);
+      const summary=h>=96?'48 Nữ Thần 25★ + 24 skin + 10 bộ Outfit Limited':
+        '24 Nữ Thần Wish Capsule 25★';
+      const confirmed=await GirlUI.confirm(
+        'Xác nhận gửi cho UID '+target.uid+'\n'
+        +'Nhân vật: '+target.character_name+' · '+target.server_id+'\n'
+        +'Gói '+h+' giờ · '+summary+'\n'
+        +(include.checked?'Kèm 1 Chìa Khóa S4 dùng thử.':'CHỈ GỬI QUÀ: không phát chìa khóa.')+
+        '\nQuà sẽ gửi vào Hòm Thư S4 của cùng UID. Không thể thu hồi quà đã nhận.',
+        {title:'SUPER GM · Xác Nhận Quà S4',ok:'Gửi Đúng UID',cancel:'Hủy'});
+      if(!confirmed)return;
+      const fingerprint=[target.uid,target.server_id,h,include.checked].join('|');
+      if(trialSendFingerprint!==fingerprint||!trialSendNonce){
+        trialSendFingerprint=fingerprint;
+        trialSendNonce=Array.from(crypto.getRandomValues(new Uint8Array(16)),
+          v=>v.toString(16).padStart(2,'0')).join('');
+      }
+      button.disabled=true;
+      try{
+        const result=await gmAction('/api/admin/s4/trial/send',{
+          uid:target.uid,server_id:target.server_id,character_name:target.character_name,
+          hours:h,send_key:include.checked,request_id:trialSendNonce
+        });
+        output.replaceChildren(
+          el('strong','',result.already_sent?'Gói này đã được gửi trước đó.':'Đã gửi thành công tới đúng UID.'),
+          el('p','',result.uid+' · '+result.hours+' giờ · '+result.goddess_count+
+            ' Nữ Thần 25★ · '+result.skin_count+' skin · '+
+            result.outfit_set_count+' bộ Outfit'),
+          el('p','','Thư Chìa Khóa: '+(result.key_mail_id||'Không gửi thêm')),
+          el('p','','Thư Quà S4: '+result.gift_mail_id));
+        status('Đã gửi Gói S4 '+h+' giờ cho '+target.uid+
+          '. Quà nhận ở Hòm Thư S4. '+(result.key_mail_id?'Chìa nhận tại '+target.server_id+'.':''));
+        trialSendNonce='';trialSendFingerprint='';
+        await refreshDashboard();
+      }catch(e){
+        status('Chưa xác nhận được thao tác gửi: '+(e.message||String(e))+
+          '. Giữ nguyên mã gửi để thử lại, tránh cấp trùng.',false);
+      }finally{button.disabled=!matches().length||!giftKey;}
+    },'primary');
+    button.id='gm-s4-trial-send';c.append(button);
+    updateServers();updateSummary();
+    body.append(c);
   }
   function renderItems(body){
     const featured=card('Chìa Khóa S4 Dùng Thử • Quà Tri Ân Nạp Giá Trị Cao');
@@ -439,6 +550,7 @@ window.AdminPanel=(()=>{
       const account=(dash?.accounts||[]).find(a=>a.uid===p.uid);
       if(account?.status==='banned')row.append(btn('Unban Account',()=>accountStatus(p,'unban'),'primary'));
       else row.append(btn('Ban Account',()=>accountStatus(p,'ban'),'danger'));
+      row.append(btn('Gửi Quà Thử S4',()=>{recipient=p;show('s4trial');},'primary'));
       row.append(btn('Gửi quà',()=>{recipient=p;catalogSearch='';show('currency');},'primary'),
         btn('Gửi thư',()=>{recipient=p;show('mail');},'primary'),
         btn('Phiên',()=>viewSessions(p.uid)),btn('Thu hồi phiên',()=>revokeSessions(p.uid)));

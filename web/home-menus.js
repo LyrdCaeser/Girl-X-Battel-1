@@ -399,6 +399,17 @@ const HomeMenus=(()=>{
        el('small','Chìa khóa nằm trong Túi Đồ → Vật phẩm sau khi nhận'));
      preview.append(img,detail);c.append(preview);
    }
+   if(m.attachments?.__s4_trial_gm_reward__){
+    const payload=m.attachments.__s4_trial_gm_reward__;
+    const hours=Number(payload.hours||0);
+    const gift=el('div',undefined,'hm-s4-gift-preview');
+    gift.append(el('b','★ S4 • QUÀ TRI ÂN GM '+hours+' GIỜ'),
+      el('small',hours>=96?
+        '48 Nữ Thần 25★ · 24 Skin Wish · 10 bộ Outfit Limited':
+        '24 Nữ Thần Wish Capsule 25★ · Cấp 1 · Không trang bị'),
+      el('small','Quà được SUPER GM gửi đích danh cho UID tại S4'));
+    c.append(gift);
+   }
    if(m.attachments?.__s4_exclusive_bundle__){
     const gift=el('div',undefined,'hm-s4-gift-preview');
     const supplement=Number(m.attachments?.__s4_exclusive_bundle__)===3;
@@ -422,7 +433,8 @@ const HomeMenus=(()=>{
    if(items.length)rewards(c,items.map(([id,count])=>id+'#'+count).join('|'));
    if(m.status==='pending')button(c,
      m.attachments?.__s4_exclusive_key__?'Nhận Chìa Khóa S4':
-       m.attachments?.__s4_exclusive_bundle__?'Nhận Quà & Triệu Hồi Wish':'Nhận Đính Kèm',
+       m.attachments?.__s4_exclusive_bundle__||m.attachments?.__s4_trial_gm_reward__?
+        'Nhận Quà S4 & Triệu Hồi Wish':'Nhận Đính Kèm',
      ()=>claimServerMail(m.id),pending);
    else if(claimed){
     paragraph(c,'Đã nhận đính kèm.');

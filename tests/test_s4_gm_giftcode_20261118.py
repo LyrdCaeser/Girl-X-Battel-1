@@ -27,7 +27,9 @@ class S4GMGiftcodeTests(unittest.TestCase):
         live_service.register_player('USER-B','S4','Người B')
         live_service.register_player('USER-A','S1','Người A gốc')
         self.guard=patch.multiple(s4_exclusive,ensure_vip15=lambda uid,server_id:3100000,
-                                  ensure_key_claimed=lambda uid,server_id:True)
+                                  ensure_key_claimed=lambda uid,server_id:True,
+                                  permanent_access=lambda uid:True,
+                                  ensure_access=lambda uid,server_id:'permanent')
         self.guard.start()
         self.addCleanup(self.guard.stop)
 
