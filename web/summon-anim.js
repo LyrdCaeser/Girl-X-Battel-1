@@ -13,7 +13,7 @@ const SummonAnim=(()=>{
  // partnerAnimationName1/2 by star (5…11) in SummonEffectResWindow.lua.
  const ANIM1={5:'texiao01',6:'texiao02',7:'texiao07',8:'texiao08',9:'texiao09',10:'texiao03',11:'texiao10'};
  const ANIM2={5:'texiao04',6:'texiao05',7:'texiao11',8:'texiao12',9:'texiao13',10:'texiao06',11:'texiao14'};
- let pics=null,pictures=null,skipped=false,overlay=null,s4Sequence=false;
+ let pics=null,pictures=null,skipped=false,overlay=null,s4Sequence=false,manualWish=false;
  const el=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;};
  const sfx=n=>{try{GxbAudio.sfx(n);}catch{}};
  const wait=ms=>new Promise(r=>setTimeout(r,ms));
@@ -370,10 +370,20 @@ const SummonAnim=(()=>{
    const finish=()=>{
     if(done)return;done=true;clearTimeout(timer);clearInterval(poll);
     if(touch){touch.hidden=true;touch.onclick=null;}
+    const hint=overlay?.querySelector('.sa-hint');
+    if(hint&&manualWish){hint.hidden=true;hint.onclick=null;}
     resolve();
    };
+   const hint=overlay?.querySelector('.sa-hint');
+   if(manualWish&&hint){
+    hint.textContent='Chạm để hoàn tất Wish ✦';
+    hint.hidden=false;
+    hint.onclick=finish;
+   }
    if(touch)touch.onclick=finish;
-   timer=setTimeout(finish,ms);
+   // A GM Goddess gift stays on its native Wish reveal until the player taps.
+   // Keep the existing timed S4 movie unchanged for large 24/48-girl bundles.
+   if(!manualWish)timer=setTimeout(finish,ms);
    poll=setInterval(()=>{if(skipped)finish();},80);
   });
  }
@@ -408,10 +418,12 @@ const SummonAnim=(()=>{
      if(type==='girls'){
       await attachGirl(fig,entry.table_id);
       if(skipped)break;
-      const placed=nativeNameStars(fig,entry,25);
-      uncap=caption(entry,25,placed);
+      const star=Math.max(1,Math.min(25,Number(entry.star||entry.stars)||25));
+      const placed=nativeNameStars(fig,entry,star);
+      uncap=caption(entry,star,placed);
      }
-     await run(fig,'texiao10');
+     const currentStar=Math.max(1,Math.min(25,Number(entry.star||entry.stars)||25));
+     await run(fig,currentStar<=11?(ANIM1[currentStar]||'texiao01'):'texiao10');
      s4SuppressBakedGirlHeading(fig);
      if(skipped)break;
      sfx('ui_gain_hero_5star');
@@ -424,18 +436,18 @@ const SummonAnim=(()=>{
    }
   }finally{e.done();}
  }
- async function playS4Rewards(partners,skins){
+ async function playS4Rewards(partners,skins,options={}){
   const girls=Array.isArray(partners)?partners:[];
   const costumes=Array.isArray(skins)?skins:[];
   if(overlay||(!girls.length&&!costumes.length))return;
   if(typeof PIXI==='undefined'||typeof GxbSpine==='undefined')return;
-  skipped=false;s4Sequence=true;
+  skipped=false;s4Sequence=true;manualWish=options.manual===true;
   document.querySelector('.sa-waiting')?.remove();
   try{
    await assets();
    if(skipped)return;
-   document.documentElement.classList.add('gxb-s4-cinematic');
-   overlay=el('div','sa-overlay sa-s4-native-wish');
+   if(!manualWish)document.documentElement.classList.add('gxb-s4-cinematic');
+   overlay=el('div','sa-overlay sa-s4-native-wish'+(manualWish?' sa-gm-goddess-wish':''));
    const stage=el('div','sa-stage');
    const bg=el('img','sa-bg');bg.src='/assets/summon/summon_scene.png';
    bg.alt='Máy triệu hồi Wish nguyên bản';stage.append(bg);overlay.append(stage);
@@ -446,7 +458,7 @@ const SummonAnim=(()=>{
    skip.onclick=()=>{skipped=true;};
    const voice=el('button','sa-voice','♪ Nghe giọng');voice.type='button';
    voice.hidden=true;
-   const progress=el('div','sa-s4-progress','Đang mở Wish S4…');
+   const progress=el('div','sa-s4-progress',manualWish?'✦ QUÀ NỮ THẦN • WISH ✦':'Đang mở Wish S4…');
    const instruction=el('div','sa-s4-instruction','');
    overlay.append(touch,hint,cap,skip,voice,progress,instruction);
    (window.GxbFrame?.root()||document.body).append(overlay);
@@ -458,7 +470,7 @@ const SummonAnim=(()=>{
    catch(error){console.warn('S4 Wish: pha Skin gặp lỗi',error);}
   }catch(error){console.warn('Không phát được một phần Wish S4',error);}
   finally{
-   overlay?.remove();overlay=null;s4Sequence=false;skipped=false;
+   overlay?.remove();overlay=null;s4Sequence=false;skipped=false;manualWish=false;
    document.documentElement.classList.remove('gxb-s4-cinematic');
   }
  }

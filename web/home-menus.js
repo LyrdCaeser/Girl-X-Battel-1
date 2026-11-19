@@ -338,23 +338,47 @@ const HomeMenus=(()=>{
    message=e.message||'Không mở lại được Wish S4.';render();
   }finally{pending=false;}
  }
+ async function revealGmGoddessWish(gift){
+  // A GM giftcode grants its real heroine in claim_live_mail BEFORE this
+  // read-only cinematic. Replaying never calls /api/mail/claim a second time.
+  if(!gift)return;
+  const hero={
+    table_id:Number(gift.table_id),
+    name:String(gift.name||'Nữ Thần'),
+    star:Number(gift.stars)||5,
+    level:Number(gift.level)||1
+  };
+  if(!Number.isSafeInteger(hero.table_id)||hero.table_id<=0)return;
+  try{
+   if(typeof SummonAnim==='undefined'||typeof SummonAnim.playS4Rewards!=='function')
+    throw new Error('Không tải được màn triệu hồi Wish');
+   await SummonAnim.playS4Rewards([hero],[],{manual:true,goddessGift:true});
+  }catch(error){
+   console.warn('Gift Nữ Thần: màn Wish không thể tải',error);
+   message='Đã nhận Nữ Thần. Màn Wish không hiển thị trên thiết bị này.';
+   render();
+  }
+ }
  async function claimServerMail(mailId){
   if(pending)return;
   pending=true;message='';
-  let celebration=null;
+  let celebration=null,goddessWish=null;
   try{
    const result=await api('/api/mail/claim',{mail_id:mailId});
    if(result?.state)state=result.state;
    mailLastRefresh=Date.now();if(window.GameAssistant)GameAssistant.updateHome();
    celebration=result?.s4_rewards||null;
-   message=celebration
+   goddessWish=result?.goddess||null;
+   message=goddessWish?'Đã nhận Nữ Thần. Mở màn Triệu Hồi Wish!':
+     celebration
      ? 'Quà độc quyền S4 đã được nhận. Đang mở hiệu ứng Wish!'
      : result?.attachments?.__s4_exclusive_key__
        ? 'Chúc mừng VIP 15! Chìa Khóa S4 đã mở khóa máy chủ S4 cho tài khoản.'
        : 'Đã nhận vật phẩm đính kèm.';
   }catch(e){message=e.message||'Không thể nhận thư.';}
   finally{pending=false;render();}
-  if(celebration)await revealS4Bundle(celebration);
+  if(goddessWish)await revealGmGoddessWish(goddessWish);
+  else if(celebration)await revealS4Bundle(celebration);
  }
  async function markServerMailRead(){
   const unread=(state?.mail_info||[]).some(m=>!m.read);
@@ -434,10 +458,13 @@ const HomeMenus=(()=>{
    if(m.status==='pending')button(c,
      m.attachments?.__s4_exclusive_key__?'Nhận Chìa Khóa S4':
        m.attachments?.__s4_exclusive_bundle__||m.attachments?.__s4_trial_gm_reward__?
-        'Nhận Quà S4 & Triệu Hồi Wish':'Nhận Đính Kèm',
+        'Nhận Quà S4 & Triệu Hồi Wish':goddess?
+        'Nhận Nữ Thần & Mở Wish':'Nhận Đính Kèm',
      ()=>claimServerMail(m.id),pending);
    else if(claimed){
     paragraph(c,'Đã nhận đính kèm.');
+    if(goddess)button(c,'▶ Xem Lại Triệu Hồi Wish (Không Nhận Quà Lần Nữa)',
+      ()=>revealGmGoddessWish(goddess),pending);
     if(state?.server_id==='S4'&&m.attachments?.__s4_exclusive_bundle__)
      button(c,'▶ Xem Lại Wish (Không Nhận Quà Lần Nữa)',()=>replayS4Wish(),pending);
    }

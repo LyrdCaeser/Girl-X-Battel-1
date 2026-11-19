@@ -18,7 +18,7 @@ assert(!css.includes('.hm-s4-wish-cards'));
 assert(fs.readFileSync('web/summon-anim.css','utf8').includes('.sa-s4-native-wish'));
 assert(events.includes("c.featured_30_days||[]"));
 assert(events.includes("!cal()?.exclusive_s4"));
-for(const name of ['home-menus.js?v=20261119-s4-gm-trial-gift-r1',
+for(const name of ['home-menus.js?v=20261119-goddess-wish-manual-r2',
  'home-menus.css?v=20261118-native-wish-r1',
  'auth.js?v=20261119-s4-trial-r1','events.js?v=20261118-s4-calendar-r1'])
  assert(html.includes(name),name);

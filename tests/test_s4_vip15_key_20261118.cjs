@@ -16,7 +16,7 @@ assert(auth.includes('VIP 15 + chìa khóa vĩnh viễn'));
 assert(read('gxb2/s4_exclusive.py').includes('Chìa Khóa S4 • Độc Quyền'));
 for(const file of ['app.js','auth.js'])
  assert(html.includes('/'+file+'?v=20261119-s4-trial-r1'),file);
-assert(html.includes('/home-menus.js?v=20261119-s4-gm-trial-gift-r1'));
+assert(html.includes('/home-menus.js?v=20261119-goddess-wish-manual-r2'));
 assert(html.includes('/home-menus.css?v=20261118-native-wish-r1'));
 assert(app.includes('/assets/items-catalog.json?v=20261119-s4-trial-r1'));
 console.log('PASS VIP15 S4 exclusive key UI: SVG, VIP mail, bag inventory, no gifts, versioned assets');

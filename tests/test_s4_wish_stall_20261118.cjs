@@ -56,12 +56,12 @@ function fig(){
  assert(source.includes("catch(e){console.warn('Wish bỏ qua lượt hiển thị lỗi:'"));
  assert(source.includes('finally{uncap();e.done();}'));
  assert(source.includes('finally{m.done();}'));
- assert(source.includes('finally{overlay?.remove();overlay=null;s4Sequence=false;}'));
+ assert(source.includes('overlay=null;s4Sequence=false;skipped=false;manualWish=false;'));
  const home=fs.readFileSync('web/home-menus.js','utf8');
  assert(home.includes('await SummonAnim.playS4Rewards(girls,skins)'));
  const html=fs.readFileSync('web/index.html','utf8');
- assert(html.includes('/summon-anim.js?v=20261118-s4-cinema-clean-r1'));
- assert(html.includes('/home-menus.js?v=20261119-s4-gm-trial-gift-r1'));
+ assert(html.includes('/summon-anim.js?v=20261119-goddess-wish-manual-r2'));
+ assert(html.includes('/home-menus.js?v=20261119-goddess-wish-manual-r2'));
 
  // A 25-star result in S4 can pause at tapOrSkip: automatically continue
  // after 3 seconds instead of silently waiting for an invisible tap.

@@ -165,3 +165,23 @@
   animation:none;opacity:1;transform:none;
  }
 }
+
+/* Read-only native Wish for a single GM Goddess gift: deliberate manual reveal. */
+.sa-gm-goddess-wish{background:#121122}
+.sa-gm-goddess-wish .sa-bg{filter:saturate(1.16) contrast(1.03)}
+.sa-gm-goddess-wish .sa-s4-progress{
+ display:block!important;top:clamp(24px,6dvh,80px);
+ color:#fff4ce;background:linear-gradient(120deg,#302054ed,#8b5ba7e8);
+ border:2px solid #ffe9b0;box-shadow:0 0 26px #d9aff090;
+ white-space:nowrap;font-size:clamp(14px,3.7cqw,22px)
+}
+.sa-gm-goddess-wish .sa-hint{
+ display:block;left:50%;bottom:max(48px,8dvh);z-index:6;
+ background:linear-gradient(135deg,#fff7d9,#e2c7ff);color:#4d2f66;
+ border:2px solid #ffe8a0;border-radius:35px;
+ box-shadow:0 6px 26px #2111389a;animation:sa-bob 1.3s ease-in-out infinite
+}
+.sa-gm-goddess-wish .sa-hint[hidden]{display:none!important}
+.sa-gm-goddess-wish .sa-s4-instruction{display:none}
+.sa-gm-goddess-wish .sa-skip{opacity:.85;background:#342052d9;border:1px solid #e7c5ff!important}
+@media(prefers-reduced-motion:reduce){.sa-gm-goddess-wish .sa-hint{animation:none}}

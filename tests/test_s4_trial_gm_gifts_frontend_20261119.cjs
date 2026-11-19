@@ -30,7 +30,7 @@ assert(engine.includes("s4_trial_reward = inventory.pop('__s4_trial_gm_reward__'
 assert(engine.includes('s4_trial_gm_gifts.grant('),'real server-side persistent reward');
 assert(engine.includes('s4_trial_gm_gifts.unlock_on_activation('),'key activation unlocks matching gift');
 assert(html.includes('/admin.js?v=20261119-gm-mobile-button-r4'));
-assert(html.includes('/home-menus.js?v=20261119-s4-gm-trial-gift-r1'));
+assert(html.includes('/home-menus.js?v=20261119-goddess-wish-manual-r2'));
 
 const girlui=read('web/girl-ui.js');
 const style=read('web/admin.css');
