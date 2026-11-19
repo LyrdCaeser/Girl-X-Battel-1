@@ -169,12 +169,7 @@
 /* Read-only native Wish for a single GM Goddess gift: deliberate manual reveal. */
 .sa-gm-goddess-wish{background:#121122}
 .sa-gm-goddess-wish .sa-bg{filter:saturate(1.16) contrast(1.03)}
-.sa-gm-goddess-wish .sa-s4-progress{
- display:block!important;top:clamp(24px,6dvh,80px);
- color:#fff4ce;background:linear-gradient(120deg,#302054ed,#8b5ba7e8);
- border:2px solid #ffe9b0;box-shadow:0 0 26px #d9aff090;
- white-space:nowrap;font-size:clamp(14px,3.7cqw,22px)
-}
+.sa-gm-goddess-wish .sa-s4-progress{display:none!important}
 .sa-gm-goddess-wish .sa-hint{
  display:block;left:50%;bottom:max(48px,8dvh);z-index:6;
  background:linear-gradient(135deg,#fff7d9,#e2c7ff);color:#4d2f66;

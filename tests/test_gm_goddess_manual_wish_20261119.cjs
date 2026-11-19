@@ -17,6 +17,8 @@ assert(src.includes("manualWish=options.manual===true"),
   'Manual mode must not change S4 movie behavior');
 assert(src.includes('if(!manualWish)timer=setTimeout(finish,ms)'),
   'No automatic advance on GM Wish');
+assert(css.includes('.sa-gm-goddess-wish .sa-s4-progress{display:none!important}'), 'GM Wish progress badge must stay hidden');
+assert(html.includes('summon-anim.css?v=20261119-gm-wish-no-counter-r3'));
 assert(css.includes('.sa-gm-goddess-wish .sa-hint'),
   'Visible touch-to-complete button for both PC and mobile');
 assert(html.includes('summon-anim.js?v=20261119-goddess-wish-manual-r2'));
