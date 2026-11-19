@@ -9,6 +9,21 @@ window.AdminPanel=(()=>{
   const textarea=(parent,label,id,placeholder='')=>{const l=el('label','admin-field',label),i=document.createElement('textarea');i.id=id;i.placeholder=placeholder;l.append(i);parent.append(l);return i;};
   const btn=(text,fn,cls='')=>{const b=el('button',cls,text);b.type='button';b.onclick=fn;return b;};
   function status(t,ok=true){const n=document.getElementById('admin-status');if(n){n.textContent=t||'';n.dataset.ok=ok?'1':'0';}}
+  function renderGmKeyGate(parent,id){
+    const gate=el('div','admin-gm-key-gate');
+    if(giftKey){
+      gate.append(el('strong','admin-key-ok','✓ Khóa QTV đã xác thực trong phiên GM Tools.'));
+    }else{
+      gate.append(el('p','admin-note','Cần xác thực khóa QTV trước khi gửi hoặc tạo Giftcode S4.'));
+      const key=field(gate,'Nhập khóa QTV để mở thao tác tại đây',id,'password');
+      key.autocomplete='off';key.placeholder='Khóa bảo mật SUPER GM';
+      key.addEventListener('keydown',e=>{
+        if(e.key==='Enter'){e.preventDefault();verifyGiftKey(id);}
+      });
+      gate.append(btn('Xác thực khóa QTV',()=>verifyGiftKey(id),'primary'));
+    }
+    parent.append(gate);
+  }
   function card(title){const c=el('section','admin-card');c.append(el('h2','',title));return c;}
   function ensure(){
     if(root)return root;
@@ -164,7 +179,7 @@ window.AdminPanel=(()=>{
       +'Một lần xác nhận gửi thư chìa khóa tại server thường (nếu tích chọn) '
       +'và thư Nữ Thần/skin/Outfit ở S4. Có thể gửi trước khi tạo nhân vật S4. '
       +'Quà tự mở đúng mốc khi chìa khóa được kích hoạt và tự cấp khi vào S4.'));
-    if(!giftKey)c.append(btn('Xác thực khóa QTV tại Gửi Thư',()=>show('mail'),'admin-secondary'));
+    renderGmKeyGate(c,'gm-s4-trial-key');
     const uid=field(c,'UID người chơi (đúng UID trong tab Người Chơi)','gm-s4-trial-uid');
     uid.placeholder='GB3-000000001';
     uid.value=recipient?.uid||'';
@@ -292,6 +307,7 @@ window.AdminPanel=(()=>{
     }
     featured.append(grid,btn('Gửi Thư Chìa Khóa S4',()=>show('mail'),'admin-secondary'));
     const codeBox=card('Tạo Giftcode • Chìa Khóa S4 Dùng Thử Theo UID');
+    renderGmKeyGate(codeBox,'gm-s4-giftcode-key');
     codeBox.append(el('p','admin-note',
       'Mã riêng của đúng một UID, chỉ đổi một lần tại server thường. '
       +'Người chơi tự nhập Giftcode trong Hòm Thư, nhận chìa khóa rồi kích hoạt. '
@@ -367,17 +383,21 @@ window.AdminPanel=(()=>{
     giftCards(body,'items');
   }
   const renderShards=body=>giftCards(body,'shards');
-  async function verifyGiftKey(){
-    const input=document.getElementById('gm-action-key');
-    const key=input?.value||'';
-    if(!key){status('Vui lòng nhập khóa QTV.',false);return;}
+  async function verifyGiftKey(inputId='gm-action-key'){
+    const input=document.getElementById(inputId);
+    const key=input?.value?.trim()||'';
+    if(!key){status('Vui lòng nhập khóa QTV tại mục đang mở.',false);return;}
     try{
       const r=await fetch('/api/admin/gm/verify-key',{method:'POST',credentials:'same-origin',
         headers:{'Content-Type':'application/json','X-GXB3-GM-Key':key},body:'{}'});
       const payload=await r.json();
       if(!r.ok||!payload.verified)throw Error(payload.error||'Không xác thực được khóa QTV.');
-      giftKey=key;status('Đã xác thực khóa QTV.');render();
-    }catch(e){giftKey='';status(e.message,false);}
+      giftKey=key;
+      const scroll=root?.scrollTop||0;
+      render();if(root)root.scrollTop=scroll;
+      status('Đã xác thực khóa QTV. Có thể thực hiện thao tác S4.');
+    }catch(e){status(e.message||'Xác thực khóa QTV thất bại.',false);}
+    finally{if(input)input.value='';}
   }
   // GM actions that move paid rewards or change a published package require the
   // same volatile second factor as sending player mail (never localStorage).
@@ -462,7 +482,7 @@ window.AdminPanel=(()=>{
     const c=card('Gửi quà qua Hòm Thư · xác nhận UID trước khi gửi');
     const key=field(c,'Khóa QTV (không lưu vào thiết bị)','gm-action-key','password');key.autocomplete='off';
     if(giftKey)key.placeholder='Đã xác thực, để trống nếu không đổi khóa';
-    c.append(btn('Xác thực khóa QTV',verifyGiftKey,'primary'));
+    c.append(btn('Xác thực khóa QTV',()=>verifyGiftKey(),'primary'));
     c.append(el('p','admin-note',giftKey?'Đã xác thực khóa QTV. Vẫn cần đúng UID và tên nhân vật.':'Cần khóa riêng trên VPS và phiên đăng nhập SUPER GM.'));
     const uid=field(c,'UID người nhận','gm-mail-uid');
     const sid=field(c,'Máy chủ','gm-mail-server');sid.value=recipient?.server_id||state?.server_id||'S1';
@@ -896,7 +916,7 @@ window.AdminPanel=(()=>{
   const val=id=>document.getElementById(id)?.value?.trim()||'';
   async function load(){try{ensure();[cfg,dash,topupCfg,giftCatalog]=await Promise.all([api('/api/admin/config'),api('/api/admin/dashboard'),api('/api/admin/topup-packages'),api('/api/admin/gift-catalog')]);show(active);status('Hệ Thống QTV đã sẵn sàng.');}catch(e){status(e.message,false);}}
   async function open(){ensure();root.hidden=false;await load();}
-  function close(){giftKey='';giftBasket={};if(root)root.hidden=true;showView('home');}
-  async function logout(){developerMode=false;adminKey='';sessionStorage.setItem('gxb2-developer','0');sessionStorage.removeItem('gxb2-admin-key');if(root)root.hidden=true;state=await api('/api/state');loadFormation();showView('home');renderGame();}
+  function close(){giftBasket={};if(root)root.hidden=true;showView('home');}
+  async function logout(){giftKey='';developerMode=false;adminKey='';sessionStorage.setItem('gxb2-developer','0');sessionStorage.removeItem('gxb2-admin-key');if(root)root.hidden=true;state=await api('/api/state');loadFormation();showView('home');renderGame();}
   return{open,close,load,logout};
 })();

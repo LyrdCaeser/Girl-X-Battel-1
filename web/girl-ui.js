@@ -392,7 +392,7 @@ const GirlUI=(()=>{
   else body.append(el('p','detail-note',"Skill is at maximum level."));}
 
  // ---- common window over the sheet (9gongge21 frame: blue title bar, close_btn_2, help_2) and toast ----
- function sheetRoot(){return view==='detail'?$('girl-detail-view'):(document.querySelector('#game-root>section:not([hidden])')||window.GxbFrame?.root()||$('game-root')||document.body);}
+ function sheetRoot(){const gm=$('admin-view');if(gm&&!gm.hidden)return gm;return view==='detail'?$('girl-detail-view'):(document.querySelector('#game-root>section:not([hidden])')||window.GxbFrame?.root()||$('game-root')||document.body);}
  function win({title='',help=null,cls='',plain=false,stack=false}={}){const host=sheetRoot();if(!stack)host.querySelector('.gs-overlay')?.remove();const ov=el('div','gs-overlay');const w=el('div','gs-win'+(plain?' plain':'')+(cls?' '+cls:''));ov.append(w);
   const close=()=>ov.remove();ov.onclick=e=>{if(e.target===ov)close();};
   if(!plain){const bar=el('div','gs-win-bar');bar.append(el('b','',title));const x=el('button','gs-win-x');x.type='button';x.onclick=close;bar.append(x);if(help){const h=el('button','gs-win-help');h.type='button';h.onclick=()=>CampaignUI.popup(help,{});bar.append(h);}w.append(bar);}
