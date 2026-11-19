@@ -47,5 +47,5 @@ assert(app.includes("['S4_LOCKED','S4_TRIAL_EXPIRED'].includes(data.code)"));
 assert(css.includes('white-space:pre-line'));
 for(const file of ['app.js','auth.js','auth.css'])
  assert(html.includes('/'+file+'?v=20261119-s4-trial-r1'),file);
-assert(html.includes('/admin.js?v=20261119-gm-key-ui-r3'));
+assert(html.includes('/admin.js?v=20261119-gm-mobile-button-r4'));
 console.log('PASS: GM S4 5 trial items, Bag use, timed VIP preview, expiry kick and independent clock');

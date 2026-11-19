@@ -62,3 +62,17 @@
 .admin-gm-key-gate{border:1px solid #7894bb;border-radius:12px;background:#152340;padding:12px;margin:12px 0}
 .admin-key-ok{display:block;color:#d7f5dc;font-size:13px;line-height:1.5}
 .admin-gm-key-gate button{width:100%}
+
+/* The mobile footer cannot cover the last GM action button. */
+.admin-footer{position:static;bottom:auto;background:transparent;padding:10px 0 16px;margin-top:8px}
+.admin-body{padding-bottom:24px}
+.admin-gm-key-gate .admin-note{opacity:1}
+@media(max-width:650px){
+  .admin-head,.admin-nav{position:relative;top:auto;z-index:1}
+  .admin-card button{max-width:100%;white-space:normal;overflow-wrap:anywhere}
+  .admin-card>.primary,#gm-s4-trial-send,#gm-s4-code-generate{display:block;width:100%;min-height:52px;margin-top:16px}
+  .admin-check{white-space:normal;flex-wrap:wrap;align-items:flex-start}
+  .admin-check input{flex:0 0 auto}
+  .admin-card select,.admin-card input{max-width:100%;min-width:0}
+  .admin-view{overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain}
+}

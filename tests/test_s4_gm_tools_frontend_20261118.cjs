@@ -15,5 +15,5 @@ assert(ui.includes("nonce:rec.nonce,confirm:'XOA S4'"));
 assert(ui.includes("Xóa Nhân Vật S4 • Xác Nhận Cuối"));
 assert(ui.includes("p.server_id==='S4'"));
 assert(ui.includes('response.archive_id'));
-assert(html.includes('/admin.js?v=20261119-gm-key-ui-r3'));
+assert(html.includes('/admin.js?v=20261119-gm-mobile-button-r4'));
 console.log('PASS: GM Tools S4 Wish code + gated two-stage delete/archive UI');

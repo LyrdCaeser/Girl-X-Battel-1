@@ -44,7 +44,7 @@ window.AdminPanel=(()=>{
     return root;
   }
   async function refreshDashboard(){dash=await api('/api/admin/dashboard');}
-  function show(id){active=id;for(const b of root.querySelectorAll('.admin-tab'))b.classList.toggle('on',b.dataset.tab===id);render();}
+  function show(id){active=id;for(const b of root.querySelectorAll('.admin-tab'))b.classList.toggle('on',b.dataset.tab===id);render();if(root)root.scrollTop=0;}
   function render(){const body=document.getElementById('admin-body');if(!body)return;body.replaceChildren();
     const fn={overview:renderOverview,mail:renderMail,currency:renderCurrency,items:renderItems,shards:renderShards,goddess:renderGoddessGift,s4trial:renderS4TrialGift,orders:renderOrders,players:renderPlayers,worlds:renderWorlds,tools:renderTools,config:renderConfig,audit:renderAudit}[active]||renderOverview;fn(body);
   }
@@ -220,7 +220,7 @@ window.AdminPanel=(()=>{
         'Đã xác minh UID có '+found.length+' nhân vật ở máy chủ thường. '
         +'Quà S4 chỉ dành cho đúng UID này.':
         'Chưa xác minh được UID. Chọn người chơi trong tab Người Chơi hoặc nhập UID có nhân vật server thường.';
-      button.disabled=!found.length||!giftKey;
+      button.disabled=!found.length;
     };
     const updateSummary=()=>{
       const h=Number(time.value);
@@ -236,8 +236,10 @@ window.AdminPanel=(()=>{
     include.addEventListener('change',()=>{trialSendNonce='';trialSendFingerprint='';});
     const button=btn('Xác Nhận Gửi Quà S4 Theo UID',async()=>{
       const target=matches().find(p=>p.server_id===server.value);
-      if(!target||!giftKey){
-        status('Cần UID có nhân vật ở server thường và khóa SUPER GM đã xác thực.',false);return;
+      if(!target){status('Hãy chọn UID có nhân vật tại máy chủ thường.',false);return;}
+      if(!giftKey){
+        status('Hãy xác thực khóa QTV ngay trong mục Quà S4 Dùng Thử.',false);
+        document.getElementById('gm-s4-trial-key')?.focus();return;
       }
       const h=Number(time.value);
       const summary=h>=96?'48 Nữ Thần 25★ + 24 skin + 10 bộ Outfit Limited':
@@ -276,7 +278,7 @@ window.AdminPanel=(()=>{
       }catch(e){
         status('Chưa xác nhận được thao tác gửi: '+(e.message||String(e))+
           '. Giữ nguyên mã gửi để thử lại, tránh cấp trùng.',false);
-      }finally{button.disabled=!matches().length||!giftKey;}
+      }finally{button.disabled=!matches().length;}
     },'primary');
     button.id='gm-s4-trial-send';c.append(button);
     updateServers();updateSummary();
@@ -348,12 +350,16 @@ window.AdminPanel=(()=>{
       codeVerify.textContent=candidates.length?
         'UID đã xác minh. Mã chỉ dành cho đúng nhân vật được chọn.':
         'UID chưa có nhân vật hoạt động tại máy chủ thường.';
-      generate.disabled=!candidates.length||!giftKey;
+      generate.disabled=!candidates.length;
     };
     codeUid.addEventListener('input',refreshCodePlayers);
     const generate=btn('Tạo Giftcode Chìa Khóa S4 Theo UID',async()=>{
       const p=found().find(x=>x.server_id===codeServer.value);
-      if(!p||!giftKey){status('Cần UID đúng và khóa SUPER GM đã xác thực.',false);return;}
+      if(!p){status('Hãy chọn UID có nhân vật tại máy chủ thường.',false);return;}
+      if(!giftKey){
+        status('Hãy xác thực khóa QTV ngay phía trên phần tạo Giftcode.',false);
+        document.getElementById('gm-s4-giftcode-key')?.focus();return;
+      }
       const hrs=Number(codeHours.value);
       const ok=await GirlUI.confirm(
         'Tạo 1 Giftcode cho UID '+p.uid+' · '+p.character_name+' ('+p.server_id+')\n'+
@@ -376,9 +382,9 @@ window.AdminPanel=(()=>{
         status('Đã tạo Giftcode riêng cho UID '+p.uid+'. Chưa gửi hoặc phát quà trước khi nhập mã.');
         customCode.value='';
       }catch(e){status(e.message||'Không tạo được Giftcode S4',false);}
-      finally{generate.disabled=!found().length||!giftKey;}
+      finally{generate.disabled=!found().length;}
     },'primary');
-    codeBox.append(generate);refreshCodePlayers();
+    generate.id='gm-s4-code-generate';codeBox.append(generate);refreshCodePlayers();
     body.append(featured,codeBox);
     giftCards(body,'items');
   }
@@ -393,8 +399,13 @@ window.AdminPanel=(()=>{
       const payload=await r.json();
       if(!r.ok||!payload.verified)throw Error(payload.error||'Không xác thực được khóa QTV.');
       giftKey=key;
-      const scroll=root?.scrollTop||0;
-      render();if(root)root.scrollTop=scroll;
+      // Never re-render the S4 form here: it would erase the selected 120h
+      // package, recipient, custom code and expiration immediately after auth.
+      if(active==='s4trial'||active==='items'){
+        for(const gate of root.querySelectorAll('.admin-gm-key-gate'))
+          gate.replaceChildren(el('strong','admin-key-ok',
+            '✓ Khóa QTV đã xác thực. Có thể gửi quà hoặc tạo Giftcode.'));
+      }else render();
       status('Đã xác thực khóa QTV. Có thể thực hiện thao tác S4.');
     }catch(e){status(e.message||'Xác thực khóa QTV thất bại.',false);}
     finally{if(input)input.value='';}

@@ -29,14 +29,18 @@ assert(home.includes('SummonAnim.playS4Rewards(girls,skins)'),'original Wish reu
 assert(engine.includes("s4_trial_reward = inventory.pop('__s4_trial_gm_reward__', None)"));
 assert(engine.includes('s4_trial_gm_gifts.grant('),'real server-side persistent reward');
 assert(engine.includes('s4_trial_gm_gifts.unlock_on_activation('),'key activation unlocks matching gift');
-assert(html.includes('/admin.js?v=20261119-gm-key-ui-r3'));
+assert(html.includes('/admin.js?v=20261119-gm-mobile-button-r4'));
 assert(html.includes('/home-menus.js?v=20261119-s4-gm-trial-gift-r1'));
 
 const girlui=read('web/girl-ui.js');
 const style=read('web/admin.css');
 assert(admin.includes("renderGmKeyGate(c,'gm-s4-trial-key')"),'inline key verification for direct S4 gift');
 assert(admin.includes("renderGmKeyGate(codeBox,'gm-s4-giftcode-key')"),'inline key verification for S4 giftcode');
-assert(admin.includes("const scroll=root?.scrollTop||0;"),'restore position after key validation');
+assert(admin.includes("if(active==='s4trial'||active==='items')"),'keep giftcode and 120-hour selection during verification');
 assert(girlui.includes("if(gm&&!gm.hidden)return gm"),'confirmation must be inside GM Tools');
 assert(style.includes(".admin-view>.gs-overlay.gs-confirm-overlay"),'confirmation layer is above GM Tools');
+assert(style.includes('.admin-footer{position:static;bottom:auto'),'footer must not cover GM buttons');
+assert(style.includes('#gm-s4-code-generate{display:block;width:100%'),'mobile action full-width and visible');
+assert(admin.includes("generate.id='gm-s4-code-generate'"),'selectable mobile giftcode button');
+assert(admin.includes('generate.disabled=!candidates.length;'),'button clickable for key prompt');
 console.log('PASS S4 trial GM: private key giftcodes, automatic activation rewards, five tiers');
