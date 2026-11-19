@@ -135,6 +135,13 @@ def _choice_option(reward_id, amount, catalog):
 def describe(item_id):
     """UI is given only source-derived choices, never a free-form reward ID."""
     item_id = str(item_id)
+    from . import s4_trial
+    hours=s4_trial.hours_for(item_id)
+    if hours:
+        return {'usable':True,'item_id':item_id,'kind':'s4_trial',
+                'hours':hours,'max_per_use':1,
+                'open_all_threshold':999999999,
+                'reason':'Dùng một lần để mở S4. Thời gian chỉ trừ khi S4 mở cửa.'}
     recipe = recipes().get(item_id)
     if not recipe:
         return {'usable': False, 'item_id': item_id, 'reason':

@@ -156,7 +156,33 @@ window.AdminPanel=(()=>{
     },'primary'));
     vip.append(tile);body.append(vip);giftCards(body,'currency');
   }
-  const renderItems=body=>giftCards(body,'items');
+  function renderItems(body){
+    const featured=card('Chìa Khóa S4 Dùng Thử • Quà Tri Ân Nạp Giá Trị Cao');
+    featured.append(el('p','admin-note',
+      'SUPER GM chỉ gửi cho người chơi có lịch sử nạp đã xác minh. '
+      +'5 chìa khóa có thời lượng 24h / 48h / 72h / 96h / 120h. '
+      +'Người chơi nhận từ Hòm Thư, sử dụng trong Túi Đồ tại server thường. '
+      +'Thời gian bắt đầu từ lúc kích hoạt, chỉ giảm khi S4 mở cửa. '
+      +'Hết giờ thì tự mất quyền vào S4; không cấp gói quà VIP 15 vĩnh viễn.'));
+    const grid=el('div','admin-gift-grid');
+    for(const hours of [24,48,72,96,120]){
+      const id=990050+hours/24;
+      const row=(giftCatalog?.items||[]).find(x=>Number(x.id)===id);
+      if(!row)continue;
+      const tile=el('article','admin-gift-card');
+      tile.append(giftPic('/s4-exclusive-key.svg',row.name));
+      const description=el('div','admin-gift-details');
+      description.append(el('b','',row.name),
+        el('small','','Thử '+hours+' giờ chơi S4 • Không chuyển nhượng'),
+        el('small','','ID '+id+' • Chỉ cấp qua SUPER GM'));
+      tile.append(description);
+      tile.append(btn('Thêm 1 Chìa Khóa',()=>addGift(row,1),'primary'));
+      grid.append(tile);
+    }
+    featured.append(grid,btn('Gửi Thư Chìa Khóa S4',()=>show('mail'),'admin-secondary'));
+    body.append(featured);
+    giftCards(body,'items');
+  }
   const renderShards=body=>giftCards(body,'shards');
   async function verifyGiftKey(){
     const input=document.getElementById('gm-action-key');

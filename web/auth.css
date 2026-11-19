@@ -43,3 +43,6 @@ html.auth-locked #app-frame{filter:blur(8px);pointer-events:none;user-select:non
  padding:11px 12px;border-radius:10px;color:#fff;font-weight:800}
 .auth-s4-switch:disabled{opacity:.5}
 @media(max-width:390px){.auth-s4-countdown{font-size:11px;top:calc(50px + env(safe-area-inset-top,0px))}}
+
+/* S4 VIP preview: playable-hour countdown shown only on S4. */
+.auth-s4-countdown{white-space:pre-line;text-align:center}

@@ -129,6 +129,35 @@ def ensure_vip15(uid, server_id):
     return earned
 
 
+def permanent_access(uid):
+    """Only genuinely paid VIP15 + a claimed permanent key grants forever."""
+    return (vip.level_for(paid_exp_in_other_worlds(uid)) >= REQUIRED_VIP
+            and key_claimed(uid))
+
+
+def access_mode(uid, now=None):
+    """Validate either lifetime VIP15 or an active GM trial bound to same UID."""
+    if permanent_access(uid):
+        return 'permanent'
+    from . import s4_trial
+    if s4_trial.status(uid,now=now)['active']:
+        return 'trial'
+    return 'none'
+
+
+def ensure_access(uid, server_id, now=None):
+    if str(server_id or '').upper()!=WORLD:
+        return None
+    mode=access_mode(uid,now)
+    if mode=='none':
+        raise ValueError(
+            'S4 yêu cầu VIP 15 cùng Chìa Khóa vĩnh viễn, '
+            'hoặc Chìa Khóa S4 Dùng Thử còn thời hạn. '
+            'Hãy sử dụng chìa khóa trong Túi Đồ tại S1–S3.'
+        )
+    return mode
+
+
 def access_key_mail_id(uid):
     """One deterministic, UID-wide reward ID across all current/future worlds."""
     return "S4-KEY-" + hashlib.sha256(str(uid).encode("utf-8")).hexdigest()[:24].upper()

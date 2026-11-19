@@ -672,14 +672,28 @@ class Engine:
 
     def use_bag_item(self, item_id, reward_id=None, count=1, open_all=False):
         """Server-authoritative original game reward rules; never trust client data."""
-        from . import bag_use
+        from . import bag_use, s4_trial
         with self.lock:
             self.db.execute('BEGIN IMMEDIATE')
             try:
                 state = self._load()
                 try:
                     used_count = int(state.get('items', {}).get(str(int(item_id)), 0)) if open_all else int(count)
-                    rewards = bag_use.open_in_state(state, item_id, count, reward_id, open_all)
+                    if s4_trial.hours_for(item_id) is not None:
+                        if (open_all or str(count)!='1' or reward_id not in (None,'',0)):
+                            raise ValueError('Mỗi lần chỉ được dùng một Chìa Khóa S4')
+                        if isinstance(self.db, ScopedPostgresPlayerDB) and self.db._tx is not None:
+                            # A UID may have characters on S1/S2/S3 concurrently.
+                            # Serialize activation across all worlds before the
+                            # second DB read verifies no other active trial.
+                            self.db._tx.execute(
+                                'SELECT pg_advisory_xact_lock(hashtext(%s))',
+                                ('gxb3:s4trial:'+str(state['uid']),))
+                        trial = s4_trial.activate(state,item_id)
+                        rewards = {}
+                    else:
+                        trial = None
+                        rewards = bag_use.open_in_state(state, item_id, count, reward_id, open_all)
                 except ValueError as exc:
                     raise GameError(str(exc)) from exc
                 self._save_profile(state)
@@ -689,7 +703,7 @@ class Engine:
                 raise
         return {'state': self.snapshot(),
                 'used': {'item_id': int(item_id), 'count': used_count},
-                'rewards': rewards}
+                'rewards': rewards, 's4_trial':trial}
 
     def growth_diary_action(self, request):
         if not isinstance(request, dict): raise GameError('Datos inválidos')
@@ -1133,9 +1147,11 @@ class Engine:
                 state['account_status'] = 'active'  # current account status is enforced by auth_context()
             if state['server_id'] == 'S4':
                 from . import s4_exclusive
-                if not state.get('s4_exclusive_claimed'):
+                if (s4_exclusive.permanent_access(state['uid'])
+                    and not state.get('s4_exclusive_claimed')):
                     s4_exclusive.ensure_welcome(state['uid'], 'S4', state['name'])
-                elif (int(state.get('s4_catalog_version') or 0)
+                elif (state.get('s4_exclusive_claimed')
+                      and int(state.get('s4_catalog_version') or 0)
                       < s4_exclusive.CATALOG_VERSION
                       and not getattr(self, '_s4_catalog_mail_checked', False)):
                     s4_exclusive.ensure_catalog_upgrade(

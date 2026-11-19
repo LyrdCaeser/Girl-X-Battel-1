@@ -23,7 +23,7 @@ from gxb2.story import catalog as story_catalog
 from gxb2.dress import catalog as dress_catalog
 from gxb2.skins import catalog as skins_catalog
 from gxb2.souls import catalog as souls_catalog
-from gxb2 import protocol as p, local_promotion, local_config, world_live_config, topup, live_service, auth, database, gm_catalog, giftcodes, studio_sso, skin_store, skin_bank, skin_gifts, owner_recovery, profile_photos, s4_exclusive, s4_gm
+from gxb2 import protocol as p, local_promotion, local_config, world_live_config, topup, live_service, auth, database, gm_catalog, giftcodes, studio_sso, skin_store, skin_bank, skin_gifts, owner_recovery, profile_photos, s4_exclusive, s4_gm, s4_trial
 from gxb2.player_engines import PlayerEnginePool
 from gxb2.battle import simulate as simulate_battle, ONLINE_BATTLE_ID, normalize_online_seed
 from gxb2.security import FixedWindowRateLimiter, DEFAULT_LIMITS, env_bool, validate_production_config
@@ -269,6 +269,12 @@ class HTTPHandler(BaseHTTPRequestHandler):
             self.send(401, {'error': 'AUTH_REQUIRED'})
             return None
         if ctx['account']['server_id'] == 'S4':
+            if ctx.get('s4_access_expired'):
+                self.send(423, {
+                    'error':'Chìa Khóa S4 Dùng Thử đã hết hạn. Hãy quay lại máy chủ thường.',
+                    'code':'S4_TRIAL_EXPIRED','s4_cycle':s4_exclusive.cycle()
+                })
+                return None
             cycle = s4_exclusive.cycle()
             if cycle['phase'] == 'locked':
                 self.send(423, {
@@ -362,6 +368,11 @@ class HTTPHandler(BaseHTTPRequestHandler):
             try:
                 if account['server_id']=='S4':
                     phase=s4_exclusive.cycle()
+                    if s4_exclusive.access_mode(account['uid'])=='none':
+                        self.wfile.write((
+                            'event: s4_trial_expired\ndata: '+json.dumps(phase)+'\n\n').encode())
+                        self.wfile.flush()
+                        break
                     if phase['phase']=='locked':
                         self.wfile.write(('event: s4_lock\ndata: '+json.dumps(phase)+'\n\n').encode())
                         self.wfile.flush()
@@ -421,11 +432,27 @@ class HTTPHandler(BaseHTTPRequestHandler):
                 return self.send(503,{'ready':False,'database':database.backend_name()})
         if path == '/api/s4/cycle':
             return self.send(200, s4_exclusive.cycle())
+        if path == '/api/s4/trial':
+            ctx = self.auth_context()
+            if not ctx:
+                return self.send(401,{'error':'AUTH_REQUIRED'})
+            uid=ctx['account']['uid']
+            return self.send(200,{
+                **s4_trial.status(uid),
+                'access_mode':s4_exclusive.access_mode(uid),
+                'server_id':'S4',
+            },headers={'Cache-Control':'no-store'})
         if path == '/api/auth/me':
             ctx = self.auth_context()
+            trial = (s4_trial.status(ctx['account']['uid']) if ctx else None)
+            if trial is not None:
+                trial['access_mode']=s4_exclusive.access_mode(ctx['account']['uid'])
+                trial['server_id']='S4'
             return self.send(200, {'authenticated': bool(ctx), 'session': ctx,
-                                   'worlds': live_service.worlds(), 'is_super_gm': self.is_super_gm(),
-                                   's4_cycle': s4_exclusive.cycle()})
+                                   'worlds': live_service.worlds(),
+                                   'is_super_gm': self.is_super_gm(),
+                                   's4_cycle': s4_exclusive.cycle(),
+                                   's4_trial':trial})
         if path == '/api/auth/sessions':
             ctx = self.require_auth()
             if not ctx: return
@@ -1419,6 +1446,9 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                 if not self.gm_key_authorized(): return self.send(403, {'error': 'Khóa QTV không chính xác hoặc chưa cấu hình trên VPS'})
                 # Item IDs and quantities are validated server-side; client icons or names grant no authority.
                 gift = gm_catalog.validate_gift(data.get('attachments') or {})
+                if (str(data.get('server_id') or '').upper()=='S4'
+                        and any(item in s4_trial.KEY_IDS for item in gift)):
+                    raise ValueError('Chìa Khóa S4 Dùng Thử phải gửi vào Hòm Thư máy chủ thường, không gửi trực tiếp S4')
                 return self.send(200, live_service.send_mail(data.get('uid'), data.get('server_id'), data.get('character_name'),
                     data.get('title'), data.get('body'), gift, 'SUPER_GM'))
             if path == '/api/admin/order/review':

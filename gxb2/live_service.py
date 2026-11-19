@@ -2516,6 +2516,9 @@ def _social_text_blocked(text):
 
 def social_gift_meta(item_id):
     item_id = str(item_id or "")
+    from . import s4_trial
+    if item_id in s4_trial.KEY_IDS or item_id == '990004':
+        return None  # GM trial/permanent S4 entitlements are never tradable
     row = SOCIAL_ITEMS.get(item_id)
     if not row:
         return None

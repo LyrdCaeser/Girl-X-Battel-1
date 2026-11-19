@@ -11,14 +11,12 @@ assert(ui.includes("performance.now()"),'counter uses monotonic elapsed clock');
 assert(ui.includes("if(!selected)return;"),'non-S4 selection suppresses clock UI');
 assert(ui.includes("note.hidden=!selected;"));
 assert(ui.includes("selector.value==='S4'&&locked"),'disables entry to closed S4');
-assert(ui.includes("'Chọn S1–S3 để tiếp tục chơi'"),'valid session can switch to other worlds');
+assert(ui.includes("'Chọn máy chủ thường để tiếp tục chơi'"),'valid session can switch to other worlds');
 assert(ui.includes("'/api/auth/switch-server'"),'uses existing server-side validation');
 assert(ui.includes("'/api/s4/cycle'"),'server clock poll');
 assert(css.includes('.auth-s4-cycle-note[hidden]{display:none}'));
 assert(css.includes('.auth-s4-countdown'));
-assert(app.includes("response.status===423&&data.code==='S4_LOCKED'"));
-for(const file of ['app.js','auth.js']){
-  const version=file==='app.js'?'r2':'r1';
-  assert(html.includes('/'+file+'?v=20261118-vip15-s4key-'+version),file+' not refreshed');
-}
+assert(app.includes("response.status===423&&['S4_LOCKED','S4_TRIAL_EXPIRED'].includes(data.code)"));
+for(const file of ['app.js','auth.js'])
+  assert(html.includes('/'+file+'?v=20261119-s4-trial-r1'),file+' not refreshed');
 console.log('PASS: S4 72h/48h clock, selected-only countdown, client kick, server 423, 15s clock sync');

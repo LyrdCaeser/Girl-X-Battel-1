@@ -457,7 +457,7 @@ function girlIconSource(id){
  return '';
 }
 function itemPicture(item){
- if(String(item?.id)==='990004')return '/s4-exclusive-key.svg';
+ if(String(item?.id)==='990004'||[990051,990052,990053,990054,990055].includes(Number(item?.id)))return '/s4-exclusive-key.svg';
  if(String(item?.id)==='930220')return girlIconSource(757001);
  if(String(item?.id)==='930235')return girlIconSource(55014);
  const icon=String(item?.icon||'');if(icon.startsWith('partner_avatar_')){const src=girlIconSource(Number(icon.slice('partner_avatar_'.length)));if(src)return src;}
@@ -562,7 +562,13 @@ async function showBagItem(item,count,src){
    }else{
      select.hidden=true;$('bag-use-native-choices').hidden=true;
    }
-   note.textContent=original.kind==='choice'?'Chọn phần thưởng muốn nhận.':
+   if(original.kind==='s4_trial'){
+     qty.value='1';qty.max='1';qty.hidden=true;
+     button.textContent='Kích Hoạt S4 • '+Number(original.hours)+' Giờ';
+     note.textContent='Chìa khóa sẽ tiêu hao ngay khi kích hoạt. '
+       +'Chỉ tính giờ khi S4 đang mở cửa; thời gian tạm dừng trong 48 giờ S4 nghỉ. '
+       +'Không gồm quà VIP 15 vĩnh viễn.';
+   }else note.textContent=original.kind==='choice'?'Chọn phần thưởng muốn nhận.':
      (original.random?'Mở rương để nhận quà ngẫu nhiên.':'Nhận toàn bộ quà trong rương.');
    currentBagUse={id:item.id,name:item.name,kind:original.kind,options:original};
  }catch(e){
@@ -603,9 +609,12 @@ async function useSelectedBagItem(openAll=false){
  if(selected.kind==='choice'&&!selected.options.choices.some(x=>Number(x.id)===reward)){
    error('Hãy chọn phần thưởng hợp lệ');return;
  }
- const message=selected.kind==='choice'?
-   (' nhận '+$('bag-use-choice').selectedOptions[0]?.textContent+' mỗi lần'):
-   (selected.options.random?' nhận phần thưởng ngẫu nhiên':' nhận toàn bộ quà');
+ const message=selected.kind==='s4_trial'
+   ? ' kích hoạt '+Number(selected.options.hours)+' giờ CHƠI THỬ S4? Chìa khóa sẽ tiêu hao. '
+     +'Thời gian tạm dừng khi S4 nghỉ 48 giờ; không cấp quà VIP 15.'
+   :selected.kind==='choice'
+   ? (' nhận '+$('bag-use-choice').selectedOptions[0]?.textContent+' mỗi lần')
+   : (selected.options.random?' nhận phần thưởng ngẫu nhiên':' nhận toàn bộ quà');
  const confirmed=typeof GirlUI!=='undefined'&&GirlUI.confirm
    ? await GirlUI.confirm((openAll?'Mở tất cả ':'Dùng ')+count+' × '+bagVi(selected.name)+' để'+message+'?',{title:openAll?'Xác nhận Mở Tất Cả':'Xác nhận sử dụng',ok:openAll?'Mở Tất Cả':'Dùng',cancel:'Hủy'})
    : confirm((openAll?'Mở tất cả ':'Dùng ')+count+' × '+bagVi(selected.name)+' để'+message+'?');
@@ -614,6 +623,14 @@ async function useSelectedBagItem(openAll=false){
  try{
    const result=await api('/api/inventory/use',{item_id:id,reward_id:reward,count,open_all:openAll});
    state=result.state; $('bag-detail').hidden=true;currentBagUse=null;
+   if(result.s4_trial){
+     window.GxbAuth?.refreshS4Trial?.();
+     window.GirlUI?.notice?.(
+       'Chìa Khóa S4 đã kích hoạt: '+result.s4_trial.hours+
+       ' giờ chơi! Hãy chọn S4 tại màn chuyển máy chủ. '
+       +'Thời gian chỉ giảm trong các đợt S4 mở cửa.',
+       {title:'Chìa Khóa S4 Dùng Thử'});
+   }
    if(typeof GxbAudio!=='undefined')GxbAudio.sfx('gain_window_sound',.75);
    render();error('');
  }catch(e){error(e.message);}
@@ -700,8 +717,9 @@ const ACTION_SOUNDS=[[/\/api\/action$/,/^BUY_SHOP_ITEM$/,'shop_buy_success'],[/\
  [/\/guild\/action$/,/^checkin$/,'ui_click_reward_float2'],[/\/midas\/action$/,/.*/,'ui_click_reward_expand'],[/\/internship\/action$/,/^complete$/,'gain_window_sound'],[/\/internship\/action$/,/^start$/,'paper_unfold'],
  [/\/chimes\/action$/,/.*/,'bell_ring'],[/\/firework-project\/action$/,/^make/,'sound_firework_burst'],[/\/jackpot\/action$/,/^(spin|draw)/,'casino_1']];
 function actionSound(url,body){if(typeof GxbAudio==='undefined'||!body||typeof body!=='object')return;const a=String(body.message||body.action||'');for(const [u,m,f,fx]of ACTION_SOUNDS)if(u.test(url)&&m.test(a)){GxbAudio.sfx(f,.8);if(fx&&typeof GxbSpine!=='undefined'&&GxbSpine.burst)GxbSpine.burst(fx);return;}}
-async function api(url,body){const headers={};if(developerMode&&url.startsWith('/api/'))headers['X-GXB2-Mode']='developer';if(adminKey&&url.startsWith('/api/'))headers['X-GXB2-Admin-Key']=adminKey;if(body!==undefined)headers['Content-Type']='application/json';const response=await fetch(url,{headers,credentials:'same-origin',...(body===undefined?{}:{method:'POST',body:JSON.stringify(body)})});const data=await response.json();if(!response.ok){if(response.status===423&&data.code==='S4_LOCKED'){
-  window.GxbAuth?.kickToServerLobby?.(data.s4_cycle);
+async function api(url,body){const headers={};if(developerMode&&url.startsWith('/api/'))headers['X-GXB2-Mode']='developer';if(adminKey&&url.startsWith('/api/'))headers['X-GXB2-Admin-Key']=adminKey;if(body!==undefined)headers['Content-Type']='application/json';const response=await fetch(url,{headers,credentials:'same-origin',...(body===undefined?{}:{method:'POST',body:JSON.stringify(body)})});const data=await response.json();if(!response.ok){if(response.status===423&&['S4_LOCKED','S4_TRIAL_EXPIRED'].includes(data.code)){
+  window.GxbAuth?.kickToServerLobby?.(
+    data.s4_cycle,data.code==='S4_TRIAL_EXPIRED'?'trial_expired':'');
  }const raw=data.error||"Could not complete the action";const msg=(window.GxbLocale&&GxbLocale.current()==='vi'&&window.GxbVi)?GxbVi.t(raw):(window.GxbLocale?GxbLocale.t(raw):raw);throw Error(msg);}actionSound(url,body);if(data&&data.state&&typeof data.state.level==='number'){const before=Number(state?.level||0);if(before&&data.state.level>before&&typeof GxbSpine!=='undefined'&&GxbSpine.burst){GxbSpine.burst('shengji');if(typeof GxbAudio!=='undefined')GxbAudio.sfx('train_level_up',.9);}}return data;}
 function render(){
  document.body.classList.toggle('developer-mode',!!state.developer);
@@ -1223,5 +1241,5 @@ $('profile-rename').addEventListener('click',()=>openProfileEdit('name'));$('pro
 $('profile-edit-cancel').addEventListener('click',()=>{$('profile-edit-dialog').hidden=true;});
 $('profile-edit-form').addEventListener('submit',async event=>{event.preventDefault();const button=$('profile-edit-form').querySelector('[type=submit]');button.disabled=true;try{const result=await api('/api/profile',{[profileEditField]:$('profile-edit-input').value});state=result.state;$('profile-edit-dialog').hidden=true;render();}catch(error){$('profile-edit-message').textContent=error.message;}finally{button.disabled=false;}});
 
-window.GxbStartGame=()=>Promise.all([api('/api/state'),api('/assets/avatars.json?v=1.1.2'),api('/assets/home-icons.json'),api('/assets/characters.json'),api('/assets/battle-maps.json'),api('/assets/girls-catalog.json'),api('/assets/cards.json'),api('/assets/items-catalog.json?v=20261118-vip15-s4key-r1'),api('/assets/item-icons.json'),api('/assets/girl-details.json'),api('/assets/graduate.json'),api('/assets/ascension.json?v=20261114-native-compose-all-r1'),api('/assets/profile/catalog.json'),api('/assets/local-promotion.json'),api('/assets/pictures.json'),api('/api/skins/catalog',{}).catch(()=>({skins:{}}))]).then(async([s,a,icons,arts,maps,catalog,cards,items,itemImages,details,recipes,ascensions,profileAssets,localPromotions,pictureAssets,skinAssets])=>{state=s;profileCatalog=profileAssets;avatars=a;homeIcons=icons;artIds=new Set(arts);pictureIds=new Set(pictureAssets);skinCatalog=skinAssets.skins||{};cardIds=new Set(cards);itemCatalog=items;itemIcons=new Set(itemImages);girlDetails=details;graduateRecipes={...recipes,...ascensions,...localPromotions};battleMapIds=new Set(maps);girlsCatalog=catalog;galleryCatalog=[...catalog].sort((a,b)=>Number(b.skins.length>0)-Number(a.skins.length>0)||b.stars-a.stars||a.name.localeCompare(b.name));installHomeIcons();await composeHomeAtlas();selectedStage=Math.min(state.next_stage,30);loadFormation();showView('home');render();}).catch(e=>error("Could not load the backend: "+e.message));
+window.GxbStartGame=()=>Promise.all([api('/api/state'),api('/assets/avatars.json?v=1.1.2'),api('/assets/home-icons.json'),api('/assets/characters.json'),api('/assets/battle-maps.json'),api('/assets/girls-catalog.json'),api('/assets/cards.json'),api('/assets/items-catalog.json?v=20261119-s4-trial-r1'),api('/assets/item-icons.json'),api('/assets/girl-details.json'),api('/assets/graduate.json'),api('/assets/ascension.json?v=20261114-native-compose-all-r1'),api('/assets/profile/catalog.json'),api('/assets/local-promotion.json'),api('/assets/pictures.json'),api('/api/skins/catalog',{}).catch(()=>({skins:{}}))]).then(async([s,a,icons,arts,maps,catalog,cards,items,itemImages,details,recipes,ascensions,profileAssets,localPromotions,pictureAssets,skinAssets])=>{state=s;profileCatalog=profileAssets;avatars=a;homeIcons=icons;artIds=new Set(arts);pictureIds=new Set(pictureAssets);skinCatalog=skinAssets.skins||{};cardIds=new Set(cards);itemCatalog=items;itemIcons=new Set(itemImages);girlDetails=details;graduateRecipes={...recipes,...ascensions,...localPromotions};battleMapIds=new Set(maps);girlsCatalog=catalog;galleryCatalog=[...catalog].sort((a,b)=>Number(b.skins.length>0)-Number(a.skins.length>0)||b.stars-a.stars||a.name.localeCompare(b.name));installHomeIcons();await composeHomeAtlas();selectedStage=Math.min(state.next_stage,30);loadFormation();showView('home');render();}).catch(e=>error("Could not load the backend: "+e.message));
 (window.GxbAuthReady||Promise.resolve(true)).then(ok=>{if(ok)window.GxbStartGame();});

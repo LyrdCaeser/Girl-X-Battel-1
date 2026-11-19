@@ -31,17 +31,20 @@ def _girl_image(girl_id: int) -> str:
     return ""
 
 def catalog() -> dict:
+    from . import s4_trial
     items = []
     for record in ITEMS.values():
         key = str(record.get("icon") or "")
         picture = ITEM_IMAGES / (key + ".png")
-        if not key or not picture.is_file():
+        trial = str(record['id']) in s4_trial.KEY_IDS
+        if not trial and (not key or not picture.is_file()):
             continue
         items.append({
             "id": int(record["id"]), "name": str(record["name"]),
             "category": int(record.get("category") or 0),
             "quality": int(record.get("quality") or 0),
-            "image": "/assets/item-icons/" + key + ".png",
+            "image": "/s4-exclusive-key.svg" if trial
+                     else "/assets/item-icons/" + key + ".png",
         })
     shards = []
     for record in DEBRIS.values():

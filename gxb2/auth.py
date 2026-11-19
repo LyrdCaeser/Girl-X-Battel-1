@@ -203,7 +203,7 @@ def register(username, password, character_name, server_id="S1", email="", user_
     character_name = str(character_name or "").strip()
     server_id = str(server_id or "S1").strip().upper()
     if server_id == "S4":
-        raise ValueError("S4 chỉ dành cho tài khoản đã có nhân vật VIP 15 ở máy chủ khác. Hãy đăng ký ở S1–S3.")
+        raise ValueError("Hãy đăng ký nhân vật tại máy chủ thường, nhận hoặc sử dụng Chìa Khóa S4 rồi tạo nhân vật S4.")
     if not 2 <= len(character_name) <= 20 or any(ord(c) < 32 for c in character_name):
         raise ValueError("Tên Nhân Vật phải dài 2–20 ký tự")
     worlds = {w["server_id"]: w for w in live_service.worlds()}
@@ -275,8 +275,7 @@ def login(username, password, server_id="S1", remote="", user_agent=""):
             from . import s4_exclusive
             try:
                 s4_exclusive.ensure_open(server_id)
-                s4_exclusive.ensure_vip15(row["uid"], server_id)
-                s4_exclusive.ensure_key_claimed(row["uid"], server_id)
+                s4_exclusive.ensure_access(row["uid"], server_id)
             except Exception:
                 # Failed VIP logins must release their auth DB connection.
                 db.close()
@@ -289,7 +288,7 @@ def login(username, password, server_id="S1", remote="", user_agent=""):
         db.execute("UPDATE accounts SET last_login=? WHERE id=?", (int(time.time()), row["id"]))
         db.commit(); db.close()
     _clear_attempts(bucket)
-    if server_id == "S4":
+    if server_id == "S4" and s4_exclusive.permanent_access(row["uid"]):
         try: s4_exclusive.ensure_welcome(row["uid"], server_id, player["character_name"])
         except Exception:
             import logging
@@ -314,13 +313,18 @@ def session(token):
         db.execute("UPDATE sessions SET last_seen=? WHERE token_hash=?", (now, th)); db.commit(); db.close()
     player = live_service.player(row["uid"], row["server_id"])
     if not player or player["status"] == "banned": return None
+    s4_access_expired = False
     if str(row["server_id"]).upper() == "S4":
         from . import s4_exclusive
+        # Keep a valid session long enough for the player to switch back to
+        # S1/S2/S3. Gameplay requires_auth() still hard-blocks expired S4 trials.
         try:
-            s4_exclusive.ensure_vip15(row["uid"], "S4")
-            s4_exclusive.ensure_key_claimed(row["uid"], "S4")
-        except ValueError: return None
-    return {"account": _public_account(row, row["server_id"]), "character_name": player["character_name"], "player": player}
+            s4_exclusive.ensure_access(row["uid"], "S4")
+        except ValueError:
+            s4_access_expired = True
+    return {"account": _public_account(row, row["server_id"]),
+            "character_name": player["character_name"], "player": player,
+            "s4_access_expired": s4_access_expired}
 
 
 def logout(token):
@@ -336,8 +340,7 @@ def switch_server(token, server_id):
     if server_id == "S4":
         from . import s4_exclusive
         s4_exclusive.ensure_open(server_id)
-        s4_exclusive.ensure_vip15(current["account"]["uid"], server_id)
-        s4_exclusive.ensure_key_claimed(current["account"]["uid"], server_id)
+        s4_exclusive.ensure_access(current["account"]["uid"], server_id)
     player = live_service.player(current["account"]["uid"], server_id)
     if not player: raise ValueError("Chưa có nhân vật ở server này")
     if player["status"] == "banned": raise ValueError("Nhân vật ở server này đang bị khóa")
@@ -348,7 +351,7 @@ def switch_server(token, server_id):
         db.execute("UPDATE sessions SET server_id=?,last_seen=? WHERE token_hash=?",
                    (server_id,int(time.time()),_token_hash(token)))
         db.commit(); db.close()
-    if server_id == "S4":
+    if server_id == "S4" and s4_exclusive.permanent_access(current["account"]["uid"]):
         try: s4_exclusive.ensure_welcome(current["account"]["uid"], server_id, player["character_name"])
         except Exception:
             import logging
@@ -364,8 +367,7 @@ def create_character(token, server_id, character_name):
     if server_id == "S4":
         from . import s4_exclusive
         s4_exclusive.ensure_open(server_id)
-        s4_exclusive.ensure_vip15(uid, server_id)
-        s4_exclusive.ensure_key_claimed(uid, server_id)
+        s4_exclusive.ensure_access(uid, server_id)
     character_name = str(character_name or "").strip()
     if not 2 <= len(character_name) <= 20 or any(ord(c) < 32 for c in character_name):
         raise ValueError("Tên Nhân Vật phải dài 2–20 ký tự")
@@ -375,7 +377,7 @@ def create_character(token, server_id, character_name):
     if not world or world["status"] != "online" or not int(world.get("character_creation_open", 1)):
         raise ValueError((world or {}).get("message") or "Server hiện không mở tạo nhân vật")
     live_service.register_player(uid, server_id, character_name)
-    if server_id == "S4":
+    if server_id == "S4" and s4_exclusive.permanent_access(uid):
         try: s4_exclusive.ensure_welcome(uid, server_id, character_name)
         except Exception:
             import logging

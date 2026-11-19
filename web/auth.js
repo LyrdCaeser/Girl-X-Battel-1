@@ -2,8 +2,15 @@
 window.GxbAuth=(()=>{
   let overlay=null,session=null,worlds=[],isSuperGM=false;
   let s4Cycle=null,s4SyncedAt=0,s4PollBusy=false,s4Kicked=false,s4Badge=null;
+  let s4Trial=null,s4TrialSyncedAt=0,s4TrialPollBusy=false,s4KickedReason='';
   const s4Time=()=>s4Cycle?Math.max(0,Math.ceil(Number(s4Cycle.phase_end)-(
     Number(s4Cycle.server_now)+(performance.now()-s4SyncedAt)/1000))):0;
+  function s4TrialTime(){
+    if(!s4Trial?.active)return 0;
+    const elapsed=(performance.now()-s4TrialSyncedAt)/1000;
+    return Math.max(0,Math.ceil(Number(s4Trial.remaining_seconds)-
+      (s4Cycle?.phase==='open'?elapsed:0)));
+  }
   function s4Clock(seconds){
     seconds=Math.max(0,Math.floor(seconds));
     return [Math.floor(seconds/3600),Math.floor(seconds%3600/60),seconds%60]
@@ -26,12 +33,17 @@ window.GxbAuth=(()=>{
     const locked=s4Cycle?.phase==='locked';
     const clock=s4Cycle?s4Clock(s4Time()):'Đang đồng bộ…';
     note.classList.toggle('locked',!!locked);
+    const trialActive=s4Trial?.access_mode==='trial'&&s4TrialTime()>0;
     note.replaceChildren(
-      el('strong','',locked?'🔒 S4 tạm khóa • 48 giờ':'★ S4 Độc Quyền VIP 15 • Đang mở'),
+      el('strong','',locked?'🔒 S4 tạm khóa • 48 giờ':
+        '★ S4 • VIP 15 hoặc Chìa Khóa Dùng Thử'),
       el('span','',locked?'Mở lại sau '+clock:
         'Khóa sau '+clock+' (chơi 72 giờ, nghỉ 48 giờ)'),
       ...(locked?[el('small','','S4 sẽ tự mở lại khi hết thời gian. Hãy chọn máy chủ khác để tiếp tục chơi.')]:[]),
-      el('small','','Yêu cầu VIP 15 và Chìa Khóa S4 • Độc Quyền đã nhận trong Hòm Thư của tài khoản.')
+      el('small','',trialActive?
+        'Chìa Khóa Dùng Thử còn '+s4Clock(s4TrialTime())+
+        ' giờ chơi; tạm dừng đếm khi S4 nghỉ 48 giờ.':
+        'Cần VIP 15 + chìa khóa vĩnh viễn, hoặc dùng Chìa Khóa S4 Dùng Thử từ Túi Đồ.')
     );
   }
   function showS4Badge(){
@@ -44,7 +56,9 @@ window.GxbAuth=(()=>{
       s4Badge.setAttribute('aria-label','Thời gian mở cửa còn lại của S4');
       document.body.append(s4Badge);
     }
-    s4Badge.textContent='S4 • Khóa sau '+s4Clock(s4Time());
+    s4Badge.textContent='S4 • Khóa sau '+s4Clock(s4Time())+
+      (s4Trial?.access_mode==='trial'?
+        '\nDùng thử còn '+s4Clock(s4TrialTime()):'');
   }
   function updateS4Clock(){
     for(const select of document.querySelectorAll(
@@ -55,6 +69,10 @@ window.GxbAuth=(()=>{
       const selector=document.getElementById(id),button=document.getElementById(buttonId);
       if(selector&&button&&!button.dataset.requestBusy)
         button.disabled=selector.value==='S4'&&locked;
+    }
+    if(session?.account?.server_id==='S4'&&!s4Kicked&&s4Trial?.access_mode==='trial'
+       &&s4TrialTime()===0){
+      kickToServerLobby(s4Cycle,'trial_expired');
     }
     if(session?.account?.server_id==='S4'&&!s4Kicked&&s4Cycle&&
        (locked||s4Time()===0))kickToServerLobby(s4Cycle);
@@ -71,8 +89,19 @@ window.GxbAuth=(()=>{
     }catch(e){console.warn('Không cập nhật được đồng hồ S4',e);}
     finally{s4PollBusy=false;}
   }
-  function kickToServerLobby(cycle){
+  async function syncS4Trial(){
+    if(s4TrialPollBusy||!session?.account)return;
+    s4TrialPollBusy=true;
+    try{
+      const data=await request('/api/s4/trial');
+      s4Trial=data;s4TrialSyncedAt=performance.now();
+      updateS4Clock();
+    }catch(e){console.warn('Không cập nhật được thời gian chìa khóa S4',e);}
+    finally{s4TrialPollBusy=false;}
+  }
+  function kickToServerLobby(cycle,reason=''){
     if(session?.account?.server_id!=='S4'||s4Kicked)return;
+    s4KickedReason=reason;
     if(cycle?.server_id==='S4'){
       s4Cycle=cycle;s4SyncedAt=performance.now();
     }
@@ -87,7 +116,10 @@ window.GxbAuth=(()=>{
          (session?.account?.server_id==='S4'||selectedS4()))void syncS4Cycle();
     },1000);
     setInterval(()=>{
-      if(session?.account?.server_id==='S4'||selectedS4())void syncS4Cycle();
+      if(session?.account?.server_id==='S4'||selectedS4()){
+        void syncS4Cycle();
+        void syncS4Trial();
+      }
     },15000);
   }
 
@@ -116,7 +148,7 @@ window.GxbAuth=(()=>{
     const select=document.createElement('select');select.id=id;
     for(const w of worlds.filter(x=>x.status!=='closed')){
       const special=w.server_id==='S4';
-      const label=w.name+' · '+w.server_id+(special?' · VIP 15':'')+
+      const label=w.name+' · '+w.server_id+(special?' · VIP 15 / Dùng thử':'')+
         (w.status==='maintenance'?' · Bảo trì':'');
       const option=el('option','',label);
       option.value=w.server_id;option.disabled=w.status!=='online';select.append(option);
@@ -166,10 +198,13 @@ window.GxbAuth=(()=>{
       };
       const forgot=el('button','auth-link','Quên mật khẩu?');forgot.onclick=renderRecovery;body.append(submit,forgot);
       if(s4Kicked&&session?.account?.server_id==='S4'){
-        const leave=el('button','auth-s4-switch','Chọn S1–S3 để tiếp tục chơi');
+        if(s4KickedReason==='trial_expired')
+          status.textContent='Chìa Khóa S4 Dùng Thử đã hết hạn. '
+            +'Hãy chọn máy chủ thường để tiếp tục chơi hoặc kích hoạt chìa khóa khác.';
+        const leave=el('button','auth-s4-switch','Chọn máy chủ thường để tiếp tục chơi');
         leave.type='button';
         leave.onclick=async()=>{
-          if(world.value==='S4'){status.textContent='S4 đang tạm khóa. Hãy chọn S1, S2 hoặc S3.';return;}
+          if(world.value==='S4'){status.textContent='Chọn máy chủ thường khác S4 để tiếp tục chơi.';return;}
           leave.disabled=true;
           try{await request('/api/auth/switch-server',{server_id:world.value});location.reload();}
           catch(e){status.textContent=e.message;leave.disabled=false;}
@@ -219,7 +254,11 @@ window.GxbAuth=(()=>{
       if(data.s4_cycle?.server_id==='S4'){
         s4Cycle=data.s4_cycle;s4SyncedAt=performance.now();
       }
+      if(data.s4_trial){s4Trial=data.s4_trial;s4TrialSyncedAt=performance.now();}
       if(!data.authenticated){show();return false;}
+      if(session?.account?.server_id==='S4'&&session?.s4_access_expired){
+        s4Kicked=true;s4KickedReason='trial_expired';show();return false;
+      }
       if(session?.account?.server_id==='S4'&&s4Cycle?.phase==='locked'){
         s4Kicked=true;show();return false;
       }
@@ -279,6 +318,6 @@ window.GxbAuth=(()=>{
   window.GxbAuthReady=init();
   startS4Timers();
   return{request,session:()=>session,isSuperGM:()=>isSuperGM,worlds:()=>worlds,
-         kickToServerLobby,refreshS4Cycle:syncS4Cycle,
+         kickToServerLobby,refreshS4Cycle:syncS4Cycle,refreshS4Trial:syncS4Trial,
          logout:async()=>{await request('/api/auth/logout',{});location.reload();}};
 })();

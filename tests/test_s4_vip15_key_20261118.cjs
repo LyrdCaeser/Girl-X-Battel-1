@@ -12,10 +12,11 @@ assert(app.includes("String(item?.id)==='990004'"));
 assert(home.includes('m.attachments?.__s4_exclusive_key__'));
 assert(home.includes('Nhận Chìa Khóa S4'));
 assert(home.includes('/s4-exclusive-key.svg'));
-assert(auth.includes('Chìa Khóa S4 • Độc Quyền'));
-for(const file of ['app.js','home-menus.js','home-menus.css','auth.js']){
- const version=['app.js','home-menus.js'].includes(file)?'r2':'r1';
- assert(html.includes('/'+file+'?v=20261118-vip15-s4key-'+version),file);
-}
-assert(app.includes('/assets/items-catalog.json?v=20261118-vip15-s4key-r1'));
+assert(auth.includes('VIP 15 + chìa khóa vĩnh viễn'));
+assert(read('gxb2/s4_exclusive.py').includes('Chìa Khóa S4 • Độc Quyền'));
+for(const file of ['app.js','auth.js'])
+ assert(html.includes('/'+file+'?v=20261119-s4-trial-r1'),file);
+assert(html.includes('/home-menus.js?v=20261118-s4-cinema-clean-r1'));
+assert(html.includes('/home-menus.css?v=20261118-native-wish-r1'));
+assert(app.includes('/assets/items-catalog.json?v=20261119-s4-trial-r1'));
 console.log('PASS VIP15 S4 exclusive key UI: SVG, VIP mail, bag inventory, no gifts, versioned assets');
