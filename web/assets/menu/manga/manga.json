@@ -1,1 +1,1329 @@
-{"episodes":[[1,"Episode 1",true],[2,"Episode 2",true],[3,"Episode 3",true],[4,"Episode 4",true],[5,"Episode 5",true],[6,"Episode 6",true],[7,"Episode 7",true],[8,"Episode 8",true],[9,"Episode 9",true],[10,"Episode 10",true],[11,"Episode 11",true],[12,"Episode 12",true],[13,"Episode 13",true],[14,"Episode 14",true],[15,"Episode 15",true],[16,"Episode 16",true],[17,"Episode 17",true],[18,"Episode 18",true],[19,"Episode 19",true],[20,"Episode 20",true],[21,"Episode 21",true],[22,"Episode 22",true],[23,"Episode 23",true],[24,"Episode 24",true],[25,"Episode 25",true],[26,"Episode 26",true],[27,"Episode 27",true],[28,"Episode 28",true],[29,"Episode 29",true],[30,"Episode 30",true],[31,"Episode 31",true],[32,"Episode 32",true],[33,"Episode 33",true],[34,"Episode 34",true],[35,"Episode 35",true],[36,"Episode 36",true],[37,"Episode 37",true],[38,"Episode 38",true],[39,"Episode 39",true],[40,"Episode 40",true],[41,"Episode 41",true],[42,"Episode 42",true],[43,"Episode 43",true],[44,"Episode 44",true],[45,"Episode 45",true],[46,"Episode 46",true],[47,"Episode 47",true],[48,"Episode 48",true],[49,"Episode 49",true],[50,"Episode 50",true],[51,"Episode 51",true],[52,"Episode 52",true],[53,"Episode 53",true],[54,"Episode 54",true],[55,"Episode 55",true],[56,"Episode 56",true],[57,"Episode 57",true],[58,"Episode 58",true],[59,"Episode 59",true],[60,"Episode 60",true],[61,"Episode 61",true],[62,"Sp.1",true],[63,"Episode 62",true],[64,"Episode 63",true],[65,"Episode 64",true],[66,"Sp.2",true],[67,"Episode 65",true],[68,"Episode 66",true],[69,"Episode 67",true],[70,"Episode 68",true],[71,"Episode 69",true],[72,"Episode 70",true],[73,"Episode 71",true],[74,"Episode 72",true],[75,"Episode 73",true],[76,"Episode 74",true],[77,"Episode 75",true],[78,"Episode 76",true],[79,"Episode 77",true],[80,"Episode 78",true],[81,"Episode 79",true],[82,"Episode 80",true],[83,"Episode 81",true],[84,"Episode 82",true],[85,"Episode 83",true],[86,"Episode 84",true],[87,"Episode 85",true],[88,"Episode 86",true],[89,"Episode 87",true],[90,"Episode 88",true],[91,"Episode 89",true],[92,"Episode 90",true],[93,"Episode 91",true],[94,"Episode 92",true],[95,"Episode 93",true],[96,"Episode 94",true],[97,"Episode 95",true],[98,"Episode 96",true],[99,"Episode 97",true],[100,"Episode 98",true],[101,"Episode 99",true],[102,"Episode 100",true],[103,"Sp.3",true],[104,"Episode 101",true],[105,"Episode 102",true],[106,"Episode 103",true],[107,"Episode 104",true],[108,"Episode 105",true],[109,"Episode 106",true],[110,"Episode 107",true],[111,"Episode 108",true],[112,"Episode 109",true],[113,"Episode 110",true],[114,"Episode 111",true],[115,"Episode 112",true],[116,"Episode 113",true],[117,"Episode 114",true],[118,"Episode 115",true],[119,"Episode 116",true],[120,"Episode 117",true],[121,"Episode 118",true],[122,"Episode 119",true],[123,"Episode 120",true],[124,"Episode 121",true],[125,"Episode 122",true],[126,"Episode 123",true],[127,"Episode 124",true],[128,"Episode 125",true],[129,"Episode 126",true],[130,"Episode 127",true],[131,"Episode 128",true],[132,"Episode 129",true],[133,"Episode 130",true],[134,"Episode 131",true],[135,"Episode 132",true],[136,"Episode 133",true],[137,"Episode 134",true],[138,"Episode 135",true],[139,"Episode 136",true],[140,"Episode 137",true],[141,"Episode 138",true],[142,"Episode 139",true],[143,"Episode 140",true],[144,"Episode 141",true],[145,"Episode 142",true],[146,"Episode 143",true],[147,"Episode 144",true],[148,"Episode 145",true],[149,"Episode 146",true],[150,"Episode 147",true],[151,"Episode 148",true],[152,"Episode 149",true],[153,"Episode 150",true],[154,"Episode 151",true],[155,"Episode 152",true],[156,"Episode 153",true],[157,"Episode 154",true],[158,"Episode 155",true],[159,"Episode 156",true],[160,"Episode 157",true],[161,"Episode 158",true],[162,"Episode 159",true],[163,"Episode 160",true],[164,"Episode 161",true],[165,"Episode 162",true],[166,"Episode 163",true],[167,"Episode 164",true],[168,"Episode 165",true],[169,"Episode 166",true],[170,"Episode 167",true],[171,"Episode 168",true],[172,"Episode 169",true],[173,"Episode 170",true],[174,"Episode 171",true],[175,"Episode 172",true],[176,"Episode 173",true],[177,"Episode 174",true],[178,"Episode 175",true],[179,"Episode 176",true],[180,"Episode 177",true],[181,"Episode 178",true],[182,"Episode 179",true],[183,"Episode 180",true],[184,"Episode 181",true],[185,"Episode 182",true],[186,"Episode 183",true],[187,"Episode 184",true],[188,"Episode 185",true],[189,"Episode 186",true],[190,"Episode 187",true],[191,"Episode 188",true],[192,"Episode 189",true],[193,"Episode 190",true],[194,"Episode 191",true],[195,"Episode 192",true],[196,"Episode 193",true],[197,"Episode 194",true],[198,"Episode 195",true],[199,"Episode 196",true],[200,"Episode 197",true],[201,"Episode 198",true],[202,"Episode 199",true],[203,"Episode 200",true],[204,"Episode 201",true],[205,"Episode 202",true],[206,"Episode 203",true],[207,"Episode 204",true],[208,"Episode 205",true],[209,"Episode 206",true],[210,"Episode 207",true],[211,"Episode 208",true],[212,"Episode 209",true],[213,"Episode 210",true],[214,"Episode 211",true],[215,"Episode 212",true]],"birthday":[[1,"Alice"],[2,"Amazon"],[3,"Amelia Scythe"],[4,"Angel"],[5,"Apate"],[6,"Aurora"],[7,"Blair"],[8,"Blowie"],[9,"Chevalir"],[10,"Cygmar"],[11,"Diana"],[12,"Dracula"],[13,"Effy"],[14,"Elysia"],[15,"Enmaya"],[16,"Esau Jacob"],[17,"Fencer"],[18,"Frexie"],[19,"Gambler"],[20,"Gwen Brigit"],[21,"Hadea"],[22,"Holly"],[23,"Hottie"],[24,"Izanami"],[25,"Javelin"],[26,"Joan"],[27,"Kassy"],[28,"Kong Ming"],[29,"Kratos Turin"],[30,"Krystal"],[31,"Lavia Estel"],[32,"Librarian"],[33,"Linky"],[34,"Lucifer Michael"],[35,"Maia"],[36,"Masamune"],[37,"Mika"],[38,"Miku"],[39,"Mio"],[40,"Monica"],[41,"Muppet"],[42,"Nani"],[43,"Nymphaea"],[44,"Phoenix"],[45,"Promethea"],[46,"Psychic"],[47,"Raphael"],[48,"Robbie"],[49,"Saint"],[50,"Sakura"],[51,"Sapphire"],[52,"Silvia"],[53,"Sonya"],[54,"Succuba"],[55,"Susan"],[56,"Syrcotte"],[57,"Teresa Hermes"],[58,"Trinity"],[59,"Valeera"],[60,"Vivian"],[61,"Wildtress"],[62,"Zeusia"]]}
+{
+ "episodes": [
+  [
+   1,
+   "Tập 1",
+   true
+  ],
+  [
+   2,
+   "Tập 2",
+   true
+  ],
+  [
+   3,
+   "Tập 3",
+   true
+  ],
+  [
+   4,
+   "Tập 4",
+   true
+  ],
+  [
+   5,
+   "Tập 5",
+   true
+  ],
+  [
+   6,
+   "Tập 6",
+   true
+  ],
+  [
+   7,
+   "Tập 7",
+   true
+  ],
+  [
+   8,
+   "Tập 8",
+   true
+  ],
+  [
+   9,
+   "Tập 9",
+   true
+  ],
+  [
+   10,
+   "Tập 10",
+   true
+  ],
+  [
+   11,
+   "Tập 11",
+   true
+  ],
+  [
+   12,
+   "Tập 12",
+   true
+  ],
+  [
+   13,
+   "Tập 13",
+   true
+  ],
+  [
+   14,
+   "Tập 14",
+   true
+  ],
+  [
+   15,
+   "Tập 15",
+   true
+  ],
+  [
+   16,
+   "Tập 16",
+   true
+  ],
+  [
+   17,
+   "Tập 17",
+   true
+  ],
+  [
+   18,
+   "Tập 18",
+   true
+  ],
+  [
+   19,
+   "Tập 19",
+   true
+  ],
+  [
+   20,
+   "Tập 20",
+   true
+  ],
+  [
+   21,
+   "Tập 21",
+   true
+  ],
+  [
+   22,
+   "Tập 22",
+   true
+  ],
+  [
+   23,
+   "Tập 23",
+   true
+  ],
+  [
+   24,
+   "Tập 24",
+   true
+  ],
+  [
+   25,
+   "Tập 25",
+   true
+  ],
+  [
+   26,
+   "Tập 26",
+   true
+  ],
+  [
+   27,
+   "Tập 27",
+   true
+  ],
+  [
+   28,
+   "Tập 28",
+   true
+  ],
+  [
+   29,
+   "Tập 29",
+   true
+  ],
+  [
+   30,
+   "Tập 30",
+   true
+  ],
+  [
+   31,
+   "Tập 31",
+   true
+  ],
+  [
+   32,
+   "Tập 32",
+   true
+  ],
+  [
+   33,
+   "Tập 33",
+   true
+  ],
+  [
+   34,
+   "Tập 34",
+   true
+  ],
+  [
+   35,
+   "Tập 35",
+   true
+  ],
+  [
+   36,
+   "Tập 36",
+   true
+  ],
+  [
+   37,
+   "Tập 37",
+   true
+  ],
+  [
+   38,
+   "Tập 38",
+   true
+  ],
+  [
+   39,
+   "Tập 39",
+   true
+  ],
+  [
+   40,
+   "Tập 40",
+   true
+  ],
+  [
+   41,
+   "Tập 41",
+   true
+  ],
+  [
+   42,
+   "Tập 42",
+   true
+  ],
+  [
+   43,
+   "Tập 43",
+   true
+  ],
+  [
+   44,
+   "Tập 44",
+   true
+  ],
+  [
+   45,
+   "Tập 45",
+   true
+  ],
+  [
+   46,
+   "Tập 46",
+   true
+  ],
+  [
+   47,
+   "Tập 47",
+   true
+  ],
+  [
+   48,
+   "Tập 48",
+   true
+  ],
+  [
+   49,
+   "Tập 49",
+   true
+  ],
+  [
+   50,
+   "Tập 50",
+   true
+  ],
+  [
+   51,
+   "Tập 51",
+   true
+  ],
+  [
+   52,
+   "Tập 52",
+   true
+  ],
+  [
+   53,
+   "Tập 53",
+   true
+  ],
+  [
+   54,
+   "Tập 54",
+   true
+  ],
+  [
+   55,
+   "Tập 55",
+   true
+  ],
+  [
+   56,
+   "Tập 56",
+   true
+  ],
+  [
+   57,
+   "Tập 57",
+   true
+  ],
+  [
+   58,
+   "Tập 58",
+   true
+  ],
+  [
+   59,
+   "Tập 59",
+   true
+  ],
+  [
+   60,
+   "Tập 60",
+   true
+  ],
+  [
+   61,
+   "Tập 61",
+   true
+  ],
+  [
+   62,
+   "Sp.1",
+   true
+  ],
+  [
+   63,
+   "Tập 62",
+   true
+  ],
+  [
+   64,
+   "Tập 63",
+   true
+  ],
+  [
+   65,
+   "Tập 64",
+   true
+  ],
+  [
+   66,
+   "Sp.2",
+   true
+  ],
+  [
+   67,
+   "Tập 65",
+   true
+  ],
+  [
+   68,
+   "Tập 66",
+   true
+  ],
+  [
+   69,
+   "Tập 67",
+   true
+  ],
+  [
+   70,
+   "Tập 68",
+   true
+  ],
+  [
+   71,
+   "Tập 69",
+   true
+  ],
+  [
+   72,
+   "Tập 70",
+   true
+  ],
+  [
+   73,
+   "Tập 71",
+   true
+  ],
+  [
+   74,
+   "Tập 72",
+   true
+  ],
+  [
+   75,
+   "Tập 73",
+   true
+  ],
+  [
+   76,
+   "Tập 74",
+   true
+  ],
+  [
+   77,
+   "Tập 75",
+   true
+  ],
+  [
+   78,
+   "Tập 76",
+   true
+  ],
+  [
+   79,
+   "Tập 77",
+   true
+  ],
+  [
+   80,
+   "Tập 78",
+   true
+  ],
+  [
+   81,
+   "Tập 79",
+   true
+  ],
+  [
+   82,
+   "Tập 80",
+   true
+  ],
+  [
+   83,
+   "Tập 81",
+   true
+  ],
+  [
+   84,
+   "Tập 82",
+   true
+  ],
+  [
+   85,
+   "Tập 83",
+   true
+  ],
+  [
+   86,
+   "Tập 84",
+   true
+  ],
+  [
+   87,
+   "Tập 85",
+   true
+  ],
+  [
+   88,
+   "Tập 86",
+   true
+  ],
+  [
+   89,
+   "Tập 87",
+   true
+  ],
+  [
+   90,
+   "Tập 88",
+   true
+  ],
+  [
+   91,
+   "Tập 89",
+   true
+  ],
+  [
+   92,
+   "Tập 90",
+   true
+  ],
+  [
+   93,
+   "Tập 91",
+   true
+  ],
+  [
+   94,
+   "Tập 92",
+   true
+  ],
+  [
+   95,
+   "Tập 93",
+   true
+  ],
+  [
+   96,
+   "Tập 94",
+   true
+  ],
+  [
+   97,
+   "Tập 95",
+   true
+  ],
+  [
+   98,
+   "Tập 96",
+   true
+  ],
+  [
+   99,
+   "Tập 97",
+   true
+  ],
+  [
+   100,
+   "Tập 98",
+   true
+  ],
+  [
+   101,
+   "Tập 99",
+   true
+  ],
+  [
+   102,
+   "Tập 100",
+   true
+  ],
+  [
+   103,
+   "Sp.3",
+   true
+  ],
+  [
+   104,
+   "Tập 101",
+   true
+  ],
+  [
+   105,
+   "Tập 102",
+   true
+  ],
+  [
+   106,
+   "Tập 103",
+   true
+  ],
+  [
+   107,
+   "Tập 104",
+   true
+  ],
+  [
+   108,
+   "Tập 105",
+   true
+  ],
+  [
+   109,
+   "Tập 106",
+   true
+  ],
+  [
+   110,
+   "Tập 107",
+   true
+  ],
+  [
+   111,
+   "Tập 108",
+   true
+  ],
+  [
+   112,
+   "Tập 109",
+   true
+  ],
+  [
+   113,
+   "Tập 110",
+   true
+  ],
+  [
+   114,
+   "Tập 111",
+   true
+  ],
+  [
+   115,
+   "Tập 112",
+   true
+  ],
+  [
+   116,
+   "Tập 113",
+   true
+  ],
+  [
+   117,
+   "Tập 114",
+   true
+  ],
+  [
+   118,
+   "Tập 115",
+   true
+  ],
+  [
+   119,
+   "Tập 116",
+   true
+  ],
+  [
+   120,
+   "Tập 117",
+   true
+  ],
+  [
+   121,
+   "Tập 118",
+   true
+  ],
+  [
+   122,
+   "Tập 119",
+   true
+  ],
+  [
+   123,
+   "Tập 120",
+   true
+  ],
+  [
+   124,
+   "Tập 121",
+   true
+  ],
+  [
+   125,
+   "Tập 122",
+   true
+  ],
+  [
+   126,
+   "Tập 123",
+   true
+  ],
+  [
+   127,
+   "Tập 124",
+   true
+  ],
+  [
+   128,
+   "Tập 125",
+   true
+  ],
+  [
+   129,
+   "Tập 126",
+   true
+  ],
+  [
+   130,
+   "Tập 127",
+   true
+  ],
+  [
+   131,
+   "Tập 128",
+   true
+  ],
+  [
+   132,
+   "Tập 129",
+   true
+  ],
+  [
+   133,
+   "Tập 130",
+   true
+  ],
+  [
+   134,
+   "Tập 131",
+   true
+  ],
+  [
+   135,
+   "Tập 132",
+   true
+  ],
+  [
+   136,
+   "Tập 133",
+   true
+  ],
+  [
+   137,
+   "Tập 134",
+   true
+  ],
+  [
+   138,
+   "Tập 135",
+   true
+  ],
+  [
+   139,
+   "Tập 136",
+   true
+  ],
+  [
+   140,
+   "Tập 137",
+   true
+  ],
+  [
+   141,
+   "Tập 138",
+   true
+  ],
+  [
+   142,
+   "Tập 139",
+   true
+  ],
+  [
+   143,
+   "Tập 140",
+   true
+  ],
+  [
+   144,
+   "Tập 141",
+   true
+  ],
+  [
+   145,
+   "Tập 142",
+   true
+  ],
+  [
+   146,
+   "Tập 143",
+   true
+  ],
+  [
+   147,
+   "Tập 144",
+   true
+  ],
+  [
+   148,
+   "Tập 145",
+   true
+  ],
+  [
+   149,
+   "Tập 146",
+   true
+  ],
+  [
+   150,
+   "Tập 147",
+   true
+  ],
+  [
+   151,
+   "Tập 148",
+   true
+  ],
+  [
+   152,
+   "Tập 149",
+   true
+  ],
+  [
+   153,
+   "Tập 150",
+   true
+  ],
+  [
+   154,
+   "Tập 151",
+   true
+  ],
+  [
+   155,
+   "Tập 152",
+   true
+  ],
+  [
+   156,
+   "Tập 153",
+   true
+  ],
+  [
+   157,
+   "Tập 154",
+   true
+  ],
+  [
+   158,
+   "Tập 155",
+   true
+  ],
+  [
+   159,
+   "Tập 156",
+   true
+  ],
+  [
+   160,
+   "Tập 157",
+   true
+  ],
+  [
+   161,
+   "Tập 158",
+   true
+  ],
+  [
+   162,
+   "Tập 159",
+   true
+  ],
+  [
+   163,
+   "Tập 160",
+   true
+  ],
+  [
+   164,
+   "Tập 161",
+   true
+  ],
+  [
+   165,
+   "Tập 162",
+   true
+  ],
+  [
+   166,
+   "Tập 163",
+   true
+  ],
+  [
+   167,
+   "Tập 164",
+   true
+  ],
+  [
+   168,
+   "Tập 165",
+   true
+  ],
+  [
+   169,
+   "Tập 166",
+   true
+  ],
+  [
+   170,
+   "Tập 167",
+   true
+  ],
+  [
+   171,
+   "Tập 168",
+   true
+  ],
+  [
+   172,
+   "Tập 169",
+   true
+  ],
+  [
+   173,
+   "Tập 170",
+   true
+  ],
+  [
+   174,
+   "Tập 171",
+   true
+  ],
+  [
+   175,
+   "Tập 172",
+   true
+  ],
+  [
+   176,
+   "Tập 173",
+   true
+  ],
+  [
+   177,
+   "Tập 174",
+   true
+  ],
+  [
+   178,
+   "Tập 175",
+   true
+  ],
+  [
+   179,
+   "Tập 176",
+   true
+  ],
+  [
+   180,
+   "Tập 177",
+   true
+  ],
+  [
+   181,
+   "Tập 178",
+   true
+  ],
+  [
+   182,
+   "Tập 179",
+   true
+  ],
+  [
+   183,
+   "Tập 180",
+   true
+  ],
+  [
+   184,
+   "Tập 181",
+   true
+  ],
+  [
+   185,
+   "Tập 182",
+   true
+  ],
+  [
+   186,
+   "Tập 183",
+   true
+  ],
+  [
+   187,
+   "Tập 184",
+   true
+  ],
+  [
+   188,
+   "Tập 185",
+   true
+  ],
+  [
+   189,
+   "Tập 186",
+   true
+  ],
+  [
+   190,
+   "Tập 187",
+   true
+  ],
+  [
+   191,
+   "Tập 188",
+   true
+  ],
+  [
+   192,
+   "Tập 189",
+   true
+  ],
+  [
+   193,
+   "Tập 190",
+   true
+  ],
+  [
+   194,
+   "Tập 191",
+   true
+  ],
+  [
+   195,
+   "Tập 192",
+   true
+  ],
+  [
+   196,
+   "Tập 193",
+   true
+  ],
+  [
+   197,
+   "Tập 194",
+   true
+  ],
+  [
+   198,
+   "Tập 195",
+   true
+  ],
+  [
+   199,
+   "Tập 196",
+   true
+  ],
+  [
+   200,
+   "Tập 197",
+   true
+  ],
+  [
+   201,
+   "Tập 198",
+   true
+  ],
+  [
+   202,
+   "Tập 199",
+   true
+  ],
+  [
+   203,
+   "Tập 200",
+   true
+  ],
+  [
+   204,
+   "Tập 201",
+   true
+  ],
+  [
+   205,
+   "Tập 202",
+   true
+  ],
+  [
+   206,
+   "Tập 203",
+   true
+  ],
+  [
+   207,
+   "Tập 204",
+   true
+  ],
+  [
+   208,
+   "Tập 205",
+   true
+  ],
+  [
+   209,
+   "Tập 206",
+   true
+  ],
+  [
+   210,
+   "Tập 207",
+   true
+  ],
+  [
+   211,
+   "Tập 208",
+   true
+  ],
+  [
+   212,
+   "Tập 209",
+   true
+  ],
+  [
+   213,
+   "Tập 210",
+   true
+  ],
+  [
+   214,
+   "Tập 211",
+   true
+  ],
+  [
+   215,
+   "Tập 212",
+   true
+  ]
+ ],
+ "birthday": [
+  [
+   1,
+   "Alice"
+  ],
+  [
+   2,
+   "Amazon"
+  ],
+  [
+   3,
+   "Amelia Scythe"
+  ],
+  [
+   4,
+   "Angel"
+  ],
+  [
+   5,
+   "Apate"
+  ],
+  [
+   6,
+   "Aurora"
+  ],
+  [
+   7,
+   "Blair"
+  ],
+  [
+   8,
+   "Blowie"
+  ],
+  [
+   9,
+   "Chevalir"
+  ],
+  [
+   10,
+   "Cygmar"
+  ],
+  [
+   11,
+   "Diana"
+  ],
+  [
+   12,
+   "Dracula"
+  ],
+  [
+   13,
+   "Effy"
+  ],
+  [
+   14,
+   "Elysia"
+  ],
+  [
+   15,
+   "Enmaya"
+  ],
+  [
+   16,
+   "Esau Jacob"
+  ],
+  [
+   17,
+   "Fencer"
+  ],
+  [
+   18,
+   "Frexie"
+  ],
+  [
+   19,
+   "Gambler"
+  ],
+  [
+   20,
+   "Gwen Brigit"
+  ],
+  [
+   21,
+   "Hadea"
+  ],
+  [
+   22,
+   "Holly"
+  ],
+  [
+   23,
+   "Hottie"
+  ],
+  [
+   24,
+   "Izanami"
+  ],
+  [
+   25,
+   "Javelin"
+  ],
+  [
+   26,
+   "Joan"
+  ],
+  [
+   27,
+   "Kassy"
+  ],
+  [
+   28,
+   "Kong Ming"
+  ],
+  [
+   29,
+   "Kratos Turin"
+  ],
+  [
+   30,
+   "Krystal"
+  ],
+  [
+   31,
+   "Lavia Estel"
+  ],
+  [
+   32,
+   "Librarian"
+  ],
+  [
+   33,
+   "Linky"
+  ],
+  [
+   34,
+   "Lucifer Michael"
+  ],
+  [
+   35,
+   "Maia"
+  ],
+  [
+   36,
+   "Masamune"
+  ],
+  [
+   37,
+   "Mika"
+  ],
+  [
+   38,
+   "Miku"
+  ],
+  [
+   39,
+   "Mio"
+  ],
+  [
+   40,
+   "Monica"
+  ],
+  [
+   41,
+   "Muppet"
+  ],
+  [
+   42,
+   "Nani"
+  ],
+  [
+   43,
+   "Nymphaea"
+  ],
+  [
+   44,
+   "Phoenix"
+  ],
+  [
+   45,
+   "Promethea"
+  ],
+  [
+   46,
+   "Psychic"
+  ],
+  [
+   47,
+   "Raphael"
+  ],
+  [
+   48,
+   "Robbie"
+  ],
+  [
+   49,
+   "Saint"
+  ],
+  [
+   50,
+   "Sakura"
+  ],
+  [
+   51,
+   "Sapphire"
+  ],
+  [
+   52,
+   "Silvia"
+  ],
+  [
+   53,
+   "Sonya"
+  ],
+  [
+   54,
+   "Succuba"
+  ],
+  [
+   55,
+   "Susan"
+  ],
+  [
+   56,
+   "Syrcotte"
+  ],
+  [
+   57,
+   "Teresa Hermes"
+  ],
+  [
+   58,
+   "Trinity"
+  ],
+  [
+   59,
+   "Valeera"
+  ],
+  [
+   60,
+   "Vivian"
+  ],
+  [
+   61,
+   "Wildtress"
+  ],
+  [
+   62,
+   "Zeusia"
+  ]
+ ]
+}

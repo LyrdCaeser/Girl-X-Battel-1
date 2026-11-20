@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1023"><link rel="icon" type="image/jpeg" href="./favicon.jpg">
+<title>Goddess Battle 3 - Trang Chủ Chính Thức</title>
+<link rel="stylesheet" href="./style.css?v=20261016-authenticator-recovery-v1">
+<script defer src="./app.js?v=20261016-player-shop-visible-v3"></script>
+</head>
+<body>
+<div class="shell">
+<aside class="sidebar">
+  <a class="brand" href="/"><img class="brand-avatar" src="./favicon.jpg" alt="Goddess Battle 3"><span><b>Goddess Battle 3</b><small>TRANG CHỦ CHÍNH THỨC</small></span></a>
+  <div class="side-section">GODDESS BATTLE 3</div>
+  <nav class="nav" aria-label="Danh mục">
+    <button class="nav-btn" data-view="create" hidden>✦ <span>Tạo giftcode</span></button>
+    <button class="nav-btn" data-view="history" hidden>▤ <span>Mã đã phát hành</span></button>
+    <button class="nav-btn" data-view="redeem">◈ <span>Đổi giftcode</span></button>
+    <button class="nav-btn" data-view="shop">✧ <span>Cửa Hàng Trang Phục</span></button>
+    <button class="nav-btn" data-view="gift">♡ <span>GiftSkin · Tặng Trang Phục</span></button>
+    <button class="nav-btn" data-view="recover" hidden>⌑ <span>Khôi Phục 3 Khóa QTV</span></button>
+    <button class="nav-btn" data-view="skins" hidden>✧ <span>Quản lý trang phục</span></button>
+  </nav>
+  <div class="side-bottom">
+    <span class="server-dot"></span> Kết nối máy chủ GXB 3
+    <small>Dữ liệu lưu trên server, không lưu tại trình duyệt.</small>
+    
+  </div>
+</aside>
+<main class="main">
+  <header class="topbar"><div><span class="eyebrow">GXB 3 / HỆ THỐNG QUÀ TẶNG</span><h1 id="page-title">Tạo Giftcode</h1></div><div class="account"><span id="server-status">Đang kết nối...</span><span id="account-label">Chưa đăng nhập</span><span id="account-character" aria-live="polite">Đồng bộ với tài khoản game</span><a id="account-sync" class="account-sync" href="https://180-93-111-99.sslip.io/api/giftcode/sso/start" title="Xem đúng tài khoản và server bên game trước khi xác nhận đồng bộ">↻ Đồng bộ với GXB 3</a><button id="account-recovery" class="account-sync" type="button" hidden>⌑ Khôi phục 3 khóa</button><button id="account-switch" class="account-sync" type="button" title="Đăng xuất riêng Goddess Battle 3 - Trang Chủ Chính Thức mà không xóa tài khoản và tiến trình game" hidden>Đổi tài khoản trang chủ</button></div></header>
+  <section id="login-panel" class="panel login-card" hidden>
+    <h2>Đăng nhập tài khoản GXB 3</h2><p class="muted">Đăng nhập game để sử dụng Goddess Battle 3 - Trang Chủ Chính Thức. Chỉ tài khoản SUPER GM có thể tạo và khóa mã.</p>
+    <a id="game-sso" class="game-sso" href="https://180-93-111-99.sslip.io/api/giftcode/sso/start">↗ Liên kết đăng nhập trực tiếp từ game GXB 3</a>
+    <p class="muted mini">Trước khi đồng bộ, game sẽ hiển thị UID, tên nhân vật, server và quyền của tài khoản đang đăng nhập để bạn xác nhận. Bạn cũng có thể đăng nhập thủ công bằng tài khoản đúng bên dưới.</p>
+    <form id="login-form" class="form-row">
+      <label>Tên đăng nhập<input name="username" autocomplete="username" required></label>
+      <label>Mật khẩu<input name="password" type="password" autocomplete="current-password" required></label>
+      <label>Máy chủ<select name="server_id"><option value="S1">S1</option></select></label>
+      <button class="primary" type="submit">Đăng nhập</button>
+    </form><p id="login-status" role="status"></p>
+  </section>
+  <div id="restricted" class="panel" hidden><h2>Quản trị viên mới được truy cập</h2><p class="muted">Tài khoản hiện tại không có quyền SUPER GM. Bạn vẫn có thể đổi giftcode và mua trang phục tại Cửa Hàng Trang Phục. Nếu không đúng tài khoản mong muốn, bấm “Đổi tài khoản trang chủ”.</p></div>
+  <section id="create-lock" class="view panel login-card" hidden>
+    <span class="eyebrow">KHU VỰC BẢO VỆ</span><h2>Khóa khu vực quản trị</h2>
+    <p class="muted">Chỉ tài khoản SUPER GM đã đồng bộ với game được nhập ba loại khóa. Xác thực đủ cả ba mới hiển thị Tạo Giftcode, Mã đã phát hành và Quản lý Trang Phục.</p>
+    <form id="unlock-form" class="studio-admin-unlock" autocomplete="off">
+      <label>Khóa quản trị GXB 3<input id="unlock-admin-key" type="password" autocomplete="off" minlength="12" required placeholder="GXB3_ADMIN_KEY"></label>
+      <label>Khóa bảo vệ Goddess Battle 3 - Trang Chủ Chính Thức<input id="unlock-password" type="password" autocomplete="off" minlength="12" required placeholder="GXB3_GIFTCODE_PANEL_KEY"></label>
+      <label>Khóa hành động QTV<input id="unlock-gm-key" type="password" autocomplete="off" minlength="24" required placeholder="GXB3_GM_ACTION_KEY"></label>
+      <button class="primary" type="submit">Xác thực 3 khóa · Mở quản trị</button>
+    </form>
+    <p class="muted mini">Không lưu khóa trong trình duyệt. Quyền mở bảng chỉ tồn tại trong phiên và hết hạn tự động. Không chia sẻ khóa cho người chơi.</p>
+    <button id="open-recovery" class="ghost" type="button">Quên 3 khóa? Khôi phục bằng Google Authenticator →</button>
+  </section>
+  <section id="create-view" class="view" hidden>
+    <div class="stats">
+      <div class="stat"><span>Mã đã tạo</span><b id="stat-total">—</b></div>
+      <div class="stat"><span>Đang hoạt động</span><b id="stat-active">—</b></div>
+      <div class="stat"><span>Lượt đổi thành công</span><b id="stat-used">—</b></div>
+    </div>
+    <div class="create-grid">
+      <div class="panel">
+        <div class="section-head"><div><span class="eyebrow">BƯỚC 01</span><h2>Thông tin Giftcode</h2></div><span class="tag">Máy chủ xác nhận</span></div>
+        <div class="code-editor">
+          <label for="code">Mã Giftcode <span class="hint">(6–24 ký tự A–Z, số, dấu _ hoặc -; để trống để server tự sinh)</span>
+            <input id="code" maxlength="24" minlength="6" spellcheck="false" placeholder="Nhập mã giftcode, ví dụ: TANTHU2026" autocomplete="off" autocapitalize="characters">
+          </label>
+          <div class="code-actions">
+            <button id="random-code" type="button" class="ghost small">✧ Tạo ngẫu nhiên</button>
+            <button id="check-code" type="button" class="ghost small">Kiểm tra trùng</button>
+          </div>
+          <p id="code-check-status" class="mini" role="status" aria-live="polite">Mã tự chọn được xác nhận lại trên máy chủ khi phát hành.</p>
+        </div>
+        <div class="form-pair">
+          <label>Số lượt sử dụng tối đa<input id="max-uses" type="number" min="1" max="100000" value="100" required></label>
+          <label>Máy chủ áp dụng<select id="world"><option value="ALL">Tất cả máy chủ</option></select></label>
+        </div>
+        <label>Thời gian hết hạn (không bắt buộc)<input id="expiry" type="datetime-local"></label>
+        <label>Tiêu đề thư nhận quà<input id="title" value="Quà Giftcode GXB 3" maxlength="100"></label>
+        <label>Nội dung gửi người chơi<textarea id="message" rows="3" maxlength="1000">Chúc bạn chơi game vui vẻ!</textarea></label>
+        <hr>
+        <div class="section-head"><div><span class="eyebrow">BƯỚC 02</span><h2>Giỏ quà đính kèm</h2></div><button class="ghost small" id="clear-basket" type="button">Xóa giỏ</button></div>
+        <div id="basket" class="basket"><p class="muted">Chưa có vật phẩm nào. Hãy chọn từ danh mục bên cạnh.</p></div>
+        <hr>
+        <label>Khóa hành động QTV <span class="hint">(chỉ lưu trong trang đang mở)</span><input id="gm-key" type="password" autocomplete="off" placeholder="Nhập khóa QTV trên VPS"></label>
+        <div class="row-actions"><button id="verify-key" type="button" class="ghost">Xác thực khóa</button><button id="create-code" type="button" class="primary">✦ Tạo giftcode</button></div>
+        <div id="new-code" class="generated" hidden><span>Giftcode mới</span><strong id="created-code"></strong><button id="copy-code" type="button" class="ghost">Sao chép mã</button></div>
+      </div>
+      <div class="panel">
+        <div class="section-head"><div><span class="eyebrow">BƯỚC 03</span><h2>Chọn vật phẩm gốc</h2></div><span class="tag">Kho game thật</span></div>
+        <div class="catalog-tools"><input id="item-search" type="search" placeholder="Tìm tên hoặc ID vật phẩm..." aria-label="Tìm vật phẩm"><select id="item-kind" aria-label="Loại vật phẩm"><option value="all">Tất cả</option><option value="items">Vật phẩm</option><option value="shards">Mảnh nhân vật</option></select></div>
+        <p class="muted mini">Danh mục được tải từ máy chủ. Không cho phép thêm ID vật phẩm tự chế.</p>
+        <div id="catalog" class="catalog"><p class="muted">Đang tải danh mục...</p></div>
+        <div class="catalog-pagination"><button id="prev-page" class="ghost small" type="button">← Trước</button><span id="page-count">—</span><button id="next-page" class="ghost small" type="button">Tiếp →</button></div>
+      </div>
+    </div>
+  </section>
+  <section id="skins-view" class="view panel" hidden>
+    <div class="section-head"><div><span class="eyebrow">CỬA HÀNG SKIN / TRANG PHỤC</span><h2>Quản lý trang phục gốc</h2></div>
+      <button class="ghost small" id="skin-refresh" type="button">↻ Làm mới</button></div>
+    <p class="muted">Chỉnh giá <strong>chuyển khoản ngân hàng (VNĐ)</strong> hoặc <strong>Crystal</strong>. Liên hệ Zalo quản trị <strong>0856848557</strong> để người chơi nhận thông tin chuyển khoản. Đơn ngân hàng chỉ được duyệt khi QTV xác nhận tiền thật đã về tài khoản; không tự động mở Skin. Crystal trừ trong game. Mọi thay đổi lưu trên PostgreSQL.</p>
+    <p class="skin-wedding-warning">♡ Skin cưới là phần thưởng độc quyền kết duyên. Cả giao diện quản trị và máy chủ đều cấm bật bán, đặt giá hoặc mua bằng API.</p>
+    <div class="skin-stats" id="skin-stats"></div>
+    <div class="skin-filters">
+      <input id="skin-search" type="search" aria-label="Tìm trang phục" placeholder="Tìm nhân vật, trang phục hoặc ID...">
+      <select id="skin-group" aria-label="Lọc phe"><option value="all">Tất cả phe</option></select>
+      <select id="skin-state" aria-label="Lọc trạng thái">
+        <option value="all">Tất cả trạng thái</option><option value="enabled">Đang bán</option><option value="disabled">Đã tắt bán</option><option value="wedding">Skin cưới (chỉ xem, bị khóa)</option><option value="incomplete">Bản ghi thiếu dữ liệu (khóa)</option>
+      </select>
+      <select id="skin-currency" aria-label="Lọc loại tiền">
+        <option value="all">Mọi phương thức</option><option value="bank">Chuyển khoản ngân hàng</option><option value="crystal">Crystal</option>
+      </select>
+    </div>
+    <div class="skin-toolbar">
+      <span id="skin-page-count" class="muted mini">Đang tải trang phục...</span>
+      <div><button id="skin-prev" type="button" class="ghost small">← Trước</button>
+        <button id="skin-next" type="button" class="ghost small">Tiếp →</button></div>
+    </div>
+    <div class="skin-toolbar"><span class="muted mini">Chỉ lưu những mục đã chỉnh và xác nhận bằng khóa QTV.</span><button id="skin-save-visible" type="button" class="primary small">Lưu tất cả trang hiện tại</button></div>
+    <div id="skin-grid" class="skin-grid"></div>
+    <div class="skin-admin-key">
+      <label>Khóa hành động QTV <span class="hint">(chỉ trong phiên trang hiện tại)</span><input id="skin-gm-key" type="password" autocomplete="off" placeholder="Nhập khóa QTV để xác nhận thay đổi giá"></label>
+      <button id="skin-verify-key" type="button" class="ghost small">Xác thực khóa QTV</button>
+      <p class="muted mini">Cấu hình bán skin có hiệu lực ngay sau khi máy chủ xác nhận; không thay đổi dữ liệu skin gốc hay tài khoản đã mua.</p>
+    </div>
+    <div class="skin-bank-admin">
+      <div class="section-head"><div><span class="eyebrow">THANH TOÁN NGÂN HÀNG</span><h3>Đơn mua Skin chờ xác nhận</h3></div><button id="skin-order-refresh" type="button" class="ghost small">↻ Làm mới đơn</button></div>
+      <p class="muted">Zalo QTV: 0856848557. Chỉ bấm “Đã nhận tiền · Duyệt” sau khi đối chiếu giao dịch ngân hàng thật và mã đơn. Trang phục sẽ được gửi qua Hòm Thư game.</p>
+      <div class="skin-order-toolbar"><select id="skin-order-state" aria-label="Lọc đơn thanh toán"><option value="pending">Chờ duyệt</option><option value="approved">Đã duyệt</option><option value="rejected">Đã từ chối</option><option value="all">Tất cả</option></select><span id="skin-order-count" class="muted mini">Đang tải đơn...</span></div>
+      <div id="skin-bank-orders" class="skin-order-grid"></div>
+    </div>
+  <div class="skin-bank-admin"><div class="section-head"><h3>GiftSkin · Đơn tặng chờ duyệt</h3><button id="gift-admin-refresh" type="button" class="ghost small">↻ Làm mới</button></div><p class="muted mini">Chỉ SUPER GM được xác nhận đã nhận tiền. Quà chỉ gửi đến UID và server đã xác minh.</p><div id="gift-admin-orders"></div></div>
+  </section>
+  <dialog id="skin-preview" class="skin-preview"><button type="button" id="skin-preview-close" class="ghost">✕ Đóng</button><img id="skin-preview-image" alt="Xem trước trang phục" loading="lazy"><strong id="skin-preview-name"></strong></dialog>
+  <section id="history-view" class="view panel" hidden>
+    <div class="section-head"><div><span class="eyebrow">QUẢN LÝ</span><h2>Giftcode đã phát hành</h2></div><button class="ghost" id="refresh-history" type="button">↻ Làm mới</button></div>
+    <p class="muted">Có thể khóa mã ngay. Những lượt đổi hợp lệ trước đó vẫn giữ nguyên lịch sử.</p>
+    <div id="codes" class="codes"></div>
+  </section>
+  <section id="redeem-view" class="view panel redeem-panel" hidden>
+    <span class="redeem-art">✦</span><span class="eyebrow">QUÀ TẶNG NGƯỜI CHƠI</span><h2>Nhập mã Giftcode</h2>
+    <p class="muted">Mã được kiểm tra trên server, quà sẽ được gửi vào Hòm Thư Máy Chủ của tài khoản đang đăng nhập.</p>
+    <form id="redeem-form" class="redeem-form"><input id="redeem-code" maxlength="40" required placeholder="Nhập mã giftcode" autocomplete="off"><button class="primary" type="submit">Đổi mã</button></form>
+    <p class="muted">Mỗi tài khoản chỉ đổi một mã một lần. Không cần nhập UID hay mật khẩu QTV.</p>
+    <p class="muted mini">Quà sẽ xuất hiện trong Hòm Thư Máy Chủ ở game GXB 3.</p>
+  </section>
+  <section id="shop-view" class="view panel player-shop" hidden>
+    <div class="section-head"><div><span class="eyebrow">CỬA HÀNG DÀNH CHO MỌI NGƯỜI CHƠI</span><h2>Cửa Hàng Trang Phục</h2></div><button class="ghost small" type="button" id="shop-refresh">↻ Cập nhật giá</button></div>
+    <p class="muted">Xem trang phục và giá thật từ máy chủ GXB 3. Mua bằng <strong>Crystal</strong> sẽ trừ số dư và gửi trang phục qua Hòm Thư game. Đơn <strong>VNĐ</strong> cần quản trị viên xác nhận đã nhận tiền mới giao. Trang phục kết duyên không bán.</p>
+    <p class="muted mini" id="shop-account-note">Đang kiểm tra phiên đăng nhập…</p>
+    <div class="player-shop-tools"><input id="shop-search" type="search" placeholder="Tên nữ thần, trang phục hoặc ID..." aria-label="Tìm trang phục đang bán"><select id="shop-group" aria-label="Lọc phe"><option value="all">Tất cả phe</option></select></div>
+    <p id="shop-count" class="muted mini" aria-live="polite">Đang tải danh mục...</p>
+    <div id="shop-grid" class="player-shop-grid" aria-live="polite"></div><div class="row-actions"><button id="shop-prev" type="button" class="ghost">← Trước</button><button id="shop-next" type="button" class="ghost">Tiếp →</button></div>
+    <div class="player-shop-orders">
+      <div class="section-head"><h3>Đơn trang phục của tôi</h3><button id="shop-orders-refresh" type="button" class="ghost small">↻ Làm mới đơn</button></div>
+      <p class="muted mini">Đơn chuyển khoản được lưu trên máy chủ, không lưu trình duyệt. Liên hệ Zalo quản trị <a href="https://zalo.me/0856848557" target="_blank" rel="noopener noreferrer">0856848557</a> để xác nhận hướng dẫn thanh toán. Chỉ chuyển tiền khi đã đối chiếu thông tin.</p>
+      <div id="shop-orders" class="player-shop-order-list"></div>
+    </div>
+  </section>
+  <section id="gift-view" class="view panel gift-page" hidden>
+    <div class="section-head"><div><span class="eyebrow">QUÀ TẶNG GIỮA NGƯỜI CHƠI</span><h2>♡ GiftSkin — Tặng Trang Phục</h2></div></div>
+    <p class="muted">Mọi người chơi đều có thể tặng trang phục đang bán cho nhân vật khác. Xác minh <strong>UID GB3-9 số, tên nhân vật và server</strong> trước khi thanh toán. Người nhận phải vào <strong>Hòm Thư game</strong> để nhận quà.</p>
+    <div class="gift-fields">
+      <label>UID người nhận<input id="gift-recipient-uid" placeholder="GB3-123456789" maxlength="13" autocomplete="off"></label>
+      <label>Tên nhân vật nhận quà<input id="gift-recipient-name" placeholder="Tên nhân vật chính xác" maxlength="40" autocomplete="off"></label>
+      <label>Máy chủ người nhận<select id="gift-server"><option value="S1">S1</option></select></label>
+      <label>Trang phục muốn tặng<select id="gift-skin"><option value="">Chọn trang phục đang bán</option></select></label>
+      <label>Thanh toán bằng<select id="gift-payment"><option value="crystal">Crystal của tôi</option><option value="bank">VNĐ · Chuyển khoản của tôi</option></select></label>
+    </div>
+    <p id="gift-price" class="gift-price">Hãy chọn trang phục</p>
+    <p id="gift-verified" class="muted mini" role="status">Chưa xác minh UID + tên nhân vật + server.</p>
+    <div class="row-actions"><button id="gift-verify" type="button" class="ghost">✓ Xác minh người nhận</button><button id="gift-send" type="button" class="primary">♡ Tặng trang phục</button></div>
+    <p class="muted mini">Crystal: trừ tiền người tặng và ghi thư người nhận cùng giao dịch Neon. VNĐ: tạo đơn, chỉ phát quà khi SUPER GM xác nhận tiền thật. Skin kết duyên không được bán hoặc tặng.</p>
+    <div class="section-head"><h3>Đơn tặng qua chuyển khoản của tôi</h3><button id="gift-orders-refresh" class="ghost small" type="button">↻ Làm mới</button></div>
+    <div id="gift-orders" class="player-shop-order-list"></div>
+  </section>
+
+  <section id="recover-view" class="view panel recovery-page" hidden>
+    <span class="eyebrow">BẢO MẬT DÀNH RIÊNG SUPER GM</span>
+    <h2>⌑ Khôi Phục 3 Khóa Quản Trị</h2>
+    <p class="muted">Sử dụng <strong>mã Google Authenticator 6 số</strong> hoặc <strong>mã dự phòng một lần</strong> để thay cả ba khóa. Chỉ SUPER GM đang đăng nhập mới được thực hiện. Không cần thay đổi hoặc xóa dữ liệu game trong Neon.</p>
+    <p class="muted mini">Nếu chưa liên kết Google Authenticator, lần đầu bắt buộc phải nhập đúng cả 3 khóa hiện tại. Google Authenticator không tự cấp mã dự phòng cho GXB 3; website sẽ tạo mã dự phòng riêng sau khi liên kết thành công.</p>
+    <div class="recovery-status-row"><strong id="recovery-state">Đang kiểm tra trạng thái bảo mật…</strong><button id="recovery-refresh" class="ghost small" type="button">↻ Kiểm tra</button></div>
+    <div id="recovery-setup" hidden>
+      <h3>1. Liên kết Google Authenticator (một lần)</h3>
+      <p class="muted mini">Nhập bộ khóa quản trị <strong>hiện tại</strong> để xác nhận chủ sở hữu, rồi thêm khóa thiết lập vào Google Authenticator → Nhập khóa thiết lập.</p>
+      <form id="recovery-setup-form" class="recovery-form" autocomplete="off">
+        <label>Khóa quản trị GXB 3 hiện tại<input name="admin_key" type="password" required minlength="12" autocomplete="off"></label>
+        <label>Khóa bảo vệ trang chủ hiện tại<input name="panel_key" type="password" required minlength="12" autocomplete="off"></label>
+        <label>Khóa hành động QTV hiện tại<input name="gm_key" type="password" required minlength="24" autocomplete="off"></label>
+        <button class="primary" type="submit">Tạo mã liên kết Authenticator</button>
+      </form>
+      <div id="recovery-pairing" class="recovery-pairing" hidden>
+        <p class="muted">Trong Google Authenticator, chọn <strong>Thêm mã (+) → Nhập khóa thiết lập</strong>, sau đó nhập tên <strong>Goddess Battle 3</strong> và khóa bên dưới.</p>
+        <div class="recovery-seed"><code id="recovery-seed-value"></code><button id="recovery-seed-copy" type="button" class="ghost small">Sao chép khóa</button></div>
+        <form id="recovery-confirm-form" class="recovery-form" autocomplete="off">
+          <label>Mã 6 số đang hiện trong Google Authenticator<input name="code" type="text" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code" required></label>
+          <button type="submit" class="primary">Xác nhận liên kết và tạo mã dự phòng</button>
+        </form>
+      </div>
+    </div>
+    <div id="recovery-reset" hidden>
+      <h3>Thay thế bộ 3 khóa đã quên</h3>
+      <p class="muted mini">Mã Google Authenticator chỉ dùng một lần trong khung 30 giây; mã dự phòng GXB 3 chỉ dùng một lần. Khóa mới sẽ thay thế khóa cũ ngay sau khi server xác nhận.</p>
+      <form id="recovery-reset-form" class="recovery-form" autocomplete="off">
+        <label>Mã Authenticator (6 số) hoặc mã dự phòng<input name="code" type="text" maxlength="28" autocomplete="one-time-code" placeholder="123456 hoặc GXB3-XXXX-XXXX-XXXX-XXXX" required></label>
+        <label>Khóa quản trị GXB 3 mới<input name="admin_key" type="password" minlength="12" autocomplete="new-password" required></label>
+        <label>Nhập lại khóa quản trị mới<input name="admin_confirm" type="password" minlength="12" autocomplete="off" required></label>
+        <label>Khóa bảo vệ trang chủ mới<input name="panel_key" type="password" minlength="12" autocomplete="new-password" required></label>
+        <label>Nhập lại khóa bảo vệ mới<input name="panel_confirm" type="password" minlength="12" autocomplete="off" required></label>
+        <label>Khóa hành động QTV mới<input name="gm_key" type="password" minlength="24" autocomplete="new-password" required></label>
+        <label>Nhập lại khóa hành động mới<input name="gm_confirm" type="password" minlength="24" autocomplete="off" required></label>
+        <button type="submit" class="primary recovery-submit">Xác nhận reset cả 3 khóa</button>
+      </form>
+      <div class="recovery-backup-rotate">
+        <h3>Cấp lại mã khôi phục dự phòng</h3>
+        <p class="muted mini">Nhập mã 6 số Authenticator để cấp lại 8 mã mới. <strong>Tất cả mã dự phòng cũ sẽ bị vô hiệu hóa.</strong></p>
+        <form id="recovery-rotate-form" class="form-row" autocomplete="off">
+          <input name="code" type="text" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code" placeholder="Mã Authenticator 6 số" required>
+          <button class="ghost" type="submit">Cấp lại mã dự phòng</button>
+        </form>
+      </div>
+    </div>
+    <div id="recovery-backups" class="recovery-backups" hidden>
+      <h3>8 mã dự phòng GXB 3 — chỉ hiển thị lần này</h3>
+      <p class="muted">Lưu các mã ở nơi riêng tư, không chụp gửi người khác. Nếu mất điện thoại, bé có thể sử dụng <strong>một mã chưa dùng</strong> để khôi phục bộ 3 khóa.</p>
+      <pre id="recovery-backup-list" aria-label="Các mã dự phòng"></pre>
+      <button id="recovery-copy-backups" class="ghost" type="button">Sao chép toàn bộ mã dự phòng</button>
+      <button id="recovery-dismiss-backups" class="ghost" type="button">Tôi đã lưu an toàn</button>
+    </div>
+    <p id="recovery-feedback" class="muted" role="status" aria-live="polite"></p>
+  </section>
+  <p id="global-status" role="status" aria-live="polite"></p>
+</main>
+</div>
+</body></html>

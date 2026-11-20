@@ -1,0 +1,49 @@
+name: Publish Audited Station Vietnamese
+
+on:
+  push:
+    branches: [snez-vietnamese]
+    paths:
+      - tools/polish_station_vi.py
+      - .github/workflows/publish-station-vi.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gxb3-station-vi-publish
+  cancel-in-progress: false
+
+jobs:
+  polish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: snez-vietnamese
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify original publisher data and polish all 522 translations
+        run: python tools/polish_station_vi.py --apply --check
+      - name: Run original character localization coverage tests
+        run: python -m unittest discover -s tests -p 'test_station_vi_coverage.py' -v
+      - name: Upload audited translation
+        uses: actions/upload-artifact@v4
+        with:
+          name: gxb3-station-vi-105-417
+          path: web/assets/station/station-vi.json
+          if-no-files-found: error
+      - name: Commit if all checks pass
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add web/assets/station/station-vi.json
+          if ! git diff --cached --quiet; then
+            git commit -m "i18n(station): verify 105 profiles and 417 skill descriptions in Vietnamese"
+            git pull --rebase origin snez-vietnamese
+            git push origin HEAD:snez-vietnamese
+          fi

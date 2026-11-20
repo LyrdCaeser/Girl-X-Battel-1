@@ -48,3 +48,17 @@
 .hc-bless{margin:0;font-size:calc(20 * var(--u))}
 .hc-fight{justify-self:center;font-size:calc(32 * var(--u));padding:calc(12 * var(--u)) calc(70 * var(--u))}
 .hc-win{overflow-x:hidden}.hc-cand,.hc-option{min-width:0;overflow:hidden}.hc-cand .portrait{max-width:100%}
+
+/* Readability over bright original character banners; no art is replaced. */
+.hc-fort{color:#fff}
+.hc-fort-text{left:calc(10 * var(--u));right:calc(10 * var(--u));bottom:calc(7 * var(--u));padding:calc(10 * var(--u)) calc(12 * var(--u));border-radius:calc(10 * var(--u));background:linear-gradient(90deg,rgba(18,20,45,.88),rgba(18,20,45,.52) 78%,transparent);color:#fff;text-shadow:0 2px 3px #071022,0 0 4px #071022}
+.hc-fort-text b{font-weight:900;color:#fff;line-height:1.05;overflow-wrap:anywhere}
+.hc-fort-text span{color:#fff4cb;font-weight:800}
+.hc-head-name{color:#fff;font-weight:900;background:linear-gradient(90deg,#151a42df,#151a4200);padding:calc(8 * var(--u)) calc(12 * var(--u));border-radius:8px}
+.hc-logo-vi{justify-self:center;font-size:calc(56 * var(--u));font-weight:900;line-height:1.2;text-align:center;color:#fff;text-shadow:0 2px 5px #06162e,0 0 8px #abdcff}
+
+/* A real help dialog replaces the former oversized, clipped help toast. */
+.hc-help-modal{max-height:min(90dvh,950px)}
+.hc-help-body{display:grid;gap:.55rem;max-height:min(72dvh,760px);overflow-y:auto;
+overscroll-behavior:contain;color:#435472;line-height:1.5;font-size:clamp(14px,3.5vw,17px)}
+.hc-help-body p{margin:0;overflow-wrap:anywhere}

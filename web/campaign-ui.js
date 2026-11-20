@@ -8,16 +8,19 @@ const GxbSpine=(()=>{
  function load(base){if(cache.has(base))return cache.get(base);const key='spine:'+base;const p=new Promise((resolve,reject)=>{const loader=new PIXI.Loader();loader.add(key,base+'/model.json',{metadata:{spineAtlasFile:base+'/model.atlas'}});loader.onError.add(reject);loader.load((_,res)=>res[key]?.spineData?resolve(res[key].spineData):reject(Error('Spine '+base)));});cache.set(base,p);p.catch(()=>cache.delete(base));return p;}
  // Mounts a skeleton centred in `host`; sequence = [[anim,loop],...]. Returns {destroy, figure}.
  async function mount(host,base,{width=720,height=720,sequence=null,fit=.9,y=.5,className='gxb-spine',scale=null,origin=null,preserve=false,resolution=null}={}){
-  const data=await load(base);const app=new PIXI.Application({width,height,transparent:true,antialias:true,preserveDrawingBuffer:!!preserve,resolution:resolution||Math.min(2,devicePixelRatio||1),autoDensity:false});app.view.className=className;host.append(app.view);
+  const data=await load(base);const app=new PIXI.Application({width,height,transparent:true,antialias:true,preserveDrawingBuffer:!!preserve,resolution:resolution||Math.min(2,devicePixelRatio||1),autoDensity:false});app.ticker.stop();app.view.className=className;host.append(app.view);
   const fig=new PIXI.spine.Spine(data);const names=data.animations.map(a=>a.name);const seq=(sequence||[[names.find(n=>/idle|animation|daiji/i.test(n))||names[0],true]]).filter(([n])=>names.includes(n));
   if(seq.length){fig.state.setAnimation(0,seq[0][0],seq[0][1]);let delay=seq[0][1]?0:(data.findAnimation(seq[0][0])?.duration||0);for(const [n,l,track]of seq.slice(1)){if(track)fig.state.addAnimation(track,n,l,delay);else fig.state.addAnimation(0,n,l,0);}}fig.update(0);
   if(scale){fig.scale.set(scale);fig.x=width*(origin?.[0]??.5);fig.y=height*(origin?.[1]??.5);}else{const b=fig.getLocalBounds();const s=Math.min(width*fit/Math.max(1,b.width),height*fit/Math.max(1,b.height));fig.scale.set(s);fig.x=width/2-(b.x+b.width/2)*s;fig.y=height*y-(b.y+b.height/2)*s;}app.stage.addChild(fig);
-  const handle={figure:fig,app,dead:false,idle:0,destroy(){if(handle.dead)return;handle.dead=true;live.delete(handle);try{app.destroy(true,{children:true,texture:false,baseTexture:false});}catch{}}};live.add(handle);
+  const handle={figure:fig,app,dead:false,idle:0,visible:!visibilityObserver,destroy(){if(handle.dead)return;handle.dead=true;live.delete(handle);if(visibilityObserver)visibilityObserver.unobserve(app.view);try{app.destroy(true,{children:true,texture:false,baseTexture:false});}catch{}}};app.view._gxbSpineHandle=handle;live.add(handle);if(visibilityObserver)visibilityObserver.observe(app.view);else syncTicker(handle);
   return handle;
  }
  // Browsers keep ~16 live WebGL contexts and silently drop the oldest (battle chibis vanished). Every mount is
  // registered; canvases that stay detached from the page for two sweeps are destroyed.
  const live=new Set();
+ function syncTicker(h){if(h.dead)return;if(h.visible&&!document.hidden)h.app.ticker.start();else h.app.ticker.stop();}
+ const visibilityObserver=typeof IntersectionObserver==='function'?new IntersectionObserver(entries=>{for(const entry of entries){const h=entry.target._gxbSpineHandle;if(h){h.visible=entry.isIntersecting;syncTicker(h);}}}):null;
+ document.addEventListener('visibilitychange',()=>{for(const h of live)syncTicker(h);});
  function sweep(){for(const h of [...live]){if(h.app.view.isConnected){h.idle=0;continue;}if(++h.idle>=2)h.destroy();}}
  setInterval(sweep,1500);
  // Static frame for lists (Servant cards): renders once, keeps a PNG and frees the context. Serialized.
@@ -32,11 +35,20 @@ const GxbSpine=(()=>{
 
 const GxbAudio=(()=>{
  const TRACKS={home:'home_bg_music',campaign:'campaign_bg_music',battle:'battle_bg_music_1',campus:'main_story_campus'};
+ const AUDIO_KEY="gxb3:audio-levels:v1",DOT_KEY="gxb3:hide-red-dots:v1",AUDIO_DEFAULTS={music:70,effects:80,voice:90};
+ let audioLevels={...AUDIO_DEFAULTS},hideDots=false;
+ try{audioLevels={...audioLevels,...JSON.parse(localStorage.getItem(AUDIO_KEY)||"{}")};}catch{}
+ try{hideDots=localStorage.getItem(DOT_KEY)==="1";}catch{}
+ const volume=k=>Math.max(0,Math.min(100,Number(audioLevels[k]??100)));
+ function setVolume(k,v){if(!(k in audioLevels))return;audioLevels[k]=Math.max(0,Math.min(100,Number(v)||0));try{localStorage.setItem(AUDIO_KEY,JSON.stringify(audioLevels));}catch{}if(music&&k==="music")music.volume=volume("music")/100;window.dispatchEvent(new CustomEvent("gxb-audio-volume",{detail:{channel:k,level:volume(k)}}));}
+ function dots(v){hideDots=!!v;try{localStorage.setItem(DOT_KEY,hideDots?"1":"0");}catch{}document.documentElement.classList.toggle("gxb-hide-red-dots",hideDots);}
+ function hiddenDots(){return hideDots;}
+ document.documentElement.classList.toggle("gxb-hide-red-dots",hideDots);
  let muted=false,current='',music=null,unlocked=false,wanted='home';
  try{muted=localStorage.getItem('gxb2-muted')==='1';}catch{}
  function src(name){return '/assets/sounds/'+name+'.mp3';}
- function play(track){wanted=track;if(!unlocked||muted){if(music)music.pause();return;}if(track==='home'&&homeTrack)track=homeTrack;if(current===track&&music&&!music.paused)return;if(music){music.pause();}current=track;music=new Audio(src(TRACKS[track]||track));music.loop=true;music.volume=.45;music.play().catch(()=>{});}
- function sfx(name,volume=.8){if(muted||!unlocked)return;const a=new Audio(src(name));a.volume=Math.max(0,Math.min(1,volume));a.play().catch(()=>{});lastSfx=performance.now();}
+ function play(track){wanted=track;if(!unlocked||muted){if(music)music.pause();return;}if(track==='home'&&homeTrack)track=homeTrack;if(current===track&&music&&!music.paused)return;if(music){music.pause();}current=track;music=new Audio(src(TRACKS[track]||track));music.loop=true;music.volume=volume('music')/100;music.play().catch(()=>{});}
+ function sfx(name,level=.8){if(muted||!unlocked)return;const a=new Audio(src(name));a.volume=Math.max(0,Math.min(1,level))*volume("effects")/100;a.play().catch(()=>{});lastSfx=performance.now();}
  // Game sound ids (xyd.SoundID / sound1-2 → assets/sounds/sounds.json) and skill sounds (skill.sound → skills.json).
  let table=null,skills=null,lastSfx=0,homeTrack='';const recent=new Map();
  try{homeTrack=localStorage.getItem('gxb2-bgm')||'';}catch{}
@@ -51,21 +63,21 @@ const GxbAudio=(()=>{
   const c=(b.className||'')+' '+(b.id||'');const kind=/back/i.test(c)?2007:/(^|[-_ ])(x|close)($|[-_ ])|win-x/i.test(c)?2008:/tab|nav/i.test(c)?2009:2006;
   setTimeout(()=>{if(lastSfx<t0)id(kind,.7);},0);},true);
  function view(next){play(({home:'home','home-systems':'home',events:'home',campaign:'campaign','event-battle':'battle',tower:'campaign','daily-quiz':'campaign',patrol:'campaign','house-exam':'campaign','hero-challenge':'campaign','sanctuary-mode':'campaign','old-campus':'campaign',echoes:'campaign',shrine:'campaign',galaxy:'campaign',dress:'campus',campus:'campus',graduate:'campus',league:'campaign'})[next]||'home');}
- function toggle(){muted=!muted;try{localStorage.setItem('gxb2-muted',muted?'1':'0');}catch{}button.textContent=muted?'🔇':'🔊';if(muted)music?.pause();else{current='';play(wanted);}}
+ function toggle(){muted=!muted;try{localStorage.setItem('gxb2-muted',muted?'1':'0');}catch{}button.textContent=muted?'🔇':'🔊';window.dispatchEvent(new CustomEvent('gxb-audio-mute',{detail:{muted}}));if(muted)music?.pause();else{current='';play(wanted);}}
  const button=document.createElement('button');button.type='button';button.className='gxb-mute';button.title="Music";button.setAttribute('aria-label',"Toggle music");button.textContent=muted?'🔇':'🔊';button.addEventListener('click',e=>{e.stopPropagation();toggle();});
  document.addEventListener('DOMContentLoaded',()=>(window.GxbFrame?.root()||document.body).append(button));
  document.addEventListener('pointerdown',()=>{if(unlocked)return;unlocked=true;current='';play(wanted);},{capture:true});
  // pause()/resume(): the story player (story.js) plays its own music. muted(): story sounds follow the mute button.
  function pause(){if(music&&!music.paused){music.pause();return true;}return false;}
  function resume(){if(music&&!muted&&unlocked)music.play().catch(()=>{});}
- return {play,sfx,view,battle:()=>play('battle'),pause,resume,muted:()=>muted,id,skill,bgm,ready,table:()=>table,homeTrack:()=>homeTrack};
+ return {play,sfx,view,battle:()=>play('battle'),pause,resume,muted:()=>muted,id,skill,bgm,ready,table:()=>table,homeTrack:()=>homeTrack,volume,setVolume,dots,hiddenDots};
 })();
 
 const CampaignUI=(()=>{
  let timer=null,busy=false,overlay=null,spine=null;
  const el=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;};
  const clock=s=>[Math.floor(s/3600),Math.floor(s%3600/60),s%60].map(n=>String(n).padStart(2,'0')).join(':');
- function iconFor(id){if(id==='1'||id==='2')return '/assets/currency/icon_'+id+'_small.png';if(typeof itemPicture==='function'&&itemCatalog?.[id]){const pic=itemPicture(itemCatalog[id]);if(pic)return pic;}const it=itemCatalog?.[id];if(it&&itemIcons?.has(it.icon))return '/assets/item-icons/'+it.icon+'.png';if(typeof Equipment!=='undefined'){const eq=Equipment.icon?.(id);if(eq)return eq;}const n=Number(id);if(n>20000000&&n<20010000)return '/assets/profile/head_'+(n-20000000)+'.png';if(n>=8001&&n<9000)return '/assets/profile/frame_'+n+'.png';if(n>=1010000&&n<1100000)return '/assets/original-ui/house-dress/img_'+n+'.png';return '/assets/ui/item_bg.png';} // avatars 2000xxxx, frames 8xxx, furniture 10xxxxx
+ function iconFor(id){if(id==='1'||id==='2')return '/assets/currency/icon_'+id+'_small.png';if(typeof itemPicture==='function'&&itemCatalog?.[id]){const pic=itemPicture(itemCatalog[id]);if(pic)return pic;}const it=itemCatalog?.[id];if(it&&itemIcons?.has(it.icon))return '/assets/item-icons/'+it.icon+'.png';if(typeof Equipment!=='undefined'){const eq=Equipment.icon?.(id);if(eq)return eq;}const n=Number(id);if(n>20000000&&n<20010000)return profileAsset('head_'+(n-20000000));if(n>=8001&&n<9000)return '/assets/profile/frame_'+n+'.png';if(n>=1010000&&n<1100000)return '/assets/original-ui/house-dress/img_'+n+'.png';return '/assets/ui/item_bg.png';} // avatars 2000xxxx, frames 8xxx, furniture 10xxxxx
  function nameFor(id){return ({'1':"Gold",'2':"Gems",'3':"Player EXP",'9':"Girl EXP"})[id]||itemCatalog?.[id]?.name||"Item "+id;}
  function norm(a){if(!Array.isArray(a))return a||{};const o={};for(const x of a){const id=String(x.item_id??x.id??x[0]),n=Number(x.item_num??x.num??x.count??x[1]??0);o[id]=(o[id]||0)+n;}return o;}
  function rewardGrid(awards){awards=norm(awards);const g=el('div','cr-rewards');for(const [id,n]of Object.entries(awards||{})){if(!n)continue;const c=el('div','cr-reward');const q=Math.min(itemCatalog?.[id]?.quality||1,7);c.style.backgroundImage=`url('/assets/ui/quality_${q}.png')`;const i=el('img');i.src=iconFor(id);i.alt='';c.append(i,el('b','',number(n)));c.title=nameFor(id)+' × '+number(n);g.append(c);}return g;}
@@ -80,18 +92,18 @@ const CampaignUI=(()=>{
  // ---- Result window ----
  async function result(win,awards,opts={}){close();GxbAudio.sfx(win?'battle_win':'battle_lose');GxbAudio.play(opts.event?'battle':'campaign');
   overlay=el('div','cr-overlay '+(win?'win':'lose'));const box=el('div','cr-box');const stage=el('div','cr-anim');box.append(stage);
-  const banner=el('img','cr-result-banner');banner.src='/assets/original-ui/battle-result/battle_result_text'+(win?'01':'02')+'_en_en.png';banner.alt=win?'VICTORY':'DEFEAT';box.append(banner);
-  box.append(el('h2','cr-title',win?"Victory!":"Defeat"),el('p','cr-sub',opts.label||''));
-  if(win){box.append(Object.keys(norm(awards)).length?rewardGrid(awards):el('p','cr-note',"Stage already cleared: no first-clear reward. Loot is earned through idle farming."));}
-  else{const tips=el('ul','cr-tips');for(const t of ["Level up and promote your Girls","Equip them or forge better gear","Change your lineup: 2 in front, 4 in back"])tips.append(el('li','',t));box.append(tips);}
-  if(opts.report?.hurts){const d=el('button','cr-detail');d.type='button';d.title="Battle statistics";const di=el('img');di.src='/assets/campaign/battle_detail_icon_2.png';di.alt='';d.append(di);d.onclick=()=>stats(opts.report);box.append(d);}
-  const row=el('div','cr-actions');const ok=el('button','cr-btn',"Continue");ok.type='button';ok.onclick=()=>{close();if(opts.event){leaveEventBattle();}else{const a=$('arena');if(a)a.hidden=true;if(view==='campaign')window.scrollTo({top:0,behavior:'smooth'});}};row.append(ok);
-  if(!win&&!opts.event){const up=el('button','cr-btn alt',"Upgrade Girls");up.type='button';up.onclick=()=>{close();showView('girls');};row.append(up);}box.append(row);overlay.append(box);(window.GxbFrame?.root()||document.body).append(overlay);
-  try{spine=await GxbSpine.mount(stage,'/assets/spine/'+(win?'shengli_new':'shibai_new'),{width:720,height:520,scale:.65,origin:[.5,1.24],sequence:[['texiao01',false],['texiao02',true,1]],className:'cr-canvas'});}catch(e){stage.classList.add('fallback');stage.textContent=win?'VICTORY':'DEFEAT';}}
+  const banner=el('div','cr-result-banner cr-result-banner-vi',win?'CHIẾN THẮNG':'THẤT BẠI');box.append(banner);
+  box.append(el('h2','cr-title',win?"Chiến Thắng!":"Thất Bại"),el('p','cr-sub',opts.label||''));
+  if(win){box.append(Object.keys(norm(awards)).length?rewardGrid(awards):el('p','cr-note',"Ải đã vượt: không còn thưởng lần đầu. Phần thưởng treo máy vẫn nhận bình thường."));}
+  else{const tips=el('ul','cr-tips');for(const t of ["Tăng cấp và tiến hóa Nữ Thần","Trang bị hoặc rèn trang bị tốt hơn","Đổi đội hình: 2 hàng trước, 4 hàng sau"])tips.append(el('li','',t));box.append(tips);}
+  if(opts.report?.hurts){const d=el('button','cr-detail');d.type='button';d.title="Thống kê chiến đấu";const di=el('img');di.src='/assets/campaign/battle_detail_icon_2.png';di.alt='';d.append(di);d.onclick=()=>stats(opts.report);box.append(d);}
+  const row=el('div','cr-actions');const ok=el('button','cr-btn',"Tiếp Tục");ok.type='button';ok.onclick=()=>{close();if(opts.event){leaveEventBattle();}else{const a=$('arena');if(a)a.hidden=true;if(view==='campaign')window.scrollTo({top:0,behavior:'smooth'});}};row.append(ok);
+  if(!win&&!opts.event){const up=el('button','cr-btn alt',"Nâng Cấp Nữ Thần");up.type='button';up.onclick=()=>{close();showView('girls');};row.append(up);}box.append(row);overlay.append(box);(window.GxbFrame?.root()||document.body).append(overlay);
+  try{spine=await GxbSpine.mount(stage,'/assets/spine/'+(win?'shengli_new':'shibai_new'),{width:720,height:520,scale:.65,origin:[.5,1.24],sequence:[['texiao01',false],['texiao02',true,1]],className:'cr-canvas'});}catch(e){stage.classList.add('fallback');stage.textContent=win?'CHIẾN THẮNG':'THẤT BẠI';}}
  // BattleStatisticsWindow: Ally | Enemy columns, Damage / Damage Taken / Heal (report.hurts: hurt, tank, heal per pos).
  function stats(report,mode='hurt'){let panel=document.querySelector('.cr-stats');if(!panel){panel=el('div','cr-stats');overlay.append(panel);}panel.replaceChildren();
-  const head=el('div','cr-stats-head');const sword=el('img');sword.src='/assets/campaign/arena_sword.png';sword.alt='';const x=el('button','cr-stats-x','×');x.type='button';x.onclick=()=>panel.remove();head.append(el('b','','Ally'),sword,el('b','','Enemy'),x);panel.append(head);
-  const tabs=el('div','cr-stats-tabs');for(const [k,l]of [['hurt','Damage'],['tank','Damage Taken'],['heal','Heal']]){const b=el('button',k===mode?'on':'',l);b.type='button';b.onclick=()=>stats(report,k);tabs.append(b);}panel.append(tabs);
+  const head=el('div','cr-stats-head');const sword=el('img');sword.src='/assets/campaign/arena_sword.png';sword.alt='';const x=el('button','cr-stats-x','×');x.type='button';x.onclick=()=>panel.remove();head.append(el('b','','Đồng Minh'),sword,el('b','','Kẻ Địch'),x);panel.append(head);
+  const tabs=el('div','cr-stats-tabs');for(const [k,l]of [['hurt','Sát Thương'],['tank','Sát Thương Nhận'],['heal','Hồi Phục']]){const b=el('button',k===mode?'on':'',l);b.type='button';b.onclick=()=>stats(report,k);tabs.append(b);}panel.append(tabs);
   const units=new Map((report.display_units||[]).map(u=>[u.pos,u]));const vals=new Map((report.hurts||[]).map(h=>[h.pos,Number(h[mode]||0)]));const max=Math.max(1,...vals.values());
   const grid=el('div','cr-stats-grid');const al=[...units.keys()].filter(p=>p<=6).sort((a,b)=>a-b),en=[...units.keys()].filter(p=>p>6).sort((a,b)=>a-b);for(let i=0;i<Math.max(al.length,en.length);i++){for(const [side,pos] of [[0,al[i]],[1,en[i]]]){const u=units.get(pos);const cell=el('div','cr-stat'+(side?' enemy':''));if(u){const face=typeof portrait==='function'?portrait(u.table_id,52):el('span');face.classList?.add('cr-stat-face');const lv=el('span','cr-stat-lv',String(u.level||u.lv||''));const v=vals.get(pos)||0;const bar=el('div','cr-stat-bar');const f=el('i');f.style.width=(v/max*100)+'%';bar.append(f);const info=el('div','cr-stat-info');info.append(el('b','',number(v)),bar);const fw=el('div','cr-stat-facebox');fw.append(face,lv);if(side)cell.append(info,fw);else cell.append(fw,info);}grid.append(cell);}}panel.append(grid);}
  function close(){spine?.destroy();spine=null;overlay?.remove();overlay=null;}

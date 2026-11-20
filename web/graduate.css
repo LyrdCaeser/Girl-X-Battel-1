@@ -220,11 +220,6 @@
 #app-frame .sm-top .sm-res b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #app-frame .sm-top .sm-back{width:48px;right:8px;translate:none}
 
-/* Menu uses a 720-unit design inside the fixed 480px game canvas. */
-#app-frame .sm-view{--u:calc(480px / 720)}
-#app-frame .sm-view .sm-stage{height:732px;min-height:0;padding:0;box-sizing:border-box}
-#app-frame .sm-view .sm-nav{height:65px;min-height:65px}
-
 /* Reference-style destination filters: one emblem and a readable star number. */
 #graduate-view .graduate-tools{right:4px;top:5px;gap:4px}
 #graduate-view .graduate-star-filters{grid-template-columns:30px;gap:3px;padding:4px 2px;background:#f7f3edbd;border:1px solid #bcc9dd;border-radius:7px}

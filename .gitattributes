@@ -18,3 +18,13 @@
 *.bin filter=lfs diff=lfs merge=lfs -text
 *.so filter=lfs diff=lfs merge=lfs -text
 *.dylib filter=lfs diff=lfs merge=lfs -text
+
+# Branded client icon is committed as a regular small JPEG (not an LFS pointer).
+# Prevent Git LFS from misidentifying it on customer/VPS checkouts.
+clients/icons/gxb3-icon.jpg -filter -diff -merge -text
+# Official portal favicon is the identical small JPEG, not a Git LFS object.
+giftcode-studio/favicon.jpg -filter -diff -merge -text
+
+# The 69,972-byte login promotion WebP was committed as a normal Git blob.
+# Keep it out of LFS to prevent checkout warnings on the VPS and client builds.
+web/assets/login/gxb3-wedding-promo.webp -filter -diff -merge -text

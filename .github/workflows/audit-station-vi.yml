@@ -1,0 +1,55 @@
+name: Audit Vietnamese Station Candidate
+
+on:
+  push:
+    branches: [snez-vietnamese]
+    paths:
+      - tools/retranslate_station_vi.py
+      - .github/workflows/audit-station-vi.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gxb3-station-vi-candidate
+  cancel-in-progress: false
+
+jobs:
+  translate-candidate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 80
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: snez-vietnamese
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install CPU translation model packages
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install "torch==2.5.1" --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install "transformers==4.44.2" "sentencepiece>=0.2,<0.3"
+      - name: Generate complete candidate from publisher data
+        env:
+          HF_HUB_DISABLE_TELEMETRY: "1"
+          TOKENIZERS_PARALLELISM: "false"
+        run: |
+          python tools/retranslate_station_vi.py --apply --batch-size 8
+          python tools/retranslate_station_vi.py --verify
+      - uses: actions/upload-artifact@v4
+        with:
+          name: station-vi-candidate-522
+          path: web/assets/station/station-vi-candidate.json
+          retention-days: 30
+      - name: Commit candidate for review (not live)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add web/assets/station/station-vi-candidate.json
+          if ! git diff --cached --quiet; then
+            git commit -m "i18n(station): draft 522 Vietnamese station descriptions for review"
+            git pull --rebase origin snez-vietnamese
+            git push origin HEAD:snez-vietnamese
+          fi

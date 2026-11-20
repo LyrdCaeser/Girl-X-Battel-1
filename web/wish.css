@@ -37,3 +37,11 @@
 .wc-info b{display:block;font-size:15px;color:#4b3d66;margin-bottom:4px}
 .wc-rbar{position:relative;height:16px;border-radius:9px;background:#d8d2e6;overflow:hidden;max-width:220px}.wc-rbar i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(#ffe083,#f0b528)}.wc-rbar span{position:relative;display:block;text-align:center;font:800 11px/16px system-ui;color:#3a2d4d}
 .wc-chips{display:flex;gap:6px}.wc-chip{position:relative;width:46px;height:46px;border-radius:8px;background:#efe9fa;display:grid;place-items:center}.wc-chip img{max-width:40px;max-height:40px}.wc-chip b{position:absolute;right:2px;bottom:0;font:800 11px system-ui;color:#fff;text-shadow:0 0 2px #000,0 0 2px #000}
+
+/* Original animated chibi sits on the centre of the Wish Capsule machine.
+   The full portrait is only a fallback for devices without WebGL. */
+.wc-art .wc-chibi{position:absolute;inset:6% 0 4%;display:grid;place-items:center;overflow:visible;pointer-events:none;z-index:2}
+.wc-art .wc-chibi canvas{display:block;max-width:100%;max-height:100%;width:100%!important;height:100%!important;object-fit:contain}
+.wc-art .wc-girl.wc-fallback{left:0;bottom:2%;width:100%;height:92%;object-fit:contain;object-position:bottom center}
+.wc-art .wc-girl.wc-fallback[hidden]{display:none}
+.wc-art .wc-name{z-index:3;left:50%;transform:translateX(-50%);white-space:nowrap;max-width:94%;text-overflow:ellipsis;overflow:hidden}

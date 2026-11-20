@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-label="Chìa Khóa S4 Độc Quyền">
+<defs>
+ <linearGradient id="gold" x1="0" x2="1" y1="0" y2="1">
+  <stop stop-color="#fff6b7"/><stop offset=".35" stop-color="#ffc955"/><stop offset=".73" stop-color="#b97725"/><stop offset="1" stop-color="#ffe7a0"/>
+ </linearGradient>
+ <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#87efff"/><stop offset=".5" stop-color="#4a88e9"/><stop offset="1" stop-color="#3c3786"/></linearGradient>
+ <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="1" dy="5" stdDeviation="5" flood-color="#4c2558" flood-opacity=".48"/></filter>
+</defs>
+<g filter="url(#shadow)" transform="translate(5 0) rotate(-38 120 120)">
+ <path d="M107 91H133V189L146 205L133 220L120 211L107 220L94 206L107 191Z" fill="url(#gold)" stroke="#87512a" stroke-width="4"/>
+ <path d="M112 135H128M112 154H128" stroke="#fff8d4" stroke-width="5" stroke-linecap="round"/>
+ <circle cx="120" cy="75" r="57" fill="url(#gold)" stroke="#8f5c28" stroke-width="5"/>
+ <circle cx="120" cy="75" r="42" fill="url(#blue)" stroke="#fff3bf" stroke-width="4"/>
+ <path d="M120 39L128 56L147 59L133 73L137 93L120 84L103 93L107 73L93 59L112 56Z" fill="#d2eeff" opacity=".52"/>
+ <text x="120" y="85" font-family="DejaVu Sans,Arial,sans-serif" font-size="30" font-weight="900" text-anchor="middle" fill="#fff">S4</text>
+</g>
+<path d="M23 185Q120 157 217 185L207 215Q120 232 33 215Z" fill="#614a96" stroke="#eacb83" stroke-width="4"/>
+<text x="120" y="204" font-family="DejaVu Sans,Arial,sans-serif" font-weight="bold" font-size="17" text-anchor="middle" fill="#fff2bb">ĐỘC QUYỀN</text>
+</svg>

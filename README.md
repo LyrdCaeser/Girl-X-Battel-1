@@ -1,3 +1,11 @@
+Serious warning (NO RECYCLING, FORK RECYCLED WILL RESULT IN HAND CUTTING OFF YOUR HANDS) :"
+
+© 2026 LyrdCaeser. All Rights Reserved.
+
+This repository and its source code are public strictly for portfolio demonstration and code review purposes.
+
+UNAUTHORIZED USE IS STRICTLY PROHIBITED. You are NOT allowed to reproduce, copy, distribute, modify, or use this source code for any personal or commercial projects without explicit written permission."
+
 > **02/10/2026 — actualización 088:** nuevas tablas y sistemas locales, ajustes de Campaign y Tests, guías contextuales, iconos y efectos de brillo, textos de interfaz en inglés, estados de batalla, formación centrada y rótulos VICTORY/DEFEAT. [Notas de distribución](DISTRIBUCION_2026-10-02.md).
 
 > **01/10/2026 — CONTENT-072:** Friend Boss actual, Servant Training, Ulticore y Practical Work disponibles desde Inicio → Training & Bosses. Growth Diary **157/160**. **364 tests aprobados** y combates nativos comprobados en DB temporal. [Alcance y límites](SISTEMAS_PENDIENTES_RECONSTRUIDOS.md). Reiniciar servidor para cargar el código.

@@ -31,7 +31,7 @@ def message_type(mid: int, direction: str) -> str:
 
 # Fields the local save keeps next to an original message but that never go on the wire: partner `soul_infos` is the
 # Anima Gear params for ReportHero / HeroAttr (the original sends only `souls`, the equipped ids).
-LOCAL_ONLY = {'partners_info': {'soul_infos'}}
+LOCAL_ONLY = {'partners_info': {'soul_infos', 'gm_bonus'}}
 
 def normalize(name: str, data: dict, *, strict: bool = True) -> dict:
     fields = {f['name']: f for f in SCHEMA[name]['fields']}
@@ -39,6 +39,11 @@ def normalize(name: str, data: dict, *, strict: bool = True) -> dict:
         data = {k: v for k, v in data.items() if k not in LOCAL_ONLY[name]}
     if strict and set(data) - fields.keys():
         raise ValueError(f'Unexpected {name} fields: {sorted(set(data)-fields.keys())}')
+    # Some original Lua battle effects omit the optional display label,
+    # while the legacy protobuf marks it required. Keep the report valid for
+    # every battle without changing the authoritative effect values.
+    if name == 'battle_buff' and data.get('name') is None:
+        data = {**data, 'name': ''}
     out = {}
     for key, value in data.items():
         if key not in fields or value is None:
@@ -55,6 +60,16 @@ def normalize(name: str, data: dict, *, strict: bool = True) -> dict:
                 raise ValueError(f'{name}.{key} must be an object')
             out[key] = normalize(field['message_type'], value, strict=strict)
         else:
+            if name == 'battle_data' and key == 'total_harm':
+                # The original client defines total_harm as signed int32.
+                # LuaJIT legitimately accumulates more than 2**31-1 at 25★.
+                # Saturate ONLY the legacy protobuf copy, not the actual
+                # authoritative LuaJIT report saved as exact JSON. Otherwise
+                # MAP_FIGHT raises "Value out of range: 3192954487" and
+                # rolls back the player fight and rewards.
+                if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+                    raise ValueError('battle_data.total_harm must be a nonnegative integer')
+                value = min(value, 2**31 - 1)
             out[key] = value
     return out
 

@@ -1,0 +1,82 @@
+/* GXB 3: native Windows/desktop-only landscape experience. */
+.gxb-desktop #app-frame,
+.gxb-desktop #app-frame #game-root{
+  width:100vw!important;max-width:none!important;height:100dvh;overflow-x:hidden;
+}
+.gxb-desktop #app-frame #game-root{padding-inline:clamp(12px,2.4vw,48px)}
+.gxb-desktop #app-frame .home-view{width:100%;max-width:none!important;margin:12px auto 0}
+.gxb-desktop #app-frame .home-stage{
+  width:100%;height:calc(100dvh - 160px);min-height:500px;
+  aspect-ratio:auto;border-width:2px;border-radius:20px;overflow:hidden;
+}
+.gxb-desktop #app-frame .home-background{background-size:cover;background-position:center}
+.gxb-desktop #app-frame .home-hero{height:76%;width:min(45%,660px);max-width:660px;bottom:12%;object-fit:contain}
+.gxb-desktop #app-frame .home-top{height:84px;max-height:16%;padding:12px clamp(12px,2vw,32px)}
+.gxb-desktop #app-frame .home-side{width:clamp(96px,10vw,164px);max-height:69%}
+.gxb-desktop #app-frame .home-side button{min-height:62px;max-height:13dvh}
+.gxb-desktop #app-frame .home-bottom{height:88px;max-height:15%}
+.gxb-desktop #app-frame .home-destinations{max-width:850px;left:50%;transform:translateX(-50%)}
+.gxb-desktop #app-frame .girls-view,
+.gxb-desktop #app-frame .bag-view,
+.gxb-desktop #app-frame .capsule-view,
+.gxb-desktop #app-frame .girl-detail-view{
+  width:min(1400px,calc(100vw - 64px))!important;max-width:none!important;
+  margin:10px auto 0!important;min-height:calc(100dvh - 155px);
+}
+.gxb-desktop #app-frame .bag-view{padding-bottom:105px}
+.gxb-desktop #app-frame .bag-panel{margin:9px 18px 0;padding:24px 28px;min-height:clamp(350px,54dvh,780px)}
+.gxb-desktop #app-frame .bag-grid{grid-template-columns:repeat(10,minmax(0,1fr));gap:15px}
+.gxb-desktop #app-frame .bag-item{max-width:112px;justify-self:center}
+.gxb-desktop #app-frame .bag-tabs{margin:14px 18px 7px}
+.gxb-desktop #app-frame .bag-tabs button{font-size:16px;min-height:48px}
+.gxb-desktop #app-frame .bag-actions{margin:0 18px;bottom:72px;min-height:70px}
+.gxb-desktop #app-frame .girls-grid{grid-template-columns:repeat(7,minmax(0,1fr))}
+.gxb-desktop #app-frame .girls-bottom-nav,
+.gxb-desktop #app-frame .bag-bottom-nav{width:min(1400px,calc(100vw - 64px));height:73px;bottom:0}
+.gxb-desktop #app-frame .girls-filters,
+.gxb-desktop #app-frame .shard-filters{width:min(1400px,calc(100vw - 64px))}
+.gxb-desktop #app-frame .detail-scene{height:min(66dvh,760px)}
+.gxb-desktop #app-frame .detail-art-wrap img.full-art{width:min(68%,800px)}
+.gxb-desktop #app-frame .capsule-view{padding-bottom:94px}
+.gxb-desktop #app-frame .capsule-banner{min-height:230px}
+.gxb-desktop #app-frame .capsule-top{padding:14px 24px}
+.gxb-desktop #app-frame .layout{max-width:none;gap:28px}
+.gxb-desktop #app-frame #game-root.campaign-mode{padding:0!important}
+.gxb-desktop #app-frame #game-root.campaign-mode .layout.only-campaign{
+  width:100%!important;max-width:none!important;margin:0!important
+}
+.gxb-desktop #app-frame #game-root.campaign-mode .campaign{
+  width:100%!important;max-width:none!important;height:100dvh;min-height:100dvh
+}
+.gxb-desktop #app-frame #game-root.campaign-mode .campaign-scene{
+  height:clamp(330px,calc(100dvh - 425px),730px)!important;max-height:none
+}
+.gxb-desktop #app-frame #game-root.campaign-mode .campaign-bottom-nav{
+  width:100%;left:0;transform:none;height:74px
+}
+@media (max-width:1150px){
+ .gxb-desktop #app-frame .bag-grid{grid-template-columns:repeat(7,minmax(0,1fr))}
+ .gxb-desktop #app-frame .girls-grid{grid-template-columns:repeat(5,minmax(0,1fr))}
+}
+
+/* 2026-10-16 native PC release: each scene owns its landscape geometry.
+   No transformed/scaled phone canvas; separate CSS for home, battles, inventory
+   and player Skin Store. Mobile-only styles remain in mobile-layout.css. */
+html.gxb-desktop #app-frame{width:100vw!important;height:100dvh!important;transform:none!important}
+html.gxb-desktop #app-frame #game-root{width:100vw!important;max-width:none!important;min-height:100dvh!important}
+html.gxb-desktop #app-frame #home-view{width:100%!important;max-width:none!important;margin:0 auto!important}
+html.gxb-desktop #app-frame #home-view .home-stage{width:100%!important;height:calc(100dvh - 84px)!important;min-height:550px!important;aspect-ratio:auto!important}
+html.gxb-desktop #app-frame #game-root.campaign-mode .campaign{width:100%!important;min-width:0!important}
+html.gxb-desktop #app-frame .gs-overlay>.sk-store-win{width:min(1460px,calc(100vw - 72px));max-width:calc(100vw - 72px)}
+html.gxb-desktop #app-frame .sk-store-win .gs-win-body{max-height:min(76dvh,920px);overflow:auto}
+html.gxb-desktop #app-frame .sk-store-grid{grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}
+html.gxb-desktop #app-frame .sk-store-card{padding:10px}
+html.gxb-desktop #app-frame .sk-store-buy{min-height:38px}
+html.gxb-desktop #app-frame .girls-view .girls-grid{grid-template-columns:repeat(7,minmax(0,1fr))}
+html.gxb-desktop #app-frame .bag-view .bag-grid{grid-template-columns:repeat(10,minmax(0,1fr))}
+html.gxb-desktop #app-frame .home-skin-store img.home-store-icon{display:block;width:48px;height:48px;object-fit:contain;margin:auto}
+@media (max-width:1350px){
+ html.gxb-desktop #app-frame .sk-store-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+ html.gxb-desktop #app-frame .bag-view .bag-grid{grid-template-columns:repeat(8,minmax(0,1fr))}
+}
+\nhtml.gxb-desktop #app-frame #game-root>footer{display:none!important}\n

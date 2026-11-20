@@ -62,8 +62,13 @@ def value_now(state, kind):
 
 
 def piece_item(state, did):
+    # Old profiles may still reference Outfit ids without recovered artwork/items.
+    # Treat those showcase slots as empty instead of crashing profile snapshots.
+    did = int(did or 0)
+    if did not in dress.PIECES:
+        return None
     star = int(dress.saved(state)['owned'].get(str(did), 0))
-    return dress.ITEMS.get(dress.item_of(int(did), star)) if star else None
+    return dress.ITEMS.get(dress.item_of(did, star)) if star else None
 
 
 def fits(state, sid, did):

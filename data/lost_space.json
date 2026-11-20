@@ -1,1 +1,1398 @@
-{"awards":{"1":{"extra_award":"2#500","treasure_step":"","award":"2#500","if_treasure":"","id":1,"export_step":"23|33"},"2":{"extra_award":"36#10","treasure_step":"","award":"36#30","if_treasure":"","id":2,"export_step":"23|33"},"3":{"extra_award":"4102007#1","treasure_step":"15|25","award":"4102007#1","if_treasure":1,"id":3,"export_step":"23|33"},"4":{"extra_award":"4705002#10","treasure_step":"","award":"453#1","if_treasure":"","id":4,"export_step":"23|33"},"5":{"extra_award":"2#2000","treasure_step":"","award":"4101071#1","if_treasure":"","id":5,"export_step":"23|33"},"6":{"extra_award":"4102008#1","treasure_step":"15|25","award":"4102058#1","if_treasure":1,"id":6,"export_step":"23|33"},"7":{"extra_award":"170#50","treasure_step":"","award":"358#50","if_treasure":"","id":7,"export_step":"23|33"},"8":{"extra_award":"4302048#1","treasure_step":"","award":"4501002#1","if_treasure":"","id":8,"export_step":"23|33"},"9":{"extra_award":"2#5000","treasure_step":"15|25","award":"418#50","if_treasure":1,"id":9,"export_step":"23|33"},"10":{"extra_award":"930235#50","treasure_step":"","award":"448#1","if_treasure":"","id":10,"export_step":"23|33"},"11":{"extra_award":"4101008#1","treasure_step":"","award":"4801001#1","if_treasure":"","id":11,"export_step":"23|33"},"12":{"extra_award":"4801001#1","treasure_step":"25|35","award":"4402015#1","if_treasure":1,"id":12,"export_step":"23|33"},"13":{"extra_award":"417#3000","treasure_step":"","award":"4104023#1","if_treasure":"","id":13,"export_step":"23|33"},"14":{"extra_award":"6000#3000","treasure_step":"","award":"4201042#10","if_treasure":"","id":14,"export_step":"23|33"},"15":{"extra_award":"419#60","treasure_step":"","award":"418#100","if_treasure":"","id":15,"export_step":"23|33"},"16":{"extra_award":"358#15","treasure_step":"","award":"4801002#1","if_treasure":"","id":16,"export_step":"23|33"},"17":{"extra_award":"4206001#30","treasure_step":"25|35","award":"4501002#1","if_treasure":1,"id":17,"export_step":"23|33"},"18":{"extra_award":"448#1","treasure_step":"","award":"4901001#1","if_treasure":"","id":18,"export_step":"23|33"},"19":{"extra_award":"6779#1","treasure_step":"","award":"4402015#1","if_treasure":"","id":19,"export_step":"23|33"},"20":{"extra_award":"4101010#1","treasure_step":"","award":"420#1","if_treasure":"","id":20,"export_step":"23|33"},"21":{"extra_award":"4801002#2","treasure_step":"","award":"4801002#1","if_treasure":"","id":21,"export_step":"23|33"},"22":{"extra_award":"326#500","treasure_step":"25|35","award":"930235#50","if_treasure":1,"id":22,"export_step":"23|33"},"23":{"extra_award":"4206001#50","treasure_step":"","award":"4201042#30","if_treasure":"","id":23,"export_step":"23|33"},"24":{"extra_award":"4801003#2","treasure_step":"","award":"4801003#1","if_treasure":"","id":24,"export_step":"23|33"},"25":{"extra_award":"418#50","treasure_step":"","award":"4901001#2","if_treasure":"","id":25,"export_step":"23|33"},"26":{"extra_award":"5100020#1","treasure_step":"","award":"358#20","if_treasure":"","id":26,"export_step":"23|33"},"27":{"extra_award":"420#5","treasure_step":"","award":"420#5","if_treasure":"","id":27,"export_step":"23|33"},"28":{"extra_award":"986001#10","treasure_step":"","award":"986001#10","if_treasure":"","id":28,"export_step":"23|33"},"29":{"extra_award":"2#10000","treasure_step":"","award":"2#10000","if_treasure":"","id":29,"export_step":"23|33"},"30":{"extra_award":"5100021#1","treasure_step":"","award":"358#20","if_treasure":"","id":30,"export_step":"23|33"},"31":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":31,"export_step":"23|33"},"32":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":32,"export_step":"23|33"},"33":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":33,"export_step":"23|33"},"34":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":34,"export_step":"23|33"},"35":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":35,"export_step":"23|33"},"36":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":36,"export_step":"23|33"},"37":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":37,"export_step":"23|33"},"38":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":38,"export_step":"23|33"},"39":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":39,"export_step":"23|33"},"40":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":40,"export_step":"23|33"},"41":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":41,"export_step":"23|33"},"42":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":42,"export_step":"23|33"},"43":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":43,"export_step":"23|33"},"44":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":44,"export_step":"23|33"},"45":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":45,"export_step":"23|33"},"46":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":46,"export_step":"23|33"},"47":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":47,"export_step":"23|33"},"48":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":48,"export_step":"23|33"},"49":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":49,"export_step":"23|33"},"50":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":50,"export_step":"23|33"},"51":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":51,"export_step":"23|33"},"52":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":52,"export_step":"23|33"},"53":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":53,"export_step":"23|33"},"54":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":54,"export_step":"23|33"},"55":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":55,"export_step":"23|33"},"56":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":56,"export_step":"23|33"},"57":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":57,"export_step":"23|33"},"58":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":58,"export_step":"23|33"},"59":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":59,"export_step":"23|33"},"60":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":60,"export_step":"23|33"},"61":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":61,"export_step":"23|33"},"62":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":62,"export_step":"23|33"},"63":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":63,"export_step":"23|33"},"64":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":64,"export_step":"23|33"},"65":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":65,"export_step":"23|33"},"66":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":66,"export_step":"23|33"},"67":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":67,"export_step":"23|33"},"68":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":68,"export_step":"23|33"},"69":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":69,"export_step":"23|33"},"70":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":70,"export_step":"23|33"},"71":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":71,"export_step":"23|33"},"72":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":72,"export_step":"23|33"},"73":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":73,"export_step":"23|33"},"74":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":74,"export_step":"23|33"},"75":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":75,"export_step":"23|33"},"76":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":76,"export_step":"23|33"},"77":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":77,"export_step":"23|33"},"78":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":78,"export_step":"23|33"},"79":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":79,"export_step":"23|33"},"80":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":80,"export_step":"23|33"},"81":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":81,"export_step":"23|33"},"82":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":82,"export_step":"23|33"},"83":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":83,"export_step":"23|33"},"84":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":84,"export_step":"23|33"},"85":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":85,"export_step":"23|33"},"86":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":86,"export_step":"23|33"},"87":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":87,"export_step":"23|33"},"88":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":88,"export_step":"23|33"},"89":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":89,"export_step":"23|33"},"90":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":90,"export_step":"23|33"},"91":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":91,"export_step":"23|33"},"92":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":92,"export_step":"23|33"},"93":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":93,"export_step":"23|33"},"94":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":94,"export_step":"23|33"},"95":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":95,"export_step":"23|33"},"96":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":96,"export_step":"23|33"},"97":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":97,"export_step":"23|33"},"98":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":98,"export_step":"23|33"},"99":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":99,"export_step":"23|33"},"100":{"extra_award":"","treasure_step":"","award":"358#20","if_treasure":"","id":100,"export_step":"23|33"}},"boxes":{"1":{"show_icon":"","award":"1#250000","id":1,"num":3,"boxes":1},"2":{"show_icon":"","award":"9#250000","id":2,"num":3,"boxes":1},"3":{"show_icon":"","award":"10#150","id":3,"num":2,"boxes":1},"4":{"show_icon":"","award":"14#150","id":4,"num":2,"boxes":1},"5":{"show_icon":"","award":"2#20","id":5,"num":2,"boxes":1},"6":{"show_icon":"","award":"26#100","id":6,"num":2,"boxes":1},"7":{"show_icon":"","award":"27#10","id":7,"num":2,"boxes":1},"8":{"show_icon":"","award":"216#5","id":8,"num":2,"boxes":1},"9":{"show_icon":1,"award":"940003#30","id":9,"num":2,"boxes":1},"10":{"show_icon":"","award":"198#200","id":10,"num":2,"boxes":1},"11":{"show_icon":"","award":"199#40","id":11,"num":2,"boxes":1},"12":{"show_icon":"","award":"349#1","id":12,"num":2,"boxes":1},"13":{"show_icon":"","award":"1#500000","id":13,"num":3,"boxes":1},"14":{"show_icon":"","award":"9#500000","id":14,"num":3,"boxes":1},"15":{"show_icon":"","award":"10#300","id":15,"num":2,"boxes":1},"16":{"show_icon":"","award":"14#300","id":16,"num":2,"boxes":1},"17":{"show_icon":"","award":"27#20","id":17,"num":2,"boxes":1},"18":{"show_icon":"","award":"26#200","id":18,"num":2,"boxes":1},"19":{"show_icon":"","award":"216#10","id":19,"num":2,"boxes":1},"20":{"show_icon":"","award":"349#2","id":20,"num":1,"boxes":1},"21":{"show_icon":"","award":"198#400","id":21,"num":2,"boxes":1},"22":{"show_icon":"","award":"199#80","id":22,"num":2,"boxes":1},"23":{"show_icon":"","award":"2#50","id":23,"num":1,"boxes":1},"24":{"show_icon":1,"award":"940001#30","id":24,"num":2,"boxes":1},"25":{"show_icon":"","award":"36#1","id":25,"num":2,"boxes":1},"26":{"show_icon":"","award":"29#1","id":26,"num":2,"boxes":1},"27":{"show_icon":"","award":"20#1","id":27,"num":1,"boxes":1},"28":{"show_icon":"","award":"1#10000000","id":28,"num":5,"boxes":2},"29":{"show_icon":"","award":"9#10000000","id":29,"num":5,"boxes":2},"30":{"show_icon":"","award":"10#6000","id":30,"num":4,"boxes":2},"31":{"show_icon":"","award":"14#6000","id":31,"num":4,"boxes":2},"32":{"show_icon":"","award":"26#6000","id":32,"num":3,"boxes":2},"33":{"show_icon":"","award":"27#750","id":33,"num":3,"boxes":2},"34":{"show_icon":"","award":"216#375","id":34,"num":3,"boxes":2},"35":{"show_icon":"","award":"29#5","id":35,"num":2,"boxes":2},"36":{"show_icon":1,"award":"940002#50","id":36,"num":2,"boxes":2},"37":{"show_icon":"","award":"2#100","id":37,"num":2,"boxes":2},"38":{"show_icon":"","award":"198#10000","id":38,"num":3,"boxes":2},"39":{"show_icon":"","award":"199#2000","id":39,"num":3,"boxes":2},"40":{"show_icon":"","award":"1#12000000","id":40,"num":6,"boxes":3},"41":{"show_icon":"","award":"9#12000000","id":41,"num":6,"boxes":3},"42":{"show_icon":"","award":"10#7200","id":42,"num":6,"boxes":3},"43":{"show_icon":"","award":"14#7200","id":43,"num":6,"boxes":3},"44":{"show_icon":"","award":"26#7200","id":44,"num":4,"boxes":3},"45":{"show_icon":"","award":"27#900","id":45,"num":4,"boxes":3},"46":{"show_icon":"","award":"216#450","id":46,"num":4,"boxes":3},"47":{"show_icon":"","award":"29#5","id":47,"num":4,"boxes":3},"48":{"show_icon":1,"award":"940002#50","id":48,"num":4,"boxes":3},"49":{"show_icon":"","award":"2#100","id":49,"num":4,"boxes":3},"50":{"show_icon":"","award":"198#12000","id":50,"num":4,"boxes":3},"51":{"show_icon":"","award":"199#2400","id":51,"num":4,"boxes":3},"52":{"show_icon":1,"award":"940004#50","id":52,"num":1,"boxes":3}},"events":{"1":{"energy_num":"","name":-1,"item_id":355,"type":1,"id":1,"num":3,"boxes":1},"2":{"energy_num":"","name":-1,"item_id":"","type":2,"id":2,"num":3,"boxes":1},"3":{"energy_num":2,"name":-1,"item_id":"","type":3,"id":3,"num":2,"boxes":1},"4":{"energy_num":4,"name":-1,"item_id":"","type":3,"id":4,"num":1,"boxes":1},"5":{"energy_num":"","name":-1,"item_id":"","type":4,"id":5,"num":0,"boxes":"1|2|3"},"6":{"energy_num":"","name":-1,"item_id":"","type":5,"id":6,"num":0,"boxes":""},"7":{"energy_num":"","name":-1,"item_id":356,"type":6,"id":7,"num":0,"boxes":""}},"skills":{"1":{"if_level_up":"","name":-1,"limit":"","id":1,"level_up":"","energy":32},"2":{"if_level_up":"","name":-1,"limit":"","id":2,"level_up":"","energy":42},"3":{"if_level_up":1,"name":-1,"limit":3,"id":3,"level_up":6,"energy":52},"4":{"if_level_up":"","name":-1,"limit":"","id":4,"level_up":"","energy":43},"5":{"if_level_up":"","name":-1,"limit":"","id":5,"level_up":"","energy":35},"6":{"if_level_up":1,"name":-1,"limit":4,"id":6,"level_up":"","energy":34}},"event_text":{"1":{"name":"Portal","icon":"activity_lost_space_icon_xyg_90","desc":"You will leave your current Space Zone and enter a new Space Zone by tapping on a portal. You will also obtain the chest reward for the current Space Zone."},"2":{"name":"Supply Stash","icon":"activity_lost_space_icon_bjd_90","desc":"A supply hideout located in the Space Zones. You will obtain huge rewards for entering a Supply Stash. But you will need enough Supply Coordinates to get enough information about its location."},"3":{"name":"Supply Coordinate","icon":"activity_lost_space_icon_bjz_1_90","desc":"Records the information of the Supply Stash location. You will locate the Supply Stash after collecting 3 Supply Coordinates."},"4":{"name":"Hologram Machine","icon":"activity_lost_space_icon_xj","desc":"Valuable records left behind by the predecessors. It will show you the location of a high-value reward in the current Space Zone once triggered. Can only be used in the Space Zone where it is found."},"5":{"name":"Copier","icon":"activity_lost_space_icon_double_90","desc":"A mysterious device that can replicate an item. Once obtained the amount of rewards you find in the next move will be doubled. (You can enter the next Space Zone with this effect triggered) (Double chance won't be consumed upon triggering a special event)"},"6":{"name":"Laser Energy","icon":"activity_lost_space_icon_nl","desc":"The energy required to activate the laser device. The laser device can be used to trigger powerful skills after it receives enough energy."}},"skill_text":{"1":{"name":"Sweep Laser","icon":"activity_lost_space_icon_skill2","desc":"Guide the Laser to explore the blocks of area in the same row as the last block explored."},"2":{"name":"Cross Laser","icon":"activity_lost_space_icon_skill1","desc":"Guide the Laser to explore (maximum) 8 blocks next to the last explored block (top bottom left and right 2 each)."},"3":{"name":"Charged Laser","icon":"activity_lost_space_icon_skill3","desc":"Guide the Laser to explore (maximum) 6 blocks next to the last explored block (top and bottom 3 each). The amount of laser energies required to trigger this skill will be reduced by 6 each time the skill is triggered (maximum by 18). ({1} reduction(s) made)"},"4":{"name":"Circle Laser","icon":"activity_lost_space_icon_skill4","desc":"Guide the Laser to explore the blocks of area neighboring the last block explored."},"5":{"name":"Unstable Laser","icon":"activity_lost_space_icon_skill5","desc":"Guide the Laser to explore 5 random blocks of area. (Unexplored area will be explored first)"},"6":{"name":"Adaptive Laser","icon":"activity_lost_space_icon_skill6","desc":"Guide the Laser to explore 2 blocks next to the last explored block (top and bottom). The exploration range will be increased by 1 block of area (1 more block for top or bottom by turns the exploration range on top will be increased first) each time the skill is triggered. (maximum by 4 blocks of area) ({1} block(s) increased)"}},"buy_cost":"2#100","buy_limit":40,"text":{"ACTIVITY_LOST_SPACE_MOVE_ENERGY_NO":"Insufficient Space Radar","ACTIVITY_LOST_SPACE_SKILL_ENERGY_NO":"Insufficient Laser Energy","ACTIVITY_LOST_SPACE_NO_UNOPEN_GRID":"No explorable area","ACTIVITY_LOST_SPACE_AUTO_GET":"Claim All","ACTIVITY_LOST_SPACE_AUTO_GET_NO":"No Rewards to Claim","ACTIVITY_LOST_SPACE_EXIT_TIPS1":"Confirm to enter the next space zone?","ACTIVITY_LOST_SPACE_EXIT_TIPS2":"Please claim the rewards you found before entering the next Space Zone.","ACTIVITY_LOST_SPACE_SKILL_ENERGY_COST":"Energy Cost: {1}","ACTIVITY_LOST_SPACE_SKILL_CHANGE":"Laser Energy will be reset to 0 after switching the skill confirm to continue?","ACTIVITY_LOST_SPACE_NAV1":"Special Event","ACTIVITY_LOST_SPACE_NAV2":"Help","ACTIVITY_LOST_SPACE_HELP_TEXT":"1. During the event you are able to explore the Space Zone with Space Radars. You will get a reward for each block of area explored. But only the blocks neighboring the explored blocks can be explored.|2. There is a portal hidden in each Space Zone. After finding and tapping the portal (but you need to claim the rewards in your current Space Zone first) you can get a reward for the current Space Zone and enter the next Space Zone.|3. Supply Coordinates will appear in certain Space Zones. After collecting 3 Supply Coordinates a Supply Stash will appear. You can enter the Supply Space Zone and gain huge rewards by tapping on its icon.|4. You can select a skill to support you in your exploration. 1 Laser Energy will be provided for each Space Radar consumed. The skill you select will be able to be triggered to explore multiple blocks of area once your Laser Energy is full.|5. You can adjust your skill selection any time you want. But your Laser Energy will be reset to 0 once you switch your skill. Once your Laser Energy is full you won't be able to obtain more Laser Energy.|6. The rewards you find during the exploration will need to be claimed there's a button in the event page that can help you to claim the rewards in bulk. But the special events will need you to tap and trigger manually.|7. Auto Explore will be available when you have 5 or more Space Radars. During Auto Explore the system will automatically trigger the special events and your skill. Auto Explore will be stopped if your Space Radars are all consumed or a portal is found.|8. Once the event ends the remaining Space Radars will automatically be exchanged into Coins at a rate of 1000K Coins each. The Coins will be sent via Mail.","ACTIVITY_LOST_SPACE_SKILL_ENERGY_TIPS":"Laser Energy is full confirm not to trigger the skill?","ACTIVITY_LOST_SPACE_SKILL_NO_USE":"No explorable area is in your current skill range","ACTIVITY_LOST_SPACE_SKILL_MASK_EXIT_SHOW":"Portal detected","ACTIVITY_LOST_SPACE_SKILL_MASK_GET_AWARD":"Space Station Reward acquired","ACTIVITY_LOST_SPACE_SKILL_MASK_TREASURE_PART_SHOW":"Supply Coordinate located","ACTIVITY_LOST_SPACE_SKILL_MASK_TREASURE_SHOW":"Supply Stash detected","ACTIVITY_LOST_SPACE_SKILL_PASS_TIPS":"You have explored all Space Zones!","ACTIVITY_LOST_SPACE_SKILL_START":"Begin","ACTIVITY_LOST_SPACE_SKILL_NO_CLICK":"This area is hidden and cannot be explored","ACTIVITY_LOST_SPACE_AWARD_TITLE":"Preview","ACTIVITY_LOST_SPACE_AWARD_NUM":"Zone {1}","ACTIVITY_LOST_SPACE_SKILL_MASK_TREASURE_PART_SHOW_ENTER":"A Supply Coordinate is hiding in this Space Zone","ACTIVITY_LOST_SPACE_SKILL_MASK_TREASURE_EXIT_TIPS1":"You haven't found the Supply Coordinate in this Space Zone yet confirm to enter the next Space Zone right now?\n[c][e28002](Supply Coordinates only appear in several Specific Space Zones you might not be able to locate the Supply Stash if you miss the Supply Coordinate here!)[-][/c]","ACTIVITY_LOST_SPACE_SKILL_MASK_TREASURE_EXIT_TIPS2":"You haven't collected the Supply Coordinate in this Space Zone yet confirm to enter the next Space Zone right now?\n[c][e28002](Supply Coordinates only appear in several Specific Space Zones you might not be able to locate the Supply Stash if you miss the Supply Coordinate here!)[-][/c]","ACTIVITY_LOST_SPACE_SKILL_MASK_TREASURE_EXIT_TIPS3":"You haven't entered the Supply Stash in this Space Zone yet confirm to enter the next Space Zone right now?\n[c][e28002](Don't miss this exclusive chance to get huge rewards!)[-][/c]","ACTIVITY_LOST_SPACE_SKILL_CHOOSE":"Select","ACTIVITY_LOST_SPACE_TEXT01":"Zone","ACTIVITY_LOST_SPACE_TEXT02":"Basic","ACTIVITY_LOST_SPACE_TEXT03":"Extra","ACTIVITY_LOST_SPACE_TEXT04":"Unlock","ACTIVITY_LOST_SPACE_TEXT05":"Event","ACTIVITY_LOST_SPACE_TEXT06":"The reward for passing each Space Zone will be upgraded after purchasing the pack","ACTIVITY_LOST_SPACE_TEXT07":"Check Rewards","ACTIVITY_LOST_SPACE_TEXT08":"Rewards","ACTIVITY_LOST_SPACE_TEXT09":"Upgradeable","ACTIVITY_LOST_SPACE_TEXT10":"1. After purchasing Spaceship Supplies you will get another additional reward for passing each Space Zone.|2. If you have passed at least 1 Space Zone before purchasing Spaceship Supplies the additional rewards for passing the previous Space Zone(s) will also be issued via Mail.","ACTIVITY_LOST_SPACE_TEXT11":"Auto Explore","ACTIVITY_LOST_SPACE_TEXT12":"Auto Explore is only available when you have 5 or more Space Radars","ACTIVITY_LOST_SPACE_TEXT13":"Result","ACTIVITY_LOST_SPACE_TEXT14":"Space Rader Used","ACTIVITY_LOST_SPACE_TEXT15":"Reward Obtained","ACTIVITY_LOST_SPACE_TEXT16":"Cannot Auto Explore when Portal is detected","ACTIVITY_LOST_SPACE_TEXT17":"Confirm to Auto Explore?"}}
+{
+  "awards": {
+    "1": {
+      "extra_award": "2#500",
+      "treasure_step": "",
+      "award": "2#500",
+      "if_treasure": "",
+      "id": 1,
+      "export_step": "23|33"
+    },
+    "2": {
+      "extra_award": "36#10",
+      "treasure_step": "",
+      "award": "36#30",
+      "if_treasure": "",
+      "id": 2,
+      "export_step": "23|33"
+    },
+    "3": {
+      "extra_award": "4102007#1",
+      "treasure_step": "15|25",
+      "award": "4102007#1",
+      "if_treasure": 1,
+      "id": 3,
+      "export_step": "23|33"
+    },
+    "4": {
+      "extra_award": "4705002#10",
+      "treasure_step": "",
+      "award": "453#1",
+      "if_treasure": "",
+      "id": 4,
+      "export_step": "23|33"
+    },
+    "5": {
+      "extra_award": "2#2000",
+      "treasure_step": "",
+      "award": "4101071#1",
+      "if_treasure": "",
+      "id": 5,
+      "export_step": "23|33"
+    },
+    "6": {
+      "extra_award": "4102008#1",
+      "treasure_step": "15|25",
+      "award": "4102058#1",
+      "if_treasure": 1,
+      "id": 6,
+      "export_step": "23|33"
+    },
+    "7": {
+      "extra_award": "170#50",
+      "treasure_step": "",
+      "award": "358#50",
+      "if_treasure": "",
+      "id": 7,
+      "export_step": "23|33"
+    },
+    "8": {
+      "extra_award": "4302048#1",
+      "treasure_step": "",
+      "award": "4501002#1",
+      "if_treasure": "",
+      "id": 8,
+      "export_step": "23|33"
+    },
+    "9": {
+      "extra_award": "2#5000",
+      "treasure_step": "15|25",
+      "award": "418#50",
+      "if_treasure": 1,
+      "id": 9,
+      "export_step": "23|33"
+    },
+    "10": {
+      "extra_award": "930235#50",
+      "treasure_step": "",
+      "award": "448#1",
+      "if_treasure": "",
+      "id": 10,
+      "export_step": "23|33"
+    },
+    "11": {
+      "extra_award": "4101008#1",
+      "treasure_step": "",
+      "award": "4801001#1",
+      "if_treasure": "",
+      "id": 11,
+      "export_step": "23|33"
+    },
+    "12": {
+      "extra_award": "4801001#1",
+      "treasure_step": "25|35",
+      "award": "4402015#1",
+      "if_treasure": 1,
+      "id": 12,
+      "export_step": "23|33"
+    },
+    "13": {
+      "extra_award": "417#3000",
+      "treasure_step": "",
+      "award": "4104023#1",
+      "if_treasure": "",
+      "id": 13,
+      "export_step": "23|33"
+    },
+    "14": {
+      "extra_award": "6000#3000",
+      "treasure_step": "",
+      "award": "4201042#10",
+      "if_treasure": "",
+      "id": 14,
+      "export_step": "23|33"
+    },
+    "15": {
+      "extra_award": "419#60",
+      "treasure_step": "",
+      "award": "418#100",
+      "if_treasure": "",
+      "id": 15,
+      "export_step": "23|33"
+    },
+    "16": {
+      "extra_award": "358#15",
+      "treasure_step": "",
+      "award": "4801002#1",
+      "if_treasure": "",
+      "id": 16,
+      "export_step": "23|33"
+    },
+    "17": {
+      "extra_award": "4206001#30",
+      "treasure_step": "25|35",
+      "award": "4501002#1",
+      "if_treasure": 1,
+      "id": 17,
+      "export_step": "23|33"
+    },
+    "18": {
+      "extra_award": "448#1",
+      "treasure_step": "",
+      "award": "4901001#1",
+      "if_treasure": "",
+      "id": 18,
+      "export_step": "23|33"
+    },
+    "19": {
+      "extra_award": "6779#1",
+      "treasure_step": "",
+      "award": "4402015#1",
+      "if_treasure": "",
+      "id": 19,
+      "export_step": "23|33"
+    },
+    "20": {
+      "extra_award": "4101010#1",
+      "treasure_step": "",
+      "award": "420#1",
+      "if_treasure": "",
+      "id": 20,
+      "export_step": "23|33"
+    },
+    "21": {
+      "extra_award": "4801002#2",
+      "treasure_step": "",
+      "award": "4801002#1",
+      "if_treasure": "",
+      "id": 21,
+      "export_step": "23|33"
+    },
+    "22": {
+      "extra_award": "326#500",
+      "treasure_step": "25|35",
+      "award": "930235#50",
+      "if_treasure": 1,
+      "id": 22,
+      "export_step": "23|33"
+    },
+    "23": {
+      "extra_award": "4206001#50",
+      "treasure_step": "",
+      "award": "4201042#30",
+      "if_treasure": "",
+      "id": 23,
+      "export_step": "23|33"
+    },
+    "24": {
+      "extra_award": "4801003#2",
+      "treasure_step": "",
+      "award": "4801003#1",
+      "if_treasure": "",
+      "id": 24,
+      "export_step": "23|33"
+    },
+    "25": {
+      "extra_award": "418#50",
+      "treasure_step": "",
+      "award": "4901001#2",
+      "if_treasure": "",
+      "id": 25,
+      "export_step": "23|33"
+    },
+    "26": {
+      "extra_award": "5100020#1",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 26,
+      "export_step": "23|33"
+    },
+    "27": {
+      "extra_award": "420#5",
+      "treasure_step": "",
+      "award": "420#5",
+      "if_treasure": "",
+      "id": 27,
+      "export_step": "23|33"
+    },
+    "28": {
+      "extra_award": "986001#10",
+      "treasure_step": "",
+      "award": "986001#10",
+      "if_treasure": "",
+      "id": 28,
+      "export_step": "23|33"
+    },
+    "29": {
+      "extra_award": "2#10000",
+      "treasure_step": "",
+      "award": "2#10000",
+      "if_treasure": "",
+      "id": 29,
+      "export_step": "23|33"
+    },
+    "30": {
+      "extra_award": "5100021#1",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 30,
+      "export_step": "23|33"
+    },
+    "31": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 31,
+      "export_step": "23|33"
+    },
+    "32": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 32,
+      "export_step": "23|33"
+    },
+    "33": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 33,
+      "export_step": "23|33"
+    },
+    "34": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 34,
+      "export_step": "23|33"
+    },
+    "35": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 35,
+      "export_step": "23|33"
+    },
+    "36": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 36,
+      "export_step": "23|33"
+    },
+    "37": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 37,
+      "export_step": "23|33"
+    },
+    "38": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 38,
+      "export_step": "23|33"
+    },
+    "39": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 39,
+      "export_step": "23|33"
+    },
+    "40": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 40,
+      "export_step": "23|33"
+    },
+    "41": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 41,
+      "export_step": "23|33"
+    },
+    "42": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 42,
+      "export_step": "23|33"
+    },
+    "43": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 43,
+      "export_step": "23|33"
+    },
+    "44": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 44,
+      "export_step": "23|33"
+    },
+    "45": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 45,
+      "export_step": "23|33"
+    },
+    "46": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 46,
+      "export_step": "23|33"
+    },
+    "47": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 47,
+      "export_step": "23|33"
+    },
+    "48": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 48,
+      "export_step": "23|33"
+    },
+    "49": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 49,
+      "export_step": "23|33"
+    },
+    "50": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 50,
+      "export_step": "23|33"
+    },
+    "51": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 51,
+      "export_step": "23|33"
+    },
+    "52": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 52,
+      "export_step": "23|33"
+    },
+    "53": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 53,
+      "export_step": "23|33"
+    },
+    "54": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 54,
+      "export_step": "23|33"
+    },
+    "55": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 55,
+      "export_step": "23|33"
+    },
+    "56": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 56,
+      "export_step": "23|33"
+    },
+    "57": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 57,
+      "export_step": "23|33"
+    },
+    "58": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 58,
+      "export_step": "23|33"
+    },
+    "59": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 59,
+      "export_step": "23|33"
+    },
+    "60": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 60,
+      "export_step": "23|33"
+    },
+    "61": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 61,
+      "export_step": "23|33"
+    },
+    "62": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 62,
+      "export_step": "23|33"
+    },
+    "63": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 63,
+      "export_step": "23|33"
+    },
+    "64": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 64,
+      "export_step": "23|33"
+    },
+    "65": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 65,
+      "export_step": "23|33"
+    },
+    "66": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 66,
+      "export_step": "23|33"
+    },
+    "67": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 67,
+      "export_step": "23|33"
+    },
+    "68": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 68,
+      "export_step": "23|33"
+    },
+    "69": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 69,
+      "export_step": "23|33"
+    },
+    "70": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 70,
+      "export_step": "23|33"
+    },
+    "71": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 71,
+      "export_step": "23|33"
+    },
+    "72": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 72,
+      "export_step": "23|33"
+    },
+    "73": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 73,
+      "export_step": "23|33"
+    },
+    "74": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 74,
+      "export_step": "23|33"
+    },
+    "75": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 75,
+      "export_step": "23|33"
+    },
+    "76": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 76,
+      "export_step": "23|33"
+    },
+    "77": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 77,
+      "export_step": "23|33"
+    },
+    "78": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 78,
+      "export_step": "23|33"
+    },
+    "79": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 79,
+      "export_step": "23|33"
+    },
+    "80": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 80,
+      "export_step": "23|33"
+    },
+    "81": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 81,
+      "export_step": "23|33"
+    },
+    "82": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 82,
+      "export_step": "23|33"
+    },
+    "83": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 83,
+      "export_step": "23|33"
+    },
+    "84": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 84,
+      "export_step": "23|33"
+    },
+    "85": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 85,
+      "export_step": "23|33"
+    },
+    "86": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 86,
+      "export_step": "23|33"
+    },
+    "87": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 87,
+      "export_step": "23|33"
+    },
+    "88": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 88,
+      "export_step": "23|33"
+    },
+    "89": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 89,
+      "export_step": "23|33"
+    },
+    "90": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 90,
+      "export_step": "23|33"
+    },
+    "91": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 91,
+      "export_step": "23|33"
+    },
+    "92": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 92,
+      "export_step": "23|33"
+    },
+    "93": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 93,
+      "export_step": "23|33"
+    },
+    "94": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 94,
+      "export_step": "23|33"
+    },
+    "95": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 95,
+      "export_step": "23|33"
+    },
+    "96": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 96,
+      "export_step": "23|33"
+    },
+    "97": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 97,
+      "export_step": "23|33"
+    },
+    "98": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 98,
+      "export_step": "23|33"
+    },
+    "99": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 99,
+      "export_step": "23|33"
+    },
+    "100": {
+      "extra_award": "",
+      "treasure_step": "",
+      "award": "358#20",
+      "if_treasure": "",
+      "id": 100,
+      "export_step": "23|33"
+    }
+  },
+  "boxes": {
+    "1": {
+      "show_icon": "",
+      "award": "1#250000",
+      "id": 1,
+      "num": 3,
+      "boxes": 1
+    },
+    "2": {
+      "show_icon": "",
+      "award": "9#250000",
+      "id": 2,
+      "num": 3,
+      "boxes": 1
+    },
+    "3": {
+      "show_icon": "",
+      "award": "10#150",
+      "id": 3,
+      "num": 2,
+      "boxes": 1
+    },
+    "4": {
+      "show_icon": "",
+      "award": "14#150",
+      "id": 4,
+      "num": 2,
+      "boxes": 1
+    },
+    "5": {
+      "show_icon": "",
+      "award": "2#20",
+      "id": 5,
+      "num": 2,
+      "boxes": 1
+    },
+    "6": {
+      "show_icon": "",
+      "award": "26#100",
+      "id": 6,
+      "num": 2,
+      "boxes": 1
+    },
+    "7": {
+      "show_icon": "",
+      "award": "27#10",
+      "id": 7,
+      "num": 2,
+      "boxes": 1
+    },
+    "8": {
+      "show_icon": "",
+      "award": "216#5",
+      "id": 8,
+      "num": 2,
+      "boxes": 1
+    },
+    "9": {
+      "show_icon": 1,
+      "award": "940003#30",
+      "id": 9,
+      "num": 2,
+      "boxes": 1
+    },
+    "10": {
+      "show_icon": "",
+      "award": "198#200",
+      "id": 10,
+      "num": 2,
+      "boxes": 1
+    },
+    "11": {
+      "show_icon": "",
+      "award": "199#40",
+      "id": 11,
+      "num": 2,
+      "boxes": 1
+    },
+    "12": {
+      "show_icon": "",
+      "award": "349#1",
+      "id": 12,
+      "num": 2,
+      "boxes": 1
+    },
+    "13": {
+      "show_icon": "",
+      "award": "1#500000",
+      "id": 13,
+      "num": 3,
+      "boxes": 1
+    },
+    "14": {
+      "show_icon": "",
+      "award": "9#500000",
+      "id": 14,
+      "num": 3,
+      "boxes": 1
+    },
+    "15": {
+      "show_icon": "",
+      "award": "10#300",
+      "id": 15,
+      "num": 2,
+      "boxes": 1
+    },
+    "16": {
+      "show_icon": "",
+      "award": "14#300",
+      "id": 16,
+      "num": 2,
+      "boxes": 1
+    },
+    "17": {
+      "show_icon": "",
+      "award": "27#20",
+      "id": 17,
+      "num": 2,
+      "boxes": 1
+    },
+    "18": {
+      "show_icon": "",
+      "award": "26#200",
+      "id": 18,
+      "num": 2,
+      "boxes": 1
+    },
+    "19": {
+      "show_icon": "",
+      "award": "216#10",
+      "id": 19,
+      "num": 2,
+      "boxes": 1
+    },
+    "20": {
+      "show_icon": "",
+      "award": "349#2",
+      "id": 20,
+      "num": 1,
+      "boxes": 1
+    },
+    "21": {
+      "show_icon": "",
+      "award": "198#400",
+      "id": 21,
+      "num": 2,
+      "boxes": 1
+    },
+    "22": {
+      "show_icon": "",
+      "award": "199#80",
+      "id": 22,
+      "num": 2,
+      "boxes": 1
+    },
+    "23": {
+      "show_icon": "",
+      "award": "2#50",
+      "id": 23,
+      "num": 1,
+      "boxes": 1
+    },
+    "24": {
+      "show_icon": 1,
+      "award": "940001#30",
+      "id": 24,
+      "num": 2,
+      "boxes": 1
+    },
+    "25": {
+      "show_icon": "",
+      "award": "36#1",
+      "id": 25,
+      "num": 2,
+      "boxes": 1
+    },
+    "26": {
+      "show_icon": "",
+      "award": "29#1",
+      "id": 26,
+      "num": 2,
+      "boxes": 1
+    },
+    "27": {
+      "show_icon": "",
+      "award": "20#1",
+      "id": 27,
+      "num": 1,
+      "boxes": 1
+    },
+    "28": {
+      "show_icon": "",
+      "award": "1#10000000",
+      "id": 28,
+      "num": 5,
+      "boxes": 2
+    },
+    "29": {
+      "show_icon": "",
+      "award": "9#10000000",
+      "id": 29,
+      "num": 5,
+      "boxes": 2
+    },
+    "30": {
+      "show_icon": "",
+      "award": "10#6000",
+      "id": 30,
+      "num": 4,
+      "boxes": 2
+    },
+    "31": {
+      "show_icon": "",
+      "award": "14#6000",
+      "id": 31,
+      "num": 4,
+      "boxes": 2
+    },
+    "32": {
+      "show_icon": "",
+      "award": "26#6000",
+      "id": 32,
+      "num": 3,
+      "boxes": 2
+    },
+    "33": {
+      "show_icon": "",
+      "award": "27#750",
+      "id": 33,
+      "num": 3,
+      "boxes": 2
+    },
+    "34": {
+      "show_icon": "",
+      "award": "216#375",
+      "id": 34,
+      "num": 3,
+      "boxes": 2
+    },
+    "35": {
+      "show_icon": "",
+      "award": "29#5",
+      "id": 35,
+      "num": 2,
+      "boxes": 2
+    },
+    "36": {
+      "show_icon": 1,
+      "award": "940002#50",
+      "id": 36,
+      "num": 2,
+      "boxes": 2
+    },
+    "37": {
+      "show_icon": "",
+      "award": "2#100",
+      "id": 37,
+      "num": 2,
+      "boxes": 2
+    },
+    "38": {
+      "show_icon": "",
+      "award": "198#10000",
+      "id": 38,
+      "num": 3,
+      "boxes": 2
+    },
+    "39": {
+      "show_icon": "",
+      "award": "199#2000",
+      "id": 39,
+      "num": 3,
+      "boxes": 2
+    },
+    "40": {
+      "show_icon": "",
+      "award": "1#12000000",
+      "id": 40,
+      "num": 6,
+      "boxes": 3
+    },
+    "41": {
+      "show_icon": "",
+      "award": "9#12000000",
+      "id": 41,
+      "num": 6,
+      "boxes": 3
+    },
+    "42": {
+      "show_icon": "",
+      "award": "10#7200",
+      "id": 42,
+      "num": 6,
+      "boxes": 3
+    },
+    "43": {
+      "show_icon": "",
+      "award": "14#7200",
+      "id": 43,
+      "num": 6,
+      "boxes": 3
+    },
+    "44": {
+      "show_icon": "",
+      "award": "26#7200",
+      "id": 44,
+      "num": 4,
+      "boxes": 3
+    },
+    "45": {
+      "show_icon": "",
+      "award": "27#900",
+      "id": 45,
+      "num": 4,
+      "boxes": 3
+    },
+    "46": {
+      "show_icon": "",
+      "award": "216#450",
+      "id": 46,
+      "num": 4,
+      "boxes": 3
+    },
+    "47": {
+      "show_icon": "",
+      "award": "29#5",
+      "id": 47,
+      "num": 4,
+      "boxes": 3
+    },
+    "48": {
+      "show_icon": 1,
+      "award": "940002#50",
+      "id": 48,
+      "num": 4,
+      "boxes": 3
+    },
+    "49": {
+      "show_icon": "",
+      "award": "2#100",
+      "id": 49,
+      "num": 4,
+      "boxes": 3
+    },
+    "50": {
+      "show_icon": "",
+      "award": "198#12000",
+      "id": 50,
+      "num": 4,
+      "boxes": 3
+    },
+    "51": {
+      "show_icon": "",
+      "award": "199#2400",
+      "id": 51,
+      "num": 4,
+      "boxes": 3
+    },
+    "52": {
+      "show_icon": 1,
+      "award": "940004#50",
+      "id": 52,
+      "num": 1,
+      "boxes": 3
+    }
+  },
+  "events": {
+    "1": {
+      "energy_num": "",
+      "name": -1,
+      "item_id": 355,
+      "type": 1,
+      "id": 1,
+      "num": 3,
+      "boxes": 1
+    },
+    "2": {
+      "energy_num": "",
+      "name": -1,
+      "item_id": "",
+      "type": 2,
+      "id": 2,
+      "num": 3,
+      "boxes": 1
+    },
+    "3": {
+      "energy_num": 2,
+      "name": -1,
+      "item_id": "",
+      "type": 3,
+      "id": 3,
+      "num": 2,
+      "boxes": 1
+    },
+    "4": {
+      "energy_num": 4,
+      "name": -1,
+      "item_id": "",
+      "type": 3,
+      "id": 4,
+      "num": 1,
+      "boxes": 1
+    },
+    "5": {
+      "energy_num": "",
+      "name": -1,
+      "item_id": "",
+      "type": 4,
+      "id": 5,
+      "num": 0,
+      "boxes": "1|2|3"
+    },
+    "6": {
+      "energy_num": "",
+      "name": -1,
+      "item_id": "",
+      "type": 5,
+      "id": 6,
+      "num": 0,
+      "boxes": ""
+    },
+    "7": {
+      "energy_num": "",
+      "name": -1,
+      "item_id": 356,
+      "type": 6,
+      "id": 7,
+      "num": 0,
+      "boxes": ""
+    }
+  },
+  "skills": {
+    "1": {
+      "if_level_up": "",
+      "name": -1,
+      "limit": "",
+      "id": 1,
+      "level_up": "",
+      "energy": 32
+    },
+    "2": {
+      "if_level_up": "",
+      "name": -1,
+      "limit": "",
+      "id": 2,
+      "level_up": "",
+      "energy": 42
+    },
+    "3": {
+      "if_level_up": 1,
+      "name": -1,
+      "limit": 3,
+      "id": 3,
+      "level_up": 6,
+      "energy": 52
+    },
+    "4": {
+      "if_level_up": "",
+      "name": -1,
+      "limit": "",
+      "id": 4,
+      "level_up": "",
+      "energy": 43
+    },
+    "5": {
+      "if_level_up": "",
+      "name": -1,
+      "limit": "",
+      "id": 5,
+      "level_up": "",
+      "energy": 35
+    },
+    "6": {
+      "if_level_up": 1,
+      "name": -1,
+      "limit": 4,
+      "id": 6,
+      "level_up": "",
+      "energy": 34
+    }
+  },
+  "event_text": {
+    "1": {
+      "name": "Portal",
+      "icon": "activity_lost_space_icon_xyg_90",
+      "desc": "You will leave your current Space Zone and enter a new Space Zone by tapping on a portal. You will also obtain the chest reward for the current Space Zone."
+    },
+    "2": {
+      "name": "Supply Stash",
+      "icon": "activity_lost_space_icon_bjd_90",
+      "desc": "A supply hideout located in the Space Zones. You will obtain huge rewards for entering a Supply Stash. But you will need enough Supply Coordinates to get enough information about its location."
+    },
+    "3": {
+      "name": "Supply Coordinate",
+      "icon": "activity_lost_space_icon_bjz_1_90",
+      "desc": "Records the information of the Supply Stash location. You will locate the Supply Stash after collecting 3 Supply Coordinates."
+    },
+    "4": {
+      "name": "Hologram Machine",
+      "icon": "activity_lost_space_icon_xj",
+      "desc": "Valuable records left behind by the predecessors. It will show you the location of a high-value reward in the current Space Zone once triggered. Can only be used in the Space Zone where it is found."
+    },
+    "5": {
+      "name": "Copier",
+      "icon": "activity_lost_space_icon_double_90",
+      "desc": "A mysterious device that can replicate an item. Once obtained the amount of rewards you find in the next move will be doubled. (You can enter the next Space Zone with this effect triggered) (Double chance won't be consumed upon triggering a special event)"
+    },
+    "6": {
+      "name": "Laser Energy",
+      "icon": "activity_lost_space_icon_nl",
+      "desc": "The energy required to activate the laser device. The laser device can be used to trigger powerful skills after it receives enough energy."
+    }
+  },
+  "skill_text": {
+    "1": {
+      "name": "Sweep Laser",
+      "icon": "activity_lost_space_icon_skill2",
+      "desc": "Guide the Laser to explore the blocks of area in the same row as the last block explored."
+    },
+    "2": {
+      "name": "Cross Laser",
+      "icon": "activity_lost_space_icon_skill1",
+      "desc": "Guide the Laser to explore (maximum) 8 blocks next to the last explored block (top bottom left and right 2 each)."
+    },
+    "3": {
+      "name": "Charged Laser",
+      "icon": "activity_lost_space_icon_skill3",
+      "desc": "Guide the Laser to explore (maximum) 6 blocks next to the last explored block (top and bottom 3 each). The amount of laser energies required to trigger this skill will be reduced by 6 each time the skill is triggered (maximum by 18). ({1} reduction(s) made)"
+    },
+    "4": {
+      "name": "Circle Laser",
+      "icon": "activity_lost_space_icon_skill4",
+      "desc": "Guide the Laser to explore the blocks of area neighboring the last block explored."
+    },
+    "5": {
+      "name": "Unstable Laser",
+      "icon": "activity_lost_space_icon_skill5",
+      "desc": "Guide the Laser to explore 5 random blocks of area. (Unexplored area will be explored first)"
+    },
+    "6": {
+      "name": "Adaptive Laser",
+      "icon": "activity_lost_space_icon_skill6",
+      "desc": "Guide the Laser to explore 2 blocks next to the last explored block (top and bottom). The exploration range will be increased by 1 block of area (1 more block for top or bottom by turns the exploration range on top will be increased first) each time the skill is triggered. (maximum by 4 blocks of area) ({1} block(s) increased)"
+    }
+  },
+  "buy_cost": "2#100",
+  "buy_limit": 40,
+  "text": {
+    "ACTIVITY_LOST_SPACE_MOVE_ENERGY_NO": "Không đủ Ra-đa Không Gian",
+    "ACTIVITY_LOST_SPACE_SKILL_ENERGY_NO": "Không đủ Năng Lượng Laser",
+    "ACTIVITY_LOST_SPACE_NO_UNOPEN_GRID": "Không có khu vực có thể khám phá",
+    "ACTIVITY_LOST_SPACE_AUTO_GET": "Nhận Tất Cả",
+    "ACTIVITY_LOST_SPACE_AUTO_GET_NO": "Không có phần thưởng để nhận",
+    "ACTIVITY_LOST_SPACE_EXIT_TIPS1": "Chuyển sang vùng không gian tiếp theo?",
+    "ACTIVITY_LOST_SPACE_EXIT_TIPS2": "Hãy nhận hết phần thưởng đã tìm thấy trước khi chuyển vùng.",
+    "ACTIVITY_LOST_SPACE_SKILL_ENERGY_COST": "Tiêu hao {1} Năng Lượng",
+    "ACTIVITY_LOST_SPACE_SKILL_CHANGE": "Đổi kỹ năng sẽ đặt lại Năng Lượng Laser về 0. Tiếp tục?",
+    "ACTIVITY_LOST_SPACE_NAV1": "Sự Kiện Đặc Biệt",
+    "ACTIVITY_LOST_SPACE_NAV2": "Trợ Giúp",
+    "ACTIVITY_LOST_SPACE_HELP_TEXT": "1. Dùng Ra-đa Không Gian để khám phá từng ô và nhận thưởng. Chỉ có thể mở những ô liền kề ô đã khám phá.|2. Mỗi vùng có một cổng dịch chuyển bí mật. Hãy nhận hết thưởng đã tìm thấy trước khi sử dụng cổng.|3. Thu thập đủ 3 Tọa Độ Tiếp Tế để mở Kho Tiếp Tế đặc biệt.|4. Mỗi Ra-đa đã dùng cung cấp 1 Năng Lượng Laser. Khi đầy, có thể kích hoạt kỹ năng để mở nhiều ô.|5. Đổi kỹ năng sẽ đặt lại Năng Lượng Laser hiện có về 0.|6. Dùng nút Nhận Tất Cả để thu thập thưởng thông thường; sự kiện đặc biệt phải kích hoạt thủ công.|7. Tự Thám Hiểm mở khi có ít nhất 5 Ra-đa Không Gian.|8. Tự Thám Hiểm dừng khi hết Ra-đa hoặc phát hiện cổng dịch chuyển.",
+    "ACTIVITY_LOST_SPACE_SKILL_ENERGY_TIPS": "Năng Lượng Laser đã đầy. Bạn muốn bỏ qua kích hoạt kỹ năng?",
+    "ACTIVITY_LOST_SPACE_SKILL_NO_USE": "Không có ô nào trong phạm vi kỹ năng có thể khám phá",
+    "ACTIVITY_LOST_SPACE_SKILL_MASK_EXIT_SHOW": "Đã phát hiện Cổng Dịch Chuyển",
+    "ACTIVITY_LOST_SPACE_SKILL_MASK_GET_AWARD": "Đã nhận thưởng Trạm Không Gian",
+    "ACTIVITY_LOST_SPACE_SKILL_MASK_TREASURE_PART_SHOW": "Đã tìm thấy Tọa Độ Tiếp Tế",
+    "ACTIVITY_LOST_SPACE_SKILL_MASK_TREASURE_SHOW": "Đã phát hiện Kho Tiếp Tế",
+    "ACTIVITY_LOST_SPACE_SKILL_PASS_TIPS": "Bạn đã khám phá hết các vùng không gian!",
+    "ACTIVITY_LOST_SPACE_SKILL_START": "Bắt Đầu",
+    "ACTIVITY_LOST_SPACE_SKILL_NO_CLICK": "Khu vực này đang bị ẩn và không thể khám phá",
+    "ACTIVITY_LOST_SPACE_AWARD_TITLE": "Xem Trước",
+    "ACTIVITY_LOST_SPACE_AWARD_NUM": "Vùng {1}",
+    "ACTIVITY_LOST_SPACE_SKILL_MASK_TREASURE_PART_SHOW_ENTER": "Có một Tọa Độ Tiếp Tế ẩn trong vùng này",
+    "ACTIVITY_LOST_SPACE_SKILL_MASK_TREASURE_EXIT_TIPS1": "Bạn chưa tìm thấy Tọa Độ Tiếp Tế. Vẫn chuyển sang vùng tiếp theo?",
+    "ACTIVITY_LOST_SPACE_SKILL_MASK_TREASURE_EXIT_TIPS2": "Bạn chưa thu thập Tọa Độ Tiếp Tế. Vẫn chuyển sang vùng tiếp theo?",
+    "ACTIVITY_LOST_SPACE_SKILL_MASK_TREASURE_EXIT_TIPS3": "Bạn chưa vào Kho Tiếp Tế trong vùng này. Vẫn chuyển vùng?",
+    "ACTIVITY_LOST_SPACE_SKILL_CHOOSE": "Chọn",
+    "ACTIVITY_LOST_SPACE_TEXT01": "Khu Vực",
+    "ACTIVITY_LOST_SPACE_TEXT02": "Cơ Bản",
+    "ACTIVITY_LOST_SPACE_TEXT03": "Bổ Sung",
+    "ACTIVITY_LOST_SPACE_TEXT04": "Mở Khóa",
+    "ACTIVITY_LOST_SPACE_TEXT05": "Sự Kiện",
+    "ACTIVITY_LOST_SPACE_TEXT06": "Sau khi mua gói tương ứng, thưởng qua mỗi vùng không gian sẽ được nâng cấp",
+    "ACTIVITY_LOST_SPACE_TEXT07": "Xem Phần Thưởng",
+    "ACTIVITY_LOST_SPACE_TEXT08": "Phần Thưởng",
+    "ACTIVITY_LOST_SPACE_TEXT09": "Có Thể Nâng Cấp",
+    "ACTIVITY_LOST_SPACE_TEXT10": "1. Mua gói Tiếp Tế Phi Thuyền để có thêm phần thưởng khi qua mỗi vùng.|2. Nếu đã vượt qua một vùng trước khi mua gói, phần thưởng bổ sung của vùng đó có thể nhận theo điều kiện sự kiện.",
+    "ACTIVITY_LOST_SPACE_TEXT11": "Tự Thám Hiểm",
+    "ACTIVITY_LOST_SPACE_TEXT12": "Cần ít nhất 5 Ra-đa Không Gian để Tự Thám Hiểm",
+    "ACTIVITY_LOST_SPACE_TEXT13": "Kết Quả",
+    "ACTIVITY_LOST_SPACE_TEXT14": "Ra-đa Đã Dùng",
+    "ACTIVITY_LOST_SPACE_TEXT15": "Phần Thưởng Nhận Được",
+    "ACTIVITY_LOST_SPACE_TEXT16": "Không thể Tự Thám Hiểm khi đã phát hiện Cổng Dịch Chuyển",
+    "ACTIVITY_LOST_SPACE_TEXT17": "Xác nhận Tự Thám Hiểm?"
+  }
+}

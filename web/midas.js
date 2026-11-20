@@ -17,7 +17,7 @@ const Midas=(()=>{
   const fb=el('button','md-btn','Free');fb.type='button';fb.disabled=!info.free_ready;fb.onclick=async()=>{const r=await act({action:'free'});if(r?.got)CampaignUI.popup('Alchemy',r.got);};free.append(fb);
   const buy=el('div','md-card');buy.append(img(A(info.buys>=2?'midas_icon03':'midas_icon02')),el('b','','× '+number(info.next_gold||0)),el('small','',`Purchases ${info.times-info.buys}/${info.times}`));
   const bb=el('button','md-btn gold','');bb.type='button';bb.disabled=!info.next_cost;if(info.next_cost){const g=img('/assets/currency/icon_2_small.png');bb.append(g,el('span','',String(info.next_cost['2']||0)));}else bb.textContent="Sold out";
-  bb.onclick=async()=>{const c=info.next_cost?.['2'];if(c&&!confirm(`Spend ${c} Gems in ${number(info.next_gold)} Gold?`))return;const r=await act({action:'buy'});if(r?.got)CampaignUI.popup('Alchemy',r.got);};buy.append(bb);
+  bb.onclick=async()=>{const c=info.next_cost?.['2'];if(c&&!await GirlUI.confirm(`Dùng ${c} Kim Cương để nhận ${number(info.next_gold)} Vàng?`,{title:"Luyện Kim",ok:"Đổi"}))return;const r=await act({action:'buy'});if(r?.got)CampaignUI.popup('Alchemy',r.got);};buy.append(bb);
   row.append(free,buy);w.append(row,el('p','md-note',note||"Resets daily at midnight (local time). Gold depends on your level."));}
  return {open};
 })();

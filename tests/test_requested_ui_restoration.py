@@ -1,0 +1,121 @@
+"""Regression guards for requested GXB 3 native UI and Vietnamese game content.
+
+Static/read-only; no account, production API or Neon mutation.
+"""
+import json
+import re
+import unittest
+from pathlib import Path
+
+ROOT=Path(__file__).resolve().parents[1]
+WEB=ROOT/"web"
+
+
+class RequestedRestorationTests(unittest.TestCase):
+    def test_native_gold_gems_controls_and_evolution(self):
+        html=(WEB/"index.html").read_text(encoding="utf-8")
+        app=(WEB/"app.js").read_text(encoding="utf-8")
+        self.assertIn('id="home-add-gold"',html)
+        self.assertIn('id="home-add-gems"',html)
+        self.assertIn('id="detail-grade-up"',html)
+        self.assertIn("action('PARTNER_LEVUP'",app)
+        self.assertIn("action('PARTNER_GRADEUP'",app)
+        self.assertIn("hero.grade_cost",app)
+        self.assertIn("next_awake", (ROOT/"gxb2/engine.py").read_text(encoding="utf-8"))
+        self.assertIn("AWAKE_PARTNER",app)
+        self.assertIn("graduateTarget=key;showView('graduate')",app)
+
+    def test_archived_events_show_real_catalog_without_fake_21_space_board(self):
+        app=(WEB/"app.js").read_text(encoding="utf-8")
+        events=(WEB/"events.js").read_text(encoding="utf-8")
+        self.assertIn("key==='luvly-castle'?279:191",app)
+        self.assertIn("openOriginalEvent(167",app)
+        self.assertIn("openOriginalEvent",events)
+        routes=json.loads((ROOT/"data/events.json").read_text(encoding="utf-8"))["activities"]
+        self.assertTrue({167,191,279}.issubset({r["id"] for r in routes}))
+        self.assertNotIn("function drift(parent)",app)
+
+    def test_live_guild_does_not_use_mock_members(self):
+        app=(WEB/"app.js").read_text(encoding="utf-8")
+        guild=(WEB/"guild.js").read_text(encoding="utf-8")
+        self.assertIn("Guild.openOnline(",app)
+        self.assertIn("api('/api/world-guild')",guild)
+        self.assertIn("GuildTerritory.paint(back,false)",guild)
+        self.assertIn("g.members||[]",guild)
+        self.assertIn("onlineRequest('/api/world-guild/manage'",guild)
+
+    def test_real_online_people_replaces_fake_recommendations(self):
+        home=(WEB/"home-menus.js").read_text(encoding="utf-8")
+        self.assertIn("api('/api/friends')",home)
+        self.assertIn("if(!tab)tab='players'",home)
+        self.assertIn("friendAct('request'",home)
+        self.assertIn("friendPresence(p)",home)
+        self.assertIn("Online '+Math.floor(seconds/60)+' phút trước",home)
+
+    def test_mail_refreshes_live_and_goddess_gifts_stay_compact(self):
+        home=(WEB/"home-menus.js").read_text(encoding="utf-8")
+        css=(WEB/"home-menus.css").read_text(encoding="utf-8")
+        server=(ROOT/"server.py").read_text(encoding="utf-8")
+        self.assertIn("path == '/api/mail'",server)
+        self.assertIn("async function refreshServerMail",home)
+        self.assertIn("↻ Làm mới",home)
+        self.assertIn("api('/api/giftcode/redeem',{code})",home)
+        self.assertIn("placeholder='Nhập mã Giftcode'",home)
+        self.assertIn("if(key==='mail')mailLastRefresh=0",home)
+        self.assertNotIn("if(root==='mail'&&view==='home-systems'&&tab==='server'&&!document.hidden)",home)
+        self.assertIn("el('div',undefined,'hm-goddess-gift')",home)
+        self.assertIn(".hm-goddess-gift>img",css)
+        self.assertIn("height:250px",css)
+
+    def test_social_profile_calendar_story_assistant_and_skill_controls(self):
+        home=(WEB/"home-menus.js").read_text(encoding="utf-8")
+        server=(ROOT/"server.py").read_text(encoding="utf-8")
+        events=(WEB/"events.js").read_text(encoding="utf-8")
+        story=(WEB/"story.css").read_text(encoding="utf-8")
+        assistant=(WEB/"game-assistant.css").read_text(encoding="utf-8")
+        girls=(WEB/"girl-ui.js").read_text(encoding="utf-8")
+        self.assertIn("friendAvatar(p.avatar)",home)
+        self.assertIn("Đội Hình Chính",home)
+        self.assertIn("So Tài",home)
+        self.assertIn("/api/friends/gift",home)
+        self.assertIn("profile.gift_items",home)
+        self.assertIn("affection_gained",home)
+        self.assertIn("profile.currency_gift_left",home)
+        self.assertIn("Tiền tệ: còn",home)
+        self.assertIn("item.max_quantity",home)
+        self.assertIn("hm-gift-list",home)
+        self.assertIn("GxbBagVi?.t",home)
+        self.assertIn("itemPicture",home)
+        self.assertNotIn("const select=el('select',undefined,'hm-gift-select')",home)
+        self.assertIn("Quay Lại Bạn Bè", (WEB/"remaining-systems.js").read_text(encoding="utf-8"))
+        self.assertIn("Boss hôm nay đã bị đánh bại", (WEB/"remaining-systems.js").read_text(encoding="utf-8"))
+        self.assertNotIn("Mỗi vật phẩm tặng tăng 100 Hảo Cảm",home)
+        self.assertIn("social_gift_meta", (ROOT/"gxb2/live_service.py").read_text(encoding="utf-8"))
+        self.assertIn("Cầu Hôn · 1 Oath Ring",home)
+        self.assertIn("path == '/api/friends/duel'",server)
+        self.assertIn("path == '/api/friends/marriage'",server)
+        self.assertIn("Làm mới hằng ngày",events)
+        self.assertIn("height:calc(84%",story)
+        self.assertIn(".ga2-tab img{width:68%;height:68%",assistant)
+        self.assertIn("gu-ex-up",girls)
+        self.assertIn("'Nâng Cấp'",girls)
+
+    def test_missions_appear_in_vietnamese_without_modifying_rules(self):
+        newbie=json.loads((ROOT/"data/newbie_camp.json").read_text(encoding="utf-8"))
+        diary=json.loads((ROOT/"data/growth_diary.json").read_text(encoding="utf-8"))
+        self.assertEqual(len(newbie["tasks"]),33)
+        self.assertEqual(len(diary["missions"]),160)
+        for row in [*newbie["tasks"].values(), *diary["missions"].values()]:
+            self.assertFalse(re.search(r"\b(?:Pass Stage|Campaign Loot|Upgrade|Acquire|Consume|Internship Quest|Level up|Guild Bosses|Slot Tickets|Junior Varsity)\b", row["text"], re.IGNORECASE), row["text"])
+
+    def test_manga_episodes_and_help_faq_vietnamese_names_intact(self):
+        manga=json.loads((WEB/"assets/menu/manga/manga.json").read_text(encoding="utf-8"))
+        self.assertEqual(len(manga["birthday"]),62)
+        self.assertTrue(all(x[1].startswith("Tập ") for x in manga["episodes"] if str(x[1]).startswith("Tập ")))
+        helpdata=json.loads((WEB/"assets/menu/help.json").read_text(encoding="utf-8"))
+        self.assertEqual(len(helpdata["faq"]),4)
+        self.assertEqual(helpdata["faq"][2]["title"],"Thanh Toán Và VIP")
+        self.assertIn("Trợ Giúp",(WEB/"settings-menu.js").read_text(encoding="utf-8"))
+
+if __name__=="__main__":
+    unittest.main()

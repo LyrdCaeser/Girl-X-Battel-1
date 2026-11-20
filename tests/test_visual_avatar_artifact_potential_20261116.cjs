@@ -1,0 +1,43 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
+const root=path.resolve(__dirname,'..'),read=p=>fs.readFileSync(path.join(root,p),'utf8');
+const html=read('web/index.html'),app=read('web/app.js'),profileCss=read('web/skin-collection.css');
+const eq=read('web/equipment.js'),eqCss=read('web/equipment.css');
+const gu=read('web/girl-ui.js'),guCss=read('web/girl-ui.css');
+
+assert.match(app,/e\.style\.backgroundSize='contain'/);
+assert.match(app,/e\.style\.backgroundRepeat='no-repeat'/);
+assert.match(profileCss,/#home-view \.home-profile-portrait\{[\s\S]*?background-size:contain!important/);
+assert.match(profileCss,/#home-view \.home-profile-frame\{[\s\S]*?object-fit:contain!important/);
+assert.match(profileCss,/#home-view \.home-profile #home-level\{[\s\S]*?font:800 clamp\(10px/);
+assert.match(html,/\/skin-collection\.css\?v=20261116-profile-fit-r4/);
+assert.match(html,/\/app\.js\?v=20261117-anima-convert-r4/);
+assert.match(eqCss,/#smithy-view \.sm-grid \.sm-item \.eq-stars img\{[\s\S]*?width:11px!important/);
+assert.match(eqCss,/#smithy-view \.sm-top\.art \.eq-stars img\{[\s\S]*?height:11px!important/);
+assert.match(html,/\/equipment\.css\?v=20261117-forge-alert-size-r4/);
+assert.match(html,/\/equipment\.js\?v=20261116-antique-vi-r4/);
+assert.match(eq,/"Nguyên liệu \(chạm để chọn; chạm lại hoặc nhấn Xóa Chọn để bỏ\)"/);
+assert.match(eq,/antiqueName\(r\.name\)\+' → '\+antiqueName\(row\(r\.artifact_next\)\.name\)/);
+assert.match(eq,/attrText\(a,v,localize\)/);
+assert.match(eq,/'Witch Curse':'Lời Nguyền Phù Thủy'/);
+const scoped=eq.slice(eq.indexOf(' const ARTVI='),eq.indexOf(' const SLOTS='));
+const loc=vm.runInNewContext('(()=>{'+scoped+';return {antiqueName};})()');
+const names=[...new Set(Object.values(JSON.parse(read('data/equipment.json')).items).filter(r=>r.pos===6).map(r=>r.name))];
+assert.deepEqual(names.filter(n=>loc.antiqueName(n)===n&&!['Muramasa'].includes(n)),[],'Untranslated artifact title');
+const mapped=gu.slice(gu.indexOf(' const POTENTIAL_VI='),gu.indexOf(' const el=(tag,cls,text)=>'));
+const pot=vm.runInNewContext('(()=>{let pots={skills:{}};'+mapped+';return POTENTIAL_VI;})()');
+const canonical=JSON.parse(read('data/potentials.json'));
+assert.equal(Object.keys(pot).length,Object.keys(canonical.skills).length);
+for(const [id,[name,desc]] of Object.entries(pot)){
+ assert(id in canonical.skills);assert(name.startsWith('Tiềm Năng: '));
+ assert(desc.length>10);assert(!/Potential|Deals |Increases |Attack by|Shield when|Willpower/.test(desc));
+}
+assert.match(gu,/info=potentialInfo\(id\)/);
+assert.match(gu,/const info=potentialInfo\(id\)/);
+assert.match(gu,/win\(\{title:'Chuyển Đổi Tiềm Năng'/);
+assert.match(gu,/'Kích Hoạt'/);
+assert.match(gu,/'Đã Kích Hoạt'/);
+assert.match(guCss,/#girl-detail-view \.lb-btns \.lb-small/);
+assert.match(html,/\/girl-ui\.js\?v=20261116-potential-choose-vi-r3/);
+console.log('PASS: fitted avatar, small artifact stars, all artifact titles, 15 Potential translations');

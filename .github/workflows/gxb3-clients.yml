@@ -1,0 +1,254 @@
+name: GXB 3 2.6.5 client packages
+
+on:
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: "Chỉ phát hành APK/EXE/iOS lên GitHub Release khi chủ game xác nhận"
+        required: false
+        type: boolean
+        default: false
+  push:
+    branches: [snez-vietnamese]
+    # One explicit signed-off release tag is allowed to publish exactly 2.6.5.
+    # Branch pushes continue to build for QA without publishing anything.
+    tags: [v2.6.5]
+    paths:
+      - "clients/**"
+      - ".gitattributes"
+      - ".github/workflows/gxb3-clients.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  windows-exe:
+    name: Windows EXE 2.6.5
+    runs-on: windows-2022
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Validate all four release formats use version 2.6.5 / code 200367
+        run: python clients/tools/verify_client_version.py
+      - name: Check production URL (informational)
+        shell: pwsh
+        continue-on-error: true
+        run: |
+          $r = Invoke-WebRequest -UseBasicParsing -Uri "https://180-93-111-99.sslip.io/readyz" -TimeoutSec 30
+          if ($r.StatusCode -ne 200) { throw "Production temporarily unavailable" }
+      - name: Install Windows packager and icon converter
+        run: python -m pip install -r clients/windows/requirements-build.txt Pillow
+      - name: Generate branded Windows icon
+        run: |
+          python clients/tools/generate_icons.py
+          python -c "from PIL import Image; im=Image.open('clients/icons/gxb3-icon.jpg'); im.verify(); print('Verified game cover launcher source')"
+          python -c "from pathlib import Path; assert Path('clients/windows/gxb3.ico').stat().st_size > 1000"
+      - name: Build Windows x64 EXE
+        shell: pwsh
+        run: |
+          pyinstaller --noconfirm --clean --onefile --windowed --name NuThanChienDau-GXB3-2.6.5 --icon clients/windows/gxb3.ico --version-file clients/windows/version_info.txt --collect-all webview clients/windows/gxb3_launcher.py
+      - name: Verify native Windows EXE
+        shell: pwsh
+        run: |
+          $target = "dist/NuThanChienDau-GXB3-2.6.5.exe"
+          if (!(Test-Path $target)) { throw "EXE was not built" }
+          if ((Get-Item $target).Length -lt 1000000) { throw "EXE unexpectedly small" }
+          $productVersion = (Get-Item $target).VersionInfo.ProductVersion
+          if ($productVersion -notlike "2.6.5*") { throw "Windows EXE version metadata mismatch: $productVersion" }
+          Get-Item $target | Select-Object Name,Length,@{Name="ProductVersion";Expression={$_.VersionInfo.ProductVersion}}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: NuThanChienDau-GXB3-Windows-2.6.5
+          path: dist/NuThanChienDau-GXB3-2.6.5.exe
+          if-no-files-found: error
+          compression-level: 9
+          retention-days: 30
+
+  android-apk:
+    name: Android APK 2.6.5
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.9"
+      - name: Install Android SDK 35
+        shell: bash
+        run: |
+          set -e
+          SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort | tail -n 1)"
+          test -n "$SDKMANAGER"
+          yes | "$SDKMANAGER" --licenses >/dev/null || true
+          "$SDKMANAGER" "platforms;android-35" "build-tools;35.0.0"
+      - name: Check production URL (informational)
+        continue-on-error: true
+        run: curl --fail --retry 2 --retry-delay 3 --max-time 30 https://180-93-111-99.sslip.io/readyz
+      - name: Generate branded Android icon
+        run: |
+          python3 -m pip install --user --break-system-packages Pillow
+          python3 clients/tools/generate_icons.py
+      - name: Build signed 2.6.5 APK
+        run: gradle -p clients/android :app:assembleRelease --stacktrace --no-daemon
+      - name: Verify package signature and size
+        shell: bash
+        run: |
+          set -e
+          src="clients/android/app/build/outputs/apk/release/app-release.apk"
+          test -s "$src"
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose "$src"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$src" | grep -F "versionCode='200367' versionName='2.6.5'"
+          cp "$src" NuThanChienDau-GXB3-Android-2.6.5.apk
+          ls -lh NuThanChienDau-GXB3-Android-2.6.5.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: NuThanChienDau-GXB3-Android-2.6.5
+          path: NuThanChienDau-GXB3-Android-2.6.5.apk
+          if-no-files-found: error
+          retention-days: 30
+
+  ios-beta:
+    name: iOS 2.6.5 developer IPA and Web Clip
+    runs-on: macos-15
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check iPhoneOS SDK
+        run: |
+          xcodebuild -version
+          xcrun --sdk iphoneos --show-sdk-path
+      - name: Generate branded iOS icons
+        run: |
+          python3 -m pip install --user --break-system-packages Pillow
+          python3 clients/tools/generate_icons.py
+      - name: Compile genuine iOS arm64 WKWebView application
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build/Payload/GXB3.app
+          cp clients/ios/Info.plist build/Payload/GXB3.app/Info.plist
+          cp clients/ios/AppIcon/*.png build/Payload/GXB3.app/
+          xcrun swiftc \
+            -parse-as-library \
+            -target arm64-apple-ios15.0 \
+            -sdk "$(xcrun --sdk iphoneos --show-sdk-path)" \
+            -O \
+            -o build/Payload/GXB3.app/GXB3 \
+            clients/ios/GXB3App.swift
+          test -s build/Payload/GXB3.app/GXB3
+          /usr/libexec/PlistBuddy -c 'Print CFBundleIdentifier' build/Payload/GXB3.app/Info.plist
+          /usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' build/Payload/GXB3.app/Info.plist | grep -Fx '2.6.5'
+          /usr/libexec/PlistBuddy -c 'Print CFBundleVersion' build/Payload/GXB3.app/Info.plist | grep -Fx '200367'
+      - name: Bundle unsigned iOS IPA for later Apple signing
+        shell: bash
+        run: |
+          cd build
+          zip -qry ../NuThanChienDau-GXB3-iOS-2.6.5-UNSIGNED.ipa Payload
+          cd ..
+          test -s NuThanChienDau-GXB3-iOS-2.6.5-UNSIGNED.ipa
+          unzip -t NuThanChienDau-GXB3-iOS-2.6.5-UNSIGNED.ipa | tail -1
+      - name: Create installable Safari Web Clip alternative
+        run: python3 clients/ios/make_webclip.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: NuThanChienDau-GXB3-iOS-2.6.5
+          path: |
+            NuThanChienDau-GXB3-iOS-2.6.5-UNSIGNED.ipa
+            NuThanChienDau-GXB3-iOS-2.6.5.mobileconfig
+          if-no-files-found: error
+          retention-days: 30
+
+  full-package:
+    name: GXB3 Combined Android Windows iOS 2.6.5
+    needs: [windows-exe, android-apk, ios-beta]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - name: Download the three verified build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: NuThanChienDau-GXB3-*
+          merge-multiple: true
+          path: distribution
+      - name: Verify files and provide checksums
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd distribution
+          test -s NuThanChienDau-GXB3-2.6.5.exe
+          test -s NuThanChienDau-GXB3-Android-2.6.5.apk
+          test -s NuThanChienDau-GXB3-iOS-2.6.5-UNSIGNED.ipa
+          test -s NuThanChienDau-GXB3-iOS-2.6.5.mobileconfig
+          sha256sum *.exe *.apk *.ipa *.mobileconfig > SHA256SUMS.txt
+          cat > PHIEN_BAN.txt <<'TXT'
+          GXB 3 · Version Name 2.6.5 · VersionCode 200367
+          Android APK: Android 8+ (RC/debug signature; see HUONG_DAN.txt)
+          Windows EXE: Windows x64, WebView2
+          iOS IPA: unsigned developer build; Apple signing is required to install as an app
+          iOS Web Clip: install the .mobileconfig profile on iPhone/iPad, then open the home-screen icon
+          TXT
+          cat > HUONG_DAN.txt <<'TXT'
+          GXB 3 - 2.6.5
+
+          Android 8+ : Cai APK tren dien thoai.
+          Windows x64: Chay EXE tren Windows, yeu cau WebView2.
+          iPhone: IPA CHUA KY Apple, khong cai truc tiep duoc.
+                  Co the su dung Safari -> Chia se -> Them vao man hinh chinh.
+                  Kem theo file .mobileconfig de su dung Web Clip.
+
+          Tat ca launcher can ket noi mang va may chu GXB 3.
+          Tien trinh game duoc luu tren server; khong phai ban offline.
+          APK duoc ky bang debug/RC key. Neu chu ky khac ban dang cai, can go ban cu truoc khi cai 2.6.5.
+          Du lieu nguoi choi van luu tren Neon; go app khong xoa tien trinh game tren may chu.
+          TXT
+      - name: Upload the single complete package
+        uses: actions/upload-artifact@v4
+        with:
+          name: GXB3-TRON-BO-APK-EXE-IOS-2.6.5
+          path: distribution/
+          if-no-files-found: error
+          compression-level: 9
+          retention-days: 30
+
+
+  publish-release:
+    name: Publish GXB 3 2.6.5 production packages
+    # Publish ONLY after explicit owner authorization: manual checkbox OR
+    # the single approved v2.6.5 release tag pushed after CI/QA success.
+    # Ordinary branch pushes NEVER publish or overwrite earlier releases.
+    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.publish == true) || (github.event_name == 'push' && github.ref == 'refs/tags/v2.6.5') }}
+    needs: [full-package]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download the verified four-format package
+        uses: actions/download-artifact@v4
+        with:
+          name: GXB3-TRON-BO-APK-EXE-IOS-2.6.5
+          path: distribution
+      - name: Publish versioned production downloads
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="v2.6.5"
+          title="Nữ Thần Chiến Đấu - GXB 3 · 2.6.5"
+          notes=$(printf 'Version Name 2.6.5 · VersionCode 200367\n\nBuild source: %s\n\nFour distribution formats: Android APK, Windows x64 EXE, unsigned iOS IPA, and iOS Web Clip mobileconfig. Read HUONG_DAN.txt and PHIEN_BAN.txt before installing.' "$GITHUB_SHA")
+          if gh release view "$tag" >/dev/null 2>&1; then
+            gh release edit "$tag" --title "$title" --notes "$notes"
+            gh release upload "$tag" distribution/*.exe distribution/*.apk distribution/*.ipa distribution/*.mobileconfig distribution/SHA256SUMS.txt distribution/HUONG_DAN.txt distribution/PHIEN_BAN.txt --clobber
+          else
+            gh release create "$tag" distribution/*.exe distribution/*.apk distribution/*.ipa distribution/*.mobileconfig distribution/SHA256SUMS.txt distribution/HUONG_DAN.txt distribution/PHIEN_BAN.txt --title "$title" --notes "$notes" --target "$GITHUB_SHA"
+          fi
+          gh release view "$tag" --json name,tagName,url,assets

@@ -3,10 +3,130 @@
 .a3-team{display:flex;align-items:center;gap:8px;padding:6px;margin:6px 0;border-radius:10px;background:#f3f6fb;box-shadow:inset 0 0 0 1px #d3dcea;cursor:pointer}.a3-team.on{box-shadow:inset 0 0 0 2px #4d8ad1;background:#eaf2fd}
 .a3-badge{width:34px;height:34px;flex:none}
 .a3-slots{flex:1;display:grid;grid-template-columns:repeat(6,1fr);gap:4px}
-.a3-slot{position:relative;aspect-ratio:1;border:1px dashed #b7c4d6;border-radius:8px;background:#fff;padding:0;cursor:pointer;overflow:hidden}.a3-slot.full{border-style:solid}.a3-slot img,.a3-slot canvas{width:100%;height:100%;object-fit:cover}.a3-slot small{position:absolute;left:0;right:0;bottom:0;font:700 9px system-ui;color:#fff;background:#0008;text-align:center}
+.a3-slot{position:relative;aspect-ratio:1;border:1px dashed #b7c4d6;border-radius:8px;background:#fff;padding:0;cursor:pointer;overflow:hidden}.a3-slot.full{border-style:solid}/* Portraits fit the square slot; star images are independent overlays. */
+.a3-slot>.portrait{display:block;width:100%!important;height:100%!important;min-width:0;min-height:0;border-radius:inherit;overflow:hidden}
+.a3-slot>.portrait>.portrait-image{display:block;width:100%!important;height:100%!important;object-fit:contain!important;object-position:center center!important}
+.a3-slot>.portrait>canvas{width:100%!important;height:100%!important}.a3-slot small{position:absolute;left:0;right:0;bottom:0;font:700 9px system-ui;color:#fff;background:#0008;text-align:center}
 .a3-tools{display:flex;gap:8px;justify-content:flex-end;margin:4px 0}
 .a3-pool{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;max-height:34vh;overflow:auto;padding:4px;border-radius:8px;background:#eef2f8}
-.a3-cand{position:relative;aspect-ratio:1;border:0;padding:0;border-radius:8px;background:#fff;overflow:hidden;cursor:pointer}.a3-cand img{width:100%;height:100%;object-fit:cover}.a3-cand small{position:absolute;left:0;right:0;bottom:0;font:700 9px system-ui;color:#fff;background:#0008;text-align:center}.a3-cand.on::after{content:'✔';position:absolute;inset:0;display:grid;place-items:center;background:#0006;color:#fff;font-size:20px}
+.a3-cand{position:relative;aspect-ratio:1;border:0;padding:0;border-radius:8px;background:#fff;overflow:hidden;cursor:pointer}/* Never enlarge native star/awakening images with a blanket img selector. */
+.a3-cand>.portrait{display:block;width:100%!important;height:100%!important;min-width:0;min-height:0;border-radius:inherit;overflow:hidden}
+.a3-cand>.portrait>.portrait-image{display:block;width:100%!important;height:100%!important;object-fit:contain!important;object-position:center center!important}.a3-cand small{position:absolute;left:0;right:0;bottom:0;font:700 9px system-ui;color:#fff;background:#0008;text-align:center}.a3-cand.on::after{content:'✔';position:absolute;inset:0;display:grid;place-items:center;background:#0006;color:#fff;font-size:20px}
 .a3-acts{display:flex;justify-content:center;margin-top:10px}.a3-acts .ar-go{position:static;width:180px;height:52px}
 .ar-3v3-entry{position:absolute;border:0;padding:0;background:none;cursor:pointer}.ar-3v3-entry img{width:100%;height:100%;object-fit:contain}
-.a3-pool{grid-auto-rows:62px;align-content:start}.a3-cand{aspect-ratio:auto;height:62px;width:100%}.a3-cand>*:first-child{width:100%;height:100%;object-fit:cover;display:block}
+.a3-pool{grid-auto-rows:62px;align-content:start}.a3-cand{aspect-ratio:auto;height:62px;width:100%}.a3-cand>.portrait{display:block}
+
+
+/* Original ArenaFormationWindow: a separate six-position defence formation. */
+.ar-defense-title{text-align:center;color:#355279}
+.ar-defense-help{margin:0;text-align:center;color:#6c7890;font-size:calc(19 * var(--u))}
+.ar-defense-board{display:grid;gap:calc(10 * var(--u));padding:calc(12 * var(--u));border:calc(2 * var(--u)) solid #cad6e7;border-radius:calc(14 * var(--u));background:linear-gradient(#f8fbff,#e7eef8)}
+.ar-defense-row{display:grid;grid-template-columns:calc(115 * var(--u)) 1fr;align-items:center;gap:calc(8 * var(--u))}
+.ar-defense-label{text-align:center;font-size:calc(20 * var(--u))}.ar-defense-row.front .ar-defense-label{color:#d46d43}.ar-defense-row.back .ar-defense-label{color:#41945a}
+.ar-defense-slots{display:flex;justify-content:center;gap:calc(10 * var(--u))}
+.ar-defense-slot{position:relative;width:calc(86 * var(--u));height:calc(86 * var(--u));padding:0;border:calc(3 * var(--u)) dashed #aebbd0;border-radius:calc(12 * var(--u));background:#fff;color:#8aa1c2;font-size:calc(38 * var(--u));overflow:hidden;cursor:pointer}
+.ar-defense-slot.full{border-style:solid;border-color:#dfb65b}.ar-defense-slot.active{box-shadow:0 0 0 calc(4 * var(--u)) #58a6ef}
+.ar-defense-slot .portrait{width:100%!important;height:100%!important}.ar-defense-slot>small{position:absolute;right:0;bottom:0;min-width:calc(23 * var(--u));background:#253c65cc;color:#fff;font-size:calc(16 * var(--u))}
+.ar-defense-pool{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:calc(8 * var(--u));max-height:calc(460 * var(--u));overflow:auto;padding:calc(6 * var(--u));border-radius:calc(10 * var(--u));background:#edf2f8}
+.ar-defense-candidate{position:relative;display:grid;grid-template-rows:calc(118 * var(--u)) auto;min-width:0;padding:calc(3 * var(--u));border:calc(2 * var(--u)) solid #9eb4d1;border-radius:calc(9 * var(--u));background:linear-gradient(#fff8db,#fff);overflow:hidden;cursor:pointer}
+.ar-defense-candidate .portrait{width:100%!important;height:calc(118 * var(--u))!important;display:block;border-radius:calc(6 * var(--u));background:#eaf0fa}
+.ar-defense-candidate .portrait-image{object-fit:contain!important;object-position:center top!important}
+.ar-defense-meta{display:grid;min-width:0;padding:calc(3 * var(--u)) calc(2 * var(--u));line-height:1.15}.ar-defense-meta b,.ar-defense-meta small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ar-defense-meta b{color:#465779;font-size:calc(17 * var(--u))}.ar-defense-meta small{color:#b56b13;font-weight:900;font-size:calc(16 * var(--u))}
+.ar-defense-candidate.used{filter:grayscale(.7);opacity:.42}
+
+
+/* The attack formation reuses original card-star assets (5 yellow, 6–9 red,
+   awakening badge for 10–25). Keep stars visible INSIDE every portrait, not
+   below the clipped card grid or obscured by the name/level metadata. */
+.ar-defense-slot .ar-native-stars,
+.ar-defense-candidate .ar-native-stars{
+  position:absolute;left:0;right:0;bottom:0;z-index:8;
+  min-height:calc(21 * var(--u));
+  display:flex;align-items:center;justify-content:center;gap:calc(2 * var(--u));
+  background:linear-gradient(transparent,#142039a8);
+  pointer-events:none;
+}
+.ar-defense-slot .ar-native-stars{bottom:0}
+.ar-defense-candidate .ar-native-stars{
+  bottom:calc(3 * var(--u));
+  height:calc(22 * var(--u));
+}
+.ar-defense-slot .ar-native-stars .gu-stars,
+.ar-defense-candidate .ar-native-stars .gu-stars{
+  display:inline-flex;align-items:center;justify-content:center;
+  gap:0;max-width:95%;min-width:0;overflow:visible;
+}
+.ar-defense-slot .ar-native-stars .gu-star,
+.ar-defense-candidate .ar-native-stars .gu-star{
+  width:calc(13 * var(--u));height:calc(13 * var(--u));
+  flex:none;object-fit:contain;
+}
+.ar-defense-slot .ar-native-stars .gu-emblem,
+.ar-defense-candidate .ar-native-stars .gu-emblem{
+  height:calc(21 * var(--u));max-width:calc(55 * var(--u));
+  object-fit:contain;display:block;
+}
+.ar-defense-slot .ar-native-stars .gu-emblem-num,
+.ar-defense-candidate .ar-native-stars .gu-emblem-num{
+  font-size:calc(10 * var(--u));
+}
+.ar-native-star-fallback{
+  color:#ffe18c;font-size:calc(15 * var(--u));font-weight:900;
+}
+.ar-defense-candidate:has(.ar-native-stars){
+  grid-template-rows:minmax(0,1fr);
+  aspect-ratio:1/1;
+  height:calc(118 * var(--u));
+  display:block;position:relative;
+}
+.ar-defense-candidate:has(.ar-native-stars)>.portrait{
+  height:100%!important;width:100%!important;
+}
+/* No caption on top of the portraits: only original character art and stars. */
+
+
+/* The frame and original star rail must be layered independently.
+   An outer button may not scale descendant images other than portrait art. */
+.a3-win .a3-slot,
+.a3-win .a3-cand{min-width:0;min-height:0;isolation:isolate}
+.a3-win .a3-slot>.portrait,
+.a3-win .a3-cand>.portrait{position:relative;z-index:0;background:#f5f1e8}
+.a3-win .a3-slot .ar-native-stars,
+.a3-win .a3-cand .ar-native-stars{width:auto;height:auto;overflow:visible}
+/* Arena Team: all three teams show the SAME original star and awakening
+   textures as Arena/Cross Server. No level, name, or numeric badges are
+   painted over the Goddess portraits. The original three-team layout stays. */
+.a3-win .a3-slot .ar-native-stars,
+.a3-win .a3-cand .ar-native-stars{
+  position:absolute;bottom:0;left:0;right:0;z-index:8;
+  display:flex;align-items:center;justify-content:center;
+  min-height:calc(14 * var(--u));
+  pointer-events:none;
+  background:linear-gradient(transparent,#192441a6);
+}
+.a3-win .a3-slot .ar-native-stars .gu-stars,
+.a3-win .a3-cand .ar-native-stars .gu-stars{
+  display:flex;align-items:center;justify-content:center;
+  max-width:100%;gap:0;overflow:visible;
+}
+.a3-win .a3-slot .ar-native-stars .gu-star,
+.a3-win .a3-cand .ar-native-stars .gu-star{
+  width:calc(9 * var(--u))!important;
+  height:calc(9 * var(--u))!important;
+  max-width:none!important;object-fit:contain!important;flex:none;
+}
+.a3-win .a3-slot .ar-native-stars .gu-emblem,
+.a3-win .a3-cand .ar-native-stars .gu-emblem{
+  width:auto!important;height:calc(16 * var(--u))!important;
+  max-width:calc(33 * var(--u))!important;
+  object-fit:contain!important;flex:none;
+}
+.a3-win .a3-slot .ar-native-stars .gu-emblem-num,
+.a3-win .a3-cand .ar-native-stars .gu-emblem-num{
+  font-size:calc(9 * var(--u))!important;
+  color:#fff5c4;text-shadow:0 1px 2px #171627;
+}
+.a3-win .a3-slot .ar-native-stars .ar-native-star-fallback,
+.a3-win .a3-cand .ar-native-stars .ar-native-star-fallback{
+  font-size:calc(11 * var(--u));
+}

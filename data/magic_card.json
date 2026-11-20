@@ -1,1 +1,811 @@
-{"awards":{"1":{"award":"2#20","type":0,"id":1,"limit":1,"level":1},"2":{"award":"2#20","type":0,"id":2,"limit":1,"level":1},"3":{"award":"2#20","type":0,"id":3,"limit":1,"level":1},"4":{"award":"2#300","type":0,"id":4,"limit":1,"level":1},"5":{"award":"36#1","type":0,"id":5,"limit":1,"level":1},"6":{"award":"20#1","type":0,"id":6,"limit":1,"level":1},"7":{"award":"35#1","type":0,"id":7,"limit":1,"level":1},"8":{"award":"35#1","type":0,"id":8,"limit":1,"level":1},"9":{"award":"35#1","type":0,"id":9,"limit":1,"level":1},"10":{"award":"333#1","type":0,"id":10,"limit":1,"level":1},"11":{"award":"423#1","type":0,"id":11,"limit":1,"level":1},"12":{"award":"976001#1","type":0,"id":12,"limit":1,"level":1},"13":{"award":"359#20","type":0,"id":13,"limit":1,"level":1},"14":{"award":"359#20","type":0,"id":14,"limit":1,"level":1},"15":{"award":"359#20","type":0,"id":15,"limit":1,"level":1},"16":{"award":"419#1","type":0,"id":16,"limit":1,"level":1},"17":{"award":"419#1","type":0,"id":17,"limit":1,"level":1},"18":{"award":"419#1","type":0,"id":18,"limit":1,"level":1},"19":{"award":"417#50","type":0,"id":19,"limit":1,"level":1},"20":{"award":"417#50","type":0,"id":20,"limit":1,"level":1},"21":{"award":"417#50","type":0,"id":21,"limit":1,"level":1},"22":{"award":"216#10","type":0,"id":22,"limit":1,"level":1},"23":{"award":"216#10","type":0,"id":23,"limit":1,"level":1},"24":{"award":"34#5","type":0,"id":24,"limit":1,"level":1},"25":{"award":"6791#1","type":1,"id":25,"limit":1,"level":21},"26":{"award":"5100021#1","type":1,"id":26,"limit":1,"level":18},"27":{"award":"5100020#1","type":1,"id":27,"limit":1,"level":16},"28":{"award":"4901001#3","type":1,"id":28,"limit":1,"level":14},"29":{"award":"5100020#1","type":1,"id":29,"limit":1,"level":14},"30":{"award":"4402015#2","type":1,"id":30,"limit":1,"level":14},"31":{"award":"6779#1","type":1,"id":31,"limit":1,"level":12},"32":{"award":"4101010#1","type":1,"id":32,"limit":2,"level":11},"33":{"award":"418#100","type":1,"id":33,"limit":1,"level":11},"34":{"award":"6779#1","type":1,"id":34,"limit":1,"level":10},"35":{"award":"4104023#1","type":1,"id":35,"limit":1,"level":9},"36":{"award":"358#50","type":1,"id":36,"limit":1,"level":9},"37":{"award":"418#50","type":1,"id":37,"limit":1,"level":9},"38":{"award":"4901001#1","type":1,"id":38,"limit":2,"level":8},"39":{"award":"4402015#1","type":1,"id":39,"limit":1,"level":8},"40":{"award":"4101008#1","type":1,"id":40,"limit":4,"level":7},"41":{"award":"4102056#1","type":1,"id":41,"limit":1,"level":7},"42":{"award":"6785#1","type":1,"id":42,"limit":1,"level":7},"43":{"award":"4501002#1","type":1,"id":43,"limit":1,"level":7},"44":{"award":"4206001#60","type":1,"id":44,"limit":1,"level":6},"45":{"award":"418#20","type":1,"id":45,"limit":2,"level":6},"46":{"award":"420#2","type":1,"id":46,"limit":1,"level":6},"47":{"award":"4102008#1","type":1,"id":47,"limit":4,"level":6},"48":{"award":"374#50","type":1,"id":48,"limit":1,"level":6},"49":{"award":"29#50","type":1,"id":49,"limit":1,"level":6},"50":{"award":"4101067#1","type":1,"id":50,"limit":1,"level":6},"51":{"award":"424#25","type":1,"id":51,"limit":1,"level":5},"52":{"award":"417#5000","type":1,"id":52,"limit":1,"level":5},"53":{"award":"426#6000","type":1,"id":53,"limit":1,"level":5},"54":{"award":"358#10","type":1,"id":54,"limit":1,"level":4},"55":{"award":"930213#50","type":1,"id":55,"limit":1,"level":4},"56":{"award":"930214#50","type":1,"id":56,"limit":1,"level":4},"57":{"award":"170#30","type":1,"id":57,"limit":4,"level":4},"58":{"award":"25#30","type":1,"id":58,"limit":2,"level":3},"59":{"award":"930201#50","type":1,"id":59,"limit":2,"level":3},"60":{"award":"940004#100","type":1,"id":60,"limit":2,"level":3},"61":{"award":"4201042#15","type":1,"id":61,"limit":10,"level":3},"62":{"award":"4206001#20","type":1,"id":62,"limit":3,"level":2},"63":{"award":"198#15000","type":1,"id":63,"limit":2,"level":2},"64":{"award":"199#3500","type":1,"id":64,"limit":2,"level":2},"65":{"award":"228#1","type":1,"id":65,"limit":2,"level":2},"66":{"award":"20#10","type":1,"id":66,"limit":2,"level":2},"67":{"award":"36#30","type":1,"id":67,"limit":2,"level":1},"68":{"award":"35#150","type":1,"id":68,"limit":3,"level":1},"69":{"award":"940016#50","type":1,"id":69,"limit":2,"level":1},"70":{"award":"940015#50","type":1,"id":70,"limit":2,"level":1},"71":{"award":"73#15","type":1,"id":71,"limit":10,"level":1},"72":{"award":"940004#50","type":1,"id":72,"limit":20,"level":1},"73":{"award":"229#1","type":1,"id":73,"limit":99,"level":1},"74":{"award":"211#1","type":1,"id":74,"limit":99,"level":1}},"missions":{"1":{"if_change":"","activity_id":134,"award":"180#10","type":0,"id":1,"complete_value":4,"getway":"","desc":-1},"2":{"if_change":"","activity_id":134,"award":"180#5","type":0,"id":2,"complete_value":1,"getway":10,"desc":-1},"3":{"if_change":"","activity_id":134,"award":"180#5","type":0,"id":3,"complete_value":5,"getway":5,"desc":-1},"4":{"if_change":"","activity_id":134,"award":"180#5","type":0,"id":4,"complete_value":1,"getway":112,"desc":-1},"5":{"if_change":"","activity_id":134,"award":"180#5","type":0,"id":5,"complete_value":1,"getway":124,"desc":-1},"6":{"if_change":"","activity_id":134,"award":"180#15","type":1,"id":6,"complete_value":5,"getway":"","desc":-1},"7":{"if_change":"","activity_id":134,"award":"180#15","type":1,"id":7,"complete_value":1000,"getway":2,"desc":-1},"8":{"if_change":"","activity_id":20,"award":"180#15","type":1,"id":8,"complete_value":400,"getway":23,"desc":-1},"9":{"if_change":"","activity_id":20,"award":"180#30","type":1,"id":9,"complete_value":800,"getway":23,"desc":-1},"10":{"if_change":"","activity_id":168,"award":"180#15","type":1,"id":10,"complete_value":200,"getway":7,"desc":-1},"11":{"if_change":"","activity_id":168,"award":"180#30","type":1,"id":11,"complete_value":500,"getway":7,"desc":-1},"12":{"if_change":"","activity_id":16,"award":"180#15","type":1,"id":12,"complete_value":40,"getway":8,"desc":-1},"13":{"if_change":"","activity_id":16,"award":"180#30","type":1,"id":13,"complete_value":80,"getway":8,"desc":-1},"14":{"if_change":"","activity_id":134,"award":"180#10","type":1,"id":14,"complete_value":1,"getway":7,"desc":-1},"15":{"if_change":"","activity_id":134,"award":"180#20","type":1,"id":15,"complete_value":1,"getway":30,"desc":-1},"16":{"if_change":"","activity_id":74,"award":"180#15","type":1,"id":16,"complete_value":1000,"getway":83,"desc":-1},"17":{"if_change":"","activity_id":74,"award":"180#30","type":1,"id":17,"complete_value":2000,"getway":83,"desc":-1},"18":{"if_change":"","activity_id":166,"award":"180#15","type":1,"id":18,"complete_value":40,"getway":144,"desc":-1},"19":{"if_change":"","activity_id":166,"award":"180#30","type":1,"id":19,"complete_value":80,"getway":144,"desc":-1},"20":{"if_change":"","activity_id":74,"award":"180#15","type":1,"id":20,"complete_value":75,"getway":222,"desc":-1},"21":{"if_change":"","activity_id":74,"award":"180#30","type":1,"id":21,"complete_value":150,"getway":222,"desc":-1}},"mission_text":{"1":"Complete all the other missions","2":"Complete 1 battle in Tests","3":"Engage 5 battles in Junior Varsity","4":"Complete a battle in Magician's Assistant","5":"Purchase 1 piece of Furniture","6":"Log in 5 Days","7":"Consume 1000 Gems","8":"Pull Slot Machine 400 times","9":"Pull Slot Machine 800 times","10":"Draw 200 Adv. Capsules","11":"Draw 500 Adv. Capsules","12":"Enroll 40 times","13":"Enroll 80 times","14":"Acquire a 5-star Girl","15":"Graduate 1 Girl to 6-star","16":"Consume 1000 Elemental Orbs","17":"Consume 2000 Elemental Orbs","18":"Use 40 Rudders in total","19":"Use 80 Rudders in total","20":"Use 75 Space Radars in total","21":"Use 150 Space Radars in total"},"weights":[100,50,70,100,150,240,322,420,502,700,880,966,1000,966,880,700,502,420,322,240,150,100,70,50,100],"hammer":15,"text":{"ACTIVITY_ICE_SECRET_AWARDS_CD":"Refresh in","ACTIVITY_ICE_SECRET_MISSION_DAILY":"Daily","ACTIVITY_ICE_SECRET_MISSION_WEEKLY":"Weekly","ACTIVITY_ICE_SECRET_MISSION_CD":"Refresh in","ACTIVITY_ICE_SECRET_MISSION_TIP":"Tasks will no longer be refreshed","ACTIVITY_ICE_SECRET_ROUNDS":"Round {1}","ACTIVITY_ICE_SECRET_MAXAWARD_TEXT":"Ultimate Reward","ACTIVITY_ICE_SECRET_MAXAWARD_WINDOW":"Set Ultimate Reward","ACTIVITY_ICE_SECRET_MAXAWARD_ERROR":"Please set an Ultimate Reward","ACTIVITY_ICE_SECRET_MAXAWARD_TIP":"Will be unlocked at Round {1}","ACTIVITY_ICE_SECRET_START":"Start","ACTIVITY_ICE_SECRET_PARTNER_TEXT1":"Game On!","ACTIVITY_ICE_SECRET_PARTNER_TEXT2":"Pick the correct card","ACTIVITY_ICE_SECRET_PARTNER_TEXT3":"Tap on the cards to get rewards!","ACTIVITY_ICE_SECRET_GAME_HELP":"1.During the event flip a card by consuming 15 Magic Wands to receive rewards.|2. Players can select an ultimate reward for each round.|3. Better options for Ultimate Rewards will be unlocked as you reach higher stages.|4. You will be able to get to the next stage by tapping on \"Next\" button after you successfully acquire the Ultimate Reward in your current stage.|5. Magic Wands can be acquired from Magic Gift Pack Backstage Prep and Magician's Assistant!|6. After the event is over unused Magic Wands will automatically be retrieved by the system and exchanged into Coins. Each Magic Wand is worth 20K. The Coins will be issued to your account via Mail.","ACTIVITY_ICE_SECRET_GAME_TIP":"The next stage is unlocked do you want to stay in the current stage?","ACTIVITY_ICE_SECRET_GAME_TITLE":"Preview","ACTIVITY_ICE_SECRET_BOSS_TEXT01":"Chances:{1}","ACTIVITY_ICE_SECRET_BOSS_TEXT02":"Not enough Challenge Chance!","ACTIVITY_ICE_SECRET_BOSS_TEXT03":"Preview","ACTIVITY_ICE_SECRET_BOSS_TEXT04":"Get reward according to the damage you deal","ACTIVITY_ICE_SECRET_BOSS_TEXT05":"Damage","ACTIVITY_ICE_SECRET_BOSS_HELP":"1. During the event you have 1 chance to challenge the enemy here each day.\n2. You will be able to get Magic Wands as reward for each challenge. You will be able to get more Magic Wands if you deal higher damage to the enemy in the battle.","ACTIVITY_ICE_SECRET_ITEM_TIPS":"Tap and hold the icon to view details"}}
+{
+  "awards": {
+    "1": {
+      "award": "2#20",
+      "type": 0,
+      "id": 1,
+      "limit": 1,
+      "level": 1
+    },
+    "2": {
+      "award": "2#20",
+      "type": 0,
+      "id": 2,
+      "limit": 1,
+      "level": 1
+    },
+    "3": {
+      "award": "2#20",
+      "type": 0,
+      "id": 3,
+      "limit": 1,
+      "level": 1
+    },
+    "4": {
+      "award": "2#300",
+      "type": 0,
+      "id": 4,
+      "limit": 1,
+      "level": 1
+    },
+    "5": {
+      "award": "36#1",
+      "type": 0,
+      "id": 5,
+      "limit": 1,
+      "level": 1
+    },
+    "6": {
+      "award": "20#1",
+      "type": 0,
+      "id": 6,
+      "limit": 1,
+      "level": 1
+    },
+    "7": {
+      "award": "35#1",
+      "type": 0,
+      "id": 7,
+      "limit": 1,
+      "level": 1
+    },
+    "8": {
+      "award": "35#1",
+      "type": 0,
+      "id": 8,
+      "limit": 1,
+      "level": 1
+    },
+    "9": {
+      "award": "35#1",
+      "type": 0,
+      "id": 9,
+      "limit": 1,
+      "level": 1
+    },
+    "10": {
+      "award": "333#1",
+      "type": 0,
+      "id": 10,
+      "limit": 1,
+      "level": 1
+    },
+    "11": {
+      "award": "423#1",
+      "type": 0,
+      "id": 11,
+      "limit": 1,
+      "level": 1
+    },
+    "12": {
+      "award": "976001#1",
+      "type": 0,
+      "id": 12,
+      "limit": 1,
+      "level": 1
+    },
+    "13": {
+      "award": "359#20",
+      "type": 0,
+      "id": 13,
+      "limit": 1,
+      "level": 1
+    },
+    "14": {
+      "award": "359#20",
+      "type": 0,
+      "id": 14,
+      "limit": 1,
+      "level": 1
+    },
+    "15": {
+      "award": "359#20",
+      "type": 0,
+      "id": 15,
+      "limit": 1,
+      "level": 1
+    },
+    "16": {
+      "award": "419#1",
+      "type": 0,
+      "id": 16,
+      "limit": 1,
+      "level": 1
+    },
+    "17": {
+      "award": "419#1",
+      "type": 0,
+      "id": 17,
+      "limit": 1,
+      "level": 1
+    },
+    "18": {
+      "award": "419#1",
+      "type": 0,
+      "id": 18,
+      "limit": 1,
+      "level": 1
+    },
+    "19": {
+      "award": "417#50",
+      "type": 0,
+      "id": 19,
+      "limit": 1,
+      "level": 1
+    },
+    "20": {
+      "award": "417#50",
+      "type": 0,
+      "id": 20,
+      "limit": 1,
+      "level": 1
+    },
+    "21": {
+      "award": "417#50",
+      "type": 0,
+      "id": 21,
+      "limit": 1,
+      "level": 1
+    },
+    "22": {
+      "award": "216#10",
+      "type": 0,
+      "id": 22,
+      "limit": 1,
+      "level": 1
+    },
+    "23": {
+      "award": "216#10",
+      "type": 0,
+      "id": 23,
+      "limit": 1,
+      "level": 1
+    },
+    "24": {
+      "award": "34#5",
+      "type": 0,
+      "id": 24,
+      "limit": 1,
+      "level": 1
+    },
+    "25": {
+      "award": "6791#1",
+      "type": 1,
+      "id": 25,
+      "limit": 1,
+      "level": 21
+    },
+    "26": {
+      "award": "5100021#1",
+      "type": 1,
+      "id": 26,
+      "limit": 1,
+      "level": 18
+    },
+    "27": {
+      "award": "5100020#1",
+      "type": 1,
+      "id": 27,
+      "limit": 1,
+      "level": 16
+    },
+    "28": {
+      "award": "4901001#3",
+      "type": 1,
+      "id": 28,
+      "limit": 1,
+      "level": 14
+    },
+    "29": {
+      "award": "5100020#1",
+      "type": 1,
+      "id": 29,
+      "limit": 1,
+      "level": 14
+    },
+    "30": {
+      "award": "4402015#2",
+      "type": 1,
+      "id": 30,
+      "limit": 1,
+      "level": 14
+    },
+    "31": {
+      "award": "6779#1",
+      "type": 1,
+      "id": 31,
+      "limit": 1,
+      "level": 12
+    },
+    "32": {
+      "award": "4101010#1",
+      "type": 1,
+      "id": 32,
+      "limit": 2,
+      "level": 11
+    },
+    "33": {
+      "award": "418#100",
+      "type": 1,
+      "id": 33,
+      "limit": 1,
+      "level": 11
+    },
+    "34": {
+      "award": "6779#1",
+      "type": 1,
+      "id": 34,
+      "limit": 1,
+      "level": 10
+    },
+    "35": {
+      "award": "4104023#1",
+      "type": 1,
+      "id": 35,
+      "limit": 1,
+      "level": 9
+    },
+    "36": {
+      "award": "358#50",
+      "type": 1,
+      "id": 36,
+      "limit": 1,
+      "level": 9
+    },
+    "37": {
+      "award": "418#50",
+      "type": 1,
+      "id": 37,
+      "limit": 1,
+      "level": 9
+    },
+    "38": {
+      "award": "4901001#1",
+      "type": 1,
+      "id": 38,
+      "limit": 2,
+      "level": 8
+    },
+    "39": {
+      "award": "4402015#1",
+      "type": 1,
+      "id": 39,
+      "limit": 1,
+      "level": 8
+    },
+    "40": {
+      "award": "4101008#1",
+      "type": 1,
+      "id": 40,
+      "limit": 4,
+      "level": 7
+    },
+    "41": {
+      "award": "4102056#1",
+      "type": 1,
+      "id": 41,
+      "limit": 1,
+      "level": 7
+    },
+    "42": {
+      "award": "6785#1",
+      "type": 1,
+      "id": 42,
+      "limit": 1,
+      "level": 7
+    },
+    "43": {
+      "award": "4501002#1",
+      "type": 1,
+      "id": 43,
+      "limit": 1,
+      "level": 7
+    },
+    "44": {
+      "award": "4206001#60",
+      "type": 1,
+      "id": 44,
+      "limit": 1,
+      "level": 6
+    },
+    "45": {
+      "award": "418#20",
+      "type": 1,
+      "id": 45,
+      "limit": 2,
+      "level": 6
+    },
+    "46": {
+      "award": "420#2",
+      "type": 1,
+      "id": 46,
+      "limit": 1,
+      "level": 6
+    },
+    "47": {
+      "award": "4102008#1",
+      "type": 1,
+      "id": 47,
+      "limit": 4,
+      "level": 6
+    },
+    "48": {
+      "award": "374#50",
+      "type": 1,
+      "id": 48,
+      "limit": 1,
+      "level": 6
+    },
+    "49": {
+      "award": "29#50",
+      "type": 1,
+      "id": 49,
+      "limit": 1,
+      "level": 6
+    },
+    "50": {
+      "award": "4101067#1",
+      "type": 1,
+      "id": 50,
+      "limit": 1,
+      "level": 6
+    },
+    "51": {
+      "award": "424#25",
+      "type": 1,
+      "id": 51,
+      "limit": 1,
+      "level": 5
+    },
+    "52": {
+      "award": "417#5000",
+      "type": 1,
+      "id": 52,
+      "limit": 1,
+      "level": 5
+    },
+    "53": {
+      "award": "426#6000",
+      "type": 1,
+      "id": 53,
+      "limit": 1,
+      "level": 5
+    },
+    "54": {
+      "award": "358#10",
+      "type": 1,
+      "id": 54,
+      "limit": 1,
+      "level": 4
+    },
+    "55": {
+      "award": "930213#50",
+      "type": 1,
+      "id": 55,
+      "limit": 1,
+      "level": 4
+    },
+    "56": {
+      "award": "930214#50",
+      "type": 1,
+      "id": 56,
+      "limit": 1,
+      "level": 4
+    },
+    "57": {
+      "award": "170#30",
+      "type": 1,
+      "id": 57,
+      "limit": 4,
+      "level": 4
+    },
+    "58": {
+      "award": "25#30",
+      "type": 1,
+      "id": 58,
+      "limit": 2,
+      "level": 3
+    },
+    "59": {
+      "award": "930201#50",
+      "type": 1,
+      "id": 59,
+      "limit": 2,
+      "level": 3
+    },
+    "60": {
+      "award": "940004#100",
+      "type": 1,
+      "id": 60,
+      "limit": 2,
+      "level": 3
+    },
+    "61": {
+      "award": "4201042#15",
+      "type": 1,
+      "id": 61,
+      "limit": 10,
+      "level": 3
+    },
+    "62": {
+      "award": "4206001#20",
+      "type": 1,
+      "id": 62,
+      "limit": 3,
+      "level": 2
+    },
+    "63": {
+      "award": "198#15000",
+      "type": 1,
+      "id": 63,
+      "limit": 2,
+      "level": 2
+    },
+    "64": {
+      "award": "199#3500",
+      "type": 1,
+      "id": 64,
+      "limit": 2,
+      "level": 2
+    },
+    "65": {
+      "award": "228#1",
+      "type": 1,
+      "id": 65,
+      "limit": 2,
+      "level": 2
+    },
+    "66": {
+      "award": "20#10",
+      "type": 1,
+      "id": 66,
+      "limit": 2,
+      "level": 2
+    },
+    "67": {
+      "award": "36#30",
+      "type": 1,
+      "id": 67,
+      "limit": 2,
+      "level": 1
+    },
+    "68": {
+      "award": "35#150",
+      "type": 1,
+      "id": 68,
+      "limit": 3,
+      "level": 1
+    },
+    "69": {
+      "award": "940016#50",
+      "type": 1,
+      "id": 69,
+      "limit": 2,
+      "level": 1
+    },
+    "70": {
+      "award": "940015#50",
+      "type": 1,
+      "id": 70,
+      "limit": 2,
+      "level": 1
+    },
+    "71": {
+      "award": "73#15",
+      "type": 1,
+      "id": 71,
+      "limit": 10,
+      "level": 1
+    },
+    "72": {
+      "award": "940004#50",
+      "type": 1,
+      "id": 72,
+      "limit": 20,
+      "level": 1
+    },
+    "73": {
+      "award": "229#1",
+      "type": 1,
+      "id": 73,
+      "limit": 99,
+      "level": 1
+    },
+    "74": {
+      "award": "211#1",
+      "type": 1,
+      "id": 74,
+      "limit": 99,
+      "level": 1
+    }
+  },
+  "missions": {
+    "1": {
+      "if_change": "",
+      "activity_id": 134,
+      "award": "180#10",
+      "type": 0,
+      "id": 1,
+      "complete_value": 4,
+      "getway": "",
+      "desc": -1
+    },
+    "2": {
+      "if_change": "",
+      "activity_id": 134,
+      "award": "180#5",
+      "type": 0,
+      "id": 2,
+      "complete_value": 1,
+      "getway": 10,
+      "desc": -1
+    },
+    "3": {
+      "if_change": "",
+      "activity_id": 134,
+      "award": "180#5",
+      "type": 0,
+      "id": 3,
+      "complete_value": 5,
+      "getway": 5,
+      "desc": -1
+    },
+    "4": {
+      "if_change": "",
+      "activity_id": 134,
+      "award": "180#5",
+      "type": 0,
+      "id": 4,
+      "complete_value": 1,
+      "getway": 112,
+      "desc": -1
+    },
+    "5": {
+      "if_change": "",
+      "activity_id": 134,
+      "award": "180#5",
+      "type": 0,
+      "id": 5,
+      "complete_value": 1,
+      "getway": 124,
+      "desc": -1
+    },
+    "6": {
+      "if_change": "",
+      "activity_id": 134,
+      "award": "180#15",
+      "type": 1,
+      "id": 6,
+      "complete_value": 5,
+      "getway": "",
+      "desc": -1
+    },
+    "7": {
+      "if_change": "",
+      "activity_id": 134,
+      "award": "180#15",
+      "type": 1,
+      "id": 7,
+      "complete_value": 1000,
+      "getway": 2,
+      "desc": -1
+    },
+    "8": {
+      "if_change": "",
+      "activity_id": 20,
+      "award": "180#15",
+      "type": 1,
+      "id": 8,
+      "complete_value": 400,
+      "getway": 23,
+      "desc": -1
+    },
+    "9": {
+      "if_change": "",
+      "activity_id": 20,
+      "award": "180#30",
+      "type": 1,
+      "id": 9,
+      "complete_value": 800,
+      "getway": 23,
+      "desc": -1
+    },
+    "10": {
+      "if_change": "",
+      "activity_id": 168,
+      "award": "180#15",
+      "type": 1,
+      "id": 10,
+      "complete_value": 200,
+      "getway": 7,
+      "desc": -1
+    },
+    "11": {
+      "if_change": "",
+      "activity_id": 168,
+      "award": "180#30",
+      "type": 1,
+      "id": 11,
+      "complete_value": 500,
+      "getway": 7,
+      "desc": -1
+    },
+    "12": {
+      "if_change": "",
+      "activity_id": 16,
+      "award": "180#15",
+      "type": 1,
+      "id": 12,
+      "complete_value": 40,
+      "getway": 8,
+      "desc": -1
+    },
+    "13": {
+      "if_change": "",
+      "activity_id": 16,
+      "award": "180#30",
+      "type": 1,
+      "id": 13,
+      "complete_value": 80,
+      "getway": 8,
+      "desc": -1
+    },
+    "14": {
+      "if_change": "",
+      "activity_id": 134,
+      "award": "180#10",
+      "type": 1,
+      "id": 14,
+      "complete_value": 1,
+      "getway": 7,
+      "desc": -1
+    },
+    "15": {
+      "if_change": "",
+      "activity_id": 134,
+      "award": "180#20",
+      "type": 1,
+      "id": 15,
+      "complete_value": 1,
+      "getway": 30,
+      "desc": -1
+    },
+    "16": {
+      "if_change": "",
+      "activity_id": 74,
+      "award": "180#15",
+      "type": 1,
+      "id": 16,
+      "complete_value": 1000,
+      "getway": 83,
+      "desc": -1
+    },
+    "17": {
+      "if_change": "",
+      "activity_id": 74,
+      "award": "180#30",
+      "type": 1,
+      "id": 17,
+      "complete_value": 2000,
+      "getway": 83,
+      "desc": -1
+    },
+    "18": {
+      "if_change": "",
+      "activity_id": 166,
+      "award": "180#15",
+      "type": 1,
+      "id": 18,
+      "complete_value": 40,
+      "getway": 144,
+      "desc": -1
+    },
+    "19": {
+      "if_change": "",
+      "activity_id": 166,
+      "award": "180#30",
+      "type": 1,
+      "id": 19,
+      "complete_value": 80,
+      "getway": 144,
+      "desc": -1
+    },
+    "20": {
+      "if_change": "",
+      "activity_id": 74,
+      "award": "180#15",
+      "type": 1,
+      "id": 20,
+      "complete_value": 75,
+      "getway": 222,
+      "desc": -1
+    },
+    "21": {
+      "if_change": "",
+      "activity_id": 74,
+      "award": "180#30",
+      "type": 1,
+      "id": 21,
+      "complete_value": 150,
+      "getway": 222,
+      "desc": -1
+    }
+  },
+  "mission_text": {
+    "1": "Complete all the other missions",
+    "2": "Complete 1 battle in Tests",
+    "3": "Engage 5 battles in Junior Varsity",
+    "4": "Complete a battle in Magician's Assistant",
+    "5": "Purchase 1 piece of Furniture",
+    "6": "Log in 5 Days",
+    "7": "Consume 1000 Gems",
+    "8": "Pull Slot Machine 400 times",
+    "9": "Pull Slot Machine 800 times",
+    "10": "Draw 200 Adv. Capsules",
+    "11": "Draw 500 Adv. Capsules",
+    "12": "Enroll 40 times",
+    "13": "Enroll 80 times",
+    "14": "Acquire a 5-star Girl",
+    "15": "Graduate 1 Girl to 6-star",
+    "16": "Consume 1000 Elemental Orbs",
+    "17": "Consume 2000 Elemental Orbs",
+    "18": "Use 40 Rudders in total",
+    "19": "Use 80 Rudders in total",
+    "20": "Use 75 Space Radars in total",
+    "21": "Use 150 Space Radars in total"
+  },
+  "weights": [
+    100,
+    50,
+    70,
+    100,
+    150,
+    240,
+    322,
+    420,
+    502,
+    700,
+    880,
+    966,
+    1000,
+    966,
+    880,
+    700,
+    502,
+    420,
+    322,
+    240,
+    150,
+    100,
+    70,
+    50,
+    100
+  ],
+  "hammer": 15,
+  "text": {
+    "ACTIVITY_ICE_SECRET_AWARDS_CD": "Làm mới sau",
+    "ACTIVITY_ICE_SECRET_MISSION_DAILY": "Hằng Ngày",
+    "ACTIVITY_ICE_SECRET_MISSION_WEEKLY": "Hằng Tuần",
+    "ACTIVITY_ICE_SECRET_MISSION_CD": "Làm mới sau",
+    "ACTIVITY_ICE_SECRET_MISSION_TIP": "Nhiệm vụ không còn được làm mới",
+    "ACTIVITY_ICE_SECRET_ROUNDS": "Vòng {1}",
+    "ACTIVITY_ICE_SECRET_MAXAWARD_TEXT": "Phần Thưởng Cao Nhất",
+    "ACTIVITY_ICE_SECRET_MAXAWARD_WINDOW": "Chọn Phần Thưởng Cao Nhất",
+    "ACTIVITY_ICE_SECRET_MAXAWARD_ERROR": "Hãy chọn phần thưởng cao nhất",
+    "ACTIVITY_ICE_SECRET_MAXAWARD_TIP": "Mở khóa ở vòng {1}",
+    "ACTIVITY_ICE_SECRET_START": "Bắt Đầu",
+    "ACTIVITY_ICE_SECRET_PARTNER_TEXT1": "Trò chơi bắt đầu!",
+    "ACTIVITY_ICE_SECRET_PARTNER_TEXT2": "Chọn đúng lá bài",
+    "ACTIVITY_ICE_SECRET_PARTNER_TEXT3": "Chạm vào lá bài để nhận thưởng!",
+    "ACTIVITY_ICE_SECRET_GAME_HELP": "1. Mỗi lần lật thẻ tiêu hao 15 Đũa Phép và nhận thưởng.|2. Mỗi vòng được chọn một Phần Thưởng Cao Nhất.|3. Các phần thưởng tốt hơn sẽ được mở khi đạt đến vòng cao hơn.|4. Nhận phần thưởng cao nhất để mở vòng tiếp theo.|5. Nhận Đũa Phép từ Gói Quà Ma Thuật, Chuẩn Bị Hậu Trường và Trợ Thủ Pháp Sư.|6. Khi kết thúc sự kiện, Đũa Phép chưa dùng được đổi thành Vàng và gửi qua Thư.",
+    "ACTIVITY_ICE_SECRET_GAME_TIP": "Vòng tiếp theo đã mở. Bạn có muốn tiếp tục vòng hiện tại không?",
+    "ACTIVITY_ICE_SECRET_GAME_TITLE": "Xem Trước",
+    "ACTIVITY_ICE_SECRET_BOSS_TEXT01": "Số lượt: {1}",
+    "ACTIVITY_ICE_SECRET_BOSS_TEXT02": "Không đủ lượt thách đấu!",
+    "ACTIVITY_ICE_SECRET_BOSS_TEXT03": "Xem Trước",
+    "ACTIVITY_ICE_SECRET_BOSS_TEXT04": "Nhận thưởng dựa trên sát thương gây ra",
+    "ACTIVITY_ICE_SECRET_BOSS_TEXT05": "Sát Thương",
+    "ACTIVITY_ICE_SECRET_BOSS_HELP": "1. Mỗi ngày có một lượt thách đấu.|2. Gây sát thương để nhận Đũa Phép.|3. Chọn đội hình mạnh nhất và dùng kỹ năng hợp lý để đạt phần thưởng tốt hơn.",
+    "ACTIVITY_ICE_SECRET_ITEM_TIPS": "Nhấn giữ biểu tượng để xem chi tiết"
+  }
+}

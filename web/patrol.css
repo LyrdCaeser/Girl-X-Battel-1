@@ -70,3 +70,9 @@
 .pt-shop-row{display:flex;align-items:center;gap:calc(10 * var(--u));background:#fff9;border-radius:calc(14 * var(--u));padding:calc(8 * var(--u)) calc(14 * var(--u))}
 .pt-cost{margin-left:auto;display:flex;gap:calc(6 * var(--u))}
 .pt-empty{text-align:center;font-size:calc(22 * var(--u))}
+
+/* Show help as a readable, scrollable dialog instead of one oversized title. */
+.pt-help-modal{max-height:min(88dvh,900px)}
+.pt-help-list{margin:0;padding:0 0 0 1.45em;max-height:min(68dvh,710px);overflow-y:auto;
+font-size:clamp(14px,3.6vw,17px);line-height:1.55;color:#3f4b67}
+.pt-help-list li{margin:0 0 .8em;overflow-wrap:break-word}

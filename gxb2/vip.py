@@ -1,66 +1,60 @@
-"""VIP by achievements (LOCAL-050). The original VIP EXP came from recharges; offline it is earned by playing.
+"""Paid VIP progression; the original VIP tiers/perks remain unchanged.
 
-VIP EXP ("popularity") is a pure function of the save, so it can't be double-counted and existing saves get it
-retroactively. Sources and weights (LOCAL, adjustable in one place):
-  campaign  12 per stage reached (max_stage)      level  6 per player level above 1
-  tasks     10 per daily task / 25 per trophy claimed (missions.action keeps the running total)
-  login      5 per day played                     lab     8 per Guild Lab technology level
-  collection 1 per Yume Collection Point (trophy), WAVE-049 · user's idea: the trophies feed VIP
-The level thresholds and perks are the original vip table (data/vip.json); nothing there is rebalanced.
+VIP EXP is earned only when a verified GM mail or approved paid order is
+*claimed* by the exact UID/server owner. Campaign, login, tasks and trophies
+must never influence VIP level.
 """
 import json
 from pathlib import Path
 
-LEVELS = json.loads((Path(__file__).resolve().parents[1] / 'data/vip.json').read_text())['levels']
-WEIGHTS = {'campaign': 12, 'level': 6, 'login': 5, 'lab': 8, 'collection': 1}  # tasks: 10 / 25 live in missions.action
+LEVELS = json.loads((Path(__file__).resolve().parents[1] / "data/vip.json").read_text())["levels"]
 MAX_LEVEL = len(LEVELS) - 1
-_PLAYER_EXP = sorted((int(r['all_exp']), int(k)) for k, r in json.loads((Path(__file__).resolve().parents[1] / 'data/exp_player.json').read_text()).items())
-
-
-def player_level(state):
-    exp = int((state.get('items') or {}).get('3', 0))
-    return max(lv for need, lv in _PLAYER_EXP if need <= exp)
-
-
-def breakdown(state):
-    """VIP EXP per source."""
-    totals = (state.get('missions') or {}).get('totals') or {}
-    lab = sum(int(v) for v in ((state.get('guild_lab') or {}).get('levels') or {}).values() if str(v).lstrip('-').isdigit())
-    return {'campaign': int(state.get('max_stage', 0)) * WEIGHTS['campaign'],
-            'level': max(0, player_level(state) - 1) * WEIGHTS['level'],
-            'tasks': int(totals.get('popularity', 0)),  # missions.action adds 10 per daily task / 25 per trophy
-            'login': int(totals.get('login', 0)) * WEIGHTS['login'],
-            'lab': lab * WEIGHTS['lab'],
-            'collection': collection_points(state) * WEIGHTS['collection']}
-
-
-def collection_points(state):
-    try:
-        from . import collection
-        return collection.points(state)
-    except Exception:  # a save without the collection data still gets the other sources
-        return 0
+# Server-side only virtual reward code: not a consumable inventory item.
+VIP_EXP_REWARD_ID = "999999991"
+MAX_VIP_EXP_REWARD = 2_000_000
 
 
 def exp(state):
-    return sum(breakdown(state).values())
+    return max(0, int(state.get("vip_paid_exp", 0)))
+
+
+def breakdown(state):
+    return {"paid": exp(state)}
 
 
 def level_for(total):
-    return max(row['level'] for row in LEVELS if row['need_exp'] <= total)
+    total = max(0, int(total))
+    return max(int(row["level"]) for row in LEVELS if int(row["need_exp"]) <= total)
 
 
 def info(state, developer=False):
-    parts = breakdown(state); total = sum(parts.values())
+    total = exp(state)
     lv = MAX_LEVEL if developer else level_for(total)
-    nxt = LEVELS[lv + 1] if lv < MAX_LEVEL else None
-    return {'level': lv, 'exp': total, 'base': LEVELS[lv]['need_exp'], 'next': nxt['need_exp'] if nxt else None,
-            'sources': parts, 'weights': WEIGHTS, 'perks': LEVELS[lv], 'next_perks': nxt}
+    next_tier = LEVELS[lv + 1] if lv < MAX_LEVEL else None
+    return {
+        "level": lv, "exp": total, "base": LEVELS[lv]["need_exp"],
+        "next": next_tier["need_exp"] if next_tier else None,
+        "sources": breakdown(state), "weights": {}, "perks": LEVELS[lv],
+        "next_perks": next_tier,
+    }
 
 
 def apply(state, developer=False):
-    """Expose the derived level where the other systems already look (state['vip'] / state['vip_level'])."""
-    lv = info(state, developer)['level']
-    state['vip'] = state['vip_level'] = lv
+    lv = info(state, developer)["level"]
+    state["vip"] = state["vip_level"] = lv
     return lv
 
+
+def claim_reward(state, attachments):
+    """Apply a mail-only VIP EXP award exactly once within the mail claim transaction.
+
+    The mail claim transaction enforces single-use and UID/server isolation.
+    This function never accepts arbitrary player requests.
+    """
+    gain = int(attachments.pop(VIP_EXP_REWARD_ID, 0))
+    if gain < 0 or gain > MAX_VIP_EXP_REWARD:
+        raise ValueError("VIP EXP không hợp lệ")
+    if gain:
+        state["vip_paid_exp"] = exp(state) + gain
+        apply(state)
+    return gain

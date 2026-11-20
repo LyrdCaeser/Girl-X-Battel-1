@@ -93,3 +93,82 @@
 .ag2-exname{color:#2f6fb4;font:700 12px system-ui}.ag2-ex b{color:#34466a;font:800 15px system-ui}.ag2-ex .gs-btn{min-width:110px}.ag2-ex.locked b{color:#9aa3b5;font-weight:600;font-size:13px}
 /* Replace grid: 5 icons per row must fit the window (icons were fixed 108u and overflowed). */
 .ag-grid{grid-template-columns:repeat(5,minmax(0,1fr))}.ag-cell{min-width:0}.ag-cell>.ag-icon{width:100%;height:auto;aspect-ratio:1}
+
+
+/* Anima: saved sets operate on authenticated server inventory, not mock data. */
+.ag-plan-hint,.ag-slot-count{margin:calc(6 * var(--u)) 0 calc(12 * var(--u));color:#566480;font:600 calc(19 * var(--u))/1.35 system-ui;text-align:center}
+.ag-plans{display:grid;gap:calc(12 * var(--u));max-height:calc(450 * var(--u));overflow-y:auto}
+.ag-plan{padding:calc(10 * var(--u));border:calc(2 * var(--u)) solid #c3d2e7;border-radius:calc(12 * var(--u));background:#fff}
+.ag-plan-name{display:block;color:#27518a;font:800 calc(23 * var(--u)) system-ui}
+.ag-plan-pieces{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:calc(6 * var(--u));margin:calc(6 * var(--u)) 0}
+.ag-plan-pieces .ag-icon,.ag-plan-empty{width:100%;height:auto;aspect-ratio:1;min-width:0}
+.ag-plan-empty{display:grid;place-items:center;border:calc(2 * var(--u)) dashed #b9c6d8;border-radius:calc(8 * var(--u));color:#93a4bb;font-size:calc(26 * var(--u))}
+.ag-plan-actions{display:flex;flex-wrap:wrap;gap:calc(8 * var(--u));justify-content:center}
+.ag-plan-actions .gs-btn{font-size:calc(19 * var(--u));padding:calc(5 * var(--u)) calc(8 * var(--u));min-width:0}
+.ag-plan-actions .gs-btn:disabled{opacity:.48}
+
+/* Mobile Anima sheets: scroll the body, not the frame. The native blue title
+   bar and close/help controls extend above the 9-slice border. */
+html.gxb-mobile #app-frame .gs-overlay>.gs-win.ag-win,
+html.gxb-mobile #app-frame .gs-overlay>.gs-win.ag2,
+html.gxb-mobile #app-frame .gs-overlay>.gs-win.ag-detail,
+html.gxb-mobile #app-frame .gs-overlay>.gs-win.ag-ritual-win{
+  overflow:visible!important;
+  max-height:calc(100dvh - 36px)!important;
+}
+html.gxb-mobile #app-frame .gs-win.ag-win>.gs-win-body,
+html.gxb-mobile #app-frame .gs-win.ag2>.gs-win-body,
+html.gxb-mobile #app-frame .gs-win.ag-detail>.gs-win-body,
+html.gxb-mobile #app-frame .gs-win.ag-ritual-win>.gs-win-body{
+  min-height:0;
+  max-height:calc(100dvh - 126px);
+  overflow-y:auto;
+  overscroll-behavior:contain;
+}
+html.gxb-mobile #app-frame .gs-win.ag-win .gs-win-bar,
+html.gxb-mobile #app-frame .gs-win.ag2 .gs-win-bar,
+html.gxb-mobile #app-frame .gs-win.ag-detail .gs-win-bar,
+html.gxb-mobile #app-frame .gs-win.ag-ritual-win .gs-win-bar{
+  z-index:15;
+  overflow:visible;
+}
+html.gxb-mobile #app-frame #bag-view:has(.ag-bag-info){
+  padding-bottom:calc(62px + env(safe-area-inset-bottom))!important;
+}
+html.gxb-mobile #app-frame #bag-view .bag-actions:has(.ag-bag-info){
+  flex-wrap:wrap;
+  align-items:center;
+  min-height:64px;
+  overflow:visible;
+}
+html.gxb-mobile #app-frame #bag-view .ag-bag-info{
+  order:-1;
+  margin:0;
+  width:100%;
+  justify-content:flex-end;
+  padding:2px 4px;
+}
+html.gxb-mobile #app-frame #bag-view .ag-ritual{
+  min-height:36px;
+  padding:5px 12px;
+  white-space:nowrap;
+}
+
+
+/* Real inventory diagnostic and explicit server refresh in the Anima picker. */
+.ag-inventory-warning{padding:calc(8 * var(--u));margin:calc(6 * var(--u)) 0;
+ border:calc(2 * var(--u)) solid #d5c59f;border-radius:calc(7 * var(--u));
+ background:#fffbf0;color:#6a5a41;line-height:1.4;font-size:calc(18 * var(--u))}
+.ag-sync{display:flex;justify-content:flex-end;margin:calc(4 * var(--u)) 0}
+.ag-sync .gs-btn{font-size:calc(18 * var(--u));line-height:1.2!important;
+ min-width:calc(175 * var(--u));height:calc(47 * var(--u))}
+
+
+/* Two source-backed Anima inventories: individually owned gear vs
+   stacked source items. Do not mix their counts or auto-consume either. */
+.bag-panel .bag-grid .ag-bag-section{
+ grid-column:1/-1;min-width:0;
+ padding:6px 10px;margin:3px 0;
+ border-radius:6px;background:linear-gradient(#e8f3ff,#d6e9fa);
+ color:#355b85;font:800 13px/1.3 system-ui;
+}

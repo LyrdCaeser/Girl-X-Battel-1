@@ -59,6 +59,75 @@ ENEMY, ELITE, RULER, BOX, EMPTY, PIRATE, TYRANT = 1, 2, 3, 9, 10, 11, 12
 BUFF_TYPES = {4, 5, 6, 7, 8}
 LOCAL_BRACKET = [(1200, 3), (1000, 4), (800, 5), (500, 6), (300, 7), (150, 8), (50, 9), (1, 10)]
 
+VI_SYSTEMS = {
+    1: ("Hệ Khởi Nguyên", "Các hành tinh trong Hệ Sao này được liên kết bởi một sợi dây bí ẩn."),
+    2: ("Hệ Phú Quý", "Ánh sáng khoáng vật từ các hành tinh đã thu hút rất nhiều nhà thám hiểm."),
+    3: ("Hệ Ngọc Bích", "Những hành tinh nơi đây nổi tiếng khắp vũ trụ nhờ vẻ ngoài độc đáo."),
+    4: ("Hệ Tử La", "Muốn đáp xuống nơi đây, hãy chú ý các vệ tinh đang chuyển động trên quỹ đạo."),
+    5: ("Hệ Bóng Tối", "Hệ Sao im lặng và lạnh lẽo. Đừng ở lại quá lâu kẻo lạc mất phương hướng."),
+    6: ("Hệ Ảo Ảnh", "Ảo ảnh của các vì sao và hành tinh tạo nên cảnh tượng tráng lệ nhất vũ trụ."),
+    7: ("Hệ Bụi Sao", "Bụi sao bao phủ các hành tinh, nhìn từ xa tựa như dải áo của tiên nữ."),
+    8: ("Hệ Cô Lập", "Các hành tinh bị ngăn cách với không gian bên ngoài bằng những kết giới trong suốt."),
+    999: ("Hệ Vĩnh Hằng", "Không ai dám tới gần cung điện của Bạo Chúa Ngân Hà, cũng là nơi Hải Tặc Vũ Trụ tụ tập.")
+}
+VI_TYPES = {
+    1: ("Kẻ Địch Thường", "Không khó để đánh bại, nhưng chúng luôn áp đảo về số lượng."),
+    2: ("Kẻ Địch Tinh Anh", "Chỉ xuất hiện tại một số khu vực. Phải đánh bại chúng mới có thể đi tiếp."),
+    3: ("Thủ Lĩnh", "Kẻ địch nguy hiểm nhất trong Hệ Sao và là thử thách cuối cùng trước khi trở về."),
+    4: ("Hành Tinh Bí Ẩn A20", "Một hành tinh chưa được khám phá, ẩn chứa sức mạnh giúp đội hình chiến đấu mạnh hơn."),
+    5: ("Hành Tinh Bí Ẩn B22", "Một hành tinh chưa được khám phá, ẩn chứa sức mạnh giúp đội hình chiến đấu mạnh hơn."),
+    6: ("Hành Tinh Bí Ẩn C08", "Một hành tinh chưa được khám phá, ẩn chứa sức mạnh giúp đội hình chiến đấu mạnh hơn."),
+    7: ("Hành Tinh Bí Ẩn D16", "Một hành tinh chưa được khám phá, ẩn chứa sức mạnh giúp đội hình chiến đấu mạnh hơn."),
+    8: ("Hành Tinh Bí Ẩn E01", "Một hành tinh chưa được khám phá, ẩn chứa sức mạnh giúp đội hình chiến đấu mạnh hơn."),
+    9: ("Rương Tiếp Tế", "Một chiếc rương trôi nổi giữa không gian. Mở rương cần thời gian nhưng phần thưởng rất xứng đáng."),
+    10: ("Khoảng Không", "Không phải khu vực nào trong Ngân Hà cũng có thứ đáng để khám phá."),
+    11: ("Hải Tặc Vũ Trụ", "Những kẻ tội phạm khét tiếng. Hãy đánh bại và lấy chiến lợi phẩm trước khi chúng bỏ đi."),
+    12: ("Bạo Chúa Ngân Hà", "Kẻ địch hùng mạnh có thể xuyên qua không gian và thời gian.")
+}
+VI_MISSIONS = {
+    "1001": "Thám hiểm {1} khu vực trong mùa này",
+    "1002": "Đi đến điểm cuối của {1} Hệ Sao trong mùa này",
+    "1003": "Đánh bại {1} Kẻ Địch Tinh Anh trong mùa này",
+    "1004": "Nhận {1} Rương Tiếp Tế trong mùa này",
+    "1005": "Đánh bại {1} Hải Tặc Vũ Trụ trong mùa này",
+    "1006": "Đạt {1}%% tiến độ thám hiểm một Hệ Sao trong mùa này",
+    "1007": "Đánh bại {1} Kẻ Địch Thường trong mùa này",
+    "1008": "Đánh bại {1} Thủ Lĩnh trong mùa này",
+    "1009": "Thám hiểm {1} Hành Tinh Bí Ẩn trong mùa này",
+    "1010": "Đánh bại Bạo Chúa Ngân Hà cấp {1} trong mùa này"
+}
+VI_TEAMS = {
+    1001: "Tăng {1} HP và {2} Tấn Công cho Nữ Thần trong các trận Hành Trình Ngân Hà.",
+    1002: "Giảm {1} thời gian thám hiểm và tăng thêm {2} khu vực cho mỗi lộ trình, không áp dụng tại Hệ Vĩnh Hằng.",
+    1003: "Tăng {1} Quả Cầu Mờ và {2} Đá Ngân Hà nhận được khi thám hiểm, không áp dụng tại Hệ Vĩnh Hằng."
+}
+VI_HELP = [
+    """Điều Kiện & Thời Gian
+1. Mỗi mùa Hành Trình Ngân Hà kéo dài 28 ngày: 27 ngày thám hiểm và 1 ngày tổng kết.
+2. Tính năng mở sau khi vượt ải Chiến Dịch 16-4 và sở hữu ít nhất một Nữ Thần 10★.
+
+Cách Chơi
+1. Thám hiểm càng xa thì kẻ địch càng mạnh và phần thưởng càng giá trị.
+2. Sự kiện chiến đấu cho phép nhận thưởng ngay sau khi thắng; các sự kiện khác cần thời gian để hoàn thành.
+3. Mỗi mùa chỉ mở Hệ Khởi Nguyên lúc bắt đầu. Hoàn thành đủ yêu cầu của Hệ Sao hiện tại để mở Hệ Sao tiếp theo.
+4. Chỉ thám hiểm một Hệ Sao tại một thời điểm. Nếu đổi Hệ Sao, tiến độ bản đồ hiện tại sẽ được đặt lại, nhưng Điểm Thám Hiểm và Đá Ngân Hà vẫn được giữ.
+5. Hệ Vĩnh Hằng mở khi hoàn thành yêu cầu của Hệ Sao thứ 4; tại đây có Hải Tặc Vũ Trụ và Bạo Chúa Ngân Hà.
+6. Điểm Thám Hiểm dùng để mở thưởng Hộ Chiếu Ngân Hà và hàng hóa trong Cửa Hàng.
+7. Khi bước vào ngày tổng kết, hành trình đang thực hiện sẽ được thu hồi. Phần thưởng từ khu vực đã hoàn thành vẫn được nhận.
+8. Điểm và tiến độ thám hiểm được đặt lại khi sang mùa mới, vì vậy hãy nhận hết phần thưởng trước khi mùa kết thúc.""",
+    """Bản Đồ Hệ Sao
+1. Cùng một loại sự kiện ở các Hệ Sao khác nhau cho số Điểm Thám Hiểm như nhau, nhưng phần thưởng có thể khác.
+2. Chỉ có thể đi vào khu vực nằm ở hàng bắt đầu hoặc liền kề khu vực đã thám hiểm.
+3. Mỗi lộ trình được chọn nhiều khu vực liên tiếp. Kẻ địch phải được khiêu chiến trực tiếp và không thể đưa vào lộ trình tự động.
+4. Đánh bại Thủ Lĩnh, mở đủ Rương Tiếp Tế và đi tới điểm cuối để hoàn thành yêu cầu mở Hệ Sao tiếp theo.
+5. Từ 30% tiến độ, mỗi khu vực đã thám hiểm làm HP và Tấn Công của Thủ Lĩnh giảm 1%, tối đa 40%.""",
+    """Đội Thám Hiểm & Phần Thưởng
+1. Có ba Đội Thám Hiểm. Tổng Đột Phá trên 10★ của các thành viên quyết định cấp hiệu ứng.
+2. Đội 1 tăng sức mạnh chiến đấu; Đội 2 rút ngắn thời gian và tăng số khu vực mỗi lộ trình; Đội 3 tăng tài nguyên nhận được.
+3. Phiếu Khiêu Chiến Ngân Hà dùng khi chiến đấu, được bổ sung hằng ngày và có giới hạn tích trữ.
+4. Bảng Xếp Hạng sử dụng Điểm Thám Hiểm thật của người chơi trong cùng máy chủ ở mùa hiện tại; bằng điểm sẽ xếp theo Lực Chiến, sau đó đến Cấp."""
+]
+
 
 def ids(text):
     return [int(float(x)) for x in str(text or '').split('|') if x not in ('', None)]
@@ -153,7 +222,7 @@ def generate(map_id, season):
         # capture 2026-09-29-h/04-06: ordinary rows are complete (no voids); only start / end / elite rows have gaps
         if connected(grid, W, H):
             return {'w': W, 'h': H, 'cells': [c if c else {'e': -1} for c in grid]}
-    raise RuntimeError('No se pudo generar el mapa')
+    raise RuntimeError('Không thể tạo bản đồ Hệ Sao')
 
 
 def neighbours(c, W, H):
@@ -452,7 +521,7 @@ def spawn_pirates(state, g, now):
 def action(state, request, now=None, fight=None):
     now = int(time.time()) if now is None else now
     if not unlocked(state):
-        raise ValueError(f'Galaxy Voyage se desbloquea al superar la fase {UNLOCK_STAGE} de la campaña y tener una chica de 10★')
+        raise ValueError(f'Hành Trình Ngân Hà mở khóa sau khi vượt ải {UNLOCK_STAGE} và sở hữu một Nữ Thần 10★')
     g = saved(state, now)
     s = g['season']
     items = state['items']
@@ -465,58 +534,58 @@ def action(state, request, now=None, fight=None):
         return {}
     if kind == 'teams':
         if s.get('explore'):
-            raise ValueError('Cannot do this during an ongoing Exploration')
+            raise ValueError('Không thể thực hiện khi đang thám hiểm')
         teams = [[int(x) for x in t][:6] for t in (request.get('teams') or [[], [], []])][:3]
         owned = {p['partner_id'] for p in state['partners']}
         flat = [x for t in teams for x in t]
         if len(flat) != len(set(flat)) or any(x not in owned for x in flat):
-            raise ValueError('Equipos no válidos')
+            raise ValueError('Đội thám hiểm không hợp lệ')
         g['teams'] = teams + [[]] * (3 - len(teams))
         return {}
     if kind == 'claim_task':
         row = next((t for t in task_rows(s) if t['id'] == int(request.get('id', 0))), None)
         if not row or not row['claimable']:
-            raise ValueError('Tarea no disponible')
+            raise ValueError('Nhiệm vụ chưa thể nhận')
         s['tasks'].append(row['id']); s['points'] += row['points']
         return {'got': {POINTS: row['points']}}
     if kind == 'claim_pass':
         pid = int(request.get('id', 0))
         row = next((p for p in DATA['pass'] if int(p['id']) == pid), None)
         if not row or pid in s['pass'] or s['points'] < int(row['point_limit']):
-            raise ValueError('Premio no disponible')
+            raise ValueError('Phần thưởng chưa thể nhận')
         got = pairs(row['free_awards']); add(items, got); s['pass'].append(pid)
         return {'got': got}
     if kind == 'store':
         which, sid = int(request.get('store', 1)), int(request.get('id', 0))
         row = next((r for r in DATA['store1' if which == 1 else 'store2'] if int(r['id']) == sid), None)
         if not row:
-            raise ValueError('Artículo no válido')
+            raise ValueError('Vật phẩm không hợp lệ')
         bag = s['store1'] if which == 1 else g['store2']
         if int(bag.get(str(sid), 0)) >= int(row['buy_limit']):
-            raise ValueError('Ya no quedan unidades')
+            raise ValueError('Đã hết lượt mua')
         if not store_open(g, which, row):
-            raise ValueError('Aún no cumples el requisito de Exploration Points')
+            raise ValueError('Chưa đạt đủ Điểm Thám Hiểm yêu cầu')
         cost = pairs(row['cost'])
         if any(int(items.get(k, 0)) < v for k, v in cost.items()):
-            raise ValueError('Faltan Galaxy Stones')
+            raise ValueError('Không đủ Đá Ngân Hà')
         for k, v in cost.items():
             items[k] = int(items[k]) - v
         got = pairs(row['item']); add(items, got); bag[str(sid)] = int(bag.get(str(sid), 0)) + 1
         return {'got': got}
     if not exploring and kind not in ('claim',):
-        raise ValueError('Cannot do this in result phase')
+        raise ValueError('Không thể thực hiện trong giai đoạn tổng kết')
     mid = int(request.get('map', s.get('cur') or 1))
     if kind == 'enter':
         if mid == HOLE:
             if not s['hole']:
-                raise ValueError(f'Unlock after meeting the requirement of System No.{HOLE_NEED}')
+                raise ValueError(f'Mở khóa sau khi hoàn thành yêu cầu của Hệ Sao thứ {HOLE_NEED}')
             map_state(s, HOLE); spawn_pirates(state, g, now)
             return {}
         if mid not in MAPS or mid > s['open']:
-            raise ValueError('Ese sistema aún está bloqueado')
+            raise ValueError('Hệ Sao này chưa được mở khóa')
         if s['cur'] and s['cur'] != mid:
             if s.get('explore'):
-                raise ValueError('You need to Recall your current Exploration before moving to another System.')
+                raise ValueError('Hãy thu hồi đoàn thám hiểm hiện tại trước khi chuyển sang Hệ Sao khác.')
             s['maps'].pop(str(s['cur']), None)  # "the Exploration Progress in this System will be reset"
         s['cur'] = mid
         map_state(s, mid)
@@ -524,30 +593,30 @@ def action(state, request, now=None, fight=None):
     if kind in ('route', 'recall', 'claim'):
         if kind == 'route':
             if s.get('explore'):
-                raise ValueError('Please claim your Exploration Reward first')
+                raise ValueError('Hãy nhận Phần Thưởng Thám Hiểm trước')
             if mid != s['cur']:
-                raise ValueError('Entra primero en este sistema')
+                raise ValueError('Hãy vào Hệ Sao này trước')
             ms = map_state(s, mid)
             route = [int(c) for c in request.get('cells') or []]
             if not 1 <= len(route) <= route_limit(state, g) or len(set(route)) != len(route):
-                raise ValueError(f'Planifica entre 1 y {route_limit(state, g)} áreas')
+                raise ValueError(f'Hãy chọn từ 1 đến {route_limit(state, g)} khu vực')
             seen = set(ms['opened'])
             anchors = []
             for c in route:
                 cell = ms['grid']['cells'][c]
                 if cell['e'] == -1 or ev_type(cell['e']) in (ENEMY, ELITE, RULER):
-                    raise ValueError('Las rutas solo incluyen áreas explorables (sin enemigos)')
+                    raise ValueError('Lộ trình chỉ được chọn khu vực có thể thám hiểm và không có kẻ địch')
                 a = cell['a']
                 if a in ms['opened'] or a in anchors:
-                    raise ValueError('Esa área ya está explorada')
+                    raise ValueError('Khu vực này đã được thám hiểm')
                 tmp = {**ms, 'opened': list(seen)}
                 if not can_reach(tmp, a):
-                    raise ValueError('Cada área debe estar junto al inicio o a una zona explorada')
+                    raise ValueError('Mỗi khu vực phải liền kề điểm bắt đầu hoặc khu vực đã thám hiểm')
                 anchors.append(a); seen.update(cells_of(ms['grid'], a))
             s['explore'] = {'map': mid, 'ids': anchors, 'times': [explore_time(state, g, ms['grid']['cells'][a]['e']) for a in anchors], 'start': now}
             return {}
         if not s.get('explore'):
-            raise ValueError('No hay ninguna exploración')
+            raise ValueError('Hiện không có đoàn thám hiểm nào')
         if kind == 'recall':
             return {'got': finish_explore(state, g, now)}
         done, end_t = explore_state(s['explore'], now)
@@ -565,24 +634,24 @@ def action(state, request, now=None, fight=None):
         team = request.get('team') or []
         owned = {p['partner_id']: p for p in state['partners']}
         if not 1 <= len(team) <= 6 or any(int(t['partner_id']) not in owned for t in team):
-            raise ValueError('Equipo no válido')
+            raise ValueError('Đội hình không hợp lệ')
         rows = [{**copy.deepcopy(owned[int(t['partner_id'])]), 'pos': int(t['pos'])} for t in team]
         if mid == HOLE:
             return fight_hole(state, g, request, rows, now, fight)
         if mid != s['cur']:
-            raise ValueError('Entra primero en este sistema')
+            raise ValueError('Hãy vào Hệ Sao này trước')
         ms = map_state(s, mid)
         cell = int(request.get('cell', -1))
         c = ms['grid']['cells'][cell] if 0 <= cell < len(ms['grid']['cells']) else {'e': -1}
         if c['e'] == -1 or ev_type(c['e']) not in (ENEMY, ELITE, RULER):
-            raise ValueError('Ahí no hay ningún enemigo')
+            raise ValueError('Khu vực này không có kẻ địch')
         a = c['a']
         if a in ms['opened']:
-            raise ValueError('Ese enemigo ya fue derrotado')
+            raise ValueError('Kẻ địch này đã bị đánh bại')
         if not can_reach(ms, a):
-            raise ValueError('Primero explora un área contigua')
+            raise ValueError('Hãy thám hiểm khu vực liền kề trước')
         if int(items.get(str(COUPON), 0)) < 1:
-            raise ValueError('No te quedan Galaxy Challenge Coupons (+10 cada día)')
+            raise ValueError('Đã hết Phiếu Khiêu Chiến Ngân Hà, mỗi ngày nhận thêm 10 phiếu')
         items[str(COUPON)] = int(items[str(COUPON)]) - 1
         t = ev_type(c['e'])
         status = ms['hp'].get(str(a)) if t != RULER else None
@@ -596,19 +665,19 @@ def action(state, request, now=None, fight=None):
         elif t != RULER:
             ms['hp'][str(a)] = {str(x['pos'] - 6): {'hp': max(0, int(x['hp'])), 'mp': int(x['mp'])} for x in report.get('end_status', []) if x['pos'] > 6}
         return result
-    raise ValueError('Acción de Galaxy Voyage no disponible')
+    raise ValueError('Thao tác Hành Trình Ngân Hà không hợp lệ')
 
 
 def fight_hole(state, g, request, rows, now, fight):
     s = g['season']
     if not s['hole']:
-        raise ValueError('System of Eternity está bloqueado')
+        raise ValueError('Hệ Vĩnh Hằng chưa được mở khóa')
     ms = map_state(s, HOLE)
     gods = battle_gods(state, g, {'buffs': []}, 12001)
     if 'pirate' in request:
         p = next((x for x in s['pirates'] if x['cell'] == int(request['pirate']) and not x['done']), None)
         if not p or p['expire'] <= now:
-            raise ValueError('The enemy has escaped')
+            raise ValueError('Kẻ địch đã rời đi')
         report = fight(rows, int(p['battle']), gods, None, None)
         p['done'] = True  # one attempt
         result = {'battle': report, 'win': bool(report['isWin'])}
@@ -620,7 +689,7 @@ def fight_hole(state, g, request, rows, now, fight):
         return result
     level = int(request.get('level', 1))
     if not 1 <= level <= s['boss_max']:
-        raise ValueError(f'Dificultad no disponible (máximo {s["boss_max"]})')
+        raise ValueError(f'Độ khó chưa mở (tối đa {s["boss_max"]})')
     eid = 12000 + level
     bids = ids(EVENTS[eid]['battle_id'])
     report = fight(rows, bids[(s['n'] - 1) % len(bids)], gods, None, None)
@@ -661,8 +730,7 @@ def task_rows(s):
         if int(m['begin_season']) > s['n']:
             continue
         key = str(m['text_id'])
-        text = DATA['mission_text'].get(key) or {'1009': 'Explore {1} Mystery Planet(s) in this season',
-                                                 '1010': 'Defeat Galaxy Tyrant of Difficulty Level {1} in this season'}.get(key, key)
+        text = VI_MISSIONS.get(key, key)
         val, need = int(s['counters'].get(key, 0)), int(m['complete'])
         out.append({'id': int(m['id']), 'text': text.replace('{1}', str(need)).replace('%%', '%'), 'value': val, 'need': need,
                     'points': int(m['explore_points']), 'claimed': int(m['id']) in s['tasks'], 'claimable': val >= need and int(m['id']) not in s['tasks']})
@@ -721,25 +789,25 @@ def snapshot(state, now=None):
         if mid == HOLE:
             continue
         ms = s['maps'].get(str(mid))
-        systems.append({'id': mid, 'name': DATA['map_text'].get(str(m['name_text_id']), ''), 'intro': DATA['map_text'].get(str(m['intro_text_id']), ''),
+        systems.append({'id': mid, 'name': VI_SYSTEMS.get(mid, ('Hệ Sao', ''))[0], 'intro': VI_SYSTEMS.get(mid, ('Hệ Sao', ''))[1],
                         'icon': m['icon_text'], 'big': m['icon_big_text'], 'bg': m['map_text'], 'mask': m['icon_mask_text'],
                         'available': mid <= systems_open(n), 'open': mid <= s['open'] and mid <= systems_open(n),
                         'progress': pct(ms) if ms else 0, 'req': requirements(ms) if ms else None, 'current': s['cur'] == mid})
     hole = MAPS[HOLE]
     info = {'unlocked': True, 'season': n, 'exploring': now < explore_end, 'explore_end': explore_end, 'season_end': end,
             'points': s['points'], 'coupons': int(view['items'].get(str(COUPON), 0)), 'coupon_max': C_MAX, 'stones': int(view['items'].get(STONE, 0)),
-            'systems': systems, 'current': s['cur'], 'hole': {'open': s['hole'], 'name': DATA['map_text'].get(str(hole['name_text_id']), ''),
-                                                             'intro': DATA['map_text'].get(str(hole['intro_text_id']), ''), 'icon': hole['icon_text'], 'big': hole['icon_big_text'], 'bg': hole['map_text']},
+            'systems': systems, 'current': s['cur'], 'hole': {'open': s['hole'], 'name': VI_SYSTEMS[HOLE][0],
+                                                             'intro': VI_SYSTEMS[HOLE][1], 'icon': hole['icon_text'], 'big': hole['icon_big_text'], 'bg': hole['map_text']},
             'route_limit': route_limit(view, g), 'tasks': task_rows(s), 'last_reward': g.get('last_reward'),
             'pass': [{'id': int(p['id']), 'need': int(p['point_limit']), 'free': pairs(p['free_awards']), 'pay': pairs(p['pay_awards']),
                       'claimed': int(p['id']) in s['pass']} for p in DATA['pass'] if int(p['begin_season']) <= n],
             'store': {'season': [{**r, 'bought': int(s['store1'].get(str(r['id']), 0)), 'ok': store_open(g, 1, r)} for r in DATA['store1'] if int(r['begin_season']) <= n],
                       'permanent': [{**r, 'bought': int(g['store2'].get(str(r['id']), 0)), 'ok': store_open(g, 2, r)} for r in DATA['store2'] if int(r['begin_season']) <= n]},
-            'store_text': DATA['store_text'], 'help': [DATA['text'].get(f'GALAXY_TRIP_HELP0{i}', '') for i in (1, 2, 3)]}
+            'store_text': DATA['store_text'], 'help': VI_HELP}
     teams = []
     for i, members in enumerate(g['teams']):
         row, total = team_tier(view, members, i + 1)
-        teams.append({'members': members, 'total': total, 'tier': row, 'text': DATA['team_text'].get(str(1001 + i), '')})
+        teams.append({'members': members, 'total': total, 'tier': row, 'text': VI_TEAMS.get(1001 + i, '')})
     info['teams'] = teams
     info['team_tiers'] = DATA['teams']
     maps = {}
@@ -759,7 +827,7 @@ def snapshot(state, now=None):
                                 'enemy': enemy_view(ids(EVENTS[12000 + lv]['battle_id'])[(n - 1) % len(ids(EVENTS[12000 + lv]['battle_id']))])} for lv in range(1, BOSS_MAX + 1)]}
     info['events'] = {str(k): {'type': ev_type(k), 'points': int(v.get('explore_points') or 0), 'awards': {**pairs(v.get('award1')), **pairs(v.get('award2'))}, 'skill': v.get('skill_id')}
                       for k, v in EVENTS.items()}
-    info['types'] = {str(k): {'name': DATA['type_text'].get(str(v['name_text_id']), ''), 'intro': DATA['type_text'].get(str(v['intro_text_id']), ''),
+    info['types'] = {str(k): {'name': VI_TYPES.get(k, ('Sự Kiện', ''))[0], 'intro': VI_TYPES.get(k, ('Sự Kiện', ''))[1],
                               'icon': v['icon_text'], 'big': v['icon_big_text'], 'size': [int(x) for x in str(v['size']).split('|')], 'time': int(v['time'] or 0)} for k, v in TYPES.items()}
     info['buff_text'] = DATA['buff_text']
     return info

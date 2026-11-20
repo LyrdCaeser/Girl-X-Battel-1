@@ -233,7 +233,36 @@ def action(state, request, rng=secrets.randbelow):
     if not partner:
         raise ValueError('Chica inexistente')
     partner.setdefault('love_point', 0)
-    if kind == 'gift':
+    if kind == 'gift_quick':
+        from . import vip
+        if vip.level_for(vip.exp(state)) < 4:
+            raise ValueError('Tặng Nhanh yêu cầu VIP 4')
+        before = int(partner['love_point'])
+        maximum = cap(partner)
+        if before >= maximum:
+            raise ValueError('Đã đạt giới hạn Thân Mật')
+        like, dislike = likes(partner['table_id'])
+        remaining = maximum - before
+        used = {}
+        # Prioritise favourite gifts; never consume a gift after reaching the cap.
+        # All mutations happen in one original /api/relations/action save.
+        for item in sorted(range(FIRST, FIRST + COUNT),
+                           key=lambda x: (0 if x in like else 2 if x in dislike else 1, x)):
+            per = POINTS[2] if item in like else POINTS[0] if item in dislike else POINTS[1]
+            have = max(0, int(state['items'].get(str(item), 0)))
+            if remaining <= 0: break
+            if not have or per <= 0: continue
+            take = min(have, (remaining + per - 1)//per)
+            if take <= 0: continue
+            used[str(item)] = take
+            remaining = max(0, remaining - take * per)
+        if not used:
+            raise ValueError('Không có quà phù hợp để tặng nhanh')
+        for item, take in used.items():
+            state['items'][item] = int(state['items'][item]) - take
+        partner['love_point'] = maximum - remaining
+        result.update(delta=partner['love_point'] - before, used=used, quick=True)
+    elif kind == 'gift':
         item = int(request.get('item_id', 0)); num = int(request.get('num', 1))
         if not FIRST <= item < FIRST + COUNT or num < 1:
             raise ValueError('Regalo inválido')

@@ -8,7 +8,7 @@ the server and is not in the client: locally one roll per box every DROP_INTERVA
 from __future__ import annotations
 import json, secrets, time
 from pathlib import Path
-from . import vip
+from . import vip, local_config
 
 ROOT = Path(__file__).resolve().parents[1]
 STAGES = json.loads((ROOT / 'data/stage.json').read_text())
@@ -79,8 +79,8 @@ def pending(state, now=None):
             economy[key]=economy.get(key,0)+amount*ticks
     # vip.extra_output: idle bonus of the current VIP level (LOCAL-050 earns the level by playing)
     bonus=1+float(vip.LEVELS[min(int(state.get('vip',0) or 0),vip.MAX_LEVEL)]['extra_output'])
-    economy={k:int(v*bonus) for k,v in economy.items()}
-    rate={k:int(v*bonus) for k,v in (pair(stage['gold']),pair(stage['exp_partner']),pair(stage['exp_player']))}
+    economy={k:local_config.scale_reward(int(v*bonus)) for k,v in economy.items()}
+    rate={k:local_config.scale_reward(int(v*bonus)) for k,v in (pair(stage['gold']),pair(stage['exp_partner']),pair(stage['exp_player']))}
     loot=intervals(state,int(hang['drop_since']),now,DROP_INTERVAL)
     return {'stage':int(stage['id']),'seconds':secs,'max_seconds':MAX_TIME,'rate':rate,
             'economy':economy,'rolls':sum(n for _,n in loot),'drop_seconds':max(0,min(now-int(hang['drop_since']),MAX_TIME)),'drop_interval':DROP_INTERVAL,
@@ -115,7 +115,7 @@ def collect(state, now=None, rng=secrets.randbelow):
         for _ in range(rolls):
             for box in str(STAGES[str(sid)]['dropbox_ids']).split('|'):
                 item=roll(box,rng)
-                if item:got[item[0]]=got.get(item[0],0)+item[1]
+                if item:got[item[0]]=got.get(item[0],0)+local_config.scale_reward(item[1])
     if not any(got.values()):
         raise ValueError('Todavía no hay recompensas acumuladas')
     for k, n in got.items():

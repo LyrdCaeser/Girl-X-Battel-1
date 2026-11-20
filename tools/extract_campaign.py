@@ -36,7 +36,8 @@ stage_names = {r[0]: r[1] for r in en.execute('select id, name from stage_text_e
 forts = {r[0]: {'name': r[1], 'desc': r[2]} for r in en.execute('select id, name, desc from fort_text_en_en')}
 stages = {}
 for sid, row in json.loads((ROOT / 'data/stage.json').read_text()).items():
-    stages[sid] = {'img': row.get('stage_img') or 'stage_img', 'name': stage_names.get(sid, ''),
+    stages[sid] = {'img': row.get('stage_img') or 'stage_img',
+                'map': row.get('set_map') or 'battle_map_26_1', 'name': stage_names.get(sid, ''),
                    'monsters': [int(x) for x in str(row.get('monsterShow') or '').split('|') if x],
                    'reward': row.get('reward') or '', 'drops': str(row.get('dropbox_show') or ''),
                    'rate': [row.get('gold'), row.get('exp_partner'), row.get('exp_player')]}

@@ -1,0 +1,70 @@
+name: GXB3 Tests
+
+on:
+  push:
+    branches: [main, snez-vietnamese]
+  pull_request:
+    branches: [main, snez-vietnamese]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+      - name: Install LuaJIT
+        run: sudo apt-get update && sudo apt-get install -y luajit
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Check Python syntax
+        run: python -m compileall -q gxb2 server.py tools
+      - name: Validate original Arena/Guild asset names and Git LFS metadata
+        run: python tools/verify_native_pvp_assets.py
+      - name: Check browser JavaScript syntax
+        run: |
+          node --check web/arena-online-native.js
+          node --check web/arena.js
+          node --check web/arena3v3.js
+          node --check web/battle-animation.js
+          node --check web/app.js
+          node --check web/story.js
+          node --check web/home-menus.js
+          node --check web/newbie-camp.js
+          node --check web/growth-diary.js
+          node --check web/mail.js
+          node --check web/campaign-ui.js
+          node --check web/campaign-flow.js
+          node --check web/summon-anim.js
+          node --check web/summon-result.js
+          node --check web/localization.js
+          node --check web/i18n-vi.js
+          node --check web/lobby-dialogue.js
+          node --check giftcode-studio/app.js
+          node --check web/skins.js
+          node --input-type=module --check < giftcode-studio/api/bridge.js
+          node --input-type=module --check < 'giftcode-studio/api/[...slug].js'
+          node --check giftcode-studio/api/bridge.js
+          node --check web/admin.js
+          node --check web/online-hub.js
+          node --check web/guild.js
+          node --check web/events.js
+          node --check web/settings-menu.js
+          node --check web/game-assistant.js
+          node --check web/dates.js
+          node --check web/payment.js
+          node --check web/auth.js
+      - name: Run browser-free JS regression tests
+        run: |
+          node tests/test_native_online_arenas.cjs
+          node tests/test_native_online_guild.cjs
+          node tests/test_frontend_runtime.cjs
+          node tests/test_giftcode_studio_runtime.cjs
+          node tests/test_giftcode_studio_prices.cjs
+      - name: Audit Vietnamese dialogue coverage (read-only)
+        run: python tools/translate_vi_dialogue.py
+      - name: Run unit tests
+        run: python -m unittest discover -s tests -p "test_*.py" -v

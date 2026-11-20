@@ -37,6 +37,13 @@
 .cf-group{position:absolute;left:-4%;top:-4%;width:32%}.cf-group img{width:100%}
 .cf-lv{position:absolute;right:8%;top:6%;color:#fff;font:800 13px system-ui;text-shadow:0 0 2px #000,0 0 2px #000}
 .cf-stars{position:absolute;left:0;right:0;bottom:4%;display:flex;justify-content:center}.cf-stars img{width:17%;margin:0 -1%}
+/* The original 10★+ Limit Break wing/emblem must not inherit tiny 4-star sizing. */
+.cf-stars .gu-stars{width:auto;max-width:72%;height:14px;gap:0}
+.cf-stars .gu-stars .gu-star{width:11px;height:11px;max-width:none;margin:0 -1px}
+.cf-stars .gu-stars .gu-emblem{width:20px!important;height:14px!important;max-width:none;margin:0}
+.cf-stars .gu-stars .gu-emblem-num{font-size:8px;line-height:1}
+.cf-star-count{font:900 13px/1 system-ui;color:#fff;text-shadow:0 1px 2px #000}
+
 /* stage detail */
 .cf-stage .cf-sub{display:flex;align-items:center;gap:10px;margin:8px 0;color:#5b6b86;font:700 18px system-ui}
 .cf-stage .cf-sub:before,.cf-stage .cf-sub:after{content:"";flex:1;border-top:1px solid #c9d3e6}
@@ -74,3 +81,5 @@
 #app-frame #event-arena{position:absolute;inset:0;height:100%;width:100%;max-width:none;margin:0;padding:0;border:0;border-radius:0;background:#000;display:flex;flex-direction:column}
 #app-frame #event-arena>.section-head,#app-frame #event-arena>.battle-line,#app-frame #event-arena>.rewards,#app-frame #event-arena>.event-battle-continue{display:none}
 #app-frame #event-arena .battlefield{width:100%;max-width:none;height:100%;flex:1;min-height:0;margin:0;border:0;border-radius:0}
+
+.cf-av.portrait{position:absolute!important;left:8%!important;top:8%!important;width:84%!important;height:84%!important;min-width:0!important;border-radius:6%!important;overflow:hidden!important}.cf-av.portrait img,.cf-av.portrait canvas{width:100%!important;height:100%!important;object-fit:cover!important}

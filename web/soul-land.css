@@ -43,3 +43,14 @@
 .lsl2-stage .lsl2-nav{position:absolute!important;left:0;right:0;bottom:0;z-index:6}
 .lsl2-note{text-align:center;color:#fff;font-weight:bold;height:auto!important;text-shadow:0 1px 3px #000}
 .lsl2-h{margin:0 0 6px;color:#5a3f9a}.lsl2-win .lsl-desc{color:#3d4d6a}
+
+/* Mobile original-screen recovery: maintain design-space positions, but
+   stretch only the artwork/background to the visible viewport. */
+@media (max-width: 720px) {
+ .soul-land-view{min-height:calc(100dvh - 48px);padding-bottom:0}
+ .lsl2-stage{height:max(calc(1280 * var(--u)), calc(100dvh - 48px));min-height:calc(1280 * var(--u))}
+ .lsl2-bg{left:0!important;top:0!important;width:100%!important;height:100%!important;object-fit:cover;object-position:center}
+}
+.lsl2-title-vi{display:flex;justify-content:center;align-items:center;margin:0;text-align:center;font-size:calc(53 * var(--u));line-height:1.15;font-weight:900;color:#ecffda;-webkit-text-stroke:calc(1.5 * var(--u)) #428f92;text-shadow:0 calc(4 * var(--u)) #a46b35,0 0 calc(11 * var(--u)) #fff,0 calc(8 * var(--u)) calc(7 * var(--u)) #255d79;z-index:3}
+.lsl2-big-label{position:absolute;left:0;right:0;bottom:19%;text-align:center;font-size:calc(38 * var(--u));font-weight:900;color:#fff2a1;text-shadow:0 calc(3 * var(--u)) calc(2 * var(--u)) #a75b21,0 0 calc(4 * var(--u)) #862d11;pointer-events:none}
+.lsl2-big-label.r{bottom:16%}

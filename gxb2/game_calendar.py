@@ -106,9 +106,54 @@ def is_open(eid, now):
     return eid in [e['id'] for e in schedule(now)[1]]
 
 
-def snapshot(now=None, resets=()):
+
+S4_LAUNCH = datetime.datetime(2026, 11, 18, 0, 0,
+                              tzinfo=datetime.timezone(datetime.timedelta(hours=7)))
+S4_WINDOW_DAYS = 30
+
+
+def s4_exclusive_schedule(now):
+    """All original playable events open; deterministic 30-day randomized
+    featured calendar (Asia/Ho_Chi_Minh) changes every day, not per request.
+    This rotates *spotlights*, never removes the event or its progress.
+    """
+    seed_day = (datetime.datetime.fromtimestamp(now, datetime.timezone(datetime.timedelta(hours=7)))
+                .date() - S4_LAUNCH.date()).days
+    cycle = max(0, seed_day // S4_WINDOW_DAYS)
+    first_day = S4_LAUNCH + datetime.timedelta(days=cycle * S4_WINDOW_DAYS)
+    pool = sorted(set(WEEKLY) | set(MONTHLY))
+    features = []
+    for d in range(S4_WINDOW_DAYS):
+        day = first_day + datetime.timedelta(days=d)
+        picked = random.Random(f"S4-EXCLUSIVE-{cycle}-{d}").sample(pool, min(3, len(pool)))
+        features.append({'day': day.date().isoformat(),
+                         'start': int(day.timestamp()),
+                         'end': int((day+datetime.timedelta(days=1)).timestamp()),
+                         'ids': picked,
+                         'names': [str(ACTS.get(i,{}).get('title') or i).replace('\\n',' ') for i in picked]})
+    return features, int(first_day.timestamp()), int((first_day+datetime.timedelta(days=S4_WINDOW_DAYS)).timestamp())
+
+
+def s4_snapshot(now, resets):
+    out = snapshot(now, resets, 'S1')
+    days, begin, end = s4_exclusive_schedule(now)
+    ids = sorted(set(WEEKLY) | set(MONTHLY))
+    out['events'] = [
+        {'id': i, 'kind': 'exclusive', 'start': begin, 'end': end,
+         'title': str(ACTS.get(i, {}).get('title') or i).replace('\\n', ' ')}
+        for i in ids]
+    out['next'] = []
+    out['always'] = sorted(set(ALWAYS) | set(ids))
+    out['exclusive_s4'] = True
+    out['featured_30_days'] = days
+    out['featured_today'] = next((d for d in days if d['start'] <= now < d['end']), days[0])
+    return out
+
+def snapshot(now=None, resets=(), server_id='S1'):
     """`resets`: extra countdowns gathered by the engine ([{'key', 'label', 'at'}]: seasons, stores…)."""
     now = int(time.time()) if now is None else now
+    if str(server_id).upper() == 'S4':
+        return s4_snapshot(now, resets)
     p, cur, nxt = schedule(now)
     base = [{'key': 'day', 'label': 'Daily reset (Daily Tasks, free draws, Hearts)', 'at': p['day']['end']},
             {'key': 'week', 'label': 'Weekly reset (weekly tasks, stores, weekly events)', 'at': p['week']['end']},

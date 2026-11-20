@@ -29,6 +29,7 @@ LV_EXP_BACK = float(MISC['soul_equip2_lvl_exp_cost'] or 0.5)
 ESSENCE = 426
 STONE_BOX = {5200100 + i: (i - 1) % 4 + 1 for i in range(1, 10)}  # "Random N-star Blue Anima Stone"
 ARTIFACT_CHEST = 435
+PLAN_LIMIT = 3  # Three independently saved Anima configurations per Goddess.
 
 
 class SoulError(ValueError):
@@ -62,7 +63,7 @@ def store(state):
 
 def charge(state, cost):
     for k, n in cost.items():
-        if int(state['items'].get(str(k), 0)) < n: raise SoulError('Faltan materiales')
+        if int(state['items'].get(str(k), 0)) < n: raise SoulError('Không đủ nguyên liệu')
     for k, n in cost.items(): state['items'][str(k)] = int(state['items'].get(str(k), 0)) - n
 
 
@@ -88,7 +89,7 @@ def roll_ex2(rng, exclude=()):
 def new_soul(state, tid, rng=None):
     rng = rng or random.SystemRandom()
     s = store(state)
-    if len(s['items']) >= LIMIT: raise SoulError('Inventario de Anima Gear lleno')
+    if len(s['items']) >= LIMIT: raise SoulError('Túi Trang Bị Linh Hồn đã đầy')
     tid = int(tid); sid = str(s['next']); s['next'] += 1
     if kind(tid) == 1:
         rec = {'kind': 1, 'table_id': tid, 'lv': 0, 'awake': 0, 'attrs': [], 'lock': 0, 'owner': 0}
@@ -143,8 +144,8 @@ def release(state, partner):
 
 def free(state, sid):
     rec = store(state)['items'].get(str(sid))
-    if not rec: raise SoulError('Anima Gear inexistente')
-    if rec.get('owner') or rec.get('lock'): raise SoulError('Está equipada o bloqueada')
+    if not rec: raise SoulError('Không tìm thấy Trang Bị Linh Hồn')
+    if rec.get('owner') or rec.get('lock'): raise SoulError('Vật phẩm đang được trang bị hoặc đã khóa')
     return rec
 
 
@@ -166,15 +167,113 @@ def action(state, request, rng=None):
     s = store(state); items = s['items']; act = request.get('action')
     def partner():
         p = next((g for g in state['partners'] if g['partner_id'] == int(request.get('partner_id') or 0)), None)
-        if not p: raise SoulError('No tienes esa chica')
+        if not p: raise SoulError('Không sở hữu Nữ Thần này')
         return p
     def soul():
         rec = items.get(str(request.get('soul_id')))
-        if not rec: raise SoulError('Anima Gear inexistente')
+        if not rec: raise SoulError('Không tìm thấy Trang Bị Linh Hồn')
         return rec
+    if act == 'receive_inventory_gear':
+        # Older rewards also exist as stackable item IDs. Claiming them is
+        # explicit: the original item stack is debited once and replaced by
+        # individually owned SoulEquip records, in the surrounding Neon
+        # transaction. No automatic migration and no invented equipment.
+        try:
+            tid = int(request.get('item_id'))
+            count = int(request.get('count'))
+        except (TypeError, ValueError, OverflowError):
+            raise SoulError('Mã hoặc số lượng Trang Bị Linh Hồn không hợp lệ') from None
+        if str(tid) not in E1 and str(tid) not in E2:
+            raise SoulError('Vật phẩm này không phải Trang Bị Linh Hồn hợp lệ')
+        if not 1 <= count <= 10:
+            raise SoulError('Mỗi lần chỉ được nhận từ 1 đến 10 Trang Bị Linh Hồn')
+        stock = state.setdefault('items', {})
+        if int(stock.get(str(tid), 0)) < count:
+            raise SoulError('Không đủ Đá hoặc Bảo Vật Linh Hồn trong túi')
+        if len(items) + count > LIMIT:
+            raise SoulError('Túi Trang Bị Linh Hồn không đủ chỗ trống')
+        charge(state, {str(tid): count})
+        received = [int(new_soul(state, tid, rng)) for _ in range(count)]
+        return {'got': received, 'item_id': tid, 'count': count}
+    if act in ('plan_save', 'plan_apply', 'plan_delete'):
+        p = partner()
+        if int(p.get('lv', 0)) < OPEN_LV:
+            raise SoulError(f'Trang bị Linh Hồn mở khi Nữ Thần đạt cấp {OPEN_LV}')
+        try:
+            plan_no = int(request.get('plan'))
+        except (ValueError, TypeError, OverflowError):
+            raise SoulError('Vị trí bộ trang bị không hợp lệ') from None
+        if not 1 <= plan_no <= PLAN_LIMIT:
+            raise SoulError('Vị trí bộ trang bị phải từ 1 đến 3')
+        plans = s.setdefault('plans', {})
+        hero_plans = plans.setdefault(str(p['partner_id']), {})
+        key = str(plan_no)
+
+        if act == 'plan_save':
+            chosen = (list(p.get('souls') or []) + [0] * 5)[:5]
+            if not any(chosen):
+                raise SoulError('Cần trang bị ít nhất một món trước khi lưu bộ trang bị')
+            seen = set()
+            for i, sid in enumerate(chosen):
+                if not sid:
+                    continue
+                if str(sid) in seen:
+                    raise SoulError('Một món Linh Hồn không thể nằm trong nhiều ô')
+                seen.add(str(sid))
+                rec = items.get(str(sid))
+                expected = 0 if not rec or rec.get('kind') == 1 else int(E2[str(rec['table_id'])]['pos']) - 1
+                if not rec or int(rec.get('owner') or 0) != int(p['partner_id']) or i != expected:
+                    raise SoulError('Bộ trang bị hiện tại chưa đồng bộ. Hãy kiểm tra các ô trước khi lưu')
+            hero_plans[key] = [int(v or 0) for v in chosen]
+            return {'plan': plan_no}
+
+        if key not in hero_plans:
+            raise SoulError('Bộ trang bị chưa được lưu')
+        if act == 'plan_delete':
+            del hero_plans[key]
+            if not hero_plans:
+                del plans[str(p['partner_id'])]
+            return {'plan': plan_no}
+
+        saved = hero_plans[key]
+        if not isinstance(saved, list) or len(saved) != 5:
+            raise SoulError('Bộ trang bị bị lỗi. Hãy lưu lại bộ trang bị mới')
+        chosen = []
+        seen = set()
+        for i, raw in enumerate(saved):
+            try:
+                sid = int(raw or 0)
+            except (TypeError, ValueError, OverflowError):
+                raise SoulError('Bộ trang bị có vật phẩm không hợp lệ') from None
+            if not sid:
+                chosen.append(0)
+                continue
+            if sid <= 0 or sid in seen:
+                raise SoulError('Bộ trang bị chứa vật phẩm trùng hoặc không hợp lệ')
+            seen.add(sid)
+            rec = items.get(str(sid))
+            if not rec:
+                raise SoulError('Một món trong bộ trang bị không còn trong Túi Đồ')
+            slot = 0 if rec['kind'] == 1 else int(E2[str(rec['table_id'])]['pos']) - 1
+            if slot != i:
+                raise SoulError('Bộ trang bị chứa Linh Hồn không đúng vị trí')
+            if int(rec.get('owner') or 0) not in (0, int(p['partner_id'])):
+                raise SoulError('Một món trong bộ đang được Nữ Thần khác trang bị. Hãy tháo ra trước')
+            chosen.append(sid)
+        # No gear transfer or removal until every chosen item is validated.
+        previous = (list(p.get('souls') or []) + [0] * 5)[:5]
+        for sid in previous:
+            if sid and str(sid) in items and int(items[str(sid)].get('owner') or 0) == int(p['partner_id']):
+                items[str(sid)]['owner'] = 0
+        for sid in chosen:
+            if sid:
+                items[str(sid)]['owner'] = p['partner_id']
+        p['souls'] = chosen
+        sync(state, p)
+        return {'plan': plan_no}
     if act == 'equip':
         p = partner(); rec = soul()
-        if int(p['lv']) < OPEN_LV: raise SoulError(f'Anima Gear se abre con la chica a nivel {OPEN_LV}')
+        if int(p['lv']) < OPEN_LV: raise SoulError(f'Trang Bị Linh Hồn mở khi Nữ Thần đạt cấp {OPEN_LV}')
         slot = 0 if rec['kind'] == 1 else int(E2[str(rec['table_id'])]['pos']) - 1
         if rec.get('owner') and rec['owner'] != p['partner_id']:
             old = next((g for g in state['partners'] if g['partner_id'] == rec['owner']), None)
@@ -197,7 +296,7 @@ def action(state, request, rng=None):
         return {}
     if act == 'lv_up':
         rec = soul(); cap = max_lv(rec)
-        if rec['lv'] >= cap: raise SoulError('Nivel máximo para su estrella')
+        if rec['lv'] >= cap: raise SoulError('Đã đạt cấp tối đa của bậc sao')
         if rec['kind'] == 1:
             times = max(1, min(int(request.get('times') or 1), cap - rec['lv']))
             for _ in range(times):
@@ -208,12 +307,12 @@ def action(state, request, rng=None):
             essence = max(0, int(request.get('essence') or 0))
             if essence: charge(state, {str(ESSENCE): essence}); exp += essence
             for fid in request.get('feed') or []:
-                if str(fid) == str(request.get('soul_id')): raise SoulError('No puedes usarla consigo misma')
+                if str(fid) == str(request.get('soul_id')): raise SoulError('Không thể dùng chính vật phẩm đang nâng cấp làm nguyên liệu')
                 f = free(state, fid)
-                if f['kind'] != 2: raise SoulError('Solo Anima Stones como material')
+                if f['kind'] != 2: raise SoulError('Chỉ có thể dùng Đá Linh Hồn làm nguyên liệu')
                 exp += int(E2[str(f['table_id'])]['exp']) + int(int(D['exp2'][str(f['lv'])]['all_exp']) * LV_EXP_BACK if f['lv'] else 0)
                 del items[str(fid)]
-            if exp <= 0: raise SoulError('Elige Soul Essence o Anima Stones')
+            if exp <= 0: raise SoulError('Hãy chọn Tinh Chất Linh Hồn hoặc Đá Linh Hồn làm nguyên liệu')
             add_exp2(rec, exp, rng)
         sync_owner(state, rec)
         return {'soul': rec}
@@ -221,20 +320,20 @@ def action(state, request, rng=None):
         rec = soul()
         if rec['kind'] == 1:
             row = E1[str(rec['table_id'])]
-            if star(rec) >= int(row['max_star']): raise SoulError('Estrellas al máximo')
+            if star(rec) >= int(row['max_star']): raise SoulError('Đã đạt bậc sao tối đa')
             need = pairs(str(row['material']).split('|')[rec['awake']])
             used = []
             for tid, n in need.items():
                 pool = [k for k, r in items.items() if k != str(request['soul_id']) and r['table_id'] == int(tid) and not r.get('owner') and not r.get('lock')]
                 pool.sort(key=lambda k: (items[k]['lv'], items[k]['awake']))
-                if len(pool) < n: raise SoulError('Necesitas copias libres del mismo Anima Artifact')
+                if len(pool) < n: raise SoulError('Cần Bảo Vật Linh Hồn cùng loại chưa trang bị làm nguyên liệu')
                 used += pool[:n]
             for k in used: del items[k]
             rec['awake'] += 1
             while len(rec['attrs']) < EX_NUM1[star(rec) - 1]: rec['attrs'].append(0)
         else:
             row = E2[str(rec['table_id'])]
-            if rec['awake'] + 1 >= int(row['max_qlt']): raise SoulError('Calidad al máximo')
+            if rec['awake'] + 1 >= int(row['max_qlt']): raise SoulError('Đã đạt phẩm chất tối đa')
             charge(state, pairs(str(row['material']).split('|')[rec['awake']])); rec['awake'] += 1
         sync_owner(state, rec)
         return {'soul': rec}
@@ -242,11 +341,11 @@ def action(state, request, rng=None):
         # SoulEquip1StrengthenWindow: extra buff slots opened by star (soul_equip1_ex_num[star]); the new roll waits in
         # `replace` until it is kept or discarded
         rec = soul()
-        if rec['kind'] != 1: raise SoulError('Solo los Anima Artifact')
+        if rec['kind'] != 1: raise SoulError('Chỉ áp dụng cho Bảo Vật Linh Hồn')
         slot = int(request.get('slot') or 1) - 1
         opened = EX_NUM1[star(rec) - 1]
         while len(rec['attrs']) < opened: rec['attrs'].append(0)
-        if not 0 <= slot < opened: raise SoulError('Ranura de atributo bloqueada')
+        if not 0 <= slot < opened: raise SoulError('Ô thuộc tính chưa mở khóa')
         charge(state, pairs(MISC['soul_equip1_ex_first_cost'] if not rec['attrs'][slot] else MISC['soul_equip1_ex_cost']))
         ids = [int(k) for k in D['buff1']]
         new = weighted(ids, [int(D['buff1'][str(i)]['weight']) for i in ids], rng)
@@ -262,7 +361,7 @@ def action(state, request, rng=None):
     if act == 'open':
         # Random N-star Anima Stone boxes and the Random Anima Artifact Chest
         iid = int(request.get('item_id') or 0); n = max(1, min(int(request.get('count') or 1), 50))
-        if iid not in STONE_BOX and iid != ARTIFACT_CHEST: raise SoulError('Ese objeto no se abre aquí')
+        if iid not in STONE_BOX and iid != ARTIFACT_CHEST: raise SoulError('Không thể mở vật phẩm này tại đây')
         charge(state, {str(iid): n}); got = []
         for _ in range(n):
             got.append(random_stone(state, STONE_BOX[iid], rng) if iid in STONE_BOX else new_soul(state, rng.choice(sorted(E1)), rng))
@@ -270,7 +369,7 @@ def action(state, request, rng=None):
     if act == 'summon':
         # Anima Stone Ritual (soul_land_equip2_gacha): the dropbox follows the ritual exp; each draw adds gacha.exp
         g = D['gacha'].get(str(request.get('gacha') or 1))
-        if not g: raise SoulError('Ritual inexistente')
+        if not g: raise SoulError('Không tìm thấy nghi thức')
         times = 10 if int(request.get('times') or 1) >= 10 else 1
         charge(state, {k: v * times for k, v in pairs(g['cost']).items()}); got = []
         for _ in range(times):
@@ -279,7 +378,7 @@ def action(state, request, rng=None):
             got.append(random_stone(state, weighted(stars, w, rng), rng, rng.choice([int(x) for x in str(box['equip2']).split('|')])))
             s['exp'] += int(g['exp'])
         return {'got': got}
-    raise SoulError('Acción de Anima Gear desconocida')
+    raise SoulError('Thao tác Trang Bị Linh Hồn không hợp lệ')
 
 
 def box_for(exp):
@@ -292,7 +391,7 @@ def box_for(exp):
 
 def snapshot(state):
     s = store(state)
-    return {'items': s['items'], 'exp': s['exp'], 'level': int(box_for(s['exp'])['id']), 'open_lv': OPEN_LV, 'limit': LIMIT}
+    return {'items': s['items'], 'exp': s['exp'], 'level': int(box_for(s['exp'])['id']), 'open_lv': OPEN_LV, 'limit': LIMIT, 'plans': s.get('plans', {})}
 
 
 def grant_dev(state, rng=None):

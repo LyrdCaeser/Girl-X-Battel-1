@@ -24,6 +24,7 @@ import copy, json, random, secrets, time
 from pathlib import Path
 
 DATA = json.loads((Path(__file__).resolve().parents[1] / 'data/dress.json').read_text())
+VI = json.loads((Path(__file__).resolve().parents[1] / 'data/dress-vi.json').read_text())
 M = DATA['misc']
 PIECES = {int(d['id']): d for d in DATA['dress']}
 ITEMS = {int(i['id']): i for i in DATA['items']}
@@ -38,7 +39,7 @@ PITY = int(M['dress_gacha_max_drop'])
 BOXES = {1: (int(M['dress_gacha_dropbox4']), int(M['dress_gacha_dropbox1'])), 2: (int(M['dress_gacha_dropbox5']), int(M['dress_gacha_dropbox2']))}
 COST = {1: '258', 2: '259'}
 FREE = {1: int(str(M['dress_gacha_free1']).split('|')[0]), 2: int(str(M['dress_gacha_free2']).split('|')[0])}
-POS_NAMES = {1: 'Head', 2: 'Body', 3: 'Legs', 4: 'Headwear', 5: 'Accessories'}
+POS_NAMES = {1: 'Đầu', 2: 'Thân', 3: 'Chân', 4: 'Mũ', 5: 'Phụ Kiện'}
 
 
 def ids(text):
@@ -65,6 +66,15 @@ def item_of(did, star):
 
 def max_star(did):
     return len(piece_items(did))
+
+
+def complete_piece(did):
+    """Some original catalogue rows have no recovered item/style definitions.
+    Keep those ids in the catalogue/save, but never treat them as usable pieces."""
+    row = PIECES.get(did)
+    return bool(row and piece_items(did) and styles_of(did)
+                and all(i in ITEMS for i in piece_items(did))
+                and all(st in STYLES and bool(str(STYLES[st].get('image') or '').strip()) for st in styles_of(did)))
 
 
 def styles_of(did):
@@ -98,6 +108,7 @@ def attrs(state):
     d = saved(state)
     a = [0, 0, 0]
     for did, star in d['owned'].items():
+        if int(did) not in PIECES or not piece_items(int(did)): continue
         it = ITEMS.get(item_of(int(did), int(star)))
         if not it: continue  # pieces without items in the client (see ORPHANS)
         for i in range(3):
@@ -153,6 +164,9 @@ def grant(state, item_id):
     did = int(it['dress_id'])
     if owned_star(d, did):
         k, n = shard_of(did)
+        if not k or n <= 0:
+            # Do not consume a draw for a piece with no defined shard refund.
+            raise ValueError('Trang phục này chưa có mảnh để quy đổi')
         items = state.setdefault('items', {})
         items[k] = int(items.get(k, 0)) + n
         return {'item': item_id, 'dress': did, 'new': False, 'shards': {k: n}}
@@ -167,7 +181,7 @@ def summon(state, kind, count, now, rng):
     free = count == 1 and now >= int(d['free'].get(key, 0)) + FREE[kind]
     if not free:
         if int(items.get(COST[kind], 0)) < count:
-            raise ValueError('No tienes suficientes ' + ('Plain Buttons' if kind == 1 else 'Fancy Buttons'))
+            raise ValueError('Không đủ ' + ('Nút Thường' if kind == 1 else 'Nút Cao Cấp'))
         items[COST[kind]] = int(items[COST[kind]]) - count
         from . import growth_diary
         growth_diary.record(state,'growth_buttons',count)
@@ -188,8 +202,10 @@ def summon(state, kind, count, now, rng):
 
 def upgrade_cost(d, did):
     star = owned_star(d, did)
-    it = ITEMS[item_of(did, star)]
-    if not it.get('next_id'):
+    if did not in PIECES or not piece_items(did):
+        return None
+    it = ITEMS.get(item_of(did, star))
+    if not it or not it.get('next_id'):
         return None
     cost = pairs(it.get('upgrade_cost'))
     for q, n in pairs(it.get('upgrade_cost2')).items():
@@ -203,7 +219,7 @@ def pay(state, cost):
     for k, n in cost.items():
         have = int(items.get(str(COMMON[int(k[3:]) - 1]), 0)) if k.startswith('qlt') else int(items.get(k, 0))
         if have < n:
-            raise ValueError('Faltan materiales para mejorar la pieza')
+            raise ValueError('Không đủ nguyên liệu để nâng cấp trang phục')
     for k, n in cost.items():
         key = str(COMMON[int(k[3:]) - 1]) if k.startswith('qlt') else k
         items[key] = int(items[key]) - n
@@ -219,16 +235,16 @@ def action(state, request, now=None, seed=None):
     if kind == 'equip':
         pos, style = int(request.get('pos', 0)), int(request.get('style', 0))
         if pos not in SLOTS:
-            raise ValueError('Posición no válida')
+            raise ValueError('Vị trí trang phục không hợp lệ')
         eq = list(d['equipped'])
         if not style:
             if not int(SLOTS[pos]['can_rm']):
-                raise ValueError('Esta pieza no se puede quitar')
+                raise ValueError('Không thể tháo bộ phận trang phục này')
             eq[pos - 1] = 0
         else:
             st = STYLES.get(style)
             if not st or int(st['pos']) != pos or not owned_star(d, int(st['dress_id'])):
-                raise ValueError('No tienes esa pieza')
+                raise ValueError('Chưa sở hữu trang phục này')
             eq[pos - 1] = style
             other = {2: 3, 3: 2}.get(pos)
             if other and eq[other - 1] and collides(style, eq[other - 1]):
@@ -239,25 +255,31 @@ def action(state, request, now=None, seed=None):
     if kind == 'save':  # Locker Room edit (capture 2026-09-29-i/02: Cancel / Save)
         new = [int(x or 0) for x in (request.get('styles') or [])][:5]
         if len(new) != 5:
-            raise ValueError('Conjunto no válido')
+            raise ValueError('Bộ trang phục không hợp lệ')
         for pos, style in enumerate(new, 1):
             if style:
                 st = STYLES.get(style)
                 if not st or int(st['pos']) != pos or not owned_star(d, int(st['dress_id'])):
-                    raise ValueError('No tienes esa pieza')
+                    raise ValueError('Chưa sở hữu trang phục này')
             elif not int(SLOTS[pos]['can_rm']):
-                raise ValueError('Cabeza, cuerpo y piernas no se pueden quitar')
+                raise ValueError('Không thể tháo trang phục ở phần đầu, thân và chân')
         if new[1] and new[2] and collides(new[1], new[2]):
-            raise ValueError('Esa parte de arriba y esa parte de abajo no se pueden combinar')
+            raise ValueError('Trang phục phần thân và chân không thể kết hợp với nhau')
         d['equipped'] = new
+        # The Locker Room uses 'save', not 'equip'. Remember alternate styles
+        # for subsequent Set / Closet selections just like single-slot equip.
+        preferences = d.setdefault('style', {})
+        for style in new:
+            if style:
+                preferences[str(STYLES[style]['dress_id'])] = style
         return {}
     if kind == 'upgrade':
         did = int(request.get('dress', 0))
         if not owned_star(d, did):
-            raise ValueError('No tienes esa pieza')
+            raise ValueError('Chưa sở hữu trang phục này')
         cost = upgrade_cost(d, did)
         if cost is None:
-            raise ValueError('Reached Max Level!')
+            raise ValueError('Trang phục đã đạt cấp tối đa!')
         before = attrs(state)
         pay(state, cost)
         d['owned'][str(did)] = owned_star(d, did) + 1
@@ -265,9 +287,9 @@ def action(state, request, now=None, seed=None):
     if kind == 'summon':
         k, count = int(request.get('kind', 1)), int(request.get('count', 1))
         if k not in (1, 2) or count not in (1, 10):
-            raise ValueError('Tirada no válida')
+            raise ValueError('Lượt quay trang phục không hợp lệ')
         return {'results': summon(state, k, count, now, rng)}
-    raise ValueError('Acción de Outfits no disponible')
+    raise ValueError('Thao tác Trang Phục không hợp lệ')
 
 
 def snapshot(state, now=None):
@@ -278,6 +300,8 @@ def snapshot(state, now=None):
     pieces = []
     for did, star in d['owned'].items():
         did = int(did)
+        if did not in PIECES:
+            continue  # Unknown legacy ID: keep it in the save, not the UI.
         cost = upgrade_cost(d, did)
         pieces.append({'dress': did, 'star': int(star), 'max': max_star(did), 'cost': cost})
     return {'attrs': attrs(view), 'equipped': d['equipped'], 'style': d['style'], 'owned': pieces, 'skills': active_skills(view),
@@ -291,13 +315,14 @@ def snapshot(state, now=None):
 def catalog():
     """Static data for the UI (loaded once)."""
     return {'pieces': {str(k): {'pos': int(v['pos']), 'group': int(v['group'] or 0), 'styles': styles_of(k), 'items': piece_items(k),
-                                'shard': shard_of(k)[0], 'name': DATA['names'].get(str(piece_items(k)[0]), '')} for k, v in PIECES.items()},
+                                'shard': shard_of(k)[0], 'name': DATA['names'].get(str(piece_items(k)[0]), ''),
+                                'available': complete_piece(k)} for k, v in PIECES.items()},
             'items': {str(k): {'star': int(v['star']), 'qlt': int(v['qlt']), 'base': [int(float(v.get(f'base{i}') or 0)) for i in (1, 2, 3)],
                                'icon': str(v['icon']).split('|')} for k, v in ITEMS.items()},
             'styles': {str(k): {'pos': int(v['pos']), 'dress': int(v['dress_id']), 'image': v['image'], 'res': v['resource'], 'slot': v.get('slot') or '',
                                 'offset': [float(x) for x in str(v.get('offset') or '0|0').split('|')], 'scale': [float(x) for x in str(v.get('scale') or '1|1').split('|')],
                                 'rotation': float(v.get('rotation') or 0)} for k, v in STYLES.items()},
-            'groups': {str(k): {'name': DATA['group_names'].get(str(k), ''), 'unit': ids(v['unit']), 'skills': ids(v['skills']), 'need': ids(v['unlock_stars'])}
+            'groups': {str(k): {'name': VI['group_names'].get(str(k), DATA['group_names'].get(str(k), '')), 'unit': ids(v['unit']), 'skills': ids(v['skills']), 'need': ids(v['unlock_stars'])}
                        for k, v in GROUPS.items()},
-            'skill_text': DATA['skill_text'], 'slots': {str(k): {'can_rm': int(v['can_rm']), 'default': int(v['default_style'] or 0), 'name': POS_NAMES[k]} for k, v in SLOTS.items()},
-            'common': COMMON, 'item_names': DATA['item_names'], 'shard_names': DATA['shard_names']}
+            'skill_text': VI['skill_text'], 'slots': {str(k): {'can_rm': int(v['can_rm']), 'default': int(v['default_style'] or 0), 'name': POS_NAMES[k]} for k, v in SLOTS.items()},
+            'common': COMMON, 'item_names': VI['item_names'], 'shard_names': VI['shard_names']}

@@ -8,14 +8,23 @@ const Arena=(()=>{
  const img=(src,cls,alt='')=>{const i=el('img',cls);i.src=src;i.alt=alt;i.draggable=false;return i;};
  function center(e,x,y,w,h){e.style.left=`calc(${360+x-w/2} * var(--u))`;e.style.top=`calc(${640-y-h/2} * var(--u))`;e.style.width=`calc(${w} * var(--u))`;if(h!=null)e.style.height=`calc(${h} * var(--u))`;return e;}
  function root(){let r=$('arena-view');if(!r){r=el('section','arena-view');r.id='arena-view';r.hidden=true;$('home-systems-view').after(r);}return r;}
- function open(from){origin=from||view;panel=null;note='';showView('arena');act({action:'open'});}
+ function open(from,mode='arena'){if(typeof NativeOnlineArenas==='undefined'){GirlUI?.notice?.('Đấu Trường gốc đang tải, vui lòng thử lại.',{title:'Đấu Trường'});return;}return NativeOnlineArenas.open(mode,from);}
  function icon(id){id=String(id);if(id==='1'||id==='2')return '/assets/currency/icon_'+id+'_small.png';const row=itemCatalog?.[id];return (row&&itemPicture(row))||(row?.icon?'/assets/shops/items/'+row.icon+'.png':'');}
  function nameOf(id){id=String(id);return id==='1'?"Gold":id==='2'?"Gems":itemCatalog?.[id]?.name||"Item "+id;}
- function avatar(id,cls){const src=icon(id);return src?img(src,cls):el('span',cls+' empty','✦');}
+ function avatar(id,cls){
+  const key=String(id||'').trim();
+  if(/^(?:head|partner_avatar)_\d{4,9}$/.test(key)||/^custom_[0-9a-f]{32}$/.test(key)){
+   const src=/^custom_[0-9a-f]{32}$/.test(key)?'/api/profile/photo/'+key+'.webp':'/assets/avatar-hd/profile/'+key+'.webp?v=1.1.2';
+   const face=img(src,cls);
+   face.onerror=()=>{face.onerror=null;face.src='/assets/profile/head_1001.png';};
+   return face;
+  }
+  const src=icon(id);return src?img(src,cls):el('span',cls+' empty','✦');
+ }
  async function act(req){if(busyLocal)return null;busyLocal=true;note='';try{const r=await api('/api/arena/action',req);state=r.state;return r;}catch(e){note=e.message;return null;}finally{busyLocal=false;render();}}
  function clock(at){const s=Math.max(0,at-Math.floor(Date.now()/1000));const d=Math.floor(s/86400);return (d?d+'d ':'')+[Math.floor(s%86400/3600),Math.floor(s%3600/60),s%60].map(n=>String(n).padStart(2,'0')).join(':');}
  function awards(parent,text){const w=el('div','ar-awards');for(const p of String(text||'').split('|')){const [k,n]=p.split('#');if(!k)continue;const c=el('span','ar-award');const s=icon(k);if(s)c.append(img(s));c.append(el('b','',number(n)));c.title=nameOf(k);w.append(c);}parent.append(w);return w;}
- function render(){const r=root();if(view!=='arena'){clearInterval(timer);timer=null;return;}const info=state.arena_info;r.replaceChildren();const st=el('div','ar-stage');r.append(st);
+ function render(){if(typeof NativeOnlineArenas!=='undefined'&&NativeOnlineArenas.isActive('arena')){NativeOnlineArenas.render();return;}const r=root();if(view!=='arena'){clearInterval(timer);timer=null;return;}const info=state.arena_info;r.replaceChildren();const st=el('div','ar-stage');r.append(st);
   st.append(center(img(A('arena_scene'),'ar-bg'),0,7,1457,1457));
   chrome(st,()=>showView(origin==='arena'?'home':origin));
   const shop=center(el('button','ar-icon-btn'),312,516,80,82);shop.type='button';shop.append(img(A('shop')));shop.title='League Store';shop.onclick=()=>Shops.open('arena',5);st.append(shop);
@@ -36,7 +45,7 @@ const Arena=(()=>{
   const pw=center(el('div','ar-power'),-194,-355,110,70);pw.append(img(A('force_icon')),el('b','',number(teamPower())));st.append(pw);
   for(const [label,val,y]of [['Rank',info.rank,-421],['Points',info.score,-465]]){const g=center(el('div','ar-stat'),-230,y,170,30);g.append(el('span','',label),el('b','',String(val)));st.append(g);}
   st.append(center(img(A('arena_decoration'),'ar-deco'),0,-411,270,164));
-  const res=center(el('div','ar-res'),0,-334,220,36);res.append(el('span','',info.free>0?`Free ×${info.free}`:''),img(icon('34')),el('b','',String(info.tickets)));const plus=el('button','ar-plus','+');plus.type='button';plus.onclick=()=>{if(confirm(`Buy 1 Arena Ticket for ${info.ticket_price} Gems?`))act({action:'buy_ticket',count:1});};res.append(plus);st.append(res);
+  const res=center(el('div','ar-res'),0,-334,220,36);res.append(el('span','',info.free>0?`Free ×${info.free}`:''),img(icon('34')),el('b','',String(info.tickets)));const plus=el('button','ar-plus','+');plus.type='button';plus.onclick=async()=>{if(await GirlUI.confirm(`Mua 1 Vé Đấu Trường với ${info.ticket_price} Kim Cương?`,{title:'Xác Nhận Mua Vé',ok:'Mua'}))act({action:'buy_ticket',count:1});};res.append(plus);st.append(res);
   const fight=center(el('button','ar-fight'),0,-420,212,77);fight.type='button';fight.style.backgroundImage=`url('${A('blue_btn_65_65')}')`;fight.textContent='Fight';fight.onclick=()=>{panel='choose';render();};st.append(fight);
   for(const [label,ic,y,fn]of [['Reward','arena_award_s',-329,()=>{panel='awards';render();}],['Record','arena_record',-397,()=>{panel='record';render();}],['Defense','arena_defence',-464,()=>CampaignUI.popup("Defense uses your current lineup (there are no other players offline).",{})]]){const b=center(el('button','ar-side'),243,y,168,54);b.type='button';b.style.backgroundImage=`url('${A('white_btn_65_65')}')`;b.append(img(A(ic)),el('span','',label));b.onclick=fn;st.append(b);}
   if(note)st.append(center(el('p','ar-note',note),0,-560,600,56));
@@ -60,11 +69,11 @@ const Arena=(()=>{
   const at=(e,x,y,w,h)=>{e.style.left=`calc(${328+x-w/2} * var(--u))`;e.style.top=`calc(${51.5-y-h/2} * var(--u))`;e.style.width=`calc(${w} * var(--u))`;e.style.height=`calc(${h} * var(--u))`;return e;};
   if(top)row.append(at(img(A('rank_icon0'+(i+1)),'ar2-rk'),-271,2,86,62));else row.append(at(el('b','ar2-num',String(i+1)),-269,0,70,40));
   const ic=at(el('button','ar2-icon'),-177,1,64,64);ic.type='button';const px=Math.round(64*scale());
-  ic.append(p.me?(typeof portrait==='function'&&state.roster?.[0]?portrait(state.roster[0].table_id,px):el('span')):avatar(p.avatar,'ar2-av'));if(p.lv)ic.append(el('small','ar2-lv',String(p.lv)));
+  ic.append(avatar(p.me?(state?.profile?.avatar||p.avatar):p.avatar,'ar2-av'));if(p.lv)ic.append(el('small','ar2-lv',String(p.lv)));
   if(!p.me&&onInspect)ic.onclick=()=>onInspect(p);row.append(ic);
   const nm=el('b','ar2-name',p.name);nm.style.left='calc(202 * var(--u))';nm.style.top='calc(14 * var(--u))';row.append(nm);
   const pw=el('span','ar2-power');pw.style.left='calc(208 * var(--u))';pw.style.top='calc(50 * var(--u))';pw.append(img(A('force_icon')),el('b','',number(p.me?me:p.power||0)));row.append(pw);
-  const sv=at(el('span','ar2-server'),146,0,108,34);sv.style.backgroundImage=`url('${A('trial_bg07')}')`;sv.append(img(A('trial_icon13')),el('b','','S1'));row.append(sv);
+  const sv=at(el('span','ar2-server'),146,0,108,34);sv.style.backgroundImage=`url('${A('trial_bg07')}')`;sv.append(img(A('trial_icon13')),el('b','',p.server_id||'—'));row.append(sv);
   row.append(at(el('small','ar2-plabel','Points'),264,23.5,80,20),at(el('b','ar2-points',String(p.score)),264,-17.5,100,30));return row;}
  // ArenaFormationWindow: the rival's card and defence line-up(s)
  function inspect(p,title){const ov=el('div','ar-overlay');const w=el('div','ar-win ar-inspect');ov.append(w);ov.onclick=e=>{if(e.target===ov)ov.remove();};
@@ -75,7 +84,7 @@ const Arena=(()=>{
   (p.teams||[]).forEach((t,k)=>{const r=el('div','ar-ins-team');if((p.teams||[]).length>1)r.append(el('b','ar-ins-n',String(k+1)));for(let s=0;s<6;s++){const u=t.find(v=>v.pos===s+1)||t[s];const c=el('div','ar-ins-slot');if(u){c.append(typeof portrait==='function'?portrait(u.table_id,px):el('span'));c.append(el('small','',String(u.lv)));}r.append(c);}w.append(r);});
   curStage().append(ov);}
  // WindowTop (gold · gems · back) and the bottom navigation, as in the Arena screens
- function chrome(st,onBack){const bar=center(el('div','ar-top'),0,612,720,56);for(const id of ['1','2']){const r=el('span','ar-top-res');r.append(img(icon(id)),el('b','',number(state.items?.[id]||0)));bar.append(r);}
+ function chrome(st,onBack){const bar=center(el('div','ar-top'),0,612,720,56);for(const id of ['1','2']){const r=el('span','ar-top-res');r.append(img(icon(id)),el('b','',number(state?.items?.[id]||0)));bar.append(r);}
   const back=el('button','ar-top-back');back.type='button';back.append(img('/assets/ui/win_back_btn.png'));back.onclick=onBack;bar.append(back);st.append(bar);
   const src=document.querySelector('.menu-explorer-bottom');if(src){const n=src.cloneNode(true);n.classList.add('ar-nav');n.querySelectorAll('button').forEach(b=>b.classList.remove('current'));st.append(n);}}
  return {open,render,rankRow,inspect,chrome};

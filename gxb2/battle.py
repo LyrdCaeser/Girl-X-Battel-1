@@ -1,6 +1,7 @@
 from __future__ import annotations
 import json
 import os
+import platform
 import shutil
 import sys
 from pathlib import Path
@@ -9,6 +10,19 @@ import tempfile
 from .local_promotion import combat_partner
 
 ROOT = Path(__file__).resolve().parents[1]
+
+# Online PvP/Guild War are hero-vs-hero fights. Keep the report's battle
+# configuration ID stable and use random_seed only for combat randomness.
+# 100001 is the original BattleCreateReport-compatible baseline used by the
+# archived runtime host itself.
+ONLINE_BATTLE_ID = 100001
+ONLINE_SEED_MODULUS = 233280
+
+
+def normalize_online_seed(value: int) -> int:
+    """Map arbitrary IDs/hashes into the original runtime's safe seed range."""
+    seed = int(value) % ONLINE_SEED_MODULUS
+    return seed if seed > 0 else 1
 
 def luajit_runtime() -> Path:
     """Choose the bundled desktop runtime, or an explicit/native override."""
@@ -19,6 +33,13 @@ def luajit_runtime() -> Path:
         return ROOT / 'runtime/luajit-windows-x64.exe'
     if sys.platform == 'darwin':
         return ROOT / 'runtime/luajit-macos-x64'
+    # The archived publisher Lua modules are bytecode-version-sensitive. Prefer
+    # the exact Linux runtime shipped with GXB3 over whichever luajit happens to
+    # be installed by the host OS; keep native fallback for non-x86_64 Linux.
+    if sys.platform.startswith('linux') and platform.machine().lower() in ('x86_64', 'amd64'):
+        bundled = ROOT / 'runtime/luajit-linux-x64'
+        if bundled.is_file():
+            return bundled
     native = shutil.which('luajit')
     if native:
         return Path(native)
@@ -47,14 +68,24 @@ def attributes(partners: list, guild_skills: list | None = None, chime_bonus: li
         raise RuntimeError('Cálculo de atributos falló: ' + result.stderr[-800:])
     return json.loads(result.stdout)
 
-def simulate(team_a: list, team_b: list, battle_id: int, seed: int, pet_a: dict | None = None, battle_type: int = 1, guild_skills_a: list | None = None, god_skills: list | None = None,
-             shrine_id: int | None = None, max_round: int | None = None, galaxy_info: dict | None = None, chime_bonus_a: list | None = None) -> dict:
+def simulate(team_a: list, team_b: list, battle_id: int, seed: int, pet_a: dict | None = None, battle_type: int = 1,
+             guild_skills_a: list | None = None, guild_skills_b: list | None = None, pet_b: dict | None = None,
+             god_skills: list | None = None, shrine_id: int | None = None, max_round: int | None = None,
+             galaxy_info: dict | None = None, chime_bonus_a: list | None = None, chime_bonus_b: list | None = None) -> dict:
     runtime = luajit_runtime()
     if not runtime.exists():
         raise RuntimeError('Falta el intérprete LuaJIT compatible. Consulta LEEME.md.')
-    request = dict(guildSkillsA=guild_skills_a or [], god_skills=[int(x) for x in (god_skills or [])], teamA=[combat_partner(p) for p in team_a], teamB=[combat_partner(p) for p in team_b], battle_id=battle_id, random_seed=seed, battle_type=battle_type)
+    request = dict(
+        guildSkillsA=guild_skills_a or [], guildSkillsB=guild_skills_b or [],
+        god_skills=[int(x) for x in (god_skills or [])],
+        teamA=[combat_partner(p) for p in team_a], teamB=[combat_partner(p) for p in team_b],
+        battle_id=battle_id, random_seed=seed, battle_type=battle_type,
+        chimeBonusA=chime_bonus_a or [], chimeBonusB=chime_bonus_b or [],
+    )
     if pet_a:
         request['petA'] = pet_a
+    if pet_b:
+        request['petB'] = pet_b
     if shrine_id:
         request['shrine_id'] = int(shrine_id)
     if max_round:
@@ -63,6 +94,8 @@ def simulate(team_a: list, team_b: list, battle_id: int, seed: int, pet_a: dict 
         request['galaxy_info'] = galaxy_info
     if chime_bonus_a:
         request['chimeBonusA'] = chime_bonus_a
+    if chime_bonus_b:
+        request['chimeBonusB'] = chime_bonus_b
     with tempfile.TemporaryDirectory(prefix='gxb2-battle-') as temp:
         path = Path(temp) / 'input.lua'
         path.write_text('return ' + lua_literal(request))

@@ -461,7 +461,7 @@
 "lv": -1,
 "bp": 0,
 "rank": -1,
-"text": "Complete all Daily Tasks"
+"text": "Hoàn thành tất cả Nhiệm Vụ Hằng Ngày"
 },
 {
 "id": 1,
@@ -472,7 +472,7 @@
 "lv": 0,
 "bp": 0,
 "rank": 1,
-"text": "Use Alchemy once to get Coins"
+"text": "Dùng Luyện Kim 1 lần để nhận Vàng"
 },
 {
 "id": 10,
@@ -483,7 +483,7 @@
 "lv": 0,
 "bp": 0,
 "rank": 2,
-"text": "Send out 5 Hearts"
+"text": "Gửi 5 Tim cho bạn bè"
 },
 {
 "id": 2,
@@ -494,7 +494,7 @@
 "lv": 14,
 "bp": 0,
 "rank": 3,
-"text": "Use Normal Slot Machine twice"
+"text": "Dùng Máy Quay Thường 2 lần"
 },
 {
 "id": 3,
@@ -505,7 +505,7 @@
 "lv": 28,
 "bp": 0,
 "rank": 4,
-"text": "Complete 2 Internships Tasks"
+"text": "Hoàn thành 2 nhiệm vụ Thực Tập"
 },
 {
 "id": 5,
@@ -516,7 +516,7 @@
 "lv": 0,
 "bp": 0,
 "rank": 6,
-"text": "Draw 1 Regular Capsule"
+"text": "Triệu hồi Thường 1 lần"
 },
 {
 "id": 6,
@@ -527,7 +527,7 @@
 "lv": 0,
 "bp": 0,
 "rank": 7,
-"text": "Draw 1 Advanced Capsule"
+"text": "Triệu hồi Cao Cấp 1 lần"
 },
 {
 "id": 7,
@@ -538,7 +538,7 @@
 "lv": 18,
 "bp": 0,
 "rank": 8,
-"text": "Finish 3 Junior Varsity battles"
+"text": "Tham gia Đấu Trường Học Viện 3 lần"
 },
 {
 "id": 8,
@@ -549,7 +549,7 @@
 "lv": 0,
 "bp": 0,
 "rank": 9,
-"text": "Collect Auto-Battle Loot 5 times in Campaign"
+"text": "Nhận chiến lợi phẩm Treo Máy 5 lần trong Chiến Dịch"
 },
 {
 "id": 9,
@@ -560,7 +560,7 @@
 "lv": 20,
 "bp": 0,
 "rank": 10,
-"text": "Clear 2 Quizzes in Daily Quiz"
+"text": "Hoàn thành 2 câu Đố Hằng Ngày"
 },
 {
 "id": 26,
@@ -571,7 +571,7 @@
 "lv": 0,
 "bp": 0,
 "rank": 11,
-"text": "Acquire resource 1 time in Dorm"
+"text": "Thu thập tài nguyên Ký Túc Xá 1 lần"
 },
 {
 "id": 12,
@@ -582,7 +582,7 @@
 "lv": 0,
 "bp": 0,
 "rank": 1,
-"text": "Win 15 battles in Junior Varsity"
+"text": "Thắng 15 trận Đấu Trường Học Viện"
 },
 {
 "id": 13,
@@ -593,7 +593,7 @@
 "lv": 0,
 "bp": 0,
 "rank": 2,
-"text": "Graduate Awake or Limit-Break girls for 10 times"
+"text": "Thức Tỉnh hoặc Đột Phá Nữ Thần 10 lần"
 },
 {
 "id": 14,
@@ -604,7 +604,7 @@
 "lv": 0,
 "bp": 0,
 "rank": 3,
-"text": "Fight in 2 Illusions of Sanctuary"
+"text": "Chiến đấu 2 lần trong Ảo Cảnh Thánh Vực"
 },
 {
 "id": 15,
@@ -615,7 +615,7 @@
 "lv": 0,
 "bp": 0,
 "rank": 4,
-"text": "Defeat 1 Friend Boss"
+"text": "Đánh bại 1 Boss Bạn Bè"
 },
 {
 "id": 16,
@@ -626,7 +626,7 @@
 "lv": 0,
 "bp": 0,
 "rank": 5,
-"text": "Complete three 5/6/7 star Internship tasks"
+"text": "Hoàn thành 3 nhiệm vụ Thực Tập 5/6/7★"
 },
 {
 "id": 17,
@@ -637,7 +637,7 @@
 "lv": 0,
 "bp": 0,
 "rank": 6,
-"text": "Increase 10 Comfort Points for your Dorm"
+"text": "Tăng 10 điểm Tiện Nghi Ký Túc Xá"
 },
 {
 "id": 25,
@@ -648,7 +648,7 @@
 "lv": 0,
 "bp": 0,
 "rank": 7,
-"text": "Craft 15 Gears in Forge."
+"text": "Chế tạo 15 Trang Bị tại Lò Rèn"
 },
 {
 "id": 18,
@@ -659,7 +659,7 @@
 "lv": 0,
 "bp": 0,
 "rank": 8,
-"text": "Complete all Daily Tasks for 7 continuous days"
+"text": "Hoàn thành toàn bộ Nhiệm Vụ Hằng Ngày trong 7 ngày liên tiếp"
 },
 {
 "id": 19,
@@ -670,7 +670,7 @@
 "lv": 0,
 "bp": 0,
 "rank": 1,
-"text": "Get a 10-Star Girl"
+"text": "Sở hữu 1 Nữ Thần 10★"
 },
 {
 "id": 20,
@@ -681,7 +681,7 @@
 "lv": 0,
 "bp": 9,
 "rank": 2,
-"text": "Get 3 skins"
+"text": "Sở hữu 3 Trang Phục"
 },
 {
 "id": 21,
@@ -692,7 +692,7 @@
 "lv": 0,
 "bp": 4,
 "rank": 3,
-"text": "Upgrade Antique for 10 times"
+"text": "Nâng cấp Cổ Vật 10 lần"
 },
 {
 "id": 22,
@@ -703,7 +703,7 @@
 "lv": 0,
 "bp": 4,
 "rank": 4,
-"text": "Finish 4 7-Star Quests in Internship"
+"text": "Hoàn thành 4 nhiệm vụ Thực Tập 7★"
 },
 {
 "id": 23,
@@ -714,7 +714,7 @@
 "lv": 0,
 "bp": 0,
 "rank": 5,
-"text": "Win 120 battles in Junior Varsity"
+"text": "Thắng 120 trận Đấu Trường Học Viện"
 },
 {
 "id": 24,
@@ -725,7 +725,7 @@
 "lv": 0,
 "bp": 9,
 "rank": 6,
-"text": "Use 25 Seals"
+"text": "Dùng 25 Ấn Phù"
 }
 ],
 "shop": [
@@ -894,41 +894,41 @@
 "lottery_cost": "221#50",
 "lottery_dropbox": 800013,
 "text": {
-"BP_TAGS": "Progress|Task|Exchange|Trophies",
-"BP_MISSION_TAGS": "Daily|Weekly|Extra",
-"BP_SHOP_TAGS": "Floral Stamp|Crystal Leaf|Flora Bookmark",
-"BP_BUY_LEV_WINDOW": "Purchase Book Level",
-"BP_CHECK_AWARD_WINDOW": "Rewards Preview",
-"BP_BUY_LEV_TIP": "Raise Level from {1} to [c][0xcb7825 size=24]{2}[-][/c]",
-"BP_SHOP_LIMIT": "Purchased: {1}/{2}",
-"BP_MAIN_HELP": "1. Basic rewards for each season of Fantasy Book are automatically unlocked. You can also purchase Luxury Book and Collector’s Book to unlock more rewards! Upgrade your Fantasy Book at any time during the current season of Fantasy Book to obtain instant rewards from your current and past levels.|2. You can get 10 Book levels after purchasing Collector’s Book. After purchasing Luxury Book you can still purchase Collector’s Book. However the price will vary.|3. You can obtain Pages to upgrade your Book level and get rewards by completing Daily Weekly and Extra tasks.|4. Reward exchange items will be refreshed in each season of Fantasy Book at the same time Floral Stamps will be cleared at the end of the season please don’t forget to exchange your reward!",
-"BP_SUB_LOGO": "Collect Pages to repair the Fantasy Book~",
-"BP_PUR_BUTTON_1": "Purchase\nLuxury Book",
-"BP_PUR_BUTTON_2": "Purchase\nCollector's Book",
-"BP_EXP_CURRENT": "Current Pages",
-"BP_LEV": "Level",
-"BP_BRASS_AWARD": "Basic Book",
-"BP_SILVER_AWARD": "Luxury Book",
-"BP_MISSION_DES": "Collect Pages by completing tasks additional tasks will appear at certain levels and cannot be completed repeatedly. Progress advanced before the additional task will still remain.",
-"BP_MISSION_REFRESH_TIME": "Refresh In:",
-"BP_UPGRADE_BUTTON": "Upgrade Book",
-"BP_PURCHASE_WINDOW_TIP": "1. Luxury Book will unlock rewards in the additional rewards column as your Book level increases. After completing all tasks Gems can be used to upgrade your Book level once your Book level reaches level 50 all rewards can be claimed.\n2. The extra Pages from Collector’s Book can be acquired once purchased other rewards will be unlocked as your Book level increases;\n3. The additional rewards’ column can only be unlocked once and cannot be claimed repeatedly;\n4. Collector’s Book can still be purchased after purchasing Luxury Book however the price will vary. You can tap on the “?” icon for further details.",
-"BP_BUY_LEV_WINDOW_HELP": "1. Gems can be used to purchase levels.|2. After upgrading your Book level with Gems your Current Pages will remain however the maximum Book level is 50 if you are using this method to upgrade directly to level 50 your Current Pages will not remain.|3. Don’t be in a rush to increase your level with Gems though as there will be a discount in the final 2 weeks of the current season of Fantasy Book!",
-"BP_BUY_LEV_PREAWARD": "Rewards Preview",
-"BP_BUY_LEV_TIP2": "There will be a discount on Gem purchase for Level increase in the final 2 weeks of the season!",
-"BP_SHOP_HELP": "1. You can use Floral Stamp and Crystal Leaf to exchange for items here.|2. Spend Floral Stamps to get random rewards from Flora Bookmark. Preview reward details by tapping the magnifying glass icon on the page.|3. Some items in Crystal Leaf will still be available in the next season. Crystal Leaf material will not be removed and will still be available in the next season.|4. Please note that Floral Stamps will be cleared at the end of the current season please don’t forget to exchange your rewards!",
-"BP_ACHIEVEMENT_DES": "You will be awarded after completing Trophies Senpai~",
-"BP_GOLD_PRICE": "$ 39.99",
-"BP_LEV_MAX": "The book has been repaired no more purchases can be made.",
-"BP_TITLE": "Fantasy Book",
-"BP_PURCHASE_HELP": "1. After purchasing Luxury Book you can unlock rewards in the additional rewards column; increase Book level to claim rewards.|2. Collector’s Book bought singularly is sold at the standard price and has the same benefits as Luxury Book. It also includes 2000 Pages (equivalent to an upgrade of 10 levels).|3. By purchasing Collector’s Book after purchasing Luxury Book you can purchase Collector’s Book at a discount. Although the additional rewards column won’t be unlocked twice you can still acquire the 2000 Pages (equivalent to an upgrade of 10 levels).",
-"BP_INSTANT_REWARD": "Instant Reward",
-"BP_SHOP_OFFSHELF": "Left",
-"BP_PURCHASE_JPTIPS1": "「Luxury Book」",
-"BP_PURCHASE_JPTIPS2": "Unlock Luxury Book",
-"BP_BUY_LAST_DAY": "{1} Days Left",
-"BP_BUY_LAST_HOUR": "{1} Hours Left",
-"BP_LOTTERY_CONFIRM": "Use {1} Floral Stamp to claim reward?",
-"BP_LOTTERY_NUM": "Select quantity"
+"BP_TAGS": "Tiến Độ|Nhiệm Vụ|Đổi Thưởng|Thành Tựu",
+"BP_MISSION_TAGS": "Hằng Ngày|Hằng Tuần|Bổ Sung",
+"BP_SHOP_TAGS": "Dấu Hoa|Lá Pha Lê|Dấu Trang Hoa",
+"BP_BUY_LEV_WINDOW": "Mua Cấp Sách",
+"BP_CHECK_AWARD_WINDOW": "Xem Trước Phần Thưởng",
+"BP_BUY_LEV_TIP": "Tăng cấp từ {1} lên {2}",
+"BP_SHOP_LIMIT": "Đã mua: {1}/{2}",
+"BP_MAIN_HELP": "1. Mỗi mùa Sách Kỳ Ảo có phần thưởng cơ bản tự mở. Có thể mở Sách Cao Cấp để nhận thêm phần thưởng.|2. Hoàn thành nhiệm vụ để nhận Trang Sách và tăng cấp.|3. Vật phẩm Đổi Thưởng được làm mới mỗi mùa. Dấu Hoa sẽ hết hạn khi mùa kết thúc, hãy đổi quà kịp thời.",
+"BP_SUB_LOGO": "Thu thập Trang Sách để khôi phục Sách Kỳ Ảo",
+"BP_PUR_BUTTON_1": "Mở Sách Cao Cấp",
+"BP_PUR_BUTTON_2": "Mở Sách Sưu Tầm",
+"BP_EXP_CURRENT": "Trang Hiện Có",
+"BP_LEV": "Cấp",
+"BP_BRASS_AWARD": "Sách Cơ Bản",
+"BP_SILVER_AWARD": "Sách Cao Cấp",
+"BP_MISSION_DES": "Thu thập Trang Sách bằng cách hoàn thành nhiệm vụ. Một số nhiệm vụ bổ sung chỉ xuất hiện khi đạt cấp yêu cầu; tiến độ đã tích lũy vẫn được giữ.",
+"BP_MISSION_REFRESH_TIME": "Làm Mới Sau:",
+"BP_UPGRADE_BUTTON": "Nâng Cấp Sách",
+"BP_PURCHASE_WINDOW_TIP": "1. Sách Cao Cấp mở thêm cột phần thưởng khi cấp Sách tăng. Sau khi hoàn thành nhiệm vụ, có thể dùng Kim Cương để tăng cấp; đạt cấp 50 có thể nhận toàn bộ phần thưởng.\n2. Sách Sưu Tầm tặng thêm Trang Sách ngay khi mua; các phần thưởng khác mở theo cấp.\n3. Cột phần thưởng bổ sung chỉ mở một lần và không thể nhận lặp.\n4. Có thể mua Sách Sưu Tầm sau Sách Cao Cấp với mức giá tương ứng.",
+"BP_BUY_LEV_WINDOW_HELP": "1. Có thể dùng Kim Cương để mua cấp.|2. Trang Sách hiện có được giữ khi mua cấp, trừ khi tăng thẳng tới cấp tối đa 50.|3. Hai tuần cuối mùa có giảm giá khi mua cấp bằng Kim Cương.",
+"BP_BUY_LEV_PREAWARD": "Xem Trước Phần Thưởng",
+"BP_BUY_LEV_TIP2": "Hai tuần cuối mùa sẽ được giảm giá Kim Cương khi mua cấp.",
+"BP_SHOP_HELP": "1. Dùng Dấu Hoa và Lá Pha Lê để đổi vật phẩm.|2. Dùng Dấu Hoa tại Dấu Trang Hoa để nhận quà ngẫu nhiên; bấm kính lúp để xem tỷ lệ.|3. Lá Pha Lê được giữ lại qua mùa sau.|4. Dấu Hoa sẽ bị xóa khi mùa kết thúc, hãy đổi quà kịp thời.",
+"BP_ACHIEVEMENT_DES": "Hoàn thành Thành Tựu để nhận phần thưởng.",
+"BP_GOLD_PRICE": "39,99 USD",
+"BP_LEV_MAX": "Sách đã được khôi phục hoàn chỉnh, không thể mua thêm cấp.",
+"BP_TITLE": "Sách Kỳ Ảo",
+"BP_PURCHASE_HELP": "1. Sách Cao Cấp mở cột phần thưởng bổ sung; tăng cấp Sách để nhận.|2. Sách Sưu Tầm có quyền lợi như Sách Cao Cấp và tặng thêm 2.000 Trang Sách, tương đương 10 cấp.|3. Nếu đã mua Sách Cao Cấp, Sách Sưu Tầm được giảm giá; cột thưởng không mở hai lần nhưng vẫn nhận 2.000 Trang Sách.",
+"BP_INSTANT_REWARD": "Phần Thưởng Nhận Ngay",
+"BP_SHOP_OFFSHELF": "Còn Lại",
+"BP_PURCHASE_JPTIPS1": "「Sách Cao Cấp」",
+"BP_PURCHASE_JPTIPS2": "Mở Sách Cao Cấp",
+"BP_BUY_LAST_DAY": "Còn {1} ngày",
+"BP_BUY_LAST_HOUR": "Còn {1} giờ",
+"BP_LOTTERY_CONFIRM": "Dùng {1} Dấu Hoa để nhận thưởng?",
+"BP_LOTTERY_NUM": "Chọn số lượng"
 }
 }
