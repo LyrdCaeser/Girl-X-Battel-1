@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>Lyr Sonia · Hệ Hỗn Độn — Spine QA</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+*{box-sizing:border-box}body{margin:0;background:#131222;color:#f4ecff}
+main{max-width:760px;margin:auto;padding:16px 15px 36px}
+h1{font-size:1.5rem;margin:14px 0 8px;text-align:center}p{text-align:center;color:#d2c6e5;line-height:1.5}
+.tag{text-align:center;font-weight:700;color:#e6d7ff;font-size:.95rem}
+.stage{width:100%;aspect-ratio:1/1;overflow:hidden;border:1px solid #75638f;border-radius:20px;background:radial-gradient(circle at 50% 45%,#3d3259,#141324)}
+.stage canvas{display:block;width:100%!important;height:100%!important;object-fit:contain}
+.controls{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:15px}
+button,select{background:#5b4b86;color:white;border:1px solid #9887c2;border-radius:11px;padding:11px 13px;font:inherit;min-height:44px}
+button:disabled,select:disabled{opacity:.4}.wide{flex:1;min-width:125px}
+.time{display:flex;align-items:center;gap:12px;margin:16px 0}.time input{flex:1;min-width:80px;accent-color:#ad99ec}
+.small{font-size:13px;color:#c8bdd7}.readout{text-align:center;min-height:26px;color:#b8f1d4;font-size:13px}
+.skills{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}
+.skill{border:1px solid #4b3d6a;background:#222039;border-radius:12px;padding:12px;min-height:70px}
+.skill strong{display:block;font-size:14px}.skill span{color:#b6a8cd;font-size:12px}
+ .dirs{margin-top:12px;padding:12px;border-radius:15px;border:1px solid #5e4d83;background:#1c1931}
+ .direction-file{display:block;font-size:14px;margin:8px 0 12px;color:#e2d5ff}
+ .direction-file input{display:block;max-width:100%;margin-top:8px;font:inherit}
+ .dirBtns{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+ .dirBtns button{min-width:0;font-size:13px;padding:8px 5px}
+ .dirBtns button[aria-pressed="true"]{background:#8666b8;border-color:#f1d6ff}
+ </style></head><body><main>
+<h1>Lyr Sonia — Spine chiến đấu</h1>
+<div class="tag">Hệ Hỗn Độn · Pháp Sư · Chibi 10★ · Bản kiểm thử riêng</div>
+<p>Đứng tại đội hình, không chạy hay lao tới đối thủ. <b>Dead = Ngã rồi biến mất.</b></p>
+<div class="stage" id="stage"></div>
+<section class="dirs" aria-labelledby="direction-title">
+ <h2 id="direction-title" style="font-size:1rem">Sáu hướng nhìn trong Spine (không lật ảnh)</h2>
+ <label class="direction-file">Nạp gói sáu hướng đã duyệt v1.4
+  <input type="file" id="direction-zip" accept=".zip,application/zip">
+ </label>
+ <div class="dirBtns">
+ <button data-facing="front" disabled>Chính diện</button>
+ <button data-facing="three_quarter_right" disabled>¾ phải</button>
+ <button data-facing="right_profile" disabled>Nghiêng phải</button>
+ <button data-facing="back" disabled>Phía sau</button>
+ <button data-facing="left_profile" disabled>Nghiêng trái</button>
+ <button data-facing="three_quarter_left" disabled>¾ trái</button>
+ </div><p id="direction-status" class="small">Chọn tệp ZIP Lyr Sonia 6 hướng v1.4 trên thiết bị để tải bộ art đã duyệt vào runtime, không cần upload lên server.</p>
+</section>
+<div class="controls"><select id="clip" disabled aria-label="Chọn hoạt ảnh">
+<option value="idle">Idle — Đứng</option><option value="attack">Attack — Đánh thường</option>
+<option value="skill">Skill — Thi triển phép</option><option value="hurt">Hurt — Trúng đòn</option>
+<option value="dead">Dead — Chết / biến mất</option>
+</select><button id="play" class="wide" disabled>▶ Phát hoạt ảnh</button>
+<button id="stop" disabled>■ Dừng</button></div>
+<div class="time"><label for="scrub">Khung hình</label><input id="scrub" type="range" min="0" max="1600" step="10" value="0" disabled><output id="time">0 / 1600 ms</output></div>
+<div id="readout" class="readout">Đang tải Spine...</div>
+<h2 style="font-size:1rem">Bốn ô kỹ năng của Lyr Sonia</h2>
+<div class="skills">
+<div class="skill"><strong>Chủ động — Tinh Liên Hỏa Ấn</strong><span>Hiệu ứng Nymphaea + Izanami + Monica; chưa gắn trong trang kiểm tra hoạt ảnh này</span></div>
+<div class="skill"><strong>Bị động 1</strong><span>Chờ hoàn thiện tác dụng và icon</span></div>
+<div class="skill"><strong>Bị động 2</strong><span>Chờ hoàn thiện tác dụng và icon</span></div>
+<div class="skill"><strong>Bị động 3</strong><span>Chờ hoàn thiện tác dụng và icon</span></div>
+</div>
+<p class="small">Chạy bằng Pixi-Spine thật, không phải GIF. Trang này mới thử model chính diện; sáu góc nhìn đã có ảnh nhưng chưa rig chiến đấu hoàn chỉnh. QA chưa đăng ký Lyr Sonia vào Production.</p>
+</main><script src="/vendor/pixi.min.js"></script><script src="/vendor/pixi-spine.js"></script><script src="direction-rules.js?v=17"></script><script src="direction-upload.js?v=17"></script><script>
+(async function(){
+const $=id=>document.getElementById(id), names=['idle','attack','skill','hurt','dead'];
+const report=(txt)=>{$('readout').textContent=txt;};
+let app,hero,spineData,playing=false,lastRaf=0,elapsed=0,prevMs=-1,token=0,clip='idle',limitMs=1600;
+const phaseEvent=(cl,t,visible)=>{window.__soniaQA={clip:cl,time:Math.round(t),visible,loaded:!!hero,render:app?.renderer?.type===PIXI.RENDERER_TYPE.WEBGL?'WEBGL':'OTHER'};};
+function seek(ms){
+ if(!hero)return;
+ elapsed=Math.min(limitMs,Math.max(0,ms));
+ if(prevMs<0||elapsed<prevMs){hero.state.setAnimation(0,clip,false);hero.update(elapsed/1000)}
+ else if(elapsed>prevMs)hero.update((elapsed-prevMs)/1000);
+ prevMs=elapsed;
+ hero.visible=!(clip==='dead'&&elapsed>=limitMs-1);
+ $('scrub').value=Math.round(elapsed);$('time').value=Math.round(elapsed)+' / '+limitMs+' ms';
+ if(hero.visible){report((clip==='dead'?'Dead: đang ngã':'Đang xem '+clip)+(clip==='dead'?'':' · Vị trí đội hình giữ nguyên'))}
+ else report('Dead hoàn tất — Lyr Sonia đã biến mất khỏi chiến trường');
+ app.renderer.render(app.stage);
+ phaseEvent(clip,elapsed,hero.visible);
+}
+function setClip(which){
+ if(!names.includes(which))return;
+ playing=false;token++;lastRaf=0;prevMs=-1;clip=which;
+ const a=spineData.findAnimation(which);limitMs=Math.round(a.duration*1000);
+ $('scrub').max=limitMs;
+ hero.visible=true;seek(0);
+}
+function tick(now,id){
+ if(!playing||id!==token)return;
+ if(lastRaf)elapsed+=Math.min(120,now-lastRaf);lastRaf=now;
+ seek(elapsed);
+ if(elapsed>=limitMs){playing=false;return}
+ requestAnimationFrame(t=>tick(t,id));
+}
+try{
+ if(!window.PIXI?.spine?.Spine)throw Error('Thiếu runtime Spine');
+ app=new PIXI.Application({width:680,height:680,backgroundColor:0x1a1730,antialias:true,autoStart:false,preserveDrawingBuffer:false});
+ $('stage').appendChild(app.view);
+ const backdrop=new PIXI.Graphics();backdrop.lineStyle(2,0x9d86bd,.5);backdrop.drawEllipse(340,576,145,20);app.stage.addChild(backdrop);
+ const loader=new PIXI.Loader();
+ loader.add('sonia','assets/sonia/model.json',{metadata:{spineAtlasFile:'assets/sonia/model.atlas'}});
+ const asset=await new Promise((resolve,reject)=>{loader.onError.add(e=>reject(new Error(e.message||'Tải atlas lỗi')));loader.load((_l,r)=>resolve(r.sonia));});
+ if(!asset?.spineData)throw Error('Không đọc được Spine Data');
+ spineData=asset.spineData;
+ for(const n of names){if(!spineData.findAnimation(n))throw Error('Thiếu hoạt ảnh '+n)}
+ hero=new PIXI.spine.Spine(spineData);hero.autoUpdate=false;hero.position.set(340,570);hero.scale.set(1.13);app.stage.addChild(hero);
+ window.__soniaCombatStage={app,getHero:()=>hero,showFront:()=>{hero.visible=true;setClip($('clip').value);}};
+ for(const id of ['clip','play','stop','scrub'])$(id).disabled=false;
+ $('clip').onchange=e=>setClip(e.target.value);
+ $('play').onclick=()=>{setClip($('clip').value);playing=true;const id=++token;requestAnimationFrame(t=>tick(t,id));};
+ $('stop').onclick=()=>{playing=false;token++;lastRaf=0;setClip($('clip').value)};
+ $('scrub').oninput=e=>{playing=false;token++;lastRaf=0;seek(Number(e.target.value));};
+ const params=new URLSearchParams(location.search),wanted=params.get('clip');
+ if(names.includes(wanted)){ $('clip').value=wanted;setClip(wanted);const at=Number(params.get('t'));if(Number.isFinite(at)&&at>=0)seek(at);}
+ else setClip('idle');
+ if(clip!=='dead'||elapsed<limitMs)report('WEBGL · Spine đã tải · 5 hoạt ảnh · không có Move');
+}catch(err){report('Không tải được: '+String(err.message||err));document.body.dataset.failed='1';}
+})();
+</script></body></html>
