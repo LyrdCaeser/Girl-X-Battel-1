@@ -40,3 +40,6 @@ web/assets/factions/8.png -filter -diff -merge -text
 web/assets/factions/group8.png -filter -diff -merge -text
 web/assets/pictures/758001.webp -filter -diff -merge -text
 web/assets/skills/skill_icon_758001*.png -filter -diff -merge -text
+
+# Keep the approved tiny Sonia pose atlas available without Git LFS.
+docs/lyr-sonia/pose_3q_v18/model.atlas -filter -diff -merge -text
