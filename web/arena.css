@@ -55,6 +55,9 @@
 .ar-ins-team{display:flex;align-items:center;gap:6px;margin:6px 0}.ar-ins-n{width:18px;color:#5d6db0}
 .ar-ins-slot{position:relative;width:56px;height:56px;border-radius:8px;background:#e7ecf6;overflow:hidden}.ar-ins-slot .portrait{width:100%!important;height:100%!important}
 .ar-ins-slot small{position:absolute;left:0;bottom:0;background:#000a;color:#fff;font-size:10px;padding:0 3px;border-top-right-radius:6px}
+.ar-ins-stars{position:absolute;right:1px;top:1px;background:#5b3d88dd;color:#ffe36e;font-size:9px;font-weight:bold;padding:1px 3px;border-radius:5px}
+.ar-ins-signature,.ar-ins-score{margin:0;text-align:center;color:#6a5a78;font-size:calc(18 * var(--u))}
+.ar-opponent-avatar[role=button],.ar-opponent-info[role=button]{cursor:pointer}
 .ar-row2{border-image-slice:30 19 fill;width:min(calc(656 * var(--u)),100%)}
 .ar-rank-list{overflow-x:hidden}
 .ar-rank-list{scrollbar-width:none}.ar-rank-list::-webkit-scrollbar{display:none}

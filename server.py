@@ -652,6 +652,23 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                 return self.send(503, {
                     'error': 'Đấu Trường tạm thời chưa tải được dữ liệu. Vui lòng thử lại.'
                 })
+        if path == '/api/pvp/opponent':
+            ctx = self.auth_context(); account = ctx['account']
+            query = parse_qs(parsed.query)
+            target_uid = str((query.get('uid') or [''])[0]).strip()
+            target_server = str((query.get('server_id') or [account['server_id']])[0]).strip().upper()
+            mode = str((query.get('mode') or ['arena'])[0]).strip().lower()
+            if not target_uid or target_uid == str(account['uid']):
+                raise ValueError('Đối thủ không hợp lệ')
+            target = live_service.player(target_uid, target_server)
+            if not target or target.get('status') != 'active':
+                raise ValueError('Không tìm thấy hồ sơ đối thủ')
+            opponent_engine = self.server.player_engines.get(
+                target_uid, target_server, target['character_name'])
+            profile = opponent_engine.pvp_public_profile(mode)
+            rating = live_service.pvp_rating(target_uid, target_server, mode)
+            profile['score'] = int(rating.get('rating') or 1000)
+            return self.send(200, profile)
         if path == '/api/skin-shop/admin/catalog':
             if not self.admin_authorized(): return self.send(403,{'error':'Yêu cầu SUPER GM'})
             return self.send(200,skin_store.catalogue(admin=True))

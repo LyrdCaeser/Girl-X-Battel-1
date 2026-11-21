@@ -100,6 +100,34 @@ class PvPArena3v3Tests(unittest.TestCase):
         finally:
             engine.close()
 
+    def test_public_opponent_profile_exposes_only_prepared_teams(self):
+        engine = self._engine('A3V3-A')
+        try:
+            state = engine._load()
+            partners = state['partners']
+            teams = [
+                [{'partner_id': int(partners[0]['partner_id']), 'pos': 1}],
+                [{'partner_id': int(partners[1]['partner_id']), 'pos': 2}],
+                [{'partner_id': int(partners[2]['partner_id']), 'pos': 3}],
+            ]
+            engine.save_pvp_arena3v3_teams(teams)
+            public = engine.pvp_public_profile('arena3v3')
+            self.assertEqual(public['uid'], 'A3V3-A')
+            self.assertEqual(len(public['teams']), 3)
+            self.assertEqual([len(team) for team in public['teams']], [1, 1, 1])
+            self.assertGreater(public['power'], 0)
+            self.assertIn('stars', public['teams'][0][0])
+            self.assertNotIn('equips', public['teams'][0][0])
+
+            root = Path(__file__).resolve().parents[1]
+            server = (root / 'server.py').read_text(encoding='utf-8')
+            ui = (root / 'web' / 'arena-online-native.js').read_text(encoding='utf-8')
+            self.assertIn("path == '/api/pvp/opponent'", server)
+            self.assertIn("api('/api/pvp/opponent?uid='", ui)
+            self.assertIn('Arena.inspect(profile', ui)
+        finally:
+            engine.close()
+
     def test_ticket_payment_is_atomic_and_idempotent_for_each_real_player(self):
         match = self._match()
         a = self._engine('A3V3-A', tickets=8)

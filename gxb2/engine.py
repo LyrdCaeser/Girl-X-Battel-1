@@ -576,6 +576,71 @@ class Engine:
                     'power': int(power), 'teams': teams, 'pet': self.battle_pet(state),
                     'guild_skills': guild_lab.skills(state), 'chime_bonus': chimes.bonus(state)}
 
+    def pvp_public_profile(self, mode='arena'):
+        """Sanitized opponent profile and saved defensive formations for Arena."""
+        mode = str(mode or 'arena').lower()
+        if mode not in ('arena', 'cross', 'arena3v3'):
+            raise GameError('Chế độ Đấu Trường không hợp lệ')
+        with self.lock:
+            state = self._load()
+            by_id = {int(p['partner_id']): p for p in state.get('partners', [])}
+
+            def build_team(formation):
+                public_units, combat_units = [], []
+                for slot in sorted(formation or [], key=lambda x: int(x.get('pos', 0))):
+                    partner = by_id.get(int(slot.get('partner_id', 0)))
+                    if not partner:
+                        continue
+                    table = TABLES['partner'].get(str(partner.get('table_id')), {})
+                    unit = copy.deepcopy(partner)
+                    unit['pos'] = int(slot.get('pos') or 0)
+                    combat_units.append(unit)
+                    public_units.append({
+                        'table_id': int(partner.get('table_id') or 0),
+                        'pos': unit['pos'],
+                        'lv': int(partner.get('lv') or 1),
+                        'grade': int(partner.get('grade') or 0),
+                        'awake': int(partner.get('awake') or 0),
+                        'stars': int(table.get('max_star') or 0) + int(partner.get('awake') or 0),
+                        'name': TABLES['names'].get(
+                            str(partner.get('table_id')), str(partner.get('table_id'))),
+                        'show_skin': int(partner.get('show_skin') or 1),
+                        'skin_id': int(partner.get('skin_id') or 0),
+                    })
+                return public_units, combat_units
+
+            if mode == 'arena3v3':
+                raw = (state.get('arena3v3') or {}).get('teams') or []
+                try:
+                    formations = arena3v3.check_teams(raw, set(by_id)) if raw else []
+                except (ValueError, TypeError, KeyError):
+                    formations = []
+            else:
+                formations = [state.get('pvp_defense') or state.get('formation') or []]
+
+            built = [build_team(formation) for formation in formations]
+            teams = [public_units for public_units, _ in built]
+            skills = guild_lab.skills(state)
+            power = 0
+            for _, combat_team in built:
+                if combat_team:
+                    attrs = self._attributes(state, combat_team, guild_skills=skills)
+                    power += sum(int(v.get('power', 0)) for v in attrs.values())
+
+            public = state.get('profile') or {}
+            return {
+                'uid': str(state.get('uid') or ''),
+                'server_id': str(state.get('server_id') or 'S1'),
+                'name': str(state.get('name') or ''),
+                'lv': player_level(state),
+                'power': int(power),
+                'avatar': public.get('avatar') or 'head_1001',
+                'frame': public.get('frame') or 'frame_8007',
+                'signature': str(public.get('signature') or ''),
+                'mode': mode,
+                'teams': teams,
+            }
+
     def pay_pvp_arena3v3_ticket(self, match_id, uid):
         """Debit this player's 3 Arena Tickets and mark payment atomically in Neon."""
         separate_live = not isinstance(self.db, ScopedPostgresPlayerDB)

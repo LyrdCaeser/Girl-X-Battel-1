@@ -76,12 +76,19 @@ const Arena=(()=>{
   const sv=at(el('span','ar2-server'),146,0,108,34);sv.style.backgroundImage=`url('${A('trial_bg07')}')`;sv.append(img(A('trial_icon13')),el('b','',p.server_id||'—'));row.append(sv);
   row.append(at(el('small','ar2-plabel','Points'),264,23.5,80,20),at(el('b','ar2-points',String(p.score)),264,-17.5,100,30));return row;}
  // ArenaFormationWindow: the rival's card and defence line-up(s)
- function inspect(p,title){const ov=el('div','ar-overlay');const w=el('div','ar-win ar-inspect');ov.append(w);ov.onclick=e=>{if(e.target===ov)ov.remove();};
+ function inspect(p,title='Hồ Sơ Đối Thủ'){const ov=el('div','ar-overlay');const w=el('div','ar-win ar-inspect');ov.append(w);ov.onclick=e=>{if(e.target===ov)ov.remove();};
   const x=el('button','ar-close','✕');x.type='button';x.onclick=()=>ov.remove();const head=el('div','ar-ins-head');const ic=el('div','ar2-icon');ic.append(avatar(p.avatar,'ar2-av'));if(p.lv)ic.append(el('small','ar2-lv',String(p.lv)));
-  const info=el('div');info.append(el('b','',p.name),el('small','','ID '+(1000000+p.id*7919)%9000000),el('small','','Server S1 · Rival local'));head.append(ic,info,x);w.append(head);
-  const d=el('div','ar-ins-def');d.append(el('b','','Defense'));const pw=el('span','ar2-power');pw.append(img(A('force_icon')),el('b','',number(p.power||0)));d.append(pw);w.append(d);
+  const info=el('div');info.append(el('b','',p.name||p.character_name||'Người chơi'),
+    el('small','','UID '+(p.uid||'—')),
+    el('small','','Máy chủ '+(p.server_id||'—')+' · Cấp '+(p.lv||p.level||1)));
+  head.append(ic,info,x);w.append(el('h2','',title),head);
+  if(p.signature)w.append(el('p','ar-ins-signature',p.signature));
+  const d=el('div','ar-ins-def');d.append(el('b','',(p.teams||[]).length>1?'Đội hình đã chuẩn bị':'Đội hình phòng thủ'));
+  const pw=el('span','ar2-power');pw.append(img(A('force_icon')),el('b','',number(p.power||0)));d.append(pw);w.append(d);
+  if(p.score!=null)w.append(el('p','ar-ins-score','Điểm mùa: '+number(p.score)));
   const px=Math.round(56*scale());
-  (p.teams||[]).forEach((t,k)=>{const r=el('div','ar-ins-team');if((p.teams||[]).length>1)r.append(el('b','ar-ins-n',String(k+1)));for(let s=0;s<6;s++){const u=t.find(v=>v.pos===s+1)||t[s];const c=el('div','ar-ins-slot');if(u){c.append(typeof portrait==='function'?portrait(u.table_id,px):el('span'));c.append(el('small','',String(u.lv)));}r.append(c);}w.append(r);});
+  (p.teams||[]).forEach((t,k)=>{const r=el('div','ar-ins-team');if((p.teams||[]).length>1)r.append(el('b','ar-ins-n',String(k+1)));for(let s=0;s<6;s++){const u=t.find(v=>Number(v.pos)===s+1)||t[s];const c=el('div','ar-ins-slot');if(u){c.append(typeof portrait==='function'?portrait(u.table_id,px,u):el('span'));c.append(el('span','ar-ins-stars',(u.stars||0)+'★'),el('small','',String(u.lv||1)));c.title=(u.name||'Nữ Thần')+' · '+(u.stars||0)+'★ · Cấp '+(u.lv||1)+' · Vị trí '+(s+1);}r.append(c);}w.append(r);});
+  if(!(p.teams||[]).some(t=>t.length))w.append(el('p','ar-empty','Đối thủ chưa lưu đội hình cho chế độ này.'));
   curStage().append(ov);}
  // WindowTop (gold · gems · back) and the bottom navigation, as in the Arena screens
  function chrome(st,onBack){const bar=center(el('div','ar-top'),0,612,720,56);for(const id of ['1','2']){const r=el('span','ar-top-res');r.append(img(icon(id)),el('b','',number(state?.items?.[id]||0)));bar.append(r);}

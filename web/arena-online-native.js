@@ -271,11 +271,17 @@ const NativeOnlineArenas=(()=>{
   if(statusNote)stage.append(center(el('p','ar-note',statusNote),0,-555,620,45));
   if(panel)drawPanel(stage);
  }
- function openPlayer(p){
-  const uid=p?.uid||'—',sid=p?.server_id||'—';
-  GirlUI.notice('Người chơi: '+p.name+'\nUID: '+uid+'\nMáy chủ: '+sid+
-    '\nLực chiến: '+fmt(p.power)+'\nĐiểm mùa: '+fmt(p.score),
-    {title:'Hồ sơ đối thủ thật'});
+ async function openPlayer(p){
+  const uid=String(p?.uid||''),sid=String(p?.server_id||state?.server_id||'S1');
+  if(!uid)return;
+  try{
+   const profile=await api('/api/pvp/opponent?uid='+encodeURIComponent(uid)+
+     '&server_id='+encodeURIComponent(sid)+'&mode='+encodeURIComponent(mode));
+   if(p?.score!=null)profile.score=p.score;
+   Arena.inspect(profile,mode==='arena3v3'?'Hồ Sơ Đấu Tổ Đội':'Hồ Sơ Đối Thủ');
+  }catch(e){
+   GirlUI.notice(e.message||'Không tải được hồ sơ và đội hình đối thủ.',{title:'Hồ Sơ Đối Thủ'});
+  }
  }
  function drawPanel(stage){
   const ov=el('div','ar-overlay');ov.onclick=e=>{if(e.target===ov){if(panel==='defense')defenseDraft=null;panel='';render();}};
@@ -297,6 +303,10 @@ const NativeOnlineArenas=(()=>{
     const info=el('div','ar-opponent-info');info.append(el('b','',rival.character_name),
       el('small','','Cấp '+fmt(rival.level)+' · Điểm '+fmt(rival.rating)),
       el('small','','Lực chiến '+fmt(rival.power)+' · '+rival.server_id));
+    face.role='button';face.tabIndex=0;face.onclick=()=>openPlayer({
+      uid:rival.uid,server_id:rival.server_id,name:rival.character_name,
+      power:rival.power,score:rival.rating});
+    info.role='button';info.tabIndex=0;info.onclick=face.onclick;
     const go=el('button','ar-small','So Tài');go.type='button';go.disabled=busy;go.onclick=()=>challenge(rival);
     row.append(face,info,go);list.append(row);
    }
@@ -307,6 +317,7 @@ const NativeOnlineArenas=(()=>{
    if(!m){paragraph('Đang nhận trạng thái trận từ máy chủ.');button('Tải lại',()=>refresh());}
    else{
     paragraph('Đối thủ: '+(opp.name||opp.uid)+' · '+(opp.server_id||state?.server_id||'')+' · LC '+fmt(opp.power));
+    button('Xem Hồ Sơ & Đội Hình Đối Thủ',()=>openPlayer(opp));
     if(mode==='arena3v3'){
      if(series){
       paragraph('Tỉ số: '+(series.wins_me??(String(m.player_a)===own()?series.wins_a:series.wins_b))+
