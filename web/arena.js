@@ -21,6 +21,11 @@ const Arena=(()=>{
   }
   const src=icon(id);return src?img(src,cls):el('span',cls+' empty','✦');
  }
+ function avatarFrame(id,cls='ar2-frame'){
+  const key=String(id||'frame_8007').trim();
+  const src=typeof profileAsset==='function'?profileAsset(key):'/assets/profile/'+key+'.png';
+  const layer=img(src,cls);layer.onerror=()=>{layer.onerror=null;layer.src='/assets/profile/frame_8007.png';};return layer;
+ }
  async function act(req){if(busyLocal)return null;busyLocal=true;note='';try{const r=await api('/api/arena/action',req);state=r.state;return r;}catch(e){note=e.message;return null;}finally{busyLocal=false;render();}}
  function clock(at){const s=Math.max(0,at-Math.floor(Date.now()/1000));const d=Math.floor(s/86400);return (d?d+'d ':'')+[Math.floor(s%86400/3600),Math.floor(s%3600/60),s%60].map(n=>String(n).padStart(2,'0')).join(':');}
  function awards(parent,text){const w=el('div','ar-awards');for(const p of String(text||'').split('|')){const [k,n]=p.split('#');if(!k)continue;const c=el('span','ar-award');const s=icon(k);if(s)c.append(img(s));c.append(el('b','',number(n)));c.title=nameOf(k);w.append(c);}parent.append(w);return w;}
@@ -69,7 +74,9 @@ const Arena=(()=>{
   const at=(e,x,y,w,h)=>{e.style.left=`calc(${328+x-w/2} * var(--u))`;e.style.top=`calc(${51.5-y-h/2} * var(--u))`;e.style.width=`calc(${w} * var(--u))`;e.style.height=`calc(${h} * var(--u))`;return e;};
   if(top)row.append(at(img(A('rank_icon0'+(i+1)),'ar2-rk'),-271,2,86,62));else row.append(at(el('b','ar2-num',String(i+1)),-269,0,70,40));
   const ic=at(el('button','ar2-icon'),-177,1,64,64);ic.type='button';const px=Math.round(64*scale());
-  ic.append(avatar(p.me?(state?.profile?.avatar||p.avatar):p.avatar,'ar2-av'));if(p.lv)ic.append(el('small','ar2-lv',String(p.lv)));
+  const avatarKey=p.me?(state?.profile?.avatar||p.avatar):p.avatar;
+  const frameKey=p.me?(state?.profile?.frame||p.frame):p.frame;
+  ic.append(avatar(avatarKey,'ar2-av'),avatarFrame(frameKey));if(p.lv)ic.append(el('small','ar2-lv',String(p.lv)));
   if(!p.me&&onInspect)ic.onclick=()=>onInspect(p);row.append(ic);
   const nm=el('b','ar2-name',p.name);nm.style.left='calc(202 * var(--u))';nm.style.top='calc(14 * var(--u))';row.append(nm);
   const pw=el('span','ar2-power');pw.style.left='calc(208 * var(--u))';pw.style.top='calc(50 * var(--u))';pw.append(img(A('force_icon')),el('b','',number(p.me?me:p.power||0)));row.append(pw);
@@ -77,7 +84,7 @@ const Arena=(()=>{
   row.append(at(el('small','ar2-plabel','Points'),264,23.5,80,20),at(el('b','ar2-points',String(p.score)),264,-17.5,100,30));return row;}
  // ArenaFormationWindow: the rival's card and defence line-up(s)
  function inspect(p,title='Hồ Sơ Đối Thủ'){const ov=el('div','ar-overlay');const w=el('div','ar-win ar-inspect');ov.append(w);ov.onclick=e=>{if(e.target===ov)ov.remove();};
-  const x=el('button','ar-close','✕');x.type='button';x.onclick=()=>ov.remove();const head=el('div','ar-ins-head');const ic=el('div','ar2-icon');ic.append(avatar(p.avatar,'ar2-av'));if(p.lv)ic.append(el('small','ar2-lv',String(p.lv)));
+  const x=el('button','ar-close','✕');x.type='button';x.onclick=()=>ov.remove();const head=el('div','ar-ins-head');const ic=el('div','ar2-icon');ic.append(avatar(p.avatar,'ar2-av'),avatarFrame(p.frame));if(p.lv)ic.append(el('small','ar2-lv',String(p.lv)));
   const info=el('div');info.append(el('b','',p.name||p.character_name||'Người chơi'),
     el('small','','UID '+(p.uid||'—')),
     el('small','','Máy chủ '+(p.server_id||'—')+' · Cấp '+(p.lv||p.level||1)));
@@ -88,7 +95,22 @@ const Arena=(()=>{
   if(p.score!=null)w.append(el('p','ar-ins-score','Điểm mùa: '+number(p.score)));
   const px=Math.round(56*scale());
   const teamScroller=el('div','ar-ins-teams');
-  (p.teams||[]).forEach((t,k)=>{const r=el('div','ar-ins-team');if((p.teams||[]).length>1)r.append(el('b','ar-ins-n',String(k+1)));for(let s=0;s<6;s++){const u=t.find(v=>Number(v.pos)===s+1)||t[s];const c=el('div','ar-ins-slot');if(u){c.append(typeof portrait==='function'?portrait(u.table_id,px,u):el('span'));c.append(el('span','ar-ins-stars',(u.stars||0)+'★'),el('small','',String(u.lv||1)));c.title=(u.name||'Nữ Thần')+' · '+(u.stars||0)+'★ · Cấp '+(u.lv||1)+' · Vị trí '+(s+1);}r.append(c);}teamScroller.append(r);});
+  function originalFormationStars(u){
+   const n=Number(u?.stars)||0,wrap=el('span','ar-ins-stars');
+   const group=Number(u?.group||((typeof girlsCatalog!=='undefined'&&girlsCatalog.find(g=>Number(g.id)===Number(u?.table_id)))||{}).group)||0;
+   if(typeof GirlUI!=='undefined'&&typeof GirlUI.stars==='function'){
+    const stars=GirlUI.stars(n,'card'),emblem=stars.querySelector('.gu-emblem');
+    if(emblem&&n>=10)emblem.src='/assets/girl-ui/'+(n===10?'star_orange'+(group===7?'_group_7':''):'potentiality_card_star'+(group===7?'_group_7':'')+(n>=15?'_max':''))+'.png';
+    wrap.append(stars);
+   }else{
+    const stars=el('span','gu-stars card');
+    if(n>=10){const base=n===10?'star_orange'+(group===7?'_group_7':''):'potentiality_card_star'+(group===7?'_group_7':'')+(n>=15?'_max':'');stars.append(img('/assets/girl-ui/'+base+'.png','gu-emblem'));if(n>10)stars.append(el('b','gu-emblem-num',String(n-10)));}
+    else{const red=n>5;for(let i=0;i<(red?n-5:n);i++)stars.append(img('/assets/girl-ui/partner_star_'+(red?'red':'yellow')+'.png','gu-star'));}
+    wrap.append(stars);
+   }
+   wrap.setAttribute('aria-label',n+' sao');return wrap;
+  }
+  (p.teams||[]).forEach((t,k)=>{const r=el('div','ar-ins-team');if((p.teams||[]).length>1)r.append(el('b','ar-ins-n',String(k+1)));for(let s=0;s<6;s++){const u=t.find(v=>Number(v.pos)===s+1)||t[s];const c=el('div','ar-ins-slot');if(u){c.append(typeof portrait==='function'?portrait(u.table_id,px,u):el('span'));c.append(originalFormationStars(u),el('small','',String(u.lv||1)));c.title=(u.name||'Nữ Thần')+' · '+(u.stars||0)+'★ · Cấp '+(u.lv||1)+' · Vị trí '+(s+1);}r.append(c);}teamScroller.append(r);});
   w.append(teamScroller);
   if(!(p.teams||[]).some(t=>t.length))w.append(el('p','ar-empty','Đối thủ chưa lưu đội hình cho chế độ này.'));
   const stage=curStage();if(stage)stage.append(ov);}

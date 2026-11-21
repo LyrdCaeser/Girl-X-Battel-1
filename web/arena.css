@@ -37,8 +37,8 @@
 .ar-row2{position:relative;flex:none;width:calc(656 * var(--u));height:calc(103 * var(--u));margin:0 auto calc(6 * var(--u));box-sizing:border-box;border:calc(18 * var(--u)) solid transparent;border-image-slice:20 fill;border-image-width:calc(18 * var(--u));border-image-repeat:stretch}
 .ar-row2>*{position:absolute;margin:calc(-18 * var(--u))}
 .ar2-rk{object-fit:contain}.ar2-num{display:flex;align-items:center;justify-content:center;font-size:calc(30 * var(--u));color:#5a4e6e}
-.ar2-icon{border:0;padding:0;background:none;cursor:pointer;border-radius:calc(10 * var(--u));overflow:hidden}.ar2-icon .ar2-av,.ar2-icon .portrait{width:100%!important;height:100%!important;object-fit:cover;display:block}
-.ar2-lv{position:absolute;left:0;bottom:0;min-width:calc(26 * var(--u));padding:0 calc(3 * var(--u));background:#000a;color:#fff;font-size:calc(15 * var(--u));border-top-right-radius:calc(8 * var(--u));text-align:center}
+.ar2-icon{position:relative;border:0;padding:0;background:none;cursor:pointer;border-radius:calc(10 * var(--u));overflow:visible}.ar2-icon .ar2-av,.ar2-icon .portrait{position:absolute;z-index:1;inset:7%;width:86%!important;height:86%!important;object-fit:cover;display:block;border-radius:calc(8 * var(--u))}.ar2-icon .ar2-frame{position:absolute;z-index:2;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none}
+.ar2-lv{position:absolute;z-index:3;left:0;bottom:0;min-width:calc(26 * var(--u));padding:0 calc(3 * var(--u));background:#000a;color:#fff;font-size:calc(15 * var(--u));border-top-right-radius:calc(8 * var(--u));text-align:center}
 .ar2-name{font-size:calc(22 * var(--u));color:#4b4a6e;white-space:nowrap;max-width:calc(260 * var(--u));overflow:hidden;text-overflow:ellipsis}
 .ar2-power{display:flex;align-items:center;gap:calc(4 * var(--u));color:#d88d2c;font-size:calc(21 * var(--u))}.ar2-power img{width:calc(34 * var(--u))}
 .ar2-server{display:flex;align-items:center;justify-content:center;gap:calc(8 * var(--u));background:center/100% 100% no-repeat;color:#4f7fb6;font-size:calc(17 * var(--u))}.ar2-server img{width:calc(26 * var(--u))}
@@ -58,7 +58,11 @@
 .ar-ins-team{display:flex;align-items:center;gap:6px;width:max-content;min-width:100%;margin:6px 0}.ar-ins-n{width:18px;flex:none;color:#5d6db0}
 .ar-ins-slot{position:relative;width:56px;height:56px;border-radius:8px;background:#e7ecf6;overflow:hidden}.ar-ins-slot .portrait{width:100%!important;height:100%!important}
 .ar-ins-slot small{position:absolute;left:0;bottom:0;background:#000a;color:#fff;font-size:10px;padding:0 3px;border-top-right-radius:6px}
-.ar-ins-stars{position:absolute;right:1px;top:1px;background:#5b3d88dd;color:#ffe36e;font-size:9px;font-weight:bold;padding:1px 3px;border-radius:5px}
+.ar-ins-stars{position:absolute;left:1px;right:1px;top:1px;display:flex;align-items:center;justify-content:flex-end;min-height:18px;pointer-events:none;overflow:visible}
+.ar-ins-stars .gu-stars{display:inline-flex;align-items:center;justify-content:center;gap:0;max-width:100%;overflow:visible}
+.ar-ins-stars .gu-star{width:10px;height:10px;flex:none;object-fit:contain}
+.ar-ins-stars .gu-emblem{width:auto;height:18px;max-width:42px;object-fit:contain;display:block}
+.ar-ins-stars .gu-emblem-num{font-size:9px;color:#fff5c4;text-shadow:0 1px 2px #171627}
 .ar-ins-signature,.ar-ins-score{margin:0;text-align:center;color:#6a5a78;font-size:calc(18 * var(--u))}
 .ar-opponent-avatar[role=button],.ar-opponent-info[role=button]{cursor:pointer}
 .ar-row2{border-image-slice:30 19 fill;width:min(calc(656 * var(--u)),100%)}
@@ -66,10 +70,11 @@
 .ar-rank-list{scrollbar-width:none}.ar-rank-list::-webkit-scrollbar{display:none}
 
 /* Owner badge always shows the uploaded public PROFILE avatar, not first Girl. */
-.ar-me-icon .ar-own-avatar{display:block;width:100%;height:100%;object-fit:cover;border-radius:calc(10 * var(--u))}
+.ar-me-icon{position:relative;overflow:visible}.ar-me-icon .ar-own-avatar{position:absolute;z-index:1;inset:7%;width:86%;height:86%;object-fit:cover;border-radius:calc(10 * var(--u))}.ar-me-icon .ar-own-frame{position:absolute;z-index:2;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none}
 
 .ar-opponents{display:grid;gap:calc(10 * var(--u));max-height:calc(690 * var(--u));overflow:auto}
 .ar-opponent{display:grid;grid-template-columns:calc(70 * var(--u)) 1fr auto;align-items:center;gap:calc(12 * var(--u));padding:calc(10 * var(--u));border:calc(2 * var(--u)) solid #aac4df;border-radius:calc(14 * var(--u));background:#eef8ff}
+.ar-opponent-avatar{position:relative;width:calc(70 * var(--u));height:calc(70 * var(--u));overflow:visible}.ar-opponent-avatar-image{position:absolute;z-index:1;inset:7%;width:86%;height:86%;object-fit:cover;border-radius:calc(9 * var(--u))}.ar-opponent-avatar-frame{position:absolute;z-index:2;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none}
 .ar-opponent-avatar{width:calc(66 * var(--u));height:calc(66 * var(--u));object-fit:cover;border-radius:calc(10 * var(--u));border:calc(2 * var(--u)) solid #6fa8d8}
 .ar-opponent-info{display:grid;gap:calc(2 * var(--u));min-width:0}.ar-opponent-info b{font-size:calc(23 * var(--u));overflow:hidden;text-overflow:ellipsis}.ar-opponent-info small{font-size:calc(18 * var(--u));color:#536a82}
 

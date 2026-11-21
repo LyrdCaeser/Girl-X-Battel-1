@@ -236,7 +236,7 @@ const NativeOnlineArenas=(()=>{
   const rows=el('div','ar-rank-list');rank.append(rows);
   for(const [i,p] of (data?.rating_board||[]).entries()){
    const player={uid:p.uid,server_id:p.server_id,name:p.character_name,lv:p.level,
-     power:p.power||0,score:p.rating,me:String(p.uid)===own(),avatar:p.avatar||'head_1001'};
+     power:p.power||0,score:p.rating,me:String(p.uid)===own(),avatar:p.avatar||'head_1001',frame:p.frame||'frame_8007'};
    rows.append(Arena.rankRow(player,i,Number(state?.power||0),openPlayer));
   }
   if(!data)rows.append(el('p','ar-empty',note||'Đang tải bảng xếp hạng trực tuyến…'));
@@ -245,7 +245,9 @@ const NativeOnlineArenas=(()=>{
   stage.append(center(el('div','ar-detail'),0,-395,706,232));
   const icon=center(el('div','ar-me-icon'),-290,-348,114,114);
   const avatarSrc=typeof profileAsset==='function'?profileAsset(state?.profile?.avatar||'head_1001'):'/assets/profile/head_1001.png';
-  const face=img(avatarSrc,'ar-own-avatar');face.onerror=()=>{face.onerror=null;face.src='/assets/profile/head_1001.png';};icon.append(face);
+  const face=img(avatarSrc,'ar-own-avatar');face.onerror=()=>{face.onerror=null;face.src='/assets/profile/head_1001.png';};
+  const frameSrc=typeof profileAsset==='function'?profileAsset(state?.profile?.frame||'frame_8007'):'/assets/profile/frame_8007.png';
+  const frame=img(frameSrc,'ar-own-frame');frame.onerror=()=>{frame.onerror=null;frame.src='/assets/profile/frame_8007.png';};icon.append(face,frame);
   stage.append(icon);
   const power=center(el('div','ar-power'),-194,-357,110,70);
   power.append(img(A('force_icon')),el('b','',fmt(data?.own_power??state?.power??0)));stage.append(power);
@@ -309,8 +311,10 @@ const NativeOnlineArenas=(()=>{
    const list=el('div','ar-opponents');win.append(list);
    for(const rival of data?.candidates||[]){
     const row=el('article','ar-opponent');
-    const face=img(typeof profileAsset==='function'?profileAsset(rival.avatar||'head_1001'):'/assets/profile/head_1001.png','ar-opponent-avatar');
-    face.onerror=()=>{face.onerror=null;face.src='/assets/profile/head_1001.png';};
+    const face=el('div','ar-opponent-avatar');const faceImg=img(typeof profileAsset==='function'?profileAsset(rival.avatar||'head_1001'):'/assets/profile/head_1001.png','ar-opponent-avatar-image');
+    faceImg.onerror=()=>{faceImg.onerror=null;faceImg.src='/assets/profile/head_1001.png';};
+    const frameImg=img(typeof profileAsset==='function'?profileAsset(rival.frame||'frame_8007'):'/assets/profile/frame_8007.png','ar-opponent-avatar-frame');
+    frameImg.onerror=()=>{frameImg.onerror=null;frameImg.src='/assets/profile/frame_8007.png';};face.append(faceImg,frameImg);
     const info=el('div','ar-opponent-info');info.append(el('b','',rival.character_name),
       el('small','','Cấp '+fmt(rival.level)+' · Điểm '+fmt(rival.rating)),
       el('small','','Lực chiến '+fmt(rival.power)+' · '+rival.server_id));

@@ -792,13 +792,16 @@ def pvp_candidates(uid, server_id, mode, limit=20):
     scope="p.server_id<>?" if mode=="cross" else "p.server_id=?"
     avatar_expr=("COALESCE(NULLIF(pp.data::jsonb #>> '{profile,avatar}', ''), 'head_1001')"
                  if database.POSTGRES else "'head_1001'")
+    frame_expr=("COALESCE(NULLIF(pp.data::jsonb #>> '{profile,frame}', ''), 'frame_8007')"
+                if database.POSTGRES else "'frame_8007'")
     avatar_join=("LEFT JOIN player_profiles pp ON pp.uid=p.uid AND pp.server_id=p.server_id"
                  if database.POSTGRES else "")
     season=pvp_season_id(mode,server_id)
     query=f"""SELECT p.uid,p.server_id,p.character_name,COALESCE(l.level,1) AS level,
                      COALESCE(NULLIF(r.power,0),l.power,0) AS power,
                      COALESCE(r.rating,1000) AS rating,
-                     COALESCE(r.matches,0) AS matches,{avatar_expr} AS avatar
+                     COALESCE(r.matches,0) AS matches,{avatar_expr} AS avatar,
+                     {frame_expr} AS frame
               FROM players p
               LEFT JOIN leaderboard l ON l.uid=p.uid AND l.server_id=p.server_id
               LEFT JOIN pvp_ratings r ON r.uid=p.uid AND r.server_id=p.server_id
@@ -1259,6 +1262,8 @@ def pvp_rating_board(mode, season_id=None, limit=100, server_id=None):
         scope=" AND p.server_id=?"; scope_params=(str(server_id).upper(),)
     avatar_expr = ("COALESCE(NULLIF(pp.data::jsonb #>> '{profile,avatar}', ''), 'head_1001') AS avatar"
                    if database.POSTGRES else "'head_1001' AS avatar")
+    frame_expr = ("COALESCE(NULLIF(pp.data::jsonb #>> '{profile,frame}', ''), 'frame_8007') AS frame"
+                  if database.POSTGRES else "'frame_8007' AS frame")
     avatar_join = (" LEFT JOIN player_profiles pp ON pp.uid=p.uid AND pp.server_id=p.server_id"
                    if database.POSTGRES else "")
     query="""SELECT p.uid,p.server_id,p.character_name,? AS mode,? AS season_id,
@@ -1266,7 +1271,8 @@ def pvp_rating_board(mode, season_id=None, limit=100, server_id=None):
                     COALESCE(r.losses,0) AS losses,COALESCE(r.matches,0) AS matches,
                     COALESCE(l.level,1) AS level,
                     COALESCE(NULLIF(r.power,0),l.power,0) AS power,
-                    """+avatar_expr+""",COALESCE(r.updated_at,l.updated_at,p.updated_at) AS updated_at
+                    """+avatar_expr+""","""+frame_expr+""",
+                    COALESCE(r.updated_at,l.updated_at,p.updated_at) AS updated_at
              FROM players p
              LEFT JOIN leaderboard l ON l.uid=p.uid AND l.server_id=p.server_id
              LEFT JOIN pvp_ratings r ON r.uid=p.uid AND r.server_id=p.server_id
