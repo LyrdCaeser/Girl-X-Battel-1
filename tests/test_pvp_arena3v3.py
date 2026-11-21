@@ -128,6 +128,7 @@ class PvPArena3v3Tests(unittest.TestCase):
             self.assertIn("api('/api/pvp/opponent?uid='", ui)
             self.assertIn('Arena.inspect(profile', ui)
             self.assertIn("root().querySelector('.ar-inspect')", ui)
+            self.assertIn("if(target.querySelector('.ar-inspect'))return;", ui)
             self.assertIn("el('div','ar-ins-teams')", arena_ui)
             self.assertIn('.ar-inspect{max-width:92%;overflow:hidden}', arena_css)
             self.assertIn('.ar-ins-teams{', arena_css)

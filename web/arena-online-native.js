@@ -219,7 +219,12 @@ const NativeOnlineArenas=(()=>{
  }
  function render(){
   if(!selected())return;
-  const target=root();target.replaceChildren();const stage=el('div','ar-stage');target.append(stage);
+  const target=root();
+  // The opponent inspector is an intentional modal owned by Arena.inspect().
+  // Any in-flight status response, heartbeat or global state repaint must wait
+  // until the player closes it instead of replacing the whole Arena stage.
+  if(target.querySelector('.ar-inspect'))return;
+  target.replaceChildren();const stage=el('div','ar-stage');target.append(stage);
   const scene=mode==='cross'?'/assets/menus/arena-cross.png':A(mode==='arena3v3'?'arena_3v3_scene':'arena_scene');
   stage.append(center(img(scene,'ar-bg'),0,5,1457,1457));
   Arena.chrome(stage,back);titleArt(stage);
