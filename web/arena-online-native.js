@@ -307,7 +307,7 @@ const NativeOnlineArenas=(()=>{
   };
   const p=data?.pvp||{};
   if(panel==='opponents'){
-   paragraph('Chọn người chơi thật cùng bậc, cùng điểm hoặc nhỉnh hơn để So Tài.');
+   paragraph('Chọn một đối thủ vừa sức và bắt đầu So Tài nào!');
    const list=el('div','ar-opponents');win.append(list);
    for(const rival of data?.candidates||[]){
     const row=el('article','ar-opponent');

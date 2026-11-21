@@ -74,8 +74,7 @@
 
 .ar-opponents{display:grid;gap:calc(10 * var(--u));max-height:calc(690 * var(--u));overflow:auto}
 .ar-opponent{display:grid;grid-template-columns:calc(70 * var(--u)) 1fr auto;align-items:center;gap:calc(12 * var(--u));padding:calc(10 * var(--u));border:calc(2 * var(--u)) solid #aac4df;border-radius:calc(14 * var(--u));background:#eef8ff}
-.ar-opponent-avatar{position:relative;width:calc(70 * var(--u));height:calc(70 * var(--u));overflow:visible}.ar-opponent-avatar-image{position:relative;z-index:1;display:block;width:100%;height:100%;object-fit:cover;border-radius:calc(9 * var(--u))}.ar-opponent-avatar-frame{position:absolute;z-index:2;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none}
-.ar-opponent-avatar{width:calc(66 * var(--u));height:calc(66 * var(--u));object-fit:cover;border-radius:calc(10 * var(--u));border:calc(2 * var(--u)) solid #6fa8d8}
+.ar-opponent-avatar{position:relative;justify-self:center;width:calc(58 * var(--u));height:calc(58 * var(--u));overflow:visible;border:0;border-radius:calc(9 * var(--u))}.ar-opponent-avatar-image{position:absolute;z-index:1;inset:7%;width:86%;height:86%;object-fit:cover;border-radius:calc(7 * var(--u))}.ar-opponent-avatar-frame{position:absolute;z-index:2;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none}
 .ar-opponent-info{display:grid;gap:calc(2 * var(--u));min-width:0}.ar-opponent-info b{font-size:calc(23 * var(--u));overflow:hidden;text-overflow:ellipsis}.ar-opponent-info small{font-size:calc(18 * var(--u));color:#536a82}
 
 /* Mobile portrait 20:9+: original native scene was only 1280 prefab units
