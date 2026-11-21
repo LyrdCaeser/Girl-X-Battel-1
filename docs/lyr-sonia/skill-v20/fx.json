@@ -1,0 +1,186 @@
+{
+  "id": "lyr-sonia-skill-v20-detailed-lotus-articulated-3q",
+  "name": "Lyr Sonia · Tinh Liên Hỏa Ấn · Góc ¾ phải",
+  "field": {
+    "w": 720,
+    "h": 960
+  },
+  "timing_ms": 1800,
+  "peak_concurrent": 2,
+  "actor_box": {
+    "x": 75,
+    "y": 265,
+    "w": 285,
+    "h": 420
+  },
+  "origins": {
+    "Nymphaea": "75301901",
+    "Izanami": "75500701",
+    "Monica": "75201701"
+  },
+  "sequence": [
+    {
+      "t": 45,
+      "duration": 255,
+      "phase": "Mở ấn",
+      "source": "Monica",
+      "res": "monika_hurt02",
+      "clip": "texiao01",
+      "at": "staff_tip",
+      "scale": 0.32,
+      "alpha": 0.78,
+      "speed": 3.3,
+      "layer": "caster"
+    },
+    {
+      "t": 285,
+      "duration": 360,
+      "phase": "Liên hoa",
+      "source": "Nymphaea",
+      "res": "lianhua_hurt02",
+      "clip": "texiao01",
+      "at": "target",
+      "scale": 0.55,
+      "alpha": 0.93,
+      "speed": 4.6,
+      "layer": "front"
+    },
+    {
+      "t": 342,
+      "duration": 250,
+      "phase": "Liên hoa",
+      "source": "Nymphaea",
+      "res": "lianhua_hurt02",
+      "clip": "texiao02",
+      "at": "target_ground",
+      "scale": 0.3,
+      "alpha": 0.77,
+      "speed": 4.14,
+      "layer": "behind"
+    },
+    {
+      "t": 610,
+      "duration": 280,
+      "phase": "Hắc hỏa",
+      "source": "Izanami",
+      "res": "yixienamei_hurt02",
+      "clip": "texiao01",
+      "at": "target",
+      "scale": 0.34,
+      "alpha": 0.81,
+      "speed": 5.2,
+      "layer": "front"
+    },
+    {
+      "t": 660,
+      "duration": 205,
+      "phase": "Hắc hỏa",
+      "source": "Izanami",
+      "res": "yixienamei_hurt02",
+      "clip": "texiao02",
+      "at": "target_ground",
+      "scale": 0.26,
+      "alpha": 0.57,
+      "speed": 4.8,
+      "layer": "behind"
+    },
+    {
+      "t": 905,
+      "duration": 310,
+      "phase": "Kết ấn",
+      "source": "Monica",
+      "res": "monika_hurt02",
+      "clip": "texiao01",
+      "at": "target_ground",
+      "scale": 0.3,
+      "alpha": 0.69,
+      "speed": 4.5,
+      "layer": "behind"
+    },
+    {
+      "t": 905,
+      "duration": 425,
+      "phase": "Kết ấn",
+      "source": "Monica",
+      "res": "monika_hurt03",
+      "clip": "texiao01",
+      "at": "target",
+      "scale": 0.44,
+      "alpha": 0.85,
+      "speed": 8,
+      "layer": "front"
+    }
+  ],
+  "remarks": [
+    "Use exact untouched GXB 3 FX source assets",
+    "Visual-only QA; no combat effect or status mutations",
+    "Original VFX needs per-fx runtime WebGL review",
+    "Never show more than two FX layers simultaneously",
+    "Same 7 original VFX steps for both PC and Mobile; no custom QA projectile connector.",
+    "Approved ¾-right art lacks the staff; magic starts from caster hand. Later replace anchor with staff head in real rig.",
+    "QA-only cutout articulated rig from approved ¾ art; verify joints and art seams in WebGL before any release."
+  ],
+  "skill_hit_event_ms": 1120,
+  "description": "Nymphaea lotus 50% larger/high opacity; 3/4 articulated cast with original staff parts; full FX PC/Mobile.",
+  "rig": {
+    "file": "assets/sonia/model.json",
+    "version": "v20-articulated-3q-QA",
+    "event_hit_s": 1.12,
+    "anchor": "staff_tip",
+    "independent_parts": 8,
+    "visual_only": true,
+    "limitations": "Prototype cutout rig; underdrawing and arm grip seams need manual cleanup"
+  },
+  "quality_profiles": {
+    "desktop": {
+      "steps": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "atlas_resources": [
+        "monika_hurt02",
+        "monika_hurt03",
+        "lianhua_hurt02",
+        "yixienamei_hurt02"
+      ],
+      "max_instances": 2
+    },
+    "mobile": {
+      "steps": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "atlas_resources": [
+        "monika_hurt02",
+        "monika_hurt03",
+        "lianhua_hurt02",
+        "yixienamei_hurt02"
+      ],
+      "max_instances": 2
+    }
+  },
+  "render": {
+    "width": 720,
+    "height": 960,
+    "resolution": 1,
+    "front_clip_x": 357,
+    "alpha_soft_cap": 0.86,
+    "actor_front_of_caster": true,
+    "staff_cast_anchor": "staff_tip",
+    "native_target": "monika_10",
+    "mobile_profile_note": "Mobile full 7/7 FX; atlas optimized only"
+  },
+  "preview_only": true,
+  "requires_game_registration": false,
+  "qa_final_hold_ms": 1120
+}
