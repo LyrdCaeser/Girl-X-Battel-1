@@ -796,7 +796,8 @@ def pvp_candidates(uid, server_id, mode, limit=20):
                  if database.POSTGRES else "")
     season=pvp_season_id(mode,server_id)
     query=f"""SELECT p.uid,p.server_id,p.character_name,COALESCE(l.level,1) AS level,
-                     COALESCE(l.power,0) AS power,COALESCE(r.rating,1000) AS rating,
+                     COALESCE(NULLIF(r.power,0),l.power,0) AS power,
+                     COALESCE(r.rating,1000) AS rating,
                      COALESCE(r.matches,0) AS matches,{avatar_expr} AS avatar
               FROM players p
               LEFT JOIN leaderboard l ON l.uid=p.uid AND l.server_id=p.server_id
@@ -808,7 +809,8 @@ def pvp_candidates(uid, server_id, mode, limit=20):
                 WHEN COALESCE(r.rating,1000)>=? AND COALESCE(r.rating,1000)<=? THEN 0
                 WHEN COALESCE(r.rating,1000)>=? AND COALESCE(r.rating,1000)<? THEN 1
                 ELSE 2 END,
-                ABS(COALESCE(r.rating,1000)-?),COALESCE(l.power,0) DESC,p.character_name
+                ABS(COALESCE(r.rating,1000)-?),
+                COALESCE(NULLIF(r.power,0),l.power,0) DESC,p.character_name
               LIMIT ?"""
     with _lock:
         db=_db(); rows=db.execute(query,(mode,season,uid,server_id,rating,rating+150,rating-100,rating,rating,
@@ -830,10 +832,15 @@ def challenge_pvp(uid, server_id, character_name, mode, target_uid, target_serve
             row=db.execute("SELECT * FROM pvp_matches WHERE id=?",(old["id"],)).fetchone()
             out={"status":"matched","match":_public_pvp_match(row)}; db.commit(); db.close(); return out
         db.execute("DELETE FROM pvp_queue WHERE uid=? AND server_id=?",(uid,server_id))
-        target=db.execute("""SELECT p.character_name,COALESCE(l.power,0) AS power FROM players p
+        season=pvp_season_id(mode,server_id)
+        target=db.execute("""SELECT p.character_name,
+                                    COALESCE(NULLIF(r.power,0),l.power,0) AS power
+                             FROM players p
                              LEFT JOIN leaderboard l ON l.uid=p.uid AND l.server_id=p.server_id
+                             LEFT JOIN pvp_ratings r ON r.uid=p.uid AND r.server_id=p.server_id
+                                  AND r.mode=? AND r.season_id=?
                              WHERE p.uid=? AND p.server_id=? AND p.status='active'""",
-                          (target_uid,target_server)).fetchone()
+                          (mode,season,target_uid,target_server)).fetchone()
         if not target: db.rollback(); db.close(); raise ValueError("Đối thủ không còn hoạt động")
         match_id="PVP-"+uuid.uuid4().hex[:16].upper(); seed=normalize_online_seed(uuid.uuid4().int)
         match_server="CROSS" if mode=="cross" else server_id
@@ -1219,11 +1226,27 @@ def pvp_rating(uid, server_id, mode, season_id=None):
                        (str(uid),str(server_id).upper(),str(mode).lower(),season_id)).fetchone()
         if not row:
             out={"uid":str(uid),"server_id":str(server_id).upper(),"mode":str(mode).lower(),
-                 "season_id":season_id,"rating":1000,"wins":0,"losses":0,"matches":0}
+                 "season_id":season_id,"rating":1000,"wins":0,"losses":0,"matches":0,"power":0}
         else:
             out=dict(row)
         db.close(); return out
 
+
+def sync_pvp_power(uid, server_id, mode, power, season_id=None):
+    """Persist mode-specific formation power without changing rating totals."""
+    uid=str(uid); server_id=str(server_id).upper(); mode=str(mode or "arena").lower()
+    season_id=season_id or pvp_season_id(mode,server_id)
+    now=int(time.time()); power=max(0,int(power))
+    with _lock:
+        db=_db()
+        db.execute("""INSERT INTO pvp_ratings(
+                      uid,server_id,mode,season_id,rating,wins,losses,matches,power,updated_at)
+                      VALUES(?,?,?,?,1000,0,0,0,?,?)
+                      ON CONFLICT(uid,server_id,mode,season_id) DO UPDATE SET
+                        power=excluded.power,updated_at=excluded.updated_at""",
+                   (uid,server_id,mode,season_id,power,now))
+        db.commit(); db.close()
+    return power
 
 
 def pvp_rating_board(mode, season_id=None, limit=100, server_id=None):
@@ -1241,7 +1264,8 @@ def pvp_rating_board(mode, season_id=None, limit=100, server_id=None):
     query="""SELECT p.uid,p.server_id,p.character_name,? AS mode,? AS season_id,
                     COALESCE(r.rating,1000) AS rating,COALESCE(r.wins,0) AS wins,
                     COALESCE(r.losses,0) AS losses,COALESCE(r.matches,0) AS matches,
-                    COALESCE(l.level,1) AS level,COALESCE(l.power,0) AS power,
+                    COALESCE(l.level,1) AS level,
+                    COALESCE(NULLIF(r.power,0),l.power,0) AS power,
                     """+avatar_expr+""",COALESCE(r.updated_at,l.updated_at,p.updated_at) AS updated_at
              FROM players p
              LEFT JOIN leaderboard l ON l.uid=p.uid AND l.server_id=p.server_id
@@ -1254,9 +1278,11 @@ def pvp_rating_board(mode, season_id=None, limit=100, server_id=None):
                       ) THEN CASE WHEN COALESCE(r.matches,0)>0 THEN 0 ELSE 1 END ELSE 0 END,
                       CASE WHEN EXISTS(
                         SELECT 1 FROM pvp_ratings z WHERE z.mode=? AND z.season_id=? AND z.matches>0
-                      ) THEN COALESCE(r.rating,1000) ELSE COALESCE(l.power,0) END DESC,
+                      ) THEN COALESCE(r.rating,1000)
+                        ELSE COALESCE(NULLIF(r.power,0),l.power,0) END DESC,
                       COALESCE(r.wins,0) DESC,COALESCE(r.matches,0) DESC,
-                      COALESCE(l.power,0) DESC,p.server_id,p.character_name LIMIT ?"""
+                      COALESCE(NULLIF(r.power,0),l.power,0) DESC,
+                      p.server_id,p.character_name LIMIT ?"""
     params=(mode,season_id,mode,season_id,*scope_params,mode,season_id,mode,season_id,limit)
     with _lock:
         db=_db(); rows=db.execute(query,params).fetchall(); out=[]

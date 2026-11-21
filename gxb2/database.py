@@ -367,6 +367,7 @@ def _ensure_live_postgres(db):
             uid TEXT NOT NULL, server_id TEXT NOT NULL, mode TEXT NOT NULL, season_id TEXT NOT NULL,
             rating INTEGER NOT NULL DEFAULT 1000, wins INTEGER NOT NULL DEFAULT 0,
             losses INTEGER NOT NULL DEFAULT 0, matches INTEGER NOT NULL DEFAULT 0,
+            power BIGINT NOT NULL DEFAULT 0,
             updated_at BIGINT NOT NULL, PRIMARY KEY(uid,server_id,mode,season_id))""",
         """CREATE TABLE IF NOT EXISTS pvp_season_claims(
             uid TEXT NOT NULL, server_id TEXT NOT NULL, mode TEXT NOT NULL, season_id TEXT NOT NULL,
@@ -395,6 +396,7 @@ def _ensure_live_postgres(db):
         ("challenge_uid", "TEXT NOT NULL DEFAULT ''"),
     ):
         db.execute(f"ALTER TABLE pvp_matches ADD COLUMN IF NOT EXISTS {col} {ddl}")
+    db.execute("ALTER TABLE pvp_ratings ADD COLUMN IF NOT EXISTS power BIGINT NOT NULL DEFAULT 0")
     db.execute("ALTER TABLE mail ADD COLUMN IF NOT EXISTS read_at BIGINT NOT NULL DEFAULT 0")
     indexes = [
         "CREATE INDEX IF NOT EXISTS idx_presence_server_seen ON presence(server_id,last_seen DESC)",
@@ -524,6 +526,7 @@ def _ensure_live_sqlite(db):
             uid TEXT NOT NULL, server_id TEXT NOT NULL, mode TEXT NOT NULL, season_id TEXT NOT NULL,
             rating INTEGER NOT NULL DEFAULT 1000, wins INTEGER NOT NULL DEFAULT 0,
             losses INTEGER NOT NULL DEFAULT 0, matches INTEGER NOT NULL DEFAULT 0,
+            power INTEGER NOT NULL DEFAULT 0,
             updated_at INTEGER NOT NULL, PRIMARY KEY(uid,server_id,mode,season_id))""",
         """CREATE TABLE IF NOT EXISTS pvp_season_claims(
             uid TEXT NOT NULL, server_id TEXT NOT NULL, mode TEXT NOT NULL, season_id TEXT NOT NULL,
@@ -574,6 +577,9 @@ def _ensure_live_sqlite(db):
     mail_cols = {row[1] for row in db.execute("PRAGMA table_info(mail)")}
     if "read_at" not in mail_cols:
         db.execute("ALTER TABLE mail ADD COLUMN read_at INTEGER NOT NULL DEFAULT 0")
+    rating_cols = {row[1] for row in db.execute("PRAGMA table_info(pvp_ratings)")}
+    if "power" not in rating_cols:
+        db.execute("ALTER TABLE pvp_ratings ADD COLUMN power INTEGER NOT NULL DEFAULT 0")
 
     indexes = [
         "CREATE INDEX IF NOT EXISTS idx_presence_server_seen ON presence(server_id,last_seen DESC)",

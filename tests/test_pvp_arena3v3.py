@@ -70,6 +70,36 @@ class PvPArena3v3Tests(unittest.TestCase):
         self.assertEqual(series['wins_a'], 0)
         self.assertEqual(series['wins_b'], 0)
 
+    def test_saved_three_team_power_uses_real_attributes_and_mode_ranking(self):
+        engine = self._engine('A3V3-A')
+        try:
+            state = engine._load()
+            partners = state['partners']
+            teams = [
+                [{'partner_id': int(partners[0]['partner_id']), 'pos': 1}],
+                [{'partner_id': int(partners[1]['partner_id']), 'pos': 2}],
+                [{'partner_id': int(partners[2]['partner_id']), 'pos': 3}],
+            ]
+            engine.save_pvp_arena3v3_teams(teams)
+            snap = engine.pvp_arena3v3_snapshot()
+            expected = 0
+            for team in snap['teams']:
+                attrs = engine._attributes(
+                    state, team, guild_skills=snap['guild_skills'])
+                expected += sum(int(v.get('power', 0)) for v in attrs.values())
+            self.assertEqual(snap['power'], expected)
+
+            # Team Arena power is independent from the main-formation leaderboard.
+            live_service.touch_presence('A3V3-A', 'S1', 'Alpha', 1, 999999999)
+            live_service.sync_pvp_power(
+                'A3V3-A', 'S1', 'arena3v3', snap['power'])
+            row = next(x for x in live_service.pvp_rating_board(
+                'arena3v3', server_id='S1') if x['uid'] == 'A3V3-A')
+            self.assertEqual(row['power'], snap['power'])
+            self.assertNotEqual(row['power'], 999999999)
+        finally:
+            engine.close()
+
     def test_ticket_payment_is_atomic_and_idempotent_for_each_real_player(self):
         match = self._match()
         a = self._engine('A3V3-A', tickets=8)

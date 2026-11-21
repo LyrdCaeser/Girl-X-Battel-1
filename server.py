@@ -617,10 +617,18 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                     account['uid'], account['server_id'],
                     current.get('name') or ctx['player']['character_name'],
                     current.get('level', 1), current.get('power', 0))
+                own_power = int(current.get('power', 0))
+                if mode == 'arena3v3':
+                    try:
+                        own_power = int(self.engine.pvp_arena3v3_snapshot().get('power', 0))
+                    except GameError:
+                        own_power = 0
+                    live_service.sync_pvp_power(
+                        account['uid'], account['server_id'], mode, own_power)
                 live_service.settle_previous_pvp_season(mode, account['server_id'])
                 pvp = live_service.pvp_status(account['uid'], account['server_id'], mode)
                 payload = {
-                    'own_power': int(current.get('power', 0)),
+                    'own_power': own_power,
                     'pvp': pvp,
                     'rating': live_service.pvp_rating(account['uid'], account['server_id'], mode),
                     'rating_board': live_service.pvp_rating_board(mode, limit=50, server_id='' if mode == 'cross' else account['server_id']),
@@ -1586,7 +1594,10 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
             if path == '/api/pvp/arena3v3/teams':
                 ctx = self.auth_context(); account = ctx['account']
                 saved = self.engine.save_pvp_arena3v3_teams(data.get('teams'))
-                return self.send(200, {'ok': True, **saved})
+                power = int(self.engine.pvp_arena3v3_snapshot().get('power', 0))
+                live_service.sync_pvp_power(
+                    account['uid'], account['server_id'], 'arena3v3', power)
+                return self.send(200, {'ok': True, 'power': power, **saved})
             if path == '/api/pvp/arena3v3/pay':
                 ctx = self.auth_context(); account = ctx['account']
                 return self.send(200, self.engine.pay_pvp_arena3v3_ticket(data.get('match_id'), account['uid']))

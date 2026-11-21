@@ -566,7 +566,11 @@ class Engine:
                     unit['pos'] = int(slot['pos'])
                     units.append(unit)
                 teams.append(units)
-            power = sum(40 * max(1, int(x.get('lv') or 1)) + 60 for team in teams for x in team)
+            power = 0
+            skills = guild_lab.skills(state)
+            for team in teams:
+                attrs = self._attributes(state, team, guild_skills=skills)
+                power += sum(int(v.get('power', 0)) for v in attrs.values())
             return {'uid': state.get('uid'), 'server_id': state.get('server_id'),
                     'name': state.get('name'), 'level': player_level(state),
                     'power': int(power), 'teams': teams, 'pet': self.battle_pet(state),
