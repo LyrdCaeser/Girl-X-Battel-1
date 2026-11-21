@@ -431,7 +431,7 @@ class Engine:
                     unit['pos'] = i
             if not team:
                 raise GameError('Đội hình PvP đang trống')
-            power = self._friend_power(state)
+            power = self._formation_power(state, formation)
             return {
                 'uid': state.get('uid'),
                 'server_id': state.get('server_id'),
@@ -790,6 +790,22 @@ class Engine:
     def _friend_power(self,state):
         attrs=self._attributes(state,state['partners'],guild_skills=guild_lab.skills(state))
         return sum(sorted((int(v.get('power',0)) for v in attrs.values()),reverse=True)[:6])
+
+    def _formation_power(self, state, formation=None):
+        """Return combat power for exactly the Girls saved in a formation."""
+        slots = state.get('formation', []) if formation is None else formation
+        owned = {int(p['partner_id']): p for p in state.get('partners', [])}
+        team = []
+        for slot in slots or []:
+            partner = owned.get(int(slot.get('partner_id', 0)))
+            if partner:
+                unit = copy.deepcopy(partner)
+                unit['pos'] = int(slot.get('pos', unit.get('pos', 0) or 0))
+                team.append(unit)
+        if not team:
+            return 0
+        attrs = self._attributes(state, team, guild_skills=guild_lab.skills(state))
+        return sum(int(v.get('power', 0)) for v in attrs.values())
 
     def remaining_system_action(self, system, request):
         if not isinstance(request,dict):raise GameError('Datos inválidos')
@@ -1336,7 +1352,7 @@ class Engine:
         state['bots_info'] = bots.snapshot(state, player_level(state), self.now())  # simulated players: rankings and chat (LOCAL-085)
         if not self.developer:
             try:
-                state['power'] = self._friend_power(state)
+                state['power'] = self._formation_power(state)
                 live_service.touch_presence(state['uid'], state['server_id'], state['name'], state['level'], state['power'])
                 state['online_count'] = len(live_service.online_players(state['server_id']))
                 state['leaderboard_preview'] = live_service.leaderboard(state['server_id'], 20)

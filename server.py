@@ -612,9 +612,15 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                 ctx = self.auth_context(); account = ctx['account']
                 query = parse_qs(parsed.query)
                 mode = (query.get('mode') or ['arena'])[0]
+                current = self.engine.pvp_team_snapshot()
+                live_service.touch_presence(
+                    account['uid'], account['server_id'],
+                    current.get('name') or ctx['player']['character_name'],
+                    current.get('level', 1), current.get('power', 0))
                 live_service.settle_previous_pvp_season(mode, account['server_id'])
                 pvp = live_service.pvp_status(account['uid'], account['server_id'], mode)
                 payload = {
+                    'own_power': int(current.get('power', 0)),
                     'pvp': pvp,
                     'rating': live_service.pvp_rating(account['uid'], account['server_id'], mode),
                     'rating_board': live_service.pvp_rating_board(mode, limit=50, server_id='' if mode == 'cross' else account['server_id']),

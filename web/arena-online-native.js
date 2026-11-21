@@ -43,7 +43,9 @@ const NativeOnlineArenas=(()=>{
     }catch(err){note=err.message||'Không thể kết nối trận đấu với đối thủ thật';}
    }
    if(stamp!==sequence||!selected())return;
-   data=next;if(!quiet&&!note)note='';render();
+   data=next;
+   if(Number.isFinite(Number(next?.own_power)))state.power=Number(next.own_power);
+   if(!quiet&&!note)note='';render();
   }catch(e){if(stamp!==sequence||!selected())return;note=e.message||'Không tải được đấu trường từ máy chủ';render();}
  }
  async function post(url,body){
@@ -235,7 +237,7 @@ const NativeOnlineArenas=(()=>{
   const face=img(avatarSrc,'ar-own-avatar');face.onerror=()=>{face.onerror=null;face.src='/assets/profile/head_1001.png';};icon.append(face);
   stage.append(icon);
   const power=center(el('div','ar-power'),-194,-357,110,70);
-  power.append(img(A('force_icon')),el('b','',fmt(state?.power||0)));stage.append(power);
+  power.append(img(A('force_icon')),el('b','',fmt(data?.own_power??state?.power??0)));stage.append(power);
   const myRow=(data?.rating_board||[]).find(p=>String(p.uid)===own());
   for(const [label,value,y] of [['Xếp hạng',myRow?.rank||'—',-421],['Điểm',Number(data?.rating?.matches||0)>0?data.rating.rating:'Chưa đấu',-465]]){
    const field=center(el('div','ar-stat '+(label==='Xếp hạng'?'ar-stat-rank':'ar-stat-score')),-230,y,170,30);field.append(el('span','',label),el('b','',value));stage.append(field);
