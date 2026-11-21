@@ -23,7 +23,13 @@ const NativeOnlineArenas=(()=>{
   {uid:m.player_b,name:m.name_b,power:m.power_b,server_id:m.server_b}:
   {uid:m?.player_a,name:m?.name_a,power:m?.power_a,server_id:m?.server_a};
  function stop(){if(timer){clearInterval(timer);timer=null;}}
- function beginPoll(){stop();timer=setInterval(()=>{if(!selected()){stop();return;}if(panel==='teams'||busy)return;refresh(true);},5000);}
+ function beginPoll(){stop();timer=setInterval(()=>{
+  if(!selected()){stop();return;}
+  // An inspected opponent profile belongs to the current Arena stage. Do not
+  // rebuild that stage underneath it; polling resumes after the player closes it.
+  if(panel==='teams'||busy||root().querySelector('.ar-inspect'))return;
+  refresh(true);
+ },5000);}
  async function open(which='arena',from='home'){
   if(!state?.items){GirlUI.notice('Hồ sơ người chơi đang tải. Vui lòng thử lại.',{title:'Đấu Trường'});return;}
   mode=['arena','cross','arena3v3'].includes(which)?which:'arena';origin=from||view||'home';

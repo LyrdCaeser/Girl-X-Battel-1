@@ -49,10 +49,13 @@
 .ar-top-res img{width:calc(40 * var(--u))}.ar-top-res b{flex:1;text-align:center;font-size:calc(22 * var(--u));color:#43506e}
 .ar-top-back{border:0;background:none;padding:0;width:calc(80 * var(--u));cursor:pointer}.ar-top-back img{width:100%}
 .ar-stage .ar-nav{position:absolute!important;left:0;right:0;bottom:0;z-index:6}
-.ar-inspect{max-width:92%}.ar-ins-head{display:flex;align-items:center;gap:12px;padding-right:30px}.ar-ins-head .ar2-icon{position:relative;width:64px;height:64px;flex:none}
+.ar-inspect{max-width:92%;overflow:hidden}.ar-ins-head{display:flex;align-items:center;gap:12px;padding-right:30px}.ar-ins-head .ar2-icon{position:relative;width:64px;height:64px;flex:none}
 .ar-ins-head div{display:grid}.ar-ins-head b{font-size:18px;color:#4b4a6e}.ar-ins-head small{color:#8a7e9a}
-.ar-ins-def{display:flex;align-items:center;justify-content:space-between;margin:10px 0 6px;padding:6px 10px;background:#eef2fb;border-radius:8px}.ar-ins-def .ar2-power{font-size:16px}.ar-ins-def .ar2-power img{width:24px}
-.ar-ins-team{display:flex;align-items:center;gap:6px;margin:6px 0}.ar-ins-n{width:18px;color:#5d6db0}
+.ar-ins-def{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px;margin:10px 0 6px;padding:6px 10px;background:#eef2fb;border-radius:8px;overflow:hidden}
+.ar-ins-def .ar2-power{position:static!important;display:flex;align-items:center;justify-content:flex-end;min-width:0;margin:0!important;font-size:calc(18 * var(--u));white-space:nowrap}.ar-ins-def .ar2-power img{flex:none;width:calc(24 * var(--u))}
+.ar-ins-def .ar2-power b{overflow:visible;text-overflow:clip;white-space:nowrap}
+.ar-ins-teams{max-width:100%;max-height:calc(245 * var(--u));overflow:auto;padding:0 0 calc(8 * var(--u));overscroll-behavior:contain;touch-action:pan-x pan-y;scrollbar-width:thin;scrollbar-color:#709ed0 #dce8f5}
+.ar-ins-team{display:flex;align-items:center;gap:6px;width:max-content;min-width:100%;margin:6px 0}.ar-ins-n{width:18px;flex:none;color:#5d6db0}
 .ar-ins-slot{position:relative;width:56px;height:56px;border-radius:8px;background:#e7ecf6;overflow:hidden}.ar-ins-slot .portrait{width:100%!important;height:100%!important}
 .ar-ins-slot small{position:absolute;left:0;bottom:0;background:#000a;color:#fff;font-size:10px;padding:0 3px;border-top-right-radius:6px}
 .ar-ins-stars{position:absolute;right:1px;top:1px;background:#5b3d88dd;color:#ffe36e;font-size:9px;font-weight:bold;padding:1px 3px;border-radius:5px}

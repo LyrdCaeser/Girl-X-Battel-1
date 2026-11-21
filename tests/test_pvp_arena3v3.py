@@ -122,9 +122,15 @@ class PvPArena3v3Tests(unittest.TestCase):
             root = Path(__file__).resolve().parents[1]
             server = (root / 'server.py').read_text(encoding='utf-8')
             ui = (root / 'web' / 'arena-online-native.js').read_text(encoding='utf-8')
+            arena_ui = (root / 'web' / 'arena.js').read_text(encoding='utf-8')
+            arena_css = (root / 'web' / 'arena.css').read_text(encoding='utf-8')
             self.assertIn("path == '/api/pvp/opponent'", server)
             self.assertIn("api('/api/pvp/opponent?uid='", ui)
             self.assertIn('Arena.inspect(profile', ui)
+            self.assertIn("root().querySelector('.ar-inspect')", ui)
+            self.assertIn("el('div','ar-ins-teams')", arena_ui)
+            self.assertIn('.ar-inspect{max-width:92%;overflow:hidden}', arena_css)
+            self.assertIn('.ar-ins-teams{', arena_css)
         finally:
             engine.close()
 

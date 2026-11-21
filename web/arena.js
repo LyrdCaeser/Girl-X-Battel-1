@@ -87,9 +87,11 @@ const Arena=(()=>{
   const pw=el('span','ar2-power');pw.append(img(A('force_icon')),el('b','',number(p.power||0)));d.append(pw);w.append(d);
   if(p.score!=null)w.append(el('p','ar-ins-score','Điểm mùa: '+number(p.score)));
   const px=Math.round(56*scale());
-  (p.teams||[]).forEach((t,k)=>{const r=el('div','ar-ins-team');if((p.teams||[]).length>1)r.append(el('b','ar-ins-n',String(k+1)));for(let s=0;s<6;s++){const u=t.find(v=>Number(v.pos)===s+1)||t[s];const c=el('div','ar-ins-slot');if(u){c.append(typeof portrait==='function'?portrait(u.table_id,px,u):el('span'));c.append(el('span','ar-ins-stars',(u.stars||0)+'★'),el('small','',String(u.lv||1)));c.title=(u.name||'Nữ Thần')+' · '+(u.stars||0)+'★ · Cấp '+(u.lv||1)+' · Vị trí '+(s+1);}r.append(c);}w.append(r);});
+  const teamScroller=el('div','ar-ins-teams');
+  (p.teams||[]).forEach((t,k)=>{const r=el('div','ar-ins-team');if((p.teams||[]).length>1)r.append(el('b','ar-ins-n',String(k+1)));for(let s=0;s<6;s++){const u=t.find(v=>Number(v.pos)===s+1)||t[s];const c=el('div','ar-ins-slot');if(u){c.append(typeof portrait==='function'?portrait(u.table_id,px,u):el('span'));c.append(el('span','ar-ins-stars',(u.stars||0)+'★'),el('small','',String(u.lv||1)));c.title=(u.name||'Nữ Thần')+' · '+(u.stars||0)+'★ · Cấp '+(u.lv||1)+' · Vị trí '+(s+1);}r.append(c);}teamScroller.append(r);});
+  w.append(teamScroller);
   if(!(p.teams||[]).some(t=>t.length))w.append(el('p','ar-empty','Đối thủ chưa lưu đội hình cho chế độ này.'));
-  curStage().append(ov);}
+  const stage=curStage();if(stage)stage.append(ov);}
  // WindowTop (gold · gems · back) and the bottom navigation, as in the Arena screens
  function chrome(st,onBack){const bar=center(el('div','ar-top'),0,612,720,56);for(const id of ['1','2']){const r=el('span','ar-top-res');r.append(img(icon(id)),el('b','',number(state?.items?.[id]||0)));bar.append(r);}
   const back=el('button','ar-top-back');back.type='button';back.append(img('/assets/ui/win_back_btn.png'));back.onclick=onBack;bar.append(back);st.append(bar);
