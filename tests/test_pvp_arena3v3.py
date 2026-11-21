@@ -138,6 +138,8 @@ class PvPArena3v3Tests(unittest.TestCase):
             self.assertIn("ar-own-frame", ui)
             self.assertNotIn("el('span','ar-ins-stars',(u.stars||0)+'★')", arena_ui)
             self.assertIn('.ar-ins-stars .gu-emblem{', arena_css)
+            self.assertIn('.ar-own-avatar{position:relative', arena_css)
+            self.assertNotIn('.ar-own-avatar{position:absolute', arena_css)
             self.assertIn('.ar-inspect{max-width:92%;overflow:hidden}', arena_css)
             self.assertIn('.ar-ins-teams{', arena_css)
         finally:
