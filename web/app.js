@@ -266,7 +266,7 @@ function renderGirlDetail(){
  const meta=girlDetails[String(hero.table_id)]||{job:'',quote:'',stats:{},skills:[]};
  const jobVi={Warrior:'Chiến Binh',Mage:'Pháp Sư',Ranger:'Xạ Thủ',Assassin:'Sát Thủ',Priest:'Linh Mục'};
  $('detail-gold').textContent=number(state.items['1']);$('detail-gems').textContent=number(state.items['2']);
- $('detail-name').textContent=Number(hero.table_id)===758001?'Lyr Sonia':hero.name;$('detail-stars').textContent='★'.repeat(Math.min(Number(hero.stars)||0,10));if(typeof GirlUI!=='undefined')$('detail-stars').replaceChildren(GirlUI.stars(hero.stars,'tag'));
+ $('detail-name').textContent=Number(hero.table_id)===758001?'Lyr Sonia':hero.name;$('detail-stars').textContent='★'.repeat(Math.min(Number(hero.stars)||0,10));if(typeof GirlUI!=='undefined')$('detail-stars').replaceChildren(GirlUI.stars(hero.stars,'tag'));if(Number(hero.table_id)===758001&&Number(hero.stars)>=10){const emblem=$('detail-stars').querySelector('.gu-emblem');if(emblem)emblem.src='/assets/chaos/lyr_sonia_tag_cosmos'+(Number(hero.stars)>=15?'_max':'')+'.png';}
  const faction=$('detail-faction');faction.src=girl.group?'/assets/factions/'+girl.group+'.png':'';faction.alt=factionNames[girl.group]||'';faction.hidden=!girl.group;
  const wantSkin=previewSkinId||(hero.show_skin!==0&&Number(hero.equips?.[6]||0))||0,imageId=wantSkin&&detailImage(wantSkin)?wantSkin:hero.table_id,art=$('detail-art'),src=detailImage(imageId),fullArt=artIds.has(imageId)||pictureIds.has(Number(imageId))||!!(typeof GirlUI!=='undefined'&&GirlUI.picture(imageId));art.src=src||'/assets/ui/item_bg.png';{ // Real image layer avoids the ::before pseudo-element being suppressed by the native sheet.
   let extension=sheetScene.querySelector('.sonia-bottom-fill');

@@ -21,7 +21,20 @@ const Skins=(()=>{
   const g=Number(hero.group||girlsCatalog.find(r=>r.id===hero.table_id)?.group||0);if(g){const f=el('img','sk-group');f.src=U+'img_group'+g+'.png';f.alt='';c.append(f);}
   if(worn){const w=el('img','sk-worn');w.src=U+'skin_icon01.png';w.alt='✓';c.append(w);}
   if(!s.base){if(own)c.append(el('span','sk-unlocked','Đã sở hữu vĩnh viễn'));const r=Number(s.rarity||0);if(r){const q=el('span','sk-rarity',RARITY[r]);q.style.backgroundImage=`url('${U}collection_dress_new_bg_${r}.png')`;c.append(q);}}
-  c.append(el('b','sk-name',s.base?baseName(hero):s.name));return c;}
+  // Lyr Sonia remains Chaos (group 8). Her star artwork alone uses the
+  // genuine purple Cosmos emblem, matching the card in the Girl collection.
+  if(s.base&&Number(hero.table_id)===758001&&Number(hero.stars)>=10){
+   const stars=Number(hero.stars),badge=el('span','sk-name sk-cosmos-star');
+   const image=el('img','gu-emblem');
+   image.src='/assets/girl-ui/'+(stars===10?'star_orange_group_7':'potentiality_card_star_group_7'+(stars>=15?'_max':''))+'.png';
+   image.alt='';
+   const mark=el('span','gu-stars card');mark.append(image);
+   if(stars>10)mark.append(el('b','gu-emblem-num',String(stars-10)));
+   badge.setAttribute('role','img');
+   badge.setAttribute('aria-label',stars+' sao · Biểu tượng sao tím Cosmos');
+   badge.append(mark);c.append(badge);
+  }else c.append(el('b','sk-name',s.base?baseName(hero):s.name));
+  return c;}
  async function detail(hero){const host=$('detail-skin-list');if(!host)return;await load();host.replaceChildren();
   const mine=Object.entries(cat.skins).filter(([,s])=>s.partners.includes(hero.table_id)).map(([id,s])=>({id:Number(id),...s}));
   const worn=Number(hero.equips?.[6]||0);if(sel&&!mine.some(s=>s.id===sel)&&sel!==hero.table_id)sel=null;const current=sel||worn||hero.table_id;

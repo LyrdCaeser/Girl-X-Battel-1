@@ -33,7 +33,7 @@ class SoniaBottomBackgroundTests(unittest.TestCase):
         self.assertIn("extension.src='/assets/chaos/lyr_sonia_bottom_extend.png'", app)
         self.assertIn('else extension?.remove();', app)
         self.assertIn('/girl-ui.css?v=20261122-sonia-bottom-dom-r2', html)
-        self.assertIn('/app.js?v=20261122-sonia-bottom-dom-r2', html)
+        self.assertIn('/app.js?v=20261122-sonia-purple-nametag-r3', html)
 
 
 if __name__ == '__main__':

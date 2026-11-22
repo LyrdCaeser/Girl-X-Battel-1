@@ -43,3 +43,26 @@
 .sk-bank-order{font:600 12px/1.6 system-ui;color:#425879;padding:7px;border-bottom:1px solid #dbe3f3;overflow-wrap:anywhere}
 .sk-bank-order-win p{font:600 13px/1.55 system-ui;color:#405273;overflow-wrap:anywhere}
 .sk-bank-zalo{display:inline-flex;padding:10px 16px;background:#187ee2;border-radius:10px;color:white;font:700 13px system-ui;margin-top:10px}
+/* Sonia's default outfit card uses the exact in-game purple Cosmos star
+   artwork instead of the old literal 10★ caption; other skins are unchanged. */
+.sk-name.sk-cosmos-star{
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ overflow:visible;
+ text-overflow:clip;
+ pointer-events:none;
+}
+.sk-name.sk-cosmos-star .gu-stars{height:100%;display:inline-flex;align-items:center;justify-content:center}
+.sk-name.sk-cosmos-star .gu-emblem{
+ height:calc(27 * var(--k) * var(--u));
+ max-width:calc(100 * var(--k) * var(--u));
+ width:auto;
+ object-fit:contain;
+}
+.sk-name.sk-cosmos-star .gu-emblem-num{
+ font-size:calc(12 * var(--k) * var(--u));
+ line-height:1;
+ color:#fff;
+ text-shadow:0 0 2px #49308b,0 0 3px #49308b;
+}
