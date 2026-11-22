@@ -418,21 +418,16 @@ html.gxb-mobile #app-frame #girl-detail-view #detail-art[src$="/758001.png"]:not
  border-radius:50%;
  box-shadow:0 0 0 1px #a798d3;
 }
-/* A real DOM image (not a pseudo-element) extends Lyr Sonia's approved art
-   into the lower part of tall MOBILE screens. Keep the art layer above it. */
-#girl-detail-view > .detail-scene > .sonia-bottom-fill{display:none;}
-html.gxb-mobile #app-frame #girl-detail-view > .detail-scene > .sonia-bottom-fill{
- display:block;
- position:absolute;
- left:0;
- top:134.615cqw; /* 700/520: exact displayed art aspect ratio */
- width:100%;
- height:calc(100% - 134.615cqw);
- min-height:0;
- object-fit:fill;
- pointer-events:none;
- z-index:1;
-}
-html.gxb-mobile #app-frame #girl-detail-view > .detail-scene > .detail-art-wrap{
- z-index:2;
+/* Lyr Sonia mobile scene: group 8 has no college_scene8.png.
+   Paint the approved lavender fabric continuation directly as the scene
+   background. No ::before/DOM child and no dependency on detail-art src.
+   Position the *top* of the continuation just under the native art
+   (520x700); keep the scene's normal artwork and controls above it.
+   !important deliberately overrides GirlUI.detail's missing inline scene. */
+html.gxb-mobile #app-frame #girl-detail-view.sonia-continuation-scene > .detail-scene{
+ background-image:url('/assets/chaos/lyr_sonia_bottom_extend.png')!important;
+ background-repeat:no-repeat!important;
+ background-position:center bottom!important;
+ background-size:100% max(1px,calc(100% - 134.615cqw))!important;
+ background-color:#d3c0e7!important;
 }

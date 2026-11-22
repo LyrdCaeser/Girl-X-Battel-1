@@ -268,13 +268,13 @@ function renderGirlDetail(){
  $('detail-gold').textContent=number(state.items['1']);$('detail-gems').textContent=number(state.items['2']);
  $('detail-name').textContent=Number(hero.table_id)===758001?'Lyr Sonia':hero.name;$('detail-stars').textContent='★'.repeat(Math.min(Number(hero.stars)||0,10));if(typeof GirlUI!=='undefined')$('detail-stars').replaceChildren(GirlUI.stars(hero.stars,'tag'));if(Number(hero.table_id)===758001&&Number(hero.stars)>=10){const emblem=$('detail-stars').querySelector('.gu-emblem');if(emblem)emblem.src='/assets/chaos/lyr_sonia_tag_cosmos'+(Number(hero.stars)>=15?'_max':'')+'.png';}
  const faction=$('detail-faction');faction.src=girl.group?'/assets/factions/'+girl.group+'.png':'';faction.alt=factionNames[girl.group]||'';faction.hidden=!girl.group;
- const wantSkin=previewSkinId||(hero.show_skin!==0&&Number(hero.equips?.[6]||0))||0,imageId=wantSkin&&detailImage(wantSkin)?wantSkin:hero.table_id,art=$('detail-art'),src=detailImage(imageId),fullArt=artIds.has(imageId)||pictureIds.has(Number(imageId))||!!(typeof GirlUI!=='undefined'&&GirlUI.picture(imageId));art.src=src||'/assets/ui/item_bg.png';{ // Real image layer avoids the ::before pseudo-element being suppressed by the native sheet.
-  let extension=sheetScene.querySelector('.sonia-bottom-fill');
-  if(Number(hero.table_id)===758001&&Number(imageId)===758001&&src==='/assets/characters/758001.png'){
-   if(!extension){extension=node('img','sonia-bottom-fill');extension.alt='';extension.setAttribute('aria-hidden','true');sheetScene.prepend(extension);}
-   extension.src='/assets/chaos/lyr_sonia_bottom_extend.png';
-  }else extension?.remove();
- }art.alt=hero.name;art.style.visibility=src?'':'hidden';{/* no illustration: the girl's own avatar, not the whole avatars.png sheet */const wrap=art.parentElement;wrap?.querySelector('.detail-fallback')?.remove();if(!src&&wrap){const f=portrait(hero.table_id,300);f.classList.add('detail-fallback');wrap.append(f);}}art.classList.toggle('full-art',fullArt);art.classList.toggle('card-art',!fullArt);
+ const wantSkin=previewSkinId||(hero.show_skin!==0&&Number(hero.equips?.[6]||0))||0,imageId=wantSkin&&detailImage(wantSkin)?wantSkin:hero.table_id,art=$('detail-art'),src=detailImage(imageId),fullArt=artIds.has(imageId)||pictureIds.has(Number(imageId))||!!(typeof GirlUI!=='undefined'&&GirlUI.picture(imageId));art.src=src||'/assets/ui/item_bg.png';
+ // Apply the actual scene fallback for Sonia regardless of which artwork path
+ // (original picture, approved character card, or skin resolver) is selected.
+ $('girl-detail-view').classList.toggle('sonia-continuation-scene',Number(hero.table_id)===758001&&Number(imageId)===758001);
+ // Remove legacy attempted backdrop if already present in a running page.
+ sheetScene.querySelector('.sonia-bottom-fill')?.remove();
+ art.alt=hero.name;art.style.visibility=src?'':'hidden';{/* no illustration: the girl's own avatar, not the whole avatars.png sheet */const wrap=art.parentElement;wrap?.querySelector('.detail-fallback')?.remove();if(!src&&wrap){const f=portrait(hero.table_id,300);f.classList.add('detail-fallback');wrap.append(f);}}art.classList.toggle('full-art',fullArt);art.classList.toggle('card-art',!fullArt);
  const quote=$('detail-quote');quote.textContent=(typeof LobbyDialogue!=='undefined'?LobbyDialogue.translateQuote(hero.table_id,meta.quote):meta.quote)||'';quote.hidden=!meta.quote;
  document.querySelectorAll('[data-detail-tab]').forEach(button=>{button.classList.toggle('active',button.dataset.detailTab===detailTab);button.setAttribute('aria-selected',String(button.dataset.detailTab===detailTab));});
  for(const name of ['attribute','gear','skins','awake'])$('detail-'+name).hidden=detailTab!==name;{const as=$('detail-astral');if(as)as.hidden=detailTab!=='astral';}

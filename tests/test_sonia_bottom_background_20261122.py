@@ -25,15 +25,16 @@ class SoniaBottomBackgroundTests(unittest.TestCase):
         css = (ROOT / 'web/girl-ui.css').read_text()
         app = (ROOT / 'web/app.js').read_text()
         html = (ROOT / 'web/index.html').read_text()
-        self.assertIn('html.gxb-mobile #app-frame #girl-detail-view > .detail-scene > .sonia-bottom-fill', css)
-        self.assertIn('top:134.615cqw;', css)
-        self.assertIn('height:calc(100% - 134.615cqw);', css)
-        self.assertIn("sheetScene.querySelector('.sonia-bottom-fill')", app)
-        self.assertIn("Number(hero.table_id)===758001&&Number(imageId)===758001", app)
-        self.assertIn("extension.src='/assets/chaos/lyr_sonia_bottom_extend.png'", app)
-        self.assertIn('else extension?.remove();', app)
-        self.assertIn('/girl-ui.css?v=20261122-sonia-bottom-dom-r2', html)
-        self.assertIn('/app.js?v=20261122-sonia-purple-nametag-r3', html)
+        self.assertIn('html.gxb-mobile #app-frame #girl-detail-view.sonia-continuation-scene > .detail-scene', css)
+        self.assertIn("background-image:url('/assets/chaos/lyr_sonia_bottom_extend.png')!important;", css)
+        self.assertIn('background-size:100% max(1px,calc(100% - 134.615cqw))!important;', css)
+        self.assertIn("classList.toggle('sonia-continuation-scene',Number(hero.table_id)===758001&&Number(imageId)===758001)", app)
+        self.assertNotIn("classList.toggle('sonia-continuation-scene',Number(hero.table_id)===758001&&src==", app)
+        # A missing group-8 college background must not revert to flat blue.
+        self.assertFalse((ROOT/'web/assets/scenes/college_scene8.png').exists())
+        self.assertIn('background-color:#d3c0e7!important;', css)
+        self.assertIn('/girl-ui.css?v=20261122-sonia-scene-fallback-r4', html)
+        self.assertIn('/app.js?v=20261122-sonia-scene-fallback-r4', html)
 
 
 if __name__ == '__main__':
