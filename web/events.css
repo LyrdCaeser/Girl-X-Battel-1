@@ -169,8 +169,11 @@ html.gxb-mobile #events-view .ev-title-label{overflow-wrap:anywhere}
 /* Lễ Hội Lyr Sonia — ActivityWindow native art, cards, frames and buttons. */
 .sf-strip{margin-bottom:calc(10 * var(--u))!important}
 .sf-strip .ev-title{width:calc(205 * var(--u));aspect-ratio:205/126}
-.sf-strip .ev-title-icon.sf-event-art{width:33%;height:67%;border-radius:6px}
-.sf-strip .ev-title-label{bottom:6%;font-size:calc(15 * var(--u))}
+.sf-strip .ev-title-icon.sf-event-art{top:33%;width:35%;height:43%;object-fit:contain;border-radius:5px}
+.sf-strip .ev-title-label{bottom:17%;font-size:calc(16 * var(--u));line-height:1.05;padding:0 calc(5 * var(--u));box-sizing:border-box}
+.sf-strip .ev-title-left{bottom:2%;max-width:96%;overflow:hidden;text-overflow:ellipsis;font-size:calc(15 * var(--u))}
+.sf-strip .ev-title{overflow:hidden}
+
 .sf-body{padding-bottom:calc(12 * var(--u))}
 .sf-banner{position:relative;display:flex;align-items:center;gap:calc(16 * var(--u));min-height:calc(260 * var(--u));padding:calc(12 * var(--u)) calc(24 * var(--u));
  background:#e5d8fa url('/assets/events/activity_bg03.png') center/cover no-repeat}
@@ -188,6 +191,8 @@ html.gxb-mobile #events-view .ev-title-label{overflow-wrap:anywhere}
 .sf-reward{display:flex;flex-direction:column;align-items:center;min-width:calc(56 * var(--u))}
 .sf-reward img{width:calc(47 * var(--u));height:calc(47 * var(--u));object-fit:contain}
 .sf-reward small{color:#765c8d;font-weight:800;font-size:calc(18 * var(--u))}
+.sf-reward-name{max-width:calc(74 * var(--u));font-weight:800;font-size:calc(14 * var(--u));line-height:1.1;color:#5d558f;text-align:center}
+.sf-reward img.sf-reward-img{object-fit:contain}
 .sf-btn{min-width:calc(114 * var(--u));min-height:calc(48 * var(--u));padding:calc(5 * var(--u)) calc(10 * var(--u));color:#fff;font-weight:900;
  font-size:calc(21 * var(--u));text-shadow:0 1px #254686;border:solid transparent;border-width:calc(12 * var(--u));border-image:url('/assets/detail/sheet/blue_btn_65_65.png') 24 fill / calc(12 * var(--u)) stretch;background:none;cursor:pointer}
 .sf-btn:disabled{filter:grayscale(.8);opacity:.65;cursor:default}

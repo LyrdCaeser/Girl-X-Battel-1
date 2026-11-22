@@ -28,6 +28,11 @@ const SummonAnim=(()=>{
    request,new Promise(resolve=>setTimeout(()=>resolve([[],{}]),4500))
   ]):await request;
   pics=new Set(q);pictures=p;
+  // The 10★ Chaos goddess has a full 1152×1536 portrait. Some cached
+  // Android WebViews still hold the old picture registry: never fall back
+  // to the small card thumbnail for this character.
+  pics.add(758001);
+  pictures['758001']={xy:[0,0],summon_static_scale:0.47,...(pictures['758001']||{})};
  }
  function run(fig,name,loop=false){
   return new Promise((resolve,reject)=>{

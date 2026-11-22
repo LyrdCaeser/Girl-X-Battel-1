@@ -48,7 +48,7 @@ STAR_REWARDS={
     22:{'2':600,SHARD:20},
     23:{'2':700,SHARD:10},
     24:{'2':850,SHARD:10},
-    25:{'2':1000,SHARD:25,TICKET:3},
+    25:{'2':1000,SHARD:25},
 }
 # Each challenge is permanently claimable only before its own deadline.
 # Progress is counted from real gameplay after the festival starts.
@@ -59,7 +59,7 @@ TASKS=(
     ('advanced60','Triệu Hồi Cao Cấp 60 lần','advanced',60,14,10,'Rất khó'),
     ('advanced150','Triệu Hồi Cao Cấp 150 lần','advanced',150,30,15,'Cực khó'),
     ('arena30','Thắng 30 trận Đấu Trường','arena_win',30,14,15,'Rất khó'),
-    ('arena100','Thắng 100 trận Đấu Trường','arena_win',100,30,20,'Cực khó'),
+    ('checkin20','Điểm Danh đủ 20 ngày','daily_checkin',20,30,20,'Cực khó'),
     ('awakening5','Thức Tỉnh Nữ Thần 5 lần','awaken',5,30,30,'Cực khó'),
 )
 # Each tier only grants its incremental difference. Maximum 350 paid tickets.
@@ -90,6 +90,7 @@ def _saved(state):
     saved.setdefault('spins',0)
     saved.setdefault('mission_claimed',[])
     saved.setdefault('paid_claimed',[])
+    saved.setdefault('checked_days',[])
     saved.setdefault('progress',{})
     return saved
 
@@ -104,6 +105,22 @@ def record(state,kind,count=1,now=None):
     if n<=0:return
     saved=_saved(state)
     saved['progress'][kind]=int(saved['progress'].get(kind,0))+n
+
+
+def record_daily_checkin(state,now=None):
+    """Count distinct real calendar check-ins, never claims or page refreshes."""
+    if now is None:
+        import time
+        now=time.time()
+    if not active(now,'missions'):
+        return
+    from . import clock
+    day=clock.day(now,local=True)
+    s=_saved(state)
+    if day in s['checked_days']:
+        return
+    s['checked_days'].append(day)
+    s['progress']['daily_checkin']=len(s['checked_days'])
 
 
 def record_sonia_star(state,star,now=None,prior=10):

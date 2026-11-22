@@ -14,6 +14,10 @@ ROOT = Path(__file__).resolve().parents[1]
 DATA = json.loads((ROOT / 'data/equipment.json').read_text())
 EQUIP = {int(k): v for k, v in DATA['items'].items()}
 PARTNERS = json.loads((ROOT / 'data/partner.json').read_text())
+# Event-only goddesses are installed into the live partner catalog instead of
+# the recovered original partner.json. Equip must recognize the same job.
+from . import chaos_summon
+PARTNERS[str(chaos_summon.PARTNER_ID)] = dict(chaos_summon.PARTNER)
 GEAR_SLOTS = (1, 2, 3, 4, 6)          # slots handled by equip/unequip; 5 is the treasure
 TREASURE_OPEN = DATA['treasure_open_level']
 EXCESS_ID, EXCESS_EXP = 6000, 10      # misc.artifact_upgrade_excess_return = 6000#10

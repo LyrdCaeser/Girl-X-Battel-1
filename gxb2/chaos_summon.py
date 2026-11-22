@@ -65,7 +65,7 @@ def register(tables):
         'dropbox_id':990061,'is_partner':1,'award':'','awaken_lv':0,
         'freetime_interval':0,
     }
-    tables['dropbox']['sonia_shard_10260'] = {
+    tables.setdefault('dropbox',{})['sonia_shard_10260'] = {
         'id':99006101,'dropbox_id':990061,'item':'758001#1',
         'weight':1,
     }

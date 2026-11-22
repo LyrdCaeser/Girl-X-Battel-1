@@ -129,8 +129,13 @@ const EventsHub=(()=>{
       const open=sf.events[id];
       const button=el('button','ev-title'+(soniaView===id?' on':''));
       button.type='button';button.title=label;
+      const miniArt={
+        stars:'/assets/girl-ui/potentiality_nametag_star_max.png',
+        shards:'/assets/item-icons/partner_avatar_758001.png',
+        missions:'/assets/factions/8.png'
+      };
       button.append(img(A(soniaView===id?'activity_icon_1_middle':'activity_icon_0_middle'),'ev-title-bg'),
-        img('/assets/cards/partner_card_758001.png','ev-title-icon sf-event-art','Lyr Sonia'),
+        img(miniArt[id],'ev-title-icon sf-event-art',label),
         el('span','ev-title-label',label));
       if(open?.active)button.append(el('small','ev-title-left',leftText(open.end)));
       button.onclick=()=>{soniaView=id;message='';soniaDraws=[];render();};
@@ -164,15 +169,20 @@ const EventsHub=(()=>{
   text.append(el('b','sf-time',info.active?'Còn '+leftText(info.end):Date.now()/1000>=info.end?'Sự kiện đã khép lại':'Sắp mở cửa'));
   section.append(text);parent.append(section);
   const rows=el('div','pe-list sf-list');parent.append(rows);
-  const icon=(id,n)=>{const node=el('div','sf-reward');const image=img(
-    id==='940060'?'/assets/factions/8.png':
-    id==='940061'?'/assets/item-icons/partner_avatar_758001.png':
-    id==='2'?'/assets/currency/icon_2_small.png':
-    id==='1'?'/assets/currency/icon_1_small.png':
-    (catalog?.item_icons?.[id]||'/assets/factions/8.png'));
-    node.append(image,el('small','',('×'+fmt(n))));return node;};
+  const icon=(id,n)=>{id=String(id);const node=el('div','sf-reward');
+    const kind={'940060':'Vé Sonia','940061':'Mảnh Sonia','10':'Hộp cơm','2':'Kim cương','1':'Vàng'};
+    const path={'940060':'/assets/factions/8.png','940061':'/assets/item-icons/partner_avatar_758001.png',
+      '10':'/assets/item-icons/icon_10.png','2':'/assets/currency/icon_2_small.png',
+      '1':'/assets/currency/icon_1_small.png'};
+    const item=itemCatalog?.[id];
+    const image=img(path[id]||(item&&typeof itemPicture==='function'?itemPicture(item):'')||
+      (catalog?.item_icons?.[id]||'/assets/item-icons/icon_10.png'),'sf-reward-img',kind[id]||itemName(id));
+    node.title=(kind[id]||itemName(id))+' ×'+fmt(n);
+    node.append(image,el('small','',('×'+fmt(n))));
+    if(kind[id])node.append(el('span','sf-reward-name',kind[id]));
+    return node;};
   if(kind==='stars'){
-    parent.append(el('p','ev-note','Mỗi mốc chỉ nhận quà một lần sau khi Sonia thực sự Thức Tỉnh trong mùa lễ hội.'));
+    parent.append(el('p','ev-note','Mỗi mốc Thức Tỉnh nhận quà một lần trong mùa. Ảnh Sonia trong phần thưởng là MẢNH, không phải Nữ Thần nguyên con; đủ 100 mảnh mới ghép được một Lyr Sonia.'));
     parent.append(el('p','sf-progress','Sonia cao nhất đang sở hữu: '+festival.highest_owned_star+'★ · Đã nâng trong mùa: '+festival.highest_awakened_star+'★'));
     for(const r of festival.stars){
       const row=el('div','pe-row sf-row');const left=el('div','sf-row-copy');

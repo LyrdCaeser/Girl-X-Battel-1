@@ -966,6 +966,8 @@ class Engine:
                     result = sonia_festival.action(state,request,now=self.now(),paid_vnd=paid)
                 else:
                     result = events.action(state, request, now=self.now())
+                    if request.get('action')=='checkin':
+                        sonia_festival.record_daily_checkin(state,now=self.now())
                 self._save_profile(state)
                 self.db.commit()
             except Exception:
