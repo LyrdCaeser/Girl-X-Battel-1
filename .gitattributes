@@ -45,3 +45,5 @@ web/assets/skills/skill_icon_758001*.png -filter -diff -merge -text
 docs/lyr-sonia/pose_3q_v18/model.atlas -filter -diff -merge -text
 # Small Hệ Hỗn Độn skin-panel icon uses a regular Git blob, as do Sonia images.
 web/assets/skins/ui/img_group8.png -filter -diff -merge -text
+# Small approved Sonia shard portrait stored directly in Git.
+web/assets/item-icons/partner_avatar_758001.png -filter -diff -merge -text

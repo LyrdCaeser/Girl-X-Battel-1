@@ -38,7 +38,7 @@ const EventsHub=(()=>{
   .replace(/\bLeft\b/g,'Còn lại').replace(/\bCompleted\b/g,'Đã hoàn thành');
  };
  let catalog=null,loading=null,tab='ex',selected=null,pinnedId=null,origin='home',pending=false,message='',visited=false;
- let publicGemPacks=null,publicGemPacksLoading=false;
+ let publicGemPacks=null,publicGemPacksLoading=false,soniaView=null,soniaDraws=[];
  function loadPublicGemPacks(){
    if(publicGemPacks!==null||publicGemPacksLoading)return;
    publicGemPacksLoading=true;
@@ -56,8 +56,8 @@ const EventsHub=(()=>{
  const img=(src,cls,alt='')=>{const i=el('img',cls);i.src=src;i.alt=alt;i.draggable=false;return i;};
  const hub=()=>state.event_hub;
  const fmt=n=>typeof number==='function'?number(n):String(n);
- function itemName(id){return NAMES[id]||catalog.item_names[id]||itemCatalog?.[id]?.name||"Item "+id;}
- function itemIcon(id){if(catalog.item_icons[id])return catalog.item_icons[id];if(typeof itemPicture==='function'&&itemCatalog?.[id]){const pic=itemPicture(itemCatalog[id]);if(pic)return pic;}const icon=itemCatalog?.[id]?.icon;if(icon&&itemIcons?.has(icon))return '/assets/item-icons/'+icon+'.png';if(id==='1'||id==='2')return '/assets/currency/icon_'+id+'_small.png';return null;}
+ function itemName(id){if(String(id)==='940060')return 'Vé Lyr Sonia';if(String(id)==='940061')return 'Mảnh Lyr Sonia';return NAMES[id]||catalog.item_names[id]||itemCatalog?.[id]?.name||'Phần thưởng';}
+ function itemIcon(id){if(String(id)==='940060')return '/assets/factions/8.png';if(String(id)==='940061')return '/assets/item-icons/partner_avatar_758001.png';if(catalog.item_icons[id])return catalog.item_icons[id];if(typeof itemPicture==='function'&&itemCatalog?.[id]){const pic=itemPicture(itemCatalog[id]);if(pic)return pic;}const icon=itemCatalog?.[id]?.icon;if(icon&&itemIcons?.has(icon))return '/assets/item-icons/'+icon+'.png';if(id==='1'||id==='2')return '/assets/currency/icon_'+id+'_small.png';return null;}
  function pairs(text){return String(text||'').split('|').filter(s=>s.includes('#')).map(s=>s.split('#'));}
  function claimable(id){const h=hub();if(id===1)return h.checkin.grid.some(d=>d.can);if(id===116)return h.sevenday.days.some(d=>d.can);return false;}
  function inTab(a,t){if(t==='new')return a.type1===3;if(t==='month')return (a.type1===2||a.type1===7)&&a.type2===3;return (a.type1===2||a.type1===7)&&a.type2!==3;}
@@ -84,6 +84,13 @@ const EventsHub=(()=>{
     row(date,d.names.map(vi).join(' · '),d.start<=c.now&&d.end>c.now?'open':'future');
    }
   }
+  const soniaCalendar=state.sonia_festival_info?.events;
+  if(soniaCalendar){
+   sec('Lễ Hội Lyr Sonia','✦');
+   for(const [kind,label]of [['stars','Thức Tỉnh nhận quà'],['shards','Vòng quay mảnh'],['missions','Hành trình Vé Lyr Sonia']]){
+    const info=soniaCalendar[kind];if(info)row(label,info.active?'Còn '+leftText(info.end):info.end<=Date.now()/1000?'Đã kết thúc':'Sắp diễn ra',info.active?'open':'future');
+   }
+  }
   sec('Lịch làm mới','↻');for(const r of c.resets)row(r.label,leftText(r.at),'reset');
   if(!c.exclusive_s4){
    sec('Đang diễn ra','●');for(const e of c.events)row((e.kind==='month'?'Sự Kiện Tháng · ':'Sự Kiện Tuần · ')+vi(e.title),'Còn '+leftText(e.end),'open');
@@ -93,8 +100,8 @@ const EventsHub=(()=>{
  function list(){const all=catalog.activities.filter(a=>inTab(a,tab)&&!(a.id===116&&hub().sevenday.done&&!cal()?.exclusive_s4));const rows=[...all]; /* Full event catalog. */if(pinnedId){const original=catalog.activities.find(a=>a.id===pinnedId);if(original&&!rows.some(a=>a.id===pinnedId))rows.unshift(original);}return rows.sort((a,b)=>(a.id===pinnedId?1:0)-(b.id===pinnedId?1:0)?(b.id===pinnedId?1:0)-(a.id===pinnedId?1:0):(WORKING.has(b.id)-WORKING.has(a.id))||(b.rank-a.rank)||(b.id-a.id));}
  function listAll(){return catalog.activities.filter(a=>inTab(a,tab)&&!(a.id===116&&hub().sevenday.done&&!cal()?.exclusive_s4)).sort((a,b)=>(WORKING.has(b.id)-WORKING.has(a.id))||(b.rank-a.rank)||(b.id-a.id));}
 
- function open(from){origin=from||'home';message='';showView('events');if(!catalog&&!loading)loading=Promise.all([api('/assets/events/catalog.json'),typeof ActKit!=='undefined'?ActKit.load():null]).then(([c])=>{catalog=c;if(typeof ActKit!=='undefined')ActKit.ids().forEach(i=>WORKING.add(i));render();}).catch(e=>{message=e.message;loading=null;render();});if(!visited){visited=true;send({action:'visit'},true);}}
- async function send(request,quiet=false){if(pending)return;pending=true;if(!quiet){message='Đang lưu…';render();}try{const r=await api('/api/events/action',request);state=r.state;const got=Object.entries(r.awards||{});message=got.length?"Đã nhận: "+got.map(([k,n])=>fmt(n)+' × '+itemName(k)).join(', '):(quiet?'':"Đã lưu.");if(got.length&&!quiet&&typeof GirlUI!=='undefined')GirlUI.toast(message);}catch(e){message=e.message;}finally{pending=false;render();if(typeof window.render==='function')window.render();}}
+ function open(from){origin=from||'home';soniaView=null;message='';showView('events');if(!catalog&&!loading)loading=Promise.all([api('/assets/events/catalog.json'),typeof ActKit!=='undefined'?ActKit.load():null]).then(([c])=>{catalog=c;if(typeof ActKit!=='undefined')ActKit.ids().forEach(i=>WORKING.add(i));render();}).catch(e=>{message=e.message;loading=null;render();});if(!visited){visited=true;send({action:'visit'},true);}}
+ async function send(request,quiet=false){if(pending)return;pending=true;if(!quiet){message='Đang lưu…';render();}try{const r=await api('/api/events/action',request);state=r.state;const got=Object.entries(r.awards||{});if(request.action==='sonia_spin')soniaDraws=r.draws||[];message=got.length?"Đã nhận: "+got.map(([k,n])=>fmt(n)+' × '+itemName(k)).join(', '):(quiet?'':"Đã lưu.");if(got.length&&!quiet&&typeof GirlUI!=='undefined')GirlUI.toast(message);}catch(e){message=e.message;}finally{pending=false;render();if(typeof window.render==='function')window.render();}}
 
  function render(){
   const root=$('events-view');if(!root||view!=='events')return;root.replaceChildren();
@@ -102,7 +109,7 @@ const EventsHub=(()=>{
   const money=el('div','ev-money');for(const id of ['1','2']){const s=el('span');s.append(img('/assets/currency/icon_'+id+'_small.png'),el('b',undefined,fmt(state.items[id]||0)));money.append(s);}
   top.append(back,el('h1',undefined,"Sự Kiện"),money);root.append(top);
   if(!catalog||!hub()){root.append(el('p','ev-note',message||"Đang tải sự kiện…"));return;}
-  const win=el('div','ev-window');root.append(win);const tabs=el('nav','ev-tabs');for(const [id,pos]of TABS){const b=el('button','ev-tab '+pos+(tab===id?' on':''),tabLabel(id));b.type='button';b.onclick=()=>{if(tab===id)return;tab=id;selected=null;pinnedId=null;message='';if(typeof GxbAudio!=='undefined')GxbAudio.sfx('ui_switch_page',.6);render();};if(catalog.activities.some(a=>inTab(a,id)&&claimable(a.id)))b.append(img(A('alert_icon'),'ev-tab-red'));tabs.append(b);}win.append(tabs);{const cb=el('button','ev-cal-btn','📅 Lịch');cb.type='button';cb.onclick=calendarWin;win.append(cb);}const panel=el('div','ev-panel');win.append(panel);
+  const win=el('div','ev-window');root.append(win);const tabs=el('nav','ev-tabs');for(const [id,pos]of TABS){const b=el('button','ev-tab '+pos+(tab===id?' on':''),tabLabel(id));b.type='button';b.onclick=()=>{if(tab===id&&!soniaView)return;soniaView=null;tab=id;selected=null;pinnedId=null;message='';if(typeof GxbAudio!=='undefined')GxbAudio.sfx('ui_switch_page',.6);render();};if(catalog.activities.some(a=>inTab(a,id)&&claimable(a.id)))b.append(img(A('alert_icon'),'ev-tab-red'));tabs.append(b);}win.append(tabs);{const cb=el('button','ev-cal-btn','📅 Lịch');cb.type='button';cb.onclick=calendarWin;win.append(cb);}const panel=el('div','ev-panel');win.append(panel);
   if([2,3,6,24,39,40,184].includes(Number(pinnedId||selected))){
     const offers=el('nav','ev-native-pack-tabs');
     for(const [id,label] of [[2,'Gói Tháng'],[3,'Gói Tuần'],[6,'Thẻ Tháng'],[24,'Thẻ Tuần'],[184,'Nạp Kim Cương']]){
@@ -113,8 +120,32 @@ const EventsHub=(()=>{
     }
     panel.append(offers);
   }
+  // Three live Lyr Sonia events use the same original ActivityWindow card
+  // strips and reward/mission boards as the other featured celebrations.
+  const sf=state.sonia_festival_info;
+  if(tab==='ex'&&sf){
+    const menu=el('nav','ev-strip sf-strip');
+    for(const [id,label] of [['stars','Lễ Hội Thức Tỉnh'],['shards','Vòng Quay Mảnh'],['missions','Hành Trình Vé']]){
+      const open=sf.events[id];
+      const button=el('button','ev-title'+(soniaView===id?' on':''));
+      button.type='button';button.title=label;
+      button.append(img(A(soniaView===id?'activity_icon_1_middle':'activity_icon_0_middle'),'ev-title-bg'),
+        img('/assets/cards/partner_card_758001.png','ev-title-icon sf-event-art','Lyr Sonia'),
+        el('span','ev-title-label',label));
+      if(open?.active)button.append(el('small','ev-title-left',leftText(open.end)));
+      button.onclick=()=>{soniaView=id;message='';soniaDraws=[];render();};
+      menu.append(button);
+    }
+    panel.append(menu);
+    if(soniaView){
+      const festivalBody=el('div','ev-body sf-body');
+      panel.append(festivalBody);soniaFestival(festivalBody,soniaView,sf);
+      const result=el('p','ev-status',message);result.setAttribute('role','status');panel.append(result);
+      return;
+    }
+  }
   const items=list();if(!items.some(a=>a.id===selected))selected=items[0]?.id??null;
-  const strip=el('div','ev-strip');for(const a of items){const b=el('button','ev-title'+(a.id===selected?' on':''));b.type='button';b.title=vi(a.title.replace(/\n/g,' '));b.append(img(A(a.id===selected?'activity_icon_1_middle':'activity_icon_0_middle'),'ev-title-bg'),img(A('icon_'+a.icon),'ev-title-icon'),el('span','ev-title-label',vi(a.title)));if(slot(a.id))b.append(el('small','ev-title-left',leftText(slot(a.id).end)));if(claimable(a.id))b.append(img(A('person_icon_red_point'),'ev-title-red'));b.onclick=()=>{selected=a.id;message='';render();};strip.append(b);}panel.append(strip);
+  const strip=el('div','ev-strip');for(const a of items){const b=el('button','ev-title'+(a.id===selected?' on':''));b.type='button';b.title=vi(a.title.replace(/\n/g,' '));b.append(img(A(a.id===selected?'activity_icon_1_middle':'activity_icon_0_middle'),'ev-title-bg'),img(A('icon_'+a.icon),'ev-title-icon'),el('span','ev-title-label',vi(a.title)));if(slot(a.id))b.append(el('small','ev-title-left',leftText(slot(a.id).end)));if(claimable(a.id))b.append(img(A('person_icon_red_point'),'ev-title-red'));b.onclick=()=>{soniaView=null;selected=a.id;message='';render();};strip.append(b);}panel.append(strip);
   requestAnimationFrame(()=>strip.querySelector('.on')?.scrollIntoView({block:'nearest',inline:'nearest'}));
   const body=el('div','ev-body');panel.append(body);
   const a=items.find(x=>x.id===selected);
@@ -123,6 +154,63 @@ const EventsHub=(()=>{
   const status=el('p','ev-status',message);status.setAttribute('role','status');panel.append(status);
  }
 
+ function soniaFestival(parent,kind,festival){
+  const info=festival.events[kind];
+  const title={stars:'Lễ Hội Thức Tỉnh',shards:'Vòng Quay Mảnh',missions:'Hành Trình Vé'}[kind];
+  const section=el('div','sf-banner');
+  section.append(img('/assets/cards/partner_card_758001.png','sf-hero','Lyr Sonia'));
+  const text=el('div','sf-banner-copy');
+  text.append(el('h2','',title),el('p','',kind==='stars'?'Thức Tỉnh Lyr Sonia · Rinh quà theo từng mốc sao':kind==='shards'?'Thử vận may, sưu tầm mảnh Sonia':'Vượt thử thách để nhận Vé Lyr Sonia'));
+  text.append(el('b','sf-time',info.active?'Còn '+leftText(info.end):Date.now()/1000>=info.end?'Sự kiện đã khép lại':'Sắp mở cửa'));
+  section.append(text);parent.append(section);
+  const rows=el('div','pe-list sf-list');parent.append(rows);
+  const icon=(id,n)=>{const node=el('div','sf-reward');const image=img(
+    id==='940060'?'/assets/factions/8.png':
+    id==='940061'?'/assets/item-icons/partner_avatar_758001.png':
+    id==='2'?'/assets/currency/icon_2_small.png':
+    id==='1'?'/assets/currency/icon_1_small.png':
+    (catalog?.item_icons?.[id]||'/assets/factions/8.png'));
+    node.append(image,el('small','',('×'+fmt(n))));return node;};
+  if(kind==='stars'){
+    parent.append(el('p','ev-note','Mỗi mốc chỉ nhận quà một lần sau khi Sonia thực sự Thức Tỉnh trong mùa lễ hội.'));
+    parent.append(el('p','sf-progress','Sonia cao nhất đang sở hữu: '+festival.highest_owned_star+'★ · Đã nâng trong mùa: '+festival.highest_awakened_star+'★'));
+    for(const r of festival.stars){
+      const row=el('div','pe-row sf-row');const left=el('div','sf-row-copy');
+      left.append(el('b','',r.star+'★ · Quà Thức Tỉnh'),el('small','',r.claimed?'Đã nhận':r.can?'Có thể nhận':'Hãy nâng Sonia đến mốc này'));
+      row.append(left);
+      const rewards=el('div','sf-rewards');for(const [id,n]of Object.entries(r.awards))rewards.append(icon(id,n));row.append(rewards);
+      const take=el('button','sf-btn',r.claimed?'Đã nhận':'Nhận quà');take.type='button';take.disabled=pending||!r.can;take.onclick=()=>send({action:'sonia_star_claim',star:r.star});row.append(take);rows.append(row);
+    }
+  }else if(kind==='shards'){
+    const w=festival.wheel;
+    parent.append(el('p','ev-note','Mỗi lượt quay đều có quà. Mảnh Lyr Sonia hiếm xuất hiện; đủ 100 mảnh có thể ghép một Lyr Sonia 10★.'));
+    parent.append(el('p','sf-progress','Đã quay '+w.spins+'/'+w.cap+' lượt trong mùa · Mảnh hiện có: '+fmt(state.items['940061']||0)+'/100'));
+    const actions=el('div','sf-spin-buttons');
+    for(const count of [5,10]){
+      const b=el('button','sf-btn',count+' lượt · '+fmt(w.costs[count])+' Kim Cương');
+      b.type='button';b.disabled=pending||!w.can||w.spins+count>w.cap||Number(state.items['2']||0)<w.costs[count];
+      b.onclick=()=>{soniaDraws=[];send({action:'sonia_spin',count});};actions.append(b);
+    }
+    parent.append(actions);
+    if(soniaDraws.length){const won=el('div','sf-won');won.append(el('h3','','Phần quà vừa nhận'));
+      const batch=el('div','sf-result-list');for(const item of soniaDraws)batch.append(el('span','',item.name));won.append(batch);parent.append(won);}
+    parent.append(el('h3','sf-subtitle','Quà trong vòng quay'));
+    for(const r of w.odds){const row=el('div','pe-row sf-row');row.append(el('b','',r.label),el('span','sf-chance',r.chance.toLocaleString('vi-VN')+'%'));rows.append(row);}
+    parent.append(el('p','ev-note','Tỷ lệ của từng quà được ghi rõ. Không có vé triệu hồi hoặc Kim Cương trong vòng quay này.'));
+  }else{
+    parent.append(el('p','ev-note','Nhiệm vụ khó và cực khó · Chỉ tính chiến công trong mùa lễ hội. Hoàn thành và nhận quà trước giờ kết thúc từng nhiệm vụ.'));
+    parent.append(el('p','sf-progress','Tối đa 12 Vé Lyr Sonia trong 30 ngày. Mỗi nhiệm vụ chỉ nhận một lần.'));
+    for(const m of festival.missions){const row=el('div','pe-row sf-row');const left=el('div','sf-row-copy');
+      left.append(el('b','',m.name),el('small','',m.difficulty+' · '+(m.claimed?'Đã nhận':festival.now>=m.end?'Đã hết hạn':'Còn '+leftText(m.end))));
+      const bar=el('div','pe-bar');bar.style.backgroundImage=`url('${A('activity_bar_bg')}')`;
+      const fill=el('i','sf-progress-fill');fill.style.width=Math.round(Math.min(1,m.progress/m.target)*100)+'%';
+      bar.append(fill,el('span','',fmt(Math.min(m.progress,m.target))+'/'+fmt(m.target)));left.append(bar);row.append(left);
+      row.append(icon('940060',m.tickets));
+      const b=el('button','sf-btn',m.claimed?'Đã nhận':'Nhận vé');b.type='button';b.disabled=pending||!m.can;b.onclick=()=>send({action:'sonia_mission_claim',id:m.id});
+      row.append(b);rows.append(row);
+    }
+  }
+ }
  function rewardIcon(id,n,cls='ev-item'){const w=el('span',cls);const src=itemIcon(id);if(src)w.append(img(src,undefined,itemName(id)));else w.append(el('em',undefined,itemName(id)));w.append(el('b',undefined,fmt(n)));w.title=itemName(id)+' × '+fmt(n);return w;}
 
  function checkIn(parent){
@@ -193,7 +281,7 @@ const EventsHub=(()=>{
     parent.append(original);
  }
 
- function openPoint(id,from){tab='ex';selected=id;pinnedId=id;open(from);}
- function openOriginalEvent(id,from){const entry={166:'ex',167:'ex',191:'ex',279:'ex'};tab=entry[id]||'ex';selected=id;pinnedId=id;open(from);}
+ function openPoint(id,from){tab='ex';selected=id;pinnedId=id;soniaView=null;open(from);}
+ function openOriginalEvent(id,from){const entry={166:'ex',167:'ex',191:'ex',279:'ex'};tab=entry[id]||'ex';selected=id;pinnedId=id;soniaView=null;open(from);}
  return {open,openPoint,openOriginalEvent,render};
 })();

@@ -67,8 +67,12 @@ class GmGoddessHTTPTests(unittest.TestCase):
         self.assertEqual(self.call('GET','/api/admin/goddess-gift/catalog',user=1)[0],403)
         code,body,_=self.call('GET','/api/admin/goddess-gift/catalog',user=0)
         self.assertEqual(code,200,body)
-        self.assertEqual(len(body['goddesses']),446)
-        self.assertEqual({x['group'] for x in body['goddesses']},set(range(1,8)))
+        self.assertEqual(len(body['goddesses']),447)
+        self.assertEqual({x['group'] for x in body['goddesses']},set(range(1,9)))
+        sonia=[x for x in body['goddesses'] if x['id']==758001]
+        self.assertEqual(len(sonia),1)
+        self.assertEqual(sonia[0]['name'],'Lyr Sonia')
+        self.assertEqual(sonia[0]['stars'],list(range(10,26)))
         config={'girl_id':51017,'stars':15,'level':250,'stats':{'hp':10},'max_stellar':True,'max_red6':True}
         self.assertEqual(self.call('POST','/api/admin/goddess-gift/create',config)[0],401)
         self.assertEqual(self.call('POST','/api/admin/goddess-gift/create',config,user=1,key='QA_ACTION_KEY_32_CHARS_DONT_SHARE')[0],403)

@@ -15,6 +15,13 @@ GRADUATE=json.loads((ROOT/'data/graduate.json').read_text())
 ASCENSION=json.loads((ROOT/'data/ascension.json').read_text())
 ASTRAL=json.loads((ROOT/'data/astral.json').read_text())
 GIRLS=json.loads((ROOT/'web/assets/girls-catalog.json').read_text())
+# Lyr Sonia is a playable Hệ Hỗn Độn Goddess. Her mail gifts reuse
+# the registered live 10★ form and the verified level/awakening rules.
+from . import chaos_summon
+PARTNERS[str(chaos_summon.PARTNER_ID)] = dict(chaos_summon.PARTNER)
+if not any(int(g['id']) == chaos_summon.PARTNER_ID for g in GIRLS):
+    GIRLS.append({'id':chaos_summon.PARTNER_ID,'name':'Lyr Sonia',
+                  'group':8,'stars':10,'host':None})
 BY_ID={int(g['id']):g for g in GIRLS}
 COMPOSE={int(r['source']):int(r['target']) for r in (*GRADUATE.values(),*(x for x in ASCENSION.values() if x.get('kind')=='compose'))}
 GEAR=(1999,2999,3999,4999)
@@ -35,7 +42,7 @@ def resolve(girl_id:int,stars:int)->tuple[int,int]:
     g=BY_ID.get(int(girl_id))
     if not g:raise ValueError('Nữ Thần không thuộc danh sách gốc')
     row=PARTNERS.get(str(girl_id))
-    if not row or not row.get('show_in_guide') or not 1<=int(row.get('group') or 0)<=7:
+    if not row or not row.get('show_in_guide') or not (1<=int(row.get('group') or 0)<=7 or int(girl_id)==chaos_summon.PARTNER_ID):
         raise ValueError('Nữ Thần không khả dụng trong game')
     base=int(row['max_star']);stars=int(stars)
     if stars<base or stars>25:raise ValueError('Sao thấp hơn hình thái gốc hoặc vượt 25★')

@@ -58,6 +58,15 @@ def register(tables):
     """Inject local records without rewriting the publisher's recovered tables."""
     tables['partner'][str(PARTNER_ID)] = dict(PARTNER)
     tables['names'][str(PARTNER_ID)] = PARTNER['name']  # real roster/battle label
+    tables['summon']['10260'] = {
+        'id':10260, 'summon_num':1,'cost':'940061#100',
+        'dropbox_id':990061,'is_partner':1,'award':'','awaken_lv':0,
+        'freetime_interval':0,
+    }
+    tables['dropbox']['sonia_shard_10260'] = {
+        'id':99006101,'dropbox_id':990061,'item':'758001#1',
+        'weight':1,
+    }
     for summon_id, count in SUMMON_COUNTS.items():
         tables['summon'][str(summon_id)] = {
             'id': summon_id, 'summon_num': count, 'cost': f'{TICKET_ID}#{count}',

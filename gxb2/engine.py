@@ -20,7 +20,7 @@ from . import hearts
 from . import fantasy_book, growth_diary, newbie_camp, friend_boss, pet_training, practical_work
 from . import arena3v3
 from . import puzzle_events, firework_project, local_promotion
-from . import wish, chaos_summon, magic_card, two_love, lost_space, vip, activity_kit, activity_draw, jackpot, blind_box, pirate, guild
+from . import wish, chaos_summon, sonia_festival, magic_card, two_love, lost_space, vip, activity_kit, activity_draw, jackpot, blind_box, pirate, guild
 from . import home_systems, events, equipment, campaign, point_events, acquisition, clock, explore, relations, missions, shops, arena, patrol, house_exam, hero_challenge, sanctuary, internship, midas, old_campus, guild_lab, echoes, shrine, galaxy, story, dress, skins, house_dress, souls, soul_land, stellar_altar, quick_formation, ev_sand, dress_show, local_config, world_live_config, live_service, database
 from . import summon_rates
 from .player_state_db import ScopedPostgresPlayerDB
@@ -954,7 +954,10 @@ class Engine:
             self.db.execute('BEGIN IMMEDIATE')
             try:
                 state = self._load()
-                result = events.action(state, request, now=self.now())
+                if str(request.get('action','')).startswith('sonia_'):
+                    result = sonia_festival.action(state, request, now=self.now())
+                else:
+                    result = events.action(state, request, now=self.now())
                 self._save_profile(state)
                 self.db.commit()
             except Exception:
@@ -1291,6 +1294,7 @@ class Engine:
         state['profile_unlocks'] = self.profile_unlocks(state)
         state['home_systems'] = home_systems.snapshot(state, now=self.now())
         state['event_hub'] = events.snapshot(state, now=self.now())
+        state['sonia_festival_info'] = sonia_festival.snapshot(state, now=self.now())
         state['hang_info'] = campaign.pending(state, now=self.now())
         state['point_events_info'] = point_events.snapshot(state, now=self.now())
         state['explore_info'] = explore.snapshot(state, self.now())
@@ -1541,7 +1545,9 @@ class Engine:
                 result = arena.action(state, request, player_level(state), self.now(), fight=fight)
                 if request.get('action') == 'fight':
                     missions.record(state, 'arena', 1, self.now())
-                    if result.get('win'): missions.record(state, 'arena_win', 1, self.now())  # Fantasy Book "Win N battles"
+                    if result.get('win'):
+                        missions.record(state, 'arena_win', 1, self.now())  # Fantasy Book "Win N battles"
+                        sonia_festival.record(state,'arena_win',1,self.now())
                 self._save_profile(state)
                 self.db.commit()
             except Exception:
@@ -3217,18 +3223,39 @@ class Engine:
             self.db.execute('BEGIN IMMEDIATE')
             try:
                 state = self._load()
+                # Snapshot Sonia's existing stars BEFORE a validated awake
+                # action. Only real, successful upgrades earn festival credit.
+                sonia_before = {
+                    int(p['partner_id']): 10+int(p.get('awake',0))
+                    for p in state['partners']
+                    if int(p['table_id']) == sonia_festival.SONIA
+                } if name in ('AWAKE_PARTNER','COMPOSE_PARTNER') else {}
                 packets, report = self._dispatch(name, request, state)
+                if name == 'MAP_FIGHT' and report and report.get('isWin'):
+                    sonia_festival.record(state,'victory',1,self.now())
                 if name == 'SUMMON':
                     sid=request.get('summon_id')
                     if sid in (1,2,3): home_systems.record(state,'regular',int(TABLES['summon'][str(sid)]['summon_num']),now=self.now())
                     elif sid in (4,5,6,7,8): home_systems.record(state,'advanced',int(TABLES['summon'][str(sid)]['summon_num']),now=self.now())
                     if sid in (4,5,6,7,8): point_events.add(state,'advanced',int(TABLES['summon'][str(sid)]['summon_num']),now=self.now())
-                    if sid in (4,5,6,7,8): missions.record(state,'advanced',int(TABLES['summon'][str(sid)]['summon_num']),self.now())
+                    if sid in (4,5,6,7,8):
+                        missions.record(state,'advanced',int(TABLES['summon'][str(sid)]['summon_num']),self.now())
+                        sonia_festival.record(state,'advanced',int(TABLES['summon'][str(sid)]['summon_num']),self.now())
                     got5=sum(1 for x in (packets[0][2].get('summon_result') or {}).get('partners',[]) if int(TABLES['partner'][str(x['table_id'])].get('max_star',0) or 0)>=5)
                     if got5: missions.record(state,'star5',got5,self.now())
                     if sid in PROPHET_SUMMONS: missions.record(state,'enroll',int(TABLES['summon'][str(sid)]['summon_num']),self.now())
                     if sid in PROPHET_SUMMONS: point_events.add(state,'prophet',int(TABLES['summon'][str(sid)]['summon_num']),now=self.now())
-                elif name in ('COMPOSE_PARTNER','AWAKE_PARTNER'): home_systems.record(state,'graduate',now=self.now()); missions.record(state,'graduate',1,self.now())
+                elif name in ('COMPOSE_PARTNER','AWAKE_PARTNER'):
+                    home_systems.record(state,'graduate',now=self.now())
+                    missions.record(state,'graduate',1,self.now())
+                    sonia_festival.record(state,'awaken',1,self.now())
+                    for candidate in state['partners']:
+                        if int(candidate['table_id']) != sonia_festival.SONIA:
+                            continue
+                        prior=sonia_before.get(int(candidate['partner_id']))
+                        after=10+int(candidate.get('awake') or 0)
+                        if prior is not None and after > prior:
+                            sonia_festival.record_sonia_star(state,after,self.now(),prior=prior)
                 if name == 'SUMMON':
                     config = TABLES['summon'][str(request['summon_id'])]
                     if int(request['summon_id']) == 9: growth_diary.record(state, 'growth_bff', int(config['summon_num']))

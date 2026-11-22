@@ -166,3 +166,35 @@ html.gxb-mobile #events-view .ev-title-label{overflow-wrap:anywhere}
 .ev-cal-row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10px;margin:5px 0;padding:9px 10px!important;border:1px solid #cfdaea;border-radius:10px;background:#fff;box-shadow:0 2px 5px #49698b18;font-size:13px!important}
 .ev-cal-row.open{border-left:5px solid #55b879}.ev-cal-row.next{border-left:5px solid #7b9ad7}.ev-cal-row.reset{border-left:5px solid #e9a84b}
 .ev-cal-name{line-height:1.3;color:#415777}.ev-cal-time{color:#c76531!important;font-size:12px;white-space:nowrap}.ev-cal-note{padding:9px 10px;border-radius:9px;background:#e3edf9;color:#5b6f8e!important;line-height:1.4}
+/* Lễ Hội Lyr Sonia — ActivityWindow native art, cards, frames and buttons. */
+.sf-strip{margin-bottom:calc(10 * var(--u))!important}
+.sf-strip .ev-title{width:calc(205 * var(--u));aspect-ratio:205/126}
+.sf-strip .ev-title-icon.sf-event-art{width:33%;height:67%;border-radius:6px}
+.sf-strip .ev-title-label{bottom:6%;font-size:calc(15 * var(--u))}
+.sf-body{padding-bottom:calc(12 * var(--u))}
+.sf-banner{position:relative;display:flex;align-items:center;gap:calc(16 * var(--u));min-height:calc(260 * var(--u));padding:calc(12 * var(--u)) calc(24 * var(--u));
+ background:#e5d8fa url('/assets/events/activity_bg03.png') center/cover no-repeat}
+.sf-hero{position:relative;width:calc(174 * var(--u));height:calc(233 * var(--u));object-fit:cover;border:calc(3 * var(--u)) solid #dbb8ff;border-radius:calc(9 * var(--u))}
+.sf-banner-copy{position:relative;flex:1;min-width:0;color:#563e8f;text-shadow:0 1px #fff}
+.sf-banner-copy h2{font-size:calc(31 * var(--u));line-height:1.15;margin:0 0 calc(8 * var(--u))}
+.sf-banner-copy p{font-size:calc(23 * var(--u));line-height:1.3;margin:0 0 calc(8 * var(--u))}
+.sf-time,.sf-progress{display:block;font-weight:800;color:#7e50ab;font-size:calc(24 * var(--u));margin:calc(8 * var(--u)) calc(20 * var(--u))}
+.sf-list{gap:calc(12 * var(--u));background:transparent}
+.sf-row{gap:calc(9 * var(--u));min-height:calc(104 * var(--u));padding:calc(9 * var(--u));flex-wrap:wrap}
+.sf-row-copy{flex:1 1 calc(190 * var(--u));min-width:0}
+.sf-row-copy>b{display:block;color:#555183;font-size:calc(24 * var(--u))}
+.sf-row-copy>small{display:block;color:#71688e;font-size:calc(18 * var(--u));margin-top:calc(4 * var(--u))}
+.sf-rewards{display:flex;gap:calc(5 * var(--u));flex-wrap:wrap}
+.sf-reward{display:flex;flex-direction:column;align-items:center;min-width:calc(56 * var(--u))}
+.sf-reward img{width:calc(47 * var(--u));height:calc(47 * var(--u));object-fit:contain}
+.sf-reward small{color:#765c8d;font-weight:800;font-size:calc(18 * var(--u))}
+.sf-btn{min-width:calc(114 * var(--u));min-height:calc(48 * var(--u));padding:calc(5 * var(--u)) calc(10 * var(--u));color:#fff;font-weight:900;
+ font-size:calc(21 * var(--u));text-shadow:0 1px #254686;border:solid transparent;border-width:calc(12 * var(--u));border-image:url('/assets/detail/sheet/blue_btn_65_65.png') 24 fill / calc(12 * var(--u)) stretch;background:none;cursor:pointer}
+.sf-btn:disabled{filter:grayscale(.8);opacity:.65;cursor:default}
+.sf-spin-buttons{display:flex;justify-content:center;gap:calc(10 * var(--u));padding:calc(10 * var(--u));flex-wrap:wrap}
+.sf-chance{font-size:calc(25 * var(--u));font-weight:900;color:#9f479f}
+.sf-won,.sf-subtitle{margin:calc(8 * var(--u)) calc(18 * var(--u));color:#6f5091}
+.sf-result-list{display:flex;flex-wrap:wrap;gap:4px}
+.sf-result-list span{border-radius:7px;background:#e3d7f4;color:#664889;padding:4px 6px;font-size:12px}
+.sf-progress-fill{background:linear-gradient(90deg,#9e62d0,#e4b3f1)!important}
+@media(max-width:410px){.sf-row{flex-wrap:wrap}.sf-btn{flex:1 1 45%}}

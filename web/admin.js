@@ -422,8 +422,8 @@ window.AdminPanel=(()=>{
     return result;
   }
   function renderGoddessGift(body){
-    const panel=card('Gift Nữ Thần · 7 hệ · Ảnh gốc');
-    panel.append(el('p','admin-note','Chỉ SUPER GM. 30 ngày từ lúc tạo; KHÔNG GIỚI HẠN tổng lượt nhập, MỖI UID chỉ nhận một lần. Nữ Thần được cấp trong Hòm Thư, không gửi trực tiếp bằng JSON.'));
+    const panel=card('Gift Nữ Thần · 8 hệ · Ảnh gốc');
+    panel.append(el('p','admin-note','Chỉ SUPER GM. Quà có hiệu lực 30 ngày, không giới hạn số người nhận. Mỗi người chỉ nhận một lần qua Hòm Thư.'));
     body.append(panel);
     if(!goddessCatalog){
       panel.append(el('p','admin-note','Đang nạp danh sách Nữ Thần và ảnh gốc từ máy chủ...'));
@@ -434,7 +434,7 @@ window.AdminPanel=(()=>{
     const tool=el('div','admin-form-row');
     const search=document.createElement('input');search.type='search';search.placeholder='Tìm tên Nữ Thần hoặc ID';search.value=goddessSearch;
     const group=document.createElement('select');
-    const names=['Tất cả 7 hệ','Hệ 1','Hệ 2','Hệ 3','Hệ 4','Hệ 5','Hệ 6','Hệ 7'];
+    const names=['Tất cả 8 hệ','Hệ U Linh Ma','Hệ Nhân Tộc','Hệ Ma Thú','Hệ Tinh Linh','Hệ Bóng Tối','Hệ Ánh Sáng','Hệ Vũ Trụ','Hệ Hỗn Độn'];
     names.forEach((name,i)=>{const o=el('option','',name);o.value=i;group.append(o);});group.value=String(goddessGroup);
     tool.append(search,group);panel.append(tool);
     const gallery=el('div','admin-gift-grid'),paging=el('div','admin-pagination');panel.append(gallery,paging);
@@ -446,7 +446,7 @@ window.AdminPanel=(()=>{
       for(const g of matched.slice(goddessPage*24,(goddessPage+1)*24)){
         const tile=el('article','admin-gift-card'+(goddessSelected?.id===g.id?' selected':''));
         const face=giftPic(g.image,g.name);face.onerror=()=>{face.style.visibility='hidden';};tile.append(face);
-        const desc=el('div','admin-gift-details');desc.append(el('b','',g.name),el('small','','Hệ '+g.group+' · ID '+g.id),el('small','','Từ '+g.base_star+'★ · '+g.stars.length+' mốc hợp lệ'));tile.append(desc);
+        const desc=el('div','admin-gift-details');desc.append(el('b','',g.name),el('small','',names[g.group]||'Nữ Thần'),el('small','','Từ '+g.base_star+'★ · '+g.stars.length+' mốc Thức Tỉnh'));tile.append(desc);
         tile.append(btn(goddessSelected?.id===g.id?'Đã chọn':'Chọn Nữ Thần',()=>{goddessSelected=g;render();},'primary'));gallery.append(tile);
       }
       if(!matched.length)gallery.append(el('p','admin-note','Không có Nữ Thần có ảnh gốc và dữ liệu sao hợp lệ.'));
@@ -458,7 +458,7 @@ window.AdminPanel=(()=>{
     group.onchange=()=>{goddessGroup=Number(group.value);goddessPage=0;draw();};
     draw();
     if(!goddessSelected){panel.append(el('p','admin-note','Chọn một Nữ Thần trong danh mục để thiết lập giftcode.'));return;}
-    const chosen=card('Cấu hình · '+goddessSelected.name+' · Hệ '+goddessSelected.group);
+    const chosen=card('Quà '+goddessSelected.name+' · '+(names[goddessSelected.group]||'Nữ Thần'));
     chosen.append(giftPic(goddessSelected.image,goddessSelected.name));
     const stars=document.createElement('select');stars.id='gm-goddess-star';
     for(const v of goddessSelected.stars){const opt=el('option','',v+'★');opt.value=v;stars.append(opt);}
