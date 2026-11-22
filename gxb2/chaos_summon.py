@@ -1,15 +1,20 @@
-"""Lyr Sonia and the ticket-only Chaos Capsule.
+"""Lyr Sonia ticket banner with stable odds and a persistent pity counter.
 
-The banner is intentionally deterministic: one Vé Lyr Sonia always grants one
-native 10-star Lyr Sonia.  Quantity buttons are separate summon IDs so the
-normal transaction/audit pipeline remains unchanged.
+Each ticket is one independent draw. Non-featured results come from the
+balanced Advanced Capsule pool; x5/x10 are convenience buttons, not bundles of
+guaranteed native 10-star copies.
 """
 from __future__ import annotations
+
+import secrets
 
 PARTNER_ID = 758001
 TICKET_ID = 940060
 SUMMON_COUNTS = {27: 1, 28: 5, 29: 10}
 SUMMONS = tuple(SUMMON_COUNTS)
+RATE_TOTAL = 10_000
+FEATURED_WEIGHT = 50  # 0.50%
+GUARANTEE = 100
 
 
 PARTNER = {
@@ -60,17 +65,28 @@ def register(tables):
         }
 
 
+def progress(state):
+    return state.setdefault('chaos_summon', {'times': 0, 'total': 0})
+
+
 def snapshot(state):
+    info = progress(state)
     return {
         'partner_id': PARTNER_ID,
         'ticket_id': TICKET_ID,
         'tickets': int(state.get('items', {}).get(str(TICKET_ID), 0)),
         'counts': dict(SUMMON_COUNTS),
-        'guaranteed': True,
+        'guaranteed': False,
+        'rate': FEATURED_WEIGHT / RATE_TOTAL,
+        'times': int(info['times']),
+        'total': int(info['total']),
+        'guarantee': GUARANTEE,
+        'remaining': max(0, GUARANTEE - int(info['times'])),
     }
 
 
-def summon(state, summon_id):
+def summon(state, summon_id, fallback_draw, rng=None):
+    rng = rng or secrets.randbelow
     count = SUMMON_COUNTS[int(summon_id)]
     items = state.setdefault('items', {})
     have = int(items.get(str(TICKET_ID), 0))
@@ -81,7 +97,14 @@ def summon(state, summon_id):
                   (max((int(v['partner_id']) for v in state.get('partners', [])), default=0) + 1))
     new = []
     for _ in range(count):
-        partner = {'partner_id': next_id, 'table_id': PARTNER_ID, 'lv': 1,
+        info = progress(state)
+        info['times'] = int(info.get('times', 0)) + 1
+        info['total'] = int(info.get('total', 0)) + 1
+        featured = info['times'] >= GUARANTEE or rng(RATE_TOTAL) < FEATURED_WEIGHT
+        table_id = PARTNER_ID if featured else int(fallback_draw())
+        if featured:
+            info['times'] = 0
+        partner = {'partner_id': next_id, 'table_id': table_id, 'lv': 1,
                    'grade': 0, 'awake': 0, 'equips': [], 'pos': 0, 'show_skin': 1}
         state.setdefault('partners', []).append(partner)
         new.append(partner)

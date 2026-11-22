@@ -22,6 +22,7 @@ from . import arena3v3
 from . import puzzle_events, firework_project, local_promotion
 from . import wish, chaos_summon, magic_card, two_love, lost_space, vip, activity_kit, activity_draw, jackpot, blind_box, pirate, guild
 from . import home_systems, events, equipment, campaign, point_events, acquisition, clock, explore, relations, missions, shops, arena, patrol, house_exam, hero_challenge, sanctuary, internship, midas, old_campus, guild_lab, echoes, shrine, galaxy, story, dress, skins, house_dress, souls, soul_land, stellar_altar, quick_formation, ev_sand, dress_show, local_config, world_live_config, live_service, database
+from . import summon_rates
 from .player_state_db import ScopedPostgresPlayerDB
 from .battle import attributes
 
@@ -3196,16 +3197,17 @@ class Engine:
         return {'last_time_3': max(0, state.get('summon_free_at', 0) - interval)}
 
     def summon_pool(self, dropbox_id, server_id='S1'):
-        rows = []
+        source_rows = []
         for source in TABLES['dropbox'].values():
             if source['dropbox_id'] != dropbox_id or str(source['item']).split('#')[0] not in TABLES['partner']:
                 continue
-            weight = world_live_config.summon_weight(source, TABLES['partner'], server_id)
-            if weight <= 0:
-                continue
-            row = dict(source)
-            row['_local_weight'] = weight
-            rows.append(row)
+            source_rows.append(source)
+        rows = summon_rates.balanced_pool(
+            source_rows,
+            TABLES['partner'],
+            dropbox_id,
+            lambda row: world_live_config.summon_weight(row, TABLES['partner'], server_id),
+        )
         if not rows: raise GameError('Pool Triệu Hồi không còn phần thưởng hợp lệ theo cấu hình Local')
         return rows, sum(int(row['_local_weight']) for row in rows)
 
@@ -3353,8 +3355,18 @@ class Engine:
         if name == 'SUMMON':
             summon_id = integer(request.get('summon_id'), 'summon_id', 1)
             if summon_id in chaos_summon.SUMMONS:
+                rows, total = self.summon_pool(10002, state.get('server_id', 'S1'))
+
+                def fallback_draw():
+                    draw = secrets.randbelow(total)
+                    for pool_row in rows:
+                        draw -= int(pool_row['_local_weight'])
+                        if draw < 0:
+                            return int(str(pool_row['item']).split('#')[0])
+                    return int(str(rows[-1]['item']).split('#')[0])
+
                 try:
-                    new = chaos_summon.summon(state, summon_id)
+                    new = chaos_summon.summon(state, summon_id, fallback_draw)
                 except ValueError as error:
                     raise GameError(str(error)) from None
                 data = {'summon_id': summon_id, 'summon_result': {'partners': new},

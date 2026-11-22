@@ -79,6 +79,11 @@ const WishCapsule=(()=>{
   const ca=el('div','capsule-banner-art chaos-art');ca.style.backgroundImage="url('"+chaos.banner+"')";
   const cc=el('div','capsule-banner-controls chaos-controls');
   cc.append(el('small','chaos-kicker',chaos.faction.name),el('h3','chaos-title',chaos.name),el('p','chaos-copy','Nữ Thần Hỗn Độn nguyên bản 10★ · có thể Thức Tỉnh đến 25★'));
+  const ci=state.chaos_summon_info||{};
+  const chaosRate=(Number(ci.rate||0)*100).toFixed(2);
+  const chaosRemaining=Math.max(0,Number(ci.remaining??ci.guarantee??100));
+  cc.append(el('p','chaos-copy','Tỷ lệ Lyr Sonia: '+chaosRate+'% · Bảo hiểm sau tối đa '+chaosRemaining+' lượt nữa'));
+  cc.append(el('p','chaos-copy','Không trúng Lyr Sonia sẽ nhận Nữ Thần từ bể Triệu Hồi Cao Cấp đã cân bằng.'));
   const ticket=el('div','chaos-ticket');ticket.append(img(chaos.ticket.icon),el('span','',chaos.ticket.name),el('b','',number(state.items?.[String(chaos.ticket.id)]||0)));cc.append(ticket);
   const cbts=el('div','capsule-buttons chaos-buttons'),have=Number(state.items?.[String(chaos.ticket.id)]||0);
   for(const drawInfo of chaos.summons){const b=btn('capsule-draw','Triệu Hồi ×'+drawInfo.count,()=>action('SUMMON',{summon_id:drawInfo.id,times:1}),have<drawInfo.count);const cost=el('strong');cost.append(drawInfo.count+' ',img(chaos.ticket.icon,'cost-token'));b.append(cost);cbts.append(b);}
