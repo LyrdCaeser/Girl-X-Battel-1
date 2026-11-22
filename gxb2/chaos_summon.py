@@ -13,8 +13,10 @@ TICKET_ID = 940060
 SUMMON_COUNTS = {27: 1, 28: 5, 29: 10}
 SUMMONS = tuple(SUMMON_COUNTS)
 RATE_TOTAL = 10_000
-FEATURED_WEIGHT = 50  # 0.50%
-GUARANTEE = 100
+FEATURED_WEIGHT = 50  # 0.50% per regular draw; always under 1.50%.
+FIRST_GUARANTEE = 120
+REPEAT_GUARANTEE = 150
+GUARANTEE_HIT_PERCENT = 95
 
 
 PARTNER = {
@@ -76,27 +78,38 @@ def register(tables):
 
 
 def progress(state):
-    return state.setdefault('chaos_summon', {'times': 0, 'total': 0})
+    info=state.setdefault('chaos_summon', {'times':0,'total':0,'cycles':0})
+    # Upgrade old state without erasing any already accumulated draws.
+    # Previous saves only had times/total, and every completed pity/hit reset
+    # times. Do not relabel an old already-triggered pity as someone's first.
+    info.setdefault('cycles', int(int(info.get('total',0))>int(info.get('times',0))))
+    return info
 
 
 def snapshot(state):
-    info = progress(state)
+    info=progress(state)
+    pity=FIRST_GUARANTEE if int(info['cycles'])==0 else REPEAT_GUARANTEE
     return {
-        'partner_id': PARTNER_ID,
-        'ticket_id': TICKET_ID,
-        'tickets': int(state.get('items', {}).get(str(TICKET_ID), 0)),
-        'counts': dict(SUMMON_COUNTS),
-        'guaranteed': False,
-        'rate': FEATURED_WEIGHT / RATE_TOTAL,
-        'times': int(info['times']),
-        'total': int(info['total']),
-        'guarantee': GUARANTEE,
-        'remaining': max(0, GUARANTEE - int(info['times'])),
+        'partner_id':PARTNER_ID,'ticket_id':TICKET_ID,
+        'tickets':int(state.get('items',{}).get(str(TICKET_ID),0)),
+        'counts':dict(SUMMON_COUNTS),'guaranteed':False,
+        'rate':FEATURED_WEIGHT/RATE_TOTAL,
+        'times':int(info['times']),'total':int(info['total']),
+        'cycles':int(info['cycles']),
+        'guarantee':pity,'first_guarantee':FIRST_GUARANTEE,
+        'repeat_guarantee':REPEAT_GUARANTEE,
+        'guaranteed_hit_percent':GUARANTEE_HIT_PERCENT,
+        'guaranteed_miss_percent':100-GUARANTEE_HIT_PERCENT,
+        'remaining':max(0,pity-int(info['times'])),
     }
 
-
-def summon(state, summon_id, fallback_draw, rng=None):
+def summon(state, summon_id, fallback_draw, rng=None,
+           offbanner_draw=None, is_five_star=None):
+    # All three drawing paths must be server-side; the client never supplies
+    # an obtained girl or controls the RNG. Each draw is resolved separately.
     rng = rng or secrets.randbelow
+    offbanner_draw=offbanner_draw or fallback_draw
+    is_five_star=is_five_star or (lambda table_id:False)
     count = SUMMON_COUNTS[int(summon_id)]
     items = state.setdefault('items', {})
     have = int(items.get(str(TICKET_ID), 0))
@@ -105,19 +118,29 @@ def summon(state, summon_id, fallback_draw, rng=None):
     items[str(TICKET_ID)] = have - count
     next_id = int(state.get('next_partner_id') or
                   (max((int(v['partner_id']) for v in state.get('partners', [])), default=0) + 1))
-    new = []
+    new=[]
     for _ in range(count):
-        info = progress(state)
-        info['times'] = int(info.get('times', 0)) + 1
-        info['total'] = int(info.get('total', 0)) + 1
-        featured = info['times'] >= GUARANTEE or rng(RATE_TOTAL) < FEATURED_WEIGHT
-        table_id = PARTNER_ID if featured else int(fallback_draw())
-        if featured:
-            info['times'] = 0
-        partner = {'partner_id': next_id, 'table_id': table_id, 'lv': 1,
-                   'grade': 0, 'awake': 0, 'equips': [], 'pos': 0, 'show_skin': 1}
-        state.setdefault('partners', []).append(partner)
+        info=progress(state)
+        info['times']=int(info.get('times',0))+1
+        info['total']=int(info.get('total',0))+1
+        limit=FIRST_GUARANTEE if int(info['cycles'])==0 else REPEAT_GUARANTEE
+        if info['times']>=limit:
+            # Pity is a 5-star-or-higher result, not a deterministic Sonia.
+            table_id=PARTNER_ID if rng(100)<GUARANTEE_HIT_PERCENT else int(offbanner_draw())
+            if table_id!=PARTNER_ID and not is_five_star(table_id):
+                raise ValueError('Nữ Thần bảo hiểm lệch phải từ 5★')
+        elif rng(RATE_TOTAL)<FEATURED_WEIGHT:
+            table_id=PARTNER_ID
+        else:
+            table_id=int(fallback_draw())
+        # Both a featured 10★ Sonia and ANY unrelated 5★ reset pity.
+        if table_id==PARTNER_ID or is_five_star(table_id):
+            info['times']=0
+            info['cycles']=int(info['cycles'])+1
+        partner={'partner_id':next_id,'table_id':table_id,'lv':1,
+                 'grade':0,'awake':0,'equips':[],'pos':0,'show_skin':1}
+        state.setdefault('partners',[]).append(partner)
         new.append(partner)
-        next_id += 1
-    state['next_partner_id'] = next_id
+        next_id+=1
+    state['next_partner_id']=next_id
     return new

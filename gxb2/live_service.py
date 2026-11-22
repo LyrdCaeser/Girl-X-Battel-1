@@ -235,6 +235,41 @@ def order(order_id):
         d=dict(row); d["reward"]=json.loads(d["reward"]); return d
 
 
+# Only receipts with a published, unambiguous price can count toward
+# Lyr Sonia's nạp milestones. Custom orders have no verified numerical price
+# and therefore never create tickets from a guessed amount.
+_SONIA_FIXED_PRICES={
+    'GEMS_250':(30_000,'30.000 VNĐ'),
+    'GEMS_500':(60_000,'60.000 VNĐ'),
+    'GEMS_1000':(120_000,'120.000 VNĐ'),
+    'GEMS_2500':(300_000,'300.000 VNĐ'),
+    'GEMS_5000':(600_000,'600.000 VNĐ'),
+}
+
+def approved_sonia_spend(uid,server_id,from_time,to_time):
+    """Read-only: count GM-approved gem purchases once, by UID + world."""
+    uid=str(uid or '').strip()
+    server_id=str(server_id or '').upper()
+    if not uid or not server_id:
+        return 0
+    with _lock:
+        db=_db()
+        try:
+            rows=db.execute(
+                """SELECT package,price_label FROM orders
+                   WHERE uid=? AND server_id=? AND status='approved'
+                         AND reviewed_at>=? AND reviewed_at<?""",
+                (uid,server_id,int(from_time),int(to_time))).fetchall()
+            total=0
+            for row in rows:
+                approved=_SONIA_FIXED_PRICES.get(str(row['package']))
+                if approved and str(row['price_label']).strip()==approved[1]:
+                    total+=approved[0]
+            return total
+        finally:
+            db.close()
+
+
 def orders(status=""):
     with _lock:
         db=_db()

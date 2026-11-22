@@ -64,3 +64,23 @@
  .capsule-banner .chaos-controls{padding:14px 20px 24px}
  .chaos-title{font-size:22px}.chaos-copy{font-size:11px}
 }
+/* Wish detail control: the in-game ≡ opens real, per-server probabilities. */
+#capsule-view .wc-odds-button{
+ position:absolute;z-index:10;top:8px;right:9px;left:auto;
+ width:34px;height:34px;padding:0;border:2px solid #fff9;border-radius:9px;
+ background:linear-gradient(165deg,#8daefa,#3867c6);color:white;
+ font:900 24px/30px system-ui;box-shadow:0 2px 6px #0007;cursor:pointer;
+}
+.wc-odds-window .wc-odds-stars{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:10px 0}
+.wc-odds-window .wc-odds-tier,.wc-odds-window .wc-odds-row{
+ display:flex;justify-content:space-between;gap:8px;align-items:center;padding:8px;
+ border:1px solid #d4c9eb;border-radius:9px;background:#f5effb;color:#584b7e;
+}
+.wc-odds-window .wc-odds-tier span{color:#9d4d91;font-weight:900}
+.wc-odds-window .wc-odds-list{max-height:42vh;overflow:auto;display:grid;gap:4px}
+.wc-odds-window .wc-odds-row{font-size:12px;min-width:0}
+.wc-odds-window .wc-odds-row span{min-width:0;flex:1}
+.wc-odds-window .wc-odds-row b{color:#9c4a86;white-space:nowrap}
+.wc-odds-window .wc-odds-row small{white-space:nowrap}
+.wc-odds-window .wc-odds-hero{display:flex;align-items:center;gap:10px}
+.wc-odds-window .wc-odds-hero img{width:68px;height:91px;object-fit:cover;border-radius:7px}

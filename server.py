@@ -795,6 +795,10 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                 return self.send(403, {'error': 'Chỉ có thể xem lại Wish tại S4'})
             return self.send(200, self.engine.s4_wish_replay(),
                              headers={'Cache-Control': 'no-store'})
+        if path == '/api/summon/rates':
+            return self.send(200, {'pools':self.engine.summon_odds(
+                self.auth_context()['account']['server_id'])},
+                headers={'Cache-Control':'no-store'})
         if path == '/api/state': return self.send(200, self.engine.snapshot())
         if path == '/api/bootstrap': return self.send(200, {'payload': self.bootstrap()})
         if path == '/assets/characters.json': return self.send(200, sorted(CHARACTER_ART))

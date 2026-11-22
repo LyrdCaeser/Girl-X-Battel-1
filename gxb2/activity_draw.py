@@ -14,7 +14,7 @@ by weight. Jungle Exploration only rebuilds area 1 of its milestones. Wish Upon 
 from __future__ import annotations
 import json, secrets
 from pathlib import Path
-from . import clock
+from . import clock, game_calendar
 
 ROOT = Path(__file__).resolve().parents[1]
 D = json.loads((ROOT / 'data/activity_draw.json').read_text())
@@ -98,10 +98,14 @@ def draw_one(ev, s, mi, rng):
 
 def snapshot(state, now):
     view = json.loads(json.dumps(state)); out = {}
+    season_open={int(x['id']) for x in game_calendar.schedule(now)[1]}
     for eid, ev in EVENTS.items():
+        opened=(str(state.get('server_id') or 'S1').upper()=='S4'
+                or eid not in game_calendar.WEEKLY+game_calendar.MONTHLY
+                or eid in season_open)
         s = data(view, eid)
-        out[str(eid)] = {'draws': s['draws'], 'claimed': s['claimed'], 'bought': s['bought'], 'pity': s['pity'], 'last': s['last'], 'guar': int(s.get('guar', 0)),
-                         'daily_ready': s['token_day'] != clock.day(now), 'daily': daily_of(eid),
+        out[str(eid)] = {'draws': s['draws'], 'claimed': s['claimed'], 'bought': s['bought'], 'pity': s['pity'], 'last': s['last'], 'guar': int(s.get('guar', 0)), 'open':opened,
+                         'daily_ready': opened and s['token_day'] != clock.day(now), 'daily': daily_of(eid) if opened else {},
                          'tokens': {k: int(view['items'].get(k, 0)) for m in ev['modes'] for k in pairs(m['cost'])}}
     return out
 
@@ -114,6 +118,8 @@ def daily_of(eid):
 def action(state, request, now, rng=secrets.randbelow):
     eid = int(request.get('event', 0))
     if not has(eid): raise DrawError('Evento sin sorteo')
+    if str(state.get('server_id') or 'S1').upper()!='S4' and not game_calendar.is_open(eid,now):
+        raise DrawError('Sự kiện đang tạm nghỉ. Hẹn gặp bạn trong lần mở kế tiếp!')
     ev = EVENTS[eid]; s = data(state, eid); act = request.get('action')
     if act == 'draw':
         mi = int(request.get('mode', 0)); times = int(request.get('times', 1))

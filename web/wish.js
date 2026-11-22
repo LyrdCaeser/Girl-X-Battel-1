@@ -46,6 +46,60 @@ const WishCapsule=(()=>{
  async function loadChaos(){if(!chaos)chaos=await api('/assets/chaos/lyr_sonia.json?v=1');return chaos;}
  async function act(req,msg){try{const r=await api('/api/wish/action',req);state=r.state;if(msg)GirlUI.toast(msg);return r;}catch(e){GirlUI.toast(e.message);return null;}finally{if(typeof render==='function')render();}}
  const hms=s=>{const h=Math.floor(s/3600),m=Math.floor(s%3600/60);return h+' giờ '+String(m).padStart(2,'0')+' phút';};
+ // ≡ opens the actual live odds for this server, not hardcoded demo rates.
+ async function oddsDetails(kind){
+  const names={regular:'Triệu Hồi Thường',advanced:'Triệu Hồi Cao Cấp',wish:'Wish Ước Nguyện',sonia:'Wish Lyr Sonia'};
+  const {body}=GirlUI.win({title:'≡ Phần Thưởng & Tỷ Lệ · '+names[kind],cls:'wc-odds-window'});
+  body.append(el('p','wc-note','Đang mở danh sách Nữ Thần và tỷ lệ Triệu Hồi…'));
+  try{
+   const response=await api('/api/summon/rates');
+   const pool=response.pools[kind==='sonia'?'advanced':kind];
+   if(!pool)throw Error('Chưa tìm thấy danh sách Triệu Hồi');
+   body.replaceChildren();
+   if(kind==='sonia'){
+     const si=state.chaos_summon_info||{};
+     body.append(el('h3','','Nữ Thần Hỗn Độn · Lyr Sonia'));
+     const feature=el('div','wc-odds-hero');
+     feature.append(img('/assets/cards/partner_card_758001.png'),el('div','',
+      'Tỷ lệ nhận Lyr Sonia mỗi lượt thường: '+(Number(si.rate||0)*100).toFixed(2)+'%.'));
+     body.append(feature);
+     body.append(el('p','wc-note',
+       'Bảo hiểm đầu tiên: '+(si.first_guarantee||120)+' lượt. Các lần sau: '+(si.repeat_guarantee||150)+' lượt.'));
+     body.append(el('p','wc-note','Tiến độ hiện tại: '+Number(si.times||0)+'/'+Number(si.guarantee||120)+
+       ' · Còn '+Number(si.remaining||0)+' lượt.'));
+     body.append(el('p','wc-note',
+       'Khi đạt bảo hiểm: 95% Lyr Sonia · 5% Nữ Thần 5★ khác. Ra bất kỳ Nữ Thần từ 5★ trở lên sẽ làm mới lượt bảo hiểm.'));
+     body.append(el('p','wc-note','Nếu chưa trúng Sonia, lượt thường sử dụng bảng Triệu Hồi Cao Cấp dưới đây, giảm theo tỷ lệ Sonia xuất hiện.'));
+   }else if(kind==='wish'){
+     const wi=state.wish_info||{};
+     const selected=pool.girls.find(g=>g.id===Number(wi.select));
+     const baseline=Number(selected?.probability||0)/100;
+     const extra=Number(wi.rate||0);
+     const actual=baseline+(1-baseline)*extra;
+     body.append(el('p','wc-note','Nữ Thần đã chọn: '+(selected?.name||'Chưa chọn')+' · Tỷ lệ hiện tại '+(actual*100).toFixed(3)+'% (bao gồm cơ hội gốc và lượt Ước Nguyện).'));
+     body.append(el('p','wc-note','Đảm bảo ra Nữ Thần đã chọn vào lượt Wish thứ 500 nếu chưa trúng. Khi trúng Nữ Thần đã chọn, lượt tích lũy bắt đầu lại.'));
+   }else{
+     body.append(el('p','wc-note','Tỷ lệ từng Nữ Thần được tính theo danh sách Triệu Hồi đang hoạt động trên máy chủ.'));
+   }
+   const stars=el('div','wc-odds-stars');
+   for(const tier of pool.stars){
+    const rarity=el('div','wc-odds-tier');
+    rarity.append(el('b','',tier.star+'★'),el('span','',Number(tier.probability).toLocaleString('vi-VN',{maximumFractionDigits:4})+'%'));stars.append(rarity);
+   }
+   if(kind==='sonia')body.append(el('h3','','Danh sách khi không ra Sonia'));
+   body.append(stars);
+   const scroll=el('div','wc-odds-list');
+   for(const entry of pool.girls){
+    const row=el('div','wc-odds-row');
+    row.append(el('span','',entry.name),el('small','',entry.star+'★'),
+      el('b','',Number(entry.probability).toLocaleString('vi-VN',{maximumFractionDigits:5})+'%'));
+    scroll.append(row);
+   }
+   body.append(el('h3','','Chi tiết Nữ Thần có thể nhận'),scroll,
+     el('p','wc-note','Đây là tỷ lệ theo từng lượt. Phần thưởng đã nhận được đưa vào đội hình của bạn.'));
+  }catch(e){body.replaceChildren(el('p','wc-note',e.message||'Không xem được tỷ lệ, hãy thử lại.'));}
+ }
+ const oddsButton=kind=>btn('wc-odds-button','≡',()=>oddsDetails(kind));
  // --- Capsule page: Advanced → Wish → Lyr Sonia share the middle slot. -----------------------------------------------
  let page=0;
  function arrow(dir,target,label){const b=btn('wc-arrow '+dir,'',()=>{page=target;capsule();});b.append(img(A('wish_capsule_arrow_'+dir)));b.setAttribute('aria-label',label);return b;}
@@ -53,7 +107,9 @@ const WishCapsule=(()=>{
  async function capsule(){await Promise.all([load(),loadChaos()]);const s=state.wish_info;if(!s){releaseWishChibi();return;}
  const adv=document.querySelector('#capsule-view .capsule-banner.advanced');if(!adv){releaseWishChibi();return;}
  releaseWishChibi();
-  adv.querySelectorAll(':scope>.wc-arrow,:scope>.wc-dots').forEach(e=>e.remove());adv.append(arrow('right',1,'Triệu Hồi Ước Nguyện'),dots());adv.hidden=page!==0;
+  const regular=document.querySelector('#capsule-view .capsule-banner.regular');
+  if(regular&&!regular.querySelector(':scope > .wc-odds-button'))regular.append(oddsButton('regular'));
+  adv.querySelectorAll(':scope>.wc-arrow,:scope>.wc-dots,:scope>.wc-odds-button').forEach(e=>e.remove());adv.append(arrow('right',1,'Triệu Hồi Ước Nguyện'),dots(),oddsButton('advanced'));adv.hidden=page!==0;
   let box=$('wish-banner');if(!box){box=el('div','capsule-banner wc-banner');box.id='wish-banner';adv.after(box);}box.replaceChildren();box.hidden=page!==1;
   const art=el('div','capsule-banner-art wc-art');
   let chibiHost=null,portrait=null;
@@ -74,7 +130,7 @@ const WishCapsule=(()=>{
   const tk=n=>{const f=document.createDocumentFragment();f.append(n+' ');f.append(img('/assets/currency/icon_36.png','cost-token'));return f;};
   const gm=n=>{const f=document.createDocumentFragment();f.append(n+' ');f.append(img('/assets/currency/icon_2_small.png','cost-token'));return f;};
   buttons.append(draw(26,"Miễn Phí",'1',s.free_in>0),draw(24,"Triệu Hồi 1",tk(1),scroll<1),draw(25,"Triệu Hồi 10",tk(10),scroll<10),draw(22,"Dùng Kim Cương ×1",gm(250),gems<250,' gem-draw'),draw(23,"Dùng Kim Cương ×10",gm(2200),gems<2200,' gem-draw'));
-  ctl.append(buttons);box.append(art,ctl,arrow('left',0,'Triệu Hồi Cao Cấp'),arrow('right',2,'Banner Lyr Sonia'),dots());
+  ctl.append(buttons);box.append(art,ctl,arrow('left',0,'Triệu Hồi Cao Cấp'),arrow('right',2,'Banner Lyr Sonia'),dots(),oddsButton('wish'));
   let cb=$('chaos-banner');if(!cb){cb=el('div','capsule-banner chaos-banner');cb.id='chaos-banner';box.after(cb);}cb.replaceChildren();cb.hidden=page!==2;
   const ca=el('div','capsule-banner-art chaos-art');ca.style.backgroundImage="url('"+chaos.banner+"')";
   const cc=el('div','capsule-banner-controls chaos-controls');
@@ -83,11 +139,11 @@ const WishCapsule=(()=>{
   const chaosRate=(Number(ci.rate||0)*100).toFixed(2);
   const chaosRemaining=Math.max(0,Number(ci.remaining??ci.guarantee??100));
   cc.append(el('p','chaos-copy','Tỷ lệ Lyr Sonia: '+chaosRate+'% · Bảo hiểm sau tối đa '+chaosRemaining+' lượt nữa'));
-  cc.append(el('p','chaos-copy','Không trúng Lyr Sonia sẽ nhận Nữ Thần từ bể Triệu Hồi Cao Cấp đã cân bằng.'));
+  cc.append(el('p','chaos-copy','Bảo hiểm lần đầu 120 lượt, từ lần sau 150 lượt. Trúng bảo hiểm: 95% Sonia · 5% Nữ Thần 5★ khác.'));
   const ticket=el('div','chaos-ticket');ticket.append(img(chaos.ticket.icon),el('span','',chaos.ticket.name),el('b','',number(state.items?.[String(chaos.ticket.id)]||0)));cc.append(ticket);
   const cbts=el('div','capsule-buttons chaos-buttons'),have=Number(state.items?.[String(chaos.ticket.id)]||0);
   for(const drawInfo of chaos.summons){const b=btn('capsule-draw','Triệu Hồi ×'+drawInfo.count,()=>action('SUMMON',{summon_id:drawInfo.id,times:1}),have<drawInfo.count);const cost=el('strong');cost.append(drawInfo.count+' ',img(chaos.ticket.icon,'cost-token'));b.append(cost);cbts.append(b);}
-  cc.append(cbts);cb.append(ca,cc,arrow('left',1,'Triệu Hồi Ước Nguyện'),dots());
+  cc.append(cbts);cb.append(ca,cc,arrow('left',1,'Triệu Hồi Ước Nguyện'),dots(),oddsButton('sonia'));
   if(s.select&&chibiHost&&page===1)void mountWishChibi(chibiHost,s.select,portrait);
  }
  function select(){const s=state.wish_info;const {body,close}=GirlUI.win({title:T('WISH_GACHA_SELECT_PARTNER_WINDOW')||'Chọn Nữ Thần Ước Nguyện',cls:'wc-select'});

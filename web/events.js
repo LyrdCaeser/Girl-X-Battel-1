@@ -38,7 +38,7 @@ const EventsHub=(()=>{
   .replace(/\bLeft\b/g,'Còn lại').replace(/\bCompleted\b/g,'Đã hoàn thành');
  };
  let catalog=null,loading=null,tab='ex',selected=null,pinnedId=null,origin='home',pending=false,message='',visited=false;
- let publicGemPacks=null,publicGemPacksLoading=false,soniaView=null,soniaDraws=[];
+ let publicGemPacks=null,publicGemPacksLoading=false,soniaView=null,soniaDraws=[],soniaMissionTab='free';
  function loadPublicGemPacks(){
    if(publicGemPacks!==null||publicGemPacksLoading)return;
    publicGemPacksLoading=true;
@@ -125,7 +125,7 @@ const EventsHub=(()=>{
   const sf=state.sonia_festival_info;
   if(tab==='ex'&&sf){
     const menu=el('nav','ev-strip sf-strip');
-    for(const [id,label] of [['stars','Lễ Hội Thức Tỉnh'],['shards','Vòng Quay Mảnh'],['missions','Hành Trình Vé']]){
+    for(const [id,label] of [['stars','Lễ Hội Thức Tỉnh'],['shards','Vòng Quay Mảnh'],['missions','Chinh Phục Nhiệm Vụ']]){
       const open=sf.events[id];
       const button=el('button','ev-title'+(soniaView===id?' on':''));
       button.type='button';button.title=label;
@@ -156,7 +156,7 @@ const EventsHub=(()=>{
 
  function soniaFestival(parent,kind,festival){
   const info=festival.events[kind];
-  const title={stars:'Lễ Hội Thức Tỉnh',shards:'Vòng Quay Mảnh',missions:'Hành Trình Vé'}[kind];
+  const title={stars:'Lễ Hội Thức Tỉnh',shards:'Vòng Quay Mảnh',missions:'Chinh Phục Nhiệm Vụ'}[kind];
   const section=el('div','sf-banner');
   section.append(img('/assets/cards/partner_card_758001.png','sf-hero','Lyr Sonia'));
   const text=el('div','sf-banner-copy');
@@ -199,7 +199,30 @@ const EventsHub=(()=>{
     parent.append(el('p','ev-note','Tỷ lệ của từng quà được ghi rõ. Không có vé triệu hồi hoặc Kim Cương trong vòng quay này.'));
   }else{
     parent.append(el('p','ev-note','Nhiệm vụ khó và cực khó · Chỉ tính chiến công trong mùa lễ hội. Hoàn thành và nhận quà trước giờ kết thúc từng nhiệm vụ.'));
-    parent.append(el('p','sf-progress','Tối đa 12 Vé Lyr Sonia trong 30 ngày. Mỗi nhiệm vụ chỉ nhận một lần.'));
+    parent.append(el('p','sf-progress','120 Vé Lyr Sonia qua thử thách · Tối đa 350 Vé qua quà nạp đã duyệt trong 30 ngày.'));
+    const tabs=el('nav','sf-mission-tabs');
+    for(const [key,label] of [['free','Thử Thách · 120 Vé'],['paid','Quà Nạp · 350 Vé']]){
+      const tabButton=el('button','ev-tab'+(soniaMissionTab===key?' on':''),label);
+      tabButton.type='button';tabButton.onclick=()=>{soniaMissionTab=key;render();};tabs.append(tabButton);
+    }
+    parent.insertBefore(tabs,rows);
+    if(soniaMissionTab==='paid'){
+      parent.append(el('p','ev-note','Quà riêng dành cho người ủng hộ. Chỉ các gói Kim Cương có giá công khai, được QTV duyệt trong thời gian lễ hội mới được tính. Gói nạp chưa xác nhận không được cộng.'));
+      parent.append(el('p','sf-progress',
+        festival.paid_available===false?'Chưa xem được lịch sử nạp. Hãy mở lại sự kiện sau nhé.':
+        'Đã nạp hợp lệ trong lễ hội: '+fmt(festival.paid_total_vnd||0)+' VNĐ'));
+      for(const m of festival.paid_missions||[]){
+        const row=el('div','pe-row sf-row');const left=el('div','sf-row-copy');
+        left.append(el('b','','Tích lũy '+fmt(m.required_vnd)+' VNĐ'),
+          el('small','',m.claimed?'Đã nhận quà':'Tổng nhận đến mốc này: '+m.total_tickets+' Vé Lyr Sonia'));
+        row.append(left,icon('940060',m.tickets));
+        const b=el('button','sf-btn',m.claimed?'Đã nhận':'Nhận vé');b.type='button';
+        b.disabled=pending||festival.paid_available===false||!m.can;b.onclick=()=>send({action:'sonia_paid_claim',tier:m.id});
+        row.append(b);rows.append(row);
+      }
+      parent.append(el('p','ev-note','Mỗi mốc quà chỉ nhận một lần. Tổng quà nạp tối đa 350 Vé, không cộng 350 Vé ở mỗi mốc.'));
+      return;
+    }
     for(const m of festival.missions){const row=el('div','pe-row sf-row');const left=el('div','sf-row-copy');
       left.append(el('b','',m.name),el('small','',m.difficulty+' · '+(m.claimed?'Đã nhận':festival.now>=m.end?'Đã hết hạn':'Còn '+leftText(m.end))));
       const bar=el('div','pe-bar');bar.style.backgroundImage=`url('${A('activity_bar_bg')}')`;
@@ -240,7 +263,7 @@ const EventsHub=(()=>{
 
  // Point events (SummonGiftBag / ProphetSummonGiftBag / WishingPoolGiftBag): banner, loop counter, tiers.
  function left(info){const secs=Math.max(0,info.ends_at-(state.server_time||Date.now()/1000));return Math.floor(secs/86400)+' ngày '+Math.floor(secs%86400/3600)+' giờ';}
- function pointEvent(parent,a){const cfg=POINT[a.id],info=state.point_events_info?.[a.id];if(!info){parent.append(el('p','ev-note',"Sự kiện chưa mở."));return;}
+ function pointEvent(parent,a){const cfg=POINT[a.id],info=state.point_events_info?.[a.id];if(!info||info.open===false){parent.append(el('p','ev-note',"Sự kiện đang tạm nghỉ. Hãy xem Lịch Sự Kiện để biết lần mở tiếp theo."));return;}
   const ban=el('div','pe-banner');ban.style.backgroundImage=`url('${A(cfg.bg)}')`;ban.append(el('h2','pe-title pe-title-vi',({13:'Thưởng Điểm Triệu Hồi',16:'Thưởng Điểm Chiêu Mộ',20:'Thưởng Điểm Máy Quay'})[a.id]||vi(a.title)),el('p','pe-desc',a.id===20?'Mỗi lần quay Máy Quay nhận 1 điểm. Có thể hoàn thành '+info.times+' vòng thưởng trong sự kiện!':cfg.desc));
   const strip=el('div','pe-strip');strip.append(el('b','','Đã hoàn thành ('+info.rounds+'/'+info.times+')'),el('span','pe-left',left(info)),el('span','pe-left-label','Còn lại'));ban.append(strip);
   const go=el('button','pe-go',cfg.go);go.type='button';go.style.backgroundImage=`url('${A('house_icon_1')}')`;go.disabled=!cfg.route;go.title=cfg.route?'':"Máy Quay hiện chưa khả dụng";go.onclick=()=>{if(cfg.route==='capsule')showView('capsule');else if(cfg.route==='enroll'&&typeof Enroll!=='undefined')Enroll.open('events');else if(cfg.route==='slots'&&typeof Slots!=='undefined')Slots.open('events');};ban.append(go);parent.append(ban);

@@ -955,7 +955,15 @@ class Engine:
             try:
                 state = self._load()
                 if str(request.get('action','')).startswith('sonia_'):
-                    result = sonia_festival.action(state, request, now=self.now())
+                    paid=0
+                    if request.get('action')=='sonia_paid_claim' and self.identity and not self.developer:
+                        try:
+                            paid=live_service.approved_sonia_spend(
+                                state.get('uid'),state.get('server_id'),
+                                sonia_festival.START,min(self.now(),sonia_festival.ENDS['missions']))
+                        except Exception as exc:
+                            raise ValueError('Chưa kiểm tra được đơn nạp đã duyệt. Hãy thử lại sau.') from exc
+                    result = sonia_festival.action(state,request,now=self.now(),paid_vnd=paid)
                 else:
                     result = events.action(state, request, now=self.now())
                 self._save_profile(state)
@@ -1294,7 +1302,18 @@ class Engine:
         state['profile_unlocks'] = self.profile_unlocks(state)
         state['home_systems'] = home_systems.snapshot(state, now=self.now())
         state['event_hub'] = events.snapshot(state, now=self.now())
-        state['sonia_festival_info'] = sonia_festival.snapshot(state, now=self.now())
+        _sonia_now=self.now()
+        _sonia_paid,_sonia_paid_available=0,True
+        if self.identity and not self.developer:
+            try:
+                _sonia_paid=live_service.approved_sonia_spend(
+                    state.get('uid'),state.get('server_id'),
+                    sonia_festival.START,min(_sonia_now,sonia_festival.ENDS['missions']))
+            except Exception:
+                # A payment lookup must never block the full game snapshot.
+                _sonia_paid_available=False
+        state['sonia_festival_info']=sonia_festival.snapshot(
+            state,now=_sonia_now,paid_vnd=_sonia_paid,paid_available=_sonia_paid_available)
         state['hang_info'] = campaign.pending(state, now=self.now())
         state['point_events_info'] = point_events.snapshot(state, now=self.now())
         state['explore_info'] = explore.snapshot(state, self.now())
@@ -3217,6 +3236,36 @@ class Engine:
         if not rows: raise GameError('Pool Triệu Hồi không còn phần thưởng hợp lệ theo cấu hình Local')
         return rows, sum(int(row['_local_weight']) for row in rows)
 
+    def summon_odds(self,server_id='S1'):
+        """Return real per-goddess odds from the same validated summoning pool.
+
+        Read-only and calculated on demand; avoids inflating /api/state.
+        Every percentage is relative to the actual total of this server.
+        """
+        result={}
+        for label,dropbox_id in (('regular',10001),('advanced',10002),('wish',10008)):
+            rows,total=self.summon_pool(dropbox_id,server_id)
+            if total<=0:
+                raise GameError('Danh sách Triệu Hồi hiện chưa sẵn sàng')
+            by_girl={}
+            by_star={}
+            for row in rows:
+                ident=int(str(row['item']).split('#')[0])
+                star=int(TABLES['partner'][str(ident)]['max_star'])
+                weight=int(row['_local_weight'])
+                by_girl[ident]=by_girl.get(ident,0)+weight
+                by_star[star]=by_star.get(star,0)+weight
+            result[label]={
+                'stars':[{'star':star,'probability':weight/total*100}
+                         for star,weight in sorted(by_star.items(),reverse=True)],
+                'girls':[{'id':ident,'name':TABLES['names'].get(str(ident),str(ident)),
+                          'star':int(TABLES['partner'][str(ident)]['max_star']),
+                          'probability':weight/total*100}
+                         for ident,weight in sorted(by_girl.items(),key=lambda pair:(-int(TABLES['partner'][str(pair[0])]['max_star']),-pair[1],pair[0]))],
+                'total':total,
+            }
+        return result
+
     def handle(self, name: str, request: dict):
         """Apply one command transactionally; returns response + ordered push packets."""
         with self.lock:
@@ -3392,8 +3441,22 @@ class Engine:
                             return int(str(pool_row['item']).split('#')[0])
                     return int(str(rows[-1]['item']).split('#')[0])
 
+                five_rows=[r for r in rows if int(TABLES['partner'][str(r['item']).split('#')[0]].get('max_star') or 0)>=5]
+                five_total=sum(int(r['_local_weight']) for r in five_rows)
+                if not five_total:
+                    raise GameError('Không tìm thấy Nữ Thần 5★ cho bảo hiểm')
+                def offbanner_draw():
+                    draw=secrets.randbelow(five_total)
+                    for row in five_rows:
+                        draw-=int(row['_local_weight'])
+                        if draw<0:return int(str(row['item']).split('#')[0])
+                    return int(str(five_rows[-1]['item']).split('#')[0])
+                def is_five_star(tid):
+                    return int(TABLES['partner'].get(str(tid),{}).get('max_star') or 0)>=5
                 try:
-                    new = chaos_summon.summon(state, summon_id, fallback_draw)
+                    new = chaos_summon.summon(state, summon_id, fallback_draw,
+                                              offbanner_draw=offbanner_draw,
+                                              is_five_star=is_five_star)
                 except ValueError as error:
                     raise GameError(str(error)) from None
                 data = {'summon_id': summon_id, 'summon_result': {'partners': new},

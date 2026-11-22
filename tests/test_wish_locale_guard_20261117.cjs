@@ -20,5 +20,5 @@ assert(T('WISH_GACHA_TEXT10').includes('Nhiệm Vụ Hằng Ngày'));
 assert.equal(T('WISH_GACHA_TEXT_1',100).split('\n')[0],'Triệu Hồi Ước Nguyện 100 lần');
 assert.equal(T('WISH_GACHA_NUM1'),'100');
 const html=fs.readFileSync('web/index.html','utf8');
-assert(html.includes('wish.js?v=20261117-localization-cacheguard-r3'));
+assert(html.includes('wish.js?v=20261122-live-wish-odds-r5'));
 console.log('PASS: 20 cached English strings suppressed in client, numbers and gameplay untouched');

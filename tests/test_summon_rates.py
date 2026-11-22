@@ -84,18 +84,40 @@ class ChaosSummonRateTests(unittest.TestCase):
         self.assertEqual(state['chaos_summon']['times'], 0)
         self.assertEqual(state['chaos_summon']['total'], 1)
 
-    def test_hard_pity_is_exactly_one_hundred_draws(self):
-        state = self.state(100)
-        for _ in range(10):
-            result = chaos_summon.summon(
-                state, 29, lambda: 33001, rng=lambda n: n - 1
-            )
-        self.assertEqual(sum(
-            girl['table_id'] == chaos_summon.PARTNER_ID
-            for girl in state['partners']
-        ), 1)
-        self.assertEqual(result[-1]['table_id'], chaos_summon.PARTNER_ID)
-        self.assertEqual(state['chaos_summon']['times'], 0)
+    def test_first_pity_120_then_150_and_offbanner_five_star(self):
+        state=self.state(270)
+        no_rare=lambda:33001
+        is_five=lambda tid: tid==51017
+        first=lambda bound:0 if bound==100 else bound-1
+        for _ in range(12):
+            result=chaos_summon.summon(
+                state,29,no_rare,rng=first,
+                offbanner_draw=lambda:51017,is_five_star=is_five)
+        self.assertEqual(result[-1]['table_id'],chaos_summon.PARTNER_ID)
+        self.assertEqual(state['chaos_summon']['times'],0)
+        self.assertEqual(chaos_summon.snapshot(state)['guarantee'],150)
+        for _ in range(15):
+            result=chaos_summon.summon(
+                state,29,no_rare,rng=lambda bound:bound-1,
+                offbanner_draw=lambda:51017,is_five_star=is_five)
+        self.assertEqual(result[-1]['table_id'],51017)
+        self.assertEqual(state['chaos_summon']['cycles'],2)
+        self.assertEqual(state['chaos_summon']['times'],0)
+
+    def test_natural_five_star_resets_cycle(self):
+        state=self.state(1)
+        result=chaos_summon.summon(
+            state,27,lambda:51017,rng=lambda n:n-1,
+            is_five_star=lambda tid:tid==51017)
+        self.assertEqual(result[0]['table_id'],51017)
+        self.assertEqual(state['chaos_summon']['times'],0)
+        self.assertEqual(chaos_summon.snapshot(state)['guarantee'],150)
+
+    def test_legacy_pity_preserved_after_update(self):
+        state=self.state(1)
+        state['chaos_summon']={'times':82,'total':115}
+        self.assertEqual(chaos_summon.snapshot(state)['guarantee'],150)
+        self.assertEqual(chaos_summon.snapshot(state)['times'],82)
 
     def test_insufficient_ticket_does_not_mutate_progress(self):
         state = self.state(0)

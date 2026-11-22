@@ -22,7 +22,7 @@ class SoniaFestivalTests(unittest.TestCase):
         self.assertEqual(f.ENDS['missions']-f.START,30*86400)
         self.assertEqual(sorted(f.STAR_REWARDS),list(range(11,26)))
         self.assertEqual(sum(r[0] for r in f.WHEEL),10_000)
-        self.assertEqual(sum(t[5] for t in f.TASKS),12)
+        self.assertEqual(sum(t[5] for t in f.TASKS),120)
         self.assertEqual(f.SPIN_COST,{5:2000,10:9500})
         self.assertNotIn(f.TICKET,set().union(*(d.keys() for _,d,_ in f.WHEEL)))
         self.assertNotIn(f.GEMS,set().union(*(d.keys() for _,d,_ in f.WHEEL)))
@@ -98,13 +98,13 @@ class SoniaFestivalTests(unittest.TestCase):
         self.assertTrue(next(t for t in f.snapshot(state,f.START+31)['missions']
                              if t['id']=='victory40')['can'])
         res=f.action(state,{'action':'sonia_mission_claim','id':'victory40'},f.START+32)
-        self.assertEqual(res['awards'],{'940060':1})
+        self.assertEqual(res['awards'],{'940060':5})
         with self.assertRaises(ValueError):
             f.action(state,{'action':'sonia_mission_claim','id':'victory40'},f.START+33)
         f.record(state,'victory',500,f.START+8*86400)
         with self.assertRaises(ValueError):
             f.action(state,{'action':'sonia_mission_claim','id':'victory120'},f.START+14*86400)
-        self.assertEqual(state['items']['940060'],1)
+        self.assertEqual(state['items']['940060'],5)
 
     def test_gm_gifts_shards_and_redemption_are_connected(self):
         catalog=[g for g in goddess_gifts.catalog() if g['id']==f.SONIA]
@@ -139,8 +139,8 @@ class SoniaFestivalTests(unittest.TestCase):
         task=next(t for t in f.snapshot(state,f.START+15*86400)['missions'] if t['id']=='advanced150')
         self.assertTrue(task['can'])
         got=f.action(state,{'action':'sonia_mission_claim','id':'advanced150'},f.START+15*86400)
-        self.assertEqual(got['awards'],{f.TICKET:2})
-        self.assertEqual(state['items'][f.TICKET],2)
+        self.assertEqual(got['awards'],{f.TICKET:15})
+        self.assertEqual(state['items'][f.TICKET],15)
 
 
 if __name__=='__main__':

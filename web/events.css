@@ -198,3 +198,8 @@ html.gxb-mobile #events-view .ev-title-label{overflow-wrap:anywhere}
 .sf-result-list span{border-radius:7px;background:#e3d7f4;color:#664889;padding:4px 6px;font-size:12px}
 .sf-progress-fill{background:linear-gradient(90deg,#9e62d0,#e4b3f1)!important}
 @media(max-width:410px){.sf-row{flex-wrap:wrap}.sf-btn{flex:1 1 45%}}
+.sf-mission-tabs{display:flex;gap:4px;margin:0 calc(14 * var(--u)) calc(10 * var(--u))}
+.sf-mission-tabs .ev-tab{flex:1;min-width:0;font-size:calc(22 * var(--u));
+ border:2px solid #98a9d6;border-radius:9px;padding:calc(12 * var(--u)) calc(8 * var(--u));
+ background:linear-gradient(#fff,#d8e7f6);color:#415e97;font-weight:900}
+.sf-mission-tabs .ev-tab.on{color:#fff;border-color:#8790d8;background:linear-gradient(#8e9ce9,#5174ce)}

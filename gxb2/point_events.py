@@ -8,7 +8,7 @@ Points per action: Enroll = 1 per Seal used (PROPHET_SUMMON_GIFTBAG_TEXT01), Slo
 """
 from __future__ import annotations
 import copy, json
-from . import clock
+from . import clock, game_calendar
 from pathlib import Path
 
 CONFIG = json.loads((Path(__file__).resolve().parents[1] / 'data/point_events.json').read_text())
@@ -48,6 +48,10 @@ def add(state, source, amount, now=None):
     for aid, cfg in CONFIG.items():
         if cfg['source'] != source or amount <= 0:
             continue
+        if str(state.get('server_id') or 'S1').upper()!='S4' and not game_calendar.is_open(int(aid),now):
+            # Do not create counters or grant prizes while this activity
+            # is outside the real Event Calendar window.
+            continue
         ev = saved(state, aid, now)
         top, times = cfg['round']
         left = amount * cfg['per']
@@ -73,7 +77,8 @@ def snapshot(state, now=None):
     for aid, cfg in CONFIG.items():
         ev = current(state, aid, now)
         done = ev['rounds'] >= cfg['round'][1]
-        out[aid] = {'period': ev['period'], 'ends_at': clock.week_end(ev['period']), 'point': cfg['round'][0] if done else ev['point'], 'rounds': ev['rounds'], 'times': cfg['round'][1],
+        opened=(str(state.get('server_id') or 'S1').upper()=='S4' or game_calendar.is_open(int(aid),now))
+        out[aid] = {'period': ev['period'], 'open':opened, 'ends_at': clock.week_end(ev['period']), 'point': cfg['round'][0] if done else ev['point'], 'rounds': ev['rounds'], 'times': cfg['round'][1],
                     'done': done, 'tiers': [{'point': t['point'], 'awards': t['awards'], 'got': done or i in ev['got']}
                                             for i, t in sorted(enumerate(cfg['table']), key=lambda pair: pair[1]['point'])]}
     return out

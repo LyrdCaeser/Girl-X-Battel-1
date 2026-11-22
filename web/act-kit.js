@@ -14,10 +14,14 @@ const ActKit=(()=>{
  function icon(id){id=String(id);if(id==='1'||id==='2')return '/assets/currency/icon_'+id+'_small.png';const it=itemCatalog?.[id];if(it&&typeof itemPicture==='function'){const p=itemPicture(it);if(p)return p;}return it&&itemIcons?.has?.(it.icon)?'/assets/item-icons/'+it.icon+'.png':null;}
  function chip(id,n,cls='ak-item'){const w=el('span',cls);const s=icon(id);if(s)w.append(img(s));else w.append(el('em','',name(id)));w.append(el('b','',fmt(n)));w.title=name(id)+' × '+fmt(n);return w;}
  async function act(req,url='/api/act-kit/action'){if(busy)return null;busy=true;try{const r=await api(url,{event:current,...req});state=r.state;if(r.got&&typeof GirlUI!=='undefined'&&Object.keys(r.got).length)GirlUI.toast("Đã nhận: "+Object.entries(r.got).map(([k,n])=>fmt(n)+' × '+name(k)).join(', '));return r;}catch(e){if(typeof GirlUI!=='undefined')GirlUI.toast(e.message);return null;}finally{busy=false;if(host?.isConnected)paint();}}
- async function render(parent,a){await load();host=parent;current=a.id;paint(a);if(data.events[a.id]&&!state.act_kit_info?.[a.id]?.started)act({action:'open'});}
+ async function render(parent,a){await load();host=parent;current=a.id;paint(a);if(data.events[a.id]&&!state.act_kit_info?.[a.id]?.started&&state.act_kit_info?.[a.id]?.open!==false)act({action:'open'});}
  function paint(a){const dv=draw.events[current],dinfo=state.act_draw_info?.[current],info=state.act_kit_info?.[current]||{bought:{},missions:[],supply:{},items:{},currency:null},ev=data.events[current]||{title:dv?.title||''};if(!host||(!data.events[current]&&!dv))return;host.querySelector('.ak-root')?.remove();
   const root=el('div','ak-root');host.append(root);const head=el('div','ak-head');head.append(el('h2','',ev.title));
   const cur=info.currency;if(cur)head.append(chip(cur,state.items[cur]||0,'ak-cur'));root.append(head);
+  if(info.open===false||dinfo?.open===false){
+   root.append(el('p','ak-note','Sự kiện đang tạm nghỉ. Xem Lịch Sự Kiện để biết ngày mở tiếp theo nhé!'));
+   return;
+  }
   const tabs=[];if(dv)tabs.push(['game','Trò Chơi']);if(ev.missions?.length)tabs.push(['missions','Nhiệm Vụ']);if(ev.shop?.length)tabs.push(['shop','Đổi Thưởng']);
   let tab=tabFor[current];if(!tabs.some(t=>t[0]===tab))tab=tabs[0]?.[0];tabFor[current]=tab;
   const nav=el('nav','ak-tabs');for(const [id,label] of tabs){const b=el('button','ak-tab'+(tab===id?' on':''),label);b.type='button';b.onclick=()=>{tabFor[current]=id;paint();};nav.append(b);}root.append(nav);
