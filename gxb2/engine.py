@@ -20,13 +20,14 @@ from . import hearts
 from . import fantasy_book, growth_diary, newbie_camp, friend_boss, pet_training, practical_work
 from . import arena3v3
 from . import puzzle_events, firework_project, local_promotion
-from . import wish, magic_card, two_love, lost_space, vip, activity_kit, activity_draw, jackpot, blind_box, pirate, guild
+from . import wish, chaos_summon, magic_card, two_love, lost_space, vip, activity_kit, activity_draw, jackpot, blind_box, pirate, guild
 from . import home_systems, events, equipment, campaign, point_events, acquisition, clock, explore, relations, missions, shops, arena, patrol, house_exam, hero_challenge, sanctuary, internship, midas, old_campus, guild_lab, echoes, shrine, galaxy, story, dress, skins, house_dress, souls, soul_land, stellar_altar, quick_formation, ev_sand, dress_show, local_config, world_live_config, live_service, database
 from .player_state_db import ScopedPostgresPlayerDB
 from .battle import attributes
 
 ROOT = Path(__file__).resolve().parents[1]
 TABLES = {name: json.loads((ROOT / f'data/{name}.json').read_text()) for name in ('partner', 'monster', 'stage', 'battle', 'exp_partner', 'exp_player', 'names', 'summon', 'dropbox')}
+chaos_summon.register(TABLES)
 DEBRIS = json.loads((ROOT / 'data/debris.json').read_text())
 GRADUATE = json.loads((ROOT / 'data/graduate.json').read_text())
 ASCENSION = json.loads((ROOT / 'data/ascension.json').read_text())
@@ -1237,6 +1238,7 @@ class Engine:
         state['souls_info'] = souls.snapshot(state)
         state['ev_sand_info'] = ev_sand.snapshot(state)
         state['wish_info'] = wish.snapshot(state, self.now())
+        state['chaos_summon_info'] = chaos_summon.snapshot(state)
         state['magic_card_info'] = magic_card.snapshot(state, self.now())
         state['two_love_info'] = two_love.snapshot(state, self.now())
         state['act_kit_info'] = activity_kit.snapshot(state, self.now())
@@ -2830,7 +2832,7 @@ class Engine:
         """Read-only, deterministic preview; the same result is used on commit.
 
         The original archive has reverse recipes for 7–15★ only. Native
-        6★, 1–5★, Cosmos and 16–25★ receive explicit, conservative
+        6★, 1–5★, Cosmos/Chaos and 16–25★ receive explicit, conservative
         behavior; the 16–25★ reward uses the original 15★ baseline.
         """
         pid = integer(pid, 'partner_id', 1)
@@ -2843,7 +2845,7 @@ class Engine:
         if not row: raise GameError('Dữ liệu Nữ Thần không hợp lệ')
         group = int(row.get('group') or 0)
         stars = int(row.get('max_star') or 0) + int(host.get('awake') or 0)
-        if not 1 <= group <= 7 or not 1 <= stars <= 25:
+        if not 1 <= group <= 8 or not 1 <= stars <= 25:
             raise GameError('Nữ Thần không thuộc phạm vi Hoàn Nguyên')
         if not str(row.get('hero_list') or '').strip() and int(host['table_id']) not in RETURN['puppets']:
             raise GameError('Không thể hoàn nguyên nhân vật không có dữ liệu Nữ Thần hợp lệ')
@@ -2865,9 +2867,9 @@ class Engine:
                 raise GameError('Công thức Hoàn Nguyên chứa nguyên liệu không hợp lệ')
             returns.append({'table_id': tid, 'count': int(count), 'awake': int(awake)})
 
-        if group == 7:
-            # Native Cosmos Goddesses do not have a 5★ form or house Doll;
-            # reset the SAME Cosmos goddess to her native 10★ form.
+        if group in (7, 8):
+            # Native Cosmos/Chaos Goddesses do not have a 5★ form or house Doll;
+            # reset the SAME goddess to her native 10★ form.
             give(host['table_id'])
         elif stars <= 5:
             # No lower-stage recipe exists; return the same native girl at Lv 1.
@@ -3265,6 +3267,16 @@ class Engine:
             return packets,None
         if name == 'SUMMON':
             summon_id = integer(request.get('summon_id'), 'summon_id', 1)
+            if summon_id in chaos_summon.SUMMONS:
+                try:
+                    new = chaos_summon.summon(state, summon_id)
+                except ValueError as error:
+                    raise GameError(str(error)) from None
+                data = {'summon_id': summon_id, 'summon_result': {'partners': new},
+                        'summon_info': self.summon_info(state)}
+                return [(p.MIDS[name], 'summon_res', data),
+                        (p.MIDS['ITEM_CHANGE'], 'item_change_res', self.backpack(state)),
+                        (p.MIDS['GET_SLOT_INFO'], 'get_slot_info_res', self.slot_info(state))], None
             fragment_summon = summon_id in {int(item['summon_id']) for item in DEBRIS.values() if item.get('summon_id') and str(item['summon_id']) in TABLES['summon']}
             prophet = summon_id in PROPHET_SUMMONS
             if summon_id not in (1, 2, 3, 4, 5, 6, 7, 8, 9, 15, 16) + wish.SUMMONS and not prophet and not fragment_summon: raise GameError('Tipo de invocación no disponible')

@@ -28,3 +28,15 @@ giftcode-studio/favicon.jpg -filter -diff -merge -text
 # The 69,972-byte login promotion WebP was committed as a normal Git blob.
 # Keep it out of LFS to prevent checkout warnings on the VPS and client builds.
 web/assets/login/gxb3-wedding-promo.webp -filter -diff -merge -text
+
+# Lyr Sonia release art stays as ordinary Git blobs while the repository LFS
+# quota is unavailable. These paths are intentionally scoped to this goddess.
+web/assets/avatar-hd/portraits/758001.webp -filter -diff -merge -text
+web/assets/cards/partner_card_758001.png -filter -diff -merge -text
+web/assets/chaos/** -filter -diff -merge -text
+web/assets/characters/758001.png -filter -diff -merge -text
+web/assets/chibis/lyr_sonia/** -filter -diff -merge -text
+web/assets/factions/8.png -filter -diff -merge -text
+web/assets/factions/group8.png -filter -diff -merge -text
+web/assets/pictures/758001.webp -filter -diff -merge -text
+web/assets/skills/skill_icon_758001*.png -filter -diff -merge -text

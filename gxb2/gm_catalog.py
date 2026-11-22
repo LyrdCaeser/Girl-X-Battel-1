@@ -32,7 +32,10 @@ def _girl_image(girl_id: int) -> str:
 
 def catalog() -> dict:
     from . import s4_trial
-    items = []
+    items = [{
+        "id": 940060, "name": "Vé Syrcotte", "category": 2,
+        "quality": 10, "image": "/assets/factions/8.png",
+    }]
     for record in ITEMS.values():
         key = str(record.get("icon") or "")
         picture = ITEM_IMAGES / (key + ".png")

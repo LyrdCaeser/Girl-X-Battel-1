@@ -34,6 +34,7 @@ ADMIN_KEY = os.environ.get('GXB3_ADMIN_KEY', '').strip()
 CHARACTER_ART = set(json.loads((ROOT/'web/assets/characters.json').read_text()))
 BATTLE_MAPS = set(json.loads((ROOT/'web/assets/battle-maps.json').read_text()))
 CARD_ART = set(json.loads((ROOT/'web/assets/cards.json').read_text()))
+CARD_ART.add(758001)
 def _card_aliases():
     # Re-issued girls (e.g. Selene 546003 → 46003, 656012 → 546003) have no card of their own: serve their host's card.
     rows = {int(g['id']): g for g in json.loads((ROOT/'web/assets/girls-catalog.json').read_text())}
@@ -690,8 +691,15 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                 return self.send(403, {'error':'Chỉ SUPER GM được chọn Gift Nữ Thần'})
             from gxb2 import goddess_gifts
             return self.send(200, {'goddesses': goddess_gifts.catalog(),
-                                   'factions': 7, 'duration_days': 30,
+                                   'factions': 8, 'duration_days': 30,
                                    'unlimited': True, 'one_per_uid': True})
+        if path.startswith('/assets/chaos/'):
+            folder = ROOT/'web/assets/chaos'
+            candidate = (folder / path[len('/assets/chaos/'):]).resolve()
+            if candidate.is_relative_to(folder.resolve()) and candidate.is_file():
+                mime = {'.png':'image/png', '.json':'application/json'}.get(candidate.suffix)
+                if mime: return self.send(200, candidate.read_bytes(), mime)
+            return self.send(404, {'error':'Recurso inexistente'})
         if path == '/api/admin/gift-catalog':
             if not self.admin_authorized():
                 return self.send(403, {'error': 'QTV_KEY_REQUIRED'})
@@ -832,7 +840,7 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                 return self.send(200, (ROOT/'web/assets/ui'/f'{stem}.png').read_bytes(), 'image/png')
         if path.startswith('/assets/factions/') and path.endswith('.png'):
             stem = path.rsplit('/', 1)[-1][:-4]
-            if stem.isdecimal() and 1 <= int(stem) <= 7:
+            if stem.isdecimal() and 1 <= int(stem) <= 8:
                 return self.send(200, (ROOT/'web/assets/factions'/f'group{int(stem)}.png').read_bytes(), 'image/png')
         if path.startswith('/assets/capsule/') and path.endswith('.png'):
             stem = path.rsplit('/', 1)[-1]

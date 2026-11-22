@@ -3547,5 +3547,14 @@
   "55001": {
     "stars": 5,
     "group": 5
+  },
+  "758001": {
+    "x": 0,
+    "y": 0,
+    "width": 160,
+    "height": 160,
+    "src": "/assets/avatar-hd/portraits/758001.webp",
+    "stars": 10,
+    "group": 8
   }
 }

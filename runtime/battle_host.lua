@@ -35,10 +35,12 @@ env.import=function(name)
  if name:sub(1,1)=='.'then local current=assert(stack[#stack],'relative import outside module load');name=current:match('^(.*)%.')..name end
  return env.require(name)
 end
+env.require('lib.battle.LyrSoniaPatch').register()
 env.require('base.functions')
 local cocos=env.require('lib.battle.framework.cocos');env.string.split=cocos.string.split
 for _,name in ipairs({'app.common.enums','app.common.const','app.common.Battle','app.common.utils'})do env.require(name)end
 env.require('app.common.tables.TableManager').get()
+env.require('lib.battle.LyrSoniaPatch').apply()
 if mode=='tables'then
  for i=4,#arg do
   local name=arg[i];local t=env.require('data.tables.'..name)

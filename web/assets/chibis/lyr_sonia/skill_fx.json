@@ -1,0 +1,436 @@
+{
+  "skeleton": {
+    "hash": "LyrSoniaSkillFX_v1",
+    "spine": "3.6.37",
+    "width": 900.0,
+    "height": 900.0,
+    "images": "./images_fx/"
+  },
+  "bones": [
+    {
+      "name": "root"
+    },
+    {
+      "name": "aura_center",
+      "parent": "root",
+      "x": 0,
+      "y": 240
+    },
+    {
+      "name": "ring_outer",
+      "parent": "aura_center",
+      "scaleX": 1.15,
+      "scaleY": 0.42
+    },
+    {
+      "name": "ring_inner",
+      "parent": "aura_center",
+      "scaleX": 0.85,
+      "scaleY": 0.32
+    },
+    {
+      "name": "beam_main",
+      "parent": "root",
+      "x": 260,
+      "y": 0
+    },
+    {
+      "name": "meteor_1",
+      "parent": "root",
+      "x": 180,
+      "y": 520,
+      "rotation": -18
+    },
+    {
+      "name": "meteor_2",
+      "parent": "root",
+      "x": 280,
+      "y": 580,
+      "rotation": -15
+    },
+    {
+      "name": "meteor_3",
+      "parent": "root",
+      "x": 360,
+      "y": 500,
+      "rotation": -22
+    },
+    {
+      "name": "impact_core",
+      "parent": "root",
+      "x": 260,
+      "y": 180
+    },
+    {
+      "name": "sparkles",
+      "parent": "aura_center",
+      "x": 0,
+      "y": 60
+    }
+  ],
+  "slots": [
+    {
+      "name": "ring_outer",
+      "bone": "ring_outer",
+      "blend": "additive",
+      "attachment": "ring_aura"
+    },
+    {
+      "name": "ring_inner",
+      "bone": "ring_inner",
+      "blend": "additive",
+      "attachment": "ring_aura"
+    },
+    {
+      "name": "beam_main",
+      "bone": "beam_main",
+      "blend": "additive",
+      "attachment": "beam_ray"
+    },
+    {
+      "name": "meteor_1",
+      "bone": "meteor_1",
+      "blend": "additive",
+      "attachment": "meteor_streak"
+    },
+    {
+      "name": "meteor_2",
+      "bone": "meteor_2",
+      "blend": "additive",
+      "attachment": "meteor_streak"
+    },
+    {
+      "name": "meteor_3",
+      "bone": "meteor_3",
+      "blend": "additive",
+      "attachment": "meteor_streak"
+    },
+    {
+      "name": "impact_core",
+      "bone": "impact_core",
+      "blend": "additive",
+      "attachment": "star_core"
+    },
+    {
+      "name": "sparkles",
+      "bone": "sparkles",
+      "blend": "additive",
+      "attachment": "petal_sparkle"
+    }
+  ],
+  "skins": {
+    "default": {
+      "ring_outer": {
+        "ring_aura": {
+          "width": 360,
+          "height": 360
+        }
+      },
+      "ring_inner": {
+        "ring_aura": {
+          "width": 360,
+          "height": 360
+        }
+      },
+      "beam_main": {
+        "beam_ray": {
+          "y": 280,
+          "width": 220,
+          "height": 560
+        }
+      },
+      "meteor_1": {
+        "meteor_streak": {
+          "width": 110,
+          "height": 320
+        }
+      },
+      "meteor_2": {
+        "meteor_streak": {
+          "width": 110,
+          "height": 320
+        }
+      },
+      "meteor_3": {
+        "meteor_streak": {
+          "width": 110,
+          "height": 320
+        }
+      },
+      "impact_core": {
+        "star_core": {
+          "width": 320,
+          "height": 320
+        }
+      },
+      "sparkles": {
+        "petal_sparkle": {
+          "width": 380,
+          "height": 280
+        }
+      }
+    }
+  },
+  "animations": {
+    "skill_vfx": {
+      "bones": {
+        "ring_outer": {
+          "rotate": [
+            {
+              "time": 0,
+              "angle": 0
+            },
+            {
+              "time": 1.8,
+              "angle": 180
+            }
+          ],
+          "scale": [
+            {
+              "time": 0,
+              "x": 0.2,
+              "y": 0.2
+            },
+            {
+              "time": 0.4,
+              "x": 1.25,
+              "y": 1.25
+            },
+            {
+              "time": 1.4,
+              "x": 1.35,
+              "y": 1.35
+            },
+            {
+              "time": 1.8,
+              "x": 0.1,
+              "y": 0.1
+            }
+          ]
+        },
+        "ring_inner": {
+          "rotate": [
+            {
+              "time": 0,
+              "angle": 0
+            },
+            {
+              "time": 1.8,
+              "angle": -240
+            }
+          ],
+          "scale": [
+            {
+              "time": 0,
+              "x": 0.1,
+              "y": 0.1
+            },
+            {
+              "time": 0.45,
+              "x": 1.15,
+              "y": 1.15
+            },
+            {
+              "time": 1.8,
+              "x": 0.1,
+              "y": 0.1
+            }
+          ]
+        },
+        "meteor_1": {
+          "translate": [
+            {
+              "time": 0.55,
+              "x": 0,
+              "y": 0
+            },
+            {
+              "time": 1.05,
+              "x": 70,
+              "y": -340
+            }
+          ]
+        },
+        "meteor_2": {
+          "translate": [
+            {
+              "time": 0.65,
+              "x": 0,
+              "y": 0
+            },
+            {
+              "time": 1.15,
+              "x": -20,
+              "y": -400
+            }
+          ]
+        },
+        "meteor_3": {
+          "translate": [
+            {
+              "time": 0.72,
+              "x": 0,
+              "y": 0
+            },
+            {
+              "time": 1.22,
+              "x": -90,
+              "y": -320
+            }
+          ]
+        },
+        "beam_main": {
+          "scale": [
+            {
+              "time": 1.05,
+              "x": 0.1,
+              "y": 0.2
+            },
+            {
+              "time": 1.2,
+              "x": 1.35,
+              "y": 1.15
+            },
+            {
+              "time": 1.55,
+              "x": 0.9,
+              "y": 1.0
+            },
+            {
+              "time": 1.8,
+              "x": 0.05,
+              "y": 0.5
+            }
+          ]
+        },
+        "impact_core": {
+          "rotate": [
+            {
+              "time": 1.05,
+              "angle": 0
+            },
+            {
+              "time": 1.8,
+              "angle": 135
+            }
+          ],
+          "scale": [
+            {
+              "time": 1.05,
+              "x": 0.1,
+              "y": 0.1
+            },
+            {
+              "time": 1.22,
+              "x": 1.5,
+              "y": 1.5
+            },
+            {
+              "time": 1.8,
+              "x": 0.05,
+              "y": 0.05
+            }
+          ]
+        },
+        "sparkles": {
+          "translate": [
+            {
+              "time": 0,
+              "y": 0
+            },
+            {
+              "time": 1.8,
+              "y": 95
+            }
+          ]
+        }
+      },
+      "slots": {
+        "beam_main": {
+          "color": [
+            {
+              "time": 0,
+              "color": "ffffff00"
+            },
+            {
+              "time": 1.05,
+              "color": "ffffffff"
+            },
+            {
+              "time": 1.6,
+              "color": "ffffffaa"
+            },
+            {
+              "time": 1.8,
+              "color": "ffffff00"
+            }
+          ]
+        },
+        "impact_core": {
+          "color": [
+            {
+              "time": 0,
+              "color": "ffffff00"
+            },
+            {
+              "time": 1.08,
+              "color": "ffffffff"
+            },
+            {
+              "time": 1.8,
+              "color": "ffffff00"
+            }
+          ]
+        },
+        "meteor_1": {
+          "color": [
+            {
+              "time": 0,
+              "color": "ffffff00"
+            },
+            {
+              "time": 0.55,
+              "color": "ffffffff"
+            },
+            {
+              "time": 1.05,
+              "color": "ffffff00"
+            }
+          ]
+        },
+        "meteor_2": {
+          "color": [
+            {
+              "time": 0,
+              "color": "ffffff00"
+            },
+            {
+              "time": 0.65,
+              "color": "ffffffff"
+            },
+            {
+              "time": 1.15,
+              "color": "ffffff00"
+            }
+          ]
+        },
+        "meteor_3": {
+          "color": [
+            {
+              "time": 0,
+              "color": "ffffff00"
+            },
+            {
+              "time": 0.72,
+              "color": "ffffffff"
+            },
+            {
+              "time": 1.22,
+              "color": "ffffff00"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

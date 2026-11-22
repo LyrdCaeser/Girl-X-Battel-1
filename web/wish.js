@@ -4,7 +4,7 @@
 // Advanced Capsules or gems → summons 22-26) and the event panel (activity/WishCapsule: banner, "Capsule" button and the
 // draw-count rewards). Rules: gxb2/wish.py. Prefix wc-.
 const WishCapsule=(()=>{
- let data=null;
+ let data=null,chaos=null;
  // Keep at most one living Spine model; repeated capsule renders must not
  // accumulate WebGL contexts or leave a ghost chibi after switching pages.
  let wishChibi=null,wishChibiGeneration=0;
@@ -43,16 +43,17 @@ const WishCapsule=(()=>{
  function icon(id){id=String(id);if(id==='1'||id==='2')return '/assets/currency/icon_'+id+'_small.png';const it=itemCatalog?.[id];if(it&&typeof itemPicture==='function'){const p=itemPicture(it);if(p)return p;}return it&&itemIcons.has(it.icon)?'/assets/item-icons/'+it.icon+'.png':'';}
  function chips(text){const w=el('span','wc-chips');for(const p of String(text||'').split('|')){if(!p.includes('#'))continue;const [k,v]=p.split('#');const c=el('span','wc-chip');const s=icon(k);if(s)c.append(img(s));c.append(el('b','',number(Number(v))));c.title=itemCatalog?.[k]?.name||k;w.append(c);}return w;}
  async function load(){if(!data)data=await api('/assets/wish.json?v=20261117-wish-localization-r3');return data;}
+ async function loadChaos(){if(!chaos)chaos=await api('/assets/chaos/lyr_sonia.json?v=1');return chaos;}
  async function act(req,msg){try{const r=await api('/api/wish/action',req);state=r.state;if(msg)GirlUI.toast(msg);return r;}catch(e){GirlUI.toast(e.message);return null;}finally{if(typeof render==='function')render();}}
  const hms=s=>{const h=Math.floor(s/3600),m=Math.floor(s%3600/60);return h+' giờ '+String(m).padStart(2,'0')+' phút';};
- // --- Capsule page: Advanced ⇄ Wish share the middle slot (SummonWindow groupMiddle, btnLeft_ / btnRight_, dotGroup) ----
+ // --- Capsule page: Advanced → Wish → Lyr Sonia share the middle slot. -----------------------------------------------
  let page=0;
- function arrow(dir){const b=btn('wc-arrow '+dir,'',()=>{page=dir==='right'?1:0;capsule();});b.append(img(A('wish_capsule_arrow_'+dir)));b.setAttribute('aria-label',dir==='right'?'Triệu Hồi Ước Nguyện':'Triệu Hồi Cao Cấp');return b;}
- function dots(){const d=el('div','wc-dots');for(let i=0;i<2;i++)d.append(img(A('wish_capsule_dot'+(i===page?1:0))));return d;}
- async function capsule(){await load();const s=state.wish_info;if(!s){releaseWishChibi();return;}
+ function arrow(dir,target,label){const b=btn('wc-arrow '+dir,'',()=>{page=target;capsule();});b.append(img(A('wish_capsule_arrow_'+dir)));b.setAttribute('aria-label',label);return b;}
+ function dots(){const d=el('div','wc-dots');for(let i=0;i<3;i++)d.append(img(A('wish_capsule_dot'+(i===page?1:0))));return d;}
+ async function capsule(){await Promise.all([load(),loadChaos()]);const s=state.wish_info;if(!s){releaseWishChibi();return;}
  const adv=document.querySelector('#capsule-view .capsule-banner.advanced');if(!adv){releaseWishChibi();return;}
  releaseWishChibi();
-  adv.querySelectorAll(':scope>.wc-arrow,:scope>.wc-dots').forEach(e=>e.remove());adv.append(arrow('right'),dots());adv.hidden=page!==0;
+  adv.querySelectorAll(':scope>.wc-arrow,:scope>.wc-dots').forEach(e=>e.remove());adv.append(arrow('right',1,'Triệu Hồi Ước Nguyện'),dots());adv.hidden=page!==0;
   let box=$('wish-banner');if(!box){box=el('div','capsule-banner wc-banner');box.id='wish-banner';adv.after(box);}box.replaceChildren();box.hidden=page!==1;
   const art=el('div','capsule-banner-art wc-art');
   let chibiHost=null,portrait=null;
@@ -73,7 +74,15 @@ const WishCapsule=(()=>{
   const tk=n=>{const f=document.createDocumentFragment();f.append(n+' ');f.append(img('/assets/currency/icon_36.png','cost-token'));return f;};
   const gm=n=>{const f=document.createDocumentFragment();f.append(n+' ');f.append(img('/assets/currency/icon_2_small.png','cost-token'));return f;};
   buttons.append(draw(26,"Miễn Phí",'1',s.free_in>0),draw(24,"Triệu Hồi 1",tk(1),scroll<1),draw(25,"Triệu Hồi 10",tk(10),scroll<10),draw(22,"Dùng Kim Cương ×1",gm(250),gems<250,' gem-draw'),draw(23,"Dùng Kim Cương ×10",gm(2200),gems<2200,' gem-draw'));
-  ctl.append(buttons);box.append(art,ctl,arrow('left'),dots());
+  ctl.append(buttons);box.append(art,ctl,arrow('left',0,'Triệu Hồi Cao Cấp'),arrow('right',2,'Banner Lyr Sonia'),dots());
+  let cb=$('chaos-banner');if(!cb){cb=el('div','capsule-banner chaos-banner');cb.id='chaos-banner';box.after(cb);}cb.replaceChildren();cb.hidden=page!==2;
+  const ca=el('div','capsule-banner-art chaos-art');ca.style.backgroundImage="url('"+chaos.banner+"')";
+  const cc=el('div','capsule-banner-controls chaos-controls');
+  cc.append(el('small','chaos-kicker',chaos.faction.name),el('h3','chaos-title',chaos.name),el('p','chaos-copy','Nữ Thần Hỗn Độn nguyên bản 10★ · có thể Thức Tỉnh đến 25★'));
+  const ticket=el('div','chaos-ticket');ticket.append(img(chaos.ticket.icon),el('span','',chaos.ticket.name),el('b','',number(state.items?.[String(chaos.ticket.id)]||0)));cc.append(ticket);
+  const cbts=el('div','capsule-buttons chaos-buttons'),have=Number(state.items?.[String(chaos.ticket.id)]||0);
+  for(const drawInfo of chaos.summons){const b=btn('capsule-draw','Triệu Hồi ×'+drawInfo.count,()=>action('SUMMON',{summon_id:drawInfo.id,times:1}),have<drawInfo.count);const cost=el('strong');cost.append(drawInfo.count+' ',img(chaos.ticket.icon,'cost-token'));b.append(cost);cbts.append(b);}
+  cc.append(cbts);cb.append(ca,cc,arrow('left',1,'Triệu Hồi Ước Nguyện'),dots());
   if(s.select&&chibiHost&&page===1)void mountWishChibi(chibiHost,s.select,portrait);
  }
  function select(){const s=state.wish_info;const {body,close}=GirlUI.win({title:T('WISH_GACHA_SELECT_PARTNER_WINDOW')||'Chọn Nữ Thần Ước Nguyện',cls:'wc-select'});
