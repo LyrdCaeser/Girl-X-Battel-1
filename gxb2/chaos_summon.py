@@ -28,7 +28,7 @@ PARTNER = {
     'grade_lv1': '', 'grade_exp1': '', 'grade_lv2': '', 'grade_exp2': '',
     'grade_lv3': '', 'grade_exp3': '', 'grade_lv4': '', 'grade_exp4': '',
     'grade_lv5': '', 'grade_exp5': '', 'grade_lv6': '', 'grade_exp6': '',
-    'ex_skill': 0, 'star_origin': 0,
+    'ex_skill': 1, 'star_origin': 0,
     'atk_id': 75800100, 'act_skill_id': 75800101,
     'pas_skill1_id': 75800102, 'pas_skill2_id': 75800103, 'pas_skill3_id': 75800104,
     'pas_tier1': 1, 'pas_tier2': 1, 'pas_tier3': 1,

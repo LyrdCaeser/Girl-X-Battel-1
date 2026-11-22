@@ -33,7 +33,7 @@ assert(!battle.includes('if(!fxLite)at('));
 assert(battle.includes('for(const timer of fxTimers){clearTimeout(timer);clearInterval(timer);}'));
 assert(battle.includes('for(const f of live){'));
 assert(battle.includes('f.state.timeScale=value*(fxConfigs.get(f)||1)'));
-assert(app.includes('battleAnimation?.timing?.(frame.skill_id,frame.pos)'));
+assert(app.includes('battleAnimation?.timing?.(displaySkillId,frame.pos)'));
 assert(app.includes('soniaTiming.impact/battleSpeed'));
 assert(!battle.includes('SoniaBattleVFX'));
 for(const id of skills)assert(battle.includes(id+':{impact:'),'native timeline for '+id);

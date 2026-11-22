@@ -1095,14 +1095,15 @@ async function replay(report,options={}){
       fighter.epFill.style.width=amount+'%';fighter.ep=amount;
      }
    }
-  }if(frame.skill_id>0&&typeof GxbAudio!=='undefined')GxbAudio.skill(frame.skill_id);if(frame.skill_id>0)battleAnimation?.play(frame.pos,frame.skill_id%100===0?'attack':'skill');for(const u of units.values())u.element.classList.remove('active');const actor=units.get(frame.pos);if(actor){actor.element.classList.add('active');actor.element.classList.remove('attack');void actor.element.offsetWidth;actor.element.classList.add('attack');}if(frame.skill_id>0)el('line').textContent='Hiệp '+frame.round+' · '+(actor?.name||"Trang Bị")+' tung chiêu';else el('line').textContent='Hiệp '+frame.round;
+  }const displaySkillId=soniaIsActor&&Number(frame.skill_id)>=758001011&&Number(frame.skill_id)<=758001015?75800101:Number(frame.skill_id);
+  if(frame.skill_id>0&&typeof GxbAudio!=='undefined')GxbAudio.skill(displaySkillId);if(frame.skill_id>0)battleAnimation?.play(frame.pos,frame.skill_id%100===0?'attack':'skill');for(const u of units.values())u.element.classList.remove('active');const actor=units.get(frame.pos);if(actor){actor.element.classList.add('active');actor.element.classList.remove('attack');void actor.element.offsetWidth;actor.element.classList.add('attack');}if(frame.skill_id>0)el('line').textContent='Hiệp '+frame.round+' · '+(actor?.name||"Trang Bị")+' tung chiêu';else el('line').textContent='Hiệp '+frame.round;
   // Native attack wind-up comes BEFORE the hit/FX frame. Never strike the
   // target before the caster starts the attack animation.
-  const soniaTiming=frame.skill_id>0?battleAnimation?.timing?.(frame.skill_id,frame.pos):null;
+  const soniaTiming=frame.skill_id>0?battleAnimation?.timing?.(displaySkillId,frame.pos):null;
   if(frame.skill_id>0){
    await new Promise(resolve=>setTimeout(resolve,210/battleSpeed));
    if(skip||token!==battleReplayToken)break;
-   battleAnimation?.fx?.(frame.skill_id,frame.pos,[...new Set(list(frame.buffs)
+   battleAnimation?.fx?.(displaySkillId,frame.pos,[...new Set(list(frame.buffs)
      .filter(b=>typeof b.hp==='number'&&b.pos!==frame.pos).map(b=>b.pos))]);
    // Synchronize the real damage/hit frame with Sonia's visible impact.
    // Other goddesses keep their unchanged 210ms wind-up and battle speed.

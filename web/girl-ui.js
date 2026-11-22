@@ -111,9 +111,64 @@ const GirlUI=(()=>{
    if(popup.isConnected)detail.textContent='Chưa thể tải mô tả. Hãy mở lại kỹ năng.';
   });
  }
+ // Lyr Sonia's four native Elite Skill branches are upgradable separately,
+ // using the same two original skill books and five-rank costs as other girls.
+ function soniaEliteSkills(hero){
+  const {body}=win({title:'Kỹ Năng Tinh Anh',cls:'gu-ex-win gu-sonia-ex-win'});
+  const skills=(hero.ex_skills||[0,0,0,0]).concat([0,0,0,0]).slice(0,4);
+  const names=['Tinh Cầu Hỗn Mang','Nghịch Lưu Ma Lực','Vòng Luân Hư Vô','Quy Luật Sụp Đổ'];
+  const describe=[
+   lv=>lv?'Sát thương tinh cầu tăng lên '+(260+8*lv)+'% Công lên toàn bộ kẻ địch. Các hiệu ứng Hỗn Độn và dao độc vẫn được giữ nguyên.':'Tinh cầu gây 260% Công lên toàn bộ kẻ địch. Nâng cấp Tinh Anh để tăng sức mạnh.',
+   lv=>lv?'Nghịch Lưu Ma Lực gia tăng '+(2*lv)+'% sát thương kỹ năng trong 2 hiệp.':'Nghịch Lưu Ma Lực chưa được nâng cấp Tinh Anh.',
+   lv=>lv?'Khiên Hỗn Độn tăng đến '+(600+30*lv)+'% Công, tăng sức bảo hộ cho Sonia.':'Khiên Hỗn Độn có sức mạnh cơ bản bằng 600% Công.',
+   lv=>lv?'Khi hạ gục kẻ địch, Quy Luật Sụp Đổ có thể hồi thêm '+(3*lv)+' Năng Lượng.':'Quy Luật Sụp Đổ chưa được nâng cấp Tinh Anh.'
+  ];
+  const row=el('div','gu-ex-row'),panel=el('div','gu-sonia-ex-panel');
+  const cards=[];let selected=0;
+  function paint(){
+   cards.forEach((b,i)=>{b.classList.toggle('selected',i===selected);b.setAttribute('aria-pressed',String(i===selected));});
+   const lv=Number(skills[selected])||0;
+   panel.replaceChildren();
+   panel.append(el('h4','gu-sonia-ex-title',names[selected]),
+    el('p','gu-sonia-ex-description',describe[selected](lv)));
+   if(lv<5){
+    panel.append(el('p','gu-sonia-ex-next','Cấp kế tiếp · '+(lv+1)+'/5'),
+     el('p','gu-sonia-ex-description',describe[selected](lv+1)));
+    const amounts=hero.ex_skill_costs?.[selected];
+    if(amounts&&Object.keys(amounts).length){
+     const materials=el('div','gu-sonia-ex-materials'),canPay=cost(materials,amounts);
+     panel.append(materials);
+     const up=el('button','gs-btn','Nâng Cấp');up.type='button';up.disabled=!canPay;
+     up.onclick=async()=>{
+      if(up.disabled)return;
+      up.disabled=true;
+      try{
+       await action('UPGRADE_PARTNER_EX_SKILL',{partner_id:hero.partner_id,index:selected+1});
+       const next=state.roster.find(h=>h.partner_id===hero.partner_id);
+       if(next){sheetRoot().querySelector('.gs-overlay')?.remove();soniaEliteSkills(next);}
+      }finally{up.disabled=false;}
+     };
+     panel.append(up);
+    }else{
+     panel.append(el('p','gu-sonia-ex-description','Chưa tải được nguyên liệu nâng cấp.'));
+    }
+   }else{
+    panel.append(el('p','gu-sonia-ex-max','Kỹ năng đã đạt cấp tối đa.'));
+   }
+  }
+  for(let i=0;i<4;i++){
+   const b=el('button','gu-ex-skill');b.type='button';
+   b.setAttribute('aria-label',names[i]+' · cấp '+skills[i]+' trên 5');
+   b.append(img('/assets/skills/skill_icon_'+(75800101+i)+'.png'),
+    el('span','gu-ex-lv',String(skills[i])+'/5'),el('span','gu-ex-up',names[i]));
+   b.onclick=()=>{selected=i;paint();};
+   row.append(b);cards.push(b);
+  }
+  body.append(row,panel);paint();
+ }
  // Elite Skills (exskill_grade_up_window): opened from the sheet's left button, no longer inside the Attribute tab
  function exSkills(hero){document.querySelector('.gu-ex')?.remove();}
- function eliteSkills(hero){if(!hero.has_ex_skills){toast("This Girl has no Elite Skills.");return;}const {body}=win({title:'Elite Skills',cls:'gu-ex-win'});const skills=(hero.ex_skills||[0,0,0,0]).concat([0,0,0,0]).slice(0,4);
+ function eliteSkills(hero){if(Number(hero.table_id)===758001&&hero.has_ex_skills)return soniaEliteSkills(hero);if(!hero.has_ex_skills){toast("This Girl has no Elite Skills.");return;}const {body}=win({title:'Elite Skills',cls:'gu-ex-win'});const skills=(hero.ex_skills||[0,0,0,0]).concat([0,0,0,0]).slice(0,4);
   const icons=[...document.querySelectorAll('#detail-skills .detail-skill img')].map(i=>i.src),names=[...document.querySelectorAll('#detail-skills .detail-skill')].map(i=>i.title);const row=el('div','gu-ex-row');
   skills.forEach((lv,i)=>{const b=el('button','gu-ex-skill');b.type='button';if(icons[i])b.append(img(icons[i]));b.append(el('span','gu-ex-lv',lv+'/5'),el('span','gu-ex-up',lv>=5?'Tối Đa':'Nâng Cấp'));b.disabled=lv>=5;b.title=(names[i]||'Kỹ Năng '+(i+1))+(lv>=5?' · Đã tối đa':' · Nâng cấp');b.onclick=async()=>{await action('UPGRADE_PARTNER_EX_SKILL',{partner_id:hero.partner_id,index:i+1});const h=state.roster.find(x=>x.partner_id===hero.partner_id);if(h){sheetRoot().querySelector('.gs-overlay')?.remove();eliteSkills(h);}};row.append(b);});
   body.append(row);const low=Math.min(...skills);if(low<5){const c=el('div','gu-grade');c.append(el('small','',"Next level cost:"));cost(c,hero.ex_skill_cost);body.append(c);}else body.append(el('p','detail-note',"All Elite Skills are maxed."));}

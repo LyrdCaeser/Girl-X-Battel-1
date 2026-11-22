@@ -51,7 +51,7 @@ for(const [id,resource] of [
  assert.equal(d.skeleton.spine,'3.6.37');
  assert(fs.existsSync('web/assets/battle-fx/'+resource+'/model.atlas'));
 }
-assert(html.includes('app.js?v=20261122-skill-click-r10'));
+assert(html.includes('app.js?v=20261122-sonia-elite-vfx-r11'));
 assert(html.includes('style.css?v=20261122-sonia-gold-shield-r5'));
 assert(html.includes('battle-animation.js?v=20261122-sonia-five-daggers-r8'));
 console.log('PASS: native Lua buffs drive real yellow shield that depletes/disappears, conditional Dracula+Promethea+ban visual cues');

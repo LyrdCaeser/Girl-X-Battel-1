@@ -40,7 +40,7 @@ assert(anim.includes("spawn('meiyingdu_hurt02','texiao01'"));
 assert(anim.includes('index*105/Math.max(.25,rate)'));
 assert(anim.includes('seen.size>=5'));
 assert(anim.includes('clearInterval(timer)'));
-assert(html.includes('app.js?v=20261122-skill-click-r10'));
+assert(html.includes('app.js?v=20261122-sonia-elite-vfx-r11'));
 assert(html.includes('battle-animation.js?v=20261122-sonia-five-daggers-r8'));
 assert(html.includes('wish.js?v=20261122-sonia-poison-skilldesc-r8'));
 const j=JSON.parse(fs.readFileSync('web/assets/chaos/lyr_sonia.json','utf8'));

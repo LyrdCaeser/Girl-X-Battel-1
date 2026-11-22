@@ -493,3 +493,18 @@ html.gxb-mobile #app-frame #girl-detail-view.sonia-continuation-scene:not(.gs-zo
 .gu-skill-info-actions{display:flex;justify-content:center;margin-top:calc(8 * var(--u))}
 html.gxb-mobile #app-frame .gs-win.gu-skill-info{max-height:calc(100dvh - 28px)}
 html.gxb-mobile #app-frame .gs-win.gu-skill-info .gs-win-body{max-height:calc(100dvh - 125px)}
+
+/* Native Sonia Elite Skill window: original 9-slice frame, usable on mobile. */
+.gu-sonia-ex-win .gu-ex-row{gap:calc(10 * var(--u));grid-template-columns:repeat(4,minmax(0,1fr))}
+.gu-sonia-ex-win .gu-ex-skill{min-width:0;min-height:calc(175 * var(--u));padding-bottom:calc(48 * var(--u))!important;border-radius:calc(12 * var(--u));border-color:#a5a9d2}
+.gu-sonia-ex-win .gu-ex-skill.selected{border-color:#ac72e7;box-shadow:0 0 0 calc(3 * var(--u)) #cdb4f7}
+.gu-sonia-ex-win .gu-ex-skill img{height:calc(110 * var(--u))!important;object-fit:contain}
+.gu-sonia-ex-win .gu-ex-up{font-size:calc(13 * var(--u));line-height:1.15;padding:calc(2 * var(--u));min-height:calc(38 * var(--u));overflow:hidden}
+.gu-sonia-ex-win .gu-ex-lv{font-size:calc(15 * var(--u))}
+.gu-sonia-ex-panel{text-align:center;margin-top:calc(18 * var(--u));padding:calc(18 * var(--u));border:calc(2 * var(--u)) solid #c9b8e6;border-radius:calc(12 * var(--u));background:#faf8ff}
+.gu-sonia-ex-title{font-size:calc(27 * var(--u));color:#6a4ca5;margin:0 0 calc(12 * var(--u))}
+.gu-sonia-ex-description{font-size:calc(21 * var(--u));line-height:1.45;color:#485471;margin:calc(7 * var(--u)) 0;white-space:normal}
+.gu-sonia-ex-next{margin:calc(12 * var(--u)) 0 calc(6 * var(--u));font-size:calc(21 * var(--u));font-weight:800;color:#8365bf}
+.gu-sonia-ex-materials{margin:calc(16 * var(--u)) 0;display:flex;justify-content:center}
+.gu-sonia-ex-panel>.gs-btn{display:block;margin:calc(8 * var(--u)) auto}
+.gu-sonia-ex-max{font-size:calc(22 * var(--u));font-weight:bold;color:#8562b0}

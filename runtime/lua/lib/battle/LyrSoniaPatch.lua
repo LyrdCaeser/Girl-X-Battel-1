@@ -18,7 +18,12 @@ local function appendRaw(moduleName, values)
         local pos = keys[key]
         if pos then row[pos] = value end
     end
-    rows[maxIndex + 1] = row
+    if moduleName == 'partner_exskill' then
+        row[keys.id] = tostring(values.id)
+        rows[tostring(values.id)] = row
+    else
+        rows[maxIndex + 1] = row
+    end
 end
 
 local function effect(id, buff, kind, num, rounds, prob)
@@ -42,7 +47,7 @@ function M.register()
         base_atk=1056, base_hp=13680, base_arm=60, base_spd=312,
         grow_atk=105.6, grow_hp=1368, grow_arm=6, grow_spd=2,
         energy_base=50, decompose='7#25000|9#200000|10#25000',
-        ex_skill=0, star_origin=0, atk_id=75800100,
+        ex_skill=1, star_origin=0, atk_id=75800100,
         act_skill_id=75800101, pas_skill1_id=75800102,
         pas_skill2_id=75800103, pas_skill3_id=75800104,
         pas_tier1=1, pas_tier2=1, pas_tier3=1,
@@ -114,6 +119,40 @@ function M.register()
         is_unseal=1, target1=1, effect1=1758003, sub_skill=0})
     skill(75800107, {is_pass=1, is_cost_energy=2, is_add_energy=1,
         is_unseal=1, target1=1, effect1=1758013, sub_skill=0})
+
+    -- Native 5-rank Elite Skills: all four true Sonia abilities, no fake stats.
+    for slot=1,4 do
+        local base=75800100+slot
+        local ranks={}
+        for rank=1,5 do ranks[rank]=tostring(base*10+rank) end
+        appendRaw('partner_exskill', {
+            id=base, ex_id=table.concat(ranks,'|'),
+            desc_num1='',desc_num2='',desc_num3='',desc_num4='',
+            desc_num5='',desc_num6='',desc_num7='',desc_num8='',desc_num9=''
+        })
+    end
+    for rank=1,5 do
+        -- 1. Active spell 260% -> 300% attack at Lv5.
+        effect(1758019+rank,'hurt',1019,2.60+0.08*rank,0,1)
+        skill(758001010+rank,{is_pass=0,trigger=3,is_cost_energy=1,
+            target1=12,effect1=tostring(1758019+rank)..'|1758002|1758002|1758014|1758015',
+            target2=1,effect2='1758017',target3=108,rand3=5,
+            effect3='1758018|1758019',sub_skill='75800106|75800107',
+            icon_id='skill_icon_75800101'})
+        -- 2. +2% to +10% skill damage buff.
+        effect(1758024+rank,'sklP',1005,0.02*rank,2,1)
+        skill(758001020+rank,{is_pass=1,trigger=28,attr_pas=1,target1=1,
+            effect1=tostring(1758024+rank),icon_id='skill_icon_75800102',level=3})
+        -- 3. Native shield 600% -> 750% attack at Lv5.
+        effect(1758029+rank,'hpShieldByAD',1557,6+0.3*rank,0,1)
+        skill(758001030+rank,{is_pass=1,trigger=28,target1=1,
+            effect1=tostring(1758029+rank)..'|1758008|1758011',
+            icon_id='skill_icon_75800103',level=3})
+        -- 4. 3-15 Energy upon a real enemy defeat.
+        effect(1758034+rank,'energy',1013,3*rank,0,1)
+        skill(758001040+rank,{is_pass=1,trigger=15,target1=1,
+            effect1=tostring(1758034+rank),icon_id='skill_icon_75800104',level=3})
+    end
 end
 
 function M.apply()
@@ -188,7 +227,7 @@ function M.apply()
 
     local et = xyd.tables.effectTable
     local customEffects = {}
-    for id = 1758001, 1758019 do
+    for id = 1758001, 1758039 do
         local record = readRaw('effect2', id)
         if record then
             et.datas[id] = record
@@ -225,6 +264,14 @@ function M.apply()
         customSkills[id] = readRaw('skill7', id)
         st.ids_[#st.ids_ + 1] = id
         st.TableLua.ids[#st.TableLua.ids + 1] = id
+    end
+    for slot=1,4 do
+        for rank=1,5 do
+            local id=(75800100+slot)*10+rank
+            customSkills[id]=assert(readRaw('skill7',id))
+            st.ids_[#st.ids_ + 1]=id
+            st.TableLua.ids[#st.TableLua.ids + 1]=id
+        end
     end
     local function skillMethod(name, fn)
         local original = st[name]
@@ -305,6 +352,7 @@ function M.apply()
         [1758014]=true, [1758015]=true,
         [1758016]=true, [1758019]=true,
     }
+    for n=1758025,1758029 do statusArray[n]=true end
     ReportBuff.setIsHit = function(self, ...)
         if statusArray[tonumber(self.effectID)] and
            type(self.finalNumArray_) ~= 'table' then
@@ -316,7 +364,7 @@ function M.apply()
     local priorShield = ShieldBuff.excuteBuff
     ShieldBuff.excuteBuff = function(self, ...)
         local id = tonumber(self.effectID)
-        if (id==1758007 or id==1758017) and
+        if (id==1758007 or id==1758017 or (id>=1758030 and id<=1758034)) and
            type(self.finalNumArray_) ~= 'table' then
             self.finalNumArray_ = {tonumber(self.finalNumArray_) or 0}
         end

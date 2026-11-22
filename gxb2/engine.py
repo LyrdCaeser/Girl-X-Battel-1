@@ -1433,6 +1433,7 @@ class Engine:
                                     'star_10': int(row.get('star_10') or 0), 'astral_list': int(row.get('star_origin') or 0) if stars >= 15 else 0, 'namesake': int(str(row.get('material') or '').split('|')[0] or 0) if int(row['max_star']) > 5 else int(partner['table_id']), 'potential_options': [[int(x) for x in st.split('#') if x] for st in str(row.get('potential') or '').split('|') if st] if int(row['max_star']) == 10 else [],
                                     'has_ex_skills': stars >= 10 and str(row.get('ex_skill')) == '1', 'gift_like': str(row.get('gift_type1') or ''),
                                     'ex_skill_cost': item_pairs(EXSKILL['cost'].get(str(min((partner.get('ex_skills') or [0])) + 1), '')),
+                                    'ex_skill_costs': [item_pairs(EXSKILL['cost'].get(str(n + 1), '')) for n in (list(partner.get('ex_skills') or []) + [0, 0, 0, 0])[:4]] if int(partner['table_id']) == 758001 else [],
                                     'resonate': {'costs': [item_pairs(RESONATE['cost'].get(str(v + 1), '')) for v in (list(partner.get('ex_skills') or []) + [0, 0, 0, 0])[:4]], 'max': RESONATE['max'], 'effects': RESONATE['effects'].get(str(partner['table_id']), [])} if int(row['group']) == 7 else None})
         stages = sorted(TABLES['stage'].values(), key=lambda row: row['id'])
         state['stages'] = [{'id': row['id'], 'level_required': row['lv'], 'unlocked': row['id'] <= state['next_stage'],

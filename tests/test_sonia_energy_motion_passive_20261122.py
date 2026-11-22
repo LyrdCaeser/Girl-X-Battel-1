@@ -39,7 +39,7 @@ class EnergyMotionPassiveTests(unittest.TestCase):
         self.assertIn("filter:hue-rotate(150deg)",self.css)
         self.assertNotIn("unit-energy-fake",self.app)
         self.assertIn('style.css?v=20261122-sonia-gold-shield-r5',self.html)
-        self.assertIn('app.js?v=20261122-skill-click-r10',self.html)
+        self.assertIn('app.js?v=20261122-sonia-elite-vfx-r11',self.html)
 
     def test_sonia_idle_attack_skill_motion_is_real_spine(self):
         anim=self.model['animations']
