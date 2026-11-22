@@ -351,6 +351,9 @@ function M.apply()
     local statusArray = {
         [1758014]=true, [1758015]=true,
         [1758016]=true, [1758019]=true,
+        -- The shield-expiry heal contains an effect-ID list (not a scalar).
+        -- Without normalization, two Sonias can crash checkRemoveHpShield.
+        [1758011]=true,
     }
     for n=1758025,1758029 do statusArray[n]=true end
     ReportBuff.setIsHit = function(self, ...)

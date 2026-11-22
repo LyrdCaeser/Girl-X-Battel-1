@@ -54,3 +54,17 @@
 .lsl2-title-vi{display:flex;justify-content:center;align-items:center;margin:0;text-align:center;font-size:calc(53 * var(--u));line-height:1.15;font-weight:900;color:#ecffda;-webkit-text-stroke:calc(1.5 * var(--u)) #428f92;text-shadow:0 calc(4 * var(--u)) #a46b35,0 0 calc(11 * var(--u)) #fff,0 calc(8 * var(--u)) calc(7 * var(--u)) #255d79;z-index:3}
 .lsl2-big-label{position:absolute;left:0;right:0;bottom:19%;text-align:center;font-size:calc(38 * var(--u));font-weight:900;color:#fff2a1;text-shadow:0 calc(3 * var(--u)) calc(2 * var(--u)) #a75b21,0 0 calc(4 * var(--u)) #862d11;pointer-events:none}
 .lsl2-big-label.r{bottom:16%}
+
+/* Original Land of Souls: immediate loading panel and visible battle feedback. */
+.lsl2-loading{
+ min-height:calc(1280 * var(--u));padding:calc(260 * var(--u)) calc(35 * var(--u));
+ background:#6356a7 url('/assets/souls/soul_land_main_bg_banner.webp') center top/cover no-repeat;
+ display:flex;flex-direction:column;align-items:center;text-align:center;
+ gap:calc(22 * var(--u));color:#fff;text-shadow:0 2px 4px #312262;
+}
+.lsl2-loading h2{font-size:calc(40 * var(--u));margin:0}
+.lsl2-loading p{font-size:calc(26 * var(--u));font-weight:750}
+.lsl2-loading-controls{display:flex;gap:calc(18 * var(--u));justify-content:center;flex-wrap:wrap}
+.lsl2-fight-alert{font-size:calc(20 * var(--u));color:#c54656;line-height:1.45;text-align:center;padding:calc(10 * var(--u));margin:calc(10 * var(--u)) 0}
+.lsl2-fight-alert[hidden]{display:none}
+.lsl2-fight:disabled{opacity:.72;cursor:wait}

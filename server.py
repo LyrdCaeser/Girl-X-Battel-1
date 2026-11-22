@@ -567,6 +567,12 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
             server_id = (parse_qs(parsed.query).get('server_id') or [ctx['account']['server_id']])[0]
             rows = live_service.online_players(server_id)
             return self.send(200, {'server_id': server_id, 'count': len(rows), 'players': rows})
+        if path == '/api/soul-land/catalog':
+            # Small, read-only original Soul Land catalogue. Avoid downloading
+            # unrelated Anima Gear tables before this map can be displayed.
+            catalogue = souls_catalog()
+            return self.send(200, {k: catalogue[k] for k in
+                                   ('land', 'land_shop', 'god_text', 'icons', 'names')})
         if path == '/api/soul-land/ranking':
             # Only real players in this authenticated world; no bot fallback.
             account = self.auth_context()['account']

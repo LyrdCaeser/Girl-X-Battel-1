@@ -3,14 +3,26 @@
 // Banner soul_land_main_bg_banner, three forts (50 stages each) with the next stage, its stage rule (god skill) and Fight,
 // idle Soul Branches (collect), Store (soul_land_shop), Anima Stone Ritual and the Anima Gear bag.
 const SoulLand=(()=>{
- let origin='league',cat=null,fort=1,skipReplay=false;
+ let origin='league',cat=null,catLoading=null,loadError=false,fort=1,skipReplay=false,fighting=false;
  const A=n=>'/assets/souls/'+n;
  const el=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;};
  const img=(src,cls,alt='')=>{const i=el('img',cls);i.src=src;i.alt=alt;i.draggable=false;return i;};
  const btn=(cls,text,fn,dis=false)=>{const b=el('button',cls,text);b.type='button';b.onclick=fn;b.disabled=dis;return b;};
  try{skipReplay=localStorage.getItem('gxb2.soulLand.skip')==='1';}catch{}
  function root(){let r=$('soul-land-view');if(!r){r=el('section','soul-land-view');r.id='soul-land-view';r.hidden=true;$('home-systems-view').after(r);}return r;}
- async function open(from){origin=from||view;root();if(!cat)cat=await Souls.load();showView('soul-land');render();}
+ async function open(from){
+  origin=from||view;root();
+  // Show the actual game page immediately, even on slow mobile networks.
+  showView('soul-land');render();
+  if(cat)return;
+  loadError=false;
+  if(!catLoading)catLoading=api('/api/soul-land/catalog').then(rows=>{
+   if(!rows?.land||!rows?.land_shop||!rows?.god_text)throw Error('Danh mục Vùng Đất Linh Hồn chưa sẵn sàng.');
+   cat=rows;return rows;
+  }).finally(()=>{catLoading=null;});
+  try{await catLoading;if(view==='soul-land')render();}
+  catch(e){loadError=true;if(view==='soul-land')render();}
+ }
  function icon(id){id=String(id);if(id==='1'||id==='2')return '/assets/currency/icon_'+id+'_small.png';const it=itemCatalog?.[id];if(it&&itemIcons.has(it.icon))return '/assets/item-icons/'+it.icon+'.png';return cat?.icons?.[id]?A(cat.icons[id]+'.png'):'';}
  function chips(obj){const w=el('span','lsl-chips');for(const [k,n]of Object.entries(obj||{})){const c=el('span','lsl-chip');const s=icon(k);if(s)c.append(img(s));c.append(el('b','',number(n)));c.title=(itemCatalog?.[k]?.name||cat?.names?.[k]||k);w.append(c);}return w;}
  async function act(req){try{const r=await api('/api/soul-land/action',req);state=r.state;return r;}catch(e){GirlUI.toast(e.message);return null;}finally{if(view==='soul-land')render();}}
@@ -20,7 +32,20 @@ const SoulLand=(()=>{
  const S=n=>'/assets/sprite/'+n+'.png';
  const at=(e,x,y,w,h)=>{e.style.left=`calc(${360+x-w/2} * var(--u))`;e.style.top=`calc(${640-y-(h||0)/2} * var(--u))`;e.style.width=`calc(${w} * var(--u))`;if(h!=null)e.style.height=`calc(${h} * var(--u))`;return e;};
  const FORT_POS=[[-63,292],[144,-11],[-159,-125]];let hangFx=null;
- function render(){const r=root();if(view!=='soul-land'||!cat)return;const info=state.soul_land_info||{};hangFx?.destroy?.();hangFx=null;r.replaceChildren();const st=el('div','lsl2-stage');r.append(st);
+ function render(){
+  const r=root();if(view!=='soul-land')return;
+  if(!cat){
+   r.replaceChildren();
+   const load=el('div','lsl2-loading');
+   load.append(el('h2','','Vùng Đất Linh Hồn'),
+     el('p','',loadError?'Chưa mở được vùng đất. Bé hãy thử lại nhé!':'Đang mở Vùng Đất Linh Hồn…'));
+   const controls=el('div','lsl2-loading-controls');
+   if(loadError)controls.append(btn('gs-btn','Thử Lại',()=>open(origin)));
+   controls.append(btn('gs-btn','Quay Lại',()=>showView(origin==='soul-land'?'league':origin)));
+   load.append(controls);r.append(load);return;
+  }
+  const info=state.soul_land_info||{};
+  hangFx?.destroy?.();hangFx=null;r.replaceChildren();const st=el('div','lsl2-stage');r.append(st);
   st.append(at(img('/assets/bg/soul_land_main_bg_banner.webp','lsl2-bg'),0,0,1024,2048));
   const top=at(el('div','lsl2-top'),0,612,720,56);const c=el('span','lsl2-res');c.append(img(icon('421')),el('b','',String(info.tickets??0)));c.title="Vé Thử Thách Linh Hồn";top.append(c);const back=btn('lsl2-back','',()=>showView(origin==='soul-land'?'league':origin));back.append(img('/assets/ui/win_back_btn.png'));top.append(back);st.append(top);
   st.append(at(el('h1','lsl2-title-vi','Vùng Đất Linh Hồn'),0,489-56,575,130));
@@ -45,11 +70,46 @@ const SoulLand=(()=>{
   if(!f.next){body.append(el('p','lsl-note',"Đã hoàn thành khu vực!"));return;}
   const row=cat.land[f.next];const n=f.next-f.first+1;body.append(el('h3','lsl2-h','Ải '+n+' / '+f.total));const god=cat.god_text[row.god_skill];if(god)body.append(el('b','lsl-rule',god[0]),GirlUI.rich('p','lsl-desc',god[1]));
   const aw=el('div','lsl-awards');aw.append(el('small','','Phần thưởng:'),chips(Object.fromEntries(String(row.awards_show||'').split('|').filter(x=>x.includes('#')).map(x=>x.split('#').map(Number)))));body.append(aw);
-  const acts=el('div','lsl-acts');const sk=btn('lsl-skip'+(skipReplay?' on':''),(skipReplay?'☑':'☐')+' Bỏ qua',()=>{skipReplay=!skipReplay;try{localStorage.setItem('gxb2.soulLand.skip',skipReplay?'1':'0');}catch{}sk.textContent=(skipReplay?'☑':'☐')+' Bỏ qua';sk.classList.toggle('on',skipReplay);});
-  acts.append(sk,btn('gs-btn lsl-fight','Chiến Đấu',()=>{close();fight(f.next,n);},(info.tickets||0)<1));body.append(acts,el('small','lsl-hint',"Sử dụng đội hình hiện tại · 1 Vé Thử Thách Linh Hồn (hoàn lại khi thua)."));}
- async function fight(stage,n){const res=await act({action:'fight',stage});if(!res)return;const label="Vùng Đất Linh Hồn · Khu vực "+fort+" · Ải "+n;
-  if(!skipReplay&&res.report&&typeof watchEventBattle==='function'){await watchEventBattle({report:res.report,rewards:res.got||{}},'soul-land',label);}
-  else CampaignUI.result(res.win,res.got||{},{event:true,label,report:res.report});}
+  const acts=el('div','lsl-acts');const sk=btn('lsl-skip'+(skipReplay?' on':''),(skipReplay?'☑':'☐')+' Bỏ qua',()=>{
+   skipReplay=!skipReplay;try{localStorage.setItem('gxb2.soulLand.skip',skipReplay?'1':'0');}catch{}
+   sk.textContent=(skipReplay?'☑':'☐')+' Bỏ qua';sk.classList.toggle('on',skipReplay);
+  });
+  const go=btn('gs-btn lsl-fight','Chiến Đấu',null,(info.tickets||0)<1);
+  const alert=el('p','lsl2-fight-alert','');alert.hidden=true;
+  go.onclick=()=>fight(f.next,n,f.fort,go,close,alert);
+  acts.append(sk,go);body.append(acts,alert,el('small','lsl-hint',
+   "Sử dụng đội hình hiện tại · 1 Vé Thử Thách Linh Hồn (hoàn lại khi thua)."));
+ }
+ async function fight(stage,n,area,button,close,alert){
+  if(fighting)return;
+  fighting=true;button.disabled=true;button.textContent='Đang chuẩn bị trận đấu…';alert.hidden=true;
+  const label="Vùng Đất Linh Hồn · Khu vực "+area+" · Ải "+n;
+  try{
+   const res=await api('/api/soul-land/action',{action:'fight',stage});
+   if(!res?.state||typeof res.win!=='boolean')
+     throw Error('Chưa nhận được kết quả trận đấu. Hãy kiểm tra lại vé trước khi thử lại.');
+   state=res.state;
+   close();
+   // A successful server fight must never be sent twice if an animation fails.
+   if(!skipReplay&&res.report&&typeof watchEventBattle==='function'){
+    try{
+     await watchEventBattle({report:res.report,rewards:res.got||{}},'soul-land',label);
+    }catch(error){
+     console.warn('Soul Land replay unavailable',error);
+     if(view==='event-battle')showView('soul-land');
+     CampaignUI.result(res.win,res.got||{},{event:true,label,report:res.report});
+    }
+   }else{
+    CampaignUI.result(res.win,res.got||{},{event:true,label,report:res.report});
+   }
+  }catch(error){
+   if(button.isConnected){
+    button.disabled=false;button.textContent='Chiến Đấu';
+    alert.textContent=error?.message||'Chưa thể vào trận. Hãy thử lại nhé!';
+    alert.hidden=false;
+   }else GirlUI.toast('Chưa thể vào trận. Hãy thử lại nhé!');
+  }finally{fighting=false;}
+ }
  function shop(){const {body}=GirlUI.win({title:'Cửa Hàng',cls:'lsl-shop'});const info=state.soul_land_info||{};body.append(el('p','','Cành Linh Hồn: '+number(state.items['422']||0)+" · Giới hạn làm mới mỗi chu kỳ 28 ngày."));
   for(const row of Object.values(cat.land_shop)){const [iid,num]=String(row.item).split('#');const left=Number(row.limit)-Number(info.shop?.[row.id]||0);const r=el('div','lsl-shop-row');r.append(chips({[iid]:Number(num)}),el('span','',(cat.names[iid]||itemCatalog?.[iid]?.name||iid)),el('small','',"Còn lại: "+left+'/'+row.limit),chips(Object.fromEntries([String(row.cost).split('#').map(Number)])));
    r.append(btn('gs-btn','Mua',async()=>{const x=await act({action:'buy',id:row.id,count:1});if(x){document.querySelector('.gs-overlay')?.remove();shop();}},left<=0));body.append(r);}}
