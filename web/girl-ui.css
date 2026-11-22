@@ -418,18 +418,21 @@ html.gxb-mobile #app-frame #girl-detail-view #detail-art[src$="/758001.png"]:not
  border-radius:50%;
  box-shadow:0 0 0 1px #a798d3;
 }
-/* Mobile-only: carry the lower fabric of Sonia's approved 3:4 artwork
-   into taller portrait screens. The art remains uncropped and unscaled;
-   this backdrop starts exactly where the contain image ends. */
-html.gxb-mobile #app-frame #girl-detail-view.sonia-background-extend>.detail-scene::before{
- content:"";
+/* A real DOM image (not a pseudo-element) extends Lyr Sonia's approved art
+   into the lower part of tall MOBILE screens. Keep the art layer above it. */
+#girl-detail-view > .detail-scene > .sonia-bottom-fill{display:none;}
+html.gxb-mobile #app-frame #girl-detail-view > .detail-scene > .sonia-bottom-fill{
  display:block;
  position:absolute;
- top:calc(100cqw * 700 / 520 - 1px);
- bottom:0;
  left:0;
- right:0;
- z-index:0;
- background:url('/assets/chaos/lyr_sonia_bottom_extend.png') center top/100% 100% no-repeat;
+ top:134.615cqw; /* 700/520: exact displayed art aspect ratio */
+ width:100%;
+ height:calc(100% - 134.615cqw);
+ min-height:0;
+ object-fit:fill;
  pointer-events:none;
+ z-index:1;
+}
+html.gxb-mobile #app-frame #girl-detail-view > .detail-scene > .detail-art-wrap{
+ z-index:2;
 }
