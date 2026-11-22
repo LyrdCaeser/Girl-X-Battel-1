@@ -51,8 +51,13 @@ def is_locked(partner):
     return any(int(v or 0) for v in flags) or any(partner.get(k,0) for k in ('lock_flags','lock_flag','locked'))
 
 def eligible(partner):
-    row=PARTNERS[str(partner['table_id'])]
-    return (str(partner['table_id']) in DATA['partner_replace'] and int(row['group']) in (1,2,3,4)
+    table_id = str(partner.get('table_id', ''))
+    row = PARTNERS.get(table_id)
+    # Special summons (e.g. Lyr Sonia) are valid owned girls but are not
+    # entries in the original Prophet Replacement table.
+    if row is None or table_id not in DATA['partner_replace']:
+        return False
+    return (int(row['group']) in (1,2,3,4)
             and int(row['max_star'])+int(partner.get('awake',0)) in (4,5)
             and not is_locked(partner))
 
