@@ -435,3 +435,19 @@ html.gxb-mobile #app-frame #girl-detail-view.gs-zoom.sonia-continuation-scene .d
  opacity:0!important;
  pointer-events:none!important;
 }
+/* AWAKENING-IMAGE-MATERIAL: required-goddess artwork replaces the red
+   literal Chọn placeholder; 0/1 means preview, 1/1 means selected.
+   Keep the native item frame and its full click area on Mobile and PC. */
+.lb-mat.choose .lb-pic{position:relative;background:#e8e3f3;isolation:isolate}
+.lb-mat.choose .lb-pic .lb-card{width:100%;height:100%;border:0;border-radius:0;box-sizing:border-box}
+.lb-mat.choose .lb-pic .lb-card>img{width:100%;height:100%;object-fit:cover;object-position:center top}
+.lb-mat.choose .lb-pic.lb-preview .lb-card>img{filter:brightness(.83) saturate(.86)}
+.lb-mat.choose .lb-pic .lb-pick-mark{
+ position:absolute;right:calc(3 * var(--u));bottom:calc(3 * var(--u));
+ width:calc(34 * var(--u));height:calc(34 * var(--u));border-radius:50%;
+ border:calc(2 * var(--u)) solid #f4f7ff;
+ background:#328bdb;color:#fff;display:grid;place-items:center;
+ font:900 calc(28 * var(--u))/1 system-ui;text-shadow:0 1px 1px #12345a;
+ box-shadow:0 1px 4px #182f58aa;pointer-events:none;z-index:2;
+}
+.lb-mat.choose .lb-pic>.lb-required-star{width:65%!important;height:65%!important;object-fit:contain}

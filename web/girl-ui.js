@@ -121,6 +121,26 @@ const GirlUI=(()=>{
     kind==='sacrifices'?sacrificeEligible(g):matches(Number(recipe.material[index]),g,host)
    )).sort(materialOrder);
   }
+  // The empty awakening slot shows the REQUIRED goddess art (or a genuine
+  // eligible preview for wildcard recipes) instead of a fabricated "Chọn"
+  // tile. Previewing never selects or consumes a goddess: only the picker
+  // below writes savedSelection and changes the counter to 1/1.
+  function materialSlotPreview(pic,hero,recipe,kind,index,selected,code=0){
+   const exact=Number(code)>0&&Number(code)%1000!==999;
+   const preview=selected||(exact?{table_id:Number(code)}:
+     materialCandidates(recipe,hero,kind,index)[0]);
+   const id=Number(preview?.table_id||(kind==='copies'?hero.table_id:0));
+   if(id)pic.append(card(id));
+   else{
+    const icon=img('/assets/girl-ui/partner_star_red.png','lb-required-star');
+    icon.alt='';
+    pic.append(icon);
+   }
+   if(!selected){
+    pic.classList.add('lb-preview');
+    pic.append(el('span','lb-pick-mark','+'));
+   }
+  }
   function chooseMaterial(hero,recipe,kind,index,parentClose){
    const picked=pick(recipe,hero),current=kind==='normal'?picked[index]:picked[kind][index],label=kind==='copies'?'Nữ Thần cùng tên':kind==='sacrifices'?'Nữ Thần bổ trợ':codeLabel(Number(recipe.material[index]));
    const {body,close}=win({title:'Chọn Nguyên Liệu',cls:'lb-choose'});body.append(el('p','lb-choice-note','Chọn '+label+'. Nữ Thần đã khóa hoặc đang chờ giao dịch sẽ không xuất hiện.'));
@@ -209,8 +229,11 @@ const GirlUI=(()=>{
      const grid=el('div','lb-mats wrap');
      for(let i=0;i<required;i++){
       const g=items[i],c=el('button','lb-mat choose'+(g?' ok':'')),pic=el('span','lb-pic');c.type='button';
-      if(g)pic.append(card(Number(g.table_id)));else pic.append(el('i','',emptyText));
-      c.append(pic,el('small','',(g?'1':'0')+'/1'));c.title=g?g.name+' · '+g.stars+'★ · Cấp '+g.lv:'Chạm để chọn';c.onclick=()=>chooseMaterial(hero,r,kind,i,close);grid.append(c);
+      materialSlotPreview(pic,hero,r,kind,i,g);
+      c.append(pic,el('small','',(g?'1':'0')+'/1'));
+      c.title=g?g.name+' · '+g.stars+'★ · Cấp '+g.lv:label+' · Chạm vào ảnh để chọn';
+      c.setAttribute('aria-label',c.title);
+      c.onclick=()=>chooseMaterial(hero,r,kind,i,close);grid.append(c);
      }
      body.append(grid);
     };
@@ -219,9 +242,11 @@ const GirlUI=(()=>{
    }else{
     const mats=el('div','lb-mats');
     (r.material||[]).forEach((code,i)=>{const g=chosen[i],c=el('button','lb-mat choose'+(g?' ok':'')),pic=el('span','lb-pic');c.type='button';
-     const id=g?g.table_id:(code%1000===999?0:code);
-     if(g&&id&&cardIds.has(id))pic.append(img('/assets/cards/partner_card_'+id+'.png'));else if(g)pic.append(card(Number(id)));else pic.append(el('i','',code%1000===999?Math.floor(code/10000)+'★':'Chọn'));
-     c.append(pic,el('small','',(g?1:0)+'/1'));c.title=g?g.name+' · '+g.stars+'★ · Cấp '+g.lv:codeLabel(code);c.onclick=()=>chooseMaterial(hero,r,'normal',i,close);mats.append(c);
+     materialSlotPreview(pic,hero,r,'normal',i,g,Number(code));
+     c.append(pic,el('small','',(g?1:0)+'/1'));
+     c.title=g?g.name+' · '+g.stars+'★ · Cấp '+g.lv:codeLabel(Number(code))+' · Chạm vào ảnh để chọn';
+     c.setAttribute('aria-label',c.title);
+     c.onclick=()=>chooseMaterial(hero,r,'normal',i,close);mats.append(c);
     });body.append(mats);
    }
    const c=el('div','lb-cost'),ok=cost(c,r.cost||{});body.append(c);
@@ -243,7 +268,7 @@ const GirlUI=(()=>{
 
   // ---- Reverse (PotentialityBackWindow), Exchange (TenStarExchangeWindow), Switch (PotentialitySwitchWindow) ----
  let ret=null;
- const card=(tid,cls='')=>{const c=el('span','lb-card '+cls);if(cardIds.has(tid))c.append(img('/assets/cards/partner_card_'+tid+'.png'));else{/* house dolls (561001…766001) share partner_avatar_661001 */const i=img('/assets/original-ui/portraits/partner_avatar_'+tid+'.png');i.onerror=()=>{i.onerror=null;i.src='/assets/original-ui/portraits/partner_avatar_661001.png';};c.append(i);}return c;};
+ const card=(tid,cls='')=>{const c=el('span','lb-card '+cls);if(cardIds.has(tid)||Number(tid)===758001)c.append(img('/assets/cards/partner_card_'+tid+'.png'));else{/* house dolls (561001…766001) share partner_avatar_661001 */const i=img('/assets/original-ui/portraits/partner_avatar_'+tid+'.png');i.onerror=()=>{i.onerror=null;i.src='/assets/original-ui/portraits/partner_avatar_661001.png';};c.append(i);}return c;};
  async function reverse(hero){
   let plan;
   try {plan=await api('/api/rebirth/preview',{partner_id:hero.partner_id});}

@@ -35,7 +35,7 @@ class SoniaBottomBackgroundTests(unittest.TestCase):
         # A missing group-8 college background must not revert to flat blue.
         self.assertFalse((ROOT/'web/assets/scenes/college_scene8.png').exists())
         self.assertIn('background-color:#dec6df!important;', css)
-        self.assertIn('/girl-ui.css?v=20261122-sonia-full-zoom-canvas-r5', html)
+        self.assertIn('/girl-ui.css?v=20261122-awake-material-image-r1', html)
         self.assertIn('/app.js?v=20261122-sonia-scene-fallback-r4', html)
 
 

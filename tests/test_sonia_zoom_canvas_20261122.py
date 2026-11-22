@@ -40,7 +40,7 @@ class SoniaZoomCanvasTests(unittest.TestCase):
         self.assertIn('background-position:center top!important;',css)
         self.assertIn('gs-zoom.sonia-continuation-scene .detail-art-wrap{',css)
         self.assertIn('opacity:0!important;',css)
-        self.assertIn('/girl-ui.css?v=20261122-sonia-full-zoom-canvas-r5',html)
+        self.assertIn('/girl-ui.css?v=20261122-awake-material-image-r1',html)
 
 
 if __name__=='__main__':
