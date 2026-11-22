@@ -451,3 +451,21 @@ html.gxb-mobile #app-frame #girl-detail-view.gs-zoom.sonia-continuation-scene .d
  box-shadow:0 1px 4px #182f58aa;pointer-events:none;z-index:2;
 }
 .lb-mat.choose .lb-pic>.lb-required-star{width:65%!important;height:65%!important;object-fit:contain}
+
+/* SONIA-MOBILE-FULLBLEED-20261122:
+   Partner detail uses the native picture metadata scale (0.47) shared with
+   Wish, which incorrectly shrinks the 1152x1536 illustration into 541x722
+   units and centers it ~279 units below the top. On the 720x1280 original
+   character sheet, a 960x1280 image fills vertically and bleeds 120 units
+   past each horizontal edge. Override only Sonia's normal MOBILE sheet.
+   The Wish metadata, desktop layout and already-approved zoom canvas stay
+   untouched. No cover/contain thumbnail rules or forced distortion. */
+html.gxb-mobile #app-frame #girl-detail-view.sonia-continuation-scene:not(.gs-zoom) #detail-art.gu-native[src$="/758001.webp"]{
+ width:calc(960 * var(--u))!important;
+ height:auto!important;
+ max-width:none!important;
+ left:calc(360 * var(--u))!important;
+ top:calc(640 * var(--u))!important;
+ transform:translate(-50%,-50%)!important;
+ object-fit:fill!important;
+}

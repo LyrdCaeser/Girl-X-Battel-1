@@ -43,7 +43,7 @@ const css=fs.readFileSync('web/girl-ui.css','utf8');
 const html=fs.readFileSync('web/index.html','utf8');
 assert(css.includes('.lb-mat.choose .lb-pic .lb-card{width:100%;height:100%;border:0'));
 assert(html.includes('/girl-ui.js?v=20261122-awake-material-image-r1'));
-assert(html.includes('/girl-ui.css?v=20261122-awake-material-image-r1'));
+assert(html.includes('/girl-ui.css?v=20261122-sonia-mobile-fullbleed-r2'));
 assert(!code.includes("pic.append(el('i','',code%1000===999?"),'no literal Chọn tile in material slots');
 assert(code.includes('cardIds.has(tid)||Number(tid)===758001'),'Sonia special card always resolves to real card art');
 console.log('PASS: required Sonia portrait, selection 0/1 vs 1/1, wildcard/awake25 and unchanged choice logic');

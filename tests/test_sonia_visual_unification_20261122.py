@@ -53,9 +53,9 @@ class SoniaVisualUnificationTests(unittest.TestCase):
         # The app/portrait sheet version advances when later Sonia-only
         # visual fixes ship; the skins script remains on the unified release.
         for file, version in (
-            ('app.js', '20261122-sonia-scene-fallback-r4'),
+            ('app.js', '20261122-sonia-skill-timing-r5'),
             ('skins.js', '20261122-sonia-cosmos-outfit-r2'),
-            ('girl-ui.css', '20261122-awake-material-image-r1'),
+            ('girl-ui.css', '20261122-sonia-mobile-fullbleed-r2'),
         ):
             self.assertIn('/' + file + '?v=' + version, html)
 
