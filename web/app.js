@@ -171,6 +171,9 @@ const factionIcons=['⌕','🐾','✚','♨','❧','☾','☼','✦','✧'];
 // re-issue chain: the id, its host, the host's host… (e.g. 656012 → 546003 → 46003)
 function hostChain(id){const out=[Number(id)];for(let k=0;k<5;k++){const h=girlsCatalog.find(g=>g.id===out[out.length-1])?.host;if(!h)break;out.push(Number(h));}return out;}
 function artId(id){id=Number(id);for(let hop=0;hop<5;hop++){if(cardIds.has(id)||artIds.has(id))return id;const host=girlsCatalog.find(g=>g.id===id)?.host;if(!host)break;id=Number(host);}return id;} // re-issues chain: 656012 → 546003 → 46003
+// Lyr Sonia is Chaos (group 8), not Cosmos. Only her card STAR ART
+// borrows the existing purple Cosmos emblem; faction metadata stays intact.
+function cosmosCardStarArt(row){return Number(row.group)===7||Number(row.id)===758001;}
 function girlCard(row, owned=false, skinId=null, copy=null){
  // `copy`: this card's own roster entry (duplicates of a girl are separate copies with their own level and gear)
  const pick=()=>copy||state.roster.find(h=>h.table_id===row.id);
@@ -186,7 +189,7 @@ function girlCard(row, owned=false, skinId=null, copy=null){
  if(skinId&&!artIds.has(skinId)&&!hasSkinPicture&&!hasSkinCard){card.classList.add('skin-picture-pending');art.append(node('span','skin-art-missing',"Illustration pending"));}
  art.append(badge);if(owned){const ownedEntry=pick();if(ownedEntry)art.append(node('span','girl-level',String(ownedEntry.lv)));}
  card.append(art,node('span','girl-name',!owned&&skinId?row.name+' · '+(skinCatalog[String(skinId)]?.name||'Skin'):row.name));
- {const heroStars=owned?(pick()?.stars??row.stars):row.stars;const st=node('span','girl-stars','★'.repeat(Math.min(row.stars,6))||'—');if(typeof GirlUI!=='undefined'){st.replaceChildren(GirlUI.stars(heroStars,'card'));st.classList.add('gu-has');if(heroStars>=10){const emblem=st.querySelector('.gu-emblem');if(emblem)emblem.src='/assets/girl-ui/'+(heroStars===10?'star_orange'+(row.group===7?'_group_7':''):'potentiality_card_star'+(row.group===7?'_group_7':'')+(heroStars>=15?'_max':''))+'.png';}}card.append(st);}
+ {const heroStars=owned?(pick()?.stars??row.stars):row.stars;const st=node('span','girl-stars','★'.repeat(Math.min(row.stars,6))||'—');if(typeof GirlUI!=='undefined'){st.replaceChildren(GirlUI.stars(heroStars,'card'));st.classList.add('gu-has');if(heroStars>=10){const emblem=st.querySelector('.gu-emblem');if(emblem)emblem.src='/assets/girl-ui/'+(heroStars===10?'star_orange'+(cosmosCardStarArt(row)?'_group_7':''):'potentiality_card_star'+(cosmosCardStarArt(row)?'_group_7':'')+(heroStars>=15?'_max':''))+'.png';}}card.append(st);}
  if(!owned&&row.skins.length)card.append(node('span','girl-skin-count',row.skins.length+' skins'));
  if(owned){const hero=pick();if(hero){card.classList.add('selectable');card.tabIndex=0;card.setAttribute('role','button');card.setAttribute('aria-label',"Open details for "+row.name);card.addEventListener('click',()=>openGirlDetail(hero.partner_id));card.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();openGirlDetail(hero.partner_id);}});}}
  return card;
