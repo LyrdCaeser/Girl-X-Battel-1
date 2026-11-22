@@ -36,7 +36,7 @@ class SoniaBottomBackgroundTests(unittest.TestCase):
         self.assertFalse((ROOT/'web/assets/scenes/college_scene8.png').exists())
         self.assertIn('background-color:#dec6df!important;', css)
         self.assertIn('/girl-ui.css?v=20261122-sonia-mobile-fullbleed-r2', html)
-        self.assertIn('/app.js?v=20261122-sonia-passive-visual-r7', html)
+        self.assertIn('/app.js?v=20261122-sonia-four-new-status-r8', html)
 
 
 if __name__ == '__main__':

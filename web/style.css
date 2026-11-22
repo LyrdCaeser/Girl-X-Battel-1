@@ -485,3 +485,18 @@ html.gxb-mobile #app-frame #capsule-view .capsule-banner.wc-banner::before{
 /* Dead units inherit the same HP visibility state; the EP cannot float
    on its own after death. */
 .battlefield .unit.dead .unit-ep{visibility:hidden!important}
+
+/* Sonia real shield: yellow layer only while the Lua report confirms
+   shield HP. The native green HP stays unchanged beneath it. */
+.battlefield .unit .hp>i.shield-hp-fill{
+ position:absolute!important;right:2px!important;left:auto!important;
+ top:2px!important;height:8px!important;max-width:calc(100% - 4px);
+ border-radius:1px!important;margin:0!important;padding:0!important;
+ z-index:7!important;pointer-events:none;
+ background:linear-gradient(180deg,#fff8b4 0%,#ffd54a 40%,#e8a61e 100%)!important;
+ box-shadow:0 0 3px #fbc54a88;
+ transition:width .16s linear
+}
+.battlefield .unit.dead .hp>i.shield-hp-fill{
+ width:0!important;visibility:hidden!important
+}

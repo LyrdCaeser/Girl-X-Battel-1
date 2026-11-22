@@ -38,8 +38,8 @@ class EnergyMotionPassiveTests(unittest.TestCase):
         self.assertIn('.battlefield .unit.dead .unit-ep{visibility:hidden!important}',self.css)
         self.assertIn("filter:hue-rotate(150deg)",self.css)
         self.assertNotIn("unit-energy-fake",self.app)
-        self.assertIn('style.css?v=20261122-hp-ep-attached-r4',self.html)
-        self.assertIn('app.js?v=20261122-sonia-passive-visual-r7',self.html)
+        self.assertIn('style.css?v=20261122-sonia-gold-shield-r5',self.html)
+        self.assertIn('app.js?v=20261122-sonia-four-new-status-r8',self.html)
 
     def test_sonia_idle_attack_skill_motion_is_real_spine(self):
         anim=self.model['animations']
@@ -57,7 +57,7 @@ class EnergyMotionPassiveTests(unittest.TestCase):
         self.assertIn("?'battle_idle':",self.battle)
         self.assertIn("setAnimation(1,'blink',false)",self.battle)
         self.assertIn('soniaBlinkTimers.clear()',self.battle)
-        self.assertIn('battle-animation.js?v=20261122-sonia-passive-fx-front-r6',self.html)
+        self.assertIn('battle-animation.js?v=20261122-sonia-dracula-promethea-r7',self.html)
 
     def test_three_passive_vfx_have_real_event_cues(self):
         for phrase in (

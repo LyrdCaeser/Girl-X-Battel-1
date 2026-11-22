@@ -76,10 +76,23 @@ function M.register()
     effect(1758013, 'kawenCountMark', 1456,
         '1758012|1015166|1758001|1758001', 0, 1)
 
+    -- Four additions are native Lua battle mechanics, not fake client-side
+    -- stats. Reuse the original effect types already used by other girls.
+    -- Dracula: take 40 SPD for two rounds (40% chance on active skill).
+    effect(1758014, 'spdSteal', 1321, 40, 2, 0.40)
+    -- Promethea chains: seal one enemy for one round (25% on active).
+    effect(1758015, 'seal', 1271, 0, 1, 0.25)
+    -- Ban one enemy's next turn, 18% on a basic strike; 1 round, not permanent.
+    effect(1758016, 'stunH', 1127, 0, 1, 0.18)
+    -- Additional cast shield: 2x own ATK; the existing 6x ATK guard
+    -- passive is retained, and shield damage/expiry is handled by Lua.
+    effect(1758017, 'hpShieldByAD', 1557, 2, 0, 1)
+
     skill(75800100, {is_pass=0, trigger=1, target1=108, rand1=3,
-        effect1='1758004|1758005', sub_skill='75800105|75800107'})
+        effect1='1758004|1758005|1758016', sub_skill='75800105|75800107'})
     skill(75800101, {is_pass=0, trigger=3, is_cost_energy=1,
-        target1=12, effect1='1758001|1758002|1758002',
+        target1=12, effect1='1758001|1758002|1758002|1758014|1758015',
+        target2=1, effect2='1758017',
         sub_skill='75800106|75800107', icon_id='skill_icon_75800101'})
     skill(75800102, {is_pass=1, trigger=28, attr_pas=1, target1=1,
         effect1='', icon_id='skill_icon_75800102', level=3})

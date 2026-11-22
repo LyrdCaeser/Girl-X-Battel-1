@@ -13,7 +13,7 @@ const clips=[
 ];
 assert(!fs.existsSync('web/sonia-battle-vfx.js'),'hand-painted Canvas engine removed');
 assert(!html.includes('sonia-battle-vfx.js'),'second canvas no longer loaded');
-assert(html.includes('battle-animation.js?v=20261122-sonia-passive-fx-front-r6'));
+assert(html.includes('battle-animation.js?v=20261122-sonia-dracula-promethea-r7'));
 assert(battle.includes('const soniaSlots=new Set('));
 assert(battle.includes("at('lianhua_hurt01',.72,'target',1.6,.96)"));
 for(const res of ['lianhua_hurt01','sonia_chaos_orb','sonia_chaos_siphon','sonia_chaos_guard','sonia_chaos_collapse'])assert(battle.includes("'"+res+"'"));

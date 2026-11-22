@@ -114,14 +114,21 @@ const rigBounds=(cleanWidth>0&&cleanHeight>0)?{width:cleanWidth,height:cleanHeig
     75800101:{impact:910,duration:1590},
     75800102:{impact:450,duration:1180},
     75800103:{impact:350,duration:1150},
-    75800104:{impact:390,duration:1050}
+    75800104:{impact:390,duration:1050},
+    // Extra native status cues. These IDs are visual only; effects actually
+    // apply exclusively through Lua's 1758014..1758017 battle-effect table.
+    75800108:{impact:260,duration:900},  // Dracula SPD theft
+    75800109:{impact:320,duration:1150}, // Promethea chain seal
+    75800110:{impact:280,duration:1280}, // Real shield creation
+    75800111:{impact:300,duration:950}   // Turn-ban
   };
   if(soniaSlots.size){
     // First hit and primary active skill are available before the first
     // damaging frame, with a bounded warm-up for slow Android networks.
     const preload=Promise.allSettled(
       ['lianhua_hurt01','sonia_chaos_orb','sonia_chaos_siphon',
-       'sonia_chaos_guard','sonia_chaos_collapse'].map(name=>fxLoad(name)));
+       'sonia_chaos_guard','sonia_chaos_collapse',
+       'spdegula_hurt01','puluomixiusi_hurt02'].map(name=>fxLoad(name)));
     await Promise.race([preload,new Promise(resolve=>setTimeout(resolve,2800))]);
   }
   function play(pos,kind){
@@ -220,6 +227,18 @@ const rigBounds=(cleanWidth>0&&cleanHeight>0)?{width:cleanWidth,height:cleanHeig
      break;
     case 75800104: // Apollis's radiance, shifted cosmic purple
      at('sonia_chaos_collapse',.76,'target',1.05,1);
+     break;
+    case 75800108: // Lord Dracula's original SPD-stealing apparition
+     at('spdegula_hurt01',.31,'target',1.1,.98,0,'texiao01');
+     break;
+    case 75800109: // Promethea's original chains
+     at('puluomixiusi_hurt02',.28,'target',1.55,1);
+     break;
+    case 75800110: // Shield forms around Sonia using the native lotus rig
+     at('sonia_chaos_guard',.72,'caster-front',1.35,1,0,'texiao02');
+     break;
+    case 75800111: // Ban-turn: native cosmic binding circle
+     at('sonia_chaos_collapse',.54,'target',1.45,.98);
      break;
    }
    return true;
