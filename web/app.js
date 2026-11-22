@@ -977,7 +977,10 @@ async function replay(report,options={}){
  function bossShow(v){if(!bb)return;const next=bb.tiers.find(t=>t>v)??bb.tiers.at(-1);const reached=bb.tiers.filter(t=>t<=v).length;bossFill.style.width=Math.min(100,v/next*100)+'%';bossText.textContent=number(Math.round(v))+' / '+number(next);bossGift.querySelector('b').textContent=String(reached);}bossShow(bb?bb.before:0);
  const hud=node('div','battle-hud');const progress=node('div','battle-progress'),progressFill=node('i');progress.append(progressFill);const speed=node('button','battle-speed');speed.type='button';speed.title="Change speed";speed.setAttribute('aria-label',"Battle speed");function speedIcon(){speed.replaceChildren();const img=node('img');img.src=`/assets/original-ui/new_battle_speed${battleSpeed}.png`;img.alt=`×${battleSpeed}`;speed.append(img);}speedIcon();speed.addEventListener('click',()=>{battleSpeed=battleSpeed===1?2:battleSpeed===2?4:1;speedIcon();battleAnimation?.speed(battleSpeed);});const jump=node('button','battle-jump');jump.type='button';jump.title="Skip to results";jump.setAttribute('aria-label',"Skip battle");const jumpImg=node('img');jumpImg.src='/assets/original-ui/battle_img_skip2.png';jumpImg.alt="Skip";jump.append(jumpImg);jump.addEventListener('click',()=>{skip=true;});// BattleWindow petBar_: Servant avatar (pet_avatar + grade) and its energy from frame.eps pos 13; hidden without a Servant.
  const petA=report.petA;progress.classList.add('pet-energy');if(petA){const pet=node('span','battle-leader battle-pet');const pi=node('img');pi.alt='';pi.src='/assets/servant/'+(servantAvatars[String(petA.pet_id)]||'pet_avatar_mao_')+(petA.grade||1)+'.png';pet.append(pi);hud.append(pet,progress);}hud.append(speed,jump);progressFill.style.width='0%';field.append(hud);
- const visibleUnits=(report.display_units||[]).filter((u,i,all)=>u&&Number.isInteger(Number(u.pos))&&Number(u.pos)>=1&&Number(u.pos)<=12&&all.findIndex(x=>Number(x?.pos)===Number(u.pos))===i);for(const u of visibleUnits){const e=node('div','unit'+(u.boss&&bb?' boss-unit':'')),xy=battlePositions[u.pos];if(xy){e.style.left=(xy[0]/1080*100)+'%';e.style.top=((1920-xy[1])/1920*100)+'%';}if(artIds.has(u.table_id)){const art=node('img','unit-art');art.src='/assets/characters/'+u.table_id+'.png';art.alt='';art.loading='lazy';e.append(art);}else e.append(portrait(u.table_id,70));const status=node('div','unit-status');status.append(node('span','unit-level',String(u.level||1)));e.title=u.name;const faction=girlsCatalog.find(g=>g.id===u.table_id)?.group;if(faction){const icon=node('img','unit-faction');icon.src=`/assets/factions/${faction}.png`;icon.alt='';status.append(icon);}e.append(status);const bar=node('div','hp'),fill=node('i');fill.style.width='100%';bar.append(fill);e.append(bar);units.set(u.pos,{element:e,fill,name:u.name,hp:100});el(u.pos<=6?'allies':'enemies').append(e);}
+ const visibleUnits=(report.display_units||[]).filter((u,i,all)=>u&&Number.isInteger(Number(u.pos))&&Number(u.pos)>=1&&Number(u.pos)<=12&&all.findIndex(x=>Number(x?.pos)===Number(u.pos))===i);for(const u of visibleUnits){const e=node('div','unit'+(u.boss&&bb?' boss-unit':'')),xy=battlePositions[u.pos];if(xy){e.style.left=(xy[0]/1080*100)+'%';e.style.top=((1920-xy[1])/1920*100)+'%';}if(artIds.has(u.table_id)){const art=node('img','unit-art');art.src='/assets/characters/'+u.table_id+'.png';art.alt='';art.loading='lazy';e.append(art);}else e.append(portrait(u.table_id,70));const status=node('div','unit-status');status.append(node('span','unit-level',String(u.level||1)));e.title=u.name;const faction=girlsCatalog.find(g=>g.id===u.table_id)?.group;if(faction){const icon=node('img','unit-faction');icon.src=`/assets/factions/${faction}.png`;icon.alt='';status.append(icon);}e.append(status);const bar=node('div','hp'),fill=node('i');fill.style.width='100%';bar.append(fill);e.append(bar);
+ const epBar=node('div','unit-ep'),epFill=node('i');epFill.style.width='0%';
+ epBar.append(epFill);epBar.setAttribute('aria-label','Năng lượng');e.append(epBar);
+ units.set(u.pos,{element:e,fill,epFill,ep:0,name:u.name,hp:100,tableId:Number(u.table_id)});el(u.pos<=6?'allies':'enemies').append(e);}
  el('line').textContent="Loading original animations…";try{const animation=await ChibiBattle.create(field,visibleUnits,battlePositions,{bossScene:!!bb});if(token!==battleReplayToken){animation.destroy();return;}battleAnimation=animation;animation.speed(battleSpeed);for(const [pos,u] of units){
     if(animation.has(pos)){
       u.element.classList.add('has-chibi');
@@ -993,7 +996,43 @@ async function replay(report,options={}){
     }
    }if(animation.missing.length){console.warn("No animated model for",animation.missing);const note=node('span','battle-asset-note',"Animated model pending: "+[...new Set(animation.missing)].join(', '));arena.append(note);};}catch(e){console.warn("Animations unavailable",e);}
  arena.scrollIntoView({behavior:skip?'instant':'smooth',block:'center'});const battleStates=await BattleStates.create(units);let frameIndex=0;
- for(const frame of report.frames){if(skip||token!==battleReplayToken||(event&&view!=='event-battle'))break;round.textContent='Hiệp '+frame.round;++frameIndex;for(const e of list(frame.eps))if(e.pos===13)progressFill.style.width=Math.max(0,Math.min(100,e.ep))+'%';if(frame.skill_id>0&&typeof GxbAudio!=='undefined')GxbAudio.skill(frame.skill_id);if(frame.skill_id>0)battleAnimation?.play(frame.pos,frame.skill_id%100===0?'attack':'skill');for(const u of units.values())u.element.classList.remove('active');const actor=units.get(frame.pos);if(actor){actor.element.classList.add('active');actor.element.classList.remove('attack');void actor.element.offsetWidth;actor.element.classList.add('attack');}if(frame.skill_id>0)el('line').textContent='Hiệp '+frame.round+' · '+(actor?.name||"Trang Bị")+' tung chiêu';else el('line').textContent='Hiệp '+frame.round;
+ // Three Sonia support skills are passive slots. Lua battle reports do not
+ // necessarily emit skill_id=75800102/03/04 as attack frames, particularly
+ // when a 666-level Sonia defeats opponents immediately. These visual-only
+ // cues reflect real observed energy, deployment and finishing events; they
+ // never alter EP, shields, damage or rewards.
+ const soniaCueSeen=new Set();
+ function soniaVisualCue(pos,skillId,targets,round,delay=0){
+  const key=pos+':'+skillId+':'+round;
+  if(soniaCueSeen.has(key)||skip||token!==battleReplayToken)return;
+  soniaCueSeen.add(key);
+  const animation=battleAnimation;
+  if(!animation)return;
+  if(delay<=0){animation.fx(skillId,pos,targets);return;}
+  setTimeout(()=>{if(!skip&&token===battleReplayToken&&battleAnimation===animation)
+    animation.fx(skillId,pos,targets);
+  },delay/Math.max(1,battleSpeed));
+ }
+ for(const [pos,u] of units){
+  if(Number(u.tableId)===758001)soniaVisualCue(pos,75800103,[],0,0);
+ }
+ for(const frame of report.frames){if(skip||token!==battleReplayToken||(event&&view!=='event-battle'))break;round.textContent='Hiệp '+frame.round;++frameIndex;
+ const soniaIsActor=units.get(Number(frame.pos))?.tableId===758001;
+ let soniaEnergyGained=false;
+ for(const e of list(frame.eps)){
+   const epValue=Number(e.ep),epPos=Number(e.pos);
+   if(!Number.isFinite(epValue))continue;
+   const amount=Math.max(0,Math.min(100,epValue));
+   if(epPos===13)progressFill.style.width=amount+'%';
+   else if(epPos>=1&&epPos<=12){
+     const fighter=units.get(epPos);
+     if(fighter){
+      if(soniaIsActor&&epPos===Number(frame.pos)&&amount>fighter.ep&&Number(frame.skill_id)>0)
+        soniaEnergyGained=true;
+      fighter.epFill.style.width=amount+'%';fighter.ep=amount;
+     }
+   }
+  }if(frame.skill_id>0&&typeof GxbAudio!=='undefined')GxbAudio.skill(frame.skill_id);if(frame.skill_id>0)battleAnimation?.play(frame.pos,frame.skill_id%100===0?'attack':'skill');for(const u of units.values())u.element.classList.remove('active');const actor=units.get(frame.pos);if(actor){actor.element.classList.add('active');actor.element.classList.remove('attack');void actor.element.offsetWidth;actor.element.classList.add('attack');}if(frame.skill_id>0)el('line').textContent='Hiệp '+frame.round+' · '+(actor?.name||"Trang Bị")+' tung chiêu';else el('line').textContent='Hiệp '+frame.round;
   // Native attack wind-up comes BEFORE the hit/FX frame. Never strike the
   // target before the caster starts the attack animation.
   const soniaTiming=frame.skill_id>0?battleAnimation?.timing?.(frame.skill_id,frame.pos):null;
@@ -1010,7 +1049,19 @@ async function replay(report,options={}){
    }
   }
   if(bb)for(const b of list(frame.buffs))if(b.pos===7&&typeof b.hp==='number'){if(b.hp<bossLast)bossLost+=bossLast-b.hp;bossLast=b.hp;bossShow(bb.before+bb.dealt*(bossTotalLoss?bossLost/bossTotalLoss:0));}
-  for(const buff of list(frame.buffs)){battleStates.apply(buff);const u=units.get(buff.pos);if(u&&typeof buff.hp==='number'){u.fill.style.width=Math.max(0,Math.min(100,buff.hp))+'%';if(buff.hp<=0&&u.hp>0)battleAnimation?.play(buff.pos,'dead');else if(buff.hp>0&&u.hp<=0)battleAnimation?.play(buff.pos,'revive');else if(buff.hp<u.hp)battleAnimation?.play(buff.pos,'hurt');u.hp=buff.hp;u.element.classList.toggle('dead',buff.hp<=0);if(buff.hp<=0)battleStates.clear(buff.pos);}}
+  let soniaFinishedEnemy=false;
+  const soniaTargets=[];
+  for(const buff of list(frame.buffs)){battleStates.apply(buff);const u=units.get(buff.pos);
+   if(soniaIsActor&&u&&Number(buff.pos)!==Number(frame.pos)&&
+      ((Number(buff.pos)>6)!==(Number(frame.pos)>6))){
+     if(!soniaTargets.includes(Number(buff.pos)))soniaTargets.push(Number(buff.pos));
+     if(typeof buff.hp==='number'&&u.hp>0&&buff.hp<=0)soniaFinishedEnemy=true;
+   }
+   if(u&&typeof buff.hp==='number'){u.fill.style.width=Math.max(0,Math.min(100,buff.hp))+'%';if(buff.hp<=0&&u.hp>0)battleAnimation?.play(buff.pos,'dead');else if(buff.hp>0&&u.hp<=0)battleAnimation?.play(buff.pos,'revive');else if(buff.hp<u.hp)battleAnimation?.play(buff.pos,'hurt');u.hp=buff.hp;u.element.classList.toggle('dead',buff.hp<=0);if(buff.hp<=0)battleStates.clear(buff.pos);}}
+  // Izanami visual when real Sonia energy rises; Apollis on actual enemy
+  // defeat. Passives that are not activated by Lua do not claim any stats.
+  if(soniaEnergyGained)soniaVisualCue(Number(frame.pos),75800102,soniaTargets,frame.round,90);
+  if(soniaFinishedEnemy)soniaVisualCue(Number(frame.pos),75800104,soniaTargets,frame.round,460);
   await new Promise(resolve=>setTimeout(resolve,
    (soniaTiming?Math.max(240,soniaTiming.duration-soniaTiming.impact):(frame.skill_id>0?790:240))/battleSpeed));
  }

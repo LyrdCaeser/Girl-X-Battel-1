@@ -13,11 +13,12 @@ const clips=[
 ];
 assert(!fs.existsSync('web/sonia-battle-vfx.js'),'hand-painted Canvas engine removed');
 assert(!html.includes('sonia-battle-vfx.js'),'second canvas no longer loaded');
-assert(html.includes('battle-animation.js?v=20261122-sonia-4borrowed-spine-r4'));
+assert(html.includes('battle-animation.js?v=20261122-sonia-motion-passivefx-r5'));
 assert(battle.includes('const soniaSlots=new Set('));
 assert(battle.includes("at('lianhua_hurt01',.72,'target',1.6,.96)"));
-assert(battle.includes("['lianhua_hurt01','sonia_chaos_orb','sonia_chaos_collapse'].map(name=>fxLoad(name))"));
-assert(battle.includes("await Promise.race([preload,new Promise(resolve=>setTimeout(resolve,2000))])"));
+for(const res of ['lianhua_hurt01','sonia_chaos_orb','sonia_chaos_siphon','sonia_chaos_guard','sonia_chaos_collapse'])assert(battle.includes("'"+res+"'"));
+assert(battle.includes(".map(name=>fxLoad(name))"));
+assert(battle.includes("await Promise.race([preload,new Promise(resolve=>setTimeout(resolve,2800))])"));
 
 assert(battle.includes('if(soniaNativeFx(skillId,caster,targets))return;'));
 assert(battle.includes("at('sonia_chaos_guard',.55,'caster',2.2,.96,0,'texiao02')"));

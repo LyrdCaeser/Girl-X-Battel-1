@@ -2,7 +2,7 @@
 const ChibiBattle=(()=>{
  let cataloguePromise;const dataCache=new Map();
  async function catalogue(){return cataloguePromise||(cataloguePromise=fetch('/assets/chibis/catalog.json?v=20261014-nephilim3').then(r=>{if(!r.ok)throw Error("Chibi catalog unavailable");return r.json();}));}
- async function load(name){if(dataCache.has(name))return dataCache.get(name);const promise=new Promise((resolve,reject)=>{const loader=new PIXI.Loader();loader.add(name,`/assets/chibis/${name}/model.json`,{metadata:{spineAtlasFile:`/assets/chibis/${name}/model.atlas`}});loader.onError.add(e=>reject(e));loader.load((_,resources)=>{const data=resources[name]?.spineData;if(data)resolve(data);else reject(Error("Could not read "+name));});});dataCache.set(name,promise);try{return await promise;}catch(e){dataCache.delete(name);throw e;}}
+ async function load(name){if(dataCache.has(name))return dataCache.get(name);const promise=new Promise((resolve,reject)=>{const loader=new PIXI.Loader();loader.add(name,`/assets/chibis/${name}/model.json${name==='lyr_sonia'?'?v=20261122-motion-r1':''}`,{metadata:{spineAtlasFile:`/assets/chibis/${name}/model.atlas`}});loader.onError.add(e=>reject(e));loader.load((_,resources)=>{const data=resources[name]?.spineData;if(data)resolve(data);else reject(Error("Could not read "+name));});});dataCache.set(name,promise);try{return await promise;}catch(e){dataCache.delete(name);throw e;}}
  // The archived Spine models use different native bone/attachment dimensions.
  // Fit BOTH axes into one 1080 x 1920 battle footprint, instead of sizing by
  // height alone (which made wide/tall skins enormous on portrait phones).
@@ -70,7 +70,27 @@ const ChibiBattle=(()=>{
   const app=new PIXI.Application({width:1080,height:1920,transparent:true,antialias:true,resolution:1,autoDensity:false});
   app.view.className='chibi-canvas';app.view.dataset.models='0';app.view.setAttribute('aria-label',"Girls animated with the original skeletons");field.prepend(app.view);
   const figures=new Map(),missing=[],anchors=new Map(),headAnchors=new Map(),deadPositions=new Set(),deathTokens=new Map();
-  await Promise.all(units.map(async u=>{const meta=(u.skin_id&&catalogueData[u.skin_id])||catalogueData[u.table_id];if(!meta){missing.push(u.table_id);return;}try{const data=await load(meta.model);if(cancelled)return;const figure=new PIXI.spine.Spine(data);const idle=data.animations.some(a=>a.name==='idle')?'idle':data.animations[0]?.name;if(idle)figure.state.setAnimation(0,idle,true);figure.stateData.defaultMix=.08;figure.update(0);const bounds=figure.getLocalBounds();const nativeBounds={width:data.width||bounds.width,height:data.height||bounds.height};
+  const soniaBlinkTimers=new Set();
+  function blinkSonia(figure,ms=3900){
+   let timer=setTimeout(()=>{
+    soniaBlinkTimers.delete(timer);
+    if(cancelled)return;
+    const current=figure.state.getCurrent(0)?.animation?.name;
+    if(figure.visible&&(current==='idle'||current==='battle_idle')&&figure.state.hasAnimation('blink')){
+      figure.state.setAnimation(1,'blink',false);
+      let stop=setTimeout(()=>{soniaBlinkTimers.delete(stop);
+        if(!cancelled)figure.state.clearTrack(1);
+      },260);
+      soniaBlinkTimers.add(stop);
+    }
+    blinkSonia(figure,4500);
+   },ms);
+   soniaBlinkTimers.add(timer);
+  }
+  await Promise.all(units.map(async u=>{const meta=(u.skin_id&&catalogueData[u.skin_id])||catalogueData[u.table_id];if(!meta){missing.push(u.table_id);return;}try{const data=await load(meta.model);if(cancelled)return;const figure=new PIXI.spine.Spine(data);
+const idle=Number(u.table_id)===758001&&data.animations.some(a=>a.name==='battle_idle')
+ ?'battle_idle':data.animations.some(a=>a.name==='idle')?'idle':data.animations[0]?.name;
+if(idle)figure.state.setAnimation(0,idle,true);figure.stateData.defaultMix=.08;figure.update(0);const bounds=figure.getLocalBounds();const nativeBounds={width:data.width||bounds.width,height:data.height||bounds.height};
 // Some exported skins contain attack VFX in their setup bounds. Do not let
 // these invisible attachments shrink the entire character.
 const cleanWidth=Number(data.width),cleanHeight=Number(data.height);
@@ -79,7 +99,8 @@ const rigBounds=(cleanWidth>0&&cleanHeight>0)?{width:cleanWidth,height:cleanHeig
   // aligned with the model even for mirrored rigs / oversized skill attachments.
   headAnchors.set(u.pos,headAnchorForFigure(figure,cleanHeight>0?cleanHeight:bounds.height,
                                             scale,!!u.boss&&bossScene));
-  figures.set(u.pos,{figure,idle,meta});app.view.dataset.models=String(figures.size);}catch(e){missing.push(u.table_id);console.warn("Chibi not loaded",u.table_id,e.message);}}));
+  figures.set(u.pos,{figure,idle,meta});app.view.dataset.models=String(figures.size);
+  if(Number(u.table_id)===758001)blinkSonia(figure);}catch(e){missing.push(u.table_id);console.warn("Chibi not loaded",u.table_id,e.message);}}));
   app.stage.sortableChildren=true;app.stage.sortChildren();
   // Four Sonia skills now have dedicated Spine 3.6.37 visual copies: one
   // original skill each from Monica, Izanami, Nymphaea and Apollis. Only
@@ -99,10 +120,9 @@ const rigBounds=(cleanWidth>0&&cleanHeight>0)?{width:cleanWidth,height:cleanHeig
     // First hit and primary active skill are available before the first
     // damaging frame, with a bounded warm-up for slow Android networks.
     const preload=Promise.allSettled(
-      ['lianhua_hurt01','sonia_chaos_orb','sonia_chaos_collapse'].map(name=>fxLoad(name)));
-    await Promise.race([preload,new Promise(resolve=>setTimeout(resolve,2000))]);
-    for(const res of ['sonia_chaos_siphon','sonia_chaos_guard'])
-      fxLoad(res).catch(()=>{});
+      ['lianhua_hurt01','sonia_chaos_orb','sonia_chaos_siphon',
+       'sonia_chaos_guard','sonia_chaos_collapse'].map(name=>fxLoad(name)));
+    await Promise.race([preload,new Promise(resolve=>setTimeout(resolve,2800))]);
   }
   function play(pos,kind){
    const unit=figures.get(pos);if(!unit||cancelled)return;
@@ -226,6 +246,7 @@ const rigBounds=(cleanWidth>0&&cleanHeight>0)?{width:cleanWidth,height:cleanHeig
    for(const f of live)f.state.timeScale=value*(fxConfigs.get(f)||1);
   }
   function destroy(){cancelled=true;
+   for(const timer of soniaBlinkTimers)clearTimeout(timer);soniaBlinkTimers.clear();
    for(const timer of fxTimers)clearTimeout(timer);fxTimers.clear();
    for(const f of live){try{app.stage.removeChild(f);f.destroy({children:true});}catch{}}
    live.clear();app.destroy(true,{children:true,texture:false,baseTexture:false});

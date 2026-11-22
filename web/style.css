@@ -463,3 +463,15 @@ html.gxb-mobile #app-frame #capsule-view .capsule-banner.wc-banner::before{
  background-size:calc(100% + 30px) 100%;
  background-position:center;
 }
+
+/* SONIA-NATIVE-EP-20261122: restore the original miniature energy meter
+   below each native HP bar. Its value comes exclusively from Lua frame.eps.
+   Keep the existing publisher HP background and draw only a slim EP track. */
+.battlefield .unit .unit-ep{position:absolute;top:calc(24px + 13px);left:3%;width:94%;
+ height:5px;border:1px solid #dce5ffcc;border-radius:2px;overflow:hidden;
+ background:#252d57cc;box-shadow:0 1px 2px #14245d80;pointer-events:none}
+.battlefield .unit .unit-ep i{display:block;height:100%;width:0;
+ background:url('/assets/original-ui/battle_hp_bar1.png') left center/100% 100% no-repeat;
+ filter:hue-rotate(150deg) saturate(.92);
+ transition:width .15s linear}
+.battlefield .unit:not(.has-chibi) .unit-ep{top:calc(11px + 13px)}

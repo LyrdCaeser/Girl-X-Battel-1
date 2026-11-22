@@ -19,5 +19,5 @@ const catalog=JSON.parse(fs.readFileSync('web/assets/girls-catalog.json','utf8')
 const sonia=catalog.find(row=>row.id===758001);
 assert.equal(sonia.group,8,'Lyr Sonia remains in Chaos faction');
 const html=fs.readFileSync('web/index.html','utf8');
-assert(html.includes('/app.js?v=20261122-sonia-skill-timing-r5'));
+assert(html.includes('/app.js?v=20261122-battle-ep-sonia-r6'));
 console.log('PASS: Lyr Sonia borrows purple Cosmos card-star art, factions and others unchanged');

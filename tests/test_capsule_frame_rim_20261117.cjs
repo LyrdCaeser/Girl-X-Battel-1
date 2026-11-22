@@ -10,7 +10,7 @@ assert(part.includes('background-size:calc(100% + 22px) 100%'));
 assert(part.includes('background-size:calc(100% + 30px) 100%'));
 assert(part.includes('border-width:2px'));
 assert(part.includes('html.gxb-mobile #app-frame #capsule-view'),'Desktop styles must stay independent');
-assert(html.includes('style.css?v=20261117-narrow-original-border-r2'));
+assert(html.includes('style.css?v=20261122-battle-ep-restore-r3'));
 assert(css.includes("url('/assets/capsule/advanced-panel.png')"),'native art must not change');
 assert(css.includes("url('/assets/wish/wish_capsule_summon_bg.png')")===false ||
        fs.readFileSync('web/wish.css','utf8').includes("url('/assets/wish/wish_capsule_summon_bg.png')"));
