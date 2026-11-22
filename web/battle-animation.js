@@ -83,9 +83,23 @@ const rigBounds=(cleanWidth>0&&cleanHeight>0)?{width:cleanWidth,height:cleanHeig
   app.stage.sortableChildren=true;app.stage.sortChildren();
   // Sonia's event-only skill IDs have no legacy fx*.lua entries. The
   // dedicated battle-field renderer uses her original four motifs.
-  const soniaFx=typeof SoniaBattleVFX!=='undefined'
-    ?SoniaBattleVFX.mount(field,units,positions):null;
-  soniaFx?.guard();
+  // Native GXB3 Spine 3.6.37 assets, not a second Canvas/HTML renderer.
+  // These shared battle FX are a visual bridge until Sonia's unique FX pack
+  // passes visual/mobile approval; no foreign layer or static cut-in.
+  const soniaSlots=new Set(units.filter(u=>Number(u.table_id)===758001).map(u=>Number(u.pos)));
+  const soniaNative={
+    75800101:{impact:910,duration:1590},
+    75800102:{impact:450,duration:1180},
+    75800103:{impact:350,duration:1150},
+    75800104:{impact:910,duration:1590}
+  };
+  const fxLite=document.documentElement.classList.contains('gxb-mobile');
+  if(soniaSlots.size){
+    // Start downloads alongside the first battle frame; do not block combat.
+    for(const res of ['monika_hurt03','yixienamei_hurt01','monika_hurt02','lianhua_hurt02']){
+      fxLoad(res).catch(()=>{});
+    }
+  }
   function play(pos,kind){
    const unit=figures.get(pos);if(!unit||cancelled)return;
    const {figure,idle}=unit;
@@ -119,13 +133,71 @@ const rigBounds=(cleanWidth>0&&cleanHeight>0)?{width:cleanWidth,height:cleanHeig
   }
   // Skill effects (assets/battle-fx/skills.json, fx*.lua): "h" on every target (layer 1 = under the girl, position 1 = at her feet),
   // "c" at a point of the 720×1280 field (mirrored for the enemy side). One-shot Spine clips, removed when they end.
-  let rate=1;const live=new Set();
-  async function spawn(res,anim,scale,x,y,flip,z){try{const data=await fxLoad(res);if(cancelled)return;const f=new PIXI.spine.Spine(data);const name=data.animations.some(a=>a.name===anim)?anim:data.animations[0]?.name;if(!name)return;f.scale.set((flip?-1:1)*scale*1.5,scale*1.5);f.x=x;f.y=y;f.zIndex=z;f.state.timeScale=rate;f.state.setAnimation(0,name,false);const done=()=>{if(!live.has(f))return;live.delete(f);f.visible=false;requestAnimationFrame(()=>{try{if(!cancelled){app.stage.removeChild(f);f.destroy({children:true});}}catch{}});};f.state.addListener({complete:done});live.add(f);app.stage.addChild(f);setTimeout(done,4000);}catch{}}
+  let rate=1;const live=new Set(),fxConfigs=new WeakMap(),fxTimers=new Set();
+  async function spawn(res,anim,scale,x,y,flip,z,options={}){try{
+   const data=await fxLoad(res);if(cancelled)return;
+   const f=new PIXI.spine.Spine(data);
+   const name=data.animations.some(a=>a.name===anim)?anim:data.animations[0]?.name;
+   if(!name)return;
+   f.scale.set((flip?-1:1)*scale*1.5,scale*1.5);
+   f.x=x;f.y=y;f.zIndex=z;f.alpha=options.alpha??1;
+   const effectSpeed=Number(options.speed)||1;
+   f.state.timeScale=rate*effectSpeed;
+   f.state.setAnimation(0,name,false);
+   fxConfigs.set(f,effectSpeed);
+   const done=()=>{if(!live.has(f))return;live.delete(f);f.visible=false;
+    requestAnimationFrame(()=>{try{if(!cancelled){app.stage.removeChild(f);f.destroy({children:true});}}catch{}});};
+   f.state.addListener({complete:done});
+   live.add(f);app.stage.addChild(f);
+   setTimeout(done,(Number(options.maxMs)||4000)/Math.max(.25,rate));
+  }catch(e){console.warn('Battle Spine FX unavailable',res,e?.message||e);}}
+  // Sonia's 4 skill IDs now use the SAME PIXI/Spine stage, skill timing and
+  // scale pipeline as every other GXB3 girl. Mobile renders at most one
+  // original Spine effect per cue; desktop allows two short complementary FX.
+  function soniaNativeFx(skillId,caster,targets){
+   if(!soniaSlots.has(Number(caster))||!soniaNative[Number(skillId)]||cancelled)return false;
+   const source=figures.get(Number(caster))?.figure;
+   if(!source)return true;
+   let opponents=(targets||[]).filter(pos=>(Number(pos)>6)!==(Number(caster)>6))
+     .map(pos=>figures.get(Number(pos))?.figure).filter(Boolean);
+   if(!opponents.length){
+     opponents=[...figures.entries()].filter(([pos])=>(pos>6)!==(caster>6))
+       .map(([,value])=>value.figure).filter(Boolean);
+   }
+   const x=opponents.length?opponents.reduce((sum,f)=>sum+f.x,0)/opponents.length:540;
+   const y=opponents.length?opponents.reduce((sum,f)=>sum+f.y,0)/opponents.length:890;
+   const flip=(x<source.x);
+   const at=(res,scale,place,speed,alpha,delay=0)=>{
+    const figure=place==='caster'?source:null;
+    const px=figure?figure.x:x,py=figure?figure.y:y;
+    const z=py+(place==='caster'?-1:1);
+    let timer=null;
+    const fire=()=>{if(timer!==null)fxTimers.delete(timer);
+      if(!cancelled)void spawn(res,'texiao01',scale,px,py,flip,z,{speed,alpha,maxMs:2300});};
+    if(delay>0){timer=setTimeout(fire,delay/Math.max(.25,rate));fxTimers.add(timer);}
+    else fire();
+   };
+   switch(Number(skillId)){
+    case 75800101:
+     if(!fxLite)at('monika_hurt02',.30,'caster',2.8,.55);
+     at('monika_hurt03',.58,'target',3.35,.82,200);
+     break;
+    case 75800102:
+     at('yixienamei_hurt01',.58,'target',1.3,.78);
+     break;
+    case 75800103:
+     at('monika_hurt02',.42,'caster',2.4,.74);
+     break;
+    case 75800104:
+     at('lianhua_hurt02',.52,'target',3.0,.85);
+     if(!fxLite)at('monika_hurt03',.41,'target',3.8,.47,450);
+     break;
+   }
+   return true;
+  }
   async function fx(skillId,caster,targets){
    if(cancelled||deadPositions.has(caster))return;
-   // Start Sonia FX synchronously before the first fetch/await: damage can
-   // otherwise resolve before her invisible, missing legacy FX has loaded.
-   soniaFx?.play(skillId,caster,targets);
+   if(soniaNativeFx(skillId,caster,targets))return;
    const table=await fxSkills(),row=table[String(skillId)];if(!row||cancelled)return;
    // The native side transform faces the enemy. Derive the side from the
    // opposing, actual target figures rather than from an arbitrary animation list.
@@ -144,9 +216,18 @@ const rigBounds=(cleanWidth>0&&cleanHeight>0)?{width:cleanWidth,height:cleanHeig
             layer===1?u.figure.y-1:u.figure.y+1);
    }
   }
-  function speed(value){rate=value;soniaFx?.speed(value);for(const {figure} of figures.values())figure.state.timeScale=value;for(const f of live)f.state.timeScale=value;}
-  function destroy(){cancelled=true;soniaFx?.destroy();app.destroy(true,{children:true,texture:false,baseTexture:false});}
-  return {play,speed,destroy,fx,timing:(id,pos)=>soniaFx?.timing(id,pos)||null,anchors,headAnchors,has:pos=>figures.has(pos),missing};
+  function speed(value){rate=value;
+   for(const {figure} of figures.values())figure.state.timeScale=value;
+   for(const f of live)f.state.timeScale=value*(fxConfigs.get(f)||1);
+  }
+  function destroy(){cancelled=true;
+   for(const timer of fxTimers)clearTimeout(timer);fxTimers.clear();
+   for(const f of live){try{app.stage.removeChild(f);f.destroy({children:true});}catch{}}
+   live.clear();app.destroy(true,{children:true,texture:false,baseTexture:false});
+  }
+  return {play,speed,destroy,fx,
+    timing:(id,pos)=>soniaSlots.has(Number(pos))?soniaNative[Number(id)]||null:null,
+    anchors,headAnchors,has:pos=>figures.has(pos),missing};
  }
  return {create,catalogue,fitScaleForBounds,fitScaleForModel,modelFacing,effectFlipForSide,headAnchorForFigure};
 })();

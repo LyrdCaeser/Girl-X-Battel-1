@@ -1,70 +1,39 @@
 'use strict';
-const vm=require('node:vm'),fs=require('node:fs'),assert=require('node:assert/strict');
-const source=fs.readFileSync('web/sonia-battle-vfx.js','utf8');
-const animation=fs.readFileSync('web/battle-animation.js','utf8');
-const app=fs.readFileSync('web/app.js','utf8');
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+const battle=fs.readFileSync('web/battle-animation.js','utf8');
 const html=fs.readFileSync('web/index.html','utf8');
-const calls={frames:0,draws:0,removed:0};
-let next=1,rafs=new Map();
-const gradient={addColorStop(){}};
-const drawing={
- createRadialGradient(){return gradient;},
- setTransform(){},clearRect(){calls.frames++},save(){},restore(){},
- beginPath(){calls.draws++},moveTo(){},lineTo(){},ellipse(){},stroke(){},
- arc(){},fill(){},bezierCurveTo(){},quadraticCurveTo(){},
- translate(){},rotate(){},scale(){},drawImage(){calls.draws++},
- fillRect(){},fillText(){}
-};
-const ctx=vm.createContext({
- console,Math,Number,Set,Object,Map,Array,Image:class{constructor(){this.complete=false;this.naturalWidth=0;}},
- performance:{now:()=>100},
- document:{createElement(name){
-  assert.equal(name,'canvas');
-  return {width:0,height:0,style:{},className:'',
-   getContext:()=>drawing,remove(){calls.removed++}};
- }},
- requestAnimationFrame(fn){const id=next++;rafs.set(id,fn);return id;},
- cancelAnimationFrame(id){rafs.delete(id);}
-});
-vm.runInContext(source+';globalThis.VFX=SoniaBattleVFX;',ctx);
-const vfx=ctx.VFX;
-assert.deepEqual(Object.keys(vfx.SKILLS).map(Number),[75800100,75800101,75800102,75800103,75800104]);
-const field={append(node){this.node=node;}};
-const units=[{pos:1,table_id:758001},{pos:7,table_id:51017},{pos:8,table_id:51018}];
-const xy={1:[270,600],7:[800,700],8:[840,1000]};
-const engine=vfx.mount(field,units,xy);
-assert.equal(field.node.width,540,'half-resolution Android-safe drawing surface');
-assert.equal(field.node.height,960);
-assert.equal(engine.skillCount,1);
-assert.equal(engine.timing(75800101,1).impact,1350);
-assert.equal(engine.timing(75800104,1).duration,2750);
-assert.equal(engine.timing(75800101,7),null,'enemy or non-Sonia caster cannot call Sonia FX');
-assert.equal(engine.timing(1110101,1),null);
-assert.equal(engine.play(75800101,7,[1]),null);
-const effects=[75800101,75800102,75800103,75800104];
-for(const id of effects){
- const data=engine.play(id,1,[7,8]);
- assert(data&&data.duration>0,'every original skill gets a visible clip');
- assert(rafs.size>0,'rAF is scheduled');
- let t=100;
- for(let j=0;j<5;j++){
-  const callbacks=[...rafs.values()];rafs.clear();t+=120;
-  for(const cb of callbacks)cb(t);
- }
-}
-assert(calls.draws>250,'VFX must draw actual pixels, got '+calls.draws);
-assert(calls.frames>=4);
-engine.speed(2);engine.speed(4);engine.speed(1);
-engine.destroy();
-assert.equal(calls.removed,1);
-assert.equal(rafs.size,0);
-assert(animation.includes('soniaFx?.play(skillId,caster,targets)'));
-assert(animation.includes('soniaFx?.destroy()'));
-assert(animation.includes('soniaFx?.guard()'));
-assert(animation.includes('soniaFx?.speed(value)'));
-assert(app.includes('const soniaTiming=frame.skill_id>0?battleAnimation?.timing?'));
+const app=fs.readFileSync('web/app.js','utf8');
+const skills=[75800101,75800102,75800103,75800104];
+const clips=[
+  'monika_hurt03',
+  'yixienamei_hurt01',
+  'monika_hurt02',
+  'lianhua_hurt02'
+];
+assert(!fs.existsSync('web/sonia-battle-vfx.js'),'hand-painted Canvas engine removed');
+assert(!html.includes('sonia-battle-vfx.js'),'second canvas no longer loaded');
+assert(html.includes('battle-animation.js?v=20261122-native-sonia-spine-r2'));
+assert(battle.includes('const soniaSlots=new Set('));
+assert(battle.includes('if(soniaNativeFx(skillId,caster,targets))return;'));
+assert(battle.includes("new PIXI.spine.Spine(data)"));
+assert(battle.includes('const fxLite=document.documentElement.classList.contains'));
+assert(battle.includes('if(!fxLite)at('));
+assert(battle.includes('for(const timer of fxTimers)clearTimeout(timer)'));
+assert(battle.includes('for(const f of live){'));
+assert(battle.includes('f.state.timeScale=value*(fxConfigs.get(f)||1)'));
+assert(app.includes('battleAnimation?.timing?.(frame.skill_id,frame.pos)'));
 assert(app.includes('soniaTiming.impact/battleSpeed'));
-assert(html.includes('sonia-battle-vfx.js?v=20261122-4skills-r1'));
-assert(html.indexOf('/sonia-battle-vfx.js')<html.indexOf('/battle-animation.js'));
-assert(html.includes('wish.js?v=20261122-sonia-pity-985-r6'));
-console.log('PASS: 4 VFX cues draw real frames, no other girls affected, 0.5x backing canvas, speed/skip/destroy, timed damage');
+assert(!battle.includes('SoniaBattleVFX'));
+for(const id of skills)assert(battle.includes(id+':{impact:'),'native timeline for '+id);
+for(const name of clips){
+ assert(battle.includes("'"+name+"'"),'Spine resource registered: '+name);
+ const dir=path.join('web','assets','battle-fx',name);
+ const data=JSON.parse(fs.readFileSync(path.join(dir,'model.json'),'utf8'));
+ assert.equal(data.skeleton.spine,'3.6.37');
+ assert(data.animations.texiao01,'native animation required: '+name);
+ assert(fs.existsSync(path.join(dir,'model.atlas')));
+ const imageNames=fs.readdirSync(dir).filter(n=>n.endsWith('.webp'));
+ assert(imageNames.length>=1,'real game textures: '+name);
+}
+assert(!html.includes('<canvas class="sonia-'),'no added HTML canvas in app');
+console.log('PASS: Sonia uses only existing GXB3 Spine 3.6.37 native clips, timed impacts, mobile one-layer cap, cleanup and no custom Canvas');
