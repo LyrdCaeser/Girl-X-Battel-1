@@ -62,6 +62,55 @@ const GirlUI=(()=>{
   if(hero.grade<hero.max_grade&&hero.lv>=hero.level_cap){const g=el('div','gu-grade');g.append(el('b','',"Promote"));const ok=cost(g,hero.grade_cost);const b=el('button','gu-btn','Grade Up');b.type='button';b.disabled=!ok;b.onclick=()=>action('PARTNER_GRADEUP',{partner_id:hero.partner_id});g.append(b);box?.after(g);}
   if(hero.lv>=hero.level_cap&&hero.grade>=hero.max_grade){const t=$('detail-cost-text');if(t){t.textContent='MAX';t.classList.add('gu-max');}}}
 
+ // PartnerDetailWindow: tapping any girl's original skill icon opens the same
+ // 9-slice game window. Never invent an ability when publisher text is absent.
+ let skillDescriptionData=null,skillDescriptionLoading=null;
+ const detailDescriptions=()=>skillDescriptionData?Promise.resolve(skillDescriptionData):
+  (skillDescriptionLoading||=api('/assets/skills/skill-descriptions.json?v=20261122-original-skill-info-r1')
+   .then(data=>(skillDescriptionData=data.skills||{},skillDescriptionData))
+   .catch(err=>{skillDescriptionLoading=null;throw err;}));
+ function skillInfo(hero,skill){
+  const {body,close,win:popup}=win({title:'Mô Tả Kỹ Năng',cls:'gu-skill-info'});
+  const head=el('div','gu-skill-info-head');
+  const iconName=String(skill.icon||'');
+  const image=iconName.startsWith('/')?iconName:'/assets/skills/'+iconName+'.png';
+  head.append(img(image,'gu-skill-info-icon'));
+  const labels=el('div','gu-skill-info-labels');
+  labels.append(el('strong','',skill.name||'Kỹ Năng'),
+    el('small','',Number(hero.table_id)===758001?'Lyr Sonia':hero.name));
+  if(skill.type)labels.append(el('small','',skill.type));
+  head.append(labels);body.append(head);
+  const detail=el('div','gu-skill-info-text','Đang mở mô tả kỹ năng…');
+  body.append(detail);
+  const footer=el('div','gu-skill-info-actions'),done=el('button','gs-btn','Đóng');
+  done.type='button';done.onclick=close;footer.append(done);body.append(footer);
+  if(Array.isArray(skill.levels)&&skill.levels.length){
+   detail.replaceChildren();
+   // Sonia's true native skill has exactly three tier descriptions; display
+   // all of them instead of guessing a tier from the character's star count.
+   for(let i=0;i<skill.levels.length;i++){
+    const sec=el('section','gu-skill-info-level');
+    sec.append(el('h4','', 'Cấp Kỹ Năng '+(i+1)),
+      el('p','',String(skill.levels[i]||'Không có mô tả.')));
+    detail.append(sec);
+   }
+   return;
+  }
+  void detailDescriptions().then(rows=>{
+   if(!popup.isConnected)return;
+   const item=rows[String(skill.id)];
+   detail.replaceChildren();
+   if(item?.text){
+    if(item.lang==='en')detail.append(el('small','gu-skill-info-language','Nội dung nguyên bản'));
+    detail.append(el('p','gu-skill-info-description',item.text));
+   }else{
+    detail.append(el('p','gu-skill-info-description',
+      'Kỹ năng này chưa có mô tả chi tiết trong bản gốc.'));
+   }
+  }).catch(()=>{
+   if(popup.isConnected)detail.textContent='Chưa thể tải mô tả. Hãy mở lại kỹ năng.';
+  });
+ }
  // Elite Skills (exskill_grade_up_window): opened from the sheet's left button, no longer inside the Attribute tab
  function exSkills(hero){document.querySelector('.gu-ex')?.remove();}
  function eliteSkills(hero){if(!hero.has_ex_skills){toast("This Girl has no Elite Skills.");return;}const {body}=win({title:'Elite Skills',cls:'gu-ex-win'});const skills=(hero.ex_skills||[0,0,0,0]).concat([0,0,0,0]).slice(0,4);
@@ -461,5 +510,5 @@ const GirlUI=(()=>{
     });
   }
  function stars(n,kind='card'){n=Number(n)||0;const w=el('span','gu-stars '+kind);if(n>=10){const base=kind==='tag'?'potentiality_nametag_star':'potentiality_card_star';w.append(img('/assets/girl-ui/'+base+(n>=15?'_max':'')+'.png','gu-emblem'));if(n>10)w.append(el('b','gu-emblem-num',String(n-10)));}else{const red=n>5;for(let i=0;i<(red?n-5:n);i++)w.append(img('/assets/girl-ui/partner_star_'+(red?'red':'yellow')+'.png','gu-star'));}w.title=n+'★';return w;}
- return {detail,load,picture,stars,win,toast,notice,promptNumber,promptText,confirm:confirmGame,eliteSkills,resonate,reverse,rich};
+ return {detail,load,picture,stars,win,skillInfo,toast,notice,promptNumber,promptText,confirm:confirmGame,eliteSkills,resonate,reverse,rich};
 })();

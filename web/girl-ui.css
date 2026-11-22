@@ -469,3 +469,27 @@ html.gxb-mobile #app-frame #girl-detail-view.sonia-continuation-scene:not(.gs-zo
  transform:translate(-50%,-50%)!important;
  object-fit:fill!important;
 }
+
+/* Lyr Sonia and all goddess skill details: original game frame, mobile friendly. */
+#girl-detail-view .detail-skill{
+ appearance:none;background:transparent;border:0;margin:0;padding:0;
+ color:inherit;cursor:pointer;touch-action:manipulation;
+}
+#girl-detail-view .detail-skill:focus-visible{outline:calc(3 * var(--u)) solid #f6c875;outline-offset:calc(3 * var(--u));border-radius:calc(9 * var(--u))}
+#girl-detail-view .detail-skill:active img{filter:brightness(1.14)}
+.gs-win.gu-skill-info{max-width:96%;max-height:90%;overflow:visible}
+.gs-win.gu-skill-info .gs-win-bar{left:0;right:0;top:calc(-43 * var(--u));z-index:5}
+.gs-win.gu-skill-info .gs-win-x{top:calc(4 * var(--u));right:calc(9 * var(--u));width:calc(45 * var(--u));height:calc(45 * var(--u))}
+.gs-win.gu-skill-info .gs-win-body{min-height:0;max-height:100%;overflow-y:auto;padding:calc(10 * var(--u)) calc(14 * var(--u)) calc(15 * var(--u))}
+.gu-skill-info-head{display:flex;align-items:center;gap:calc(18 * var(--u));border-bottom:calc(2 * var(--u)) solid #c3b4e3;padding-bottom:calc(14 * var(--u));margin-bottom:calc(12 * var(--u))}
+.gu-skill-info-icon{width:calc(112 * var(--u));height:calc(112 * var(--u));object-fit:contain;flex-shrink:0;background:url('/assets/detail/skill_icon_bg.png') center/contain no-repeat}
+.gu-skill-info-labels{display:flex;flex-direction:column;min-width:0;gap:calc(6 * var(--u));color:#444a79}
+.gu-skill-info-labels strong{font-size:calc(28 * var(--u));line-height:1.22;overflow-wrap:anywhere}
+.gu-skill-info-labels small,.gu-skill-info-language{font-size:calc(17 * var(--u));color:#6b6b97}
+.gu-skill-info-text{color:#465170;line-height:1.5;font-size:calc(23 * var(--u));overflow-wrap:anywhere}
+.gu-skill-info-description,.gu-skill-info-level p{white-space:pre-line;margin:calc(7 * var(--u)) 0 calc(12 * var(--u));line-height:1.45}
+.gu-skill-info-level{padding:calc(10 * var(--u)) calc(14 * var(--u));margin-bottom:calc(12 * var(--u));background:#f5f3ff;border:calc(2 * var(--u)) solid #d6c9ed;border-radius:calc(9 * var(--u))}
+.gu-skill-info-level h4{margin:0;color:#7262b5;font-size:calc(22 * var(--u))}
+.gu-skill-info-actions{display:flex;justify-content:center;margin-top:calc(8 * var(--u))}
+html.gxb-mobile #app-frame .gs-win.gu-skill-info{max-height:calc(100dvh - 28px)}
+html.gxb-mobile #app-frame .gs-win.gu-skill-info .gs-win-body{max-height:calc(100dvh - 125px)}

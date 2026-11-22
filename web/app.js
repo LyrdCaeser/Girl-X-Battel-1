@@ -300,7 +300,17 @@ function renderGirlDetail(){
  gradeButton.title=Object.entries(gradeCost).map(([id,n])=>(itemCatalog[id]?.name||('Vật phẩm '+id))+': '+number(n)).join(' · ');
  $('detail-level-note').textContent=atCap?(isGradeMax?'Đã đạt giới hạn tiến hóa của bậc sao này.':'Đạt giới hạn cấp: nhấn Tiến Hóa khi đủ nguyên liệu.'):levelButton.disabled?'Không đủ vật phẩm để tăng cấp.':'Tăng cấp bằng vật phẩm trong Túi Đồ.';
  const stats=$('detail-stats');stats.replaceChildren();for(const [label,base,growth,icon] of [['HP','base_hp','grow_hp','attr_hp_icon'],['ATK','base_atk','grow_atk','attr_atk_icon'],['DEF','base_arm','grow_arm','attr_def_icon'],['SPD','base_spd','grow_spd','attr_spd_icon']]){const e=node('div','detail-stat'),img=node('img');img.src='/assets/detail/'+icon+'.png';img.alt='';const value=Math.round(Number(meta.stats?.[base]||0)+Number(meta.stats?.[growth]||0)*(hero.lv-1));e.append(img,node('span','',label+': '+number(value)));stats.append(e);}
- const skills=$('detail-skills');skills.replaceChildren();for(const skill of meta.skills||[]){const e=node('div','detail-skill'),img=node('img');img.src=skill.icon?'/assets/skills/'+skill.icon+'.png':'/assets/detail/skill_icon_bg.png';img.alt='';e.title=skill.name;e.append(img,node('small','',skill.name));skills.append(e);}
+ const skills=$('detail-skills');skills.replaceChildren();for(const skill of meta.skills||[]){
+  const e=node('button','detail-skill'),icon=node('img');
+  e.type='button';
+  icon.src=skill.icon?'/assets/skills/'+skill.icon+'.png':'/assets/detail/skill_icon_bg.png';
+  icon.alt='';
+  e.title='Xem mô tả: '+skill.name;
+  e.setAttribute('aria-label','Xem mô tả kỹ năng '+skill.name);
+  e.append(icon,node('small','',skill.name));
+  e.addEventListener('click',()=>GirlUI.skillInfo(hero,skill));
+  skills.append(e);
+ }
  const slots=$('detail-gear-slots');slots.replaceChildren();for(const [index,icon] of ['partner_weapon','partner_cloth','partner_treasure','partner_shoes'].entries()){const e=node('div','detail-gear-slot'),img=node('img');img.src='/assets/detail/'+icon+'.png';img.alt='';const equipped=hero.equips?.[index];e.append(img,node('span','',equipped?'Đã trang bị':"Trống"));slots.append(e);}
  $('detail-gear-note').textContent='Trang bị hiện có của Nữ Thần.';
  const gearStock=$('detail-gear-stock');gearStock.replaceChildren();for(const [id,count] of Object.entries(state.items).filter(([id,count])=>Number(count)>0&&itemCatalog[id]?.category===1).slice(0,12)){const item=itemCatalog[id],e=node('div','detail-stock-item'),img=node('img');img.src=itemPicture(item)||'/assets/ui/item_bg.png';img.alt='';e.append(img,node('small','',item.name+' ×'+number(count)));gearStock.append(e);}if(!gearStock.childElementCount)gearStock.append(node('p','detail-note',"Không có trang bị trong Túi Đồ."));

@@ -16,7 +16,16 @@ const Station=(()=>{
  const LINES=['Dummy Test','Tests','Guild Boss','Junior Varsity'];
  function find(tid){const ids=typeof hostChain==='function'?hostChain(tid):[Number(tid)];for(const [k,g]of Object.entries(data.girls))if(g.ids.some(i=>ids.includes(i)||i%100000===Number(tid)%100000))return k;return null;}
  async function call(req){try{const r=await api('/api/relations/action',{...req,id:cid});if(r.state)state=r.state;rec=r.station;world={hot:r.hot||[],likes:r.likes||0};note='';return r;}catch(e){note=e.message;return null;}finally{render();}}
- async function open(tableId){data=data||await api('/assets/station/station.json');
+ async function open(tableId){
+  if(!data){
+   const [base,sonia]=await Promise.all([
+    api('/assets/station/station.json'),
+    api('/assets/chaos/lyr_sonia_station.json?v=20261122-sonia-station-r1')
+   ]);
+   if(String(sonia?.id)==='858001'&&sonia?.girl?.ids?.includes(758001))
+     base.girls['858001']=sonia.girl;
+   data=base;
+  }
   if(!translated){try{translated=await api('/assets/station/station-vi.json?v=20261015-editorial2');}catch{translated={girls:{}};}}
   cid=find(tableId);if(!cid)return false;
   tab=0;card=Math.max(0,data.girls[cid].ids.indexOf(Number(tableId)));line=0;note='';popup=null;host=document.querySelector('.dates-view')||window.GxbFrame?.root()||document.body;

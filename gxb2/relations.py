@@ -128,6 +128,14 @@ def wedding_skin(table_id):
 # ---- Discuss → Partner Data Station (PartnerCommentComponent). LOCAL (LOCAL-074): comments, likes and the player's own
 # labels lived on the online server; here they are the player's own notes, kept in the save per comment id.
 STATION = json.loads((ROOT / 'web/assets/station/station.json').read_text()) if (ROOT / 'web/assets/station/station.json').exists() else {'girls': {}, 'labels': {}}
+# Lyr Sonia has no entry in the recovered publisher Station table. Register
+# her own profile beside it, without mutating the original translation source.
+_SONIA_STATION_FILE = ROOT / 'web/assets/chaos/lyr_sonia_station.json'
+if _SONIA_STATION_FILE.is_file():
+    _sonia_station = json.loads(_SONIA_STATION_FILE.read_text(encoding='utf-8'))
+    if str(_sonia_station.get('id')) == '858001' and _sonia_station['girl'].get('ids') == [758001]:
+        STATION['girls']['858001'] = _sonia_station['girl']
+
 STATION_KINDS = ('station', 'station_like', 'station_labels', 'station_comment', 'station_delete')
 COMMENT_MIN, COMMENT_MAX = 12, 400  # misc partner_comment_length_limit_en_en
 LABEL_MAX = 3
@@ -160,6 +168,9 @@ def station_action(state, request):
         rec['comments'].pop(i)
     if kind != 'station':
         box[cid] = rec
+    if cid == '858001':
+        # Do not fabricate other players, reviews or likes for the new Goddess.
+        return {'station': rec, 'hot': [], 'likes': int(rec.get('like') or 0)}
     from . import bots
     world = bots.comments('girl:' + cid, int(request.get('_now') or __import__('time').time()))  # LOCAL-085: other players' reviews are bots
     return {'station': rec, 'hot': world['hot'], 'likes': world['likes'] + int(rec.get('like') or 0)}

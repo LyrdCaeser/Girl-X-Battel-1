@@ -1,0 +1,54 @@
+{
+  "id": "858001",
+  "girl": {
+    "ids": [
+      758001
+    ],
+    "points": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "labels": [
+      3,
+      4,
+      5
+    ],
+    "name": "Lyr Sonia",
+    "desc": "Lyr Sonia là Nữ Thần Hệ Hỗn Độn, Pháp Sư điều khiển tinh cầu và các dòng ma lực. Cô có thể bảo hộ bản thân bằng Khiên Hỗn Độn, cướp Tốc Độ, trói kẻ địch và phóng dao độc. Những hiệu ứng này xuất hiện theo cơ hội kích hoạt trong trận.",
+    "skills": [
+      {
+        "id": 75800101,
+        "name": "Tinh Cầu Hỗn Mang",
+        "icon": "skill_icon_75800101",
+        "desc": "Gây 260% Công Sát Thương Phép lên toàn bộ địch; đặt 2 tầng Ấn Hỗn Độn không thể giải trừ lên mỗi mục tiêu, đồng thời tăng 25% Sát Thương Kỹ Năng cho Sonia trong 2 hiệp. Có 40% cơ hội cướp 40 Tốc Độ của địch trong 2 hiệp, 25% cơ hội trói bằng xích Promethea trong 1 hiệp; đồng thời nhận thêm Khiên Hỗn Độn bằng 200% Công. Phóng Độc phóng tối đa 5 dao vào 5 kẻ địch ngẫu nhiên, mỗi dao gây 65% Công. Mục tiêu trúng độc mất 2% HP mỗi lượt trong 3 lượt; ở tốc độ thường, độc phát tác cách nhau ít nhất 5 giây."
+      },
+      {
+        "id": 75800102,
+        "name": "Nghịch Lưu Ma Lực",
+        "icon": "skill_icon_75800102",
+        "desc": "Đánh thường gây 130% Công Sát Thương Phép lên 3 mục tiêu; hút 20 Năng Lượng từ mỗi mục tiêu, hồi 40 Năng Lượng cho Sonia và đặt thêm 1 tầng Ấn Hỗn Độn lên mục tiêu có Công cao nhất. Khi đánh thường, có 18% cơ hội khiến mục tiêu bị cấm lượt trong 1 hiệp."
+      },
+      {
+        "id": 75800103,
+        "name": "Vòng Luân Hư Vô",
+        "icon": "skill_icon_75800103",
+        "desc": "Nhận Khiên Hư Vô bằng 600% Công và 100% Miễn Khống Chế cứng; khi khiên vỡ hồi 80 Năng Lượng và tăng 30 Tốc Độ trong 2 hiệp. Khiên phủ ánh vàng lên thanh máu; ánh vàng tan đi khi khiên bị phá."
+      },
+      {
+        "id": 75800104,
+        "name": "Quy Luật Sụp Đổ",
+        "icon": "skill_icon_75800104",
+        "desc": "Đủ 4 tầng Ấn: tiêu hao toàn bộ, gây 260% Công cộng thêm 30% Công mỗi tầng Ấn và 100% tỷ lệ cơ bản gây Choáng 1 hiệp; tối đa 1 lần mỗi hiệp."
+      }
+    ],
+    "artifacts": [],
+    "lineups": [
+      null,
+      null,
+      null
+    ]
+  }
+}
