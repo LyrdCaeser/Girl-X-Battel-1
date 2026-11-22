@@ -399,3 +399,13 @@ html.gxb-mobile #app-frame .gs-win.lb-win .gs-win-body{min-height:0;max-height:c
 /* Let taps on static or Spine skin art reach the native art wrapper,
    which triggers the canonical voice and translated dialogue. */
 #girl-detail-view .gu-lihui,#girl-detail-view .gu-lihui-canvas{pointer-events:none}
+
+/* Lyr Sonia (758001) artwork has a 3:4 canvas. On the 720x1280
+   mobile character sheet, bottom-aligned contain leaves a large blank
+   band above her. Anchor this illustration at the top without cropping,
+   moving the sheet, or affecting any other girl / desktop view. */
+html.gxb-mobile #app-frame #girl-detail-view #detail-art[src$="/758001.webp"]:not(.gu-native),
+html.gxb-mobile #app-frame #girl-detail-view #detail-art[src$="/758001.png"]:not(.gu-native){
+ object-fit:contain!important;
+ object-position:center top!important;
+}
