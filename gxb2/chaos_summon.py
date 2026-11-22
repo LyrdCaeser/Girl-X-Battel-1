@@ -1,6 +1,6 @@
 """Lyr Sonia and the ticket-only Chaos Capsule.
 
-The banner is intentionally deterministic: one Vé Syrcotte always grants one
+The banner is intentionally deterministic: one Vé Lyr Sonia always grants one
 native 10-star Lyr Sonia.  Quantity buttons are separate summon IDs so the
 normal transaction/audit pipeline remains unchanged.
 """
@@ -75,7 +75,7 @@ def summon(state, summon_id):
     items = state.setdefault('items', {})
     have = int(items.get(str(TICKET_ID), 0))
     if have < count:
-        raise ValueError('Không đủ Vé Syrcotte')
+        raise ValueError('Không đủ Vé Lyr Sonia')
     items[str(TICKET_ID)] = have - count
     next_id = int(state.get('next_partner_id') or
                   (max((int(v['partner_id']) for v in state.get('partners', [])), default=0) + 1))

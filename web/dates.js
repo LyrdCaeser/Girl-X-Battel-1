@@ -3,9 +3,9 @@
 // Layout from dates_window.prefab: full art, right panel dates_bg02 with the intimacy icon, 5 hearts and gifts,
 // Gift / Voice tabs, bottom buttons. Voices: partner_dialog → sound1/sound2 → /assets/voices/<id>.mp3.
 const Dates=(()=>{
- let data=null,loading=null,mode='list',pid=null,tab='gift',origin='home',bubble='',busyLocal=false,note='',many=false,audio=null,picked=null;
+ let data=null,loading=null,mode='list',pid=null,tab='gift',origin='home',bubble='',busyLocal=false,note='',many=false,audio=null,utterance=null,voiceVolume=.9,picked=null;
  const voiceIndex=new Map();
- window.addEventListener('gxb-audio-volume',e=>{if(e.detail?.channel==='voice'&&audio)audio.volume=e.detail.level/100;});
+ window.addEventListener('gxb-audio-volume',e=>{if(e.detail?.channel==='voice'){voiceVolume=e.detail.level/100;if(audio)audio.volume=voiceVolume;}});
  const A=n=>'/assets/dates/'+n+'.png';
  const VOICE_TYPES_VI={
   1:'Thông Báo',2:'Chạm',3:'Chiến Đấu',4:'Thông Báo',5:'Thất Bại',
@@ -40,13 +40,21 @@ const Dates=(()=>{
   );
   return catalog;
  }
+ function installChaosVoice(catalog,pack){
+  const rows=Array.isArray(pack?.dialogs)?pack.dialogs:[];
+  if(!rows.length||rows.some(x=>Number(x.type)<1||Number(x.type)>31||!String(x.text||'').trim()))throw Error('Gói giọng Lyr Sonia không đầy đủ.');
+  catalog.dialogs=Object.assign({},catalog.dialogs,{[String(pack.id)]:rows});
+  catalog.cv=Object.assign({},catalog.cv,{[String(pack.id)]:pack.cv||'Giọng Việt · Lyr Sonia'});
+  return catalog;
+ }
 
  const el=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=typeof GxbVi!=='undefined'?GxbVi.t(text):text;return e;};
  const img=(src,cls,alt='')=>{const i=el('img',cls);i.src=src;i.alt=alt;i.draggable=false;return i;};
  const load=()=>data?Promise.resolve(data):(loading||=Promise.all([
   api('/assets/relations.json'),
-  api('/assets/dates/dialogues-vi.json?v='+DIALOG_VI_VERSION)
- ]).then(([catalog,pack])=>data=installDialogueVietnamese(catalog,pack))
+  api('/assets/dates/dialogues-vi.json?v='+DIALOG_VI_VERSION),
+  api('/assets/chaos/lyr_sonia_voice.json?v=20261122-r1')
+ ]).then(([catalog,pack,chaosVoice])=>data=installChaosVoice(installDialogueVietnamese(catalog,pack),chaosVoice))
   .catch(error=>{loading=null;throw error;}));
  const R=()=>data.rules,BASE=()=>Number(R().love_point_max_base),GROW=()=>Number(R().love_point_max_grow);
  function root(){let r=$('dates-view');if(!r){r=el('section','dates-view');r.id='dates-view';r.hidden=true;$('home-systems-view').after(r);}return r;}
@@ -54,7 +62,8 @@ const Dates=(()=>{
  function hero(){return state.roster.find(h=>h.partner_id===pid);}
  function maxOf(h){return h?.is_vowed?GROW():BASE();}
  function iconOf(h){if(h?.is_vowed)return A('love_point_icon6');const row=data.appointment[Math.min(data.appointment.length-1,Math.floor((h?.love_point||0)/1000))];return A(row?.icon||'love_point_icon1');}
- function play(sound,text){if(text&&text!=='-1')bubble=typeof GxbVi!=='undefined'?GxbVi.t(text):text;try{audio?.pause();if(sound){audio=new Audio('/assets/voices/'+sound+'.mp3');audio.volume=typeof GxbAudio!=='undefined'?GxbAudio.volume('voice')/100:.9;audio.play().catch(()=>{});}}catch{}}
+ function stopVoice(){try{audio?.pause();audio=null;if(window.speechSynthesis)window.speechSynthesis.cancel();utterance=null;}catch{}}
+ function play(sound,text){if(text&&text!=='-1')bubble=typeof GxbVi!=='undefined'?GxbVi.t(text):text;try{stopVoice();voiceVolume=typeof GxbAudio!=='undefined'?GxbAudio.volume('voice')/100:voiceVolume;if(String(sound||'').startsWith('tts:')){if(!window.speechSynthesis||!window.SpeechSynthesisUtterance)return;utterance=new SpeechSynthesisUtterance(bubble);utterance.lang='vi-VN';utterance.rate=.92;utterance.pitch=1.08;utterance.volume=voiceVolume;const voices=window.speechSynthesis.getVoices();utterance.voice=voices.find(v=>String(v.lang).toLowerCase().startsWith('vi'))||null;utterance.onend=utterance.onerror=()=>{utterance=null;};window.speechSynthesis.speak(utterance);return;}if(sound){audio=new Audio('/assets/voices/'+sound+'.mp3');audio.volume=voiceVolume;audio.play().catch(()=>{});}}catch{}}
  function allLines(h){
   // Upgraded/reissued girls and skins share their canonical Goddess's voice.
   // Resolve the native host chain before declaring the sound/dialogue missing.
@@ -67,12 +76,13 @@ const Dates=(()=>{
   return [];
  }
  // One canonical sound mapping for both Girl detail and the original summon reveal.
- // Only source-defined voice clips are playable: never synthesize replacement dialogue.
+ // Original girls use source clips. The brand-new Sonia pack explicitly uses
+ // the device Vietnamese speech voice and keeps the utterance alive on WebView.
  async function playGirlVoice(tableId,onLine){
    try{
      await load();
      const id=Number(tableId);
-     const lines=allLines({table_id:id}).filter(x=>x.sound&&[1,2,3].includes(Number(x.type)));
+     const lines=allLines({table_id:id}).filter(x=>x.sound&&[1,2,3,26].includes(Number(x.type)));
      if(!lines.length)return false;
      const key=String(id),next=voiceIndex.get(key)||0;
      const chosen=lines[next%lines.length];
@@ -84,9 +94,10 @@ const Dates=(()=>{
      return true;
    }catch{return false;}
  }
+ async function playGirlVoiceByType(tableId,type,onLine){try{await load();const lines=allLines({table_id:Number(tableId)}).filter(x=>x.sound&&Number(x.type)===Number(type));if(!lines.length)return false;const key=tableId+':'+type,next=voiceIndex.get(key)||0,chosen=lines[next%lines.length];voiceIndex.set(key,(next+1)%lines.length);play(chosen.sound,chosen.text);if(typeof onLine==='function')onLine(chosen.text);return true;}catch{return false;}}
  async function act(request){if(busyLocal)return null;busyLocal=true;note='';try{const r=await api('/api/relations/action',request);state=r.state;return r;}catch(e){note=e.message;return null;}finally{busyLocal=false;render();}}
  function render(){const r=root();if(view!=='dates')return;if(!data){load().then(render);return;}r.replaceChildren();top(r);if(mode==='date'&&hero())date(r);else{artHandle?.destroy?.();artHandle=null;artKey='';list(r);}}
- function top(r){const t=el('header','dt-top');for(const id of ['44','45']){const c=el('span','dt-cur');c.append(img(A('icon_'+id)),el('b','',number(state.items[id]||0)));c.title=itemCatalog?.[id]?.name||'';t.append(c);}const b=el('button','dt-back');b.type='button';b.append(img('/assets/ui/win_back_btn.png'));b.onclick=()=>{audio?.pause();if(mode==='date'&&!picked){mode='list';render();}else showView(origin==='dates'?'home':origin);};t.append(b);r.append(t);}
+ function top(r){const t=el('header','dt-top');for(const id of ['44','45']){const c=el('span','dt-cur');c.append(img(A('icon_'+id)),el('b','',number(state.items[id]||0)));c.title=itemCatalog?.[id]?.name||'';t.append(c);}const b=el('button','dt-back');b.type='button';b.append(img('/assets/ui/win_back_btn.png'));b.onclick=()=>{stopVoice();if(mode==='date'&&!picked){mode='list';render();}else showView(origin==='dates'?'home':origin);};t.append(b);r.append(t);}
 
  // ---- DatesListWindow: girls sorted by intimacy ----
  function list(r){r.append(el('h2','dt-title','Hẹn Hò · Kết Duyên'));const seen=new Set();const girls=[...state.roster].sort((a,b)=>(b.love_point||0)-(a.love_point||0)||b.stars-a.stars).filter(h=>{const k=h.table_id;if(seen.has(k))return false;seen.add(k);return true;});
@@ -325,5 +336,5 @@ const Dates=(()=>{
   play(vow?.sound,vow?.text);
  }
 
- return {open,render,playGirlVoice};
+ return {open,render,playGirlVoice,playGirlVoiceByType};
 })();

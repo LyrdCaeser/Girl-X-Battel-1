@@ -33,7 +33,7 @@ def _girl_image(girl_id: int) -> str:
 def catalog() -> dict:
     from . import s4_trial
     items = [{
-        "id": 940060, "name": "Vé Syrcotte", "category": 2,
+        "id": 940060, "name": "Vé Lyr Sonia", "category": 2,
         "quality": 10, "image": "/assets/factions/8.png",
     }]
     for record in ITEMS.values():

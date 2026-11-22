@@ -5,7 +5,7 @@
   "job": "Pháp Sư",
   "native_star": 10,
   "max_star": 25,
-  "ticket": {"id": 940060, "name": "Vé Syrcotte", "icon": "/assets/factions/8.png"},
+  "ticket": {"id": 940060, "name": "Vé Lyr Sonia", "icon": "/assets/factions/8.png"},
   "banner": "/assets/chaos/lyr_sonia_banner.png",
   "summons": [{"id": 27, "count": 1}, {"id": 28, "count": 5}, {"id": 29, "count": 10}],
   "skills": [
