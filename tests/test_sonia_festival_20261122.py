@@ -125,6 +125,9 @@ class SoniaFestivalTests(unittest.TestCase):
         self.assertEqual(table[0]['item'],'758001#1')
         self.assertGreater(total,0)
         self.assertTrue((ROOT/'web/assets/item-icons/partner_avatar_758001.png').is_file())
+        import json
+        public_icons=json.loads((ROOT/'web/assets/item-icons.json').read_text())
+        self.assertIn('partner_avatar_758001',public_icons)
 
     def test_no_hidden_rewards_from_invalid_actions(self):
         state=profile()
