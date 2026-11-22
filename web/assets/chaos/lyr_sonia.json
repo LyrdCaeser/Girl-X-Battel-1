@@ -36,9 +36,9 @@
       "type": "Kỹ Năng Chủ Động",
       "icon": "/assets/chaos/skill_icon_75800101.png",
       "levels": [
-        "Gây 180% Công Sát Thương Phép lên toàn bộ địch; đặt 1 tầng Ấn Hỗn Độn lên mỗi mục tiêu. Có 40% cơ hội cướp 40 Tốc Độ của địch trong 2 hiệp, 25% cơ hội trói bằng xích Promethea trong 1 hiệp; đồng thời nhận thêm Khiên Hỗn Độn bằng 200% Công.",
-        "Gây 220% Công Sát Thương Phép lên toàn bộ địch; đặt 2 tầng Ấn Hỗn Độn lên mỗi mục tiêu. Có 40% cơ hội cướp 40 Tốc Độ của địch trong 2 hiệp, 25% cơ hội trói bằng xích Promethea trong 1 hiệp; đồng thời nhận thêm Khiên Hỗn Độn bằng 200% Công.",
-        "Gây 260% Công Sát Thương Phép lên toàn bộ địch; đặt 2 tầng Ấn Hỗn Độn không thể giải trừ lên mỗi mục tiêu, đồng thời tăng 25% Sát Thương Kỹ Năng cho Sonia trong 2 hiệp. Có 40% cơ hội cướp 40 Tốc Độ của địch trong 2 hiệp, 25% cơ hội trói bằng xích Promethea trong 1 hiệp; đồng thời nhận thêm Khiên Hỗn Độn bằng 200% Công."
+        "Gây 180% Công Sát Thương Phép lên toàn bộ địch; đặt 1 tầng Ấn Hỗn Độn lên mỗi mục tiêu. Có 40% cơ hội cướp 40 Tốc Độ của địch trong 2 hiệp, 25% cơ hội trói bằng xích Promethea trong 1 hiệp; đồng thời nhận thêm Khiên Hỗn Độn bằng 200% Công. Phóng Độc phóng tối đa 5 dao vào 5 kẻ địch ngẫu nhiên, mỗi dao gây 65% Công. Mục tiêu trúng độc mất 2% HP mỗi lượt trong 3 lượt; ở tốc độ thường, độc phát tác cách nhau ít nhất 5 giây.",
+        "Gây 220% Công Sát Thương Phép lên toàn bộ địch; đặt 2 tầng Ấn Hỗn Độn lên mỗi mục tiêu. Có 40% cơ hội cướp 40 Tốc Độ của địch trong 2 hiệp, 25% cơ hội trói bằng xích Promethea trong 1 hiệp; đồng thời nhận thêm Khiên Hỗn Độn bằng 200% Công. Phóng Độc phóng tối đa 5 dao vào 5 kẻ địch ngẫu nhiên, mỗi dao gây 65% Công. Mục tiêu trúng độc mất 2% HP mỗi lượt trong 3 lượt; ở tốc độ thường, độc phát tác cách nhau ít nhất 5 giây.",
+        "Gây 260% Công Sát Thương Phép lên toàn bộ địch; đặt 2 tầng Ấn Hỗn Độn không thể giải trừ lên mỗi mục tiêu, đồng thời tăng 25% Sát Thương Kỹ Năng cho Sonia trong 2 hiệp. Có 40% cơ hội cướp 40 Tốc Độ của địch trong 2 hiệp, 25% cơ hội trói bằng xích Promethea trong 1 hiệp; đồng thời nhận thêm Khiên Hỗn Độn bằng 200% Công. Phóng Độc phóng tối đa 5 dao vào 5 kẻ địch ngẫu nhiên, mỗi dao gây 65% Công. Mục tiêu trúng độc mất 2% HP mỗi lượt trong 3 lượt; ở tốc độ thường, độc phát tác cách nhau ít nhất 5 giây."
       ]
     },
     {

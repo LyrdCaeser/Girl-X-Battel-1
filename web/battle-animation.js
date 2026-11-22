@@ -120,7 +120,9 @@ const rigBounds=(cleanWidth>0&&cleanHeight>0)?{width:cleanWidth,height:cleanHeig
     75800108:{impact:260,duration:900},  // Dracula SPD theft
     75800109:{impact:320,duration:1150}, // Promethea chain seal
     75800110:{impact:280,duration:1280}, // Real shield creation
-    75800111:{impact:300,duration:950}   // Turn-ban
+    75800111:{impact:300,duration:950},  // Turn-ban
+    75800112:{impact:190,duration:920},  // Five poison daggers
+    75800113:{impact:260,duration:600}   // Real poison tick
   };
   if(soniaSlots.size){
     // First hit and primary active skill are available before the first
@@ -128,7 +130,7 @@ const rigBounds=(cleanWidth>0&&cleanHeight>0)?{width:cleanWidth,height:cleanHeig
     const preload=Promise.allSettled(
       ['lianhua_hurt01','sonia_chaos_orb','sonia_chaos_siphon',
        'sonia_chaos_guard','sonia_chaos_collapse',
-       'spdegula_hurt01','puluomixiusi_hurt02'].map(name=>fxLoad(name)));
+       'spdegula_hurt01','puluomixiusi_hurt02','meiyingdu_hurt02'].map(name=>fxLoad(name)));
     await Promise.race([preload,new Promise(resolve=>setTimeout(resolve,2800))]);
   }
   function play(pos,kind){
@@ -240,6 +242,60 @@ const rigBounds=(cleanWidth>0&&cleanHeight>0)?{width:cleanWidth,height:cleanHeig
     case 75800111: // Ban-turn: native cosmic binding circle
      at('sonia_chaos_collapse',.54,'target',1.45,.98);
      break;
+    case 75800112:{ // Five actual poisoned daggers, one per Lua-selected enemy
+     const seen=new Set(),victims=(targets||[]).map(Number).filter(pos=>{
+      if(seen.has(pos)||seen.size>=5||
+         ((pos>6)===(Number(caster)>6)))return false;
+      seen.add(pos);return figures.has(pos);
+     });
+     for(const [index,pos] of victims.entries()){
+      const target=figures.get(pos)?.figure;
+      if(!target)continue;
+      let timer=null;
+      const launch=()=>{
+       if(timer!==null)fxTimers.delete(timer);
+       if(cancelled)return;
+       // Use PIXI's native WebGL stage; not DOM/CSS overlays or stock photos.
+       const knife=new PIXI.Graphics();
+       knife.lineStyle(2,0x331757,.92);
+       knife.beginFill(0xc9ffb7,.98);
+       knife.drawPolygon([0,-46,11,-11,6,8,0,18,-6,8,-11,-11]);
+       knife.endFill();
+       knife.beginFill(0x8759c6,.99);
+       knife.drawRect(-3,16,6,22);knife.drawRect(-13,14,26,5);
+       knife.endFill();
+       knife.alpha=.98;
+       knife.x=source.x;knife.y=source.y-145;
+       knife.rotation=Math.atan2(target.y-100-knife.y,target.x-knife.x)+Math.PI/2;
+       app.stage.addChild(knife);
+       const x0=knife.x,y0=knife.y,x1=target.x,y1=target.y-95;
+       let elapsed=0,flight=null;
+       const tick=()=>{
+        if(cancelled){if(flight!==null){clearInterval(flight);fxTimers.delete(flight);}return;}
+        elapsed+=24*Math.max(.25,rate);
+        const t=Math.min(1,elapsed/360),curve=t*t*(3-2*t);
+        knife.x=x0+(x1-x0)*curve;
+        knife.y=y0+(y1-y0)*curve-70*Math.sin(Math.PI*t);
+        if(t>=1){
+         clearInterval(flight);fxTimers.delete(flight);
+         app.stage.removeChild(knife);knife.destroy();
+         if(!cancelled)void spawn('meiyingdu_hurt02','texiao01',
+            .52,x1,y1,pos>6,y1+2,{speed:1.2,alpha:.95,maxMs:1100});
+        }
+       };
+       // A native PIXI canvas sprite animated by deterministic short steps.
+       // Timers also advance in the embedded WebView's low-frame-rate mode.
+       flight=setInterval(tick,24);
+       fxTimers.add(flight);
+      };
+      timer=setTimeout(launch,index*105/Math.max(.25,rate));
+      fxTimers.add(timer);
+     }
+     break;
+    }
+    case 75800113: // Periodic poison hit from the actual Lua battle report
+     at('meiyingdu_hurt02',.39,'target',1.3,.9);
+     break;
    }
    return true;
   }
@@ -270,7 +326,7 @@ const rigBounds=(cleanWidth>0&&cleanHeight>0)?{width:cleanWidth,height:cleanHeig
   }
   function destroy(){cancelled=true;
    for(const timer of soniaBlinkTimers)clearTimeout(timer);soniaBlinkTimers.clear();
-   for(const timer of fxTimers)clearTimeout(timer);fxTimers.clear();
+   for(const timer of fxTimers){clearTimeout(timer);clearInterval(timer);}fxTimers.clear();
    for(const f of live){try{app.stage.removeChild(f);f.destroy({children:true});}catch{}}
    live.clear();app.destroy(true,{children:true,texture:false,baseTexture:false});
   }
@@ -284,10 +340,27 @@ const rigBounds=(cleanWidth>0&&cleanHeight>0)?{width:cleanWidth,height:cleanHeig
 // BattleWindow + BaseFighter: 0/1 add, 2 work, 3/4 remove one matching name/sign.
 const BattleStates=(()=>{
  let metadata;
- function change(active,buff){const mode=Number(buff.buffOn);if(mode===0||mode===1)active.push({...buff});
-  else if(mode===3||mode===4){const i=active.findIndex(b=>b.name===buff.name&&Number(b.value||0)*Number(buff.value||0)>=0);if(i>=0)active.splice(i,1);}
+ function change(active,buff){
+  const mode=Number(buff.buffOn),name=String(buff.name||'');
+  if(!name)return;
+  const same=b=>b.name===name&&(
+    Number(b.table_id||0)===Number(buff.table_id||0)||
+    !Number(b.table_id||buff.table_id));
+  // Native BattleWindow: 0/1 apply; 2 means the buff actually ticks. A tick
+  // can arrive without an explicit apply frame in some online replays.
+  if(mode===0||mode===1){
+   active.push({...buff});
+  }else if(mode===2){
+   if(!active.some(same))active.push({...buff});
+  }else if(mode===5&&name==='hpShield'){
+   for(let i=active.length-1;i>=0;i--)if(active[i].name===name)active.splice(i,1);
+   if(Number(buff.shield)>0)active.push({...buff});
+  }else if(mode===3||mode===4){
+   const i=active.findIndex(same);
+   if(i>=0)active.splice(i,1);
+  }
  }
- async function create(units){metadata=metadata||fetch('/assets/spine/battle-status.json').then(r=>r.ok?r.json():{}).catch(()=>({}));const meta=await metadata,states=new Map();
+ async function create(units){metadata=metadata||fetch('/assets/spine/battle-status.json?v=20261122-buff-modes-r1').then(r=>r.ok?r.json():{}).catch(()=>({}));const meta=await metadata,states=new Map();
   for(const [pos,u]of units){const row=document.createElement('div');row.className='unit-buffs';row.setAttribute('aria-label','Active status effects');u.element.append(row);states.set(pos,{active:[],row});}
   function draw(s){s.row.replaceChildren();const groups=new Map();for(const b of s.active){const m=meta[b.name];if(!m)continue;const icon=Number(b.value)<0?m.negative:m.positive;if(!icon)continue;
     const g=groups.get(icon)||{icon,label:m.label,count:0};g.count=b.name==='weak'?1:g.count+1;groups.set(icon,g);}
@@ -295,7 +368,13 @@ const BattleStates=(()=>{
    for(const g of all.slice(-4)){const badge=document.createElement('span');badge.className='unit-buff';const label=g.label+(g.count>1?' ×'+g.count:'');badge.title=label;badge.setAttribute('aria-label',label);
     const icon=new Image();icon.src='/assets/spine/status-icons/'+g.icon+'.png';icon.alt=g.label;badge.append(icon);if(g.count>1){const n=document.createElement('b');n.textContent=g.count;badge.append(n);}s.row.append(badge);}
   }
-  return {apply(buff){const s=states.get(buff.pos);if(!s)return;change(s.active,buff);draw(s);},clear(pos){const s=states.get(pos);if(s){s.active=[];draw(s);}}};
+  return {apply(buff){
+   // Ignore impact/damage events; only draw verified supported statuses.
+   if(!meta[String(buff?.name||'')])return;
+   const s=states.get(Number(buff.pos));
+   if(!s)return;
+   change(s.active,buff);draw(s);
+  },clear(pos){const s=states.get(Number(pos));if(s){s.active=[];draw(s);}}};
  }
  return {create,change};
 })();

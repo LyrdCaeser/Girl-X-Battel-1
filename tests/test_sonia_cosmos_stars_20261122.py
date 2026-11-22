@@ -43,7 +43,7 @@ class SoniaCosmosStarTests(unittest.TestCase):
         self.assertIn("potentiality_card_star_group_7",skins)
         self.assertIn("badge.append(mark);c.append(badge)",skins)
         self.assertIn('.sk-name.sk-cosmos-star',css)
-        self.assertIn('/app.js?v=20261122-sonia-four-new-status-r8',html)
+        self.assertIn('/app.js?v=20261122-sonia-poison-real-r9',html)
         self.assertIn('/skins.js?v=20261122-sonia-cosmos-outfit-r2',html)
         self.assertIn('/skins.css?v=20261122-sonia-cosmos-outfit-r2',html)
 

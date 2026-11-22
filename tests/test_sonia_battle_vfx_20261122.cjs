@@ -13,7 +13,7 @@ const clips=[
 ];
 assert(!fs.existsSync('web/sonia-battle-vfx.js'),'hand-painted Canvas engine removed');
 assert(!html.includes('sonia-battle-vfx.js'),'second canvas no longer loaded');
-assert(html.includes('battle-animation.js?v=20261122-sonia-dracula-promethea-r7'));
+assert(html.includes('battle-animation.js?v=20261122-sonia-five-daggers-r8'));
 assert(battle.includes('const soniaSlots=new Set('));
 assert(battle.includes("at('lianhua_hurt01',.72,'target',1.6,.96)"));
 for(const res of ['lianhua_hurt01','sonia_chaos_orb','sonia_chaos_siphon','sonia_chaos_guard','sonia_chaos_collapse'])assert(battle.includes("'"+res+"'"));
@@ -30,7 +30,7 @@ assert(battle.includes("at('sonia_chaos_collapse',.76,'target',1.05,1)"));
 assert(battle.includes("new PIXI.spine.Spine(data)"));
 assert(!battle.includes('const fxLite=document.documentElement.classList.contains'));
 assert(!battle.includes('if(!fxLite)at('));
-assert(battle.includes('for(const timer of fxTimers)clearTimeout(timer)'));
+assert(battle.includes('for(const timer of fxTimers){clearTimeout(timer);clearInterval(timer);}'));
 assert(battle.includes('for(const f of live){'));
 assert(battle.includes('f.state.timeScale=value*(fxConfigs.get(f)||1)'));
 assert(app.includes('battleAnimation?.timing?.(frame.skill_id,frame.pos)'));

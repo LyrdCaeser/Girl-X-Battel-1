@@ -36,7 +36,7 @@ class SoniaCopiesTest(unittest.TestCase):
         self.assertNotIn("if(!fxLite)at(",src)
         self.assertIn("['lianhua_hurt01','sonia_chaos_orb','sonia_chaos_siphon',",src)
         html=(ROOT/'web/index.html').read_text()
-        self.assertIn('/battle-animation.js?v=20261122-sonia-dracula-promethea-r7',html)
+        self.assertIn('/battle-animation.js?v=20261122-sonia-five-daggers-r8',html)
         self.assertNotIn('/sonia-battle-vfx.js',html)
 
     def test_rigs_are_exact_original_spine_3_6_37(self):

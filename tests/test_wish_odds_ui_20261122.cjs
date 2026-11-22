@@ -17,6 +17,6 @@ assert(server.includes("if path == '/api/summon/rates':"));
 assert(events.includes('Thử Thách · 120 Vé'));
 assert(events.includes('Quà Nạp · 350 Vé'));
 assert(events.includes('sonia_paid_claim'));
-assert(html.includes('wish.js?v=20261122-sonia-control-desc-r7'));
+assert(html.includes('wish.js?v=20261122-sonia-poison-skilldesc-r8'));
 assert(html.includes('events.js?v=20261122-sonia-visual-tickets-r6'));
 console.log('PASS: all four Wish odds buttons, live rate request, pity details and paid/free mission tabs');

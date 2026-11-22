@@ -6,34 +6,29 @@ const css=fs.readFileSync('web/style.css','utf8');
 const html=fs.readFileSync('web/index.html','utf8');
 // The real functions from web/app.js are executed, not reimplemented.
 const start=app.indexOf(' function paintBattleShield(unit){');
-const end=app.indexOf(' const soniaCueSeen=new Set();',start);
+const end=app.indexOf(' const soniaCueSeen=new Set(),',start);
 assert(start>0&&end>start);
 const ctx=vm.createContext({});
 vm.runInContext(app.slice(start,end),ctx);
-const u={
-  shieldFill:{style:{}},
-  hp:100,
-  shieldValue:0,
-  shieldBase:0,
-  maxHp:1000
-};
-const buff=(table_id,name,value,hp=100)=>({table_id,name,value,hp,buffOn:2});
-ctx.applyBattleShieldBuff(buff(1758017,'hpShieldByAD',300),u);
-assert.equal(u.shieldValue,300);
-assert.equal(u.shieldFill.style.width,'30.00%');
+const u={shieldFill:{style:{}},hp:100,shieldValue:0,shieldBase:0,
+  shieldPercent:null,maxHp:1000};
+ctx.applyBattleShieldBuff({
+  name:'hpShield',buffOn:5,shield:16,shieldCost:2112,value:0
+},u);
+assert.equal(u.shieldPercent,16);
+assert.equal(u.shieldValue,2112);
+assert.equal(u.shieldFill.style.width,'16.00%');
 assert.equal(u.shieldFill.style.visibility,'visible');
-ctx.applyBattleShieldBuff(buff(1758004,'hurt',-100),u);
-assert.equal(u.shieldValue,200);
-assert.equal(u.shieldFill.style.width,'20.00%');
-ctx.applyBattleShieldBuff(buff(1758004,'hurt',-200),u);
+ctx.applyBattleShieldBuff({
+ name:'hpShield',buffOn:5,shield:7,shieldCost:900,value:0
+},u);
+assert.equal(u.shieldFill.style.width,'7.00%');
+ctx.applyBattleShieldBuff({
+ name:'hpShield',buffOn:5,shield:0,shieldCost:0,value:0
+},u);
 assert.equal(u.shieldValue,0);
 assert.equal(u.shieldFill.style.visibility,'hidden');
-ctx.applyBattleShieldBuff(buff(1758007,'hpShieldByAD',175),u);
-assert.equal(u.shieldValue,175);
-ctx.applyBattleShieldBuff(buff(1536001,'clearHpShield',0),u);
-assert.equal(u.shieldValue,0);
-assert.equal(u.shieldFill.style.visibility,'hidden');
-ctx.applyBattleShieldBuff(buff(1758017,'hpShieldByAD',320),u);
+ctx.applyBattleShieldBuff({name:'hpShield',buffOn:5,shield:24,shieldCost:3000,value:0},u);
 u.hp=0;ctx.paintBattleShield(u);
 assert.equal(u.shieldFill.style.visibility,'hidden');
 assert(app.includes("const shieldFill=node('i','shield-hp-fill')"));
@@ -42,8 +37,8 @@ assert(app.includes('1758014:75800108'));
 assert(app.includes('1758015:75800109'));
 assert(app.includes('1758017:75800110'));
 assert(app.includes('1758016:75800111'));
-assert(app.includes('Number(buff.buffOn)!==0'));
-assert(app.includes('if(buff.hp<=0){u.shieldValue=0;paintBattleShield(u);'));
+assert(app.includes('Number(buff.buffOn)!==3'));
+assert(app.includes('if(buff.hp<=0){u.shieldValue=0;u.shieldPercent=0;paintBattleShield(u);'));
 assert(css.includes('.battlefield .unit .hp>i.shield-hp-fill'));
 assert(css.includes('linear-gradient(180deg,#fff8b4'));
 assert(css.includes('.battlefield .unit.dead .hp>i.shield-hp-fill'));
@@ -56,7 +51,7 @@ for(const [id,resource] of [
  assert.equal(d.skeleton.spine,'3.6.37');
  assert(fs.existsSync('web/assets/battle-fx/'+resource+'/model.atlas'));
 }
-assert(html.includes('app.js?v=20261122-sonia-four-new-status-r8'));
+assert(html.includes('app.js?v=20261122-sonia-poison-real-r9'));
 assert(html.includes('style.css?v=20261122-sonia-gold-shield-r5'));
-assert(html.includes('battle-animation.js?v=20261122-sonia-dracula-promethea-r7'));
+assert(html.includes('battle-animation.js?v=20261122-sonia-five-daggers-r8'));
 console.log('PASS: native Lua buffs drive real yellow shield that depletes/disappears, conditional Dracula+Promethea+ban visual cues');

@@ -88,11 +88,19 @@ function M.register()
     -- passive is retained, and shield damage/expiry is handled by Lua.
     effect(1758017, 'hpShieldByAD', 1557, 2, 0, 1)
 
+    -- Five unique random targets; one poison dagger per target. 65% ATK
+    -- initial strike and a native 2% HP poison tick for 3 battle turns.
+    -- The replay may animate the poison every 5s at normal speed, while
+    -- server authority remains Lua's per-round DOT (never client HP edits).
+    effect(1758018, 'hurt', 1019, 0.65, 0, 1)
+    effect(1758019, 'hpDotPoison', 1434, 0.02, 3, 1)
+
     skill(75800100, {is_pass=0, trigger=1, target1=108, rand1=3,
         effect1='1758004|1758005|1758016', sub_skill='75800105|75800107'})
     skill(75800101, {is_pass=0, trigger=3, is_cost_energy=1,
         target1=12, effect1='1758001|1758002|1758002|1758014|1758015',
         target2=1, effect2='1758017',
+        target3=108, rand3=5, effect3='1758018|1758019',
         sub_skill='75800106|75800107', icon_id='skill_icon_75800101'})
     skill(75800102, {is_pass=1, trigger=28, attr_pas=1, target1=1,
         effect1='', icon_id='skill_icon_75800102', level=3})
@@ -180,7 +188,7 @@ function M.apply()
 
     local et = xyd.tables.effectTable
     local customEffects = {}
-    for id = 1758001, 1758013 do
+    for id = 1758001, 1758019 do
         local record = readRaw('effect2', id)
         if record then
             et.datas[id] = record
@@ -286,6 +294,34 @@ function M.apply()
         end
         return out
     end)
+
+    -- Publisher 3.6 ReportBuff assumes a numeric-array for a handful of
+    -- combat-status templates. The native compiled TableManager stores the
+    -- custom Sonia effect num as a scalar. Normalize *only* these custom IDs
+    -- at the use-sites; do not affect any other goddess or combat math.
+    local ReportBuff = require('lib.battle.ReportBuff')
+    local priorSetIsHit = ReportBuff.setIsHit
+    local statusArray = {
+        [1758014]=true, [1758015]=true,
+        [1758016]=true, [1758019]=true,
+    }
+    ReportBuff.setIsHit = function(self, ...)
+        if statusArray[tonumber(self.effectID)] and
+           type(self.finalNumArray_) ~= 'table' then
+            self.finalNumArray_ = {tonumber(self.finalNumArray_) or 0}
+        end
+        return priorSetIsHit(self, ...)
+    end
+    local ShieldBuff = require('lib.battle.battle_buffs.hpShieldByADBuff')
+    local priorShield = ShieldBuff.excuteBuff
+    ShieldBuff.excuteBuff = function(self, ...)
+        local id = tonumber(self.effectID)
+        if (id==1758007 or id==1758017) and
+           type(self.finalNumArray_) ~= 'table' then
+            self.finalNumArray_ = {tonumber(self.finalNumArray_) or 0}
+        end
+        return priorShield(self, ...)
+    end
 end
 
 return M

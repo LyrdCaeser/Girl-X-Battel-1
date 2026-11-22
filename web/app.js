@@ -990,7 +990,7 @@ async function replay(report,options={}){
  const reportedMaxHp=endingPct>0&&endingTrueHp>0
    ?endingTrueHp*100/endingPct:0;
  units.set(u.pos,{element:e,fill,shieldFill,shieldValue:0,shieldBase:0,
-   maxHp:Number.isFinite(reportedMaxHp)?reportedMaxHp:0,
+   shieldPercent:null,maxHp:Number.isFinite(reportedMaxHp)?reportedMaxHp:0,
    epFill,ep:0,name:u.name,hp:100,tableId:Number(u.table_id)});el(u.pos<=6?'allies':'enemies').append(e);}
  el('line').textContent="Loading original animations…";try{const animation=await ChibiBattle.create(field,visibleUnits,battlePositions,{bossScene:!!bb});if(token!==battleReplayToken){animation.destroy();return;}battleAnimation=animation;animation.speed(battleSpeed);for(const [pos,u] of units){
     if(animation.has(pos)){
@@ -1017,37 +1017,41 @@ async function replay(report,options={}){
  // shield clearing, depletion or death; actual HP continues using buff.hp.
  function paintBattleShield(unit){
   if(!unit)return;
-  const left=Math.max(0,Number(unit.shieldValue)||0);
-  const width=left<=0?0:unit.maxHp>0?
-    Math.min(100,left/unit.maxHp*100):
-    Math.min(55,left/Math.max(1,unit.shieldBase)*35);
+  // Native buffOn=5 reports shield as an authoritative % of max HP.
+  // Do not estimate shield from raw damage or a placeholder HP field.
+  const percent=Number(unit.shieldPercent);
+  const width=unit.shieldPercent!==null&&Number.isFinite(percent)
+   ?Math.max(0,Math.min(100,percent))
+   :unit.maxHp>0?Math.min(100,100*Math.max(0,unit.shieldValue)/unit.maxHp):0;
   unit.shieldFill.style.width=width.toFixed(2)+'%';
   unit.shieldFill.style.visibility=width>0&&unit.hp>0?'visible':'hidden';
  }
  function applyBattleShieldBuff(buff,unit){
   if(!unit)return;
-  const name=String(buff.name||'');
-  const effectId=Number(buff.table_id);
-  const value=Number(buff.value);
-  const shieldSource=effectId===1758007||effectId===1758017||
-      /^hpShieldBy(?:AD|Hp|MaxHp|FighterMaxHp)$/.test(name);
-  // A removed shield must never be re-added by a stale positive value.
-  if(name==='clearHpShield' || (Number(buff.buffOn)===0&&/hpShield/.test(name))){
-    unit.shieldValue=0;
-  }else if(shieldSource&&Number.isFinite(value)&&value>0){
-    unit.shieldValue+=value;
-    unit.shieldBase=Math.max(unit.shieldBase,unit.shieldValue);
-  }else if((name==='hurt'||name==='realHurt'||/shieldHurt/i.test(name)||
-           shieldSource)&&Number.isFinite(value)&&value<0&&unit.shieldValue>0){
-    unit.shieldValue=Math.max(0,unit.shieldValue+value);
+  const name=String(buff.name||''),mode=Number(buff.buffOn);
+  const reported=Number(buff.shield);
+  if(name==='hpShield'&&mode===5&&buff.shield!==undefined&&
+     Number.isFinite(reported)){
+   unit.shieldPercent=Math.max(0,Math.min(100,reported));
+   const amount=Number(buff.shieldCost);
+   if(Number.isFinite(amount)&&amount>0){
+    unit.shieldValue=amount;
+    unit.shieldBase=Math.max(unit.shieldBase,amount);
+   }else if(reported<=0)unit.shieldValue=0;
+  }else if(name==='clearHpShield'||((mode===3||mode===4)&&
+            /hpShield/.test(name))){
+   unit.shieldValue=0;unit.shieldPercent=0;
+  }else if(unit.shieldPercent===null&&/hpShieldBy/.test(name)&&
+            Number(buff.value)>0){
+   unit.shieldValue+=Number(buff.value);
+   unit.shieldBase=Math.max(unit.shieldBase,unit.shieldValue);
   }
-  // A shield or control buff can carry hp:0 as its unrelated protocol
-  // placeholder; only a real hit/health update is proof of death.
-  if((name==='hurt'||name==='realHurt')&&typeof buff.hp==='number'&&buff.hp<=0)
-    unit.shieldValue=0;
+  if((name==='hurt'||name==='realHurt')&&typeof buff.hp==='number'&&buff.hp<=0){
+   unit.shieldValue=0;unit.shieldPercent=0;
+  }
   paintBattleShield(unit);
  }
- const soniaCueSeen=new Set();
+ const soniaCueSeen=new Set(),soniaPoisonDue=new Map();
  function soniaVisualCue(pos,skillId,targets,round,delay=0){
   const key=pos+':'+skillId+':'+round+':'+(targets||[]).join(',');
   if(soniaCueSeen.has(key)||skip||token!==battleReplayToken)return;
@@ -1098,8 +1102,23 @@ async function replay(report,options={}){
    }
   }
   if(bb)for(const b of list(frame.buffs))if(b.pos===7&&typeof b.hp==='number'){if(b.hp<bossLast)bossLost+=bossLast-b.hp;bossLast=b.hp;bossShow(bb.before+bb.dealt*(bossTotalLoss?bossLost/bossTotalLoss:0));}
+  // The engine resolves DOT per battle round. At ×1, stage each *real*
+  // Sonia poison tick no sooner than five seconds after application/last
+  // tick, without changing its server-calculated HP or making client damage.
+  const poisonBuffs=list(frame.buffs).filter(b=>
+   Number(b.table_id)===1758019&&Number(b.buffOn)===2);
+  if(poisonBuffs.length&&!skip){
+   const now=Date.now(),delay=5000/Math.max(1,battleSpeed);
+   const waits=poisonBuffs.map(b=>
+    Math.max(0,(soniaPoisonDue.get(Number(b.pos))??(now+delay))-now));
+   const waitMs=Math.min(delay,Math.max(0,...waits));
+   if(waitMs>0)await new Promise(resolve=>setTimeout(resolve,waitMs));
+   if(skip||token!==battleReplayToken)break;
+   for(const b of poisonBuffs)soniaPoisonDue.set(Number(b.pos),
+      Date.now()+5000/Math.max(1,battleSpeed));
+  }
   let soniaFinishedEnemy=false;
-  const soniaTargets=[];
+  const soniaTargets=[],soniaKnifeTargets=[];
   for(const buff of list(frame.buffs)){
    battleStates.apply(buff);
    const u=units.get(Number(buff.pos));
@@ -1108,14 +1127,28 @@ async function replay(report,options={}){
    // No status icon or visual is generated on a resisted / missed control.
    const nativeId=Number(buff.table_id);
    const sourcePos=Number(buff.f_pos)||Number(frame.pos);
-   if(units.get(sourcePos)?.tableId===758001&&Number(buff.buffOn)!==0){
-    const visualSkill=({1758014:75800108,1758015:75800109,
-      1758007:75800110,1758017:75800110,1758016:75800111})[nativeId];
-    if(visualSkill)soniaVisualCue(sourcePos,visualSkill,
-      nativeId===1758007||nativeId===1758017?[]:[Number(buff.pos)],
-      Number(frame.round),75);
+   if(units.get(sourcePos)?.tableId===758001){
+    // Modes 0/1 apply a buff; 2 is a real periodic tick, 3/4 remove.
+    // Mode 5 for hpShield is a shield snapshot, not a new control.
+    if(nativeId===1758018&&Number(buff.pos)!==sourcePos&&
+       !soniaKnifeTargets.includes(Number(buff.pos)))
+      soniaKnifeTargets.push(Number(buff.pos));
+    if(nativeId===1758019&&(Number(buff.buffOn)===0||Number(buff.buffOn)===1))
+      soniaPoisonDue.set(Number(buff.pos),Date.now()+5000/Math.max(1,battleSpeed));
+    if(nativeId===1758019&&Number(buff.buffOn)===2)
+      soniaVisualCue(sourcePos,75800113,[Number(buff.pos)],Number(frame.round),0);
+    if(Number(buff.buffOn)!==3&&Number(buff.buffOn)!==4){
+     const visualSkill=({1758014:75800108,1758015:75800109,
+       1758007:75800110,1758017:75800110,1758016:75800111})[nativeId];
+     if(visualSkill)soniaVisualCue(sourcePos,visualSkill,
+       nativeId===1758007||nativeId===1758017?[]:[Number(buff.pos)],
+       Number(frame.round),75);
+    }
    }
-   const isNativeNewStatus=new Set([1758014,1758015,1758016,1758017,1758007]).has(nativeId);
+   // DOT reports carry a real changed HP percentage and must update green
+   // HP on every tick; only pure controls and shield snapshots skip HP edits.
+   const isNativeNewStatus=new Set([1758014,1758015,1758016,1758017,
+     1758007]).has(nativeId)||String(buff.name)==='hpShield';
    if(soniaIsActor&&u&&Number(buff.pos)!==Number(frame.pos)&&
       ((Number(buff.pos)>6)!==(Number(frame.pos)>6))){
      if(!soniaTargets.includes(Number(buff.pos)))soniaTargets.push(Number(buff.pos));
@@ -1125,7 +1158,13 @@ async function replay(report,options={}){
    // Shield/control effects may contain a numeric protocol placeholder;
    // they must not erase green HP or play a fake death animation.
    if(u&&typeof buff.hp==='number'&&!isNativeNewStatus){u.fill.style.width=Math.max(0,Math.min(100,buff.hp))+'%';if(buff.hp<=0&&u.hp>0)battleAnimation?.play(buff.pos,'dead');else if(buff.hp>0&&u.hp<=0)battleAnimation?.play(buff.pos,'revive');else if(buff.hp<u.hp)battleAnimation?.play(buff.pos,'hurt');u.hp=buff.hp;u.element.classList.toggle('dead',buff.hp<=0);
-    if(buff.hp<=0){u.shieldValue=0;paintBattleShield(u);battleStates.clear(buff.pos);}}}
+    if(buff.hp<=0){u.shieldValue=0;u.shieldPercent=0;paintBattleShield(u);battleStates.clear(buff.pos);}}}
+  // One Spine dagger impact per distinct Lua-hit opponent, up to five.
+  // The generated battle report chooses random targets, not the browser.
+  if(soniaIsActor&&soniaKnifeTargets.length){
+   soniaVisualCue(Number(frame.pos),75800112,soniaKnifeTargets.slice(0,5),
+      Number(frame.round),0);
+  }
   // Passive illustrations reflect a REAL Sonia action, without modifying
   // server-side passive triggers, HP, EP, damage, counters or buffs. Previously
   // the Izanami/Apollis visuals were invisible in short battles because EP
@@ -1148,7 +1187,7 @@ async function replay(report,options={}){
    (soniaTiming?Math.max(240,soniaTiming.duration-soniaTiming.impact):(frame.skill_id>0?790:240))/battleSpeed));
  }
  for(const hp of list(report.hp)){const u=units.get(hp.pos);if(u){u.fill.style.width=Math.max(0,Math.min(100,hp.hp))+'%';if(hp.hp<=0&&u.hp>0)battleAnimation?.play(hp.pos,'dead');else if(hp.hp>0&&u.hp<=0)battleAnimation?.play(hp.pos,'revive');u.hp=hp.hp;u.element.classList.toggle('dead',hp.hp<=0);
- if(hp.hp<=0)u.shieldValue=0;
+ if(hp.hp<=0){u.shieldValue=0;u.shieldPercent=0;}
  paintBattleShield(u);u.element.classList.remove('active');}}
  if(bb)bossShow(bb.before+bb.dealt);round.textContent='Hiệp '+(report.frames.at(-1)?.round||1);if(event&&view!=='event-battle')return;
  // Let the final attack/death Spine clip finish before revealing the outcome.
@@ -1394,5 +1433,5 @@ $('profile-rename').addEventListener('click',()=>openProfileEdit('name'));$('pro
 $('profile-edit-cancel').addEventListener('click',()=>{$('profile-edit-dialog').hidden=true;});
 $('profile-edit-form').addEventListener('submit',async event=>{event.preventDefault();const button=$('profile-edit-form').querySelector('[type=submit]');button.disabled=true;try{const result=await api('/api/profile',{[profileEditField]:$('profile-edit-input').value});state=result.state;$('profile-edit-dialog').hidden=true;render();}catch(error){$('profile-edit-message').textContent=error.message;}finally{button.disabled=false;}});
 
-window.GxbStartGame=()=>Promise.all([api('/api/state'),api('/assets/avatars.json?v=1.1.3'),api('/assets/home-icons.json'),api('/assets/characters.json'),api('/assets/battle-maps.json'),api('/assets/girls-catalog.json'),api('/assets/cards.json'),api('/assets/items-catalog.json?v=20261119-s4-trial-r1'),api('/assets/item-icons.json'),api('/assets/girl-details.json'),api('/assets/graduate.json'),api('/assets/ascension.json?v=20261114-native-compose-all-r1'),api('/assets/profile/catalog.json'),api('/assets/local-promotion.json'),api('/assets/pictures.json'),api('/assets/chaos/lyr_sonia.json?v=20261122-sonia-control-r1'),api('/api/skins/catalog',{}).catch(()=>({skins:{}}))]).then(async([s,a,icons,arts,maps,catalog,cards,items,itemImages,details,recipes,ascensions,profileAssets,localPromotions,pictureAssets,chaos,skinAssets])=>{state=s;profileCatalog=profileAssets;avatars=a;homeIcons=icons;artIds=new Set(arts);pictureIds=new Set([...pictureAssets,chaos.id]);skinCatalog=skinAssets.skins||{};cardIds=new Set([...cards,chaos.id]);itemCatalog={...items,[String(chaos.ticket.id)]:{id:chaos.ticket.id,name:chaos.ticket.name,description:'Vé đặc biệt dùng tại banner Lyr Sonia.',category:2,type:0,icon:'chaos_ticket'}};itemIcons=new Set(itemImages);girlDetails={...details,[String(chaos.id)]:{job:chaos.job,quote:'Giữa trật tự và hư vô, ta sẽ viết lại vận mệnh của các vì sao.',stats:{base_hp:13680,base_atk:1056,base_arm:60,base_spd:312,grow_hp:1368,grow_atk:105.6,grow_arm:6,grow_spd:2},skills:chaos.skills.map(x=>({id:x.id,name:x.name,icon:'skill_icon_'+x.id,levels:x.levels,type:x.type}))}};graduateRecipes={...recipes,...ascensions,...localPromotions};battleMapIds=new Set(maps);girlsCatalog=catalog;galleryCatalog=[...catalog].sort((a,b)=>Number(b.skins.length>0)-Number(a.skins.length>0)||b.stars-a.stars||a.name.localeCompare(b.name));installHomeIcons();await composeHomeAtlas();selectedStage=Math.min(state.next_stage,30);loadFormation();showView('home');render();}).catch(e=>error("Could not load the backend: "+e.message));
+window.GxbStartGame=()=>Promise.all([api('/api/state'),api('/assets/avatars.json?v=1.1.3'),api('/assets/home-icons.json'),api('/assets/characters.json'),api('/assets/battle-maps.json'),api('/assets/girls-catalog.json'),api('/assets/cards.json'),api('/assets/items-catalog.json?v=20261119-s4-trial-r1'),api('/assets/item-icons.json'),api('/assets/girl-details.json'),api('/assets/graduate.json'),api('/assets/ascension.json?v=20261114-native-compose-all-r1'),api('/assets/profile/catalog.json'),api('/assets/local-promotion.json'),api('/assets/pictures.json'),api('/assets/chaos/lyr_sonia.json?v=20261122-sonia-poison-r2'),api('/api/skins/catalog',{}).catch(()=>({skins:{}}))]).then(async([s,a,icons,arts,maps,catalog,cards,items,itemImages,details,recipes,ascensions,profileAssets,localPromotions,pictureAssets,chaos,skinAssets])=>{state=s;profileCatalog=profileAssets;avatars=a;homeIcons=icons;artIds=new Set(arts);pictureIds=new Set([...pictureAssets,chaos.id]);skinCatalog=skinAssets.skins||{};cardIds=new Set([...cards,chaos.id]);itemCatalog={...items,[String(chaos.ticket.id)]:{id:chaos.ticket.id,name:chaos.ticket.name,description:'Vé đặc biệt dùng tại banner Lyr Sonia.',category:2,type:0,icon:'chaos_ticket'}};itemIcons=new Set(itemImages);girlDetails={...details,[String(chaos.id)]:{job:chaos.job,quote:'Giữa trật tự và hư vô, ta sẽ viết lại vận mệnh của các vì sao.',stats:{base_hp:13680,base_atk:1056,base_arm:60,base_spd:312,grow_hp:1368,grow_atk:105.6,grow_arm:6,grow_spd:2},skills:chaos.skills.map(x=>({id:x.id,name:x.name,icon:'skill_icon_'+x.id,levels:x.levels,type:x.type}))}};graduateRecipes={...recipes,...ascensions,...localPromotions};battleMapIds=new Set(maps);girlsCatalog=catalog;galleryCatalog=[...catalog].sort((a,b)=>Number(b.skins.length>0)-Number(a.skins.length>0)||b.stars-a.stars||a.name.localeCompare(b.name));installHomeIcons();await composeHomeAtlas();selectedStage=Math.min(state.next_stage,30);loadFormation();showView('home');render();}).catch(e=>error("Could not load the backend: "+e.message));
 (window.GxbAuthReady||Promise.resolve(true)).then(ok=>{if(ok)window.GxbStartGame();});
