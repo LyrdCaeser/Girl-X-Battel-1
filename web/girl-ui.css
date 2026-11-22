@@ -418,16 +418,20 @@ html.gxb-mobile #app-frame #girl-detail-view #detail-art[src$="/758001.png"]:not
  border-radius:50%;
  box-shadow:0 0 0 1px #a798d3;
 }
-/* Lyr Sonia mobile scene: group 8 has no college_scene8.png.
-   Paint the approved lavender fabric continuation directly as the scene
-   background. No ::before/DOM child and no dependency on detail-art src.
-   Position the *top* of the continuation just under the native art
-   (520x700); keep the scene's normal artwork and controls above it.
-   !important deliberately overrides GirlUI.detail's missing inline scene. */
-html.gxb-mobile #app-frame #girl-detail-view.sonia-continuation-scene > .detail-scene{
- background-image:url('/assets/chaos/lyr_sonia_bottom_extend.png')!important;
+/* Sonia: one continuous mobile ZOOM illustration, not two browser layers.
+   It includes her original 520x700 card art, the untouched lower margin
+   from her approved full art and a softly finished satin/rug floor.
+   On zoom hide the overlapping original <img> while retaining the zoom
+   button; use intrinsic width scaling so Sonia's proportions stay intact.
+   No impact on the normal sheet or any other goddess / desktop screen. */
+html.gxb-mobile #app-frame #girl-detail-view.gs-zoom.sonia-continuation-scene > .detail-scene{
+ background-image:url('/assets/chaos/lyr_sonia_zoom_bedding_floor.png')!important;
  background-repeat:no-repeat!important;
- background-position:center bottom!important;
- background-size:100% max(1px,calc(100% - 134.615cqw))!important;
- background-color:#d3c0e7!important;
+ background-position:center top!important;
+ background-size:100% auto!important;
+ background-color:#dec6df!important;
+}
+html.gxb-mobile #app-frame #girl-detail-view.gs-zoom.sonia-continuation-scene .detail-art-wrap{
+ opacity:0!important;
+ pointer-events:none!important;
 }

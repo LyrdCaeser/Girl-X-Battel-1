@@ -55,7 +55,7 @@ class SoniaVisualUnificationTests(unittest.TestCase):
         for file, version in (
             ('app.js', '20261122-sonia-scene-fallback-r4'),
             ('skins.js', '20261122-sonia-cosmos-outfit-r2'),
-            ('girl-ui.css', '20261122-sonia-scene-fallback-r4'),
+            ('girl-ui.css', '20261122-sonia-full-zoom-canvas-r5'),
         ):
             self.assertIn('/' + file + '?v=' + version, html)
 

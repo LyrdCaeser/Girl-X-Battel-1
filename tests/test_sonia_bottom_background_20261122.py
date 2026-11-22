@@ -25,15 +25,17 @@ class SoniaBottomBackgroundTests(unittest.TestCase):
         css = (ROOT / 'web/girl-ui.css').read_text()
         app = (ROOT / 'web/app.js').read_text()
         html = (ROOT / 'web/index.html').read_text()
-        self.assertIn('html.gxb-mobile #app-frame #girl-detail-view.sonia-continuation-scene > .detail-scene', css)
-        self.assertIn("background-image:url('/assets/chaos/lyr_sonia_bottom_extend.png')!important;", css)
-        self.assertIn('background-size:100% max(1px,calc(100% - 134.615cqw))!important;', css)
+        self.assertIn('html.gxb-mobile #app-frame #girl-detail-view.gs-zoom.sonia-continuation-scene > .detail-scene', css)
+        self.assertIn("background-image:url('/assets/chaos/lyr_sonia_zoom_bedding_floor.png')!important;", css)
+        self.assertIn('background-size:100% auto!important;', css)
+        self.assertIn('background-position:center top!important;', css)
+        self.assertIn('.gs-zoom.sonia-continuation-scene .detail-art-wrap', css)
         self.assertIn("classList.toggle('sonia-continuation-scene',Number(hero.table_id)===758001&&Number(imageId)===758001)", app)
         self.assertNotIn("classList.toggle('sonia-continuation-scene',Number(hero.table_id)===758001&&src==", app)
         # A missing group-8 college background must not revert to flat blue.
         self.assertFalse((ROOT/'web/assets/scenes/college_scene8.png').exists())
-        self.assertIn('background-color:#d3c0e7!important;', css)
-        self.assertIn('/girl-ui.css?v=20261122-sonia-scene-fallback-r4', html)
+        self.assertIn('background-color:#dec6df!important;', css)
+        self.assertIn('/girl-ui.css?v=20261122-sonia-full-zoom-canvas-r5', html)
         self.assertIn('/app.js?v=20261122-sonia-scene-fallback-r4', html)
 
 
