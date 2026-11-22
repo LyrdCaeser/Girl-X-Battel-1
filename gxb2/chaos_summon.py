@@ -16,7 +16,7 @@ RATE_TOTAL = 10_000
 FEATURED_WEIGHT = 50  # 0.50% per regular draw; always under 1.50%.
 FIRST_GUARANTEE = 120
 REPEAT_GUARANTEE = 150
-GUARANTEE_HIT_PERCENT = 95
+GUARANTEE_HIT_BASIS_POINTS = 9850  # 98.50% Sonia / 1.50% nonfeatured 5★
 
 
 PARTNER = {
@@ -98,8 +98,8 @@ def snapshot(state):
         'cycles':int(info['cycles']),
         'guarantee':pity,'first_guarantee':FIRST_GUARANTEE,
         'repeat_guarantee':REPEAT_GUARANTEE,
-        'guaranteed_hit_percent':GUARANTEE_HIT_PERCENT,
-        'guaranteed_miss_percent':100-GUARANTEE_HIT_PERCENT,
+        'guaranteed_hit_percent':GUARANTEE_HIT_BASIS_POINTS/100,
+        'guaranteed_miss_percent':100-GUARANTEE_HIT_BASIS_POINTS/100,
         'remaining':max(0,pity-int(info['times'])),
     }
 
@@ -126,7 +126,7 @@ def summon(state, summon_id, fallback_draw, rng=None,
         limit=FIRST_GUARANTEE if int(info['cycles'])==0 else REPEAT_GUARANTEE
         if info['times']>=limit:
             # Pity is a 5-star-or-higher result, not a deterministic Sonia.
-            table_id=PARTNER_ID if rng(100)<GUARANTEE_HIT_PERCENT else int(offbanner_draw())
+            table_id=PARTNER_ID if rng(10000)<GUARANTEE_HIT_BASIS_POINTS else int(offbanner_draw())
             if table_id!=PARTNER_ID and not is_five_star(table_id):
                 raise ValueError('Nữ Thần bảo hiểm lệch phải từ 5★')
         elif rng(RATE_TOTAL)<FEATURED_WEIGHT:

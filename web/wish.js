@@ -68,7 +68,7 @@ const WishCapsule=(()=>{
      body.append(el('p','wc-note','Tiến độ hiện tại: '+Number(si.times||0)+'/'+Number(si.guarantee||120)+
        ' · Còn '+Number(si.remaining||0)+' lượt.'));
      body.append(el('p','wc-note',
-       'Khi đạt bảo hiểm: 95% Lyr Sonia · 5% Nữ Thần 5★ khác. Ra bất kỳ Nữ Thần từ 5★ trở lên sẽ làm mới lượt bảo hiểm.'));
+       'Khi đạt bảo hiểm: 98,5% Lyr Sonia · 1,5% Nữ Thần 5★ khác. Ra bất kỳ Nữ Thần từ 5★ trở lên sẽ làm mới lượt bảo hiểm.'));
      body.append(el('p','wc-note','Nếu chưa trúng Sonia, lượt thường sử dụng bảng Triệu Hồi Cao Cấp dưới đây, giảm theo tỷ lệ Sonia xuất hiện.'));
    }else if(kind==='wish'){
      const wi=state.wish_info||{};
@@ -139,7 +139,7 @@ const WishCapsule=(()=>{
   const chaosRate=(Number(ci.rate||0)*100).toFixed(2);
   const chaosRemaining=Math.max(0,Number(ci.remaining??ci.guarantee??100));
   cc.append(el('p','chaos-copy','Tỷ lệ Lyr Sonia: '+chaosRate+'% · Bảo hiểm sau tối đa '+chaosRemaining+' lượt nữa'));
-  cc.append(el('p','chaos-copy','Bảo hiểm lần đầu 120 lượt, từ lần sau 150 lượt. Trúng bảo hiểm: 95% Sonia · 5% Nữ Thần 5★ khác.'));
+  cc.append(el('p','chaos-copy','Bảo hiểm lần đầu 120 lượt, từ lần sau 150 lượt. Trúng bảo hiểm: 98,5% Sonia · 1,5% Nữ Thần 5★ khác.'));
   const ticket=el('div','chaos-ticket');ticket.append(img(chaos.ticket.icon),el('span','',chaos.ticket.name),el('b','',number(state.items?.[String(chaos.ticket.id)]||0)));cc.append(ticket);
   const cbts=el('div','capsule-buttons chaos-buttons'),have=Number(state.items?.[String(chaos.ticket.id)]||0);
   for(const drawInfo of chaos.summons){const b=btn('capsule-draw','Triệu Hồi ×'+drawInfo.count,()=>action('SUMMON',{summon_id:drawInfo.id,times:1}),have<drawInfo.count);const cost=el('strong');cost.append(drawInfo.count+' ',img(chaos.ticket.icon,'cost-token'));b.append(cost);cbts.append(b);}

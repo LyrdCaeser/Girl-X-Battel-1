@@ -81,6 +81,11 @@ const rigBounds=(cleanWidth>0&&cleanHeight>0)?{width:cleanWidth,height:cleanHeig
                                             scale,!!u.boss&&bossScene));
   figures.set(u.pos,{figure,idle,meta});app.view.dataset.models=String(figures.size);}catch(e){missing.push(u.table_id);console.warn("Chibi not loaded",u.table_id,e.message);}}));
   app.stage.sortableChildren=true;app.stage.sortChildren();
+  // Sonia's event-only skill IDs have no legacy fx*.lua entries. The
+  // dedicated battle-field renderer uses her original four motifs.
+  const soniaFx=typeof SoniaBattleVFX!=='undefined'
+    ?SoniaBattleVFX.mount(field,units,positions):null;
+  soniaFx?.guard();
   function play(pos,kind){
    const unit=figures.get(pos);if(!unit||cancelled)return;
    const {figure,idle}=unit;
@@ -117,7 +122,11 @@ const rigBounds=(cleanWidth>0&&cleanHeight>0)?{width:cleanWidth,height:cleanHeig
   let rate=1;const live=new Set();
   async function spawn(res,anim,scale,x,y,flip,z){try{const data=await fxLoad(res);if(cancelled)return;const f=new PIXI.spine.Spine(data);const name=data.animations.some(a=>a.name===anim)?anim:data.animations[0]?.name;if(!name)return;f.scale.set((flip?-1:1)*scale*1.5,scale*1.5);f.x=x;f.y=y;f.zIndex=z;f.state.timeScale=rate;f.state.setAnimation(0,name,false);const done=()=>{if(!live.has(f))return;live.delete(f);f.visible=false;requestAnimationFrame(()=>{try{if(!cancelled){app.stage.removeChild(f);f.destroy({children:true});}}catch{}});};f.state.addListener({complete:done});live.add(f);app.stage.addChild(f);setTimeout(done,4000);}catch{}}
   async function fx(skillId,caster,targets){
-   const table=await fxSkills(),row=table[String(skillId)];if(!row||cancelled||deadPositions.has(caster))return;
+   if(cancelled||deadPositions.has(caster))return;
+   // Start Sonia FX synchronously before the first fetch/await: damage can
+   // otherwise resolve before her invisible, missing legacy FX has loaded.
+   soniaFx?.play(skillId,caster,targets);
+   const table=await fxSkills(),row=table[String(skillId)];if(!row||cancelled)return;
    // The native side transform faces the enemy. Derive the side from the
    // opposing, actual target figures rather than from an arbitrary animation list.
    const casterFigure=figures.get(caster)?.figure;
@@ -135,9 +144,9 @@ const rigBounds=(cleanWidth>0&&cleanHeight>0)?{width:cleanWidth,height:cleanHeig
             layer===1?u.figure.y-1:u.figure.y+1);
    }
   }
-  function speed(value){rate=value;for(const {figure} of figures.values())figure.state.timeScale=value;for(const f of live)f.state.timeScale=value;}
-  function destroy(){cancelled=true;app.destroy(true,{children:true,texture:false,baseTexture:false});}
-  return {play,speed,destroy,fx,anchors,headAnchors,has:pos=>figures.has(pos),missing};
+  function speed(value){rate=value;soniaFx?.speed(value);for(const {figure} of figures.values())figure.state.timeScale=value;for(const f of live)f.state.timeScale=value;}
+  function destroy(){cancelled=true;soniaFx?.destroy();app.destroy(true,{children:true,texture:false,baseTexture:false});}
+  return {play,speed,destroy,fx,timing:(id,pos)=>soniaFx?.timing(id,pos)||null,anchors,headAnchors,has:pos=>figures.has(pos),missing};
  }
  return {create,catalogue,fitScaleForBounds,fitScaleForModel,modelFacing,effectFlipForSide,headAnchorForFigure};
 })();

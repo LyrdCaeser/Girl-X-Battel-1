@@ -14,7 +14,10 @@ from gxb2.engine import Engine
 class ReceiptAndPityTests(unittest.TestCase):
     def test_sonia_pity_120_then_150_with_real_offbanner_five_star(self):
         state={'items':{'940060':270},'partners':[],'next_partner_id':1}
-        first=lambda bound:0 if bound==100 else bound-1
+        calls=[0]
+        def first(bound):
+            calls[0]+=1
+            return 0 if calls[0]==120 else bound-1
         for _ in range(12):
             chaos_summon.summon(state,29,lambda:33001,rng=first,
                                 offbanner_draw=lambda:51017,
@@ -31,12 +34,12 @@ class ReceiptAndPityTests(unittest.TestCase):
         self.assertEqual(state['chaos_summon']['times'],0)
         self.assertEqual(state['items']['940060'],0)
 
-    def test_pity_probability_is_95_hit_5_off(self):
-        for hit_expected,roll in ((True,0),(True,94),(False,95),(False,99)):
+    def test_pity_probability_is_985_hit_15_off(self):
+        for hit_expected,roll in ((True,0),(True,9849),(False,9850),(False,9999)):
             state={'items':{'940060':1},'partners':[],'next_partner_id':1,
                    'chaos_summon':{'times':119,'total':119,'cycles':0}}
             chaos_summon.summon(state,27,lambda:33001,
-                                rng=lambda n:roll if n==100 else n-1,
+                                rng=lambda n:roll if n==10000 else n-1,
                                 offbanner_draw=lambda:51017,
                                 is_five_star=lambda tid:tid==51017)
             self.assertEqual(state['partners'][0]['table_id']==758001,hit_expected)

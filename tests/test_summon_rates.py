@@ -88,7 +88,10 @@ class ChaosSummonRateTests(unittest.TestCase):
         state=self.state(270)
         no_rare=lambda:33001
         is_five=lambda tid: tid==51017
-        first=lambda bound:0 if bound==100 else bound-1
+        calls=[0]
+        def first(bound):
+            calls[0]+=1
+            return 0 if calls[0]==120 else bound-1
         for _ in range(12):
             result=chaos_summon.summon(
                 state,29,no_rare,rng=first,
