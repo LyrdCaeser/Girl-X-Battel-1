@@ -88,6 +88,9 @@ const rigBounds=(cleanWidth>0&&cleanHeight>0)?{width:cleanWidth,height:cleanHeig
   // passes visual/mobile approval; no foreign layer or static cut-in.
   const soniaSlots=new Set(units.filter(u=>Number(u.table_id)===758001).map(u=>Number(u.pos)));
   const soniaNative={
+    // Basic attack also needs its own cue. Live Lua battle frames frequently
+    // use 75800100, not an awakening/passive skill ID.
+    75800100:{impact:340,duration:850},
     75800101:{impact:910,duration:1590},
     75800102:{impact:450,duration:1180},
     75800103:{impact:350,duration:1150},
@@ -95,10 +98,15 @@ const rigBounds=(cleanWidth>0&&cleanHeight>0)?{width:cleanWidth,height:cleanHeig
   };
   const fxLite=document.documentElement.classList.contains('gxb-mobile');
   if(soniaSlots.size){
-    // Start downloads alongside the first battle frame; do not block combat.
-    for(const res of ['monika_hurt03','yixienamei_hurt01','monika_hurt02','lianhua_hurt02']){
+    // The first damaging frame used to complete before the asynchronous
+    // Spine textures had finished loading: only numbers were visible.
+    // Prepare the lightweight basic hit and main skill hit before replay.
+    const preload=Promise.allSettled(['lianhua_hurt01','monika_hurt03'].map(name=>fxLoad(name)));
+    // A failed or hanging asset response must never leave all players on
+    // the loading scene. Warm-up has a fixed upper bound.
+    await Promise.race([preload,new Promise(resolve=>setTimeout(resolve,2000))]);
+    for(const res of ['yixienamei_hurt01','monika_hurt02','lianhua_hurt02'])
       fxLoad(res).catch(()=>{});
-    }
   }
   function play(pos,kind){
    const unit=figures.get(pos);if(!unit||cancelled)return;
@@ -178,6 +186,9 @@ const rigBounds=(cleanWidth>0&&cleanHeight>0)?{width:cleanWidth,height:cleanHeig
     else fire();
    };
    switch(Number(skillId)){
+    case 75800100:
+     at('lianhua_hurt01',.72,'target',1.6,.96);
+     break;
     case 75800101:
      if(!fxLite)at('monika_hurt02',.30,'caster',2.8,.55);
      at('monika_hurt03',.58,'target',3.35,.82,200);

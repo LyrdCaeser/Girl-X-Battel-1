@@ -3,8 +3,9 @@ const fs=require('node:fs'),path=require('node:path'),assert=require('node:asser
 const battle=fs.readFileSync('web/battle-animation.js','utf8');
 const html=fs.readFileSync('web/index.html','utf8');
 const app=fs.readFileSync('web/app.js','utf8');
-const skills=[75800101,75800102,75800103,75800104];
+const skills=[75800100,75800101,75800102,75800103,75800104];
 const clips=[
+  'lianhua_hurt01',
   'monika_hurt03',
   'yixienamei_hurt01',
   'monika_hurt02',
@@ -12,8 +13,12 @@ const clips=[
 ];
 assert(!fs.existsSync('web/sonia-battle-vfx.js'),'hand-painted Canvas engine removed');
 assert(!html.includes('sonia-battle-vfx.js'),'second canvas no longer loaded');
-assert(html.includes('battle-animation.js?v=20261122-native-sonia-spine-r2'));
+assert(html.includes('battle-animation.js?v=20261122-sonia-visible-hit-r3'));
 assert(battle.includes('const soniaSlots=new Set('));
+assert(battle.includes("at('lianhua_hurt01',.72,'target',1.6,.96)"));
+assert(battle.includes("Promise.allSettled(['lianhua_hurt01','monika_hurt03'].map(name=>fxLoad(name)))"));
+assert(battle.includes("await Promise.race([preload,new Promise(resolve=>setTimeout(resolve,2000))])"));
+
 assert(battle.includes('if(soniaNativeFx(skillId,caster,targets))return;'));
 assert(battle.includes("new PIXI.spine.Spine(data)"));
 assert(battle.includes('const fxLite=document.documentElement.classList.contains'));
