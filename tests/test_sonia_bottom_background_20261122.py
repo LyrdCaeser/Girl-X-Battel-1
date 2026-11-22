@@ -11,7 +11,7 @@ class SoniaBottomBackgroundTests(unittest.TestCase):
     def test_approved_detail_art_matches_extension_at_seam(self):
         with Image.open(ROOT / 'web/assets/characters/758001.png') as original:
             source = original.convert('RGB')
-        with Image.open(ROOT / 'web/assets/chaos/lyr_sonia_bottom_extend.webp') as extension:
+        with Image.open(ROOT / 'web/assets/chaos/lyr_sonia_bottom_extend.png') as extension:
             continuation = extension.convert('RGB')
         self.assertEqual(source.size, (520, 700))
         self.assertEqual(continuation.size, (520, 850))
@@ -27,7 +27,7 @@ class SoniaBottomBackgroundTests(unittest.TestCase):
         html = (ROOT / 'web/index.html').read_text()
         self.assertIn('html.gxb-mobile #app-frame #girl-detail-view.sonia-background-extend>.detail-scene::before', css)
         self.assertIn('top:calc(100cqw * 700 / 520 - 1px);', css)
-        self.assertIn('background:url(\'/assets/chaos/lyr_sonia_bottom_extend.webp\')', css)
+        self.assertIn('background:url(\'/assets/chaos/lyr_sonia_bottom_extend.png\')', css)
         self.assertIn("classList.toggle('sonia-background-extend',Number(imageId)===758001&&src==='/assets/characters/758001.png')", app)
         self.assertIn('/girl-ui.css?v=20261122-sonia-bottom-fill-r1', html)
         self.assertIn('/app.js?v=20261122-sonia-bottom-fill-r1', html)

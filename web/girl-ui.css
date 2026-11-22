@@ -430,6 +430,6 @@ html.gxb-mobile #app-frame #girl-detail-view.sonia-background-extend>.detail-sce
  left:0;
  right:0;
  z-index:0;
- background:url('/assets/chaos/lyr_sonia_bottom_extend.webp') center top/100% 100% no-repeat;
+ background:url('/assets/chaos/lyr_sonia_bottom_extend.png') center top/100% 100% no-repeat;
  pointer-events:none;
 }
