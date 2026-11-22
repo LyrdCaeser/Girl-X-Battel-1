@@ -856,6 +856,12 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
             stem = path[len('/assets/detail/'):-4]
             if stem in DETAIL_ICONS:
                 return self.send(200, (ROOT/'web/assets/detail'/f'{stem}.png').read_bytes(), 'image/png')
+        # Original publisher descriptions for every Goddess skill. Keep this
+        # exact, read-only JSON route separate from the allowlisted PNG icons.
+        if path == '/assets/skills/skill-descriptions.json':
+            return self.send(200,
+                (ROOT/'web/assets/skills/skill-descriptions.json').read_bytes(),
+                'application/json; charset=utf-8')
         if path.startswith('/assets/skills/') and path.endswith('.png'):
             stem = path[len('/assets/skills/'):-4]
             if stem in SKILL_ICONS:
