@@ -1,0 +1,486 @@
+
+monika_hurt02.webp
+size: 1024,1024
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+tx/hurt02/hurt02_11_00
+  rotate: true
+  xy: 940, 3
+  size: 152, 61
+  orig: 152, 62
+  offset: 0, 0
+  index: -1
+tx/hurt02/hurt02_12_00
+  rotate: false
+  xy: 2, 119
+  size: 367, 387
+  orig: 386, 455
+  offset: 19, 49
+  index: -1
+tx/hurt02/hurt02_2_00
+  rotate: false
+  xy: 2, 508
+  size: 512, 512
+  orig: 518, 518
+  offset: 3, 3
+  index: -1
+tx/hurt02/hurt02_8_12
+  rotate: false
+  xy: 305, 51
+  size: 131, 45
+  orig: 571, 168
+  offset: 228, 67
+  index: -1
+tx/hurt02/hurt02_8_13
+  rotate: true
+  xy: 940, 157
+  size: 165, 58
+  orig: 571, 168
+  offset: 211, 59
+  index: -1
+tx/hurt02/hurt02_8_14
+  rotate: true
+  xy: 940, 324
+  size: 198, 70
+  orig: 571, 168
+  offset: 194, 51
+  index: -1
+tx/hurt02/hurt02_8_15
+  rotate: true
+  xy: 926, 524
+  size: 230, 82
+  orig: 571, 168
+  offset: 177, 44
+  index: -1
+tx/hurt02/hurt02_8_16
+  rotate: true
+  xy: 926, 756
+  size: 264, 94
+  orig: 571, 168
+  offset: 160, 36
+  index: -1
+tx/hurt02/hurt02_8_17
+  rotate: false
+  xy: 2, 11
+  size: 301, 106
+  orig: 571, 168
+  offset: 141, 29
+  index: -1
+tx/hurt02/hurt02_8_19
+  rotate: true
+  xy: 654, 118
+  size: 373, 130
+  orig: 571, 168
+  offset: 105, 14
+  index: -1
+tx/hurt02/hurt02_8_20
+  rotate: true
+  xy: 371, 98
+  size: 408, 141
+  orig: 571, 168
+  offset: 87, 7
+  index: -1
+tx/hurt02/hurt02_8_21
+  rotate: true
+  xy: 786, 37
+  size: 443, 152
+  orig: 571, 168
+  offset: 70, 0
+  index: -1
+tx/hurt02/hurt02_8_26
+  rotate: true
+  xy: 514, 2
+  size: 501, 138
+  orig: 571, 168
+  offset: 38, 6
+  index: -1
+tx/hurt02/hurt02_8_27
+  rotate: true
+  xy: 516, 505
+  size: 515, 137
+  orig: 571, 168
+  offset: 31, 6
+  index: -1
+tx/hurt02/hurt02_8_28
+  rotate: true
+  xy: 655, 493
+  size: 527, 134
+  orig: 571, 168
+  offset: 25, 7
+  index: -1
+tx/hurt02/hurt02_8_29
+  rotate: true
+  xy: 791, 482
+  size: 538, 133
+  orig: 571, 168
+  offset: 19, 8
+  index: -1
+
+monika_hurt022.webp
+size: 1024,1024
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+tx/hurt02/hurt02_10_00
+  rotate: false
+  xy: 575, 723
+  size: 292, 292
+  orig: 348, 342
+  offset: 29, 25
+  index: -1
+tx/hurt02/hurt02_1_00
+  rotate: false
+  xy: 267, 289
+  size: 138, 138
+  orig: 161, 166
+  offset: 12, 14
+  index: -1
+tx/hurt02/hurt02_3_00
+  rotate: false
+  xy: 2, 581
+  size: 272, 302
+  orig: 428, 428
+  offset: 101, 69
+  index: -1
+tx/hurt02/hurt02_4_00
+  rotate: false
+  xy: 574, 446
+  size: 246, 275
+  orig: 428, 428
+  offset: 71, 62
+  index: -1
+tx/hurt02/hurt02_6_00
+  rotate: false
+  xy: 659, 84
+  size: 170, 174
+  orig: 856, 856
+  offset: 274, 270
+  index: -1
+tx/hurt02/hurt02_7_00
+  rotate: true
+  xy: 267, 151
+  size: 136, 131
+  orig: 138, 131
+  offset: 0, 0
+  index: -1
+tx/hurt02/hurt02_7_02
+  rotate: true
+  xy: 267, 13
+  size: 136, 131
+  orig: 138, 131
+  offset: 0, 0
+  index: -1
+tx/hurt02/hurt02_7_04
+  rotate: true
+  xy: 831, 51
+  size: 136, 131
+  orig: 138, 131
+  offset: 0, 0
+  index: -1
+tx/hurt02/hurt02_8_18
+  rotate: true
+  xy: 873, 189
+  size: 337, 118
+  orig: 571, 168
+  offset: 123, 22
+  index: -1
+tx/hurt02/hurt02_8_22
+  rotate: true
+  xy: 276, 429
+  size: 454, 150
+  orig: 571, 168
+  offset: 64, 1
+  index: -1
+tx/hurt02/hurt02_8_23
+  rotate: false
+  xy: 407, 260
+  size: 464, 147
+  orig: 571, 168
+  offset: 58, 2
+  index: -1
+tx/hurt02/hurt02_8_24
+  rotate: true
+  xy: 428, 409
+  size: 474, 144
+  orig: 571, 168
+  offset: 53, 3
+  index: -1
+tx/hurt02/hurt02_8_25
+  rotate: true
+  xy: 869, 528
+  size: 487, 141
+  orig: 571, 168
+  offset: 45, 4
+  index: -1
+tx/hurt02/hurt02_8_30
+  rotate: true
+  xy: 134, 29
+  size: 550, 131
+  orig: 571, 168
+  offset: 13, 9
+  index: -1
+tx/hurt02/hurt02_8_37
+  rotate: false
+  xy: 2, 885
+  size: 571, 130
+  orig: 571, 168
+  offset: 0, 8
+  index: -1
+tx/hurt02/hurt02_8_39
+  rotate: true
+  xy: 2, 8
+  size: 571, 130
+  orig: 571, 168
+  offset: 0, 8
+  index: -1
+tx/hurt02/hurt02_9_34
+  rotate: true
+  xy: 400, 2
+  size: 256, 257
+  orig: 263, 261
+  offset: 4, 2
+  index: -1
+
+monika_hurt023.webp
+size: 1024,1024
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+tx/hurt02/hurt02_5_00
+  rotate: false
+  xy: 575, 139
+  size: 245, 269
+  orig: 856, 856
+  offset: 383, 207
+  index: -1
+tx/hurt02/hurt02_7_06
+  rotate: false
+  xy: 713, 6
+  size: 135, 131
+  orig: 138, 131
+  offset: 1, 0
+  index: -1
+tx/hurt02/hurt02_7_20
+  rotate: false
+  xy: 822, 277
+  size: 136, 131
+  orig: 138, 131
+  offset: 0, 0
+  index: -1
+tx/hurt02/hurt02_7_22
+  rotate: false
+  xy: 822, 144
+  size: 136, 131
+  orig: 138, 131
+  offset: 0, 0
+  index: -1
+tx/hurt02/hurt02_7_24
+  rotate: false
+  xy: 575, 6
+  size: 136, 131
+  orig: 138, 131
+  offset: 0, 0
+  index: -1
+tx/hurt02/hurt02_7_26
+  rotate: true
+  xy: 850, 6
+  size: 136, 131
+  orig: 138, 131
+  offset: 0, 0
+  index: -1
+tx/hurt02/hurt02_8_32
+  rotate: true
+  xy: 839, 410
+  size: 571, 129
+  orig: 571, 168
+  offset: 0, 9
+  index: -1
+tx/hurt02/hurt02_8_41
+  rotate: false
+  xy: 2, 851
+  size: 571, 130
+  orig: 571, 168
+  offset: 0, 8
+  index: -1
+tx/hurt02/hurt02_8_43
+  rotate: false
+  xy: 2, 719
+  size: 571, 130
+  orig: 571, 168
+  offset: 0, 8
+  index: -1
+tx/hurt02/hurt02_8_45
+  rotate: false
+  xy: 2, 587
+  size: 571, 130
+  orig: 571, 168
+  offset: 0, 8
+  index: -1
+tx/hurt02/hurt02_8_47
+  rotate: false
+  xy: 2, 455
+  size: 571, 130
+  orig: 571, 168
+  offset: 0, 8
+  index: -1
+tx/hurt02/hurt02_8_49
+  rotate: false
+  xy: 2, 323
+  size: 571, 130
+  orig: 571, 168
+  offset: 0, 8
+  index: -1
+tx/hurt02/hurt02_8_51
+  rotate: true
+  xy: 575, 410
+  size: 571, 130
+  orig: 571, 168
+  offset: 0, 8
+  index: -1
+tx/hurt02/hurt02_8_53
+  rotate: false
+  xy: 2, 191
+  size: 571, 130
+  orig: 571, 168
+  offset: 0, 8
+  index: -1
+tx/hurt02/hurt02_8_55
+  rotate: true
+  xy: 707, 410
+  size: 571, 130
+  orig: 571, 168
+  offset: 0, 8
+  index: -1
+tx/hurt02/hurt02_8_57
+  rotate: false
+  xy: 2, 59
+  size: 571, 130
+  orig: 571, 168
+  offset: 0, 8
+  index: -1
+
+monika_hurt024.webp
+size: 1024,1024
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+tx/hurt02/hurt02_7_08
+  rotate: false
+  xy: 575, 143
+  size: 135, 131
+  orig: 138, 131
+  offset: 1, 0
+  index: -1
+tx/hurt02/hurt02_7_10
+  rotate: false
+  xy: 713, 276
+  size: 134, 131
+  orig: 138, 131
+  offset: 2, 0
+  index: -1
+tx/hurt02/hurt02_7_12
+  rotate: false
+  xy: 712, 143
+  size: 135, 131
+  orig: 138, 131
+  offset: 1, 0
+  index: -1
+tx/hurt02/hurt02_7_14
+  rotate: false
+  xy: 575, 10
+  size: 134, 131
+  orig: 138, 131
+  offset: 1, 0
+  index: -1
+tx/hurt02/hurt02_7_16
+  rotate: true
+  xy: 849, 281
+  size: 135, 131
+  orig: 138, 131
+  offset: 0, 0
+  index: -1
+tx/hurt02/hurt02_7_18
+  rotate: true
+  xy: 849, 144
+  size: 135, 131
+  orig: 138, 131
+  offset: 0, 0
+  index: -1
+tx/hurt02/hurt02_7_28
+  rotate: false
+  xy: 575, 276
+  size: 136, 131
+  orig: 138, 131
+  offset: 0, 0
+  index: -1
+tx/hurt02/hurt02_8_31
+  rotate: true
+  xy: 832, 418
+  size: 562, 129
+  orig: 571, 168
+  offset: 6, 9
+  index: -1
+tx/hurt02/hurt02_8_33
+  rotate: false
+  xy: 2, 851
+  size: 571, 129
+  orig: 571, 168
+  offset: 0, 9
+  index: -1
+tx/hurt02/hurt02_8_34
+  rotate: false
+  xy: 2, 721
+  size: 571, 128
+  orig: 571, 168
+  offset: 0, 9
+  index: -1
+tx/hurt02/hurt02_8_35
+  rotate: false
+  xy: 2, 591
+  size: 571, 128
+  orig: 571, 168
+  offset: 0, 9
+  index: -1
+tx/hurt02/hurt02_8_59
+  rotate: false
+  xy: 2, 461
+  size: 571, 128
+  orig: 571, 168
+  offset: 0, 9
+  index: -1
+tx/hurt02/hurt02_8_61
+  rotate: false
+  xy: 2, 331
+  size: 571, 128
+  orig: 571, 168
+  offset: 0, 9
+  index: -1
+tx/hurt02/hurt02_8_63
+  rotate: true
+  xy: 704, 409
+  size: 571, 126
+  orig: 571, 168
+  offset: 0, 11
+  index: -1
+tx/hurt02/hurt02_8_65
+  rotate: false
+  xy: 2, 77
+  size: 571, 123
+  orig: 571, 168
+  offset: 0, 14
+  index: -1
+tx/hurt02/hurt02_8_67
+  rotate: true
+  xy: 575, 409
+  size: 571, 127
+  orig: 571, 168
+  offset: 0, 10
+  index: -1
+tx/hurt02/hurt02_8_69
+  rotate: false
+  xy: 2, 202
+  size: 571, 127
+  orig: 571, 168
+  offset: 0, 10
+  index: -1

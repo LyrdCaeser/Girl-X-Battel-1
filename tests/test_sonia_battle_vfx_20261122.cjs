@@ -6,23 +6,28 @@ const app=fs.readFileSync('web/app.js','utf8');
 const skills=[75800100,75800101,75800102,75800103,75800104];
 const clips=[
   'lianhua_hurt01',
-  'monika_hurt03',
-  'yixienamei_hurt01',
-  'monika_hurt02',
-  'lianhua_hurt02'
+  'sonia_chaos_orb',
+  'sonia_chaos_siphon',
+  'sonia_chaos_guard',
+  'sonia_chaos_collapse'
 ];
 assert(!fs.existsSync('web/sonia-battle-vfx.js'),'hand-painted Canvas engine removed');
 assert(!html.includes('sonia-battle-vfx.js'),'second canvas no longer loaded');
-assert(html.includes('battle-animation.js?v=20261122-sonia-visible-hit-r3'));
+assert(html.includes('battle-animation.js?v=20261122-sonia-4borrowed-spine-r4'));
 assert(battle.includes('const soniaSlots=new Set('));
 assert(battle.includes("at('lianhua_hurt01',.72,'target',1.6,.96)"));
-assert(battle.includes("Promise.allSettled(['lianhua_hurt01','monika_hurt03'].map(name=>fxLoad(name)))"));
+assert(battle.includes("['lianhua_hurt01','sonia_chaos_orb','sonia_chaos_collapse'].map(name=>fxLoad(name))"));
 assert(battle.includes("await Promise.race([preload,new Promise(resolve=>setTimeout(resolve,2000))])"));
 
 assert(battle.includes('if(soniaNativeFx(skillId,caster,targets))return;'));
+assert(battle.includes("at('sonia_chaos_guard',.55,'caster',2.2,.96,0,'texiao02')"));
+assert(battle.includes("void spawn(res,clip,scale,px,py,flip,z,"));
+assert(battle.includes("at('sonia_chaos_orb',.56,'target',2.1,.96)"));
+assert(battle.includes("at('sonia_chaos_collapse',.64,'target',1.1,.96)"));
+
 assert(battle.includes("new PIXI.spine.Spine(data)"));
-assert(battle.includes('const fxLite=document.documentElement.classList.contains'));
-assert(battle.includes('if(!fxLite)at('));
+assert(!battle.includes('const fxLite=document.documentElement.classList.contains'));
+assert(!battle.includes('if(!fxLite)at('));
 assert(battle.includes('for(const timer of fxTimers)clearTimeout(timer)'));
 assert(battle.includes('for(const f of live){'));
 assert(battle.includes('f.state.timeScale=value*(fxConfigs.get(f)||1)'));
@@ -41,4 +46,4 @@ for(const name of clips){
  assert(imageNames.length>=1,'real game textures: '+name);
 }
 assert(!html.includes('<canvas class="sonia-'),'no added HTML canvas in app');
-console.log('PASS: Sonia uses only existing GXB3 Spine 3.6.37 native clips, timed impacts, mobile one-layer cap, cleanup and no custom Canvas');
+console.log('PASS: Sonia has one recolored Spine 3.6.37 visual from each of 4 goddesses, preserved basic hit, no Canvas/compositing');

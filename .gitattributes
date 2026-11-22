@@ -47,3 +47,9 @@ docs/lyr-sonia/pose_3q_v18/model.atlas -filter -diff -merge -text
 web/assets/skins/ui/img_group8.png -filter -diff -merge -text
 # Small approved Sonia shard portrait stored directly in Git.
 web/assets/item-icons/partner_avatar_758001.png -filter -diff -merge -text
+
+# Sonia Chaos skill FX are small recolored Spine copies in ordinary Git.
+web/assets/battle-fx/sonia_chaos_orb/** -filter -diff -merge -text
+web/assets/battle-fx/sonia_chaos_siphon/** -filter -diff -merge -text
+web/assets/battle-fx/sonia_chaos_guard/** -filter -diff -merge -text
+web/assets/battle-fx/sonia_chaos_collapse/** -filter -diff -merge -text

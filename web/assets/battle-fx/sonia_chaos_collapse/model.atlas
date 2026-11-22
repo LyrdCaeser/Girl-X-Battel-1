@@ -1,0 +1,193 @@
+
+aboluo_hurt01.webp
+size: 1024,1024
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+hurt01/hurt01_00046
+  rotate: true
+  xy: 273, 2
+  size: 152, 149
+  orig: 341, 318
+  offset: 96, 83
+  index: -1
+hurt01/hurt01_00049
+  rotate: false
+  xy: 607, 127
+  size: 297, 292
+  orig: 341, 318
+  offset: 22, 16
+  index: -1
+hurt01/hurt01_00050
+  rotate: false
+  xy: 663, 421
+  size: 307, 297
+  orig: 341, 318
+  offset: 16, 14
+  index: -1
+hurt01/hurt01_00051
+  rotate: false
+  xy: 334, 423
+  size: 318, 286
+  orig: 341, 318
+  offset: 10, 20
+  index: -1
+hurt01/hurt01_00052
+  rotate: false
+  xy: 334, 711
+  size: 327, 290
+  orig: 341, 318
+  offset: 5, 18
+  index: -1
+hurt01/hurt01_00053
+  rotate: false
+  xy: 2, 707
+  size: 330, 294
+  orig: 341, 318
+  offset: 4, 16
+  index: -1
+hurt01/hurt01_00054
+  rotate: false
+  xy: 663, 720
+  size: 332, 281
+  orig: 341, 318
+  offset: 2, 20
+  index: -1
+hurt01/hurt01_00056
+  rotate: false
+  xy: 273, 156
+  size: 332, 265
+  orig: 341, 318
+  offset: 2, 29
+  index: -1
+hurt01/hurt01_00057
+  rotate: true
+  xy: 2, 98
+  size: 331, 269
+  orig: 341, 318
+  offset: 2, 27
+  index: -1
+hurt01/hurt01_00058
+  rotate: false
+  xy: 2, 431
+  size: 326, 274
+  orig: 341, 318
+  offset: 4, 24
+  index: -1
+hurt01/hurt01_00067
+  rotate: false
+  xy: 424, 29
+  size: 179, 125
+  orig: 341, 318
+  offset: 97, 109
+  index: -1
+hurt01/hurt01_00068
+  rotate: false
+  xy: 605, 8
+  size: 176, 117
+  orig: 341, 318
+  offset: 99, 110
+  index: -1
+hurt01/hurt01_00069
+  rotate: false
+  xy: 783, 8
+  size: 175, 117
+  orig: 341, 318
+  offset: 99, 110
+  index: -1
+hurt01/hurt01_00070
+  rotate: false
+  xy: 2, 6
+  size: 174, 90
+  orig: 341, 318
+  offset: 98, 136
+  index: -1
+
+aboluo_hurt012.webp
+size: 1024,1024
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+hurt01/hurt01_00047
+  rotate: false
+  xy: 2, 65
+  size: 280, 282
+  orig: 341, 318
+  offset: 32, 21
+  index: -1
+hurt01/hurt01_00048
+  rotate: false
+  xy: 2, 349
+  size: 289, 287
+  orig: 341, 318
+  offset: 26, 19
+  index: -1
+hurt01/hurt01_00055
+  rotate: false
+  xy: 2, 638
+  size: 332, 259
+  orig: 341, 318
+  offset: 2, 32
+  index: -1
+hurt01/hurt01_00060
+  rotate: false
+  xy: 284, 76
+  size: 270, 271
+  orig: 341, 318
+  offset: 29, 26
+  index: -1
+hurt01/hurt01_00061
+  rotate: false
+  xy: 293, 351
+  size: 273, 275
+  orig: 341, 318
+  offset: 29, 24
+  index: -1
+hurt01/hurt01_00062
+  rotate: true
+  xy: 336, 628
+  size: 269, 280
+  orig: 341, 318
+  offset: 35, 22
+  index: -1
+hurt01/hurt01_00063
+  rotate: true
+  xy: 568, 357
+  size: 267, 275
+  orig: 341, 318
+  offset: 36, 24
+  index: -1
+hurt01/hurt01_00064
+  rotate: true
+  xy: 618, 626
+  size: 271, 279
+  orig: 341, 318
+  offset: 34, 22
+  index: -1
+hurt01/hurt01_00065
+  rotate: false
+  xy: 556, 78
+  size: 264, 271
+  orig: 341, 318
+  offset: 37, 26
+  index: -1
+
+aboluo_hurt013.webp
+size: 1024,1024
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+hurt01/hurt01_00059
+  rotate: false
+  xy: 2, 259
+  size: 267, 266
+  orig: 341, 318
+  offset: 30, 29
+  index: -1
+hurt01/hurt01_00066
+  rotate: false
+  xy: 2, 2
+  size: 250, 255
+  orig: 341, 318
+  offset: 44, 34
+  index: -1

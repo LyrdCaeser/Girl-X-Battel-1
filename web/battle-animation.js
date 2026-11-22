@@ -81,11 +81,10 @@ const rigBounds=(cleanWidth>0&&cleanHeight>0)?{width:cleanWidth,height:cleanHeig
                                             scale,!!u.boss&&bossScene));
   figures.set(u.pos,{figure,idle,meta});app.view.dataset.models=String(figures.size);}catch(e){missing.push(u.table_id);console.warn("Chibi not loaded",u.table_id,e.message);}}));
   app.stage.sortableChildren=true;app.stage.sortChildren();
-  // Sonia's event-only skill IDs have no legacy fx*.lua entries. The
-  // dedicated battle-field renderer uses her original four motifs.
-  // Native GXB3 Spine 3.6.37 assets, not a second Canvas/HTML renderer.
-  // These shared battle FX are a visual bridge until Sonia's unique FX pack
-  // passes visual/mobile approval; no foreign layer or static cut-in.
+  // Four Sonia skills now have dedicated Spine 3.6.37 visual copies: one
+  // original skill each from Monica, Izanami, Nymphaea and Apollis. Only
+  // these copies are recolored; source goddesses and combat math are unchanged.
+  // No extra HTML/Canvas layers or composite effects on Mobile or PC.
   const soniaSlots=new Set(units.filter(u=>Number(u.table_id)===758001).map(u=>Number(u.pos)));
   const soniaNative={
     // Basic attack also needs its own cue. Live Lua battle frames frequently
@@ -94,18 +93,15 @@ const rigBounds=(cleanWidth>0&&cleanHeight>0)?{width:cleanWidth,height:cleanHeig
     75800101:{impact:910,duration:1590},
     75800102:{impact:450,duration:1180},
     75800103:{impact:350,duration:1150},
-    75800104:{impact:910,duration:1590}
+    75800104:{impact:390,duration:1050}
   };
-  const fxLite=document.documentElement.classList.contains('gxb-mobile');
   if(soniaSlots.size){
-    // The first damaging frame used to complete before the asynchronous
-    // Spine textures had finished loading: only numbers were visible.
-    // Prepare the lightweight basic hit and main skill hit before replay.
-    const preload=Promise.allSettled(['lianhua_hurt01','monika_hurt03'].map(name=>fxLoad(name)));
-    // A failed or hanging asset response must never leave all players on
-    // the loading scene. Warm-up has a fixed upper bound.
+    // First hit and primary active skill are available before the first
+    // damaging frame, with a bounded warm-up for slow Android networks.
+    const preload=Promise.allSettled(
+      ['lianhua_hurt01','sonia_chaos_orb','sonia_chaos_collapse'].map(name=>fxLoad(name)));
     await Promise.race([preload,new Promise(resolve=>setTimeout(resolve,2000))]);
-    for(const res of ['yixienamei_hurt01','monika_hurt02','lianhua_hurt02'])
+    for(const res of ['sonia_chaos_siphon','sonia_chaos_guard'])
       fxLoad(res).catch(()=>{});
   }
   function play(pos,kind){
@@ -159,9 +155,9 @@ const rigBounds=(cleanWidth>0&&cleanHeight>0)?{width:cleanWidth,height:cleanHeig
    live.add(f);app.stage.addChild(f);
    setTimeout(done,(Number(options.maxMs)||4000)/Math.max(.25,rate));
   }catch(e){console.warn('Battle Spine FX unavailable',res,e?.message||e);}}
-  // Sonia's 4 skill IDs now use the SAME PIXI/Spine stage, skill timing and
-  // scale pipeline as every other GXB3 girl. Mobile renders at most one
-  // original Spine effect per cue; desktop allows two short complementary FX.
+  // Sonia's four skill IDs use the original GXB3 PIXI/Spine stage and
+  // timing. One recolored native Spine clip per skill on both Mobile and PC:
+  // no stitched visual layers, and never any new HTML/Canvas renderer.
   function soniaNativeFx(skillId,caster,targets){
    if(!soniaSlots.has(Number(caster))||!soniaNative[Number(skillId)]||cancelled)return false;
    const source=figures.get(Number(caster))?.figure;
@@ -175,33 +171,31 @@ const rigBounds=(cleanWidth>0&&cleanHeight>0)?{width:cleanWidth,height:cleanHeig
    const x=opponents.length?opponents.reduce((sum,f)=>sum+f.x,0)/opponents.length:540;
    const y=opponents.length?opponents.reduce((sum,f)=>sum+f.y,0)/opponents.length:890;
    const flip=(x<source.x);
-   const at=(res,scale,place,speed,alpha,delay=0)=>{
+   const at=(res,scale,place,speed,alpha,delay=0,clip='texiao01')=>{
     const figure=place==='caster'?source:null;
     const px=figure?figure.x:x,py=figure?figure.y:y;
     const z=py+(place==='caster'?-1:1);
     let timer=null;
     const fire=()=>{if(timer!==null)fxTimers.delete(timer);
-      if(!cancelled)void spawn(res,'texiao01',scale,px,py,flip,z,{speed,alpha,maxMs:2300});};
+      if(!cancelled)void spawn(res,clip,scale,px,py,flip,z,{speed,alpha,maxMs:2300});};
     if(delay>0){timer=setTimeout(fire,delay/Math.max(.25,rate));fxTimers.add(timer);}
     else fire();
    };
    switch(Number(skillId)){
-    case 75800100:
+    case 75800100: // Native light attack, preserved as a distinct fifth cue
      at('lianhua_hurt01',.72,'target',1.6,.96);
      break;
-    case 75800101:
-     if(!fxLite)at('monika_hurt02',.30,'caster',2.8,.55);
-     at('monika_hurt03',.58,'target',3.35,.82,200);
+    case 75800101: // Monica's orb, shifted violet-pink
+     at('sonia_chaos_orb',.56,'target',2.1,.96);
      break;
-    case 75800102:
-     at('yixienamei_hurt01',.58,'target',1.3,.78);
+    case 75800102: // Izanami's siphon, shifted lavender
+     at('sonia_chaos_siphon',.62,'target',1.4,.94);
      break;
-    case 75800103:
-     at('monika_hurt02',.42,'caster',2.4,.74);
+    case 75800103: // Nymphaea's lotus, shifted mauve-violet
+     at('sonia_chaos_guard',.55,'caster',2.2,.96,0,'texiao02');
      break;
-    case 75800104:
-     at('lianhua_hurt02',.52,'target',3.0,.85);
-     if(!fxLite)at('monika_hurt03',.41,'target',3.8,.47,450);
+    case 75800104: // Apollis's radiance, shifted cosmic purple
+     at('sonia_chaos_collapse',.64,'target',1.1,.96);
      break;
    }
    return true;
