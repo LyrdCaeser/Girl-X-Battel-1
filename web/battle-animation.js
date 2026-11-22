@@ -192,9 +192,13 @@ const rigBounds=(cleanWidth>0&&cleanHeight>0)?{width:cleanWidth,height:cleanHeig
    const y=opponents.length?opponents.reduce((sum,f)=>sum+f.y,0)/opponents.length:890;
    const flip=(x<source.x);
    const at=(res,scale,place,speed,alpha,delay=0,clip='texiao01')=>{
-    const figure=place==='caster'?source:null;
-    const px=figure?figure.x:x,py=figure?figure.y:y;
-    const z=py+(place==='caster'?-1:1);
+    // Sonia's lotus guard is a front-facing shield around her torso, not a
+    // ground decal hidden behind her legs at the sprite's foot anchor.
+    const onCaster=place==='caster'||place==='caster-front';
+    const figure=onCaster?source:null;
+    const px=figure?figure.x:x;
+    const py=figure?figure.y-(place==='caster-front'?100:0):y;
+    const z=figure?(place==='caster-front'?figure.y+3:py-1):py+1;
     let timer=null;
     const fire=()=>{if(timer!==null)fxTimers.delete(timer);
       if(!cancelled)void spawn(res,clip,scale,px,py,flip,z,{speed,alpha,maxMs:2300});};
@@ -209,13 +213,13 @@ const rigBounds=(cleanWidth>0&&cleanHeight>0)?{width:cleanWidth,height:cleanHeig
      at('sonia_chaos_orb',.56,'target',2.1,.96);
      break;
     case 75800102: // Izanami's siphon, shifted lavender
-     at('sonia_chaos_siphon',.62,'target',1.4,.94);
+     at('sonia_chaos_siphon',.72,'target',1.3,.98);
      break;
     case 75800103: // Nymphaea's lotus, shifted mauve-violet
-     at('sonia_chaos_guard',.55,'caster',2.2,.96,0,'texiao02');
+     at('sonia_chaos_guard',.72,'caster-front',1.35,1,0,'texiao02');
      break;
     case 75800104: // Apollis's radiance, shifted cosmic purple
-     at('sonia_chaos_collapse',.64,'target',1.1,.96);
+     at('sonia_chaos_collapse',.76,'target',1.05,1);
      break;
    }
    return true;

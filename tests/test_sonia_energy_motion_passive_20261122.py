@@ -30,11 +30,16 @@ class EnergyMotionPassiveTests(unittest.TestCase):
         ):
             self.assertIn(text,self.app)
         self.assertIn('/assets/original-ui/battle_hp_bar1.png',self.css)
-        self.assertIn('.battlefield .unit .unit-ep',self.css)
+        self.assertIn('bar.append(epBar)',self.app)
+        self.assertNotIn('e.append(epBar)',self.app)
+        self.assertIn('.battlefield .unit .hp>.unit-ep',self.css)
+        self.assertIn('top:calc(100% + 1px)!important',self.css)
+        self.assertNotIn('top:calc(24px + 13px)',self.css)
+        self.assertIn('.battlefield .unit.dead .unit-ep{visibility:hidden!important}',self.css)
         self.assertIn("filter:hue-rotate(150deg)",self.css)
         self.assertNotIn("unit-energy-fake",self.app)
-        self.assertIn('style.css?v=20261122-battle-ep-restore-r3',self.html)
-        self.assertIn('app.js?v=20261122-battle-ep-sonia-r6',self.html)
+        self.assertIn('style.css?v=20261122-hp-ep-attached-r4',self.html)
+        self.assertIn('app.js?v=20261122-sonia-passive-visual-r7',self.html)
 
     def test_sonia_idle_attack_skill_motion_is_real_spine(self):
         anim=self.model['animations']
@@ -52,7 +57,7 @@ class EnergyMotionPassiveTests(unittest.TestCase):
         self.assertIn("?'battle_idle':",self.battle)
         self.assertIn("setAnimation(1,'blink',false)",self.battle)
         self.assertIn('soniaBlinkTimers.clear()',self.battle)
-        self.assertIn('battle-animation.js?v=20261122-sonia-motion-passivefx-r5',self.html)
+        self.assertIn('battle-animation.js?v=20261122-sonia-passive-fx-front-r6',self.html)
 
     def test_three_passive_vfx_have_real_event_cues(self):
         for phrase in (
@@ -64,6 +69,10 @@ class EnergyMotionPassiveTests(unittest.TestCase):
             'if(soniaEnergyGained)soniaVisualCue(Number(frame.pos),75800102',
             'if(soniaFinishedEnemy)soniaVisualCue(Number(frame.pos),75800104',
             'if(!skip&&token===battleReplayToken&&battleAnimation===animation)',
+            'const soniaFirstActionVfx=new Set()',
+            'soniaVisualCue(Number(frame.pos),75800102,soniaTargets,frame.round,0)',
+            'soniaVisualCue(Number(frame.pos),75800104,soniaTargets,frame.round,0)',
+            'if(soniaOpening.length&&!skip)await new Promise(resolve=>setTimeout(resolve,620/battleSpeed))',
         ):
             self.assertIn(phrase,self.app)
         self.assertIn('soniaNative[Number(skillId)]',self.battle)

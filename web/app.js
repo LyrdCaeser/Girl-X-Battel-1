@@ -979,7 +979,9 @@ async function replay(report,options={}){
  const petA=report.petA;progress.classList.add('pet-energy');if(petA){const pet=node('span','battle-leader battle-pet');const pi=node('img');pi.alt='';pi.src='/assets/servant/'+(servantAvatars[String(petA.pet_id)]||'pet_avatar_mao_')+(petA.grade||1)+'.png';pet.append(pi);hud.append(pet,progress);}hud.append(speed,jump);progressFill.style.width='0%';field.append(hud);
  const visibleUnits=(report.display_units||[]).filter((u,i,all)=>u&&Number.isInteger(Number(u.pos))&&Number(u.pos)>=1&&Number(u.pos)<=12&&all.findIndex(x=>Number(x?.pos)===Number(u.pos))===i);for(const u of visibleUnits){const e=node('div','unit'+(u.boss&&bb?' boss-unit':'')),xy=battlePositions[u.pos];if(xy){e.style.left=(xy[0]/1080*100)+'%';e.style.top=((1920-xy[1])/1920*100)+'%';}if(artIds.has(u.table_id)){const art=node('img','unit-art');art.src='/assets/characters/'+u.table_id+'.png';art.alt='';art.loading='lazy';e.append(art);}else e.append(portrait(u.table_id,70));const status=node('div','unit-status');status.append(node('span','unit-level',String(u.level||1)));e.title=u.name;const faction=girlsCatalog.find(g=>g.id===u.table_id)?.group;if(faction){const icon=node('img','unit-faction');icon.src=`/assets/factions/${faction}.png`;icon.alt='';status.append(icon);}e.append(status);const bar=node('div','hp'),fill=node('i');fill.style.width='100%';bar.append(fill);e.append(bar);
  const epBar=node('div','unit-ep'),epFill=node('i');epFill.style.width='0%';
- epBar.append(epFill);epBar.setAttribute('aria-label','Năng lượng');e.append(epBar);
+ epBar.append(epFill);epBar.setAttribute('aria-label','Năng lượng');
+ // Attach EP to the actual HP frame; both must follow the same Spine head.
+ bar.append(epBar);
  units.set(u.pos,{element:e,fill,epFill,ep:0,name:u.name,hp:100,tableId:Number(u.table_id)});el(u.pos<=6?'allies':'enemies').append(e);}
  el('line').textContent="Loading original animations…";try{const animation=await ChibiBattle.create(field,visibleUnits,battlePositions,{bossScene:!!bb});if(token!==battleReplayToken){animation.destroy();return;}battleAnimation=animation;animation.speed(battleSpeed);for(const [pos,u] of units){
     if(animation.has(pos)){
@@ -1013,9 +1015,12 @@ async function replay(report,options={}){
     animation.fx(skillId,pos,targets);
   },delay/Math.max(1,battleSpeed));
  }
- for(const [pos,u] of units){
-  if(Number(u.tableId)===758001)soniaVisualCue(pos,75800103,[],0,0);
- }
+ const soniaOpening=[...units].filter(([,u])=>Number(u.tableId)===758001).map(([pos])=>Number(pos));
+ const soniaFirstActionVfx=new Set();
+ for(const pos of soniaOpening)soniaVisualCue(pos,75800103,[],0,0);
+ // Give the opening native lotus shield a visible moment before the very
+ // first attack; it was previously skipped visually by rapid battle frames.
+ if(soniaOpening.length&&!skip)await new Promise(resolve=>setTimeout(resolve,620/battleSpeed));
  for(const frame of report.frames){if(skip||token!==battleReplayToken||(event&&view!=='event-battle'))break;round.textContent='Hiệp '+frame.round;++frameIndex;
  const soniaIsActor=units.get(Number(frame.pos))?.tableId===758001;
  let soniaEnergyGained=false;
@@ -1058,10 +1063,24 @@ async function replay(report,options={}){
      if(typeof buff.hp==='number'&&u.hp>0&&buff.hp<=0)soniaFinishedEnemy=true;
    }
    if(u&&typeof buff.hp==='number'){u.fill.style.width=Math.max(0,Math.min(100,buff.hp))+'%';if(buff.hp<=0&&u.hp>0)battleAnimation?.play(buff.pos,'dead');else if(buff.hp>0&&u.hp<=0)battleAnimation?.play(buff.pos,'revive');else if(buff.hp<u.hp)battleAnimation?.play(buff.pos,'hurt');u.hp=buff.hp;u.element.classList.toggle('dead',buff.hp<=0);if(buff.hp<=0)battleStates.clear(buff.pos);}}
-  // Izanami visual when real Sonia energy rises; Apollis on actual enemy
-  // defeat. Passives that are not activated by Lua do not claim any stats.
-  if(soniaEnergyGained)soniaVisualCue(Number(frame.pos),75800102,soniaTargets,frame.round,90);
-  if(soniaFinishedEnemy)soniaVisualCue(Number(frame.pos),75800104,soniaTargets,frame.round,460);
+  // Passive illustrations reflect a REAL Sonia action, without modifying
+  // server-side passive triggers, HP, EP, damage, counters or buffs. Previously
+  // the Izanami/Apollis visuals were invisible in short battles because EP
+  // / kills were not always emitted as separate frame events. On the first
+  // Sonia action, present their native Spine motifs in sequence (never
+  // stacked), then use real subsequent EP gain / kills for repeats.
+  if(soniaIsActor&&Number(frame.skill_id)>0&&!soniaFirstActionVfx.has(Number(frame.pos))){
+    soniaFirstActionVfx.add(Number(frame.pos));
+    soniaVisualCue(Number(frame.pos),75800102,soniaTargets,frame.round,0);
+    await new Promise(resolve=>setTimeout(resolve,1020/battleSpeed));
+    if(skip||token!==battleReplayToken)break;
+    soniaVisualCue(Number(frame.pos),75800104,soniaTargets,frame.round,0);
+    await new Promise(resolve=>setTimeout(resolve,810/battleSpeed));
+    if(skip||token!==battleReplayToken)break;
+  }else{
+    if(soniaEnergyGained)soniaVisualCue(Number(frame.pos),75800102,soniaTargets,frame.round,80);
+    if(soniaFinishedEnemy)soniaVisualCue(Number(frame.pos),75800104,soniaTargets,frame.round,380);
+  }
   await new Promise(resolve=>setTimeout(resolve,
    (soniaTiming?Math.max(240,soniaTiming.duration-soniaTiming.impact):(frame.skill_id>0?790:240))/battleSpeed));
  }
