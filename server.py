@@ -567,6 +567,12 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
             server_id = (parse_qs(parsed.query).get('server_id') or [ctx['account']['server_id']])[0]
             rows = live_service.online_players(server_id)
             return self.send(200, {'server_id': server_id, 'count': len(rows), 'players': rows})
+        if path == '/api/soul-land/ranking':
+            # Only real players in this authenticated world; no bot fallback.
+            account = self.auth_context()['account']
+            return self.send(200, {'server_id': account['server_id'],
+                                   'ranking': live_service.soul_land_ranking(
+                                       account['server_id'], account['uid'])})
         if path == '/api/leaderboard':
             ctx = self.auth_context()
             query = parse_qs(parsed.query)

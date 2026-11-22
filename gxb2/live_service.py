@@ -533,6 +533,81 @@ def house_exam_ranking(server_id, season, current_uid="", fort=0, limit=100):
     return board[:limit]
 
 
+def soul_land_ranking(server_id, current_uid="", limit=100):
+    """Read-only, server-scoped Soul Land standings from real saved profiles.
+
+    The rank is exactly the number of first-time stages cleared in the three
+    original forts. Neither the legacy bot cast nor GM-generated names are used.
+    Called when a player actually opens the ranking, not on every state poll.
+    """
+    from . import soul_land
+    server_id = str(server_id or "").strip().upper()
+    current_uid = str(current_uid or "").strip()
+    limit = max(1, min(100, int(limit)))
+    with _lock:
+        db = _db()
+        try:
+            if db.backend == "postgres":
+                cleared_expr = "pp.data::jsonb #> '{soul_land,cleared}'"
+                avatar_expr = "pp.data::jsonb #>> '{profile,avatar}'"
+            else:
+                cleared_expr = "json_extract(pp.data,'$.soul_land.cleared')"
+                avatar_expr = "json_extract(pp.data,'$.profile.avatar')"
+            rows = db.execute(f"""SELECT p.uid,p.server_id,p.character_name,
+                          COALESCE(l.level,1) AS level,
+                          COALESCE(l.power,0) AS power,
+                          {cleared_expr} AS cleared,
+                          {avatar_expr} AS avatar
+                          FROM players p
+                          JOIN player_profiles pp
+                            ON pp.uid=p.uid AND pp.server_id=p.server_id
+                          LEFT JOIN leaderboard l
+                            ON l.uid=p.uid AND l.server_id=p.server_id
+                          WHERE p.server_id=? AND p.status='active'""",
+                          (server_id,)).fetchall()
+        finally:
+            db.close()
+    board=[]
+    for item in rows:
+        try:
+            cleared = item['cleared']
+            if isinstance(cleared,str):
+                cleared = json.loads(cleared)
+            if not isinstance(cleared,dict):
+                continue
+            score=0
+            for fort in (1,2,3):
+                last=int(cleared.get(str(fort)) or 0)
+                start=soul_land.first_stage(fort)
+                # A completed fort has 50 consecutive stages: malformed
+                # values do not create impossible scores or fictitious ranks.
+                if last and start <= last < start + 50 and (
+                    str(last) in soul_land.LAND and
+                    int(soul_land.LAND[str(last)]['fort_id']) == fort
+                ):
+                    score += last-start+1
+            if score <= 0:
+                continue
+            name=str(item['character_name'] or '').strip()
+            if not name:
+                continue
+            uid=str(item['uid'])
+            board.append({'uid':uid, 'server_id':server_id,
+                          'character_name':name,'level':max(1,int(item['level'] or 1)),
+                          'power':max(0,int(item['power'] or 0)),
+                          'score':score,'avatar':str(item['avatar'] or 'head_1001')})
+        except (TypeError,ValueError,KeyError,AttributeError):
+            continue
+    board.sort(key=lambda p:(-p['score'],-p['power'],-p['level'],p['character_name'].casefold(),p['uid']))
+    for rank,player in enumerate(board,1):
+        player['rank']=rank
+        player['me']=player['uid']==current_uid
+    # Public ranking only exposes display information and the current rank,
+    # not internal account identifiers or private saved state.
+    return [{k:v for k,v in row.items() if k not in ('uid','power')}
+            for row in board[:limit]]
+
+
 def shrine_ranking(server_id, season, current_uid="", limit=100):
     """Live, authenticated-world leaderboard from real Neon player profiles."""
     server_id = str(server_id or "").strip().upper()

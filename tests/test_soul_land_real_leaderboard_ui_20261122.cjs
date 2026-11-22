@@ -1,0 +1,17 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs');
+const script=fs.readFileSync('web/bots.js','utf8');
+const html=fs.readFileSync('web/index.html','utf8');
+const server=fs.readFileSync('server.py','utf8');
+const land=fs.readFileSync('web/soul-land.js','utf8');
+const backend=fs.readFileSync('gxb2/bots.py','utf8');
+assert(script.includes("if(kind!=='soul_land')"));
+assert(script.includes("api('/api/soul-land/ranking')"));
+assert(script.includes("Array.isArray(data.ranking)?data.ranking:[]"));
+assert(script.includes("realAvatar(r.avatar)"));
+assert(script.includes('Chưa có người chơi nào vượt ải'));
+assert(!backend.includes("'soul_land': rank('soul_land'"));
+assert(server.includes("if path == '/api/soul-land/ranking':"));
+assert(land.includes("Bots.open('soul_land','Xếp Hạng')"));
+assert(html.includes('/bots.js?v=20261122-soul-land-real-rank-r1'));
+console.log('PASS: Soul Land clicks query authenticated real ranking, no fake snapshot fallback.');
