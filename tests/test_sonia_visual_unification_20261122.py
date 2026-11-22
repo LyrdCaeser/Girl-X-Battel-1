@@ -50,8 +50,14 @@ class SoniaVisualUnificationTests(unittest.TestCase):
         self.assertIn("Number(imageId)===758001&&!hasSkinCard&&!hasSkinPicture", app)
         self.assertIn("s.base&&Number(hero.table_id)===758001", skins)
         self.assertIn('girl-card[data-group="8"] .girl-faction.faction-8', css)
-        for file in ('app.js', 'skins.js', 'girl-ui.css'):
-            self.assertIn('/' + file + '?v=20261122-sonia-unified-r1', html)
+        # The app/portrait sheet version advances when later Sonia-only
+        # visual fixes ship; the skins script remains on the unified release.
+        for file, version in (
+            ('app.js', '20261122-sonia-bottom-fill-r1'),
+            ('skins.js', '20261122-sonia-unified-r1'),
+            ('girl-ui.css', '20261122-sonia-bottom-fill-r1'),
+        ):
+            self.assertIn('/' + file + '?v=' + version, html)
 
 
 if __name__ == '__main__':
