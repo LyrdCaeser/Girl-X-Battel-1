@@ -17,7 +17,7 @@ const Skins=(()=>{
  function baseName(hero){const st=Number(hero.stars||hero.star||0);return st>=15?'15★':st>=13?'13★':st>=10?'10★':st>=6?'Thức Tỉnh':'Mặc Định';}
  function card(s,hero,{on,worn,own}){const c=btn('sk-card'+(on?' on':''),'',()=>{sel=s.id;previewSkinId=s.base?null:s.id;renderGirlDetail();});
   const art=el('div','sk-pic');const baseId=typeof artId==='function'?artId(hero.table_id):hero.table_id;const src=s.base?(cardIds.has(baseId)?'/assets/cards/partner_card_'+baseId+'.png':detailImage(baseId)||detailImage(hero.table_id)):'/assets/skins/cards/'+s.id+'.webp';
-  art.style.backgroundImage=`url('${src}')`+(s.base?'':`,url('${detailImage(s.id)}')`);c.append(art,el('i','sk-frame'));
+  const displaySrc=s.base&&Number(hero.table_id)===758001?src+'?v=20261122-sonia-art-r1':src;art.style.backgroundImage=`url('${displaySrc}')`+(s.base?'':`,url('${detailImage(s.id)}')`);c.append(art,el('i','sk-frame'));
   const g=Number(hero.group||girlsCatalog.find(r=>r.id===hero.table_id)?.group||0);if(g){const f=el('img','sk-group');f.src=U+'img_group'+g+'.png';f.alt='';c.append(f);}
   if(worn){const w=el('img','sk-worn');w.src=U+'skin_icon01.png';w.alt='✓';c.append(w);}
   if(!s.base){if(own)c.append(el('span','sk-unlocked','Đã sở hữu vĩnh viễn'));const r=Number(s.rarity||0);if(r){const q=el('span','sk-rarity',RARITY[r]);q.style.backgroundImage=`url('${U}collection_dress_new_bg_${r}.png')`;c.append(q);}}

@@ -57,6 +57,7 @@ PARTNER = {
 def register(tables):
     """Inject local records without rewriting the publisher's recovered tables."""
     tables['partner'][str(PARTNER_ID)] = dict(PARTNER)
+    tables['names'][str(PARTNER_ID)] = PARTNER['name']  # real roster/battle label
     for summon_id, count in SUMMON_COUNTS.items():
         tables['summon'][str(summon_id)] = {
             'id': summon_id, 'summon_num': count, 'cost': f'{TICKET_ID}#{count}',

@@ -409,3 +409,12 @@ html.gxb-mobile #app-frame #girl-detail-view #detail-art[src$="/758001.png"]:not
  object-fit:contain!important;
  object-position:center top!important;
 }
+/* Lyr Sonia Chaos faction badge matches the purple Hệ Hỗn Độn
+   icon in the filter and detail sheet, without teal art bleed-through. */
+.girls-grid .girl-card[data-group="8"] .girl-faction.faction-8{
+ background-color:#f5efff;
+ background-size:contain;
+ background-position:center;
+ border-radius:50%;
+ box-shadow:0 0 0 1px #a798d3;
+}
