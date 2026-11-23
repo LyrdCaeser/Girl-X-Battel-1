@@ -38,7 +38,7 @@ const EventsHub=(()=>{
   .replace(/\bLeft\b/g,'Còn lại').replace(/\bCompleted\b/g,'Đã hoàn thành');
  };
  let catalog=null,loading=null,tab='ex',selected=null,pinnedId=null,origin='home',pending=false,message='',visited=false;
- let publicGemPacks=null,publicGemPacksLoading=false,soniaView=null,soniaDraws=[],soniaMissionTab='free';
+ let publicGemPacks=null,publicGemPacksLoading=false,soniaView=null,soniaDraws=[],soniaMissionTab='free',soniaClockSpinning=false,soniaClockIndex=-1;
  function loadPublicGemPacks(){
    if(publicGemPacks!==null||publicGemPacksLoading)return;
    publicGemPacksLoading=true;
@@ -87,7 +87,7 @@ const EventsHub=(()=>{
   const soniaCalendar=state.sonia_festival_info?.events;
   if(soniaCalendar){
    sec('Lễ Hội Lyr Sonia','✦');
-   for(const [kind,label]of [['stars','Thức Tỉnh nhận quà'],['shards','Vòng quay mảnh'],['missions','Hành trình Vé Lyr Sonia']]){
+   for(const [kind,label]of [['stars','Thức Tỉnh nhận quà'],['shards','Vòng Quay Kim Đồng Hồ'],['missions','Hành trình Vé Lyr Sonia']]){
     const info=soniaCalendar[kind];if(info)row(label,info.active?'Còn '+leftText(info.end):info.end<=Date.now()/1000?'Đã kết thúc':'Sắp diễn ra',info.active?'open':'future');
    }
   }
@@ -101,7 +101,29 @@ const EventsHub=(()=>{
  function listAll(){return catalog.activities.filter(a=>inTab(a,tab)&&!(a.id===116&&hub().sevenday.done&&!cal()?.exclusive_s4)).sort((a,b)=>(WORKING.has(b.id)-WORKING.has(a.id))||(b.rank-a.rank)||(b.id-a.id));}
 
  function open(from){origin=from||'home';soniaView=null;message='';showView('events');if(!catalog&&!loading)loading=Promise.all([api('/assets/events/catalog.json'),typeof ActKit!=='undefined'?ActKit.load():null]).then(([c])=>{catalog=c;if(typeof ActKit!=='undefined')ActKit.ids().forEach(i=>WORKING.add(i));render();}).catch(e=>{message=e.message;loading=null;render();});if(!visited){visited=true;send({action:'visit'},true);}}
- async function send(request,quiet=false){if(pending)return;pending=true;if(!quiet){message='Đang lưu…';render();}try{const r=await api('/api/events/action',request);state=r.state;const got=Object.entries(r.awards||{});if(request.action==='sonia_spin')soniaDraws=r.draws||[];message=got.length?"Đã nhận: "+got.map(([k,n])=>fmt(n)+' × '+itemName(k)).join(', '):(quiet?'':"Đã lưu.");if(got.length&&!quiet&&typeof GirlUI!=='undefined')GirlUI.toast(message);}catch(e){message=e.message;}finally{pending=false;render();if(typeof window.render==='function')window.render();}}
+ async function send(request,quiet=false){
+  if(pending)return;
+  pending=true;
+  if(!quiet){message=request.action==='sonia_spin'?'Kim đồng hồ đang xoay…':'Đang lưu…';render();}
+  try{
+    const r=await api('/api/events/action',request);
+    state=r.state;
+    const got=Object.entries(r.awards||{});
+    if(request.action==='sonia_spin'){
+      // The server chooses every prize. The clock merely points at the last
+      // confirmed prize; it never makes or modifies a draw on the client.
+      soniaDraws=Array.isArray(r.draws)?r.draws:[];
+      const odds=state.sonia_festival_info?.wheel?.odds||[];
+      soniaClockIndex=odds.findIndex(o=>o.label===soniaDraws[soniaDraws.length-1]?.name);
+    }
+    message=got.length?"Đã nhận: "+got.map(([k,n])=>fmt(n)+' × '+itemName(k)).join(', '):(quiet?'':"Đã lưu.");
+    if(got.length&&!quiet&&typeof GirlUI!=='undefined')GirlUI.toast(message);
+  }catch(e){message=e.message||'Chưa thể quay. Hãy thử lại nhé!';}
+  finally{
+    if(request.action==='sonia_spin')soniaClockSpinning=false;
+    pending=false;render();if(typeof window.render==='function')window.render();
+  }
+}
 
  function render(){
   const root=$('events-view');if(!root||view!=='events')return;root.replaceChildren();
@@ -125,20 +147,20 @@ const EventsHub=(()=>{
   const sf=state.sonia_festival_info;
   if(tab==='ex'&&sf){
     const menu=el('nav','ev-strip sf-strip');
-    for(const [id,label] of [['stars','Lễ Hội Thức Tỉnh'],['shards','Vòng Quay Mảnh'],['missions','Chinh Phục Nhiệm Vụ']]){
+    for(const [id,label] of [['stars','Lễ Hội Thức Tỉnh'],['shards','Vòng Quay Kim Đồng Hồ'],['missions','Chinh Phục Nhiệm Vụ']]){
       const open=sf.events[id];
-      const button=el('button','ev-title'+(soniaView===id?' on':''));
+      const button=el('button','ev-title'+(soniaView===id?' on':'')+(id==='shards'?' sf-clock-tab':''));
       button.type='button';button.title=label;
       const miniArt={
         stars:'/assets/girl-ui/potentiality_nametag_star_max.png',
-        shards:'/assets/item-icons/partner_avatar_758001.png',
+        shards:'/assets/events/icon_activity_clock.png',
         missions:'/assets/factions/8.png'
       };
       button.append(img(A(soniaView===id?'activity_icon_1_middle':'activity_icon_0_middle'),'ev-title-bg'),
         img(miniArt[id],'ev-title-icon sf-event-art',label),
         el('span','ev-title-label',label));
       if(open?.active)button.append(el('small','ev-title-left',leftText(open.end)));
-      button.onclick=()=>{soniaView=id;message='';soniaDraws=[];render();};
+      button.onclick=()=>{soniaView=id;message='';soniaDraws=[];soniaClockIndex=-1;soniaClockSpinning=false;render();};
       menu.append(button);
     }
     panel.append(menu);
@@ -159,16 +181,65 @@ const EventsHub=(()=>{
   const status=el('p','ev-status',message);status.setAttribute('role','status');panel.append(status);
  }
 
+ // The 12-hour face is a visual celebration, not a uniform-odds wheel.
+ // Prize probabilities are shown separately and come unchanged from Neon.
+ function soniaClockFace(odds){
+  const stage=el('section','sf-clock-stage');
+  stage.append(el('h3','sf-clock-heading','✦ Vòng Quay Kim Đồng Hồ ✦'),
+    el('p','sf-clock-kicker','Mỗi vòng kim xoay, một điều ước được gửi tới Sonia'));
+  const dial=el('div','sf-clock-dial'+(soniaClockSpinning?' is-spinning':'')+
+    (soniaClockIndex>=0&&!soniaClockSpinning?' is-landed':''));
+  dial.setAttribute('role','img');
+  dial.setAttribute('aria-label','Đồng hồ Lyr Sonia với sáu phần thưởng và kim đồng hồ');
+  const marks=el('div','sf-clock-marks');
+  for(let i=0;i<12;i++){
+    const mark=el('i','sf-clock-mark'+(i%3===0?' major':''));
+    mark.style.setProperty('--hour',i);
+    marks.append(mark);
+  }
+  dial.append(marks);
+  for(let i=0;i<odds.length;i++){
+    const award=odds[i]?.awards||{};
+    const id=Object.keys(award)[0];
+    const item=el('div','sf-clock-prize'+(i===soniaClockIndex&&!soniaClockSpinning?' selected':''));
+    item.style.setProperty('--prize-index',i);
+    item.title=odds[i].label;
+    item.append(img(eventPrizeImage(id),'sf-clock-prize-icon',odds[i].label));
+    dial.append(item);
+  }
+  const hand=el('div','sf-clock-hand');
+  const angle=soniaClockIndex>=0?soniaClockIndex*60:0;
+  hand.style.setProperty('--clock-angle',angle+'deg');
+  hand.append(el('span','sf-clock-pointer'),el('span','sf-clock-tail'));
+  dial.append(hand);
+  const center=el('div','sf-clock-center');
+  center.append(img('/assets/item-icons/partner_avatar_758001.png','', 'Lyr Sonia'),
+    el('b','','SONIA'));
+  dial.append(center);
+  const crown=el('div','sf-clock-crown');
+  crown.append(img('/assets/events/icon_activity_clock.png','','Kim Đồng Hồ'));
+  stage.append(dial,crown);
+  return stage;
+ }
+ function eventPrizeImage(id){
+  id=String(id);
+  const fixed={'940061':'/assets/item-icons/partner_avatar_758001.png',
+   '1':'/assets/currency/icon_1_small.png',
+   '9':'/assets/item-icons/icon_9.png',
+   '10':'/assets/item-icons/icon_10.png'};
+  return fixed[id]||(typeof itemPicture==='function'&&itemCatalog?.[id]?
+    itemPicture(itemCatalog[id]):catalog?.item_icons?.[id])||'/assets/item-icons/icon_10.png';
+ }
  function soniaFestival(parent,kind,festival){
   const info=festival.events[kind];
-  const title={stars:'Lễ Hội Thức Tỉnh',shards:'Vòng Quay Mảnh',missions:'Chinh Phục Nhiệm Vụ'}[kind];
-  const section=el('div','sf-banner');
+  const title={stars:'Lễ Hội Thức Tỉnh',shards:'Vòng Quay Kim Đồng Hồ',missions:'Chinh Phục Nhiệm Vụ'}[kind];
+  const section=el('div','sf-banner'+(kind==='shards'?' sf-clock-banner':''));
   section.append(img('/assets/cards/partner_card_758001.png','sf-hero','Lyr Sonia'));
   const text=el('div','sf-banner-copy');
-  text.append(el('h2','',title),el('p','',kind==='stars'?'Thức Tỉnh Lyr Sonia · Rinh quà theo từng mốc sao':kind==='shards'?'Thử vận may, sưu tầm mảnh Sonia':'Vượt thử thách để nhận Vé Lyr Sonia'));
+  text.append(el('h2','',title),el('p','',kind==='stars'?'Thức Tỉnh Lyr Sonia · Rinh quà theo từng mốc sao':kind==='shards'?'Kim đồng hồ xoay · Vận may ghé thăm · Sưu tầm mảnh Sonia':'Vượt thử thách để nhận Vé Lyr Sonia'));
   text.append(el('b','sf-time',info.active?'Còn '+leftText(info.end):Date.now()/1000>=info.end?'Sự kiện đã khép lại':'Sắp mở cửa'));
   section.append(text);parent.append(section);
-  const rows=el('div','pe-list sf-list');parent.append(rows);
+  const rows=el('div','pe-list sf-list'+(kind==='shards'?' sf-clock-reward-grid':''));
   const icon=(id,n)=>{id=String(id);const node=el('div','sf-reward');
     const kind={'940060':'Vé Sonia','940061':'Mảnh Sonia','10':'Hộp cơm','2':'Kim cương','1':'Vàng'};
     const path={'940060':'/assets/factions/8.png','940061':'/assets/item-icons/partner_avatar_758001.png',
@@ -181,6 +252,7 @@ const EventsHub=(()=>{
     node.append(image,el('small','',('×'+fmt(n))));
     if(kind[id])node.append(el('span','sf-reward-name',kind[id]));
     return node;};
+  if(kind!=='shards')parent.append(rows);
   if(kind==='stars'){
     parent.append(el('p','ev-note','Mỗi mốc Thức Tỉnh nhận quà một lần trong mùa. Ảnh Sonia trong phần thưởng là MẢNH, không phải Nữ Thần nguyên con; đủ 100 mảnh mới ghép được một Lyr Sonia.'));
     parent.append(el('p','sf-progress','Sonia cao nhất đang sở hữu: '+festival.highest_owned_star+'★ · Đã nâng trong mùa: '+festival.highest_awakened_star+'★'));
@@ -193,20 +265,51 @@ const EventsHub=(()=>{
     }
   }else if(kind==='shards'){
     const w=festival.wheel;
-    parent.append(el('p','ev-note','Mỗi lượt quay đều có quà. Mảnh Lyr Sonia hiếm xuất hiện; đủ 100 mảnh có thể ghép một Lyr Sonia 10★.'));
-    parent.append(el('p','sf-progress','Đã quay '+w.spins+'/'+w.cap+' lượt trong mùa · Mảnh hiện có: '+fmt(state.items['940061']||0)+'/100'));
-    const actions=el('div','sf-spin-buttons');
+    parent.append(soniaClockFace(w.odds));
+    const progress=el('div','sf-clock-progress');
+    progress.append(
+      el('span','','Lượt kim đã xoay '),el('b','',fmt(w.spins)+' / '+fmt(w.cap)),
+      el('span','','Mảnh Sonia '),el('b','',fmt(state.items['940061']||0)+' / 100')
+    );
+    parent.append(progress);
+    const actions=el('div','sf-spin-buttons sf-clock-spin-buttons');
     for(const count of [5,10]){
-      const b=el('button','sf-btn',count+' lượt · '+fmt(w.costs[count])+' Kim Cương');
-      b.type='button';b.disabled=pending||!w.can||w.spins+count>w.cap||Number(state.items['2']||0)<w.costs[count];
-      b.onclick=()=>{soniaDraws=[];send({action:'sonia_spin',count});};actions.append(b);
+      const b=el('button','sf-btn sf-clock-spin-btn');
+      b.type='button';
+      b.append(el('strong','',count===5?'Quay 5 lượt':'Quay 10 lượt'),
+        el('span','sf-clock-cost','✧ '+fmt(w.costs[count])+' Kim Cương'));
+      b.disabled=pending||!w.can||w.spins+count>w.cap||Number(state.items['2']||0)<w.costs[count];
+      b.onclick=()=>{
+        if(pending)return;
+        soniaDraws=[];soniaClockIndex=-1;soniaClockSpinning=true;
+        send({action:'sonia_spin',count});
+      };
+      actions.append(b);
     }
     parent.append(actions);
-    if(soniaDraws.length){const won=el('div','sf-won');won.append(el('h3','','Phần quà vừa nhận'));
-      const batch=el('div','sf-result-list');for(const item of soniaDraws)batch.append(el('span','',item.name));won.append(batch);parent.append(won);}
-    parent.append(el('h3','sf-subtitle','Quà trong vòng quay'));
-    for(const r of w.odds){const row=el('div','pe-row sf-row');row.append(el('b','',r.label),el('span','sf-chance',r.chance.toLocaleString('vi-VN')+'%'));rows.append(row);}
-    parent.append(el('p','ev-note','Tỷ lệ của từng quà được ghi rõ. Không có vé triệu hồi hoặc Kim Cương trong vòng quay này.'));
+    if(soniaDraws.length){
+      const won=el('div','sf-won sf-clock-won');
+      won.append(el('h3','','✦ Quà Kim Đồng Hồ vừa mang tới ✦'));
+      const batch=el('div','sf-clock-result-list');
+      for(const reward of soniaDraws){
+        const id=Object.keys(reward.awards||{})[0];
+        const prize=el('div','sf-clock-result');
+        prize.append(img(eventPrizeImage(id),'',reward.name),el('span','',reward.name));
+        batch.append(prize);
+      }
+      won.append(batch);parent.append(won);
+    }
+    parent.append(el('h3','sf-clock-subtitle','✦ Kho báu của Kim Đồng Hồ ✦'));
+    for(const r of w.odds){
+      const row=el('div','sf-clock-odds-card');
+      const id=Object.keys(r.awards||{})[0];
+      row.append(img(eventPrizeImage(id),'sf-clock-odds-icon',r.label),
+       el('b','',r.label),el('strong','sf-clock-odds-number',r.chance.toLocaleString('vi-VN')+'%'));
+      rows.append(row);
+    }
+    parent.append(rows);
+    parent.append(el('p','sf-clock-footnote',
+      'Kim đồng hồ minh họa các phần quà; cơ hội nhận từng quà được ghi rõ bên dưới. Mỗi lượt đều có quà. Đủ 100 mảnh có thể ghép một Lyr Sonia 10★.'));
   }else{
     parent.append(el('p','ev-note','Nhiệm vụ khó và cực khó · Chỉ tính chiến công trong mùa lễ hội. Hoàn thành và nhận quà trước giờ kết thúc từng nhiệm vụ.'));
     parent.append(el('p','sf-progress','120 Vé Lyr Sonia qua thử thách · Tối đa 350 Vé qua quà nạp đã duyệt trong 30 ngày.'));

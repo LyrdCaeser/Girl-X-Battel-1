@@ -208,3 +208,240 @@ html.gxb-mobile #events-view .ev-title-label{overflow-wrap:anywhere}
  border:2px solid #98a9d6;border-radius:9px;padding:calc(12 * var(--u)) calc(8 * var(--u));
  background:linear-gradient(#fff,#d8e7f6);color:#415e97;font-weight:900}
 .sf-mission-tabs .ev-tab.on{color:#fff;border-color:#8790d8;background:linear-gradient(#8e9ce9,#5174ce)}
+
+/* Lyr Sonia: the Kim Đồng Hồ event, nested inside the game's original
+   ActivityWindow frame. The server still owns all prize draws and odds. */
+.sf-strip .sf-clock-tab .ev-title-label{
+  font-size:calc(14 * var(--u));bottom:15%;line-height:1.08;
+  max-width:96%;left:2%;right:2%;white-space:normal
+}
+.sf-strip .sf-clock-tab .sf-event-art{
+  width:calc(56 * var(--u));height:calc(56 * var(--u));
+  filter:drop-shadow(0 1px 3px #ebd69c)
+}
+.sf-clock-stage{
+  position:relative;isolation:isolate;overflow:hidden;text-align:center;
+  padding:calc(16 * var(--u)) calc(6 * var(--u)) calc(30 * var(--u));
+  background:radial-gradient(ellipse at 50% 56%,#7168b5 0%,#372967 55%,#241b49 100%);
+  border-top:calc(5 * var(--u)) solid #edcf85;
+  border-bottom:calc(5 * var(--u)) solid #edcf85;
+}
+.sf-clock-stage:before,.sf-clock-stage:after{
+  content:"✦";position:absolute;color:#f6e0a5;opacity:.6;
+  font-size:calc(54 * var(--u));top:43%
+}
+.sf-clock-stage:before{left:calc(15 * var(--u))}
+.sf-clock-stage:after{right:calc(15 * var(--u))}
+.sf-clock-heading{
+  position:relative;margin:0 auto calc(3 * var(--u));
+  width:max-content;max-width:97%;
+  color:#fff0ae;font-size:calc(34 * var(--u));font-weight:900;
+  line-height:1.25;text-shadow:0 2px 4px #291338,0 0 11px #a684e4
+}
+.sf-clock-kicker{
+  color:#ece0ff;margin:0 0 calc(17 * var(--u));
+  font-size:calc(21 * var(--u));font-weight:750;line-height:1.3
+}
+.sf-clock-dial{
+  position:relative;box-sizing:border-box;
+  width:min(calc(548 * var(--u)),94%);aspect-ratio:1;margin:auto;
+  border:calc(11 * var(--u)) solid #e4b957;border-radius:50%;
+  box-shadow:0 0 0 calc(5 * var(--u)) #fff0b2,
+    0 0 0 calc(11 * var(--u)) #7960a2,
+    inset 0 0 0 calc(8 * var(--u)) #6b407b,
+    inset 0 0 calc(30 * var(--u)) #1e1649,
+    0 calc(10 * var(--u)) calc(28 * var(--u)) #0b082088;
+  background:radial-gradient(circle at center,#e5cfff 0 15%,transparent 16%),
+   repeating-conic-gradient(from -15deg,transparent 0deg 29.2deg,
+     #b8a2d14d 29.3deg 30deg),
+   conic-gradient(from 0deg,#d5b0eb,#b19cdb,#e2c9f0,#8b8dca,
+     #d6b1e5,#b1a3d3,#d5b0eb)
+}
+.sf-clock-dial:before{
+  content:"";position:absolute;inset:calc(15 * var(--u));border-radius:50%;
+  border:calc(3 * var(--u)) solid #fff1cc;
+  box-shadow:0 0 calc(14 * var(--u)) #f5d99d99,
+  inset 0 0 calc(28 * var(--u)) #60458288
+}
+.sf-clock-marks{position:absolute;inset:0}
+.sf-clock-mark{
+  position:absolute;inset:calc(6 * var(--u));
+  transform:rotate(calc(var(--hour) * 30deg));
+  pointer-events:none
+}
+.sf-clock-mark:before{
+  content:"";position:absolute;top:calc(12 * var(--u));left:50%;
+  width:calc(4 * var(--u));height:calc(19 * var(--u));border-radius:3px;
+  background:#fce7b1;box-shadow:0 1px 2px #472b5a;
+  transform:translateX(-50%)
+}
+.sf-clock-mark.major:before{width:calc(7 * var(--u));height:calc(27 * var(--u));background:#fff7d8}
+.sf-clock-prize{
+  position:absolute;top:50%;left:50%;z-index:3;
+  width:calc(85 * var(--u));height:calc(85 * var(--u));
+  display:grid;place-items:center;box-sizing:border-box;
+  border:calc(4 * var(--u)) solid #f4d68a;border-radius:calc(15 * var(--u));
+  background:linear-gradient(145deg,#fff9db,#dfd0f4);
+  box-shadow:0 calc(3 * var(--u)) calc(9 * var(--u)) #45316a9c;
+  transform:translate(-50%,-50%) rotate(calc(var(--prize-index) * 60deg))
+    translateY(calc(-178 * var(--u)))
+    rotate(calc(var(--prize-index) * -60deg));
+}
+.sf-clock-prize.selected{
+  border-color:#fff9d0;box-shadow:0 0 calc(17 * var(--u)) calc(7 * var(--u)) #ffe27d;
+  background:linear-gradient(135deg,#ffedb2,#fffdf6)
+}
+.sf-clock-prize-icon{width:88%;height:88%;object-fit:contain;filter:drop-shadow(0 1px 1px #42274f50)}
+.sf-clock-hand{
+  position:absolute;inset:0;z-index:4;pointer-events:none;
+  transform:rotate(var(--clock-angle,0deg));
+  transition:transform .75s cubic-bezier(.24,1.45,.45,1)
+}
+.sf-clock-pointer{
+  position:absolute;top:20%;left:50%;height:30%;width:calc(13 * var(--u));
+  border-radius:100% 100% 18% 18%;
+  background:linear-gradient(90deg,#7e399a,#fce6ae 52%,#8a44b3);
+  clip-path:polygon(50% 0%,100% 30%,82% 100%,18% 100%,0 30%);
+  box-shadow:0 0 calc(9 * var(--u)) #fcecad;
+  transform:translateX(-50%);
+}
+.sf-clock-tail{
+  position:absolute;top:50%;left:50%;width:calc(10 * var(--u));height:calc(12 * var(--u));
+  background:#e9c46c;border-radius:0 0 40% 40%;transform:translateX(-50%)
+}
+.sf-clock-dial.is-spinning .sf-clock-hand{animation:sf-clock-run 1.35s linear infinite}
+.sf-clock-dial.is-landed .sf-clock-hand{
+  animation:sf-clock-stop .95s cubic-bezier(.15,.68,.23,1.02) both
+}
+@keyframes sf-clock-run{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes sf-clock-stop{
+  from{transform:rotate(calc(var(--clock-angle) - 720deg))}
+  to{transform:rotate(var(--clock-angle))}
+}
+.sf-clock-center{
+  position:absolute;z-index:5;top:50%;left:50%;
+  width:calc(112 * var(--u));height:calc(112 * var(--u));
+  transform:translate(-50%,-50%);
+  border:calc(6 * var(--u)) solid #f8e5a8;border-radius:50%;
+  box-shadow:0 0 calc(20 * var(--u)) #fff4e8;
+  background:linear-gradient(#7459ad,#30204d);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  overflow:hidden;box-sizing:border-box
+}
+.sf-clock-center img{width:75%;height:75%;object-fit:contain}
+.sf-clock-center b{
+  color:#fff2b0;font-size:calc(16 * var(--u));margin-top:calc(-8 * var(--u));
+  text-shadow:0 1px 2px #43226b
+}
+.sf-clock-crown{
+  position:relative;display:flex;justify-content:center;margin:calc(-24 * var(--u)) auto 0;
+  height:calc(67 * var(--u));pointer-events:none
+}
+.sf-clock-crown img{height:100%;width:auto;filter:drop-shadow(0 3px 5px #1a113b)}
+.sf-clock-progress{
+  display:grid;grid-template-columns:1fr auto;align-items:center;
+  margin:calc(17 * var(--u)) calc(22 * var(--u));
+  padding:calc(14 * var(--u)) calc(20 * var(--u));
+  border:calc(3 * var(--u)) solid #d4b77c;border-radius:calc(15 * var(--u));
+  background:linear-gradient(160deg,#fffbee,#f0e6ff);
+  color:#645184;font-weight:800;font-size:calc(24 * var(--u));
+  gap:calc(6 * var(--u))
+}
+.sf-clock-progress b{color:#8c4eb0;font-size:calc(27 * var(--u));white-space:nowrap}
+.sf-clock-spin-buttons{margin:calc(10 * var(--u)) calc(12 * var(--u));gap:calc(9 * var(--u))}
+.sf-clock-spin-btn{
+  flex:1 1 calc(245 * var(--u));min-width:0;
+  min-height:calc(101 * var(--u));
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;
+}
+.sf-clock-spin-btn strong{font-size:calc(27 * var(--u));line-height:1.15}
+.sf-clock-cost{font-size:calc(20 * var(--u));color:#fff4ca;white-space:nowrap}
+.sf-clock-won{
+  padding:calc(12 * var(--u));background:#fbf5ff;
+  border:calc(3 * var(--u)) solid #d9b2eb;border-radius:calc(12 * var(--u))
+}
+.sf-clock-won h3,.sf-clock-subtitle{
+  text-align:center;color:#77479d;font-weight:900;font-size:calc(29 * var(--u));
+  margin:calc(14 * var(--u)) calc(10 * var(--u))
+}
+.sf-clock-result-list{
+  display:grid;grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:calc(9 * var(--u))
+}
+.sf-clock-result{
+  text-align:center;display:flex;flex-direction:column;align-items:center;
+  padding:calc(5 * var(--u));border:calc(2 * var(--u)) solid #d9c7ee;
+  border-radius:calc(9 * var(--u));background:linear-gradient(#fff,#eee1ff);
+  min-width:0
+}
+.sf-clock-result img{width:calc(67 * var(--u));height:calc(62 * var(--u));object-fit:contain}
+.sf-clock-result span{
+  color:#6e538e;font-size:calc(15 * var(--u));font-weight:800;
+  overflow-wrap:anywhere;line-height:1.2
+}
+.sf-clock-reward-grid{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  padding:calc(11 * var(--u));gap:calc(10 * var(--u));
+  background:transparent
+}
+.sf-clock-odds-card{
+  display:grid;grid-template-columns:calc(65 * var(--u)) 1fr auto;
+  gap:calc(7 * var(--u));align-items:center;min-width:0;
+  min-height:calc(100 * var(--u));padding:calc(8 * var(--u));
+  box-sizing:border-box;border:calc(3 * var(--u)) solid #d5c0e9;
+  border-radius:calc(13 * var(--u));
+  background:linear-gradient(145deg,#fffefa,#f3e9ff);
+  box-shadow:inset 0 2px 2px #fff,0 2px 5px #9b87b333
+}
+.sf-clock-odds-icon{width:100%;height:calc(66 * var(--u));object-fit:contain}
+.sf-clock-odds-card b{
+  min-width:0;color:#655280;font-size:calc(19 * var(--u));
+  line-height:1.25;overflow-wrap:anywhere
+}
+.sf-clock-odds-number{
+  color:#b251ad;font-size:calc(21 * var(--u));font-weight:900;
+  white-space:nowrap
+}
+.sf-clock-footnote{
+  color:#68567e;font-weight:700;font-size:calc(19 * var(--u));
+  margin:calc(13 * var(--u)) calc(22 * var(--u)) calc(20 * var(--u));
+  line-height:1.45;text-align:center
+}
+@media(max-width:410px){
+ .sf-clock-result-list{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .sf-clock-odds-card{grid-template-columns:calc(58 * var(--u)) 1fr;grid-template-rows:auto auto}
+ .sf-clock-odds-number{grid-column:2;justify-self:start}
+}
+@media(prefers-reduced-motion:reduce){
+ .sf-clock-dial.is-spinning .sf-clock-hand,
+ .sf-clock-dial.is-landed .sf-clock-hand{animation:none}
+}
+/* Keep the long clock-event heading inside its original in-game banner,
+   without covering Sonia's portrait or the red decorative art. */
+.sf-clock-banner{
+  gap:calc(12 * var(--u));min-height:calc(262 * var(--u));
+  background-position:center;align-items:center
+}
+.sf-clock-banner .sf-hero{
+  width:calc(166 * var(--u));height:calc(230 * var(--u));
+  flex:none;border-color:#f9dfa4;
+  box-shadow:0 0 calc(11 * var(--u)) #d9b6ff;
+}
+.sf-clock-banner .sf-banner-copy{
+  padding:calc(14 * var(--u)) calc(14 * var(--u));
+  border:calc(3 * var(--u)) solid #e4ca92;border-radius:calc(13 * var(--u));
+  background:linear-gradient(145deg,#fffcf3f2,#ece0fbf2);
+  box-shadow:0 calc(3 * var(--u)) calc(10 * var(--u)) #5c43884a;
+}
+.sf-clock-banner .sf-banner-copy h2{
+  color:#63418f;font-size:calc(27 * var(--u));line-height:1.15;
+  margin-bottom:calc(6 * var(--u));text-shadow:0 1px 0 #fff;
+}
+.sf-clock-banner .sf-banner-copy p{
+  color:#77608e;font-size:calc(19 * var(--u));font-weight:750;
+  margin-bottom:calc(9 * var(--u));line-height:1.25
+}
+.sf-clock-banner .sf-time{
+  font-size:calc(21 * var(--u));color:#9c5ab3;
+  margin:0;line-height:1.2
+}
