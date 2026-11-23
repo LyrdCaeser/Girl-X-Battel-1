@@ -1,8 +1,11 @@
 """Alchemy / Midas v2 (models/Midas.lua, MidasWindow) offline.
 
-From the client: every day 1 free claim of midas.gold_new[player level] × (1 + vip.extra_midas); then up to
-vip.midas_buy_times purchases (5 at VIP 0), the n-th costing midas_buy_coin[n].cost and giving base × multiple.
-The day follows midas_time_interval (86400); LOCAL: it resets at 00:00 UTC (the server day) and VIP stays 0.
+The recovered native table contains both gold and gold_new (the latter is
+3x higher). GXB3 uses its native gold column as the safer award baseline,
+with diminishing VIP bonus and bounded escalating purchases to prevent a
+single click of Game Assistant from creating billions of Gold. Keep the
+original VIP daily purchase counts and diamond costs.
+Daily reset follows the configured game day.
 """
 from __future__ import annotations
 import json, time
@@ -26,8 +29,20 @@ def vip(state):
 
 
 def base(state, level):
-    row = DATA['gold'].get(str(level)) or DATA['gold'][str(max(int(k) for k in DATA['gold']))]
-    return round(pairs(row)[1] * (1 + vip(state)['extra']))
+    # Native midas.gold is 1/3 of gold_new (verified for all 400 rows).
+    # VIP keeps a real, increasing bonus without the former 5x payout.
+    native = DATA['gold_native']
+    index = max(1, min(int(level), max(int(k) for k in native)))
+    gold = pairs(native[str(index)])[1]
+    extra = max(0.0, float(vip(state)['extra']))
+    return round(gold * (1 + extra / (1 + extra)))
+
+
+def purchase_gold(base_gold, row):
+    # Legacy purchase multiples 5..180 were applied directly, resulting
+    # in 8,382,150,000 Gold for 16 buys at player lv400 / VIP15.
+    # Preserve their ascending order but compress bonus to +5..180%.
+    return round(base_gold * (1 + max(0.0, float(row['multiple'])) / 100))
 
 
 def saved(state, now):
@@ -46,7 +61,7 @@ def snapshot(state, level, now=None):
     times = vip(state)['times']
     nxt = DATA['buy'][m['buys']] if m['buys'] < min(times, len(DATA['buy'])) else None
     return {'base': b, 'free_ready': not m['free'], 'buys': m['buys'], 'times': times,
-            'next_cost': dict([pairs(nxt['cost'])]) if nxt else None, 'next_gold': round(b * float(nxt['multiple'])) if nxt else 0,
+            'next_cost': dict([pairs(nxt['cost'])]) if nxt else None, 'next_gold': purchase_gold(b, nxt) if nxt else 0,
             'reset': (now // 86400 + 1) * 86400}
 
 
@@ -70,7 +85,7 @@ def action(state, request, level, now=None):
             raise ValueError('Faltan gemas')
         items[k] = int(items[k]) - n
         m['buys'] += 1
-        gold = round(b * float(row['multiple']))
+        gold = purchase_gold(b, row)
     else:
         raise ValueError('Acción de alquimia no disponible')
     items['1'] = int(items.get('1', 0)) + gold
