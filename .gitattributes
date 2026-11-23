@@ -53,3 +53,7 @@ web/assets/battle-fx/sonia_chaos_orb/** -filter -diff -merge -text
 web/assets/battle-fx/sonia_chaos_siphon/** -filter -diff -merge -text
 web/assets/battle-fx/sonia_chaos_guard/** -filter -diff -merge -text
 web/assets/battle-fx/sonia_chaos_collapse/** -filter -diff -merge -text
+
+# Exact small owner-provided Lyr Sonia clock artwork (73 KB); store as a
+# normal Git blob so Production updates work without the exhausted LFS quota.
+web/assets/original-ui/sonia_clock_ornate_20261123.webp -filter -diff -merge -text

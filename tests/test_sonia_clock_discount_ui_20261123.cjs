@@ -27,8 +27,8 @@ for(const s of [
  'sf-discount-roll','@media(prefers-reduced-motion:reduce)'
 ])assert(css.includes(s),'Missing discount visuals: '+s);
 assert(!js.includes('Math.random'),'Discount must never be randomized by a mobile browser');
-assert(html.includes('events.js?v=20261123-sonia-discount-first-r8'));
-assert(html.includes('events.css?v=20261123-sonia-discount-first-r8'));
+assert(html.includes('events.js?v=20261123-sonia-ornate-clock-r9'));
+assert(html.includes('events.css?v=20261123-sonia-ornate-clock-r9'));
 assert(server.includes('SPIN_COST={1:1200,5:5800}'));
 assert(server.includes('if verb==\'sonia_discount_draw\':'));
 assert(server.includes('draw=int(generator(100))'));
