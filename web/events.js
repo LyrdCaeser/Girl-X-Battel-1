@@ -38,7 +38,7 @@ const EventsHub=(()=>{
   .replace(/\bLeft\b/g,'Còn lại').replace(/\bCompleted\b/g,'Đã hoàn thành');
  };
  let catalog=null,loading=null,tab='ex',selected=null,pinnedId=null,origin='home',pending=false,message='',visited=false;
- let publicGemPacks=null,publicGemPacksLoading=false,soniaView=null,soniaDraws=[],soniaMissionTab='free',soniaClockSpinning=false,soniaClockIndex=-1;
+ let publicGemPacks=null,publicGemPacksLoading=false,soniaView=null,soniaDraws=[],soniaMissionTab='free',soniaClockSpinning=false,soniaClockIndex=-1,soniaDiscountSpinning=false;
  function loadPublicGemPacks(){
    if(publicGemPacks!==null||publicGemPacksLoading)return;
    publicGemPacksLoading=true;
@@ -104,9 +104,18 @@ const EventsHub=(()=>{
  async function send(request,quiet=false){
   if(pending)return;
   pending=true;
-  if(!quiet){message=request.action==='sonia_spin'?'Kim đồng hồ đang xoay…':'Đang lưu…';render();}
+  if(!quiet){
+    message=request.action==='sonia_spin'?'Kim đồng hồ đang xoay…':
+      request.action==='sonia_discount_draw'?'Kim đồng hồ đang chọn ưu đãi cho bạn…':'Đang lưu…';
+    render();
+  }
   try{
     const r=await api('/api/events/action',request);
+    if(request.action==='sonia_discount_draw'&&!quiet){
+      // The free welcome dial spins once. Its result comes exclusively from
+      // the server, and the pause is only for the original-style animation.
+      await new Promise(resolve=>setTimeout(resolve,900));
+    }
     state=r.state;
     const got=Object.entries(r.awards||{});
     if(request.action==='sonia_spin'){
@@ -116,11 +125,14 @@ const EventsHub=(()=>{
       const odds=state.sonia_festival_info?.wheel?.odds||[];
       soniaClockIndex=odds.findIndex(o=>o.label===soniaDraws[soniaDraws.length-1]?.name);
     }
-    message=got.length?"Đã nhận: "+got.map(([k,n])=>fmt(n)+' × '+itemName(k)).join(', '):(quiet?'':"Đã lưu.");
+    message=request.action==='sonia_discount_draw'?
+      'Chúc mừng! Kim Đồng Hồ tặng bạn giảm '+fmt(r.discount_percent)+'% cho lần quay đầu tiên.':
+      got.length?"Đã nhận: "+got.map(([k,n])=>fmt(n)+' × '+itemName(k)).join(', '):(quiet?'':"Đã lưu.");
     if(got.length&&!quiet&&typeof GirlUI!=='undefined')GirlUI.toast(message);
   }catch(e){message=e.message||'Chưa thể quay. Hãy thử lại nhé!';}
   finally{
     if(request.action==='sonia_spin')soniaClockSpinning=false;
+    if(request.action==='sonia_discount_draw')soniaDiscountSpinning=false;
     pending=false;render();if(typeof window.render==='function')window.render();
   }
 }
@@ -160,7 +172,16 @@ const EventsHub=(()=>{
         img(miniArt[id],'ev-title-icon sf-event-art',label),
         el('span','ev-title-label',label));
       if(open?.active)button.append(el('small','ev-title-left',leftText(open.end)));
-      button.onclick=()=>{soniaView=id;message='';soniaDraws=[];soniaClockIndex=-1;soniaClockSpinning=false;render();};
+      button.onclick=()=>{
+        soniaView=id;message='';soniaDraws=[];soniaClockIndex=-1;
+        soniaClockSpinning=false;render();
+        // New participants get one complimentary DISCOUNT draw automatically;
+        // it does not count toward prize spins and never spends Diamonds.
+        if(id==='shards'&&!pending&&state.sonia_festival_info?.wheel?.first_discount?.needs_draw){
+          soniaDiscountSpinning=true;
+          send({action:'sonia_discount_draw'});
+        }
+      };
       menu.append(button);
     }
     panel.append(menu);
@@ -230,6 +251,46 @@ const EventsHub=(()=>{
   return fixed[id]||(typeof itemPicture==='function'&&itemCatalog?.[id]?
     itemPicture(itemCatalog[id]):catalog?.item_icons?.[id])||'/assets/item-icons/icon_10.png';
  }
+ function soniaDiscountOffer(first){
+  const box=el('section','sf-clock-welcome');
+  const heading=el('div','sf-clock-welcome-title');
+  heading.append(el('span','','✦ Đặc Quyền Lần Đầu ✦'),
+    el('b','','Một vòng quay ưu đãi miễn phí'));
+  box.append(heading);
+  const dial=el('div','sf-sale-dial'+(soniaDiscountSpinning?' is-rolling':'')+
+    (first.percent&&!soniaDiscountSpinning?' is-revealed':''));
+  dial.setAttribute('role','img');
+  dial.setAttribute('aria-label','Kim Đồng Hồ quay ngẫu nhiên để chọn mức giảm giá từ 1% đến 100%');
+  for(let i=0;i<12;i++){
+    const mark=el('i','sf-sale-mark');
+    mark.style.setProperty('--sale-hour',i);
+    dial.append(mark);
+  }
+  dial.append(el('span','sf-sale-needle','◆'));
+  const center=el('div','sf-sale-value');
+  center.append(el('span','',soniaDiscountSpinning?'✦':first.percent?fmt(first.percent)+'%':'?'),
+    el('small','',soniaDiscountSpinning?'Đang chọn…':'GIẢM GIÁ'));
+  dial.append(center);
+  box.append(dial);
+  if(first.percent&&!soniaDiscountSpinning){
+    box.append(el('p','sf-sale-notice','Chúc mừng! Bạn được giảm '+fmt(first.percent)+
+      '% cho một lần quay nhận quà đầu tiên. Ưu đãi sẽ tự áp dụng khi bạn chọn quay.'));
+  }else{
+    box.append(el('p','sf-sale-notice',soniaDiscountSpinning?
+      'Đồng hồ đang xoay để tìm mức giảm giá may mắn của bạn…':
+      'Chỉ một lần duy nhất! Kim đồng hồ sẽ chọn ngẫu nhiên mức giảm từ 1% đến 100%.'));
+    if(!pending&&!soniaDiscountSpinning&&first.needs_draw){
+      const retry=el('button','sf-btn sf-sale-retry','Quay Ưu Đãi Miễn Phí');
+      retry.type='button';
+      retry.onclick=()=>{
+        if(pending)return;
+        soniaDiscountSpinning=true;send({action:'sonia_discount_draw'});
+      };
+      box.append(retry);
+    }
+  }
+  return box;
+ }
  function soniaFestival(parent,kind,festival){
   const info=festival.events[kind];
   const title={stars:'Lễ Hội Thức Tỉnh',shards:'Vòng Quay Kim Đồng Hồ',missions:'Chinh Phục Nhiệm Vụ'}[kind];
@@ -265,6 +326,8 @@ const EventsHub=(()=>{
     }
   }else if(kind==='shards'){
     const w=festival.wheel;
+    const first=w.first_discount||{};
+    if(first.eligible||soniaDiscountSpinning)parent.append(soniaDiscountOffer(first));
     parent.append(soniaClockFace(w.odds));
     const progress=el('div','sf-clock-progress');
     progress.append(
@@ -273,12 +336,18 @@ const EventsHub=(()=>{
     );
     parent.append(progress);
     const actions=el('div','sf-spin-buttons sf-clock-spin-buttons');
-    for(const count of [5,10]){
+    for(const count of [1,5]){
       const b=el('button','sf-btn sf-clock-spin-btn');
       b.type='button';
-      b.append(el('strong','',count===5?'Quay 5 lượt':'Quay 10 lượt'),
-        el('span','sf-clock-cost','✧ '+fmt(w.costs[count])+' Kim Cương'));
-      b.disabled=pending||!w.can||w.spins+count>w.cap||Number(state.items['2']||0)<w.costs[count];
+      const price=Number(first.prices?.[count]??w.costs[count]);
+      b.append(el('strong','',count===1?'Quay 1 lượt':'Quay 5 lượt'),
+        el('span','sf-clock-cost',price===0?'✧ Miễn phí':'✧ '+fmt(price)+' Kim Cương'));
+      if(first.eligible&&first.percent&&!soniaDiscountSpinning){
+        b.append(el('small','sf-clock-discount',
+          'Giảm '+fmt(first.percent)+'% · Giá gốc '+fmt(w.costs[count])));
+      }
+      b.disabled=pending||!w.can||!!first.needs_draw||soniaDiscountSpinning||
+        w.spins+count>w.cap||Number(state.items['2']||0)<price;
       b.onclick=()=>{
         if(pending)return;
         soniaDraws=[];soniaClockIndex=-1;soniaClockSpinning=true;

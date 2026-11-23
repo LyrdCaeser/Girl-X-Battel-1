@@ -22,7 +22,9 @@ SHARD='940061'
 TICKET='940060'
 GEMS='2'
 SPIN_CAP=200
-SPIN_COST={5:2000,10:9500}
+SPIN_COST={1:1200,5:5800}
+DISCOUNT_MIN=1
+DISCOUNT_MAX=100
 # Exact probability / 10,000; no extra tickets or Diamonds from wheel.
 WHEEL=(
     (300, {SHARD:2}, 'Mảnh Lyr Sonia ×2'),
@@ -88,6 +90,8 @@ def _saved(state):
     saved.setdefault('star_claimed',[])
     saved.setdefault('star_reached',[])
     saved.setdefault('spins',0)
+    saved.setdefault('clock_discount_pct',0)
+    saved.setdefault('clock_discount_used',False)
     saved.setdefault('mission_claimed',[])
     saved.setdefault('paid_claimed',[])
     saved.setdefault('checked_days',[])
@@ -142,6 +146,29 @@ def record_sonia_star(state,star,now=None,prior=10):
     saved['star_reached']=sorted(reached)
 
 
+def first_discount(state):
+    """Read the lifetime one-use clock coupon without modifying the profile.
+
+    Existing participants who already have any recorded event spins cannot
+    get a new first-spin discount. Snapshot never rolls a coupon.
+    """
+    saved=state.get('sonia_festival') or {}
+    spins=int(saved.get('spins') or 0)
+    used=bool(saved.get('clock_discount_used'))
+    percent=int(saved.get('clock_discount_pct') or 0)
+    if not 1<=percent<=100:percent=0
+    eligible=spins==0 and not used
+    available=eligible and percent>0
+    return {
+        'eligible':eligible,
+        'needs_draw':eligible and percent==0,
+        'percent':percent if available else 0,
+        'used':used,
+        'prices':{str(c): (max(0,(base*(100-percent)+99)//100) if available else base)
+                  for c,base in SPIN_COST.items()},
+    }
+
+
 def snapshot(state,now=None,paid_vnd=0,paid_available=True):
     if now is None:
         import time
@@ -169,6 +196,7 @@ def snapshot(state,now=None,paid_vnd=0,paid_available=True):
             for star,awards in STAR_REWARDS.items()],
         'wheel':{'spins':int(s.get('spins') or 0),'cap':SPIN_CAP,
                  'costs':dict(SPIN_COST),
+                 'first_discount':first_discount(state),
                  'odds':[{'label':label,'chance':chance/100,'awards':item}
                           for chance,item,label in WHEEL],
                  'can':active(now,'shards')},
@@ -227,20 +255,46 @@ def action(state,request,now=None,rng=None,paid_vnd=0):
             raise ValueError('Hãy Thức Tỉnh Lyr Sonia đến mốc này trong mùa lễ hội để nhận quà')
         s['star_claimed'].append(star)
         return {'awards':_grant(state,STAR_REWARDS[star])}
+    if verb=='sonia_discount_draw':
+        if not active(now,'shards'):
+            raise ValueError('Vòng Quay Kim Đồng Hồ đã khép lại')
+        saved=state.get('sonia_festival') or {}
+        offer=first_discount(state)
+        if not offer['eligible']:
+            raise ValueError('Ưu đãi đầu tiên đã được sử dụng')
+        if offer['percent']:
+            # Safe idempotency: a retry/refresh reveals the same coupon.
+            return {'awards':{},'discount_percent':offer['percent']}
+        generator=rng or secrets.randbelow
+        draw=int(generator(100))
+        if not 0<=draw<100:
+            raise ValueError('Kim đồng hồ chưa quay đúng, hãy thử lại nhé')
+        s=_saved(state)
+        s['clock_discount_pct']=draw+1
+        return {'awards':{},'discount_percent':draw+1}
+
     if verb=='sonia_spin':
         if not active(now,'shards'):
-            raise ValueError('Vòng quay mảnh Sonia đã kết thúc')
+            raise ValueError('Vòng Quay Kim Đồng Hồ đã kết thúc')
         count=request.get('count')
         if type(count) is not int or count not in SPIN_COST:
-            raise ValueError('Hãy chọn quay 5 lần hoặc 10 lần')
-        s=_saved(state)
-        if int(s['spins'])+count>SPIN_CAP:
+            raise ValueError('Hãy chọn quay 1 lần hoặc 5 lần')
+        discount=first_discount(state)
+        if discount['needs_draw']:
+            raise ValueError('Hãy nhận ưu đãi quay lần đầu trước nhé')
+        saved=state.get('sonia_festival') or {}
+        if int(saved.get('spins') or 0)+count>SPIN_CAP:
             raise ValueError('Bạn đã đạt số lượt quay của mùa này')
-        price=SPIN_COST[count]
+        price=discount['prices'][str(count)]
         items=state.setdefault('items',{})
         if int(items.get(GEMS,0))<price:
             raise ValueError('Không đủ Kim Cương để quay')
+        # The first paid draw is the sole place the persistent discount can
+        # be consumed. The engine commits this, the cost and awards together.
+        s=_saved(state)
         items[GEMS]=int(items.get(GEMS,0))-price
+        if discount['percent']:
+            s['clock_discount_used']=True
         s['spins']=int(s['spins'])+count
         draws=[];awards={}
         rng=rng or secrets.randbelow
@@ -254,7 +308,7 @@ def action(state,request,now=None,rng=None,paid_vnd=0):
                     for item,n in reward.items():awards[item]=awards.get(item,0)+n
                     break
         _grant(state,awards)
-        return {'awards':awards,'draws':draws,'cost':price}
+        return {'awards':awards,'draws':draws,'cost':price,'discount_percent':discount['percent']}
     if verb=='sonia_paid_claim':
         if not active(now,'missions'):
             raise ValueError('Hành trình Lyr Sonia đã khép lại')

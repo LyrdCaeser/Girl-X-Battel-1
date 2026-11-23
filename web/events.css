@@ -445,3 +445,103 @@ html.gxb-mobile #events-view .ev-title-label{overflow-wrap:anywhere}
   font-size:calc(21 * var(--u));color:#9c5ab3;
   margin:0;line-height:1.2
 }
+
+/* One complimentary welcome discount dial, separate from prize clock.
+   Percent is server-drawn and stored; the animation never decides its value. */
+.sf-clock-welcome{
+  display:flex;flex-direction:column;align-items:center;
+  text-align:center;padding:calc(18 * var(--u)) calc(14 * var(--u));
+  border:calc(5 * var(--u)) solid #f2d38d;
+  border-radius:calc(17 * var(--u));
+  background:radial-gradient(ellipse at 50% 30%,#a57cce,#533b86 62%,#34225c);
+  box-shadow:inset 0 0 calc(12 * var(--u)) #fff0c466,
+    0 calc(5 * var(--u)) calc(10 * var(--u)) #5d407777;
+  margin:calc(12 * var(--u)) calc(12 * var(--u));
+  color:#fff4cd
+}
+.sf-clock-welcome-title{display:flex;flex-direction:column;gap:calc(4 * var(--u))}
+.sf-clock-welcome-title span{
+  font-size:calc(30 * var(--u));font-weight:900;
+  color:#ffe5a0;text-shadow:0 1px 5px #2e174c;
+}
+.sf-clock-welcome-title b{
+  font-size:calc(22 * var(--u));color:#faf1fd;
+  text-shadow:0 2px 3px #2b1c55
+}
+.sf-sale-dial{
+  position:relative;width:min(calc(270 * var(--u)),72%);
+  aspect-ratio:1;border:calc(9 * var(--u)) solid #efce88;
+  border-radius:50%;box-sizing:border-box;
+  margin:calc(17 * var(--u)) auto calc(10 * var(--u));
+  box-shadow:0 0 0 calc(4 * var(--u)) #faf0c7,inset 0 0 calc(15 * var(--u)) #361a65,
+    0 0 calc(22 * var(--u)) #dec9ff91;
+  background:repeating-conic-gradient(from -15deg,
+    transparent 0deg 28.5deg,#fff5c366 28.7deg 30deg),
+    conic-gradient(#e4c6fc,#8a5dbe,#d7a4fa,#8b61b5,#e4c6fc)
+}
+.sf-sale-mark{
+  position:absolute;inset:calc(10 * var(--u));
+  transform:rotate(calc(var(--sale-hour) * 30deg))
+}
+.sf-sale-mark:after{
+  content:'';position:absolute;top:0;left:50%;
+  transform:translateX(-50%);width:calc(6 * var(--u));
+  height:calc(17 * var(--u));border-radius:2px;background:#fff4c9
+}
+.sf-sale-needle{
+  position:absolute;z-index:3;top:calc(-29 * var(--u));left:50%;
+  transform:translateX(-50%);
+  color:#f7cb5c;font-size:calc(52 * var(--u));
+  text-shadow:0 2px 4px #482250;line-height:1;
+}
+.sf-sale-value{
+  position:absolute;z-index:4;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  width:60%;height:60%;border-radius:50%;
+  display:flex;flex-direction:column;justify-content:center;align-items:center;
+  background:radial-gradient(#fff4d6,#f0d08b 60%,#ba8dbd);
+  border:calc(4 * var(--u)) solid #fff4d8;
+  box-shadow:0 0 calc(15 * var(--u)) #371d64;
+}
+.sf-sale-value span{
+  font-size:calc(58 * var(--u));font-weight:1000;color:#7f4199;
+  line-height:1.1;text-shadow:0 1px #fff;
+}
+.sf-sale-value small{
+  color:#604688;font-size:calc(16 * var(--u));
+  font-weight:900;letter-spacing:1px
+}
+.sf-sale-dial.is-rolling{
+  animation:sf-discount-roll 1.2s linear infinite
+}
+.sf-sale-dial.is-rolling .sf-sale-value{
+  animation:sf-discount-center 1.2s linear infinite
+}
+@keyframes sf-discount-roll{
+  from{transform:rotate(0deg)}to{transform:rotate(360deg)}
+}
+@keyframes sf-discount-center{
+  from{transform:translate(-50%,-50%) rotate(0deg)}
+  to{transform:translate(-50%,-50%) rotate(-360deg)}
+}
+.sf-sale-notice{
+  margin:calc(6 * var(--u)) calc(10 * var(--u));
+  font-size:calc(21 * var(--u));font-weight:800;
+  line-height:1.4;color:#ffeec8;
+  text-shadow:0 1px 2px #3f235e
+}
+.sf-sale-retry{
+  margin-top:calc(12 * var(--u));
+  min-width:calc(260 * var(--u))
+}
+.sf-clock-spin-btn .sf-clock-discount{
+  color:#fff5b4;font-size:calc(17 * var(--u));
+  font-weight:900;line-height:1.15;white-space:normal;
+}
+.sf-clock-spin-btn:has(.sf-clock-discount){
+  min-height:calc(122 * var(--u));
+}
+@media(prefers-reduced-motion:reduce){
+  .sf-sale-dial.is-rolling,
+  .sf-sale-dial.is-rolling .sf-sale-value{animation:none}
+}

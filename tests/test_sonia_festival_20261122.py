@@ -23,7 +23,7 @@ class SoniaFestivalTests(unittest.TestCase):
         self.assertEqual(sorted(f.STAR_REWARDS),list(range(11,26)))
         self.assertEqual(sum(r[0] for r in f.WHEEL),10_000)
         self.assertEqual(sum(t[5] for t in f.TASKS),120)
-        self.assertEqual(f.SPIN_COST,{5:2000,10:9500})
+        self.assertEqual(f.SPIN_COST,{1:1200,5:5800})
         self.assertNotIn(f.TICKET,set().union(*(d.keys() for _,d,_ in f.WHEEL)))
         self.assertNotIn(f.GEMS,set().union(*(d.keys() for _,d,_ in f.WHEEL)))
 
@@ -68,16 +68,22 @@ class SoniaFestivalTests(unittest.TestCase):
 
     def test_spin_prices_odds_and_hard_cap(self):
         state=profile()
+        # The complimentary welcome dial grants a 1% coupon, which applies
+        # to the very first prize purchase only (5 spins here).
+        offer=f.action(state,{'action':'sonia_discount_draw'},f.START+1,rng=lambda bound:0)
+        self.assertEqual(offer['discount_percent'],1)
         r=f.action(state,{'action':'sonia_spin','count':5},f.START+1,rng=lambda bound:0)
-        self.assertEqual(r['cost'],2000)
+        self.assertEqual(r['cost'],5742)
+        self.assertEqual(r['discount_percent'],1)
         self.assertEqual(r['awards'],{f.SHARD:10})
-        self.assertEqual(state['items']['2'],498_000)
+        self.assertEqual(state['items']['2'],494_258)
         self.assertEqual(state['items'][f.SHARD],10)
-        r=f.action(state,{'action':'sonia_spin','count':10},f.START+1,rng=lambda bound:9999)
-        self.assertEqual(r['cost'],9500)
-        self.assertEqual(r['awards'],{'1':120000})
-        self.assertEqual(state['items']['2'],488_500)
-        self.assertEqual(f.snapshot(state,f.START+2)['wheel']['spins'],15)
+        r=f.action(state,{'action':'sonia_spin','count':1},f.START+1,rng=lambda bound:9999)
+        self.assertEqual(r['cost'],1200)
+        self.assertEqual(r['discount_percent'],0)
+        self.assertEqual(r['awards'],{'1':12000})
+        self.assertEqual(state['items']['2'],493_058)
+        self.assertEqual(f.snapshot(state,f.START+2)['wheel']['spins'],6)
         state['sonia_festival']['spins']=196
         before=deepcopy(state)
         with self.assertRaises(ValueError):
@@ -85,7 +91,7 @@ class SoniaFestivalTests(unittest.TestCase):
         self.assertEqual(before,state)
         with self.assertRaises(ValueError):
             f.action(state,{'action':'sonia_spin','count':5},f.ENDS['shards'])
-        for bad in (1,2,4,6,'5',True,100):
+        for bad in (2,3,4,6,10,'5',True,100):
             with self.assertRaises(ValueError):
                 f.action(state,{'action':'sonia_spin','count':bad},f.START+1)
 

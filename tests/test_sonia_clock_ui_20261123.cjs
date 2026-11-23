@@ -20,7 +20,7 @@ assert(ui.includes("const dial=el('div','sf-clock-dial'"));
 assert(ui.includes('for(let i=0;i<odds.length;i++)'));
 assert(ui.includes("const item=el('div','sf-clock-prize'"));
 assert(ui.includes('w.spins+count>w.cap'));
-assert(ui.includes("Number(state.items['2']||0)<w.costs[count]"));
+assert(ui.includes("Number(state.items['2']||0)<price"));
 assert(ui.includes("send({action:'sonia_spin',count})"));
 assert(ui.includes("if(pending)return;"));
 assert(ui.includes("soniaClockSpinning=true"));
@@ -43,11 +43,11 @@ assert(style.includes('/assets/events/activity_bg03.png'),
 assert(style.includes('@media(prefers-reduced-motion:reduce)'),
  'Reduced-motion preferences must be supported');
 for(const version of [
- '/events.js?v=20261123-sonia-clock-face-r7',
- '/events.css?v=20261123-sonia-clock-face-r7']){
+ '/events.js?v=20261123-sonia-discount-first-r8',
+ '/events.css?v=20261123-sonia-discount-first-r8']){
  assert(html.includes(version),'Cache-busting build must use updated wheel resources');
 }
-assert(grants.includes('SPIN_COST={5:2000,10:9500}'),'Server-verified cost must remain unchanged');
+assert(grants.includes('SPIN_COST={1:1200,5:5800}'),'Updated server-verified x1/x5 prices are required');
 assert(grants.includes('SPIN_CAP=200'),'No increased draw cap');
 assert(grants.includes('(300, {SHARD:2}'),'3% fragments rate preserved');
 assert(grants.includes('(20, {SHARD:5}'),'0.2% rare fragment rate preserved');
