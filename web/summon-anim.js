@@ -148,7 +148,7 @@ const SummonAnim=(()=>{
   try{fig.hackTextureBySlotName('zhiye',PIXI.Texture.EMPTY,{width:1,height:1});}catch{}
   const slot=fig.slotContainers?.[i];
   if(!slot||group==null)return false;
-  const icon=PIXI.Sprite.from('/assets/factions/group'+group+'.png');
+  const icon=PIXI.Sprite.from('/assets/factions/'+group+'.png');
   icon.anchor.set(.5);
   // Groups 1–7 use 46px textures but Chaos uses a 256px original.
   // Fit their visible size to the same native 60x60 badge, including when

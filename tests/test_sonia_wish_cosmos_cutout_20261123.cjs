@@ -95,7 +95,7 @@ function artSlot(){
   'S4/Wish includes Sonia-only artwork substitution');
  assert(code.includes('nativeNameStars(fig,entry,star,Number(entry.table_id)===758001)'),
   'S4/Wish includes Sonia-only Cosmos badge');
- assert(html.includes('/summon-anim.js?v=20261123-sonia-wish-cosmos-r5'));
+ assert(html.includes('/summon-anim.js?v=20261123-faction-reveal-r6'));
  assert(fs.existsSync('web/assets/chaos/lyr_sonia_wish_cutout.webp'));
  console.log('PASS: Sonia Wish alone gets cutout + purple Cosmos star; other girls, non-Wish art and original overlays unchanged.');
 })().catch(e=>{console.error(e);process.exitCode=1});

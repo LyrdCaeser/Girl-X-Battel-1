@@ -85,7 +85,7 @@ const run=vm.runInContext('s4RevealSequence',scope);
   'Graceful fallback for missing art must not reveal a broken image');
  assert(anim.includes("document.documentElement.classList.add('gxb-s4-cinematic')"));
  assert(anim.includes("document.documentElement.classList.remove('gxb-s4-cinematic')"));
- assert(html.includes('summon-anim.js?v=20261123-sonia-wish-cosmos-r5'));
+ assert(html.includes('summon-anim.js?v=20261123-faction-reveal-r6'));
  assert(html.includes('home-menus.js?v=20261119-goddess-wish-manual-r2'));
  console.log('PASS: 104+248 Wish cinematic frames, original Gacha FX, no baked skin labels or film-blocking HUD');
 })().catch(e=>{console.error(e);process.exitCode=1;});

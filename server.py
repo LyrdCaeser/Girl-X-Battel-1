@@ -898,8 +898,11 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                 return self.send(200, (ROOT/'web/assets/ui'/f'{stem}.png').read_bytes(), 'image/png')
         if path.startswith('/assets/factions/') and path.endswith('.png'):
             stem = path.rsplit('/', 1)[-1][:-4]
-            if stem.isdecimal() and 1 <= int(stem) <= 8:
-                return self.send(200, (ROOT/'web/assets/factions'/f'group{int(stem)}.png').read_bytes(), 'image/png')
+            # The ordinary game uses /4.png; Spine Wish and faction cards
+            # also use /group4.png. Both refer to the same original asset.
+            group_id = stem[5:] if stem.startswith('group') else stem
+            if group_id.isdecimal() and 1 <= int(group_id) <= 8:
+                return self.send(200, (ROOT/'web/assets/factions'/f'group{int(group_id)}.png').read_bytes(), 'image/png')
         if path.startswith('/assets/capsule/') and path.endswith('.png'):
             stem = path.rsplit('/', 1)[-1]
             capsule_assets = {'summon-scene.png', 'regular-panel.png', 'advanced-panel.png', 'bff-panel.png',

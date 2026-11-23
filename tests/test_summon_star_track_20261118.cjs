@@ -30,5 +30,5 @@ for(const n of [1,2,3,4,5,6,9,10,15,25]){
  starTimers.forEach(([ms,fn])=>fn());
  assert(icons.every(o=>o.visible===true&&o.alpha===1),'Each star animates into place');
 }
-assert(fs.readFileSync('web/index.html','utf8').includes('/summon-anim.js?v=20261123-sonia-wish-cosmos-r5'));
+assert(fs.readFileSync('web/index.html','utf8').includes('/summon-anim.js?v=20261123-faction-reveal-r6'));
 console.log('PASS: 1-25★ above CV, staggered original asset sprites, responsive scale animation');
