@@ -1,9 +1,9 @@
-"""Sonia's pity is exactly 98.5% hit / 1.5% offbanner, not 100% or 95%."""
+"""Sonia has 99.2%/0.8% early featured chance, with a 100% hard stop at 150."""
 import unittest
 from gxb2 import chaos_summon
 
 
-class Pity985Tests(unittest.TestCase):
+class Pity992Tests(unittest.TestCase):
     def draw(self,roll):
         state={'items':{'940060':1},'partners':[],'next_partner_id':1,
                'chaos_summon':{'times':119,'total':119,'cycles':0}}
@@ -14,13 +14,13 @@ class Pity985Tests(unittest.TestCase):
         return state,new[0]['table_id']
 
     def test_exact_probability_and_boundaries(self):
-        self.assertEqual(chaos_summon.GUARANTEE_HIT_BASIS_POINTS,9850)
-        for roll in (0,300,9849):
+        self.assertEqual(chaos_summon.GUARANTEE_HIT_BASIS_POINTS,9920)
+        for roll in (0,300,9919):
             state,target=self.draw(roll)
             self.assertEqual(target,758001)
             self.assertEqual(state['chaos_summon']['times'],0)
             self.assertEqual(state['chaos_summon']['cycles'],1)
-        for roll in (9850,9875,9999):
+        for roll in (9920,9975,9999):
             state,target=self.draw(roll)
             self.assertEqual(target,51017)
             self.assertEqual(state['chaos_summon']['times'],0)
@@ -28,10 +28,11 @@ class Pity985Tests(unittest.TestCase):
 
     def test_client_percentages(self):
         s=chaos_summon.snapshot({'items':{},'partners':[]})
-        self.assertEqual(s['guaranteed_hit_percent'],98.5)
-        self.assertEqual(s['guaranteed_miss_percent'],1.5)
+        self.assertEqual(s['guaranteed_hit_percent'],99.2)
+        self.assertEqual(s['guaranteed_miss_percent'],0.8)
         self.assertEqual(s['first_guarantee'],120)
         self.assertEqual(s['repeat_guarantee'],150)
+        self.assertEqual(s['hard_guaranteed_hit_percent'],100.0)
 
 
 if __name__=='__main__':

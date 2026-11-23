@@ -26,6 +26,7 @@ const scope=vm.createContext({
  s4SlotChildren:()=>[],
  s4SuppressBakedGirlHeading:()=>actions.push(['hide-baked-girls']),
  attachGirl:async(fig,id)=>actions.push(['goddess-image',id]),
+ nativeFaction:(fig,entry)=>actions.push(['native-faction',entry.table_id]),
  nativeNameStars:(fig,entry,star)=>{
   actions.push(['native-name-and-stars',entry.name,star]);
   return true;
@@ -50,6 +51,7 @@ const run=vm.runInContext('s4RevealSequence',scope);
  assert.equal(actions.filter(a=>a[0]==='skin-frame').length,248);
  assert.equal(actions.filter(a=>a[0]==='hide-baked-girls').length,105);
  assert.equal(actions.filter(a=>a[0]==='native-name-and-stars').length,104);
+ assert.equal(actions.filter(a=>a[0]==='native-faction').length,104);
  assert.equal(actions.filter(a=>a[0]==='skin-cinema').length,1);
  assert.equal(actions.filter(a=>a[0]==='spine-animation'&&a[1]==='222').length,2,
   'Original gacha egg animation should introduce both phases');
@@ -83,7 +85,7 @@ const run=vm.runInContext('s4RevealSequence',scope);
   'Graceful fallback for missing art must not reveal a broken image');
  assert(anim.includes("document.documentElement.classList.add('gxb-s4-cinematic')"));
  assert(anim.includes("document.documentElement.classList.remove('gxb-s4-cinematic')"));
- assert(html.includes('summon-anim.js?v=20261119-goddess-wish-manual-r2'));
+ assert(html.includes('summon-anim.js?v=20261123-real-faction-r4'));
  assert(html.includes('home-menus.js?v=20261119-goddess-wish-manual-r2'));
  console.log('PASS: 104+248 Wish cinematic frames, original Gacha FX, no baked skin labels or film-blocking HUD');
 })().catch(e=>{console.error(e);process.exitCode=1;});

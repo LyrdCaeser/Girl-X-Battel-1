@@ -29,13 +29,14 @@ class ReceiptAndPityTests(unittest.TestCase):
                                 rng=lambda bound:bound-1,
                                 offbanner_draw=lambda:51017,
                                 is_five_star=lambda tid:tid==51017)
-        self.assertEqual(state['partners'][-1]['table_id'],51017)
+        self.assertEqual(state['partners'][-1]['table_id'],758001)
+        self.assertEqual(state['chaos_summon']['sonia_times'],0)
         self.assertEqual(state['chaos_summon']['cycles'],2)
         self.assertEqual(state['chaos_summon']['times'],0)
         self.assertEqual(state['items']['940060'],0)
 
-    def test_pity_probability_is_985_hit_15_off(self):
-        for hit_expected,roll in ((True,0),(True,9849),(False,9850),(False,9999)):
+    def test_pity_probability_is_992_hit_08_off(self):
+        for hit_expected,roll in ((True,0),(True,9919),(False,9920),(False,9999)):
             state={'items':{'940060':1},'partners':[],'next_partner_id':1,
                    'chaos_summon':{'times':119,'total':119,'cycles':0}}
             chaos_summon.summon(state,27,lambda:33001,

@@ -125,6 +125,47 @@ const SummonAnim=(()=>{
   const p=full?(pictures?.[String(showId)]||{}):{};const sp=new PIXI.Sprite(PIXI.Texture.from(image));if(s4Sequence)sp.__s4WishTexture=sp.texture;sp.anchor.set(.5);const scale=full?(p.summon_static_scale||1):280/Math.max(image.naturalWidth,image.naturalHeight);sp.scale.set(scale,-scale);sp.position.set(p.xy?.[0]||0,150-(p.xy?.[1]||0));box.addChild(sp);
  }
 
+ // The original Spine movie ships one permanently baked class/faction icon
+ // in the 'zhiye' slot. Replace that icon in the SAME native animated slot
+ // for every goddess, using actual roster faction data (1..8), not a fake
+ // universal Human/Tộc symbol or a floating HTML label.
+ function factionOf(p){
+  const id=Number(p?.table_id);
+  const ids=(typeof hostChain==='function'?hostChain(id):[id]);
+  for(const tid of [id,...ids]){
+   const g=typeof girlsCatalog!=='undefined'?girlsCatalog.find(x=>Number(x.id)===Number(tid)):null;
+   const avatar=typeof avatars!=='undefined'?avatars[String(tid)]:null;
+   const group=Number(g?.group??avatar?.group??(Number(tid)===id?p?.group:undefined));
+   if(Number.isInteger(group)&&group>=1&&group<=8)return group;
+  }
+  return null;
+ }
+ function nativeFaction(fig,p){
+  const group=factionOf(p),i=fig.skeleton.findSlotIndex('zhiye');
+  if(i<0)return false;
+  // Hide the publisher's hard-coded blue class/faction glyph even if the
+  // character metadata has not loaded. Never show the wrong faction.
+  try{fig.hackTextureBySlotName('zhiye',PIXI.Texture.EMPTY,{width:1,height:1});}catch{}
+  const slot=fig.slotContainers?.[i];
+  if(!slot||group==null)return false;
+  const icon=PIXI.Sprite.from('/assets/factions/group'+group+'.png');
+  icon.anchor.set(.5);
+  // Groups 1–7 use 46px textures but Chaos uses a 256px original.
+  // Fit their visible size to the same native 60x60 badge, including when
+  // WebView finishes decoding the Chaos texture after the reveal begins.
+  const fitIcon=()=>{
+   if(icon.destroyed)return;
+   const width=Math.max(1,Number(icon.texture?.orig?.width||icon.texture?.width||60));
+   const height=Math.max(1,Number(icon.texture?.orig?.height||icon.texture?.height||60));
+   const scale=Math.min(60/width,60/height);
+   icon.scale.set(scale,-scale);
+  };
+  fitIcon();
+  const texture=icon.texture?.baseTexture;
+  if(texture&&!texture.valid)texture.once('loaded',fitIcon);
+  slot.addChild(icon);
+  return true;
+ }
  // PartnerSummonEffect:initEffect hides zhiye/cv/name (placeholder text art) and updateStar the "Nxing" slots above the
  // girl's stars; an empty texture keeps them hidden whatever the animation keys.
  // Match PartnerSummonEffect: overlay the girl's name and star icons on
@@ -239,6 +280,7 @@ const SummonAnim=(()=>{
    try{
     await attachGirl(e.fig,p.table_id);
     if(skipped)return;
+    nativeFaction(e.fig,p);
     const placed=nativeNameStars(e.fig,p,star);uncap=caption(p,star,placed);
     sfx('ui_gain_hero_5star_bg');setTimeout(()=>{if(!skipped&&overlay)sfx('ui_gain_hero_5star');},1000);
     const s=Math.min(star,11);await run(e.fig,ANIM1[s]||'texiao01');
@@ -249,6 +291,7 @@ const SummonAnim=(()=>{
    try{
     await attachGirl(e.fig,p.table_id);
     if(skipped)return;
+    nativeFaction(e.fig,p);
     const placed=nativeNameStars(e.fig,p,star);uncap=caption(p,star,placed);
     const left=summon&&i%2===1;sfx(left?'ui_gain_hero_left':'ui_gain_hero_right');
     await run(e.fig,left?'texiao03':'texiao01');
@@ -265,7 +308,7 @@ const SummonAnim=(()=>{
  }
  function s4SlotChildren(fig){
   const result=[];
-  for(const name of ['juese','name']){
+  for(const name of ['juese','name','zhiye']){
    const slot=s4Slot(fig,name);
    if(slot)result.push({slot,original:new Set(slot.children)});
   }
@@ -424,6 +467,7 @@ const SummonAnim=(()=>{
       await attachGirl(fig,entry.table_id);
       if(skipped)break;
       const star=Math.max(1,Math.min(25,Number(entry.star||entry.stars)||25));
+      nativeFaction(fig,entry);
       const placed=nativeNameStars(fig,entry,star);
       uncap=caption(entry,star,placed);
      }

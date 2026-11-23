@@ -10,13 +10,14 @@ for(const category of ['regular','advanced','wish','sonia']){
 }
 assert(js.includes("api('/api/summon/rates')"));
 assert(js.includes('wc-odds-row'));
-assert(js.includes('Bảo hiểm đầu tiên:'));
-assert(js.includes('98,5% Lyr Sonia · 1,5% Nữ Thần 5★ khác'));
+assert(js.includes('Mốc may mắn lần đầu:'));
+assert(js.includes('99,2% Sonia · 0,8% Nữ Thần 5★ khác'));
+assert(js.includes('chắc chắn 100% Lyr Sonia'));
 assert(css.includes('.wc-odds-window .wc-odds-list'));
 assert(server.includes("if path == '/api/summon/rates':"));
 assert(events.includes('Thử Thách · 120 Vé'));
 assert(events.includes('Quà Nạp · 350 Vé'));
 assert(events.includes('sonia_paid_claim'));
-assert(html.includes('wish.js?v=20261122-sonia-poison-skilldesc-r8'));
+assert(html.includes('wish.js?v=20261123-sonia-hard150-r9'));
 assert(html.includes('events.js?v=20261122-sonia-visual-tickets-r6'));
 console.log('PASS: all four Wish odds buttons, live rate request, pity details and paid/free mission tabs');

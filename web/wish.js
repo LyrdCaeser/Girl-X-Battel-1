@@ -64,11 +64,11 @@ const WishCapsule=(()=>{
       'Tỷ lệ nhận Lyr Sonia mỗi lượt thường: '+(Number(si.rate||0)*100).toFixed(2)+'%.'));
      body.append(feature);
      body.append(el('p','wc-note',
-       'Bảo hiểm đầu tiên: '+(si.first_guarantee||120)+' lượt. Các lần sau: '+(si.repeat_guarantee||150)+' lượt.'));
-     body.append(el('p','wc-note','Tiến độ hiện tại: '+Number(si.times||0)+'/'+Number(si.guarantee||120)+
+       'Mốc may mắn lần đầu: '+(si.first_guarantee||120)+' lượt (99,2% Sonia). Chắc chắn có Sonia chậm nhất ở lượt '+(si.hard_guarantee||150)+'.'));
+     body.append(el('p','wc-note','Tiến độ hiện tại: '+Number(si.times||0)+'/'+Number(si.hard_guarantee||150)+
        ' · Còn '+Number(si.remaining||0)+' lượt.'));
      body.append(el('p','wc-note',
-       'Khi đạt bảo hiểm: 98,5% Lyr Sonia · 1,5% Nữ Thần 5★ khác. Ra bất kỳ Nữ Thần từ 5★ trở lên sẽ làm mới lượt bảo hiểm.'));
+       'Mốc may mắn 120 lượt đầu: 99,2% Sonia · 0,8% Nữ Thần 5★ khác. Nếu lệch vẫn giữ tích lũy Sonia. Đủ 150 lượt không có Sonia: chắc chắn 100% Lyr Sonia. Trúng Sonia mới làm mới mốc 150.'));
      body.append(el('p','wc-note','Nếu chưa trúng Sonia, lượt thường sử dụng bảng Triệu Hồi Cao Cấp dưới đây, giảm theo tỷ lệ Sonia xuất hiện.'));
    }else if(kind==='wish'){
      const wi=state.wish_info||{};
@@ -139,7 +139,7 @@ const WishCapsule=(()=>{
   const chaosRate=(Number(ci.rate||0)*100).toFixed(2);
   const chaosRemaining=Math.max(0,Number(ci.remaining??ci.guarantee??100));
   cc.append(el('p','chaos-copy','Tỷ lệ Lyr Sonia: '+chaosRate+'% · Bảo hiểm sau tối đa '+chaosRemaining+' lượt nữa'));
-  cc.append(el('p','chaos-copy','Bảo hiểm lần đầu 120 lượt, từ lần sau 150 lượt. Trúng bảo hiểm: 98,5% Sonia · 1,5% Nữ Thần 5★ khác.'));
+  cc.append(el('p','chaos-copy','Mốc may mắn đầu tiên 120 lượt: 99,2% Sonia · 0,8% lệch. Không trúng vẫn tích lũy; đủ 150 lượt chắc chắn nhận Lyr Sonia 100%.'));
   const ticket=el('div','chaos-ticket');ticket.append(img(chaos.ticket.icon),el('span','',chaos.ticket.name),el('b','',number(state.items?.[String(chaos.ticket.id)]||0)));cc.append(ticket);
   const cbts=el('div','capsule-buttons chaos-buttons'),have=Number(state.items?.[String(chaos.ticket.id)]||0);
   for(const drawInfo of chaos.summons){const b=btn('capsule-draw','Triệu Hồi ×'+drawInfo.count,()=>action('SUMMON',{summon_id:drawInfo.id,times:1}),have<drawInfo.count);const cost=el('strong');cost.append(drawInfo.count+' ',img(chaos.ticket.icon,'cost-token'));b.append(cost);cbts.append(b);}

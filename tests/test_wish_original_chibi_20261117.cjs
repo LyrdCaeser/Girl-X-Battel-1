@@ -17,7 +17,7 @@ vm.runInContext('let wishChibi=null,wishChibiGeneration=0;'+cut,ctx);
  assert.equal(view.config.sequence[0][0],'idle');
  stop();assert.equal(view.destroyed,true);
  assert.equal(count,1);
- assert(html.includes('wish.js?v=20261122-live-wish-odds-r5'));
+ assert(html.includes('wish.js?v=20261123-sonia-hard150-r9'));
  assert(html.includes('wish.css?v=20261122-live-wish-odds-r4'));
  assert(js.includes('if(s.select&&chibiHost&&page===1)void mountWishChibi'));
  console.log('PASS: native Wish chibi idle, centred, portrait fallback, WebGL cleanup, published versions');

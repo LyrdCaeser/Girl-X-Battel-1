@@ -13,10 +13,11 @@ TICKET_ID = 940060
 SUMMON_COUNTS = {27: 1, 28: 5, 29: 10}
 SUMMONS = tuple(SUMMON_COUNTS)
 RATE_TOTAL = 10_000
-FEATURED_WEIGHT = 50  # 0.50% per regular draw; always under 1.50%.
-FIRST_GUARANTEE = 120
+FEATURED_WEIGHT = 50  # 0.50% featured roll before the 0.8% deviation.
+FIRST_GUARANTEE = 120  # First-cycle early chance: 99.2% Sonia / 0.8% deviation.
 REPEAT_GUARANTEE = 150
-GUARANTEE_HIT_BASIS_POINTS = 9850  # 98.50% Sonia / 1.50% nonfeatured 5★
+HARD_GUARANTEE = 150  # Exactly 150 consecutive draws without Sonia -> 100% Sonia.
+GUARANTEE_HIT_BASIS_POINTS = 9920  # 99.20% Sonia / 0.80% nonfeatured 5★
 
 
 PARTNER = {
@@ -83,24 +84,32 @@ def progress(state):
     # Previous saves only had times/total, and every completed pity/hit reset
     # times. Do not relabel an old already-triggered pity as someone's first.
     info.setdefault('cycles', int(int(info.get('total',0))>int(info.get('times',0))))
+    # Keep a separate *Sonia* counter. A 5★ off-banner result may restart
+    # its own 5★ pity, but cannot erase progress toward the 150-draw Sonia
+    # guarantee. Older accounts retain their previously saved 'times'.
+    info.setdefault('sonia_times', max(0, min(HARD_GUARANTEE-1,int(info.get('times',0)))))
+    info.setdefault('sonia_cycles', 0)
+    info.setdefault('first_soft_used', int(info['sonia_times']) >= FIRST_GUARANTEE)
     return info
 
 
 def snapshot(state):
     info=progress(state)
-    pity=FIRST_GUARANTEE if int(info['cycles'])==0 else REPEAT_GUARANTEE
+    pity=HARD_GUARANTEE
     return {
         'partner_id':PARTNER_ID,'ticket_id':TICKET_ID,
         'tickets':int(state.get('items',{}).get(str(TICKET_ID),0)),
         'counts':dict(SUMMON_COUNTS),'guaranteed':False,
-        'rate':FEATURED_WEIGHT/RATE_TOTAL,
-        'times':int(info['times']),'total':int(info['total']),
-        'cycles':int(info['cycles']),
+        'rate':(FEATURED_WEIGHT/RATE_TOTAL)*(GUARANTEE_HIT_BASIS_POINTS/RATE_TOTAL),
+        'times':int(info['sonia_times']),'five_star_times':int(info['times']),
+        'total':int(info['total']),'cycles':int(info['cycles']),
         'guarantee':pity,'first_guarantee':FIRST_GUARANTEE,
-        'repeat_guarantee':REPEAT_GUARANTEE,
+        'first_soft_used':bool(info['first_soft_used']),
+        'repeat_guarantee':REPEAT_GUARANTEE,'hard_guarantee':HARD_GUARANTEE,
         'guaranteed_hit_percent':GUARANTEE_HIT_BASIS_POINTS/100,
-        'guaranteed_miss_percent':100-GUARANTEE_HIT_BASIS_POINTS/100,
-        'remaining':max(0,pity-int(info['times'])),
+        'guaranteed_miss_percent':(RATE_TOTAL-GUARANTEE_HIT_BASIS_POINTS)/100,
+        'hard_guaranteed_hit_percent':100.0,
+        'remaining':max(0,pity-int(info['sonia_times'])),
     }
 
 def summon(state, summon_id, fallback_draw, rng=None,
@@ -122,21 +131,36 @@ def summon(state, summon_id, fallback_draw, rng=None,
     for _ in range(count):
         info=progress(state)
         info['times']=int(info.get('times',0))+1
+        info['sonia_times']=int(info.get('sonia_times',0))+1
         info['total']=int(info.get('total',0))+1
-        limit=FIRST_GUARANTEE if int(info['cycles'])==0 else REPEAT_GUARANTEE
-        if info['times']>=limit:
-            # Pity is a 5-star-or-higher result, not a deterministic Sonia.
-            table_id=PARTNER_ID if rng(10000)<GUARANTEE_HIT_BASIS_POINTS else int(offbanner_draw())
-            if table_id!=PARTNER_ID and not is_five_star(table_id):
-                raise ValueError('Nữ Thần bảo hiểm lệch phải từ 5★')
-        elif rng(RATE_TOTAL)<FEATURED_WEIGHT:
+        draw_number=int(info['sonia_times'])
+        first_soft=(int(info['sonia_cycles'])==0
+                    and not info['first_soft_used']
+                    and draw_number==FIRST_GUARANTEE)
+        if draw_number>=HARD_GUARANTEE:
+            # Absolutely no 0.8% deviation at the 150th draw. Never let an
+            # unrelated 5★/offbanner result restart this hard guarantee.
             table_id=PARTNER_ID
+        elif first_soft or rng(RATE_TOTAL)<FEATURED_WEIGHT:
+            # Before draw 150 the featured result may deviate by 0.8% to a
+            # valid nonfeatured 5★; the Sonia counter is retained if it does.
+            table_id=(PARTNER_ID if rng(RATE_TOTAL)<GUARANTEE_HIT_BASIS_POINTS
+                      else int(offbanner_draw()))
+            if table_id!=PARTNER_ID and not is_five_star(table_id):
+                raise ValueError('Nữ Thần lệch phải từ 5★')
         else:
             table_id=int(fallback_draw())
-        # Both a featured 10★ Sonia and ANY unrelated 5★ reset pity.
+        if first_soft:
+            info['first_soft_used']=True
+        # Any real 5★ still resets its *own* 5★ counter, but the hard Sonia
+        # guarantee is reset ONLY when a real Sonia has been awarded.
         if table_id==PARTNER_ID or is_five_star(table_id):
             info['times']=0
             info['cycles']=int(info['cycles'])+1
+        if table_id==PARTNER_ID:
+            info['sonia_times']=0
+            info['sonia_cycles']=int(info['sonia_cycles'])+1
+            info['first_soft_used']=True
         partner={'partner_id':next_id,'table_id':table_id,'lv':1,
                  'grade':0,'awake':0,'equips':[],'pos':0,'show_skin':1}
         state.setdefault('partners',[]).append(partner)

@@ -42,7 +42,7 @@ assert(anim.includes('seen.size>=5'));
 assert(anim.includes('clearInterval(timer)'));
 assert(html.includes('app.js?v=20261122-sonia-elite-vfx-r11'));
 assert(html.includes('battle-animation.js?v=20261122-sonia-five-daggers-r8'));
-assert(html.includes('wish.js?v=20261122-sonia-poison-skilldesc-r8'));
+assert(html.includes('wish.js?v=20261123-sonia-hard150-r9'));
 const j=JSON.parse(fs.readFileSync('web/assets/chaos/lyr_sonia.json','utf8'));
 assert.equal(j.skills.length,4);
 for(const desc of j.skills[0].levels){

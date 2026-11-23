@@ -103,9 +103,11 @@ class ChaosSummonRateTests(unittest.TestCase):
             result=chaos_summon.summon(
                 state,29,no_rare,rng=lambda bound:bound-1,
                 offbanner_draw=lambda:51017,is_five_star=is_five)
-        self.assertEqual(result[-1]['table_id'],51017)
+        self.assertEqual(result[-1]['table_id'],chaos_summon.PARTNER_ID)
         self.assertEqual(state['chaos_summon']['cycles'],2)
         self.assertEqual(state['chaos_summon']['times'],0)
+        self.assertEqual(state['chaos_summon']['sonia_times'],0)
+        self.assertEqual(chaos_summon.snapshot(state)['hard_guaranteed_hit_percent'],100.0)
 
     def test_natural_five_star_resets_cycle(self):
         state=self.state(1)

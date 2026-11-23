@@ -39,5 +39,5 @@ for(const stars of [1,3,5,6,9,10,15,25]){
 assert(srcs.every(x=>x.startsWith('/assets/girl-ui/')));
 assert(code.includes("await wait(900);if(!skipped)await tapOrSkip();"),'5-star display must remain visible');
 assert(code.includes("await wait(900);\n   }finally{uncap();e.done();}"),'3-4 star display held long enough to read');
-assert(fs.readFileSync('web/index.html','utf8').includes('/summon-anim.js?v=20261119-goddess-wish-manual-r2'));
+assert(fs.readFileSync('web/index.html','utf8').includes('/summon-anim.js?v=20261123-real-faction-r4'));
 console.log('PASS: original native plaque with no Chinese text, visible 1–25★, slower reveal, no new assets');

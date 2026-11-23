@@ -60,7 +60,7 @@ function fig(){
  const home=fs.readFileSync('web/home-menus.js','utf8');
  assert(home.includes('await SummonAnim.playS4Rewards(girls,skins)'));
  const html=fs.readFileSync('web/index.html','utf8');
- assert(html.includes('/summon-anim.js?v=20261119-goddess-wish-manual-r2'));
+ assert(html.includes('/summon-anim.js?v=20261123-real-faction-r4'));
  assert(html.includes('/home-menus.js?v=20261119-goddess-wish-manual-r2'));
 
  // A 25-star result in S4 can pause at tapOrSkip: automatically continue
