@@ -741,6 +741,11 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
             candidate = (folder / path[len('/assets/chaos/'):]).resolve()
             if candidate.is_relative_to(folder.resolve()) and candidate.is_file():
                 mime = {'.png':'image/png', '.json':'application/json'}.get(candidate.suffix)
+                # A transparent Sonia cutout is used only by the Wish reveal.
+                # Serve precisely this new WEBP, preserving the existing
+                # allowlist and behaviour for every other Chaos resource.
+                if candidate.name == 'lyr_sonia_wish_cutout.webp':
+                    mime = 'image/webp'
                 if mime: return self.send(200, candidate.read_bytes(), mime)
             return self.send(404, {'error':'Recurso inexistente'})
         if path == '/api/admin/gift-catalog':
