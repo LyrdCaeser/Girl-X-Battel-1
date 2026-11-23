@@ -546,75 +546,58 @@ html.gxb-mobile #events-view .ev-title-label{overflow-wrap:anywhere}
   .sf-sale-dial.is-rolling .sf-sale-value{animation:none}
 }
 
-/* Original image supplied by the event owner. The unwanted hand-drawn
-   marker is excluded at the image alpha layer, never painted over in CSS.
-   Preserve the full Roman-numeral rim, Cosmos stars and golden clock hand. */
-.sf-clock-ornate-stage{
-  padding-top:calc(18 * var(--u));padding-bottom:calc(22 * var(--u));
-  background:radial-gradient(ellipse at 50% 52%,#5e468b 0%,#34235c 67%,#21163d 100%)
+/* Gentle polish of the ORIGINAL Lyr Sonia clock, not the uploaded artwork.
+   Retain the in-game ActivityWindow, six reward slots and animated hand. */
+.sf-clock-stage{
+  background:
+    radial-gradient(circle at 50% 57%,#9972c49c 0%,transparent 56%),
+    radial-gradient(ellipse at 50% 35%,#5c489d 0%,#35265f 67%,#251a49 100%);
+  box-shadow:inset 0 calc(6 * var(--u)) calc(20 * var(--u)) #120d3477;
 }
-.sf-clock-ornate-stage .sf-clock-ornate-dial{
-  position:relative;border:0;box-shadow:none;
-  background:none;border-radius:0;
-  width:min(calc(580 * var(--u)),99%);aspect-ratio:1;
-  margin:calc(4 * var(--u)) auto 0;overflow:visible
+.sf-clock-heading{
+  color:#ffeac0;
+  letter-spacing:calc(.3 * var(--u));
+  text-shadow:0 2px 4px #28143c,0 0 calc(12 * var(--u)) #c49ce4;
 }
-.sf-clock-ornate-stage .sf-clock-ornate-dial::before{display:none}
-.sf-clock-ornate-art{
-  position:absolute;inset:0;width:100%;height:100%;object-fit:contain;
-  pointer-events:none;user-select:none;
-  filter:drop-shadow(0 calc(9 * var(--u)) calc(13 * var(--u)) #09091c99);
-  transform-origin:50% 50%;
+.sf-clock-dial{
+  border-color:#eac678;
+  background:
+    radial-gradient(circle at center,#f3dffe 0%,#dec4f5 15%,transparent 16%),
+    repeating-conic-gradient(from -15deg,transparent 0deg 29.2deg,#e6ceff72 29.3deg 30deg),
+    conic-gradient(from 0deg,#d7b5ed,#aaa3da,#e8d1f6,#919ad0,#e4bcea,#bca6e1,#d7b5ed);
+  box-shadow:
+    0 0 0 calc(5 * var(--u)) #fff0b9,
+    0 0 0 calc(11 * var(--u)) #8763b0,
+    0 0 0 calc(14 * var(--u)) #f7e4b577,
+    inset 0 0 0 calc(8 * var(--u)) #7a4b93,
+    inset 0 0 calc(35 * var(--u)) #24164d,
+    0 calc(10 * var(--u)) calc(32 * var(--u)) #140d2da6;
 }
-.sf-clock-ornate-dial.is-spinning .sf-clock-ornate-art{
-  animation:sf-ornate-turn 1.3s linear infinite
+.sf-clock-prize{
+  background:linear-gradient(150deg,#fff8e2 0%,#f6e8fa 48%,#d9c4f1 100%);
+  border-color:#f6dcaa;
+  box-shadow:
+    inset 0 calc(2 * var(--u)) calc(4 * var(--u)) #ffffffde,
+    0 calc(4 * var(--u)) calc(10 * var(--u)) #39205da3;
 }
-.sf-clock-ornate-dial.is-landed .sf-clock-ornate-art{
-  animation:sf-ornate-land .95s cubic-bezier(.17,.77,.26,1) both
+.sf-clock-prize.selected{
+  background:linear-gradient(140deg,#fff7c8,#fffbea);
+  box-shadow:0 0 calc(16 * var(--u)) calc(7 * var(--u)) #fff1a7,
+    0 calc(3 * var(--u)) calc(11 * var(--u)) #4d2766;
 }
-@keyframes sf-ornate-turn{
-  from{transform:rotate(0deg)}
-  to{transform:rotate(360deg)}
+.sf-clock-hand{filter:drop-shadow(0 0 calc(5 * var(--u)) #ffe9ac8a)}
+.sf-clock-center{
+  border-color:#ffe8b3;
+  box-shadow:
+    0 0 calc(17 * var(--u)) #fff0b7bd,
+    0 0 calc(36 * var(--u)) #a784f0a3,
+    inset 0 0 calc(10 * var(--u)) #42286d;
 }
-@keyframes sf-ornate-land{
-  from{transform:rotate(calc(var(--clock-angle) - 720deg))}
-  to{transform:rotate(var(--clock-angle))}
-}
-.sf-clock-ornate-rewards{
-  display:flex;align-items:center;justify-content:center;
-  gap:calc(9 * var(--u));margin:calc(9 * var(--u)) auto calc(4 * var(--u));
-  padding:calc(10 * var(--u)) calc(6 * var(--u));
-  width:max-content;max-width:96%;box-sizing:border-box;
-  border:calc(2 * var(--u)) solid #b995df;
-  background:linear-gradient(90deg,#3b2766d9,#7651a0de,#3b2766d9);
-  border-radius:calc(17 * var(--u))
-}
-.sf-clock-ornate-reward{
-  width:calc(72 * var(--u));height:calc(72 * var(--u));
-  flex:0 1 calc(72 * var(--u));min-width:0;
-  box-sizing:border-box;display:grid;place-items:center;
-  border:calc(3 * var(--u)) solid #c9a3e8;
-  border-radius:calc(13 * var(--u));
-  background:linear-gradient(160deg,#fff9e5,#d6bce6);
-  box-shadow:inset 0 1px 3px #fffaed
-}
-.sf-clock-ornate-reward.selected{
-  border-color:#fff5ab;
-  background:linear-gradient(#fff5ca,#fae5fc);
-  box-shadow:0 0 calc(12 * var(--u)) calc(4 * var(--u)) #fff1a2
-}
-.sf-clock-ornate-icon{
-  width:90%;height:90%;object-fit:contain;
-  filter:drop-shadow(0 1px 2px #5b367e55)
-}
-@media(max-width:410px){
-  .sf-clock-ornate-rewards{gap:calc(5 * var(--u));max-width:99%}
-  .sf-clock-ornate-reward{
-    width:calc(66 * var(--u));height:calc(66 * var(--u));
-    flex-basis:calc(66 * var(--u))
-  }
+.sf-clock-crown img{
+  filter:drop-shadow(0 calc(3 * var(--u)) calc(5 * var(--u)) #281338)
+    drop-shadow(0 0 calc(7 * var(--u)) #ffe8b466);
 }
 @media(prefers-reduced-motion:reduce){
- .sf-clock-ornate-dial.is-spinning .sf-clock-ornate-art,
- .sf-clock-ornate-dial.is-landed .sf-clock-ornate-art{animation:none}
+  .sf-clock-dial.is-spinning .sf-clock-hand,
+  .sf-clock-dial.is-landed .sf-clock-hand{animation:none}
 }

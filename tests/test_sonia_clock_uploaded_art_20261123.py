@@ -1,7 +1,4 @@
-"""Owner-provided ornate clock image is the only dial used by Sonia event.
-
-All checks are read-only. Do not modify Sonia rolls or player profiles.
-"""
+"""Owner artwork stays archived while the prior in-game clock is restored."""
 import pathlib
 import unittest
 from PIL import Image
@@ -28,24 +25,23 @@ class SoniaOwnerClockArt(unittest.TestCase):
             self.assertEqual(alpha.getpixel((320,320)),255)
             self.assertGreater(sum(alpha.histogram()[250:]),190000)
 
-    def test_no_more_css_fabricated_clock_or_avatar_over_owner_art(self):
+    def test_owner_asset_retained_but_clock_reverted_by_request(self):
         js=JS.read_text()
         clock=js[js.index(' function soniaClockFace('):js.index(' function eventPrizeImage(')]
-        self.assertIn('/assets/original-ui/sonia_clock_ornate_20261123.webp',clock)
-        self.assertIn('sf-clock-ornate-art',clock)
-        self.assertIn('sf-clock-ornate-rewards',clock)
-        self.assertNotIn("el('div','sf-clock-center')",clock)
-        self.assertNotIn("el('div','sf-clock-hand')",clock)
-        self.assertNotIn("el('div','sf-clock-marks')",clock)
-        self.assertNotIn("el('div','sf-clock-crown')",clock)
-        self.assertIn('soniaClockIndex*60-45',clock)
+        self.assertNotIn('sonia_clock_ornate_20261123.webp',clock)
+        self.assertNotIn('sf-clock-ornate',clock)
+        self.assertIn("el('div','sf-clock-hand')",clock)
+        self.assertIn("el('div','sf-clock-center')",clock)
+        self.assertIn("el('div','sf-clock-marks')",clock)
+        self.assertIn("el('div','sf-clock-crown')",clock)
+        self.assertIn('soniaClockIndex*60',clock)
         self.assertIn('i===soniaClockIndex',clock)
         style=CSS.read_text()
-        self.assertIn('sf-ornate-turn',style)
-        self.assertIn('sf-ornate-land',style)
+        self.assertNotIn('sf-clock-ornate',style)
+        self.assertIn('sf-clock-prize.selected',style)
         self.assertIn('prefers-reduced-motion',style)
         html=HTML.read_text()
-        self.assertIn('events.js?v=20261123-sonia-ornate-clock-r9',html)
-        self.assertIn('events.css?v=20261123-sonia-ornate-clock-r9',html)
+        self.assertIn('events.js?v=20261123-sonia-classic-polish-r10',html)
+        self.assertIn('events.css?v=20261123-sonia-classic-polish-r10',html)
 
 if __name__=='__main__': unittest.main()

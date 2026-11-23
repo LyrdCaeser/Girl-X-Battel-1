@@ -205,37 +205,41 @@ const EventsHub=(()=>{
  // The 12-hour face is a visual celebration, not a uniform-odds wheel.
  // Prize probabilities are shown separately and come unchanged from Neon.
  function soniaClockFace(odds){
-  const stage=el('section','sf-clock-stage sf-clock-ornate-stage');
+  const stage=el('section','sf-clock-stage');
   stage.append(el('h3','sf-clock-heading','✦ Vòng Quay Kim Đồng Hồ ✦'),
     el('p','sf-clock-kicker','Mỗi vòng kim xoay, một điều ước được gửi tới Sonia'));
-  // This is the exact clock supplied by the event owner. The circled mark
-  // outside the wheel was removed from its transparent WebP source.
-  // Animate the artwork itself: its ornate golden hand is part of the image.
-  // Do not overlay the previous CSS-drawn dial, hand or central Sonia avatar.
-  const dial=el('div','sf-clock-dial sf-clock-ornate-dial'+
-    (soniaClockSpinning?' is-spinning':'')+
+  const dial=el('div','sf-clock-dial'+(soniaClockSpinning?' is-spinning':'')+
     (soniaClockIndex>=0&&!soniaClockSpinning?' is-landed':''));
   dial.setAttribute('role','img');
-  dial.setAttribute('aria-label','Vòng Quay Kim Đồng Hồ vàng tím với hoa văn thiên văn, sao Cosmos và kim đồng hồ');
-  const angle=soniaClockIndex>=0?soniaClockIndex*60-45:0;
-  dial.style.setProperty('--clock-angle',angle+'deg');
-  dial.append(img('/assets/original-ui/sonia_clock_ornate_20261123.webp',
-    'sf-clock-ornate-art','Vòng Quay Kim Đồng Hồ Lyr Sonia'));
-  stage.append(dial);
-  // The six rewards stay OUTSIDE the reference artwork, so the Roman numerals,
-  // constellations and star-shaped hands remain completely visible.
-  const tray=el('div','sf-clock-ornate-rewards');
-  tray.setAttribute('aria-label','Sáu phần quà có thể nhận');
-  for(let i=0;i<odds.length;i++){
-    const entry=odds[i];
-    const id=Object.keys(entry.awards||{})[0];
-    const tile=el('div','sf-clock-ornate-reward'+
-      (i===soniaClockIndex&&!soniaClockSpinning?' selected':''));
-    tile.title=entry.label+' · '+entry.chance.toLocaleString('vi-VN')+'%';
-    tile.append(img(eventPrizeImage(id),'sf-clock-ornate-icon',entry.label));
-    tray.append(tile);
+  dial.setAttribute('aria-label','Đồng hồ Lyr Sonia với sáu phần thưởng và kim đồng hồ');
+  const marks=el('div','sf-clock-marks');
+  for(let i=0;i<12;i++){
+    const mark=el('i','sf-clock-mark'+(i%3===0?' major':''));
+    mark.style.setProperty('--hour',i);
+    marks.append(mark);
   }
-  stage.append(tray);
+  dial.append(marks);
+  for(let i=0;i<odds.length;i++){
+    const award=odds[i]?.awards||{};
+    const id=Object.keys(award)[0];
+    const item=el('div','sf-clock-prize'+(i===soniaClockIndex&&!soniaClockSpinning?' selected':''));
+    item.style.setProperty('--prize-index',i);
+    item.title=odds[i].label;
+    item.append(img(eventPrizeImage(id),'sf-clock-prize-icon',odds[i].label));
+    dial.append(item);
+  }
+  const hand=el('div','sf-clock-hand');
+  const angle=soniaClockIndex>=0?soniaClockIndex*60:0;
+  hand.style.setProperty('--clock-angle',angle+'deg');
+  hand.append(el('span','sf-clock-pointer'),el('span','sf-clock-tail'));
+  dial.append(hand);
+  const center=el('div','sf-clock-center');
+  center.append(img('/assets/item-icons/partner_avatar_758001.png','', 'Lyr Sonia'),
+    el('b','','SONIA'));
+  dial.append(center);
+  const crown=el('div','sf-clock-crown');
+  crown.append(img('/assets/events/icon_activity_clock.png','','Kim Đồng Hồ'));
+  stage.append(dial,crown);
   return stage;
  }
  function eventPrizeImage(id){

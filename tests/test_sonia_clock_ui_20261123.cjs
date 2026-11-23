@@ -14,14 +14,17 @@ assert(ui.includes("const section=el('div','sf-banner'+(kind==='shards'?' sf-clo
 assert(ui.includes("parent.append(soniaClockFace(w.odds));"));
 assert(ui.includes("if(kind!=='shards')parent.append(rows);"),
   'Original Star and Mission event tables must not be altered');
-assert(ui.includes("const dial=el('div','sf-clock-dial sf-clock-ornate-dial'"));
-assert(ui.includes('/assets/original-ui/sonia_clock_ornate_20261123.webp'));
-assert(ui.includes("const tray=el('div','sf-clock-ornate-rewards')"));
+assert(ui.includes("const dial=el('div','sf-clock-dial'"));
+assert(ui.includes("const marks=el('div','sf-clock-marks')"));
+assert(ui.includes('for(let i=0;i<12;i++)'));
+assert(ui.includes("const item=el('div','sf-clock-prize'"));
+assert(ui.includes("const hand=el('div','sf-clock-hand')"));
+assert(ui.includes("const center=el('div','sf-clock-center')"));
+assert(ui.includes("const crown=el('div','sf-clock-crown')"));
+assert(!ui.includes('sonia_clock_ornate_20261123.webp'),
+  'Reverted clock must not use the owner image any more');
+assert(!ui.includes('sf-clock-ornate-dial'));
 assert(ui.includes('for(let i=0;i<odds.length;i++)'));
-assert(ui.includes("const tile=el('div','sf-clock-ornate-reward'"));
-assert(!ui.includes("const hand=el('div','sf-clock-hand')"));
-assert(!ui.includes("const center=el('div','sf-clock-center')"));
-assert(!ui.includes("const marks=el('div','sf-clock-marks')"));
 assert(ui.includes('w.spins+count>w.cap'));
 assert(ui.includes("Number(state.items['2']||0)<price"));
 assert(ui.includes("send({action:'sonia_spin',count})"));
@@ -34,8 +37,9 @@ assert(!ui.includes("Math.random"),'Frontend must never roll prizes locally');
 assert(ui.includes("const id=Object.keys(reward.awards||{})[0]"));
 assert(ui.includes("r.chance.toLocaleString('vi-VN')+'%'"));
 assert(ui.includes('Kim đồng hồ minh họa các phần quà'));
-for(const selector of ['.sf-clock-stage','.sf-clock-ornate-dial','.sf-clock-ornate-art',
- '.sf-clock-ornate-rewards','.sf-clock-ornate-reward','.sf-clock-progress','.sf-clock-spin-btn',
+for(const selector of ['.sf-clock-stage','.sf-clock-dial','.sf-clock-marks',
+ '.sf-clock-prize','.sf-clock-hand','.sf-clock-center','.sf-clock-crown',
+ '.sf-clock-progress','.sf-clock-spin-btn',
  '.sf-clock-odds-card','.sf-clock-result-list','.sf-clock-banner','.sf-clock-tab']){
  assert(style.includes(selector), 'Missing native-game styled UI '+selector);
 }
@@ -46,8 +50,8 @@ assert(style.includes('/assets/events/activity_bg03.png'),
 assert(style.includes('@media(prefers-reduced-motion:reduce)'),
  'Reduced-motion preferences must be supported');
 for(const version of [
- '/events.js?v=20261123-sonia-ornate-clock-r9',
- '/events.css?v=20261123-sonia-ornate-clock-r9']){
+ '/events.js?v=20261123-sonia-classic-polish-r10',
+ '/events.css?v=20261123-sonia-classic-polish-r10']){
  assert(html.includes(version),'Cache-busting build must use updated wheel resources');
 }
 assert(grants.includes('SPIN_COST={1:1200,5:5800}'),'Updated server-verified x1/x5 prices are required');
