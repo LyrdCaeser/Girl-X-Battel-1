@@ -181,6 +181,9 @@ const GirlUI=(()=>{
   // match_materials rejects a 11★+ Sonia even though her table_id is 758001.
   // Star-specific wildcard recipes continue to use their actual star count.
   if(code===g.table_id)return !Number(g.awake||0);
+  // Lyr Sonia's 14★ needs one Cosmos goddess, regardless of her star
+  // (10★–25★); the 15★ recipe uses the separate 11★ Cosmos wildcard.
+  if(code===7999)return Number(host.table_id)===758001&&Number(g.group)===7&&starOf(g)>=10&&starOf(g)<=25;
   if(code%1000!==999)return false;
   const star=Math.floor(code/10000),group=code%10000===9999?0:Math.floor(code/1000)%10;
   return starOf(g)===star&&(!group||g.group===group);
@@ -227,7 +230,16 @@ const GirlUI=(()=>{
    const used=new Set();
    return (recipe?.material||[]).every(code=>{const g=pool.find(x=>!used.has(String(x.partner_id))&&matches(Number(code),x,host));if(!g)return false;used.add(String(g.partner_id));return true;});
   }
-  function codeLabel(code){if(code%1000===999){const star=Math.floor(code/10000),group=code%10000===9999?0:Math.floor(code/1000)%10;return star+'★ '+(group?'cùng hệ':'bất kỳ hệ nào');}return (girlsCatalog?.find?.(g=>g.id===code)?.name||'Nữ Thần '+code)+' cùng tên';}
+  function codeLabel(code){
+   if(code===7999)return 'Nữ Thần Hệ Vũ Trụ · 10★ trở lên';
+   if(code%1000===999){
+    const star=Math.floor(code/10000),group=code%10000===9999?0:Math.floor(code/1000)%10;
+    return star+'★ · '+(group===7?'Hệ Vũ Trụ':group?(factionNames[group]||'Đúng hệ'):'Bất kỳ hệ nào');
+   }
+   const known=girlsCatalog?.find?.(g=>g.id===code);
+   const name=known?.name||'Nữ Thần '+code;
+   return name+' '+(known?.stars||10)+'★'+(code===758001?' nguyên bản':'');
+  }
   function setMaterialChoice(recipe,host,kind,index,id){const saved=savedSelection(recipe,host);saved[kind][index]=id||null;}
   function materialCandidates(recipe,host,kind,index){
    const picked=pick(recipe,host),used=new Set();
@@ -341,7 +353,8 @@ const GirlUI=(()=>{
    if(targetStar>=11){const un=el('div','lb-unlock');un.append(el('b','','Mở Khóa'));un.append(nodes({...hero,stars:targetStar},'win',false));body.append(un);}
    body.append(el('p','lb-choice-note','Chạm từng ô để tự chọn Nữ Thần dùng làm nguyên liệu.'));
    if(Number(hero.table_id)===758001&&!r.awake25){
-    body.append(el('p','lb-choice-note','Cần một Lyr Sonia 10★ nguyên bản cho mỗi lần Thức Tỉnh. Sonia đã nâng lên 11★ trở lên không thể làm nguyên liệu.'));
+    const soniaCopies=(r.material||[]).filter(x=>Number(x)===758001).length;
+    body.append(el('p','lb-choice-note','Cần '+soniaCopies+' Lyr Sonia 10★ nguyên bản'+(soniaCopies>1?'':'')+' và các Nữ Thần đúng cấp sao bên dưới. Sonia từ 11★ trở lên không thể thay thế bản 10★.'));
    }
    if(r.awake25){
     const addGroup=(label,items,required,emptyText,kind)=>{
@@ -360,10 +373,11 @@ const GirlUI=(()=>{
     addGroup('Nữ Thần cùng tên',picked.copies,Number(r.copies)||0,'Chọn','copies');
     addGroup('Nữ Thần bổ trợ · hệ 1–6',picked.sacrifices,Number(r.sacrifices)||0,'Chọn','sacrifices');
    }else{
-    const mats=el('div','lb-mats');
+    const mats=el('div','lb-mats'+((r.material||[]).length>2?' wrap':''));
     (r.material||[]).forEach((code,i)=>{const g=chosen[i],c=el('button','lb-mat choose'+(g?' ok':'')),pic=el('span','lb-pic');c.type='button';
      materialSlotPreview(pic,hero,r,'normal',i,g,Number(code));
      c.append(pic,el('small','',(g?1:0)+'/1'));
+     if(Number(hero.table_id)===758001)c.append(el('span','lb-material-label',codeLabel(Number(code))));
      c.title=g?g.name+' · '+g.stars+'★ · Cấp '+g.lv:codeLabel(Number(code))+' · Chạm vào ảnh để chọn';
      c.setAttribute('aria-label',c.title);
      c.onclick=()=>chooseMaterial(hero,r,'normal',i,close);mats.append(c);
@@ -394,7 +408,7 @@ const GirlUI=(()=>{
      }else{
       const raw=$('error')?.textContent||'Chưa thể Thức Tỉnh. Hãy thử lại.';
       const err=Number(hero.table_id)===758001&&/material|receta|nguyên liệu/i.test(raw)?
-       'Nguyên liệu chưa đúng. Cần Lyr Sonia nguyên bản 10★ chưa thức tỉnh.':raw;
+       'Nguyên liệu chưa đúng. Hãy kiểm tra tên Nữ Thần, cấp sao và số lượng cần dùng.':raw;
       toast(err);
      }
     }catch(err){toast(err.message||'Chưa thể Thức Tỉnh. Hãy thử lại.');}

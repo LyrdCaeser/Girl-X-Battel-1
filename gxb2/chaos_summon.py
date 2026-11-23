@@ -36,8 +36,17 @@ PARTNER = {
     'host': '', 'material': '', 'avatar': 'partner_avatar_758001',
     'partner_model': 75800101, 'show_in_guide': 1, 'show_in_forge': 1,
     'show_in_guide_auditing': 0, 'show_in_forge_auditing': 0,
-    # 11–15★: one native Sonia copy at each original awakening step.
-    'awake_material': '|'.join([str(PARTNER_ID)] * 5),
+    # 11★ unchanged. Later awakenings have individually chosen, real goddess
+    # sacrifices; every Sonia copy must be her original, unawakened 10★ form.
+    # 109999 = any 10★; 7999 = any Cosmos (10–25★) only for this
+    # Hỗn Độn recipe; 117999 = Cosmos 11★.
+    'awake_material': '|'.join((
+        '758001',                               # 11★
+        '758001#109999',                        # 12★
+        '758001#109999#55014#53019#55012',   # 13★
+        '758001#653026#655023#7999',          # 14★
+        '758001#758001#758001#117999#753019', # 15★
+    )),
     'awake_grow': (
         '116.69#1572.00#6#2|128.83#1800.88#6#2|142.23#2062.80#6#2|'
         '152.88#2261.18#6#2|164.32#2478.78#6#2|181.41#2840.24#6.12#2|'

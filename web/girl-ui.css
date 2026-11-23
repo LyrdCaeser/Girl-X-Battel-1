@@ -508,3 +508,12 @@ html.gxb-mobile #app-frame .gs-win.gu-skill-info .gs-win-body{max-height:calc(10
 .gu-sonia-ex-materials{margin:calc(16 * var(--u)) 0;display:flex;justify-content:center}
 .gu-sonia-ex-panel>.gs-btn{display:block;margin:calc(8 * var(--u)) auto}
 .gu-sonia-ex-max{font-size:calc(22 * var(--u));font-weight:bold;color:#8562b0}
+
+
+/* Sonia's 12–15★ material recipes have 2–5 distinct goddess slots.
+   Keep the original game cards while fitting rows on narrow phones. */
+.lb-mats.wrap .lb-mat.choose{width:calc(178 * var(--u));max-width:32%}
+.lb-mat .lb-material-label{
+ display:block;max-width:calc(174 * var(--u));font:700 calc(20 * var(--u))/1.23 system-ui;
+ color:#53516c;text-align:center;overflow-wrap:anywhere;min-height:calc(45 * var(--u));
+}

@@ -51,24 +51,25 @@ function createNode(tag,cls='',content=''){
 }
 async function clickCase(actionResult,expectedText,shouldClose){
  let closed=0,called=0,toastText='',inFlight=null;
- const recipe={kind:'awake',material:[758001],cost:{'10':10000},star:12};
+ const recipe={kind:'awake',material:[758001,109999],cost:{'10':10000},star:12};
  const current={...hero,next_awake:recipe,potentials:[]};
+ const any10={table_id:757001,partner_id:105,awake:0,stars:10,group:7,flags:[],pos:0};
  const nctx=vm.createContext({
   win:()=>({body:createNode('section'),close:()=>closed++}),
   el:createNode,stars:()=>createNode('i'),nodes:()=>createNode('i'),
   pots:{attr_up:[.14,.10]},CAPS:[260,270,290,310,330],
-  pick:()=>[valid],selectedMaterials:(r,p)=>p,materialsReady:()=>true,
-  cost:()=>true,materialSlotPreview:()=>{},setMaterialChoice:()=>{},
+  pick:()=>[valid,any10],selectedMaterials:(r,p)=>p,materialsReady:()=>true,
+  cost:()=>true,materialSlotPreview:()=>{},setMaterialChoice:()=>{},codeLabel:()=> 'Nữ Thần đúng sao',
   chooseMaterial:()=>{},card:()=>createNode('img'),
   toast:t=>toastText=t,action:async(message,data)=>{
    called++;assert.equal(message,'AWAKE_PARTNER');
    assert.equal(data.partner_id,100);
-   assert.equal(data.material_ids[0],101);
+   assert.deepEqual(Array.from(data.material_ids),[101,105]);
    return actionResult;
   },
-  awakeSel:{'100:12':{normal:[101]}},
+  awakeSel:{'100:12':{normal:[101,105]}},
   selectionKey:()=> '100:12',
-  state:{roster:[current,valid]},
+  state:{roster:[current,valid,any10]},
   $:()=>({textContent:'Los materiales no coinciden con la receta original'}),
   Number,Math,console,
  });
@@ -98,7 +99,7 @@ async function clickCase(actionResult,expectedText,shouldClose){
 }
 (async()=>{
  await clickCase({state:{roster:[]}},'Thức Tỉnh thành công',true);
- await clickCase(undefined,'Cần Lyr Sonia nguyên bản 10★',false);
- assert(html.includes('/girl-ui.js?v=20261123-sonia-awake-material-r4'));
+ await clickCase(undefined,'Hãy kiểm tra tên Nữ Thần',false);
+ assert(html.includes('/girl-ui.js?v=20261123-sonia-ritual-12-15-r5'));
  console.log('PASS Sonia 10★ eligible; 11★ invalid even if preselected; locked/exchange excluded; click sends one real action; error visible and retry enabled.');
 })().catch(e=>{console.error(e);process.exitCode=1});

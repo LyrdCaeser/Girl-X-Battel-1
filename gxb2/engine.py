@@ -2911,7 +2911,12 @@ class Engine:
                 exact = needed == girl['table_id'] and star == int(row['max_star'])
                 wildcard_group = 0 if needed % 10000 == 9999 else (needed // 1000) % 10
                 wildcard = needed % 1000 == 999 and star == needed // 10000 and (not wildcard_group or int(row['group']) == wildcard_group)
-                if exact or wildcard:
+                # Dedicated Lyr Sonia 14★ material: one Cosmos goddess of
+                # any attained star. Do not enable this sentinel for other
+                # factions or allow it to consume non-Cosmos girls.
+                sonia_cosmos = (needed == 7999 and int(group) == 8
+                                and int(row['group']) == 7 and 10 <= star <= 25)
+                if exact or wildcard or sonia_cosmos:
                     used.add(pid)
                     break
             else: raise GameError('Los materiales no coinciden con la receta original')
