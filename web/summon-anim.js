@@ -112,8 +112,8 @@ const SummonAnim=(()=>{
   t.onpointerdown=e=>{y0=e.clientY;};t.onpointerup=e=>{const r=overlay.getBoundingClientRect();if(y0!=null&&(e.clientY-y0)>r.height*100/1280)end();y0=null;};
   t.onkeydown=null;hint.onclick=end;const k=setInterval(()=>{if(skipped)end();},100);});}
  // The girl's picture follows the "juese" slot (PartnerSummonEffect:replacePartner, partner_picture_xy / scale).
- async function attachGirl(fig,tableId){const i=fig.skeleton.findSlotIndex('juese');const box=fig.slotContainers?.[i];if(!box)return;
-  const showId=hostChain(tableId).find(id=>pics.has(Number(id)));const full=showId!==undefined;const url=full?'/assets/pictures/'+showId+'.webp':girlIconSource(tableId);if(!url)return;
+ async function attachGirl(fig,tableId,soniaWish=false){const i=fig.skeleton.findSlotIndex('juese');const box=fig.slotContainers?.[i];if(!box)return;
+  const showId=hostChain(tableId).find(id=>pics.has(Number(id)));const full=showId!==undefined;const url=(soniaWish&&Number(tableId)===758001)?'/assets/chaos/lyr_sonia_wish_cutout.webp':full?'/assets/pictures/'+showId+'.webp':girlIconSource(tableId);if(!url)return;
   const image=await new Promise(resolve=>{
    const im=new Image();let settled=false;
    const done=value=>{if(settled)return;settled=true;im.onload=null;im.onerror=null;clearTimeout(limit);clearInterval(skipPoll);resolve(value);};
@@ -197,7 +197,7 @@ const SummonAnim=(()=>{
    },1000+i*180);
   });
  }
- function nativeNameStars(fig,p,star){
+ function nativeNameStars(fig,p,star,soniaWish=false){
   // A 1xing/3xing slot can be disabled by its current Spine animation;
   // attach ALL real labels to the permanently visible native 'name' slot.
   const index=fig.skeleton.findSlotIndex('name');
@@ -218,7 +218,22 @@ const SummonAnim=(()=>{
   bar.addChild(label);
   const starIcons=[];
   const normal=star<=5;
-  if(normal){
+  if(soniaWish&&Number(p.table_id)===758001){
+   // Only Sonia's Wish movie uses this purple Cosmos star on the original
+   // animated star mount. Ordinary summon and all other goddesses stay intact.
+   const wing=PIXI.Sprite.from('/assets/chaos/lyr_sonia_tag_cosmos'+(star>=15?'_max':'')+'.png');
+   wing.anchor.set(.5);wing.position.set(0,78);wing.scale.set(.6,-.6);
+   bar.addChild(wing);starIcons.push(wing);
+   if(star>=10){
+    const num=new PIXI.Text(String(star),{
+     fontFamily:'Arial, sans-serif',fontSize:22,fontWeight:'bold',
+     fill:0xffffff,stroke:0x5a309a,strokeThickness:3
+    });
+    num.anchor.set(.5);num.position.set(0,78);num.scale.y=-1;bar.addChild(num);
+    num.alpha=0;
+    setTimeout(()=>{if(!num.destroyed)num.alpha=1;},1250);
+   }
+  }else if(normal){
    const count=Math.max(1,Math.min(5,star));
    const space=count===5?35:count===4?39:40;
    for(let i=0;i<count;i++){
@@ -268,7 +283,7 @@ const SummonAnim=(()=>{
   if(typeof Dates!=='undefined')void Dates.playGirlVoice(p.table_id);
   return ()=>{c.hidden=true;if(voice)voice.hidden=true;};
  }
- async function reveal(p,i,summon){const star=Number(p.star)||5;
+ async function reveal(p,i,summon,soniaWish=false){const star=Number(p.star)||5;
   if(star>=5){
    if(summon){
     const m=await layer('/assets/spine/fx_ui_gacha_revision',1.2,.66);
@@ -278,10 +293,10 @@ const SummonAnim=(()=>{
    const e=await layer('/assets/spine/fx_ui_newgirl_gaino');
    let uncap=()=>{};
    try{
-    await attachGirl(e.fig,p.table_id);
+    await attachGirl(e.fig,p.table_id,soniaWish);
     if(skipped)return;
     nativeFaction(e.fig,p);
-    const placed=nativeNameStars(e.fig,p,star);uncap=caption(p,star,placed);
+    const placed=nativeNameStars(e.fig,p,star,soniaWish);uncap=caption(p,star,placed);
     sfx('ui_gain_hero_5star_bg');setTimeout(()=>{if(!skipped&&overlay)sfx('ui_gain_hero_5star');},1000);
     const s=Math.min(star,11);await run(e.fig,ANIM1[s]||'texiao01');
     if(!skipped){run(e.fig,ANIM2[s]||'texiao04',true);await wait(900);if(!skipped)await tapOrSkip();}
@@ -289,10 +304,10 @@ const SummonAnim=(()=>{
   }else{
    const e=await layer('/assets/spine/fx_ui_newgirl_gainp');let uncap=()=>{};
    try{
-    await attachGirl(e.fig,p.table_id);
+    await attachGirl(e.fig,p.table_id,soniaWish);
     if(skipped)return;
     nativeFaction(e.fig,p);
-    const placed=nativeNameStars(e.fig,p,star);uncap=caption(p,star,placed);
+    const placed=nativeNameStars(e.fig,p,star,soniaWish);uncap=caption(p,star,placed);
     const left=summon&&i%2===1;sfx(left?'ui_gain_hero_left':'ui_gain_hero_right');
     await run(e.fig,left?'texiao03':'texiao01');
     if(!skipped)await wait(900);
@@ -464,11 +479,11 @@ const SummonAnim=(()=>{
     let uncap=()=>{};
     try{
      if(type==='girls'){
-      await attachGirl(fig,entry.table_id);
+      await attachGirl(fig,entry.table_id,Number(entry.table_id)===758001);
       if(skipped)break;
       const star=Math.max(1,Math.min(25,Number(entry.star||entry.stars)||25));
       nativeFaction(fig,entry);
-      const placed=nativeNameStars(fig,entry,star);
+      const placed=nativeNameStars(fig,entry,star,Number(entry.table_id)===758001);
       uncap=caption(entry,star,placed);
      }
      const currentStar=Math.max(1,Math.min(25,Number(entry.star||entry.stars)||25));
@@ -550,7 +565,7 @@ const SummonAnim=(()=>{
    // S4 is a long 24-goddess sequence. Recover per portrait instead of
    // aborting the entire gift on one damaged image or stalled animation.
    for(let i=0;i<partners.length&&!skipped;i++){
-    try{await reveal(partners[i],i,!!kind);}
+    try{await reveal(partners[i],i,!!kind,Number(summonId)===29&&Number(partners[i].table_id)===758001);}
     catch(e){console.warn('Wish bỏ qua lượt hiển thị lỗi:',partners[i]?.name,e);}
    }
   }catch(e){console.warn("Summon animation unavailable",e);}

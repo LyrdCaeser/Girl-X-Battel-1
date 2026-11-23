@@ -50,6 +50,6 @@ const unknown=fig();
 assert.equal(nativeFaction(unknown,{table_id:99999999}),false);
 assert.equal(unknown.changes.length,1,'Never leave incorrect blue icon for unknown girls');
 assert.equal(unknown.slotContainers[0].children.length,0);
-assert(html.includes('/summon-anim.js?v=20261123-real-faction-r4'));
+assert(html.includes('/summon-anim.js?v=20261123-sonia-wish-cosmos-r5'));
 assert(html.includes('/wish.js?v=20261123-sonia-hard150-r9'));
 console.log('PASS: native faction in original gacha slot for Raenvya, Diana, all factions 1–8 and S4 Wish.');

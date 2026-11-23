@@ -21,7 +21,7 @@ assert(css.includes('.sa-gm-goddess-wish .sa-s4-progress{display:none!important}
 assert(html.includes('summon-anim.css?v=20261119-gm-wish-no-counter-r3'));
 assert(css.includes('.sa-gm-goddess-wish .sa-hint'),
   'Visible touch-to-complete button for both PC and mobile');
-assert(html.includes('summon-anim.js?v=20261123-real-faction-r4'));
+assert(html.includes('summon-anim.js?v=20261123-sonia-wish-cosmos-r5'));
 assert(html.includes('home-menus.js?v=20261119-goddess-wish-manual-r2'));
 const section=src.slice(src.indexOf(' function s4Pause(ms){'),
                         src.indexOf(' async function s4RevealSequence('));

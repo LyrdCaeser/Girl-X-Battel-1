@@ -4,7 +4,7 @@ const html=fs.readFileSync('web/index.html','utf8');
 const events=fs.readFileSync('web/events.js','utf8');
 const anim=fs.readFileSync('web/summon-anim.js','utf8');
 const css=fs.readFileSync('web/events.css','utf8');
-assert(html.includes('summon-anim.js?v=20261123-real-faction-r4'));
+assert(html.includes('summon-anim.js?v=20261123-sonia-wish-cosmos-r5'));
 assert(html.includes('events.js?v=20261122-sonia-visual-tickets-r6'));
 assert(html.includes('events.css?v=20261122-sonia-visual-tickets-r6'));
 assert(anim.includes('pics.add(758001)'));
