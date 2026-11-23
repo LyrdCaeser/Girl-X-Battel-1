@@ -24,7 +24,7 @@ assert(server.includes("if path == '/assets/skills/skill-descriptions.json':"));
 assert(server.includes("ROOT/'web/assets/skills/skill-descriptions.json'"));
 assert(css.includes('.gs-win.gu-skill-info'));
 assert(css.includes('#girl-detail-view .detail-skill:focus-visible'));
-assert(html.includes('/girl-ui.js?v=20261122-sonia-elite-r3'));
+assert(html.includes('/girl-ui.js?v=20261123-sonia-awake-material-r4'));
 assert(html.includes('/app.js?v=20261122-sonia-elite-vfx-r11'));
 assert(html.includes('/station.js?v=20261122-sonia-discuss-r1'));
 console.log('PASS: all-goddess native touch+keyboard skill detail modal, local publisher text, Sonia original discussion profile');

@@ -175,8 +175,21 @@ const GirlUI=(()=>{
 
  // ---- Native evolution / awakening: 4★→5★→6★ and 6★→25★ ----
  function starOf(g){return g.stars;}
- function matches(code,g,host){if(g.partner_id===host.partner_id)return false;if(code===g.table_id)return true;if(code%1000!==999)return false;const star=Math.floor(code/10000),group=code%10000===9999?0:Math.floor(code/1000)%10;return starOf(g)===star&&(!group||g.group===group);}
- function materialAvailable(g,host){return g.partner_id!==host.partner_id&&!g.flags?.some(Boolean)&&state.acquisition?.exchange?.partner_id!==g.partner_id;}
+ function matches(code,g,host){
+  if(g.partner_id===host.partner_id)return false;
+  // Exact-character awakening materials must be an unawakened copy. Server
+  // match_materials rejects a 11★+ Sonia even though her table_id is 758001.
+  // Star-specific wildcard recipes continue to use their actual star count.
+  if(code===g.table_id)return !Number(g.awake||0);
+  if(code%1000!==999)return false;
+  const star=Math.floor(code/10000),group=code%10000===9999?0:Math.floor(code/1000)%10;
+  return starOf(g)===star&&(!group||g.group===group);
+ }
+ function materialAvailable(g,host){
+  return g.partner_id!==host.partner_id
+   &&!g.flags?.some(Boolean)&&!g.locked&&!g.lock_flag&&!g.lock_flags
+   &&state.acquisition?.exchange?.partner_id!==g.partner_id;
+ }
  function awake25SameCharacter(a,b){
    if(Number(a.group)!==Number(b.group))return false;
    const ai=a.awake25_identity||[[],[]],bi=b.awake25_identity||[[],[]],ah=ai[0]||[],bh=bi[0]||[];
@@ -327,6 +340,9 @@ const GirlUI=(()=>{
    if(targetStar>=16)row('Phòng Thủ',String(100+(targetStar-15)*2)+'% so với 15★');body.append(rows);
    if(targetStar>=11){const un=el('div','lb-unlock');un.append(el('b','','Mở Khóa'));un.append(nodes({...hero,stars:targetStar},'win',false));body.append(un);}
    body.append(el('p','lb-choice-note','Chạm từng ô để tự chọn Nữ Thần dùng làm nguyên liệu.'));
+   if(Number(hero.table_id)===758001&&!r.awake25){
+    body.append(el('p','lb-choice-note','Cần một Lyr Sonia 10★ nguyên bản cho mỗi lần Thức Tỉnh. Sonia đã nâng lên 11★ trở lên không thể làm nguyên liệu.'));
+   }
    if(r.awake25){
     const addGroup=(label,items,required,emptyText,kind)=>{
      body.append(el('p','detail-note',label+' · '+items.filter(Boolean).length+'/'+required));
@@ -357,15 +373,32 @@ const GirlUI=(()=>{
    const compose=r.kind==='compose';
    const acts=el('div','gs-btns'),btn=el('button','gs-btn',compose?'Tiến Hóa Nữ Thần':'Thức Tỉnh');btn.type='button';btn.disabled=!ok||!materialsReady(r,picked);
    btn.onclick=async()=>{
-    if(!materialsReady(r,picked))return;
+    if(btn.disabled||!materialsReady(r,picked))return;
     const involved=chosen.filter(g=>g?.pos);
     if(involved.length&&!await confirmGame('Có '+involved.length+' Nữ Thần nguyên liệu đang trong đội hình. Tiếp tục?',{title:'Xác Nhận Tiến Hóa',ok:'Tiếp tục',danger:true}))return;
     const ids=chosen.map(g=>g.partner_id);
     const message=compose?'COMPOSE_PARTNER':'AWAKE_PARTNER';
     const data=compose?{table_id:r.target,material_ids:[hero.partner_id,...ids]}:{partner_id:hero.partner_id,material_ids:ids};
     btn.disabled=true;
-    try{const result=await action(message,data);if(result?.state){delete awakeSel[selectionKey(r,hero)];close();}else{btn.disabled=false;}}
-    catch(err){btn.disabled=false;toast(err.message||'Không thể nâng sao');}
+    const buttonText=btn.textContent;
+    btn.textContent='Đang Thức Tỉnh…';
+    try{
+     // app.action() catches server errors and returns undefined. Display
+     // the actual failure here, above the modal; the global error banner is
+     // hidden behind the character sheet on mobile.
+     const result=await action(message,data);
+     if(result?.state){
+      delete awakeSel[selectionKey(r,hero)];
+      close();
+      toast('Thức Tỉnh thành công! '+(hero.name||'Nữ Thần')+' đã đạt '+r.star+'★.');
+     }else{
+      const raw=$('error')?.textContent||'Chưa thể Thức Tỉnh. Hãy thử lại.';
+      const err=Number(hero.table_id)===758001&&/material|receta|nguyên liệu/i.test(raw)?
+       'Nguyên liệu chưa đúng. Cần Lyr Sonia nguyên bản 10★ chưa thức tỉnh.':raw;
+      toast(err);
+     }
+    }catch(err){toast(err.message||'Chưa thể Thức Tỉnh. Hãy thử lại.');}
+    finally{btn.disabled=false;btn.textContent=buttonText;}
    };
    acts.append(btn);body.append(acts);
   }

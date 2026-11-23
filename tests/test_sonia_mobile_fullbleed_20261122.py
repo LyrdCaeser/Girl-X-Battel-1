@@ -44,7 +44,7 @@ class SoniaMobileFullBleedTest(unittest.TestCase):
         self.assertEqual(self.pic['scale'],.47,'leave original Wish metadata unchanged')
         self.assertEqual(self.pic['summon_static_scale'],.47)
         self.assertIn('/girl-ui.css?v=20261122-sonia-elite-r4',self.html)
-        self.assertIn('/girl-ui.js?v=20261122-sonia-elite-r3',self.html)
+        self.assertIn('/girl-ui.js?v=20261123-sonia-awake-material-r4',self.html)
 
     def test_original_mobile_failure_reproduced_before_override(self):
         source_width,source_height=self.original_size
