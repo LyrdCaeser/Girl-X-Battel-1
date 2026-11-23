@@ -3165,12 +3165,18 @@ class Engine:
             sacrifice_counts = tuple(range(1, 11))
             costs = (25000, 30000, 35000, 40000, 50000,
                      60000, 70000, 80000, 90000, 100000)
+            # Exclusive Lyr Sonia 16–25★ cost: lunch boxes + Honor Badges.
+            # All other girls keep their original awakening currencies.
+            star_cost = {'10': costs[index]}
+            if int(partner['table_id']) == chaos_summon.PARTNER_ID:
+                honor_badges = (4, 6, 8, 10, 12, 15, 18, 21, 25, 30)
+                star_cost['173'] = honor_badges[index]
             return {
                 'kind': 'awake', 'awake25': True,
                 'copies': copy_counts[index],
                 'sacrifices': sacrifice_counts[index],
                 'group': int(row['group']),
-                'cost': {'10': costs[index]},
+                'cost': star_cost,
                 'star': target_star,
             }
 
@@ -3179,6 +3185,12 @@ class Engine:
             return None
         costs = [c for c in str(row.get('stone_material') or '').split('|') if c]
         cost = {k: v for k, v in item_pairs(costs[awake]).items()} if awake < len(costs) else {}
+        # The native stone_material string has one pipe-delimited cost entry
+        # per star level. Add Sonia's second resource here, never by changing
+        # the general parser or source material table for other goddesses.
+        if int(partner['table_id']) == chaos_summon.PARTNER_ID and 0 <= awake < 5:
+            soul_gems = (100, 200, 350, 500, 750)
+            cost['417'] = soul_gems[awake]
         return {'kind': 'awake', 'material': [int(x) for x in mats[awake].split('#')], 'group': int(row['group']),
                 'cost': {str(k): v for k, v in cost.items()}, 'star': 11 + awake}
 

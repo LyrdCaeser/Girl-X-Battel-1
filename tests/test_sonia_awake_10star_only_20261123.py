@@ -28,6 +28,7 @@ class SoniaAwakeTenStarOnly(unittest.TestCase):
         s['formation']=[]
         s['next_partner_id']=102
         s['items']['10']=30000
+        s['items']['417']=10000
         self.engine._save_profile(s)
         self.engine.db.commit()
         return s

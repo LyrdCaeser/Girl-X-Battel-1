@@ -24,7 +24,7 @@ assert(backend.includes("'ex_skill_costs':"));
 assert(lua.includes("appendRaw('partner_exskill'"));
 assert(lua.includes("for rank=1,5 do"));
 assert(lua.includes("for id = 1758001, 1758039 do"));
-assert(html.includes("/girl-ui.js?v=20261123-sonia-ritual-12-15-r5"));
+assert(html.includes("/girl-ui.js?v=20261123-sonia-ritual-costs-r6"));
 assert(html.includes("/app.js?v=20261123-sonia-shard-mail-r12"));
 assert(html.includes("/girl-ui.css?v=20261123-sonia-ritual-12-15-r5"));
 console.log('PASS Sonia 4 native elite skills with 5 ranks, original materials and distinct per-skill costs');

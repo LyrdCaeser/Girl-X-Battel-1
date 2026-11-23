@@ -30,8 +30,8 @@ const GirlUI=(()=>{
  let pics=new Set();
  function load(){return loading||=Promise.all([api('/assets/partner-pictures.json'),api('/assets/lihui.json').catch(()=>[]),api('/assets/pictures.json').catch(()=>[]),api('/assets/potentials.json').catch(()=>null)]).then(([p,l,q,t])=>{pictures=p;lihui=new Set(l);pics=new Set(q);if(t)pots=t;});}
  function picture(id){if(!pics.has(Number(id))){const chain=typeof hostChain==='function'?hostChain(id):[Number(id)];id=chain.find(x=>pics.has(x))??id;}return pics.has(Number(id))?'/assets/pictures/'+id+'.webp':'';}
- const NAMES={'1':"Gold",'2':"Gems",'9':"Girl EXP",'10':"Grade Dust",'198':"Skill Book",'199':"Skill Crystal"};
- function cost(parent,obj){const c=el('span','gu-cost');for(const [id,n]of Object.entries(obj||{})){const ok=Number(state.items[id]||0)>=n;const s=el('span',ok?'':'short');const it=itemCatalog?.[id];const src=id==='1'||id==='2'?'/assets/currency/icon_'+id+'_small.png':it&&itemIcons.has(it.icon)?'/assets/item-icons/'+it.icon+'.png':'';if(src)s.append(img(src));s.append(el('b','',number(n)));s.title=(NAMES[id]||it?.name||"Item "+id)+" · owned: "+number(state.items[id]||0);c.append(s);}parent.append(c);return Object.entries(obj||{}).every(([id,n])=>Number(state.items[id]||0)>=n);}
+ const NAMES={'1':"Vàng",'2':"Kim Cương",'9':"EXP Nữ Thần",'10':"Hộp Cơm",'173':"Honor Badge",'417':"Ngọc Linh Hồn",'198':"Sách Kỹ Năng",'199':"Tinh Thể Kỹ Năng"};
+ function cost(parent,obj){const c=el('span','gu-cost');for(const [id,n]of Object.entries(obj||{})){const ok=Number(state.items[id]||0)>=n;const s=el('span',ok?'':'short');const it=itemCatalog?.[id];const src=id==='1'||id==='2'?'/assets/currency/icon_'+id+'_small.png':it&&itemIcons.has(it.icon)?'/assets/item-icons/'+it.icon+'.png':'';if(src)s.append(img(src));s.append(el('b','',number(n)));s.title=(NAMES[id]||it?.name||"Item "+id)+" · Hiện có: "+number(state.items[id]||0);c.append(s);}parent.append(c);return Object.entries(obj||{}).every(([id,n])=>Number(state.items[id]||0)>=n);}
 
  function detail(hero){if(!pictures){load().then(()=>view==='detail'&&renderGirlDetail());return;}
   const scene=document.querySelector('#girl-detail-view .detail-scene');if(scene)scene.style.backgroundImage=`url('/assets/scenes/college_scene${hero.group||1}.png')`;
@@ -382,6 +382,11 @@ const GirlUI=(()=>{
      c.setAttribute('aria-label',c.title);
      c.onclick=()=>chooseMaterial(hero,r,'normal',i,close);mats.append(c);
     });body.append(mats);
+   }
+   if(Number(hero.table_id)===758001){
+    body.append(el('p','lb-choice-note',targetStar<=15?
+     'Nguyên liệu tiêu hao: Hộp Cơm và Ngọc Linh Hồn.':
+     'Nguyên liệu tiêu hao: Hộp Cơm và Honor Badge.'));
    }
    const c=el('div','lb-cost'),ok=cost(c,r.cost||{});body.append(c);
    const compose=r.kind==='compose';

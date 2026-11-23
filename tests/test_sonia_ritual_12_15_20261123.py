@@ -47,6 +47,7 @@ class SoniaRitualTests(unittest.TestCase):
         state['formation']=[]
         state['next_partner_id']=500
         state['items']['10']=120000
+        state['items']['417']=10000
         self.engine._save_profile(state)
         self.engine.db.commit()
         return [p['partner_id'] for p in extras]

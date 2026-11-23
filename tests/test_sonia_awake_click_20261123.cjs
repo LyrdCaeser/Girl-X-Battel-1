@@ -100,6 +100,6 @@ async function clickCase(actionResult,expectedText,shouldClose){
 (async()=>{
  await clickCase({state:{roster:[]}},'Thức Tỉnh thành công',true);
  await clickCase(undefined,'Hãy kiểm tra tên Nữ Thần',false);
- assert(html.includes('/girl-ui.js?v=20261123-sonia-ritual-12-15-r5'));
+ assert(html.includes('/girl-ui.js?v=20261123-sonia-ritual-costs-r6'));
  console.log('PASS Sonia 10★ eligible; 11★ invalid even if preselected; locked/exchange excluded; click sends one real action; error visible and retry enabled.');
 })().catch(e=>{console.error(e);process.exitCode=1});

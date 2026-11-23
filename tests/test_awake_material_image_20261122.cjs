@@ -42,7 +42,7 @@ assert.equal(pic.children[0].tid,758001,'16–25-star same-name recipe shows hos
 const css=fs.readFileSync('web/girl-ui.css','utf8');
 const html=fs.readFileSync('web/index.html','utf8');
 assert(css.includes('.lb-mat.choose .lb-pic .lb-card{width:100%;height:100%;border:0'));
-assert(html.includes('/girl-ui.js?v=20261123-sonia-ritual-12-15-r5'));
+assert(html.includes('/girl-ui.js?v=20261123-sonia-ritual-costs-r6'));
 assert(html.includes('/girl-ui.css?v=20261123-sonia-ritual-12-15-r5'));
 assert(!code.includes("pic.append(el('i','',code%1000===999?"),'no literal Chọn tile in material slots');
 assert(code.includes('cardIds.has(tid)||Number(tid)===758001'),'Sonia special card always resolves to real card art');

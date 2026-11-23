@@ -62,6 +62,6 @@ assert(source.includes("const mats=el('div','lb-mats'+((r.material||[]).length>2
 assert(source.includes("c.append(el('span','lb-material-label',codeLabel(Number(code))))"));
 assert(css.includes('.lb-mats.wrap .lb-mat.choose'));
 assert(css.includes('.lb-material-label'));
-assert(html.includes('/girl-ui.js?v=20261123-sonia-ritual-12-15-r5'));
+assert(html.includes('/girl-ui.js?v=20261123-sonia-ritual-costs-r6'));
 assert(html.includes('/girl-ui.css?v=20261123-sonia-ritual-12-15-r5'));
 console.log('PASS: 14★ Cosmos any rank, 15★ Cosmos exactly 11★, three distinct Sonia 10★, named-star labels, disabled absent/locked materials, mobile wrap.');
