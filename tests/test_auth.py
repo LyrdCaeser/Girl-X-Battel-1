@@ -103,6 +103,50 @@ class AuthTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             auth.reset_password("Recover_01", registered["recovery_code"], "AgainStrong789")
 
+    def test_emergency_reset_http_once_under_rate_limit(self):
+        import json, threading, time, urllib.request, urllib.error
+        from http.server import ThreadingHTTPServer
+        from concurrent.futures import ThreadPoolExecutor
+        from server import HTTPHandler
+        from gxb2.security import FixedWindowRateLimiter, DEFAULT_LIMITS
+        first=auth.register("Rescue_01","StrongPass123","First","S1")
+        other=auth.register("Rescue_02","StrongPass123","Second","S1")
+        code=auth._new_recovery_code(emergency=True)
+        self.assertEqual(len(code),39)
+        db=auth._db()
+        auth._save_recovery(db,first["account"]["id"],auth._recovery_hash(code),int(time.time()),emergency=True)
+        db.commit();db.close()
+        class QuietHandler(HTTPHandler):
+            def log_message(self,*args): pass
+        http=ThreadingHTTPServer(("127.0.0.1",0),QuietHandler)
+        http.rate_limiter=FixedWindowRateLimiter()
+        worker=threading.Thread(target=http.serve_forever,daemon=True);worker.start()
+        self.addCleanup(http.server_close)
+        self.addCleanup(http.shutdown)
+        base="http://127.0.0.1:"+str(http.server_port)
+        def attempt(username,value,password="NewStrong456"):
+            req=urllib.request.Request(base+"/api/auth/reset-password",data=json.dumps({"username":username,"recovery_code":value,"new_password":password}).encode(),headers={"Content-Type":"application/json"})
+            try:
+                with urllib.request.urlopen(req,timeout=10) as response: return response.status
+            except urllib.error.HTTPError as exc: return exc.code
+        for i in range(DEFAULT_LIMITS["auth_reset"][0]):
+            self.assertEqual(attempt("Rescue_01","wrong"),400)
+        self.assertEqual(attempt("Rescue_02",other["recovery_code"]),429)
+        self.assertEqual(attempt("Rescue_02",code),429)
+        self.assertEqual(attempt("Rescue_01",auth._new_recovery_code(emergency=True)),429)
+        self.assertEqual(attempt("Rescue_01",code,"short"),400)
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            statuses=list(pool.map(lambda _:attempt("Rescue_01",code),range(2)))
+        self.assertEqual(sorted(statuses),[200,429])
+        self.assertEqual(attempt("Rescue_01",code),429)
+        self.assertEqual(attempt("Rescue_02",other["recovery_code"]),429)
+        self.assertIsNone(auth.session(first["token"]))
+        self.assertIsNotNone(auth.session(other["token"]))
+        auth.login("Rescue_01","NewStrong456","S1")
+        db=auth._db()
+        rec=db.execute("SELECT emergency,used_at FROM recovery_codes WHERE account_id=?",(first["account"]["id"],)).fetchone()
+        self.assertEqual(rec["emergency"],0);self.assertGreater(rec["used_at"],0);db.close()
+
     def test_server_policy_blocks_registration_and_character_creation(self):
         live_service.create_world("S2", "Server 2")
         live_service.set_world_policy("S2", registration_open=False, message="Đóng đăng ký")

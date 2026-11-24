@@ -141,7 +141,7 @@ window.GxbAuth=(()=>{
   async function request(url,body){
     const r=await fetch(url,{method:body===undefined?'GET':'POST',headers:body===undefined?{}:{'Content-Type':'application/json'},body:body===undefined?undefined:JSON.stringify(body),credentials:'same-origin'});
     const data=await r.json().catch(()=>({}));
-    if(!r.ok)throw Error(data.error||'Không thể hoàn tất yêu cầu');
+    if(!r.ok){if(data.error==='RATE_LIMITED')throw Error('Bạn đã thử quá nhiều lần. Vui lòng thử lại sau '+Math.max(1,Math.ceil(Number(data.retry_after||60)))+' giây. Nếu quên mã, liên hệ quản trị viên để được cấp mã cứu hộ.');throw Error(data.error||'Không thể hoàn tất yêu cầu');}
     return data;
   }
   function worldSelect(id){
@@ -236,9 +236,9 @@ window.GxbAuth=(()=>{
     function renderRecovery(){
       loginTab.classList.remove('on');registerTab.classList.remove('on');body.replaceChildren();
       body.append(el('h3','auth-recovery-title','Khôi phục mật khẩu'));
-      body.append(el('p','auth-recovery-note','Nhập tên đăng nhập và mã khôi phục đã lưu khi tạo tài khoản.'));
+      body.append(el('p','auth-recovery-note','Nhập tên đăng nhập và mã khôi phục đã lưu hoặc mã cứu hộ do quản trị viên cấp.'));
       const user=field(body,'Tên đăng nhập','auth-reset-user');
-      const code=field(body,'Mã khôi phục','auth-reset-code','text','XXXX-XXXX-XXXX-XXXX');
+      const code=field(body,'Mã khôi phục','auth-reset-code','text','Nhập mã khôi phục');code.autocomplete='off';code.spellcheck=false;
       const pass=field(body,'Mật khẩu mới','auth-reset-pass','password','Ít nhất 8 ký tự');pass.autocomplete='new-password';
       const confirm=field(body,'Nhập lại mật khẩu','auth-reset-confirm','password');confirm.autocomplete='new-password';
       const reset=el('button','auth-primary','Đặt lại mật khẩu');reset.onclick=async()=>{if(pass.value!==confirm.value){status.textContent='Mật khẩu nhập lại không khớp.';return;}reset.disabled=true;try{await request('/api/auth/reset-password',{username:user.value,recovery_code:code.value,new_password:pass.value});status.textContent='Đã đổi mật khẩu. Các phiên cũ đã bị đăng xuất.';setTimeout(renderLogin,900);}catch(e){status.textContent=e.message;reset.disabled=false;}};

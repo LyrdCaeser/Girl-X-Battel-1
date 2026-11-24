@@ -1170,7 +1170,6 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
             data = self.read_body()
             if path == '/api/auth/register' and not self.rate_limit('auth_register'): return
             if path == '/api/auth/login' and not self.rate_limit('auth_login'): return
-            if path == '/api/auth/reset-password' and not self.rate_limit('auth_reset'): return
             if path == '/api/auth/recovery-code' and not self.rate_limit('recovery_rotate'): return
             if path == '/api/order/create' and not self.rate_limit('order_create'): return
             if path in ('/api/pvp/queue','/api/pvp/challenge','/api/pvp/defense','/api/pvp/arena3v3/teams','/api/pvp/arena3v3/pay') and not self.rate_limit_player('pvp_queue'): return
@@ -1208,7 +1207,25 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                 if result.get('recovery_code'): body['recovery_code'] = result['recovery_code']
                 return self.send(200, body, headers={'Set-Cookie': cookie})
             if path == '/api/auth/reset-password':
-                return self.send(200, auth.reset_password(data.get('username'), data.get('recovery_code'), data.get('new_password')))
+                limiter=getattr(self.server,'rate_limiter',None)
+                spec=DEFAULT_LIMITS['auth_reset']
+                allowed,retry=limiter.allow('auth_reset',self.client_ip(),limit=spec[0],window=spec[1]) if limiter else (True,0)
+                if not allowed:
+                    # Separate bounded verification budget, never reset the normal limiter.
+                    # Only a server-issued 128-bit emergency code is eligible.
+                    raw=str(data.get('recovery_code') or '').strip().upper()
+                    if len(raw)==39 and re.fullmatch(r'[0-9A-F]{4}(?:-[0-9A-F]{4}){7}',raw):
+                        cap=DEFAULT_LIMITS['auth_emergency_check']
+                        can_check,_=limiter.allow('auth_emergency_check',self.client_ip(),limit=cap[0],window=cap[1])
+                        if can_check:
+                            try:
+                                result=auth.reset_password(data.get('username'),raw,data.get('new_password'),emergency_only=True)
+                            except auth.RecoveryRejected:
+                                pass
+                            else:
+                                return self.send(200,result)
+                    return self.send(429,{'error':'RATE_LIMITED','retry_after':retry},headers={'Retry-After':str(retry)})
+                return self.send(200,auth.reset_password(data.get('username'),data.get('recovery_code'),data.get('new_password')))
             if path == '/api/auth/recovery-code':
                 ctx = self.require_auth()
                 if not ctx: return

@@ -79,6 +79,7 @@ DEFAULT_LIMITS = {
     "auth_register": (5, 600),
     "auth_login": (12, 300),
     "auth_reset": (5, 900),
+    "auth_emergency_check": (20, 900),
     "recovery_rotate": (4, 3600),
     "order_create": (6, 600),
     "profile_avatar_upload": (3, 3600),

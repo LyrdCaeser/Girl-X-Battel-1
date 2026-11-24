@@ -21,14 +21,15 @@ USERNAME_RE = re.compile(r"^[A-Za-z0-9_.-]{4,24}$")
 def _db():
     return database.connect(DB_PATH, "auth")
 
-def _save_recovery(db, account_id, code_hash, created_at, used_at=0):
-    db.execute("""INSERT INTO recovery_codes(account_id,code_hash,created_at,used_at)
-                  VALUES(?,?,?,?)
+def _save_recovery(db, account_id, code_hash, created_at, used_at=0, *, emergency=False):
+    db.execute("""INSERT INTO recovery_codes(account_id,code_hash,created_at,used_at,emergency)
+                  VALUES(?,?,?,?,?)
                   ON CONFLICT(account_id) DO UPDATE SET
                     code_hash=excluded.code_hash,
                     created_at=excluded.created_at,
-                    used_at=excluded.used_at""",
-               (int(account_id), code_hash, int(created_at), int(used_at)))
+                    used_at=excluded.used_at,
+                    emergency=excluded.emergency""",
+               (int(account_id), code_hash, int(created_at), int(used_at), int(bool(emergency))))
 
 
 def _hash_password(password: str, salt: bytes) -> str:
@@ -43,8 +44,8 @@ def _recovery_hash(code: str) -> str:
     return hashlib.sha256(code.strip().upper().encode("utf-8")).hexdigest()
 
 
-def _new_recovery_code():
-    raw = secrets.token_hex(8).upper()
+def _new_recovery_code(*, emergency=False):
+    raw = secrets.token_hex(16 if emergency else 8).upper()
     return "-".join(raw[i:i+4] for i in range(0, len(raw), 4))
 
 
@@ -414,24 +415,47 @@ def set_account_status(uid, banned, reason=""):
     return _public_account(row, None)
 
 
-def reset_password(username, recovery_code, new_password):
+class RecoveryRejected(ValueError):
+    """Invalid, consumed, or not eligible for emergency recovery."""
+
+
+def reset_password(username, recovery_code, new_password, *, emergency_only=False):
     username=str(username or "").strip()
-    new_password=_clean_password(new_password)
+    code=str(recovery_code or "").strip().upper()
+    if not USERNAME_RE.fullmatch(username) or not re.fullmatch(r"[0-9A-F]{4}(?:-[0-9A-F]{4}){3}|[0-9A-F]{4}(?:-[0-9A-F]{4}){7}",code):
+        raise RecoveryRejected("Thông tin khôi phục không hợp lệ")
+    if emergency_only and len(code)!=39:
+        raise RecoveryRejected("Thông tin khôi phục không hợp lệ")
     with _lock:
         db=_db()
-        row=db.execute("SELECT * FROM accounts WHERE lower(username)=lower(?)",(username,)).fetchone()
-        if not row:
-            db.close(); raise ValueError("Thông tin khôi phục không hợp lệ")
-        rec=db.execute("SELECT * FROM recovery_codes WHERE account_id=?",(int(row["id"]),)).fetchone()
-        if not rec or int(rec["used_at"]) or not hmac.compare_digest(rec["code_hash"],_recovery_hash(str(recovery_code or ""))):
-            db.close(); raise ValueError("Thông tin khôi phục không hợp lệ")
-        salt=secrets.token_bytes(16)
-        db.execute("UPDATE accounts SET password_hash=?,salt=? WHERE id=?",
-                   (_hash_password(new_password,salt),salt.hex(),int(row["id"])))
-        db.execute("UPDATE recovery_codes SET used_at=? WHERE account_id=?",(int(time.time()),int(row["id"])))
-        db.execute("DELETE FROM sessions WHERE account_id=?",(int(row["id"]),))
-        db.commit(); db.close()
-    return {"ok": True}
+        try:
+            db.execute("BEGIN IMMEDIATE")
+            lock=" FOR UPDATE" if db.backend=="postgres" else ""
+            row=db.execute("SELECT id FROM accounts WHERE lower(username)=lower(?)"+lock,(username,)).fetchone()
+            if not row:
+                raise RecoveryRejected("Thông tin khôi phục không hợp lệ")
+            aid=int(row["id"])
+            rec=db.execute("SELECT * FROM recovery_codes WHERE account_id=?"+lock,(aid,)).fetchone()
+            if (not rec or int(rec["used_at"]) or
+                    not hmac.compare_digest(rec["code_hash"],_recovery_hash(code)) or
+                    (emergency_only and not int(rec["emergency"]))):
+                raise RecoveryRejected("Thông tin khôi phục không hợp lệ")
+            # Only consume an authenticated code after password validation succeeds.
+            password=_clean_password(new_password)
+            salt=secrets.token_bytes(16)
+            updated=db.execute("UPDATE recovery_codes SET used_at=?,emergency=0 WHERE account_id=? AND used_at=0 AND code_hash=?",
+                               (int(time.time()),aid,rec["code_hash"]))
+            if updated.rowcount!=1:
+                raise RecoveryRejected("Thông tin khôi phục không hợp lệ")
+            db.execute("UPDATE accounts SET password_hash=?,salt=? WHERE id=?",
+                       (_hash_password(password,salt),salt.hex(),aid))
+            db.execute("DELETE FROM sessions WHERE account_id=?",(aid,))
+            db.commit()
+        except Exception:
+            db.rollback();raise
+        finally:
+            db.close()
+    return {"ok":True}
 
 
 def rotate_recovery_code(token):

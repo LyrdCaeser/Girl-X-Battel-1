@@ -50,7 +50,7 @@ form.onsubmit=async e=>{
   const response=await fetch('/api/bridge?route=owner-security%2Faccount-rescue',{method:'POST',credentials:'same-origin',cache:'no-store',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(data)});
   const out=await response.json();if(epoch!==viewEpoch)return;if(!response.ok||!out.ok)throw Error(typeof out.error==='string'?out.error:'Không thể cứu hộ (HTTP '+response.status+')');
   target.textContent='Đã xử lý: '+targetLabel;
-  if(out.recovery_code){code.textContent='Mã khôi phục mới (chỉ hiển thị lần này): '+out.recovery_code;code.hidden=false;}
+  if(out.recovery_code){code.textContent='Mã cứu hộ mới (dùng một lần, có quyền khôi phục khi bị giới hạn): '+out.recovery_code;code.hidden=false;}
   result.hidden=false;feedback.textContent='Thành công.';resetSelection();
  }catch(err){if(epoch===viewEpoch)feedback.textContent=err.message||'Không thể kết nối máy chủ';}
  finally{for(const k of ['admin_key','panel_key','gm_key','code'])f[k].value='';busy=false;button.disabled=false;f.action.disabled=false;$('profile-open').disabled=false;}

@@ -79,15 +79,7 @@ def reset_existing_owner_account(password, recovery_code):
             "UPDATE accounts SET password_hash=?,salt=? WHERE id=? AND uid=?",
             (password_hash, salt.hex(), account_id, TARGET_UID),
         )
-        if db.backend == "postgres":
-            db.execute(
-                """INSERT INTO recovery_codes(account_id,code_hash,created_at,used_at)
-                   VALUES(?,?,?,0) ON CONFLICT(account_id) DO UPDATE SET
-                   code_hash=excluded.code_hash,created_at=excluded.created_at,used_at=0""",
-                (account_id, code_hash, now),
-            )
-        else:
-            auth._save_recovery(db, account_id, code_hash, now, 0)
+        auth._save_recovery(db, account_id, code_hash, now, 0)
         db.execute("DELETE FROM sessions WHERE account_id=?", (account_id,))
         db.commit()
         return {"uid": TARGET_UID, "username": TARGET_USERNAME}

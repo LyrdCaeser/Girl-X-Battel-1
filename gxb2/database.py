@@ -191,6 +191,7 @@ def _ensure_auth(db):
             created_at BIGINT NOT NULL,
             used_at BIGINT NOT NULL DEFAULT 0
         )""")
+        db.execute("ALTER TABLE recovery_codes ADD COLUMN IF NOT EXISTS emergency INTEGER NOT NULL DEFAULT 0")
         db.execute("""CREATE TABLE IF NOT EXISTS login_attempts(
             bucket TEXT PRIMARY KEY,
             count INTEGER NOT NULL,
@@ -250,6 +251,8 @@ def _ensure_auth(db):
         used_at INTEGER NOT NULL DEFAULT 0,
         FOREIGN KEY(account_id) REFERENCES accounts(id) ON DELETE CASCADE
     )""")
+    if "emergency" not in {row[1] for row in db.execute("PRAGMA table_info(recovery_codes)")}:
+        db.execute("ALTER TABLE recovery_codes ADD COLUMN emergency INTEGER NOT NULL DEFAULT 0")
     db.execute("""CREATE TABLE IF NOT EXISTS login_attempts(
         bucket TEXT PRIMARY KEY,
         count INTEGER NOT NULL,

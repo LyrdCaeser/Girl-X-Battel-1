@@ -523,8 +523,8 @@ def emergency_account(token, data):
         aid = int(account["id"])
         result = {"ok": True, "uid": str(account["uid"]), "username": str(account["username"])}
         if action.endswith("_code"):
-            code = auth._new_recovery_code()
-            auth._save_recovery(db, aid, auth._recovery_hash(code), now, 0)
+            code = auth._new_recovery_code(emergency=True)
+            auth._save_recovery(db, aid, auth._recovery_hash(code), now, 0, emergency=True)
             db.execute("DELETE FROM sessions WHERE account_id=?", (aid,))
             result["recovery_code"] = code
         else:
