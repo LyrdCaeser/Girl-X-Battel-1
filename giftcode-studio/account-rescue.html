@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="vi">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer"><title>Cứu hộ tài khoản · GXB 3</title>
+<link rel="stylesheet" href="./style.css"><script defer src="./account-rescue.js"></script></head>
+<body><main class="main"><section class="panel recovery-page">
+<a href="./">← Trang chủ GXB 3</a>
+<h1>Cứu hộ tài khoản khẩn cấp</h1>
+<p class="muted">Chỉ chủ sở hữu SUPER GM. Cứu hộ tài khoản quản trị không yêu cầu đăng nhập, nhưng phải có đủ ba khóa quản trị và mã Authenticator hoặc mã dự phòng đã thiết lập. Cứu hộ người chơi yêu cầu phiên SUPER GM đang hoạt động.</p>
+<p class="muted">Chỉ cấp mã mới sau khi xác minh chủ tài khoản qua kênh hỗ trợ riêng. Không cung cấp mã cho người khác. Cấp mã mới vô hiệu mã cũ và đăng xuất mọi phiên của tài khoản đó; không đổi UID, nhân vật, vật phẩm hay tiến trình.</p>
+<form id="rescue" class="recovery-form" autocomplete="off">
+<label>Thao tác<select name="action"><option value="owner_code">Cấp mã khôi phục tài khoản SUPER GM</option><option value="owner_unban">Gỡ khóa tài khoản SUPER GM</option><option value="player_code">Cấp mã khôi phục tài khoản người chơi</option><option value="player_unban">Gỡ khóa tài khoản người chơi</option></select></label>
+<div id="player-fields" hidden>
+<label>UID chính xác<input name="uid" maxlength="40" disabled></label>
+<label>Tên đăng nhập chính xác<input name="username" maxlength="24" disabled></label>
+<label><input type="checkbox" name="verified" disabled> Tôi đã xác minh chủ tài khoản và yêu cầu cứu hộ.</label>
+</div>
+<label>Lý do cứu hộ<input name="reason" minlength="5" maxlength="200" required></label>
+<label>Khóa quản trị<input name="admin_key" type="password" required maxlength="1024"></label>
+<label>Khóa trang chủ<input name="panel_key" type="password" required maxlength="1024"></label>
+<label>Khóa hành động QTV<input name="gm_key" type="password" required maxlength="1024"></label>
+<label>Mã Authenticator hoặc mã dự phòng<input name="code" type="password" maxlength="28" required></label>
+<button class="primary" type="submit">Xác nhận cứu hộ</button>
+</form>
+<p id="feedback" role="status" aria-live="polite"></p>
+<div id="result" hidden><h2>Kết quả</h2><p id="target"></p><p id="new-code" hidden></p><button id="hide" type="button" class="ghost">Ẩn kết quả</button></div>
+<p class="muted">Mất cả khóa quản trị hoặc chưa liên kết Authenticator? Cần xác minh qua quyền quản trị VPS; trang này không bỏ qua bảo mật. Khóa nhân vật riêng theo máy chủ vẫn xử lý trong GM Tools.</p>
+</section></main></body></html>

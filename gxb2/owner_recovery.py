@@ -425,3 +425,82 @@ def rotate_backups(token, code):
         raise
     finally:
         db.close()
+
+
+def emergency_account(token, data):
+    """Owner-only, step-up verified account rescue. Never restore old secrets.
+    An owner locked out of login must present all three keys and an enrolled
+    second factor. Player operations additionally require a live owner session.
+    """
+    action = str(data.get("action") or "")
+    if action not in ("owner_code", "owner_unban", "player_code", "player_unban"):
+        raise ValueError("Thao tác không hợp lệ")
+    is_owner = action.startswith("owner_")
+    uid = os.environ.get("GXB3_OWNER_UID", "GXB3-00000001").strip()
+    email = os.environ.get("GXB3_OWNER_EMAIL", "trieuquangholuxury@gmail.com").strip().casefold()
+    if not uid or not email:
+        raise ValueError("Chưa cấu hình chủ sở hữu")
+    if not is_owner:
+        _owner_uid(token)
+        if data.get("verified") not in (True, "on"):
+            raise ValueError("Phải xác minh chủ tài khoản trước khi cứu hộ")
+    reason = str(data.get("reason") or "").strip()
+    if not 5 <= len(reason) <= 200 or any(ord(c) < 32 for c in reason):
+        raise ValueError("Nhập lý do từ 5 đến 200 ký tự")
+    target = str(data.get("uid") or "").strip().upper()
+    username = str(data.get("username") or "").strip()
+    if not is_owner and (not target or not username or len(target)>40 or len(username)>24):
+        raise ValueError("Cần UID và tên đăng nhập chính xác")
+    now = int(time.time())
+    db = _db()
+    try:
+        db.execute("BEGIN IMMEDIATE")
+        row = _read(db, locked=True)
+        if not row or row["owner_uid"] != uid or not row["enrolled"]:
+            raise ValueError("Chưa thiết lập khôi phục an toàn; liên hệ quản trị VPS")
+        if int(row["blocked_until"]) > now:
+            raise ValueError("Đang tạm khóa thao tác khôi phục; thử lại sau")
+        # Validate the active keys under the same lock as the second factor.
+        if not _current_keys(db, {k: data.get(k+"_key") for k in KEY_FIELDS}):
+            raise ValueError("Xác thực khôi phục không hợp lệ")
+        verified = _check_factor(db, row, data.get("code"), now)
+        if not verified:
+            _failure(db, now)
+            db.commit()
+            raise ValueError("Xác thực khôi phục không hợp lệ")
+        lock = " FOR UPDATE" if db.backend == "postgres" else ""
+        if is_owner:
+            account = db.execute("SELECT id,uid,username,email,status FROM accounts WHERE uid=?"+lock,(uid,)).fetchone()
+            if not account or str(account["email"] or "").casefold() != email:
+                raise ValueError("Không xác minh được tài khoản chủ sở hữu")
+        else:
+            account = db.execute("""SELECT a.id,a.uid,a.username,a.email,a.status FROM accounts a
+                WHERE lower(a.username)=lower(?) AND (a.uid=? OR a.id IN
+                (SELECT account_id FROM account_public_uids WHERE public_uid=?))"""+lock,
+                (username,target,target)).fetchone()
+            if not account or str(account["uid"]) == uid or str(account["email"] or "").casefold() == email:
+                raise ValueError("Không tìm thấy đúng tài khoản người chơi")
+        aid = int(account["id"])
+        result = {"ok": True, "uid": str(account["uid"]), "username": str(account["username"])}
+        if action.endswith("_code"):
+            code = auth._new_recovery_code()
+            auth._save_recovery(db, aid, auth._recovery_hash(code), now, 0)
+            db.execute("DELETE FROM sessions WHERE account_id=?", (aid,))
+            result["recovery_code"] = code
+        else:
+            if account["status"] != "banned":
+                raise ValueError("Tài khoản không ở trạng thái bị khóa")
+            db.execute("UPDATE accounts SET status='active',ban_reason='' WHERE id=?", (aid,))
+        if verified[0] == "totp":
+            db.execute("UPDATE owner_security SET last_counter=?,failures=0,blocked_until=0,updated_at=? WHERE id=1",(verified[1],now))
+        else:
+            db.execute("UPDATE owner_recovery_backups SET used_at=? WHERE code_hash=? AND used_at=0",(now,verified[1]))
+            db.execute("UPDATE owner_security SET failures=0,blocked_until=0,updated_at=? WHERE id=1",(now,))
+        _event(db, uid, "account.rescue:"+action+":"+str(account["uid"])+":"+reason)
+        db.commit()
+        return result
+    except Exception:
+        db.rollback()
+        raise
+    finally:
+        db.close()

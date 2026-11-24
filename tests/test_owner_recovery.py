@@ -133,6 +133,42 @@ class RecoveryTests(unittest.TestCase):
         self.assertEqual(db.execute("SELECT COUNT(*) AS n FROM owner_key_overrides").fetchone()["n"],0)
         db.close()
 
+    def test_emergency_account_rescue(self):
+        codes=self._pair()
+        db=auth._db()
+        for uid,user,email,status in [
+            (OWNER["account"]["uid"],"owner123",OWNER["account"]["email"],"banned"),
+            (PLAYER["account"]["uid"],"player123",PLAYER["account"]["email"],"banned")]:
+            db.execute("INSERT INTO accounts(uid,username,email,password_hash,salt,status,created_at,last_login) VALUES(?,?,?,?,?,?,?,?)",
+                       (uid,user,email,"oldhash","oldsalt",status,1,1))
+        db.commit(); db.close()
+        base={k+"_key":v for k,v in CURRENT.items()} | {"reason":"Verified support ticket","code":codes[0]}
+        with patch.object(auth,"session",return_value=None):
+            with self.assertRaises(ValueError):
+                owner_recovery.emergency_account("",base | {"action":"player_code","uid":PLAYER["account"]["uid"],"username":"player123","verified":True})
+            with self.assertRaises(ValueError):
+                owner_recovery.emergency_account("",base | {"action":"owner_code","gm_key":"incorrect"})
+            r=owner_recovery.emergency_account("",base | {"action":"owner_code"})
+            self.assertEqual(r["uid"],OWNER["account"]["uid"])
+            self.assertTrue(r["recovery_code"])
+            with self.assertRaises(ValueError):
+                owner_recovery.emergency_account("",base | {"action":"owner_unban"})
+            owner_recovery.emergency_account("",base | {"action":"owner_unban","code":codes[1]})
+        player=base | {"action":"player_code","uid":PLAYER["account"]["uid"],"username":"player123","code":codes[2],"verified":True}
+        with self.assertRaises(ValueError):
+            owner_recovery.emergency_account(self.token,player | {"username":"wrong"})
+        with self.assertRaises(ValueError):
+            owner_recovery.emergency_account(self.token,player | {"verified":False})
+        r2=owner_recovery.emergency_account(self.token,player)
+        self.assertNotEqual(r2["recovery_code"],r["recovery_code"])
+        owner_recovery.emergency_account(self.token,player | {"action":"player_unban","code":codes[3]})
+        db=auth._db()
+        self.assertEqual(db.execute("SELECT COUNT(*) AS n FROM accounts WHERE status='active'").fetchone()["n"],2)
+        self.assertEqual(db.execute("SELECT COUNT(*) AS n FROM recovery_codes").fetchone()["n"],2)
+        self.assertEqual(db.execute("SELECT COUNT(*) AS n FROM owner_recovery_events WHERE action LIKE 'account.rescue:%'").fetchone()["n"],4)
+        self.assertNotIn(r["recovery_code"],str(db.execute("SELECT * FROM recovery_codes").fetchall()))
+        db.close()
+
     def test_owner_routes_are_still_session_and_privilege_guarded(self):
         import inspect
         from server import HTTPHandler

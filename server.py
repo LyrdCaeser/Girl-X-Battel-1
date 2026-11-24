@@ -1294,6 +1294,8 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                         account['uid'], account['server_id'],
                         data.get('channel'), data.get('message'), data.get('recipient_uid', ''))
                 })
+            if path == '/api/owner-security/account-rescue':
+                return self.send(200,owner_recovery.emergency_account(self.session_token(),data),headers={'Cache-Control':'private, no-store'})
             if path.startswith('/api/owner-security/'):
                 if not self.is_super_gm():
                     return self.send(403,{'error':'Chỉ chủ tài khoản SUPER GM được khôi phục khóa'})
