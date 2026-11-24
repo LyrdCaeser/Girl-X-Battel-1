@@ -177,6 +177,11 @@ class RecoveryTests(unittest.TestCase):
         self.assertIn("if not self.is_super_gm():",source)
         self.assertIn("owner_recovery.enrollment_start",source)
         self.assertIn("owner_recovery.reset_keys",source)
+        rescue=source.index("if path == '/api/owner-security/account-rescue':")
+        gate=source.index("if not self.require_auth():",rescue)
+        self.assertLess(rescue,gate)
+        self.assertIn("('player_code','player_unban') and not self.require_auth()",source[rescue:gate])
+        self.assertIn("owner_recovery.emergency_account",source[rescue:gate])
         self.assertIn("owner_recovery.status",get)
         self.assertIn("owner_recovery.verify_key",inspect.getsource(HTTPHandler.gm_key_authorized))
 

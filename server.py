@@ -1234,6 +1234,13 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                 token=studio_sso.exchange(data.get('ticket'),self.headers.get('User-Agent',''),self.client_ip())
                 cookie=f"gxb3_session={token}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age={auth.SESSION_TTL}"
                 return self.send(200,{'authenticated':True},headers={'Set-Cookie':cookie})
+            # Only the exact owner rescue route can run before session enforcement.
+            # emergency_account validates all active keys and a one-use factor;
+            # player actions still require the canonical owner session.
+            if path == '/api/owner-security/account-rescue':
+                if data.get('action') in ('player_code','player_unban') and not self.require_auth():
+                    return
+                return self.send(200,owner_recovery.emergency_account(self.session_token(),data),headers={'Cache-Control':'private, no-store'})
             if not self.require_auth():
                 return
             if path == '/api/friends/action':
@@ -1294,8 +1301,6 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                         account['uid'], account['server_id'],
                         data.get('channel'), data.get('message'), data.get('recipient_uid', ''))
                 })
-            if path == '/api/owner-security/account-rescue':
-                return self.send(200,owner_recovery.emergency_account(self.session_token(),data),headers={'Cache-Control':'private, no-store'})
             if path.startswith('/api/owner-security/'):
                 if not self.is_super_gm():
                     return self.send(403,{'error':'Chỉ chủ tài khoản SUPER GM được khôi phục khóa'})
