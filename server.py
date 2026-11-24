@@ -684,6 +684,17 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
         if path == '/api/skin-shop/admin/catalog':
             if not self.admin_authorized(): return self.send(403,{'error':'Yêu cầu SUPER GM'})
             return self.send(200,skin_store.catalogue(admin=True))
+        if path == '/api/owner-security/rescue-profiles':
+            if not self.is_super_gm():
+                return self.send(403,{'error':'Chỉ SUPER GM được xem hồ sơ cứu hộ'})
+            if not self.rate_limit('admin'): return
+            q = parse_qs(parsed.query)
+            try:
+                result = owner_recovery.rescue_profiles(self.session_token(),
+                    (q.get('q') or [''])[0], (q.get('page') or ['0'])[0])
+            except ValueError:
+                return self.send(400,{'error':'Không thể tải danh sách hồ sơ'})
+            return self.send(200,result,headers={'Cache-Control':'private, no-store'})
         if path == '/api/owner-security/status':
             if not self.is_super_gm():
                 return self.send(403, {'error':'Chỉ chủ tài khoản SUPER GM được quản lý khôi phục'})

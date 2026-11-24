@@ -2,7 +2,7 @@
 <html lang="vi">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="referrer" content="no-referrer"><title>Cứu hộ tài khoản · GXB 3</title>
-<link rel="stylesheet" href="./style.css"><script defer src="./account-rescue.js"></script></head>
+<link rel="stylesheet" href="./style.css"><link rel="stylesheet" href="./account-rescue.css?v=2"><script defer src="./account-rescue.js?v=2"></script></head>
 <body><main class="main"><section class="panel recovery-page">
 <a href="./">← Trang chủ GXB 3</a>
 <h1>Cứu hộ tài khoản khẩn cấp</h1>
@@ -11,9 +11,12 @@
 <form id="rescue" class="recovery-form" autocomplete="off">
 <label>Thao tác<select name="action"><option value="owner_code">Cấp mã khôi phục tài khoản SUPER GM</option><option value="owner_unban">Gỡ khóa tài khoản SUPER GM</option><option value="player_code">Cấp mã khôi phục tài khoản người chơi</option><option value="player_unban">Gỡ khóa tài khoản người chơi</option></select></label>
 <div id="player-fields" hidden>
-<label>UID chính xác<input name="uid" maxlength="40" disabled></label>
-<label>Tên đăng nhập chính xác<input name="username" maxlength="24" disabled></label>
-<label><input type="checkbox" name="verified" disabled> Tôi đã xác minh chủ tài khoản và yêu cầu cứu hộ.</label>
+<h2>Chọn hồ sơ người chơi</h2>
+<p class="muted mini">Chọn nhân vật thật trong game. Cứu hộ tài khoản áp dụng cho tất cả máy chủ của tài khoản đó.</p>
+<div id="profile-selected" hidden></div>
+<button id="profile-open" class="ghost" type="button">Chọn hồ sơ game</button>
+<p id="profile-feedback" role="status" aria-live="polite"></p>
+<label class="rescue-check"><input type="checkbox" name="verified" disabled> <span>Tôi đã xác minh chủ tài khoản và yêu cầu cứu hộ.</span></label>
 </div>
 <label>Lý do cứu hộ<input name="reason" minlength="5" maxlength="200" required></label>
 <label>Khóa quản trị<input name="admin_key" type="password" required maxlength="1024"></label>
@@ -25,4 +28,10 @@
 <p id="feedback" role="status" aria-live="polite"></p>
 <div id="result" hidden><h2>Kết quả</h2><p id="target"></p><p id="new-code" hidden></p><button id="hide" type="button" class="ghost">Ẩn kết quả</button></div>
 <p class="muted">Mất cả khóa quản trị hoặc chưa liên kết Authenticator? Cần xác minh qua quyền quản trị VPS; trang này không bỏ qua bảo mật. Khóa nhân vật riêng theo máy chủ vẫn xử lý trong GM Tools.</p>
-</section></main></body></html>
+</section></main>
+<dialog id="profile-picker" aria-labelledby="picker-title">
+<div class="picker-head"><h2 id="picker-title">Hồ sơ người chơi GXB 3</h2><button id="profile-close" type="button" class="ghost" aria-label="Đóng">✕</button></div>
+<form id="profile-search"><label for="profile-query">Tìm nhân vật, UID hoặc máy chủ</label><div class="picker-search"><input id="profile-query" maxlength="80" type="search" placeholder="Ví dụ: tên nhân vật, S1"><button class="ghost" type="submit">Tìm</button></div></form>
+<p id="picker-status" role="status" aria-live="polite"></p><div id="profile-list"></div>
+<div class="picker-pages"><button id="profile-prev" class="ghost" type="button" disabled>Trang trước</button><button id="profile-next" class="ghost" type="button" disabled>Trang sau</button></div>
+</dialog></body></html>

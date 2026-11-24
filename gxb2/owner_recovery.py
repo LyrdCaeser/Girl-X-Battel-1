@@ -427,6 +427,34 @@ def rotate_backups(token, code):
         db.close()
 
 
+def rescue_profiles(token, query="", page=0):
+    """Only the canonical owner can browse real game characters for rescue."""
+    owner = _owner_uid(token)
+    query = str(query or "").strip().lower()[:80]
+    page = max(0, min(10000, int(page or 0)))
+    db = auth._db()
+    try:
+        if db.backend != "postgres":
+            raise ValueError("Danh sách hồ sơ cứu hộ cần PostgreSQL")
+        term = "%" + query + "%"
+        rows = db.execute("""SELECT p.uid,p.server_id,p.character_name,p.status AS character_status,
+            a.status AS account_status,COALESCE(u.public_uid,p.uid) AS display_uid,
+            COALESCE(l.level,1) AS level,COALESCE(l.power,0) AS power,
+            pp.data::jsonb #>> '{profile,avatar}' AS avatar,
+            pp.data::jsonb #>> '{profile,frame}' AS frame
+            FROM players p JOIN accounts a ON a.uid=p.uid
+            LEFT JOIN account_public_uids u ON u.account_id=a.id
+            LEFT JOIN leaderboard l ON l.uid=p.uid AND l.server_id=p.server_id
+            LEFT JOIN player_profiles pp ON pp.uid=p.uid AND pp.server_id=p.server_id
+            WHERE a.uid<>? AND (lower(p.character_name) LIKE ? OR lower(p.uid) LIKE ?
+                OR lower(COALESCE(u.public_uid,p.uid)) LIKE ? OR lower(p.server_id) LIKE ?)
+            ORDER BY p.character_name,p.uid,p.server_id LIMIT 41 OFFSET ?""",
+            (owner,term,term,term,term,page*40)).fetchall()
+        return {"profiles":[dict(r) for r in rows[:40]],"more":len(rows)>40,"page":page}
+    finally:
+        db.close()
+
+
 def emergency_account(token, data):
     """Owner-only, step-up verified account rescue. Never restore old secrets.
     An owner locked out of login must present all three keys and an enrolled
@@ -447,10 +475,14 @@ def emergency_account(token, data):
     reason = str(data.get("reason") or "").strip()
     if not 5 <= len(reason) <= 200 or any(ord(c) < 32 for c in reason):
         raise ValueError("Nhập lý do từ 5 đến 200 ký tự")
-    target = str(data.get("uid") or "").strip().upper()
+    target = str(data.get("uid") or "").strip()
     username = str(data.get("username") or "").strip()
-    if not is_owner and (not target or not username or len(target)>40 or len(username)>24):
-        raise ValueError("Cần UID và tên đăng nhập chính xác")
+    server_id = str(data.get("server_id") or "").strip().upper()
+    if not server_id:
+        target = target.upper()
+    if not is_owner and (not target or len(target)>40 or len(username)>24 or len(server_id)>20
+                         or (not server_id and not username)):
+        raise ValueError("Cần chọn đúng hồ sơ người chơi")
     now = int(time.time())
     db = _db()
     try:
@@ -474,10 +506,18 @@ def emergency_account(token, data):
             if not account or str(account["email"] or "").casefold() != email:
                 raise ValueError("Không xác minh được tài khoản chủ sở hữu")
         else:
-            account = db.execute("""SELECT a.id,a.uid,a.username,a.email,a.status FROM accounts a
-                WHERE lower(a.username)=lower(?) AND (a.uid=? OR a.id IN
-                (SELECT account_id FROM account_public_uids WHERE public_uid=?))"""+lock,
-                (username,target,target)).fetchone()
+            if server_id:
+                if db.backend != "postgres":
+                    raise ValueError("Chọn hồ sơ cần PostgreSQL")
+                account = db.execute("""SELECT a.id,a.uid,a.username,a.email,a.status FROM accounts a
+                    WHERE a.uid=? AND EXISTS(SELECT 1 FROM players p
+                    WHERE p.uid=a.uid AND p.server_id=?)"""+lock,
+                    (target,server_id)).fetchone()
+            else:
+                account = db.execute("""SELECT a.id,a.uid,a.username,a.email,a.status FROM accounts a
+                    WHERE lower(a.username)=lower(?) AND (a.uid=? OR a.id IN
+                    (SELECT account_id FROM account_public_uids WHERE public_uid=?))"""+lock,
+                    (username,target,target)).fetchone()
             if not account or str(account["uid"]) == uid or str(account["email"] or "").casefold() == email:
                 raise ValueError("Không tìm thấy đúng tài khoản người chơi")
         aid = int(account["id"])

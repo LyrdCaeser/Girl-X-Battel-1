@@ -169,6 +169,46 @@ class RecoveryTests(unittest.TestCase):
         self.assertNotIn(r["recovery_code"],str(db.execute("SELECT * FROM recovery_codes").fetchall()))
         db.close()
 
+    def test_rescue_profile_selection_and_permissions(self):
+        codes=self._pair()
+        uid=PLAYER["account"]["uid"]
+        db=auth._db()
+        db.execute("INSERT INTO accounts(uid,username,email,password_hash,salt,status,created_at,last_login) VALUES(?,?,?,?,?,?,?,?)",
+                   (uid,"player123",PLAYER["account"]["email"],"oldhash","oldsalt","banned",1,1))
+        db.execute("CREATE TABLE players(uid TEXT,server_id TEXT,character_name TEXT,status TEXT)")
+        db.execute("CREATE TABLE leaderboard(uid TEXT,server_id TEXT,level INTEGER,power INTEGER)")
+        db.execute("CREATE TABLE player_profiles(uid TEXT,server_id TEXT,data TEXT)")
+        for world,name in [("S1","Alpha"),("S2","Beta")]:
+            db.execute("INSERT INTO players VALUES(?,?,?,?)",(uid,world,name,"active"))
+            db.execute("INSERT INTO leaderboard VALUES(?,?,?,?)",(uid,world,90,12345))
+            db.execute("INSERT INTO player_profiles VALUES(?,?,?)",(uid,world,'{"profile":{"avatar":"head_1001","frame":"frame_8007"}}'))
+        db.commit();db.close()
+        original=auth._db
+        class PgQueryAdapter:
+            backend="postgres"
+            def __init__(self): self.inner=original(); self.identity=self.inner.identity
+            def execute(self,sql,params=()):
+                sql=sql.replace(" FOR UPDATE","").replace("pp.data::jsonb #>> '{profile,avatar}'","json_extract(pp.data,'$.profile.avatar')").replace("pp.data::jsonb #>> '{profile,frame}'","json_extract(pp.data,'$.profile.frame')")
+                return self.inner.execute(sql,params)
+            def __getattr__(self,name): return getattr(self.inner,name)
+        with patch.object(auth,"_db",side_effect=PgQueryAdapter):
+            with patch.object(auth,"session",return_value=PLAYER):
+                with self.assertRaises(ValueError): owner_recovery.rescue_profiles("player")
+            rows=owner_recovery.rescue_profiles(self.token)["profiles"]
+            self.assertEqual(len(rows),2)
+            self.assertEqual(rows[0]["avatar"],"head_1001")
+            self.assertEqual(rows[0]["power"],12345)
+            self.assertEqual(rows[0]["account_status"],"banned")
+            self.assertNotIn("email",rows[0])
+            self.assertNotIn("username",rows[0])
+            self.assertEqual(owner_recovery.rescue_profiles(self.token,"Beta")["profiles"][0]["server_id"],"S2")
+            base={k+"_key":v for k,v in CURRENT.items()} | {"reason":"Verified support ticket","code":codes[0],"action":"player_code","uid":uid,"verified":True}
+            with self.assertRaises(ValueError):
+                owner_recovery.emergency_account(self.token,base | {"server_id":"S9"})
+            r=owner_recovery.emergency_account(self.token,base | {"server_id":"S2"})
+            self.assertEqual(r["uid"],uid)
+            self.assertIn("recovery_code",r)
+
     def test_owner_routes_are_still_session_and_privilege_guarded(self):
         import inspect
         from server import HTTPHandler
