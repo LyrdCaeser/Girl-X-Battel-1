@@ -1,9 +1,9 @@
 'use strict';
 (()=>{
 const $=id=>document.getElementById(id);
-const form=$('rescue'), f=form.elements, feedback=$('feedback'), result=$('result'), code=$('new-code'), target=$('target');
+const form=$('rescue'), f=form.elements, feedback=$('feedback'), result=$('result'), code=$('rescue-new-code'), target=$('target');
 const picker=$('profile-picker'), list=$('profile-list'), pickerStatus=$('picker-status');
-let selected=null,page=0,query='',requestId=0,busy=false;
+let selected=null,page=0,query='',requestId=0,busy=false,viewEpoch=0;
 function clear(){result.hidden=true;code.textContent='';code.hidden=true;target.textContent='';}
 function resetSelection(){selected=null;f.verified.checked=false;$('profile-selected').replaceChildren();$('profile-selected').hidden=true;$('profile-open').textContent='Chọn hồ sơ game';$('profile-feedback').textContent='';}
 function fields(){const player=f.action.value.startsWith('player_');$('player-fields').hidden=!player;f.verified.disabled=!player;f.verified.required=player;resetSelection();clear();}
@@ -32,7 +32,12 @@ $('profile-close').onclick=()=>picker.close();
 $('profile-search').onsubmit=e=>{e.preventDefault();query=$('profile-query').value.trim();loadProfiles(0);};
 $('profile-prev').onclick=()=>loadProfiles(Math.max(0,page-1));$('profile-next').onclick=()=>loadProfiles(page+1);
 f.action.addEventListener('change',fields);fields();$('hide').onclick=clear;
-window.addEventListener('pagehide',()=>{clear();resetSelection();form.reset();});
+function resetView(){
+ ++viewEpoch;++requestId;clear();form.reset();fields();feedback.textContent='';
+ list.replaceChildren();pickerStatus.textContent='';if(picker.open)picker.close();
+}
+window.addEventListener('pagehide',resetView);
+window.addEventListener('gxb3:rescue-reset',resetView);
 form.onsubmit=async e=>{
  e.preventDefault();if(busy)return;clear();feedback.textContent='';
  const data=Object.fromEntries(new FormData(form));const player=data.action.startsWith('player_');
@@ -40,14 +45,14 @@ form.onsubmit=async e=>{
  if(player){data.uid=selected.uid;data.server_id=selected.server_id;}
  const targetLabel=player?selected.character_name+' · '+selected.display_uid+' · '+selected.server_id:'SUPER GM';
  if(!window.confirm('Xác nhận cứu hộ: '+targetLabel+'?'))return;
- const button=form.querySelector('button[type=submit]');busy=true;button.disabled=true;f.action.disabled=true;$('profile-open').disabled=true;
+ const epoch=viewEpoch;const button=form.querySelector('button[type=submit]');busy=true;button.disabled=true;f.action.disabled=true;$('profile-open').disabled=true;
  try{
   const response=await fetch('/api/bridge?route=owner-security%2Faccount-rescue',{method:'POST',credentials:'same-origin',cache:'no-store',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(data)});
-  const out=await response.json();if(!response.ok||!out.ok)throw Error(typeof out.error==='string'?out.error:'Không thể cứu hộ (HTTP '+response.status+')');
+  const out=await response.json();if(epoch!==viewEpoch)return;if(!response.ok||!out.ok)throw Error(typeof out.error==='string'?out.error:'Không thể cứu hộ (HTTP '+response.status+')');
   target.textContent='Đã xử lý: '+targetLabel;
   if(out.recovery_code){code.textContent='Mã khôi phục mới (chỉ hiển thị lần này): '+out.recovery_code;code.hidden=false;}
   result.hidden=false;feedback.textContent='Thành công.';resetSelection();
- }catch(err){feedback.textContent=err.message||'Không thể kết nối máy chủ';}
+ }catch(err){if(epoch===viewEpoch)feedback.textContent=err.message||'Không thể kết nối máy chủ';}
  finally{for(const k of ['admin_key','panel_key','gm_key','code'])f[k].value='';busy=false;button.disabled=false;f.action.disabled=false;$('profile-open').disabled=false;}
 };
 })();

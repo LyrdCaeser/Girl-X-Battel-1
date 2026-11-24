@@ -73,3 +73,29 @@ assert(bridge.includes('me|login|logout'),'Account switching must revoke only th
 assert(bridge.includes('giftskin\\/'),'GiftSkin must use allowlisted API paths on the bridge');
 console.log('PASS | Studio SSO account identity is explicit and synced by one-use GXB3 ticket');
 console.log('PASS | Studio Skin checkbox fields serialize as JSON booleans, VNĐ/Crystal only');
+
+// Rescue menu follows the exact existing SUPER GM + panel unlock state.
+assert(!html.includes('href="./account-rescue.html"'),'Emergency entry must not be publicly linked');
+assert(/data-view="rescue" hidden/.test(html),'Rescue nav starts hidden');
+assert(/id="rescue-view" class="view panel recovery-page" hidden/.test(html),'Rescue content starts hidden');
+assert(html.includes('id="profile-picker"'),'Native website profile picker stays embedded');
+const rescue=fs.readFileSync(path.join(root,'giftcode-studio/account-rescue.js'),'utf8');
+assert(rescue.includes("window.addEventListener('gxb3:rescue-reset',resetView)"));
+assert(rescue.includes('if(epoch!==viewEpoch)return'),'Late rescue responses cannot leak into a different view');
+const views=['create','history','redeem','skins','shop','gift','recover','rescue'];
+const nodes=Object.fromEntries([...views.map(x=>x+'-view'),'page-title','create-lock'].map(x=>[x,{hidden:true}]));
+const nav=views.map(view=>({dataset:{view},hidden:true,classList:{toggle(){}}}));
+const state={admin:false,me:null,panelUnlocked:false};
+const resetEvents=[];
+const switchSource=app.slice(app.indexOf('function switchView(view){'),app.indexOf('\nfunction updateStats(){'));
+const ctx={state,$:id=>nodes[id],document:{querySelectorAll:()=>nav},window:{dispatchEvent:e=>resetEvents.push(e.type)},Event:class{constructor(type){this.type=type;}},loadPlayerShop:async()=>{},loadGiftSkin:async()=>{}};
+const switchView=vm.runInNewContext('('+switchSource+')',ctx);
+const rescueNav=nav.find(x=>x.dataset.view==='rescue');
+switchView('rescue');assert(rescueNav.hidden&&nodes['rescue-view'].hidden);assert.equal(state.view,'redeem');
+state.me={};switchView('rescue');assert(rescueNav.hidden&&nodes['rescue-view'].hidden);
+state.admin=true;switchView('rescue');assert(rescueNav.hidden&&nodes['rescue-view'].hidden);assert.equal(nodes['create-lock'].hidden,false);
+state.panelUnlocked=true;switchView('rescue');assert(!rescueNav.hidden&&!nodes['rescue-view'].hidden);
+switchView('redeem');assert(nodes['rescue-view'].hidden);
+state.admin=false;state.panelUnlocked=false;switchView('redeem');assert(rescueNav.hidden&&nodes['rescue-view'].hidden);
+assert(resetEvents.includes('gxb3:rescue-reset'));
+console.log('PASS | Recovery Tools embedded and restricted to unlocked SUPER GM');

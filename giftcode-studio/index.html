@@ -5,7 +5,9 @@
 <meta name="theme-color" content="#0b1023"><link rel="icon" type="image/jpeg" href="./favicon.jpg">
 <title>Goddess Battle 3 - Trang Chủ Chính Thức</title>
 <link rel="stylesheet" href="./style.css?v=20261016-authenticator-recovery-v1">
-<script defer src="./app.js?v=20261016-player-shop-visible-v3"></script>
+<link rel="stylesheet" href="./account-rescue.css?v=2">
+<script defer src="./account-rescue.js?v=3"></script>
+<script defer src="./app.js?v=20261124-recovery-menu-v1"></script>
 </head>
 <body>
 <div class="shell">
@@ -19,6 +21,7 @@
     <button class="nav-btn" data-view="shop">✧ <span>Cửa Hàng Trang Phục</span></button>
     <button class="nav-btn" data-view="gift">♡ <span>GiftSkin · Tặng Trang Phục</span></button>
     <button class="nav-btn" data-view="recover" hidden>⌑ <span>Khôi Phục 3 Khóa QTV</span></button>
+    <button class="nav-btn" data-view="rescue" hidden>⌑ <span>Recovery Tools · Cứu hộ tài khoản</span></button>
     <button class="nav-btn" data-view="skins" hidden>✧ <span>Quản lý trang phục</span></button>
   </nav>
   <div class="side-bottom">
@@ -29,7 +32,6 @@
 </aside>
 <main class="main">
   <header class="topbar"><div><span class="eyebrow">GXB 3 / HỆ THỐNG QUÀ TẶNG</span><h1 id="page-title">Tạo Giftcode</h1></div><div class="account"><span id="server-status">Đang kết nối...</span><span id="account-label">Chưa đăng nhập</span><span id="account-character" aria-live="polite">Đồng bộ với tài khoản game</span><a id="account-sync" class="account-sync" href="https://180-93-111-99.sslip.io/api/giftcode/sso/start" title="Xem đúng tài khoản và server bên game trước khi xác nhận đồng bộ">↻ Đồng bộ với GXB 3</a><button id="account-recovery" class="account-sync" type="button" hidden>⌑ Khôi phục 3 khóa</button><button id="account-switch" class="account-sync" type="button" title="Đăng xuất riêng Goddess Battle 3 - Trang Chủ Chính Thức mà không xóa tài khoản và tiến trình game" hidden>Đổi tài khoản trang chủ</button></div></header>
-  <p><a class="account-sync" href="./account-rescue.html">Cứu hộ tài khoản khẩn cấp</a></p>
   <section id="login-panel" class="panel login-card" hidden>
     <h2>Đăng nhập tài khoản GXB 3</h2><p class="muted">Đăng nhập game để sử dụng Goddess Battle 3 - Trang Chủ Chính Thức. Chỉ tài khoản SUPER GM có thể tạo và khóa mã.</p>
     <a id="game-sso" class="game-sso" href="https://180-93-111-99.sslip.io/api/giftcode/sso/start">↗ Liên kết đăng nhập trực tiếp từ game GXB 3</a>
@@ -44,7 +46,7 @@
   <div id="restricted" class="panel" hidden><h2>Quản trị viên mới được truy cập</h2><p class="muted">Tài khoản hiện tại không có quyền SUPER GM. Bạn vẫn có thể đổi giftcode và mua trang phục tại Cửa Hàng Trang Phục. Nếu không đúng tài khoản mong muốn, bấm “Đổi tài khoản trang chủ”.</p></div>
   <section id="create-lock" class="view panel login-card" hidden>
     <span class="eyebrow">KHU VỰC BẢO VỆ</span><h2>Khóa khu vực quản trị</h2>
-    <p class="muted">Chỉ tài khoản SUPER GM đã đồng bộ với game được nhập ba loại khóa. Xác thực đủ cả ba mới hiển thị Tạo Giftcode, Mã đã phát hành và Quản lý Trang Phục.</p>
+    <p class="muted">Chỉ tài khoản SUPER GM đã đồng bộ với game được nhập ba loại khóa. Xác thực đủ cả ba mới hiển thị Tạo Giftcode, Mã đã phát hành, Quản lý Trang Phục và Recovery Tools.</p>
     <form id="unlock-form" class="studio-admin-unlock" autocomplete="off">
       <label>Khóa quản trị GXB 3<input id="unlock-admin-key" type="password" autocomplete="off" minlength="12" required placeholder="GXB3_ADMIN_KEY"></label>
       <label>Khóa bảo vệ Goddess Battle 3 - Trang Chủ Chính Thức<input id="unlock-password" type="password" autocomplete="off" minlength="12" required placeholder="GXB3_GIFTCODE_PANEL_KEY"></label>
@@ -232,7 +234,38 @@
     </div>
     <p id="recovery-feedback" class="muted" role="status" aria-live="polite"></p>
   </section>
+<section id="rescue-view" class="view panel recovery-page" hidden>
+<span class="eyebrow">KHU VỰC BẢO MẬT SUPER GM</span><h2>Cứu hộ tài khoản khẩn cấp</h2>
+<p class="muted">Chỉ chủ sở hữu SUPER GM. Cứu hộ tài khoản quản trị không yêu cầu đăng nhập, nhưng phải có đủ ba khóa quản trị và mã Authenticator hoặc mã dự phòng đã thiết lập. Cứu hộ người chơi yêu cầu phiên SUPER GM đang hoạt động.</p>
+<p class="muted">Chỉ cấp mã mới sau khi xác minh chủ tài khoản qua kênh hỗ trợ riêng. Không cung cấp mã cho người khác. Cấp mã mới vô hiệu mã cũ và đăng xuất mọi phiên của tài khoản đó; không đổi UID, nhân vật, vật phẩm hay tiến trình.</p>
+<form id="rescue" class="recovery-form" autocomplete="off">
+<label>Thao tác<select name="action"><option value="owner_code">Cấp mã khôi phục tài khoản SUPER GM</option><option value="owner_unban">Gỡ khóa tài khoản SUPER GM</option><option value="player_code">Cấp mã khôi phục tài khoản người chơi</option><option value="player_unban">Gỡ khóa tài khoản người chơi</option></select></label>
+<div id="player-fields" hidden>
+<h2>Chọn hồ sơ người chơi</h2>
+<p class="muted mini">Chọn nhân vật thật trong game. Cứu hộ tài khoản áp dụng cho tất cả máy chủ của tài khoản đó.</p>
+<div id="profile-selected" hidden></div>
+<button id="profile-open" class="ghost" type="button">Chọn hồ sơ game</button>
+<p id="profile-feedback" role="status" aria-live="polite"></p>
+<label class="rescue-check"><input type="checkbox" name="verified" disabled> <span>Tôi đã xác minh chủ tài khoản và yêu cầu cứu hộ.</span></label>
+</div>
+<label>Lý do cứu hộ<input name="reason" minlength="5" maxlength="200" required></label>
+<label>Khóa quản trị<input name="admin_key" type="password" required maxlength="1024"></label>
+<label>Khóa trang chủ<input name="panel_key" type="password" required maxlength="1024"></label>
+<label>Khóa hành động QTV<input name="gm_key" type="password" required maxlength="1024"></label>
+<label>Mã Authenticator hoặc mã dự phòng<input name="code" type="password" maxlength="28" required></label>
+<button class="primary" type="submit">Xác nhận cứu hộ</button>
+</form>
+<p id="feedback" role="status" aria-live="polite"></p>
+<div id="result" hidden><h2>Kết quả</h2><p id="target"></p><p id="rescue-new-code" hidden></p><button id="hide" type="button" class="ghost">Ẩn kết quả</button></div>
+<p class="muted">Mất cả khóa quản trị hoặc chưa liên kết Authenticator? Cần xác minh qua quyền quản trị VPS; trang này không bỏ qua bảo mật. Khóa nhân vật riêng theo máy chủ vẫn xử lý trong GM Tools.</p>
+</section>
   <p id="global-status" role="status" aria-live="polite"></p>
 </main>
 </div>
+<dialog id="profile-picker" aria-labelledby="picker-title">
+<div class="picker-head"><h2 id="picker-title">Hồ sơ người chơi GXB 3</h2><button id="profile-close" type="button" class="ghost" aria-label="Đóng">✕</button></div>
+<form id="profile-search"><label for="profile-query">Tìm nhân vật, UID hoặc máy chủ</label><div class="picker-search"><input id="profile-query" maxlength="80" type="search" placeholder="Ví dụ: tên nhân vật, S1"><button class="ghost" type="submit">Tìm</button></div></form>
+<p id="picker-status" role="status" aria-live="polite"></p><div id="profile-list"></div>
+<div class="picker-pages"><button id="profile-prev" class="ghost" type="button" disabled>Trang trước</button><button id="profile-next" class="ghost" type="button" disabled>Trang sau</button></div>
+</dialog>
 </body></html>

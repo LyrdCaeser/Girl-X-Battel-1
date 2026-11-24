@@ -37,13 +37,14 @@ const api=async(path,body,gm=false,unlock=false)=>{
 function notice(msg,ok=true){const el=$('global-status');el.textContent=msg;el.dataset.ok=ok?'1':'0';}
 function switchView(view){
  if(!state.admin&&!['redeem','shop','gift'].includes(view))view='redeem';
+ if(view!=='rescue'||!state.admin||!state.panelUnlocked)window.dispatchEvent(new Event('gxb3:rescue-reset'));
  state.view=view;
- const titles={create:'Tạo Giftcode',history:'Giftcode đã phát hành',redeem:'Đổi Giftcode',skins:'Quản lý Trang Phục',shop:'Cửa Hàng Trang Phục',gift:'GiftSkin · Tặng Trang Phục',recover:'Khôi Phục 3 Khóa QTV'};
+ const titles={create:'Tạo Giftcode',history:'Giftcode đã phát hành',redeem:'Đổi Giftcode',skins:'Quản lý Trang Phục',shop:'Cửa Hàng Trang Phục',gift:'GiftSkin · Tặng Trang Phục',recover:'Khôi Phục 3 Khóa QTV',rescue:'Recovery Tools · Cứu hộ tài khoản'};
  $('page-title').textContent=titles[view];
  for(const el of document.querySelectorAll('.nav-btn')){el.classList.toggle('active',el.dataset.view===view);el.hidden=!['redeem','shop','gift'].includes(el.dataset.view)&&!((el.dataset.view==='recover'&&state.admin)||(state.admin&&state.panelUnlocked));}
- for(const name of ['create','history','redeem','skins','shop','gift','recover'])$(name+'-view').hidden=view!==name||(!['shop','gift'].includes(name)&&!state.me)||(!['redeem','shop','gift','recover'].includes(name)&&!state.panelUnlocked);
+ for(const name of ['create','history','redeem','skins','shop','gift','recover','rescue'])$(name+'-view').hidden=view!==name||(!['shop','gift'].includes(name)&&!state.me)||(!['redeem','shop','gift','recover'].includes(name)&&!state.panelUnlocked);
  $('create-lock').hidden=!state.me||!state.admin||['redeem','shop','gift','recover'].includes(view)||state.panelUnlocked;
- if((view==='create'||view==='skins')&&!state.panelUnlocked)state.unlockDestination=view;
+ if((view==='create'||view==='skins'||view==='rescue')&&!state.panelUnlocked)state.unlockDestination=view;
  if(view==='history'&&state.admin&&state.panelUnlocked)refreshCodes().catch(e=>notice(e.message,false));
  if(view==='skins'&&state.admin&&state.panelUnlocked)loadSkins().catch(e=>notice(e.message,false));
  if(view==='shop')loadPlayerShop().catch(e=>notice(e.message,false));
@@ -743,7 +744,7 @@ $('recovery-rotate-form').onsubmit=async e=>{
 async function start(){
  // Hide all privileged navigation until the server confirms SUPER GM ownership.
  for(const el of document.querySelectorAll('.nav-btn'))el.hidden=!['redeem','shop','gift'].includes(el.dataset.view);
- for(const name of ['create','history','redeem','skins','shop','gift','recover'])$(name+'-view').hidden=true;
+ for(const name of ['create','history','redeem','skins','shop','gift','recover','rescue'])$(name+'-view').hidden=true;
  const ticket=new URLSearchParams(location.search).get('ticket');
  let ssoFailure='';
  if(ticket){
