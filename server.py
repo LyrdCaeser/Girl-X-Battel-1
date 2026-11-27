@@ -1202,7 +1202,7 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
             if path == '/api/auth/login' and not self.rate_limit('auth_login'): return
             if path == '/api/auth/recovery-code' and not self.rate_limit('recovery_rotate'): return
             if path == '/api/order/create' and not self.rate_limit('order_create'): return
-            if path in ('/api/pvp/queue','/api/pvp/challenge','/api/pvp/defense','/api/pvp/arena3v3/teams','/api/pvp/arena3v3/pay') and not self.rate_limit_player('pvp_queue'): return
+            if path in ('/api/pvp/queue','/api/pvp/challenge','/api/pvp/defense','/api/pvp/arena3v3/teams','/api/pvp/arena3v3/pay','/api/pvp/match/invite') and not self.rate_limit_player('pvp_queue'): return
             if path in ('/api/pvp/match/battle','/api/pvp/match/replay','/api/pvp/arena3v3/round','/api/pvp/arena3v3/replay','/api/guild-war/battle') and not self.rate_limit_player('battle'): return
             if path.startswith('/api/admin/') and not self.rate_limit('admin'): return
             if path == '/api/giftcode/redeem' and not self.rate_limit('giftcode_redeem'): return
@@ -1307,7 +1307,7 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                     return self.send(403,{'error':'Đấu Trường Liên Server không mở tại S5','code':'S5_CROSS_LOCKED'})
                 # Match-bound operations include ticket payment, battle, result,
                 # heartbeat, replay and series. Check current character on every call.
-                if path.startswith('/api/pvp/match/') or path in (
+                if (path.startswith('/api/pvp/match/') and path!='/api/pvp/match/comms') or path in (
                         '/api/pvp/arena3v3/pay','/api/pvp/arena3v3/round','/api/pvp/arena3v3/replay'):
                     try:
                         live_service.require_pvp_match_world(data.get('match_id'),account['uid'],account['server_id'])
@@ -1727,13 +1727,23 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
             if path == '/api/pvp/arena3v3/pay':
                 ctx = self.auth_context(); account = ctx['account']
                 return self.send(200, self.engine.pay_pvp_arena3v3_ticket(data.get('match_id'), account['uid']))
+            if path == '/api/pvp/live-status':
+                account=self.auth_context()['account']
+                return self.send(200,live_service.live_invite_status(account['uid'],account['server_id']))
+            if path == '/api/pvp/match/comms':
+                from gxb2 import pvp_comms
+                account=self.auth_context()['account']
+                return self.send(200,pvp_comms.exchange(account['uid'],account['server_id'],data))
+            if path == '/api/pvp/match/invite':
+                account=self.auth_context()['account']
+                return self.send(200,live_service.answer_live_invite(data.get('match_id'),account['uid'],account['server_id'],data.get('action')))
             if path == '/api/pvp/challenge':
                 ctx = self.auth_context(); account = ctx['account']; player = ctx['player']
                 mode = str(data.get('mode') or 'arena')
                 current = self.engine.pvp_arena3v3_snapshot() if mode == 'arena3v3' else self.engine.snapshot()
                 return self.send(200, live_service.challenge_pvp(
                     account['uid'], account['server_id'], player['character_name'], mode,
-                    data.get('target_uid'), data.get('target_server'), int(current.get('power',0))))
+                    data.get('target_uid'), data.get('target_server'), int(current.get('power',0)), consent=True))
             if path == '/api/pvp/queue':
                 ctx = self.auth_context(); account = ctx['account']; player = ctx['player']
                 action = str(data.get('action') or 'join')
@@ -1760,6 +1770,13 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                 match = live_service.pvp_match_internal(match_id, account['uid'])
                 if match.get('mode') != 'arena3v3':
                     raise ValueError('Trận đấu không phải Đấu Trường 3v3')
+                if str(match.get('challenge_uid','')).startswith('LIVE:'):
+                    if match['status']!='finished' and account['uid']!=match['player_a']:
+                        return self.send(403,{'error':'Đang chờ người thách đấu bắt đầu lượt đấu'})
+                    ready=live_service.heartbeat_pvp_match(match_id,account['uid'],True)
+                    if match['status']!='finished' and (ready['match']['status']!='active' or not ready['all_ready']):
+                        return self.send(409,{'error':'Đang chờ cả hai người chơi sẵn sàng'})
+
                 if match.get('status') == 'finished':
                     return self.send(200, {'result': live_service.pvp_match_result(match_id, account['uid'])})
                 series = live_service.pvp_arena3v3_series_status(match_id, account['uid'])
@@ -1830,7 +1847,11 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                 ctx = self.auth_context(); account = ctx['account']
                 report = live_service.pvp_arena3v3_round_replay(
                     data.get('match_id'), account['uid'], data.get('round'))
-                return self.send(200, {'report':report})
+                match=next((m for m in live_service.live_invite_status(account['uid'],account['server_id'])['matches'] if m['id']==data.get('match_id')),None)
+                times=(match or {}).get('round_times',[])
+                idx=int(data.get('round'))
+                play_at=times[idx]+5 if idx<len(times) and times[idx] else 0
+                return self.send(200, {'report':report,'play_at':play_at,'server_time':time.time()})
             if path == '/api/pvp/match/battle':
                 ctx = self.auth_context(); account = ctx['account']
                 session = live_service.pvp_match_session(data.get('match_id'), account['uid'])
@@ -1860,7 +1881,7 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                     formation_override=data.get('formation'))
                 snap_b = engine_b.pvp_team_snapshot(defense=True)
                 ready = live_service.heartbeat_pvp_match(match['id'], account['uid'], True)
-                if ready['match'].get('status') != 'active':
+                if ready['match'].get('status') != 'active' or (str(match.get('challenge_uid','')).startswith('LIVE:') and not ready['all_ready']):
                     return self.send(409, {'error': 'Đang chờ đối thủ sẵn sàng', 'session': ready})
                 report = simulate_battle(
                     snap_a['team'], snap_b['team'],
@@ -1895,7 +1916,7 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                     authoritative, account['uid'], result['player_a'], result['player_b'],
                     pet_a=authoritative.get('petA'), pet_b=authoritative.get('petB'),
                     names=TABLES['names'])
-                return self.send(200, {'report':replay})
+                return self.send(200, {'report':replay,'play_at':int(result['resolved_at'])+5 if result.get('live_consent') else 0,'server_time':time.time()})
             if path == '/api/order/create':
                 state = self.engine.snapshot()
                 return self.send(200, live_service.create_order(state.get('uid'), state.get('server_id'), state.get('name'), data.get('package'), data.get('note','')))

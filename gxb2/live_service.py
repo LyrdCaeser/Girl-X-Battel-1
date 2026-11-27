@@ -814,6 +814,7 @@ def _public_pvp_match(row, include_result=False):
         "status","winner_uid","created_at","resolved_at",
         "rating_delta_a","rating_delta_b",
     )}
+    out['live_consent']=str(data.get('challenge_uid') or '').startswith('LIVE:')
     if include_result and str(data.get("status"))=="finished":
         for key in ("snapshot_a","snapshot_b","battle_report"):
             try:
@@ -946,7 +947,7 @@ def pvp_candidates(uid, server_id, mode, limit=20):
                                          max(1,min(50,int(limit))))).fetchall()
         out=[dict(r) for r in rows]; db.close(); return out
 
-def challenge_pvp(uid, server_id, character_name, mode, target_uid, target_server, power=0):
+def challenge_pvp(uid, server_id, character_name, mode, target_uid, target_server, power=0, *, consent=False):
     if str(server_id).upper()=='S5' and str(mode).lower() not in ('arena','arena3v3'): raise ValueError('S5 không mở Đấu Trường Liên Server')
     uid=str(uid); server_id=str(server_id).upper(); mode=str(mode or "arena").lower()
     target_uid=str(target_uid); target_server=str(target_server).upper()
@@ -959,9 +960,23 @@ def challenge_pvp(uid, server_id, character_name, mode, target_uid, target_serve
     now=int(time.time())
     with _lock:
         db=_db(); db.execute("BEGIN IMMEDIATE")
+        if consent:
+            # Expired invitations never reserve either player's slot.
+            db.execute("UPDATE pvp_matches SET status='expired',resolved_at=? WHERE status='invited' AND created_at<?",(now,now-60))
+            db.execute("UPDATE pvp_matches SET status='expired',resolved_at=? WHERE challenge_uid LIKE 'LIVE:%' AND status IN ('ready','active') AND created_at<? AND NOT EXISTS (SELECT 1 FROM pvp_match_peers pp WHERE pp.match_id=pvp_matches.id AND pp.last_seen>=?)",(now,now-900,now-30))
+            existing=db.execute("""SELECT * FROM pvp_matches WHERE challenge_uid LIKE 'LIVE:%'
+              AND status IN ('invited','ready','active') AND
+              ((player_a=? AND server_a=?) OR (player_b=? AND server_b=?) OR
+               (player_a=? AND server_a=?) OR (player_b=? AND server_b=?)) LIMIT 1""",
+              (uid,server_id,uid,server_id,target_uid,target_server,target_uid,target_server)).fetchone()
+            if existing:
+                if existing['player_a']==uid and existing['server_a']==server_id and existing['player_b']==target_uid and existing['server_b']==target_server:
+                    out={"status":"invited" if existing['status']=='invited' else 'matched',"match":_public_pvp_match(existing)}
+                    db.commit();db.close();return out
+                db.rollback();db.close();raise ValueError('Một trong hai người đang có lời mời hoặc trận đấu khác')
         old=db.execute("""SELECT id FROM pvp_matches WHERE challenge_uid=? AND COALESCE(NULLIF(server_a,''),server_id)=? AND mode=? AND status IN ('ready','active')
                           ORDER BY created_at DESC LIMIT 1""",(uid,server_id,mode)).fetchone()
-        if old:
+        if old and not consent:
             row=db.execute("SELECT * FROM pvp_matches WHERE id=?",(old["id"],)).fetchone()
             out={"status":"matched","match":_public_pvp_match(row)}; db.commit(); db.close(); return out
         db.execute("DELETE FROM pvp_queue WHERE uid=? AND server_id=?",(uid,server_id))
@@ -981,15 +996,63 @@ def challenge_pvp(uid, server_id, character_name, mode, target_uid, target_serve
                       id,mode,server_id,server_a,server_b,player_a,player_b,name_a,name_b,power_a,power_b,
                       status,winner_uid,created_at,resolved_at,seed,snapshot_a,snapshot_b,battle_report,
                       rating_delta_a,rating_delta_b,challenge_uid)
-                      VALUES(?,?,?,?,?,?,?,?,?,?,?,'active','',?,0,?,'{}','{}','{}',0,0,?)""",
+                      VALUES(?,?,?,?,?,?,?,?,?,?,?,?,'',?,0,?,'{}','{}','{}',0,0,?)""",
                    (match_id,mode,match_server,server_id,target_server,uid,target_uid,character_name,
-                    target["character_name"],max(0,int(power)),int(target["power"]),now,seed,uid))
+                    target["character_name"],max(0,int(power)),int(target["power"]),"invited" if consent else "active",now,seed,"LIVE:"+uid if consent else uid))
         if mode=="arena3v3":
             db.execute("""INSERT INTO pvp_arena3v3_series(match_id,paid_a,paid_b,rounds,updated_at)
                           VALUES(?,0,1,'[]',?)""",(match_id,now))
         _audit(db,"pvp.challenge",match_id,{"mode":mode,"target":target_uid,"target_server":target_server},"SYSTEM")
         row=db.execute("SELECT * FROM pvp_matches WHERE id=?",(match_id,)).fetchone()
-        db.commit(); out={"status":"matched","match":_public_pvp_match(row)}; db.close(); return out
+        db.commit(); out={"status":"invited" if consent else "matched","match":_public_pvp_match(row)}; db.close(); return out
+
+
+def answer_live_invite(match_id, uid, server_id, action):
+    match=require_pvp_match_world(match_id,uid,server_id)
+    if not str(match.get('challenge_uid','')).startswith('LIVE:'):
+        raise ValueError('Không phải lời mời So Tài trực tuyến')
+    if action not in ('accept','decline','cancel'):
+        raise ValueError('Thao tác lời mời không hợp lệ')
+    if (action=='cancel' and uid!=match['player_a']) or (action!='cancel' and uid!=match['player_b']):
+        raise ValueError('Bạn không có quyền trả lời lời mời này')
+    now=int(time.time())
+    with _lock:
+        db=_db()
+        try:
+            db.execute('BEGIN IMMEDIATE')
+            row=db.execute(_for_update(db,'SELECT * FROM pvp_matches WHERE id=?'),(match_id,)).fetchone()
+            if row['status']!='invited':raise ValueError('Lời mời đã được xử lý')
+            if now-int(row['created_at'])>60:raise ValueError('Lời mời đã hết hạn')
+            status={'accept':'ready','decline':'declined','cancel':'cancelled'}[action]
+            db.execute('UPDATE pvp_matches SET status=?,resolved_at=? WHERE id=?',(status,0 if status=='ready' else now,match_id))
+            db.commit()
+            return {'match':_public_pvp_match(db.execute('SELECT * FROM pvp_matches WHERE id=?',(match_id,)).fetchone())}
+        except Exception:
+            db.rollback();raise
+        finally:db.close()
+
+
+def live_invite_status(uid, server_id):
+    now=int(time.time())
+    with _lock:
+        db=_db()
+        try:
+            rows=db.execute("""SELECT id,mode,server_id,server_a,server_b,player_a,player_b,name_a,name_b,power_a,power_b,status,winner_uid,created_at,resolved_at,rating_delta_a,rating_delta_b,challenge_uid FROM pvp_matches WHERE challenge_uid LIKE 'LIVE:%'
+              AND ((player_a=? AND server_a=?) OR (player_b=? AND server_b=?))
+              AND ((status='invited' AND created_at>=?) OR status IN ('ready','active')
+               OR (status IN ('finished','declined','cancelled') AND resolved_at>=?))
+              ORDER BY created_at DESC LIMIT 5""",(uid,server_id,uid,server_id,now-60,now-180)).fetchall()
+            result=[]
+            for row in rows:
+                item=_public_pvp_match(row)
+                if row['mode']=='arena3v3' and row['status'] in ('active','finished'):
+                    series=db.execute('SELECT rounds FROM pvp_arena3v3_series WHERE match_id=?',(row['id'],)).fetchone()
+                    rounds=json.loads(series['rounds'] or '[]') if series else []
+                    item['round_count']=len(rounds)
+                    item['round_times']=[int(x.get('played_at') or 0) for x in rounds]
+                result.append(item)
+            return {'matches':result,'server_time':now}
+        finally:db.close()
 
 
 def cancel_pvp(uid, server_id, mode):
@@ -1008,13 +1071,13 @@ def pvp_status(uid, server_id, mode=""):
         if mode:
             match=db.execute("""SELECT * FROM pvp_matches
                                 WHERE ((COALESCE(challenge_uid,'')<>'' AND challenge_uid=? AND COALESCE(NULLIF(server_a,''),server_id)=?)
-                                    OR (COALESCE(challenge_uid,'')='' AND ((player_a=? AND COALESCE(NULLIF(server_a,''),server_id)=?) OR (player_b=? AND COALESCE(NULLIF(server_b,''),server_id)=?)))) AND mode=?
+                                    OR ((COALESCE(challenge_uid,'')='' OR challenge_uid LIKE 'LIVE:%') AND ((player_a=? AND COALESCE(NULLIF(server_a,''),server_id)=?) OR (player_b=? AND COALESCE(NULLIF(server_b,''),server_id)=?)))) AND mode=?
                                   AND status IN ('ready','active')
                                 ORDER BY created_at DESC LIMIT 1""",(uid,server_id,uid,server_id,uid,server_id,mode)).fetchone()
         else:
             match=db.execute("""SELECT * FROM pvp_matches
                                 WHERE ((COALESCE(challenge_uid,'')<>'' AND challenge_uid=? AND COALESCE(NULLIF(server_a,''),server_id)=?)
-                                    OR (COALESCE(challenge_uid,'')='' AND ((player_a=? AND COALESCE(NULLIF(server_a,''),server_id)=?) OR (player_b=? AND COALESCE(NULLIF(server_b,''),server_id)=?))))
+                                    OR ((COALESCE(challenge_uid,'')='' OR challenge_uid LIKE 'LIVE:%') AND ((player_a=? AND COALESCE(NULLIF(server_a,''),server_id)=?) OR (player_b=? AND COALESCE(NULLIF(server_b,''),server_id)=?))))
                                   AND status IN ('ready','active')
                                 ORDER BY created_at DESC LIMIT 1""",(uid,server_id,uid,server_id,uid,server_id)).fetchone()
         if match:
@@ -1036,7 +1099,7 @@ def activate_pvp_match(match_id, uid):
             db.rollback(); db.close(); raise ValueError("Không tìm thấy trận PvP")
         if uid not in (row["player_a"],row["player_b"]):
             db.rollback(); db.close(); raise ValueError("Bạn không thuộc trận PvP này")
-        if row["status"]=="ready":
+        if row["status"]=="ready" and not str(row["challenge_uid"] or "").startswith("LIVE:"):
             db.execute("UPDATE pvp_matches SET status='active' WHERE id=?",(str(match_id),))
         row=db.execute("SELECT * FROM pvp_matches WHERE id=?",(str(match_id),)).fetchone()
         db.commit(); out=_public_pvp_match(row); db.close(); return out
@@ -1236,7 +1299,7 @@ def record_pvp_arena3v3_round(match_id, requester_uid, expected_round, winner_ui
                 out=_arena3v3_series_view(row,series,requester_uid)
                 db.commit(); return {"series":out,"already_resolved":True}
             packed_replay=_pack_arena3v3_replay(report)
-            rounds.append({"round":len(rounds),"winner_uid":winner_uid,
+            rounds.append({"round":len(rounds),"winner_uid":winner_uid,"played_at":int(time.time()),
                            "report":{"total_round":int(report.get("total_round") or 0),
                                      "isWin":int(report["isWin"]),
                                      "total_harm":int(report.get("total_harm") or 0)},
@@ -1268,7 +1331,7 @@ def pvp_history(uid, limit=50, server_id=None):
                                   m.rating_delta_a,m.rating_delta_b,s.rounds AS arena3v3_rounds
                            FROM pvp_matches m
                            LEFT JOIN pvp_arena3v3_series s ON s.match_id=m.id
-                           WHERE (m.player_a=? OR m.player_b=?)"""+scope+"""
+                           WHERE (m.player_a=? OR m.player_b=?) AND m.status NOT IN ('invited','declined','cancelled','expired')"""+scope+"""
                            ORDER BY m.created_at DESC LIMIT ?""",(*params,limit)).fetchall()
         out=[]
         for row in rows:

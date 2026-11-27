@@ -20,6 +20,7 @@ import android.webkit.CookieManager;
 import android.webkit.JsResult;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
+import android.webkit.PermissionRequest;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
@@ -42,6 +43,8 @@ public final class MainActivity extends Activity {
     private static WeakReference<MainActivity> visibleActivity = new WeakReference<>(null);
     private boolean wishCapturePermissionPending;
     private ValueCallback<Uri[]> profilePhotoCallback;
+    private PermissionRequest voicePermission;
+    private static final int VOICE_PERMISSION_REQUEST = 3615;
 
     /** Origin restricted: this JS bridge must never be available to untrusted pages. */
     private boolean isTrustedGamePage() {
@@ -114,6 +117,17 @@ public final class MainActivity extends Activity {
     @Override public void onRequestPermissionsResult(int requestCode,
                     String[] permissions,int[] grantResults) {
         super.onRequestPermissionsResult(requestCode,permissions,grantResults);
+        if (requestCode == VOICE_PERMISSION_REQUEST) {
+            PermissionRequest pending=voicePermission;voicePermission=null;
+            if (pending!=null) {
+                if (isTrustedGamePage() && grantResults.length>0 &&
+                        grantResults[0]==PackageManager.PERMISSION_GRANTED) {
+                    pending.grant(new String[]{PermissionRequest.RESOURCE_AUDIO_CAPTURE});
+                } else pending.deny();
+            }
+            return;
+        }
+
         if (requestCode != WISH_GALLERY_PERMISSION_REQUEST) return;
         wishCapturePermissionPending=false;
         if (grantResults.length>0 &&
@@ -177,6 +191,26 @@ public final class MainActivity extends Activity {
         cookies.setAcceptThirdPartyCookies(webView, false);
 
         webView.setWebChromeClient(new WebChromeClient() {
+            @Override public void onPermissionRequest(PermissionRequest request) {
+                Uri origin=request.getOrigin();
+                if (!isTrustedGamePage() || !"https".equalsIgnoreCase(origin.getScheme())
+                        || !"180-93-111-99.sslip.io".equalsIgnoreCase(origin.getHost())
+                        || (origin.getPort()!=-1 && origin.getPort()!=443)
+                        || request.getResources().length!=1
+                        || !PermissionRequest.RESOURCE_AUDIO_CAPTURE.equals(request.getResources()[0])) {
+                    request.deny();return;
+                }
+                if (checkSelfPermission(Manifest.permission.RECORD_AUDIO)==PackageManager.PERMISSION_GRANTED) {
+                    request.grant(new String[]{PermissionRequest.RESOURCE_AUDIO_CAPTURE});
+                } else if (voicePermission==null) {
+                    voicePermission=request;
+                    requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO},VOICE_PERMISSION_REQUEST);
+                } else request.deny();
+            }
+            @Override public void onPermissionRequestCanceled(PermissionRequest request) {
+                if (voicePermission==request) voicePermission=null;
+            }
+
             @Override
             public boolean onShowFileChooser(WebView view, ValueCallback<Uri[]> callback,
                                              WebChromeClient.FileChooserParams params) {
@@ -407,6 +441,7 @@ public final class MainActivity extends Activity {
 
     @Override
     protected void onDestroy() {
+        if (voicePermission!=null) {voicePermission.deny();voicePermission=null;}
         if (visibleActivity.get() == this) visibleActivity.clear();
         if (profilePhotoCallback != null) {
             profilePhotoCallback.onReceiveValue(null);

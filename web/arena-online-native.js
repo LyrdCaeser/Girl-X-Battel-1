@@ -5,6 +5,7 @@
 const NativeOnlineArenas=(()=>{
  let mode='arena',origin='home',data=null,panel='',note='',busy=false,draft=null,teamIndex=0,defenseDraft=null,defensePos=1,attackDraft=null,attackPos=1;
  let timer=null,sequence=0,lastMatchResult=null;
+ const playedLive=new Set();let liveMatch=null,livePollBusy=false,liveIdentity='',liveOpened='',livePlaying=false;const handledInvites=new Set();
  const A=n=>'/assets/arena/'+n+'.png';
  const el=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=String(text);return n;};
  const img=(src,cls)=>{const n=el('img',cls);n.src=src;n.alt='';n.draggable=false;return n;};
@@ -72,7 +73,7 @@ const NativeOnlineArenas=(()=>{
  async function challenge(player){
   if(mode==='arena3v3'&&!validTeams(data?.arena3v3?.teams)){panel='teams';render();return;}
   const r=await post('/api/pvp/challenge',{mode,target_uid:player.uid,target_server:player.server_id});
-  if(r?.match){data.pvp=r;attackDraft=null;attackPos=1;panel=mode==='arena3v3'?'match':'attack';render();}
+  if(r?.match){liveMatch=r.match;attackDraft=null;attackPos=1;panel='';render();if(r.status==='invited')showInvite(r.match);else{data.pvp=r;panel=mode==='arena3v3'?'match':'attack';render();}}
  }
  function validTeams(teams){return Array.isArray(teams)&&teams.length===3
   &&teams.every(t=>Array.isArray(t)&&t.length>=1&&t.length<=6)
@@ -161,8 +162,8 @@ const NativeOnlineArenas=(()=>{
    panel='replay-error';render();return;
   }
   try{
-   stop();
-   await watchEventBattle({report:playback.report},activeView(),title());
+   stop();playedLive.add(match.id+':single');
+   await liveWatch(playback.report,match,activeView(),title(),playback.play_at,playback.server_time);
    panel='result';
    // The original replay's "Tiếp tục" button returns to this Arena view.
    // Result appears only on return, never in front of the battle animation.
@@ -197,7 +198,7 @@ const NativeOnlineArenas=(()=>{
   if(r.result){lastMatchResult=r.result;panel='result';}
   else {panel='match';if(r.round_report)note='Đã hoàn tất lượt '+(round+1)+' trên máy chủ.';}
   render();
-  if(!r.already_resolved&&r.round_report)await replay3v3(match.id,round);
+  if(!r.already_resolved&&r.round_report){playedLive.add(match.id+':'+round);const reply=await api('/api/pvp/arena3v3/replay',{match_id:match.id,round:Number(round)});if(reply?.report)await liveWatch(reply.report,match,activeView(),title()+' · Lượt '+(round+1),reply.play_at,reply.server_time);}
  }
  function titleArt(st){
   if(mode==='arena'||mode==='arena3v3'){
@@ -346,8 +347,10 @@ const NativeOnlineArenas=(()=>{
      }else if(!series?.paid)button('Xác nhận 3 Vé',()=>pay3v3(m));
      else if(!series?.all_paid)button('Tải lại trạng thái vé',()=>refresh());
      else if(series?.complete)button('Nhận Kết Quả Loạt Đấu',()=>round3v3(m,Number(series.next_round||0)));
-     else button('Thi đấu lượt '+(Number(series.next_round||0)+1),()=>round3v3(m,Number(series.next_round||0)));
-    }else if(m.status==='active')button('Chọn Đội Hình Tấn Công',()=>{panel='attack';render();});
+     else if(!m.live_consent||String(m.player_a)===own())button('Thi đấu lượt '+(Number(series.next_round||0)+1),()=>round3v3(m,Number(series.next_round||0)));
+     else paragraph('Đang chờ người thách đấu bắt đầu lượt tiếp theo.');
+    }else if(m.status==='active'&&String(m.player_a)===own())button('Chọn Đội Hình Tấn Công',()=>{panel='attack';render();});
+    else if(m.status==='active')paragraph('Đang chờ đối phương bắt đầu trận. Hai người sẽ cùng xem chiến đấu.');
     else{paragraph('Đang chờ đối thủ thật xác nhận sẵn sàng.');button('Sẵn Sàng Vào Trận',()=>refresh());}
     button('Tải lại',()=>refresh());
    }
@@ -566,7 +569,101 @@ const NativeOnlineArenas=(()=>{
    button('Lưu 3 đội hình gốc trên máy chủ',saveTeams,!validTeams(teams));
   }else win.append(el('p','ar-empty','Không đổi đội hình khi trận trực tuyến đã ghép.'));
  }
+ function inviteBox(){return document.getElementById('pvp-live-invite');}
+ function clearInvite(){inviteBox()?.remove();}
+ function showInvite(m){
+  if(inviteBox()?.dataset.match===m.id)return;
+  clearInvite();const box=el('div','pvp-live-invite');box.id='pvp-live-invite';box.dataset.match=m.id;
+  const incoming=String(m.player_b)===own();
+  box.append(el('b','',incoming?'Lời mời So Tài':'Đang chờ đối phương'),el('p','',incoming?m.name_a+' mời bạn So Tài · '+m.server_a:m.name_b+' chưa trả lời. Lời mời có hiệu lực 60 giây.'));
+  const actions=el('div','pvp-live-controls');
+  for(const [label,action] of (incoming?[['Đồng ý','accept'],['Từ chối','decline']]:[['Hủy lời mời','cancel']])){
+   const b=el('button','',label);b.onclick=async()=>{b.disabled=true;try{
+     if(action==='accept'&&m.mode==='arena3v3'&&!validTeams(state.arena3v3_info?.teams)){GirlUI.notice('Hãy lưu đủ ba đội trước khi đồng ý.');b.disabled=false;return;}
+     await api('/api/pvp/match/invite',{match_id:m.id,action});clearInvite();
+     if(action==='accept'){liveMatch=m;await enterLive(m);}
+   }catch(e){clearInvite();GirlUI.notice(e.message||'Lời mời không còn hiệu lực');}};actions.append(b);
+  }
+  box.append(actions);document.getElementById('app-frame').append(box);
+ }
+ async function enterLive(m){
+  if(liveOpened===m.id)return;
+  liveMatch=m;await open(m.mode,view||'home');liveOpened=m.id;panel='match';render();
+ }
+ async function pollLive(){
+  if(livePollBusy||document.hidden||!state?.uid||!state?.server_id||typeof developerMode!=='undefined'&&developerMode)return;
+  const identity=state.uid+'|'+state.server_id;
+  if(identity!==liveIdentity){liveIdentity=identity;playedLive.clear();handledInvites.clear();liveOpened='';liveMatch=null;clearInvite();stopComms();}
+  livePollBusy=true;
+  try{
+   const r=await api('/api/pvp/live-status',{});
+   if(identity!==state?.uid+'|'+state?.server_id)return;
+   const matches=r.matches||[];
+   const pending=matches.find(m=>m.status==='invited');
+   if(pending)showInvite(pending);else clearInvite();
+   for(const m of matches){
+    if(['declined','cancelled'].includes(m.status)&&String(m.player_a)===own()&&!handledInvites.has(m.id)){handledInvites.add(m.id);if(liveMatch?.id===m.id)GirlUI.toast('Lời mời So Tài đã kết thúc.');}
+    if(m.status==='ready'||m.status==='active'){
+     if(!livePlaying&&view!=='event-battle')await enterLive(m);
+     if(view!=='event-battle')await api('/api/pvp/match/heartbeat',{match_id:m.id,ready:true});
+    }
+    // The challenged player automatically watches the same saved server frames.
+    // Challenger's existing start/replay flow is preserved.
+    if(String(m.player_b)!==own()||livePlaying||view==='event-battle')continue;
+    const indexes=m.mode==='arena3v3'?Array.from({length:m.round_count||0},(_,i)=>i):m.status==='finished'?['single']:[];
+    const index=indexes.find(i=>!playedLive.has(m.id+':'+i));
+    if(index===undefined||!handledInvites.has(m.id)&&liveOpened!==m.id)continue;
+    const reply=await api(index==='single'?'/api/pvp/match/replay':'/api/pvp/arena3v3/replay',{match_id:m.id,...(index==='single'?{}:{round:index})});
+    if(reply?.report){playedLive.add(m.id+':'+index);await liveWatch(reply.report,m,m.mode==='arena3v3'?'arena3v3':'arena',title(),reply.play_at||(index==='single'?0:(m.round_times?.[index]||0)+5),reply.server_time||r.server_time);}
+   }
+  }catch(e){/* transient connection loss: retry without blocking gameplay */}finally{livePollBusy=false;}
+ }
+ async function liveWatch(report,m,origin,label,playAt=0,serverTime=0){
+  livePlaying=true;liveMatch=m;
+  try{if(playAt&&serverTime){const wait=Math.max(0,Math.min(5000,(playAt-serverTime)*1000));if(wait)await new Promise(resolve=>setTimeout(resolve,wait));}
+   const watching=watchEventBattle({report,livePvP:!!m.live_consent},origin,label);if(m.live_consent)startComms(m);await watching;}
+  finally{livePlaying=false;}
+ }
+ let comms=null;
+ function stopComms(){const c=comms;if(!c)return;comms=null;c.closed=true;c.stream?.getTracks().forEach(t=>t.stop());if(c.recorder?.state==='recording')c.recorder.stop();c.audio?.pause();c.root.remove();}
+ function startComms(m){
+  stopComms();const root=el('div','pvp-bubble');const panel=el('div','pvp-bubble-panel');panel.hidden=true;
+  const button=(label,fn)=>{const b=el('button','',label);b.type='button';b.onclick=fn;return b;};
+  const toggle=button('💬',()=>{panel.hidden=!panel.hidden;toggle.classList.remove('on');});toggle.setAttribute('aria-label','Trò chuyện trong trận');
+  const messages=el('div','pvp-bubble-messages'),status=el('small','','Mic tắt · Loa tắt');
+  const input=el('input');input.maxLength=300;input.placeholder='Nhắn tin…';
+  const controls=el('div','pvp-live-controls'),form=el('form','pvp-bubble-form');
+  const c={root,after:0,closed:false,stream:null,recorder:null,speaker:false,queue:[],audio:null,polling:false};comms=c;
+  const send=async(kind,extra={})=>api('/api/pvp/match/comms',{match_id:m.id,kind,after:c.after,...extra});
+  const mic=button('🎙 Mic',async()=>{
+   if(c.stream){c.stream.getTracks().forEach(t=>t.stop());c.stream=null;if(c.recorder?.state==='recording')c.recorder.stop();mic.classList.remove('on');root.classList.remove('mic-on');toggle.title='Trò chuyện trong trận';return;}
+   mic.disabled=true;try{
+    if(!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder)throw Error('Thiết bị chưa hỗ trợ micro trong game');
+    const stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true},video:false});
+    if(c.closed){stream.getTracks().forEach(t=>t.stop());return;}
+    c.stream=stream;mic.classList.add('on');root.classList.add('mic-on');toggle.title='Mic đang bật';
+    const type=['audio/webm;codecs=opus','audio/ogg;codecs=opus','audio/mp4'].find(t=>MediaRecorder.isTypeSupported(t));
+    function chunk(){
+     if(!c.stream||c.closed)return;
+     const rec=new MediaRecorder(c.stream,type?{mimeType:type,audioBitsPerSecond:16000}:{audioBitsPerSecond:16000});c.recorder=rec;
+     rec.ondataavailable=async e=>{if(c.closed||!e.data.size||!c.stream)return;
+      try{const bytes=new Uint8Array(await e.data.arrayBuffer());if(bytes.length>36000)return;let raw='';for(const b of bytes)raw+=String.fromCharCode(b);
+       const mime=e.data.type.toLowerCase().replace(/;\s*/g,';');await send('audio',{audio:btoa(raw),mime});}catch(err){status.textContent='Kênh micro bị gián đoạn';}};
+     rec.onstop=()=>{if(c.stream&&!c.closed)chunk();};rec.start();setTimeout(()=>{if(rec.state==='recording')rec.stop();},1200);
+    }chunk();
+   }catch(e){c.stream?.getTracks().forEach(t=>t.stop());c.stream=null;mic.classList.remove('on');root.classList.remove('mic-on');toggle.title='Trò chuyện trong trận';status.textContent='Không mở được Mic: '+(e.message||'chưa cấp quyền');}finally{mic.disabled=false;}
+  });
+  const speaker=button('🔊 Loa',()=>{c.speaker=!c.speaker;speaker.classList.toggle('on',c.speaker);if(!c.speaker){c.queue=[];c.audio?.pause();c.audio=null;}status.textContent=c.speaker?'Loa đối phương đã bật':'Loa đối phương đã tắt';});
+  function audioNext(){if(c.closed||!c.speaker||c.audio||!c.queue.length)return;const e=c.queue.shift();const audio=new Audio('data:'+e.mime+';base64,'+e.audio);c.audio=audio;const done=()=>{if(c.audio===audio)c.audio=null;audioNext();};audio.onended=done;audio.onerror=done;audio.play().catch(()=>{status.textContent='Chạm Loa để bật lại âm thanh';done();});}
+  function ingest(r){for(const e of r.events||[]){if(e.id<=c.after)continue;if(e.kind==='text'){messages.append(el('p','',(e.uid===own()?'Bạn':String(m.player_a)===own()?m.name_b:m.name_a)+': '+e.text));while(messages.children.length>40)messages.firstChild.remove();messages.scrollTop=messages.scrollHeight;if(panel.hidden)toggle.classList.add('on');}
+   else if(c.speaker&&e.audio){c.queue.push(e);if(c.queue.length>3)c.queue.shift();audioNext();}c.after=e.id;}c.after=Math.max(c.after,Number(r.after)||0);}
+  form.append(input,button('Gửi',()=>{}));form.lastChild.type='submit';form.onsubmit=async e=>{e.preventDefault();const text=input.value.trim();if(!text)return;try{ingest(await send('text',{text}));input.value='';}catch(err){status.textContent=err.message;}};
+  controls.append(mic,speaker);panel.append(controls,status,messages,form);root.append(toggle,panel);document.getElementById('event-battle-view').append(root);
+  const tick=async()=>{if(c.closed)return;if(view!=='event-battle'||document.hidden){stopComms();return;}try{ingest(await send('poll'));}catch(e){status.textContent='Kênh trò chuyện tạm mất kết nối';}if(!c.closed)setTimeout(tick,1000);};tick();
+ }
+ document.addEventListener?.('visibilitychange',()=>{if(document.hidden)stopComms();});
+ setInterval(pollLive,2500);
  function currentMode(){return mode;}
  function isActive(viewName){return selected()&&viewName===activeView();}
- return {open,render,refresh,isActive,currentMode,stop};
+ return {open,render,refresh,isActive,currentMode,stop,stopComms};
 })();

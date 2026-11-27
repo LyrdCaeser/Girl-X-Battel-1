@@ -46,8 +46,8 @@ class AttackFormationTest(unittest.TestCase):
         js=(Path(__file__).resolve().parents[1]/'web/arena-online-native.js').read_text()
         segment=js.split('async function fightSingle(match)',1)[1].split('async function pay3v3(',1)[0]
         self.assertIn("panel='replay-loading'",segment)
-        self.assertIn('await watchEventBattle',segment)
-        self.assertLess(segment.index('await watchEventBattle'),segment.index("panel='result'"))
+        self.assertIn('await liveWatch',segment)
+        self.assertLess(segment.index('await liveWatch'),segment.index("panel='result'"))
         self.assertIn("formation_override=data.get('formation')",(Path(__file__).resolve().parents[1]/'server.py').read_text())
 
 

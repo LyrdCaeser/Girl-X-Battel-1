@@ -73,16 +73,53 @@ class PvPHttpSessionTests(unittest.TestCase):
         selected=self.call('POST','/api/pvp/challenge',{
             'mode':mode,'target_uid':rival['uid'],'target_server':rival['server_id']},0)
         match=selected['match']
-        self.call('POST','/api/pvp/match/heartbeat',{'match_id':match['id'],'ready':True},0)
-        return match['id']
+        self.assertEqual(match['status'],'invited')
+        mid=match['id']
+        self.assertEqual(self.call('POST','/api/pvp/live-status',{},1)['matches'][0]['id'],mid)
+        self.assertFalse(self.call('POST','/api/pvp/live-status',{},2)['matches'])
+        self.assertNotEqual(self.request('POST','/api/pvp/match/invite',{'match_id':mid,'action':'accept'},0)[0],200)
+        self.call('POST','/api/pvp/match/heartbeat',{'match_id':mid,'ready':True},0)
+        self.assertEqual(self.call('POST','/api/pvp/match/heartbeat',{'match_id':mid,'ready':True},1)['match']['status'],'invited')
+        self.assertNotEqual(self.request('POST','/api/pvp/match/comms',{'match_id':mid,'kind':'text','text':'no'},0)[0],200)
+        self.call('POST','/api/pvp/match/invite',{'match_id':mid,'action':'accept'},1)
+        self.call('POST','/api/pvp/match/heartbeat',{'match_id':mid,'ready':True},0)
+        self.assertEqual(self.call('POST','/api/pvp/match/heartbeat',{'match_id':mid,'ready':True},1)['match']['status'],'active')
+        self.assertEqual(self.call('GET',f'/api/pvp/status?mode={mode}',user=1)['pvp']['match']['id'],mid)
+        return mid
+
+    def test_decline_cancel_expire_invites(self):
+        rival=next(row for row in self.call('GET','/api/pvp/status?mode=arena',user=0)['candidates'] if row['character_name']=='PvP Tester 1')
+        req={'mode':'arena','target_uid':rival['uid'],'target_server':rival['server_id']}
+        m=self.call('POST','/api/pvp/challenge',req,0)['match']
+        self.assertEqual(self.call('POST','/api/pvp/match/invite',{'match_id':m['id'],'action':'decline'},1)['match']['status'],'declined')
+        self.assertNotEqual(self.request('POST','/api/pvp/match/invite',{'match_id':m['id'],'action':'accept'},1)[0],200)
+        self.assertEqual(self.call('GET','/api/pvp/status?mode=arena',user=0)['pvp']['status'],'idle')
+        m=self.call('POST','/api/pvp/challenge',req,0)['match']
+        self.assertEqual(self.call('POST','/api/pvp/match/invite',{'match_id':m['id'],'action':'cancel'},0)['match']['status'],'cancelled')
+        m=self.call('POST','/api/pvp/challenge',req,0)['match']
+        db=live_service._db()
+        db.execute('UPDATE pvp_matches SET created_at=1 WHERE id=?',(m['id'],));db.commit();db.close()
+        self.assertNotEqual(self.request('POST','/api/pvp/match/invite',{'match_id':m['id'],'action':'accept'},1)[0],200)
+        self.assertFalse(any(x['id']==m['id'] for x in self.call('POST','/api/pvp/live-status',{},1)['matches']))
 
     def test_http_auth_cookies_real_pvp_and_replay_access(self):
         status,data,_=self.request('GET','/api/pvp/status?mode=arena')
         self.assertEqual(status,401,data)
         match_id=self.ready_match('arena')
-        result=self.call('POST','/api/pvp/match/battle',{'match_id':match_id},0)
+        formation=self.call('GET','/api/state',user=0)['formation']
+        result=self.call('POST','/api/pvp/match/battle',{'match_id':match_id,'formation':formation},0)
         self.assertEqual(result['result']['status'],'finished')
-        views=[self.call('POST','/api/pvp/match/replay',{'match_id':match_id},i)['report'] for i in (0,1)]
+        self.assertEqual(self.call('POST','/api/pvp/live-status',{},1)['matches'][0]['status'],'finished')
+        msg=self.call('POST','/api/pvp/match/comms',{'match_id':match_id,'kind':'text','text':'Xin chào'},0)
+        received=self.call('POST','/api/pvp/match/comms',{'match_id':match_id,'kind':'poll'},1)
+        self.assertEqual(received['events'][0]['text'],'Xin chào')
+        audio=self.call('POST','/api/pvp/match/comms',{'match_id':match_id,'kind':'audio','mime':'audio/webm;codecs=opus','audio':'GkXfow=='},1)
+        received=self.call('POST','/api/pvp/match/comms',{'match_id':match_id,'kind':'poll','after':msg['after']},0)
+        self.assertEqual(received['events'][0]['audio'],'GkXfow==')
+        self.assertNotEqual(self.request('POST','/api/pvp/match/comms',{'match_id':match_id},2)[0],200)
+        replays=[self.call('POST','/api/pvp/match/replay',{'match_id':match_id},i) for i in (0,1)]
+        self.assertEqual(replays[0]['play_at'],replays[1]['play_at'])
+        views=[r['report'] for r in replays]
         self.assertTrue(views[0]['frames'])
         self.assertEqual(views[0]['isWin'],1-views[1]['isWin'])
         self.assertEqual(len(views[0]['frames']),len(views[1]['frames']))
@@ -102,7 +139,7 @@ class PvPHttpSessionTests(unittest.TestCase):
         self.assertTrue(all(p['rank_basis']=='power' for p in initial))
         self.ready_match('arena')
         match=self.call('GET','/api/pvp/status?mode=arena',user=0)['pvp']['match']
-        self.call('POST','/api/pvp/match/battle',{'match_id':match['id']},0)
+        self.call('POST','/api/pvp/match/battle',{'match_id':match['id'],'formation':self.call('GET','/api/state',user=0)['formation']},0)
         board=self.call('GET','/api/pvp/status?mode=arena',user=0)['rating_board']
         self.assertEqual(len(board),3)
         self.assertTrue(all(p['matches']>0 for p in board[:2]))
