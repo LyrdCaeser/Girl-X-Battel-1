@@ -182,3 +182,6 @@
 #s5-rewards-dialog .s5-gear-icons img{width:100%;aspect-ratio:1;object-fit:contain;min-width:0}
 
 #s5-rewards-dialog .s5-advanced-icons{grid-template-columns:repeat(4,minmax(0,1fr))}
+
+#s5-rewards-dialog .s5-advanced-item{display:flex;align-items:center;justify-content:center;min-width:0;aspect-ratio:1;overflow:hidden}
+#s5-rewards-dialog .s5-item-fallback{font-size:9px;line-height:1.1;overflow-wrap:anywhere;color:#52677b}

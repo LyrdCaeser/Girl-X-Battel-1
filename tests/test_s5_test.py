@@ -105,11 +105,12 @@ class S5CoreTests(unittest.TestCase):
             hosts=[p for p in st['partners'] if st['s5_welcome']['hosts'].get(str(p['table_id']))==p['partner_id']]
             for p in hosts:
                 pid=p['partner_id']
-                with self.assertRaises(ValueError):s5.grant_advanced(st,pid)
-                p['lv']=200
+                self.assertEqual(p['lv'],1)
                 plan=s5.advanced_plan(p)
                 before=list(p['equips'])
                 result=s5.grant_advanced(st,pid)
+                self.assertEqual(p['lv'],1)
+                self.assertEqual(souls.snapshot(st)['open_lv'],1)
                 self.assertEqual(p['souls'],result['souls'])
                 self.assertEqual(p['equips'][:4],before[:4])
                 self.assertEqual(p['ex_skills'],[plan['elite_max']]*4)
@@ -127,6 +128,8 @@ class S5CoreTests(unittest.TestCase):
                 with self.assertRaises(ValueError):s5.grant_advanced(st,pid)
             self.assertEqual(len(st['s5_welcome']['advanced_claimed']),len(hosts))
             st['server_id']='S1'
+            self.assertEqual(souls.snapshot(st)['open_lv'],souls.OPEN_LV)
+            with self.assertRaises(ValueError):souls.action(st,{'action':'equip','partner_id':hosts[0]['partner_id'],'soul_id':hosts[0]['souls'][0]})
             with self.assertRaises(ValueError):s5.grant_advanced(st,hosts[0]['partner_id'])
 
     def test_job_gear_reward_once_for_existing_character(self):

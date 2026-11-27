@@ -101,18 +101,12 @@ class ProfilePhotoHTTPTests(unittest.TestCase):
                 self.assertEqual(engine._load()['items'][str(item)],1)
             advanced={'action':'advanced','partner_id':pid}
             c,out,_=self.request('POST','/api/s5/rewards',json_data=advanced,user=0)
-            self.assertEqual(c,400,out)
-            with engine.lock:
-                engine.db.execute('BEGIN IMMEDIATE')
-                st=engine._load()
-                hero=next(p for p in st['partners'] if p['partner_id']==pid)
-                hero['lv']=200
-                engine._save_profile(st);engine.db.commit()
-            c,out,_=self.request('POST','/api/s5/rewards',json_data=advanced,user=0)
             self.assertEqual(c,200,out)
             self.assertEqual(len(out['result']['souls']),5)
             self.assertEqual(out['result']['elite'],[h['advanced']['elite_max']]*4)
             hero=next(p for p in out['state']['roster'] if p['partner_id']==pid)
+            self.assertEqual(hero['lv'],1)
+            self.assertEqual(out['state']['souls_info']['open_lv'],1)
             self.assertEqual(hero['souls'],out['result']['souls'])
             self.assertTrue(all(hero['equips'][4:6]))
             c,info,_=self.request('GET','/api/s5/rewards',user=0)

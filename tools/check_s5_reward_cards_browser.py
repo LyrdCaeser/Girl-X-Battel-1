@@ -17,7 +17,7 @@ ordinary=next(g for g in catalog if g['stars']==10 and g['group']==1 and str(g['
 cosmos=next(g for g in catalog if g['stars']==10 and g['group']==7 and str(g['id']) in avatars)
 sonia=next(g for g in catalog if g['id']==758001)
 rows=[ordinary,cosmos,sonia]
-hosts=[dict(partner_id=i+1,name=g['name'],stars=n,kit_claimed=False,job=g['job'],gear_claimed=False,advanced_claimed=False,level=200,advanced=dict(souls=[5100020,5203106,5203206,5203306,5203406],treasure=5750,antique=67963,elite_display=5,min_level=200)) for i,(g,n) in enumerate(zip(rows,(10,14,24)))]
+hosts=[dict(partner_id=i+1,name=g['name'],stars=n,kit_claimed=False,job=g['job'],gear_claimed=False,advanced_claimed=False,level=1,advanced=dict(souls=[5100015,5203106,5203206,5203306,5203406],treasure=5750,antique=67963,elite_display=5,min_level=1)) for i,(g,n) in enumerate(zip(rows,(10,14,24)))]
 roster=[dict(partner_id=i+1,table_id=g['id'],name=g['name'],group=g['group'],stars=n,equips=[0]*7) for i,(g,n) in enumerate(zip(rows,(10,14,24)))]
 gear_sets={str(j):[1000*slot+100*j+69 for slot in (1,2,3,4)] for j in range(1,6)}
 fixture=dict(claimed=True,remaining=1,hosts=hosts,gear_sets=gear_sets,skins=[dict(id=7001,name='Trang phục 1'),dict(id=7002,name='Trang phục 2')])
@@ -89,6 +89,10 @@ with sync_playwright() as p:
         assert page.evaluate('calls.length')==5
         page.locator('.s5-tab').nth(3).click()
         assert page.locator('.s5-advanced-icons img').count()==21
+        assert 'Cần Lv' not in page.locator('#s5-rewards-dialog').inner_text()
+        assert page.locator('.s5-advanced-item').first.get_attribute('title')=='Vuốt Mèo'
+        assert page.locator('.s5-advanced-item').nth(1).get_attribute('title')=='Cua Đá · I'
+        assert not page.locator('.s5-reward-card').first.is_disabled()
         page.locator('.s5-advanced-icons img').evaluate_all("es=>es.forEach(e=>e.loading='eager')")
         page.wait_for_function("Array.from(document.querySelectorAll('.s5-advanced-icons img')).every(i=>i.complete&&i.naturalWidth>0)",timeout=5000)
         page.locator('.s5-reward-card').first.click()

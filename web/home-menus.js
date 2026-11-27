@@ -432,6 +432,19 @@ const HomeMenus=(()=>{
   }
   wrap.append(rank,el('small',n+' sao'));wrap.setAttribute('aria-label',n+' sao');return wrap;
  }
+ function s5AdvancedItem(id){
+  const item=itemCatalog[String(id)];
+  const names={5100015:'Vuốt Mèo',5100018:'Thuốc Uyên Ương',5100020:'Đồng Tiền Cổ',5100021:'Thuốc Sấm Sét'};
+  const sets={3:'Cua Đá',4:'Dê Ma',5:'Kỳ Lân Lửa',9:'Phượng Hoàng Uy Nghi'};
+  const antiques={'Power of Wind':'Sức Mạnh Gió','Black Magic Hat':'Mũ Hắc Thuật','Fate Guide':'Sách Dẫn Lối Định Mệnh','Shackle of Pain·Ghost':'Xiềng Xích Đau Đớn · U Linh Ma','Spike Shield·Ghost':'Khiên Gai · U Linh Ma','Sealed Heart·Fairy':'Trái Tim Phong Ấn · Tinh Linh',"Queen's Crown":'Vương Miện Nữ Hoàng','Swiss Army Knife':'Dao Đa Năng','Perception Watch':'Đồng Hồ Tri Giác','Silver Mirage':'Ảo Ảnh Bạc',"Warg's Bite":'Vết Cắn Sói Ma','Punishment Sword':'Kiếm Trừng Phạt','Crossbow':'Nỏ'};
+  const n=Number(id),group=Math.floor(n/1000)%10,pos=Math.floor(n/100)%10;
+  const name=names[n]||(n>=5200000&&n<5300000?(sets[group]||'Đá Linh Hồn')+' · '+(['','I','II','III','IV'][pos]||''):n>=5100000&&n<5200000?'Bảo Vật Linh Hồn':n>=5000&&n<6000?'Bảo Vật':antiques[item?.name]||'Cổ Vật');
+  const box=el('span',undefined,'s5-advanced-item');box.title=name;box.setAttribute('aria-label',name);
+  const im=el('img');im.alt='';im.loading='lazy';const src=item&&itemPicture(item);
+  const fallback=()=>{im.remove();box.append(el('small',name,'s5-item-fallback'));};
+  if(src){im.onerror=fallback;im.src=src;box.append(im);}else fallback();
+  return box;
+ }
  async function openS5Rewards(){
   if(pending)return;
   const existing=document.getElementById('s5-rewards-dialog');
@@ -481,7 +494,7 @@ const HomeMenus=(()=>{
     const b=el('button',label,'s5-tab'+(active===key?' active':''));b.type='button';b.setAttribute('aria-pressed',String(active===key));b.onclick=()=>{active=key;draw();};nav.append(b);
    }
    if(!info.claimed){body.append(el('p','Hãy nhận thư quà S5 trước.','s5-empty'));return;}
-   const hint=active==='girls'?'Chọn nữ thần để nhận nguyên liệu cho mốc sao tiếp theo.':active==='gear'?'Chọn nữ thần để nhận một bộ 4 trang bị cấp 25 đúng nghề. Tự trang bị trong mục Nữ Thần.':active==='advanced'?'Nhận đủ 5 món Linh Hồn, 4 kỹ năng tối đa, Bảo Vật và Cổ Vật cho nữ thần cấp 200 trở lên. Đồ Linh Hồn và Cổ Vật cũ được trả về Túi Đồ.':'Chọn trang phục yêu thích. Mỗi trang phục dùng một lượt chọn.';
+   const hint=active==='girls'?'Chọn nữ thần để nhận nguyên liệu cho mốc sao tiếp theo.':active==='gear'?'Chọn nữ thần để nhận một bộ 4 trang bị cấp 25 đúng nghề. Tự trang bị trong mục Nữ Thần.':active==='advanced'?'Nhận đủ 5 món Linh Hồn, 4 kỹ năng tối đa, Bảo Vật và Cổ Vật cho nữ thần ngay từ cấp 1. Đồ Linh Hồn và Cổ Vật cũ được trả về Túi Đồ.':'Chọn trang phục yêu thích. Mỗi trang phục dùng một lượt chọn.';
    body.append(el('p',hint,'s5-hint'));
    const search=el('input',undefined,'s5-search');search.type='search';search.placeholder=active==='skins'?'Tìm trang phục…':'Tìm nữ thần…';search.setAttribute('aria-label',search.placeholder);search.value=searches[active];body.append(search);
    const grid=el('div',undefined,'s5-rewards-grid '+(active==='skins'?'skins':'girls'));body.append(grid);
@@ -495,7 +508,7 @@ const HomeMenus=(()=>{
      const roster=new Map((state.roster||[]).map(g=>[Number(g.partner_id),g]));
      for(const h of info.hosts.filter(x=>x.name.toLocaleLowerCase('vi').includes(q))){
       const hero=roster.get(Number(h.partner_id));if(!hero)continue;
-      const n=Number(h.stars),done=n>=25,unavailable=advancedMode?!!h.advanced_claimed||h.level<h.advanced?.min_level:gearMode?!!h.gear_claimed:done||h.kit_claimed;
+      const n=Number(h.stars),done=n>=25,unavailable=advancedMode?!!h.advanced_claimed:gearMode?!!h.gear_claimed:done||h.kit_claimed;
       const card=el('button',undefined,'s5-reward-card');card.type='button';card.dataset.s5Action=advancedMode?'advanced':gearMode?'gear':'kit';card.dataset.unavailable=unavailable?'1':'0';card.disabled=working||unavailable;
       card.setAttribute('aria-label',h.name+' · '+n+' sao'+(done?' · Tối đa':' lên '+(n+1)+' sao'));
       const art=el('span',undefined,'s5-girl-art');art.append(portrait(hero.table_id,88,hero));
@@ -506,10 +519,10 @@ const HomeMenus=(()=>{
        card.append(s5StarBadge(n,hero),el('span',jobs[h.job]||'','s5-job'));
        const plan=h.advanced||{},items=el('span',undefined,'s5-gear-icons s5-advanced-icons');
        for(const id of [...(plan.souls||[]),plan.treasure,plan.antique]){
-        const item=itemCatalog[String(id)],im=el('img');im.alt=item?.name||'Trang bị';im.title=im.alt;im.loading='lazy';if(item)im.src=itemPicture(item);items.append(im);
+        items.append(s5AdvancedItem(id));
        }
        card.append(items,el('span','4 kỹ năng · Lv '+(plan.elite_display||5),'s5-job'),
-         el('span',h.advanced_claimed?'Đã nhận quà':h.level<plan.min_level?'Cần Lv '+plan.min_level:'Nhận quà nâng cao','s5-card-action'));
+         el('span',h.advanced_claimed?'Đã nhận quà':'Nhận quà nâng cao','s5-card-action'));
       }else if(gearMode){
        card.append(s5StarBadge(n,hero),el('span',jobs[h.job]||'Trang bị đúng nghề','s5-job'));
        const items=el('span',undefined,'s5-gear-icons');

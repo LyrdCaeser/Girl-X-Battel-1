@@ -211,8 +211,8 @@ def grant_gear(state, partner_id):
 _ADVANCED_ROLE = {
     1: (5100020, 3, 5750, (2,6,12,4), (3,4,8,14,6)),
     2: (5100021, 4, 5753, (1,7,8,3), (1,2,9,10,5)),
-    3: (5100023, 5, 5756, (1,5,7,3), (1,2,7,9,5)),
-    4: (5100023, 4, 5766, (1,5,8,3), (1,2,7,10,5)),
+    3: (5100015, 5, 5756, (1,5,7,3), (1,2,7,9,5)),
+    4: (5100015, 4, 5766, (1,5,8,3), (1,2,7,10,5)),
     5: (5100018, 9, 5768, (2,10,12,9), (3,4,11,12,14)),
 }
 
@@ -232,7 +232,7 @@ def advanced_plan(host):
     return {'souls':[central,*stones], 'treasure':treasure,'antique':antique,
             'elite_max':int(RESONATE['max'] if int(row['group'])==7 else EXSKILL['max']),
             'elite_display':10 if int(row['group'])==7 else int(EXSKILL['max']),
-            'min_level':max(souls.OPEN_LV,equipment.TREASURE_OPEN)}
+            'min_level':1}
 
 
 def _recommended_antique(tid,job):
@@ -271,8 +271,6 @@ def grant_advanced(state,partner_id):
     claimed=welcome.setdefault('advanced_claimed',{})
     if key in claimed: raise ValueError('Nữ thần này đã nhận quà nâng cao')
     plan=advanced_plan(host)
-    if int(host.get('lv',0))<plan['min_level']:
-        raise ValueError('Hãy nâng nữ thần lên cấp '+str(plan['min_level'])+' để mở đủ ô trang bị Linh Hồn.')
     inventory=souls.store(state)['items']
     if len(inventory)+5>souls.LIMIT:
         raise ValueError('Túi Trang Bị Linh Hồn cần ít nhất 5 chỗ trống')

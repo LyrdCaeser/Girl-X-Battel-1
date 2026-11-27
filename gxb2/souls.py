@@ -162,6 +162,10 @@ def add_exp2(rec, exp, rng):
     if rec['lv'] >= cap: rec['exp'] = 0
 
 
+def open_level(state):
+    return 1 if state.get('server_id') == 'S5' else OPEN_LV
+
+
 def action(state, request, rng=None):
     rng = rng or random.SystemRandom()
     s = store(state); items = s['items']; act = request.get('action')
@@ -197,7 +201,7 @@ def action(state, request, rng=None):
         return {'got': received, 'item_id': tid, 'count': count}
     if act in ('plan_save', 'plan_apply', 'plan_delete'):
         p = partner()
-        if int(p.get('lv', 0)) < OPEN_LV:
+        if int(p.get('lv', 0)) < open_level(state):
             raise SoulError(f'Trang bị Linh Hồn mở khi Nữ Thần đạt cấp {OPEN_LV}')
         try:
             plan_no = int(request.get('plan'))
@@ -273,7 +277,7 @@ def action(state, request, rng=None):
         return {'plan': plan_no}
     if act == 'equip':
         p = partner(); rec = soul()
-        if int(p['lv']) < OPEN_LV: raise SoulError(f'Trang Bị Linh Hồn mở khi Nữ Thần đạt cấp {OPEN_LV}')
+        if int(p['lv']) < open_level(state): raise SoulError(f'Trang Bị Linh Hồn mở khi Nữ Thần đạt cấp {OPEN_LV}')
         slot = 0 if rec['kind'] == 1 else int(E2[str(rec['table_id'])]['pos']) - 1
         if rec.get('owner') and rec['owner'] != p['partner_id']:
             old = next((g for g in state['partners'] if g['partner_id'] == rec['owner']), None)
@@ -391,7 +395,7 @@ def box_for(exp):
 
 def snapshot(state):
     s = store(state)
-    return {'items': s['items'], 'exp': s['exp'], 'level': int(box_for(s['exp'])['id']), 'open_lv': OPEN_LV, 'limit': LIMIT, 'plans': s.get('plans', {})}
+    return {'items': s['items'], 'exp': s['exp'], 'level': int(box_for(s['exp'])['id']), 'open_lv': open_level(state), 'limit': LIMIT, 'plans': s.get('plans', {})}
 
 
 def grant_dev(state, rng=None):
