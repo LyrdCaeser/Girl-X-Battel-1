@@ -405,13 +405,14 @@ const EventsHub=(()=>{
       parent.append(el('p','ev-note','Mỗi mốc quà chỉ nhận một lần. Tổng quà nạp tối đa 350 Vé, không cộng 350 Vé ở mỗi mốc.'));
       return;
     }
+    parent.append(el('p','ev-note','Thử Thách Học Viện: 3 giai đoạn, mỗi giai đoạn 7 ngày. Tích lũy các tầng mới vượt thành công từ khi nhiệm vụ mở; không tính đánh thử hoặc đánh thua. Tổng quà 15 Vé.'));
     for(const m of festival.missions){const row=el('div','pe-row sf-row');const left=el('div','sf-row-copy');
-      left.append(el('b','',m.name),el('small','',m.difficulty+' · '+(m.claimed?'Đã nhận':festival.now>=m.end?'Đã hết hạn':'Còn '+leftText(m.end))));
+      left.append(el('b','',m.name),el('small','',m.difficulty+' · '+(m.legacy_covered?'Đã nhận đủ quà nhiệm vụ cũ':m.claimed?'Đã nhận':festival.now>=m.end?'Đã hết hạn':festival.now<m.start?'Mở sau '+leftText(m.start):'Còn '+leftText(m.end))));
       const bar=el('div','pe-bar');bar.style.backgroundImage=`url('${A('activity_bar_bg')}')`;
       const fill=el('i','sf-progress-fill');fill.style.width=Math.round(Math.min(1,m.progress/m.target)*100)+'%';
       bar.append(fill,el('span','',fmt(Math.min(m.progress,m.target))+'/'+fmt(m.target)));left.append(bar);row.append(left);
       row.append(icon('940060',m.tickets));
-      const b=el('button','sf-btn',m.claimed?'Đã nhận':'Nhận vé');b.type='button';b.disabled=pending||!m.can;b.onclick=()=>send({action:'sonia_mission_claim',id:m.id});
+      const b=el('button','sf-btn',m.legacy_covered||m.claimed?'Đã nhận':festival.now<m.start?'Chưa mở':festival.now>=m.end?'Hết hạn':'Nhận vé');b.type='button';b.disabled=pending||!m.can;b.onclick=()=>send({action:'sonia_mission_claim',id:m.id});
       row.append(b);rows.append(row);
     }
   }

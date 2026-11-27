@@ -135,6 +135,51 @@ class SoniaFestivalTests(unittest.TestCase):
         public_icons=json.loads((ROOT/'web/assets/item-icons.json').read_text())
         self.assertIn('partner_avatar_758001',public_icons)
 
+    def test_tower_phases_and_legacy_cap(self):
+        state=profile()
+        start=f.TOWER_START;week=f.TOWER_WEEK
+        def claim(key,now):
+            return f.action(state,{'action':'sonia_mission_claim','id':key},now)
+        def rows(now):
+            return {m['id']:m for m in f.snapshot(state,now)['missions']}
+        f.record_tower_clear(state,1,start-1)
+        f.record(state,'tower_clear',1000,start)
+        self.assertEqual(rows(start)['tower100']['progress'],0)
+        self.assertNotIn('arena30',rows(start))
+        for floor in range(1,101):
+            f.record_tower_clear(state,floor,start+1)
+        f.record_tower_clear(state,100,start+2)
+        self.assertEqual(rows(start+2)['tower100']['progress'],100)
+        self.assertTrue(rows(start+2)['tower100']['can'])
+        self.assertFalse(rows(start+2)['tower200']['can'])
+        with self.assertRaises(ValueError):claim('tower200',start+2)
+        self.assertEqual(claim('tower100',start+3)['awards'],{f.TICKET:3})
+        with self.assertRaises(ValueError):claim('tower100',start+4)
+        for floor in range(101,201):
+            f.record_tower_clear(state,floor,start+week)
+        self.assertEqual(claim('tower200',start+week)['awards'],{f.TICKET:5})
+        for floor in range(201,301):
+            f.record_tower_clear(state,floor,start+2*week)
+        self.assertEqual(claim('tower300',start+2*week)['awards'],{f.TICKET:7})
+        self.assertEqual(state['items'][f.TICKET],15)
+        f.record_tower_clear(state,301,start+3*week)
+        self.assertEqual(rows(start+3*week)['tower300']['progress'],300)
+        missed=profile()
+        f.record_tower_clear(missed,1,start)
+        missed['sonia_festival']['progress']['tower_clear']=300
+        with self.assertRaises(ValueError):
+            f.action(missed,{'action':'sonia_mission_claim','id':'tower100'},start+week)
+        old=profile()
+        old['sonia_festival']={'mission_claimed':['arena30'],'progress':{'tower_clear':300}}
+        for i,key in enumerate(f.TOWER_IDS):
+            now=start+i*week
+            row=next(m for m in f.snapshot(old,now)['missions'] if m['id']==key)
+            self.assertTrue(row['legacy_covered']);self.assertFalse(row['can'])
+            with self.assertRaises(ValueError):
+                f.action(old,{'action':'sonia_mission_claim','id':key},now)
+        self.assertEqual(old['items'][f.TICKET],0)
+        self.assertLessEqual(start+3*week,f.ENDS['missions'])
+
     def test_no_hidden_rewards_from_invalid_actions(self):
         state=profile()
         before=deepcopy(state)

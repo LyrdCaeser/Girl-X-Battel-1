@@ -2866,6 +2866,7 @@ class Engine:
                 at = now if info['tickets'] == 10 else now - (1800 - info['next_ticket_seconds'])
                 state['tower'] = {'max_stage': floor if win else floor - 1, 'tickets': tickets, 'at': at}
                 missions.record(state, 'tower', 1, now)
+                if win: sonia_festival.record_tower_clear(state,floor,now)
                 state['items']['13'] = tickets
                 for item_id, amount in rewards.items():
                     state['items'][item_id] = int(state['items'].get(item_id, 0)) + amount

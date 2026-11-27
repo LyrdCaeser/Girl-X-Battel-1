@@ -50,7 +50,7 @@ assert(style.includes('/assets/events/activity_bg03.png'),
 assert(style.includes('@media(prefers-reduced-motion:reduce)'),
  'Reduced-motion preferences must be supported');
 for(const version of [
- '/events.js?v=20261123-sonia-classic-polish-r10',
+ '/events.js?v=20261127-sonia-tower-phases-r1',
  '/events.css?v=20261123-sonia-classic-polish-r10']){
  assert(html.includes(version),'Cache-busting build must use updated wheel resources');
 }
