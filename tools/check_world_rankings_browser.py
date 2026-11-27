@@ -32,6 +32,16 @@ try:
     page.wait_for_function("typeof state!=='undefined' && state?.uid && typeof WorldRankings!=='undefined' && view==='home'",timeout=20000)
     trigger=page.locator('.home-rankings');trigger.wait_for(state='visible')
     box=trigger.bounding_box(); assert box['x']>=0 and box['x']+box['width']<=w,(w,box)
+    diary=page.locator('.home-left .gd-home').nth(1)
+    event=page.locator('.home-left button').filter(has=page.locator('[data-sprite="act_bg_img_2_v3_h5"]'))
+    diary_box=diary.bounding_box()
+    event_icon=event.locator('.home-original').bounding_box()
+    rank_icon=trigger.locator('.home-original').bounding_box()
+    print('Lobby geometry',w,h,box,diary_box,event_icon,rank_icon,flush=True)
+    assert abs(box['y']-diary_box['y'])<=1
+    assert abs(rank_icon['width']-event_icon['width'])<=1 and abs(rank_icon['height']-event_icon['height'])<=1
+    assert box['x']>=diary_box['x']+diary_box['width']
+
     trigger.click()
     page.locator('.world-rank-win .ar-row2').first.wait_for(timeout=12000)
     assert page.locator('.world-rank-win .ar-row2').count()==2
