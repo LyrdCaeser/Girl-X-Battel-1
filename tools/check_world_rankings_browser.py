@@ -52,19 +52,32 @@ try:
     trigger.click()
     page.locator('.world-rank-win .ar-row2').first.wait_for(timeout=12000)
     assert page.locator('.world-rank-win .ar-row2').count()==2
+    def check_rows():
+     assert not page.locator('.wr-status').is_visible()
+     for row in page.locator('.wr-list .ar-row2').all():
+      boxes={k:row.locator('.ar2-'+k).bounding_box() for k in ('icon','name','power','points')}
+      ic,nm,pw,sc=[boxes[k] for k in ('icon','name','power','points')]
+      assert ic['x']+ic['width']<=nm['x']+1,(w,boxes)
+      assert ic['x']+ic['width']<=pw['x']+1,(w,boxes)
+      assert nm['x']+nm['width']<=sc['x']+1,(w,boxes)
+      assert nm['y']+nm['height']<=pw['y']+1,(w,boxes)
+      assert row.locator('.ar2-icon').evaluate("e=>!e.style.left && !e.style.top && ['auto','0px'].includes(getComputedStyle(e).left) && ['auto','0px'].includes(getComputedStyle(e).top)")
+    check_rows()
+
     assert page.locator('.wr-tabs button').count()==7
     page.locator('.wr-tabs').get_by_role('button',name='Liên Server',exact=True).click()
-    page.wait_for_function("document.querySelector('.wr-status')?.textContent.startsWith('Liên Server · S1–S3')")
+    page.wait_for_function("document.querySelector('.wr-cross .ar2-server b')?.textContent==='S1'")
     assert page.locator('.wr-cross .ar2-server').first.is_visible()
     assert page.locator('.wr-cross .ar2-server b').first.inner_text()=='S1'
+    check_rows()
     page.locator('.wr-tabs').get_by_role('button',name='Chiến Dịch',exact=True).click()
     page.wait_for_function("document.querySelector('.wr-list .ar2-plabel')?.textContent==='Ải đã vượt'")
-    page.locator('.wr-tabs').get_by_role('button',name='Các Hệ',exact=True).click()
+    page.locator('.wr-tabs').get_by_role('button',name='Hệ Nguyên Tố',exact=True).click()
     page.locator('.wr-groups button').first.wait_for()
     assert page.locator('.wr-groups button').count()==8
     assert page.locator('.wr-groups button img').evaluate_all("(xs)=>xs.map(x=>x.getAttribute('src'))")==['/assets/factions/group'+str(i)+'.png' for i in [1,2,3,4,6,5,7,8]]
     page.locator('.wr-groups').get_by_role('button',name='Hệ Hỗn Độn',exact=True).click()
-    page.wait_for_function("document.querySelector('.wr-status')?.textContent.includes('0 người chơi')")
+    page.locator('.wr-list .ar-empty').wait_for()
     assert page.locator('.wr-list .ar-empty').is_visible()
     page.locator('.wr-tabs').get_by_role('button',name='Lực Chiến',exact=True).click()
     page.locator('.world-rank-win .ar-row2').first.wait_for(timeout=10000)

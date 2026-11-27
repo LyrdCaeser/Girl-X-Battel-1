@@ -1,7 +1,7 @@
 'use strict';
 // Original common window + original ArenaWindowItem rows and game button sprites.
 const WorldRankings=(()=>{
- const modes=[['power','Lực Chiến'],['level','Cấp Độ'],['campaign','Chiến Dịch'],['guild','Bang Hội'],['tower','Tháp Thử Thách Học Viện'],['faction','Các Hệ']];
+ const modes=[['power','Lực Chiến'],['level','Cấp Độ'],['campaign','Chiến Dịch'],['guild','Bang Hội'],['tower','Tháp Thử Thách Học Viện'],['faction','Hệ Nguyên Tố']];
  const crossWorlds=['S1','S2','S3'];
  const factions=[[1,'U Linh Ma'],[2,'Nhân Tộc'],[3,'Ma Thú'],[4,'Tinh Linh'],[6,'Ánh Sáng'],[5,'Bóng Tối'],[7,'Vũ Trụ'],[8,'Hỗn Độn']];
  const el=(tag,cls,txt)=>{const x=document.createElement(tag);if(cls)x.className=cls;if(txt!==undefined)x.textContent=txt;return x;};
@@ -35,6 +35,8 @@ const WorldRankings=(()=>{
    const top=p.list.scrollTop;p.list.replaceChildren();
    for(const r of result.ranking){
     const row=Arena.rankRow({...r,lv:r.level,display_score:r.guild_flag?fmt(r.score):mode==='campaign'?r.display_score:fmt(r.score)},r.rank-1,r.power,null);
+    // Remove prefab coordinates only in this responsive ranking grid.
+    for(const child of row.children)for(const prop of ['left','top','width','height'])child.style.removeProperty(prop);
     if(r.guild_flag)row.querySelector('.ar2-lv').textContent=String(r.level);
     row.querySelector('.ar2-icon').style.cursor='default';
     if(r.guild_flag)row.querySelector('.ar2-power b').textContent=r.member_count+' thành viên';
@@ -42,7 +44,7 @@ const WorldRankings=(()=>{
    }
    if(!result.ranking.length)p.list.append(el('p','ar-empty','Chưa có người chơi phù hợp.'));
    p.list.scrollTop=top;
-   p.status.textContent=(result.scope==='cross'?'Liên Server · S1–S3':result.server_id)+' · '+result.total+' '+(mode==='guild'?'Bang Hội':'người chơi')+' · Hạng của bạn: '+(result.my_rank??'Chưa xếp hạng');
+   p.status.textContent='';
    p.updated.textContent='Cập nhật '+new Date(result.server_time*1000).toLocaleTimeString('vi-VN');
   }catch(e){if(active(p)&&token===seq)p.status.textContent='Không tải được BXH. '+(p.list.children.length?'Đang giữ kết quả lần trước.':'Vui lòng thử lại.');}
   finally{if(token===seq)p.pending=false;}
