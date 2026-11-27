@@ -241,6 +241,31 @@ class S5CoreTests(unittest.TestCase):
             with self.assertRaises(ValueError):souls.action(st,{'action':'equip','partner_id':hosts[0]['partner_id'],'soul_id':hosts[0]['souls'][0]})
             with self.assertRaises(ValueError):s5.grant_advanced(st,hosts[0]['partner_id'])
 
+    def test_gm_gifts_eligible_after_original_hosts_removed(self):
+        from gxb2 import equipment
+        st=self.state()
+        s5.grant_welcome(st,1795740000)
+        tid=755013
+        original=st['s5_welcome']['hosts'][str(tid)]
+        st['partners']=[p for p in st['partners'] if p['partner_id']!=original]
+        result=goddess_gifts.grant(st,{'girl_id':tid,'stars':25,'level':666},lambda p,real=True:666)
+        pid=result['partner_id']
+        self.assertIn(pid,[p['partner_id'] for p in s5.reward_hosts(st)])
+        self.assertNotIn(original,[p['partner_id'] for p in s5.reward_hosts(st)])
+        gear=s5.grant_gear(st,pid)
+        self.assertEqual(gear['gear'],s5.gear_for_job(gear['job']))
+        self.assertEqual(len(s5.grant_advanced(st,pid)['souls']),5)
+        another=goddess_gifts.grant(st,{'girl_id':tid,'stars':10,'level':1},lambda p,real=True:666)['partner_id']
+        self.assertEqual(s5.grant_kit(st,another)['to_star'],11)
+        for action in (s5.grant_gear,s5.grant_advanced,s5.grant_kit):
+            with self.assertRaises(ValueError):action(st,another)
+        st['server_id']='S1'
+        with self.assertRaises(ValueError):s5.reward_hosts(st)
+        st['server_id']='S5'
+        st.pop('s5_welcome')
+        self.assertEqual(s5.reward_hosts(st),[])
+        with self.assertRaises(ValueError):s5.grant_gear(st,pid)
+
     def test_job_gear_reward_once_for_existing_character(self):
         from gxb2 import equipment
         state=self.state()

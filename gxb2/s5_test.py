@@ -157,13 +157,29 @@ def grant_welcome(state, now):
     return {'goddesses':prizes,'wish_count':len(prizes),'skin_choices':SKIN_CHOICES}
 
 
+def reward_hosts(state):
+    """Current owned canonical S5 goddesses, independent of acquisition source."""
+    check_scope(state)
+    if not state.get('s5_welcome'):
+        return []
+    allowed=set(roster(state['uid']))
+    return [p for p in state.get('partners',[]) if int(p['table_id']) in allowed]
+
+
+def reward_host(state, partner_id):
+    if type(partner_id) is not int:
+        raise ValueError('Chọn nữ thần hợp lệ')
+    host=next((p for p in reward_hosts(state) if p['partner_id']==partner_id),None)
+    if host is None:
+        raise ValueError('Nữ thần không thuộc danh sách quà S5 hoặc chưa nhận thư khởi đầu')
+    return host
+
+
 def grant_kit(state, partner_id):
-    """One kit per original welcome host per step, preserving native upgrade."""
+    """One kit per goddess type per step, preserving native upgrade."""
     check_scope(state)
     welcome = state.get('s5_welcome') or {}
-    host = next((p for p in state.get('partners',[]) if p['partner_id']==int(partner_id)),None)
-    if not host or welcome.get('hosts',{}).get(str(host['table_id'])) != host['partner_id']:
-        raise ValueError('Chỉ cấp nguyên liệu cho nữ thần quà S5')
+    host = reward_host(state, partner_id)
     plan = awakening_plan(state['uid'],host['table_id'],host.get('awake',0))
     key = f"{host['table_id']}:{plan['to_star']}"
     kits=welcome.setdefault('kits',{})
@@ -193,11 +209,7 @@ def grant_gear(state, partner_id):
     from . import equipment
     check_scope(state)
     welcome=state.get('s5_welcome') or {}
-    if type(partner_id) is not int:
-        raise ValueError('Chọn nữ thần hợp lệ')
-    host=next((p for p in state['partners'] if p['partner_id']==partner_id),None)
-    if not host or welcome.get('hosts',{}).get(str(host['table_id']))!=partner_id:
-        raise ValueError('Chỉ cấp trang bị cho nữ thần quà S5')
+    host=reward_host(state,partner_id)
     received=welcome.setdefault('gear_claimed',{})
     key=str(host['table_id'])
     if key in received:
@@ -275,11 +287,7 @@ def grant_advanced(state,partner_id):
     from . import equipment,souls
     check_scope(state)
     welcome=state.get('s5_welcome') or {}
-    if type(partner_id) is not int:
-        raise ValueError('Chọn nữ thần hợp lệ')
-    host=next((p for p in state['partners'] if p['partner_id']==partner_id),None)
-    if not host or str(host['table_id']) not in welcome.get('hosts',{}):
-        raise ValueError('Chỉ cấp quà cho nữ thần quà S5')
+    host=reward_host(state,partner_id)
     key=str(host['table_id'])
     claimed=welcome.setdefault('advanced_claimed',{})
     if key in claimed: raise ValueError('Nữ thần này đã nhận quà nâng cao')
@@ -343,8 +351,7 @@ def move_advanced_equipment(state, partner_id):
     check_scope(state)
     if type(partner_id) is not int: raise ValueError('Chọn nữ thần hợp lệ')
     welcome=state.get('s5_welcome') or {}
-    dest=next((p for p in state['partners'] if p['partner_id']==partner_id),None)
-    if not dest: raise ValueError('Không tìm thấy nữ thần')
+    dest=reward_host(state,partner_id)
     key=str(dest['table_id'])
     if not welcome.get('advanced_claimed',{}).get(key):
         raise ValueError('Chưa nhận quà nâng cao')

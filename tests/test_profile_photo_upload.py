@@ -111,7 +111,28 @@ class ProfilePhotoHTTPTests(unittest.TestCase):
             self.assertEqual(c,200,out)
             c,info,_=self.request('GET','/api/s5/rewards',user=0)
             self.assertEqual(c,200,info)
-            h=info['hosts'][0];pid=h['partner_id']
+            # Reproduce a GM-gift replacement after the welcome copy was retired.
+            from gxb2 import goddess_gifts
+            account=auth.session(self.cookies[0].split('=',1)[1])['account']
+            engine=self.pool.get(account['uid'],'S5','Gear QA')
+            with engine.lock:
+                engine.db.execute('BEGIN IMMEDIATE')
+                profile=engine._load()
+                original=profile['s5_welcome']['hosts']['755013']
+                profile['partners']=[p for p in profile['partners'] if p['partner_id']!=original]
+                gifted=goddess_gifts.grant(profile,{'girl_id':755013,'stars':25,'level':666},engine.level_cap)
+                engine._save_profile(profile);engine.db.commit()
+            c,info,_=self.request('GET','/api/s5/rewards',user=0)
+            self.assertEqual(c,200,info)
+            gm=next(h for h in info['hosts'] if h['partner_id']==gifted['partner_id'])
+            self.assertEqual((gm['stars'],gm['level']),(25,666))
+            self.assertNotIn(original,[h['partner_id'] for h in info['hosts']])
+            c,out,_=self.request('POST','/api/s5/rewards',json_data={'action':'gear','partner_id':gm['partner_id']},user=0)
+            self.assertEqual(c,200,out)
+            self.assertEqual(out['result']['gear'],s5_test.gear_for_job(gm['job']))
+            c,info,_=self.request('GET','/api/s5/rewards',user=0)
+            self.assertEqual(c,200,info)
+            h=next(h for h in info['hosts'] if h['job']!=gm['job'] and h['level']==1);pid=h['partner_id']
             req={'action':'gear','partner_id':pid}
             c,out,_=self.request('POST','/api/s5/rewards',json_data=req,user=0)
             self.assertEqual(c,200,out)

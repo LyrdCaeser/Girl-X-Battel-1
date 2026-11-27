@@ -491,7 +491,7 @@ const HomeMenus=(()=>{
    if(!dialog.isConnected)return;
    nav.replaceChildren();body.replaceChildren();
    for(const [key,label] of [['girls','Nguyên liệu thức tỉnh'],['skins','Trang phục tự chọn · '+info.remaining],['gear','Trang bị cao cấp'],['advanced','Quà nâng cao']]){
-    const b=el('button',label,'s5-tab'+(active===key?' active':''));b.type='button';b.setAttribute('aria-pressed',String(active===key));b.onclick=()=>{active=key;draw();};nav.append(b);
+    const b=el('button',label,'s5-tab'+(active===key?' active':''));b.type='button';b.setAttribute('aria-pressed',String(active===key));b.onclick=()=>{active=key;say('');draw();};nav.append(b);
    }
    if(!info.claimed){body.append(el('p','Hãy nhận thư quà S5 trước.','s5-empty'));return;}
    const hint=active==='girls'?'Chọn nữ thần để nhận nguyên liệu cho mốc sao tiếp theo.':active==='gear'?'Chọn nữ thần để nhận một bộ 4 trang bị cấp 25 đúng nghề. Tự trang bị trong mục Nữ Thần.':active==='advanced'?'Nhận đủ 5 món Linh Hồn, 4 kỹ năng tối đa, Bảo Vật và Cổ Vật cho nữ thần ngay từ cấp 1. Đồ Linh Hồn và Cổ Vật cũ được trả về Túi Đồ.':'Chọn trang phục yêu thích. Mỗi trang phục dùng một lượt chọn.';
@@ -507,7 +507,7 @@ const HomeMenus=(()=>{
      const jobs=['','Chiến Binh','Pháp Sư','Xạ Thủ','Sát Thủ','Linh Mục'];
      const roster=new Map((state.roster||[]).map(g=>[Number(g.partner_id),g]));
      for(const h of (advancedMode?(info.advanced_hosts||info.hosts):info.hosts).filter(x=>x.name.toLocaleLowerCase('vi').includes(q))){
-      const hero=roster.get(Number(h.partner_id));if(!hero)continue;
+      const hero=roster.get(Number(h.partner_id))||h;if(!hero.table_id)continue;
       const n=Number(h.stars),done=n>=25,unavailable=advancedMode?!!h.advanced_claimed&&!h.move_equipment:gearMode?!!h.gear_claimed:done||h.kit_claimed;
       const card=el('button',undefined,'s5-reward-card');card.type='button';card.dataset.s5Action=advancedMode?'advanced':gearMode?'gear':'kit';card.dataset.unavailable=unavailable?'1':'0';card.disabled=working||unavailable;
       card.setAttribute('aria-label',h.name+' · '+n+' sao'+(done?' · Tối đa':' lên '+(n+1)+' sao'));
@@ -524,13 +524,13 @@ const HomeMenus=(()=>{
        card.append(items,el('span','4 kỹ năng · Lv '+(plan.elite_display||5),'s5-job'),
          el('span',h.move_equipment?'Chuyển Bảo Vật & Cổ Vật':h.advanced_claimed?(h.equipment_here?'Đã nhận quà':'Đã nhận ở bản khác'):'Nhận quà nâng cao','s5-card-action'));
       }else if(gearMode){
-       card.append(s5StarBadge(n,hero),el('span',jobs[h.job]||'Trang bị đúng nghề','s5-job'));
+       card.append(s5StarBadge(n,hero),el('span','Cấp '+h.level+' · '+(jobs[h.job]||'Trang bị đúng nghề'),'s5-job'));
        const items=el('span',undefined,'s5-gear-icons');
        for(const id of info.gear_sets?.[String(h.job)]||[]){
         const item=itemCatalog[String(id)],im=el('img');im.alt=item?.name||'Trang bị';im.title=im.alt;im.loading='lazy';if(item)im.src=itemPicture(item);items.append(im);
        }
        card.append(items,el('span',h.gear_claimed?'Đã nhận trang bị':'Nhận bộ trang bị','s5-card-action'));
-      }else card.append(ranks,el('span',done?'Đã đạt 25 sao':h.kit_claimed?'Đã nhận nguyên liệu':'Nhận nguyên liệu','s5-card-action'));
+      }else card.append(el('span','Cấp '+h.level,'s5-job'),ranks,el('span',done?'Đã đạt 25 sao':h.kit_claimed?'Đã nhận nguyên liệu':'Nhận nguyên liệu','s5-card-action'));
       card.onclick=()=>{if(advancedMode&&h.move_equipment&&!confirm('Chuyển hai trang bị từ bản nữ thần đã nhận sang bản cấp '+h.level+'? Trang bị hiện tại sẽ đổi chỗ.'))return;return claim({action:advancedMode?(h.move_equipment?'move_advanced_equipment':'advanced'):gearMode?'gear':'kit',partner_id:h.partner_id});};grid.append(card);
      }
     }else{
