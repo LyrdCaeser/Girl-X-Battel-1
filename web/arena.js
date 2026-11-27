@@ -76,12 +76,12 @@ const Arena=(()=>{
   const ic=at(el('button','ar2-icon'),-177,1,64,64);ic.type='button';const px=Math.round(64*scale());
   const avatarKey=p.me?(state?.profile?.avatar||p.avatar):p.avatar;
   const frameKey=p.me?(state?.profile?.frame||p.frame):p.frame;
-  ic.append(avatar(avatarKey,'ar2-av'),avatarFrame(frameKey));if(p.lv)ic.append(el('small','ar2-lv',String(p.lv)));
+  if(p.guild_flag)ic.append(img('/assets/guild/guild_flag_'+p.guild_flag+'.png','ar2-av'));else ic.append(avatar(avatarKey,'ar2-av'),avatarFrame(frameKey));if(p.lv)ic.append(el('small','ar2-lv',String(p.lv)));
   if(!p.me&&onInspect)ic.onclick=()=>onInspect(p);row.append(ic);
   const nm=el('b','ar2-name',p.name);nm.style.left='calc(202 * var(--u))';nm.style.top='calc(14 * var(--u))';row.append(nm);
   const pw=el('span','ar2-power');pw.style.left='calc(208 * var(--u))';pw.style.top='calc(50 * var(--u))';pw.append(img(A('force_icon')),el('b','',number(p.me?me:p.power||0)));row.append(pw);
   const sv=at(el('span','ar2-server'),146,0,108,34);sv.style.backgroundImage=`url('${A('trial_bg07')}')`;sv.append(img(A('trial_icon13')),el('b','',p.server_id||'—'));row.append(sv);
-  row.append(at(el('small','ar2-plabel','Points'),264,23.5,80,20),at(el('b','ar2-points',String(p.score)),264,-17.5,100,30));return row;}
+  row.append(at(el('small','ar2-plabel',p.score_label||'Points'),264,23.5,80,20),at(el('b','ar2-points',p.display_score??String(p.score)),264,-17.5,100,30));return row;}
  // ArenaFormationWindow: the rival's card and defence line-up(s)
  function inspect(p,title='Hồ Sơ Đối Thủ'){const ov=el('div','ar-overlay');const w=el('div','ar-win ar-inspect');ov.append(w);ov.onclick=e=>{if(e.target===ov)ov.remove();};
   const x=el('button','ar-close','✕');x.type='button';x.onclick=()=>ov.remove();const head=el('div','ar-ins-head');const ic=el('div','ar2-icon');ic.append(avatar(p.avatar,'ar2-av'),avatarFrame(p.frame));if(p.lv)ic.append(el('small','ar2-lv',String(p.lv)));

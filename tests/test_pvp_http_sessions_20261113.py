@@ -87,6 +87,50 @@ class PvPHttpSessionTests(unittest.TestCase):
         self.assertEqual(self.call('GET',f'/api/pvp/status?mode={mode}',user=1)['pvp']['match']['id'],mid)
         return mid
 
+    def test_world_rankings_authenticated_saved_data_and_isolation(self):
+        states=[self.call('GET','/api/state',user=i) for i in (0,1)]
+        uids=[st['uid'] for st in states]
+        guild=live_service.create_world_guild(uids[0],'S1',states[0]['name'],'Rank HTTP','',0)
+        live_service.apply_world_guild(uids[1],'S1',states[1]['name'],guild['id'],0)
+        live_service.review_guild_application(uids[0],'S1',uids[1],True)
+        db=live_service._db()
+        try:
+            live_service._ensure_social_tables(db)
+            for i,uid in enumerate(uids):
+                player=live_service.player(uid,'S1')
+                engine=self.pool.get(uid,'S1',player['character_name'])
+                saved=engine._load()
+                saved['max_stage']=1+i
+                saved['tower']={'max_stage':10+i}
+                db.execute("INSERT INTO player_profiles(uid,server_id,data,updated_at) VALUES(?,?,?,?) ON CONFLICT(uid,server_id) DO UPDATE SET data=excluded.data",
+                           (uid,'S1',json.dumps(saved),1))
+            db.commit()
+        finally:db.close()
+        self.assertEqual(self.request('GET','/api/world-rankings')[0],401)
+        for mode in ('power','level','campaign','tower','guild'):
+            board=self.call('GET','/api/world-rankings?mode='+mode+'&server_id=S5',user=0)
+            self.assertEqual(board['server_id'],'S1')
+            self.assertEqual(board['total'],1 if mode=='guild' else 2)
+            self.assertTrue(all('uid' not in r and 'data' not in r for r in board['ranking']))
+            if mode=='campaign': self.assertEqual(board['ranking'][0]['score'],2)
+            if mode=='tower': self.assertEqual(board['ranking'][0]['score'],11)
+            if mode=='guild': self.assertEqual(board['ranking'][0]['member_count'],2)
+        for group in range(1,9):
+            board=self.call('GET','/api/world-rankings?mode=faction&group='+str(group))
+            self.assertEqual(board['group'],group)
+            self.assertTrue(all(r['server_id']=='S1' for r in board['ranking']))
+        self.assertEqual(self.request('GET','/api/world-rankings?mode=faction&group=9',user=0)[0],400)
+        # Progress changes are visible without a leaderboard cache reset.
+        db=live_service._db()
+        try:
+            r=db.execute('SELECT data FROM player_profiles WHERE uid=? AND server_id=?',(uids[0],'S1')).fetchone()
+            saved=json.loads(r['data']);saved['tower']['max_stage']=100
+            db.execute('UPDATE player_profiles SET data=? WHERE uid=? AND server_id=?',(json.dumps(saved),uids[0],'S1'));db.commit()
+        finally:db.close()
+        board=self.call('GET','/api/world-rankings?mode=tower')
+        self.assertEqual(board['ranking'][0]['score'],100)
+        self.assertEqual(board['my_rank'],1)
+
     def test_authenticated_guild_presence(self):
         first=self.call('GET','/api/state',user=0)
         second=self.call('GET','/api/state',user=1)
