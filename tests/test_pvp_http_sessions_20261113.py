@@ -114,6 +114,7 @@ class PvPHttpSessionTests(unittest.TestCase):
             self.assertEqual(board['server_id'],'S1')
             self.assertEqual(board['total'],1 if mode=='guild' else 2)
             self.assertTrue(all('uid' not in r and 'data' not in r for r in board['ranking']))
+            if mode!='guild': self.assertTrue(all(r['guild_name']=='Rank HTTP' for r in board['ranking']))
             if mode=='campaign': self.assertEqual(board['ranking'][0]['score'],2)
             if mode=='tower': self.assertEqual(board['ranking'][0]['score'],11)
             if mode=='guild': self.assertEqual(board['ranking'][0]['member_count'],2)
@@ -132,6 +133,10 @@ class PvPHttpSessionTests(unittest.TestCase):
         board=self.call('GET','/api/world-rankings?mode=tower')
         self.assertEqual(board['ranking'][0]['score'],100)
         self.assertEqual(board['my_rank'],1)
+        live_service.leave_world_guild(uids[1],'S1')
+        board=self.call('GET','/api/world-rankings?mode=power')
+        self.assertEqual([r['guild_name'] for r in board['ranking'] if not r['me']],[''])
+        self.assertEqual([r['guild_name'] for r in board['ranking'] if r['me']],['Rank HTTP'])
 
     def test_cross_world_rankings_include_only_public_worlds(self):
         from gxb2 import world_rankings
@@ -148,6 +153,7 @@ class PvPHttpSessionTests(unittest.TestCase):
                 db.execute("INSERT INTO player_profiles(uid,server_id,data,updated_at) VALUES(?,?,?,?) ON CONFLICT(uid,server_id) DO UPDATE SET data=excluded.data",(uid,world,json.dumps(saved),1))
             db.commit()
         finally:db.close()
+        live_service.create_world_guild(uid,'S2','Rank QA S2','Rank S2 Only','',0)
         self.assertEqual(self.request('GET','/api/world-rankings?mode=cross')[0],401)
         board=self.call('GET','/api/world-rankings?mode=cross&server_id=S5')
         self.assertEqual(board['worlds'],['S1','S2','S3'])
@@ -156,6 +162,7 @@ class PvPHttpSessionTests(unittest.TestCase):
         self.assertEqual({r['server_id'] for r in board['ranking']},{'S1','S2','S3'})
         self.assertEqual([r['server_id'] for r in board['ranking'] if r['me']],['S1'])
         self.assertTrue(all(r['score']==r['power'] for r in board['ranking']))
+        self.assertEqual({r['server_id']:r['guild_name'] for r in board['ranking']},{'S1':'','S2':'Rank S2 Only','S3':''})
         self.assertEqual(board['my_rank'],next(r['rank'] for r in board['ranking'] if r['me']))
         for world in ('S1','S2','S3','S4','S5'):
             local=world_rankings.ranking(world,uid)

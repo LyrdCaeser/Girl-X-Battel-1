@@ -39,7 +39,19 @@ const WorldRankings=(()=>{
     for(const child of row.children)for(const prop of ['left','top','width','height'])child.style.removeProperty(prop);
     if(r.guild_flag)row.querySelector('.ar2-lv').textContent=String(r.level);
     row.querySelector('.ar2-icon').style.cursor='default';
-    if(r.guild_flag)row.querySelector('.ar2-power b').textContent=r.member_count+' thành viên';
+    // Reserve the right-hand column for actual guild membership in every player board.
+    const scoreLabel=row.querySelector('.ar2-plabel'),scoreValue=row.querySelector('.ar2-points');
+    if(r.guild_flag){
+     row.querySelector('.ar2-power b').textContent=fmt(r.power);
+     row.append(el('small','wr-extra-score',r.member_count+' thành viên'));
+    }else if(!['power','cross'].includes(result.mode)){
+     row.append(el('small','wr-extra-score',scoreLabel.textContent+': '+scoreValue.textContent));
+    }
+    scoreLabel.remove();scoreValue.remove();
+    const guildName=el('b','wr-guild-name',r.guild_flag?'':(r.guild_name||''));
+    if(guildName.textContent)guildName.title=guildName.textContent;
+    row.append(guildName);
+    if(row.querySelector('.wr-extra-score'))row.classList.add('wr-has-extra');
     p.list.append(row);
    }
    if(!result.ranking.length)p.list.append(el('p','ar-empty','Chưa có người chơi phù hợp.'));

@@ -38,7 +38,7 @@ def _profile_row(row, current_uid, current_world=None):
     stage=int(state.get('max_stage',0));stage_row=TABLES['stage'].get(str(stage))
     floor=min(len(TOWER),max(0,int((state.get('tower') or {}).get('max_stage',0))))
     return {'uid':row['uid'],'name':row['character_name'],'server_id':row['server_id'],
-            'level':player_level(state),'power':power,'campaign':stage,
+            'level':player_level(state),'power':power,'campaign':stage,'guild_name':dict(row).get('guild_name') or '',
             'campaign_label':f"{stage_row['fort_id']}-{stage_row['name']}" if stage_row else 'Chưa vượt ải',
             'tower':floor,'groups':groups,'avatar':profile.get('avatar') or 'head_1001',
             'frame':profile.get('frame') or 'frame_8007','me':row['uid']==current_uid and (current_world is None or row['server_id']==current_world)}
@@ -56,8 +56,10 @@ def ranking(server_id, current_uid, mode='power', group=1, limit=100):
     limit=max(1,min(100,int(limit)))
     db=live_service._db()
     try:
-        rows=db.execute(f"""SELECT p.uid,p.server_id,p.character_name,pp.data
+        rows=db.execute(f"""SELECT p.uid,p.server_id,p.character_name,pp.data,COALESCE(g.name,'') AS guild_name
             FROM players p JOIN player_profiles pp ON p.uid=pp.uid AND p.server_id=pp.server_id
+            LEFT JOIN world_guild_members m ON m.uid=p.uid AND m.server_id=p.server_id
+            LEFT JOIN world_guilds g ON g.id=m.guild_id AND g.server_id=p.server_id
             WHERE p.server_id IN ({placeholders}) AND p.status='active'""",worlds).fetchall()
         guilds=db.execute("""SELECT g.id,g.name,g.server_id,g.level,g.exp,gp.state
             FROM world_guilds g LEFT JOIN world_guild_progress gp ON gp.guild_id=g.id

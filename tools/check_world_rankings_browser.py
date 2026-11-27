@@ -11,6 +11,7 @@ try:
  from gxb2 import live_service
  live_service.create_world('S4','S4 QA')
  states=[case.call('GET','/api/state',user=i) for i in (0,1)]
+ live_service.create_world_guild(states[0]['uid'],'S1',states[0]['name'],'Bang Hội QA','',0)
  db=live_service._db()
  try:
   live_service._ensure_social_tables(db)
@@ -55,7 +56,8 @@ try:
     def check_rows():
      assert not page.locator('.wr-status').is_visible()
      for row in page.locator('.wr-list .ar-row2').all():
-      boxes={k:row.locator('.ar2-'+k).bounding_box() for k in ('icon','name','power','points')}
+      boxes={k:row.locator('.ar2-'+k).bounding_box() for k in ('icon','name','power')}
+      boxes['points']=row.locator('.wr-guild-name').bounding_box()
       ic,nm,pw,sc=[boxes[k] for k in ('icon','name','power','points')]
       assert ic['x']+ic['width']<=nm['x']+1,(w,boxes)
       assert ic['x']+ic['width']<=pw['x']+1,(w,boxes)
@@ -63,6 +65,8 @@ try:
       assert nm['y']+nm['height']<=pw['y']+1,(w,boxes)
       assert row.locator('.ar2-icon').evaluate("e=>!e.style.left && !e.style.top && ['auto','0px'].includes(getComputedStyle(e).left) && ['auto','0px'].includes(getComputedStyle(e).top)")
     check_rows()
+    assert sorted(page.locator('.wr-guild-name').all_text_contents())==['','Bang Hội QA']
+    assert page.locator('.wr-list .ar2-plabel,.wr-list .ar2-points').count()==0
 
     assert page.locator('.wr-tabs button').count()==7
     page.locator('.wr-tabs').get_by_role('button',name='Liên Server',exact=True).click()
@@ -71,7 +75,7 @@ try:
     assert page.locator('.wr-cross .ar2-server b').first.inner_text()=='S1'
     check_rows()
     page.locator('.wr-tabs').get_by_role('button',name='Chiến Dịch',exact=True).click()
-    page.wait_for_function("document.querySelector('.wr-list .ar2-plabel')?.textContent==='Ải đã vượt'")
+    page.wait_for_function("document.querySelector('.wr-list .wr-extra-score')?.textContent.startsWith('Ải đã vượt:')")
     page.locator('.wr-tabs').get_by_role('button',name='Hệ Nguyên Tố',exact=True).click()
     page.locator('.wr-groups button').first.wait_for()
     assert page.locator('.wr-groups button').count()==8

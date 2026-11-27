@@ -45,3 +45,9 @@ html.gxb-desktop #app-frame .home-stage .home-left.home-live-events{width:min(54
 #app-frame .wr-list.wr-cross .ar2-rk,#app-frame .wr-list.wr-cross .ar2-num,#app-frame .wr-list.wr-cross .ar2-icon{grid-row:1/4}
 #app-frame .wr-list.wr-cross .ar2-server{display:flex;grid-column:3;grid-row:3;justify-self:start;min-width:38px;padding:2px 5px;gap:3px;font-size:11px}
 #app-frame .wr-list.wr-cross .ar2-server img{width:12px;height:auto}
+
+/* Shared guild column for every player leaderboard; empty when not a member. */
+#app-frame .wr-list .ar-row2 .wr-guild-name{grid-column:4;grid-row:1/-1;align-self:center;text-align:center;color:#4b4a6e;font-size:clamp(11px,3cqw,17px);line-height:1.2;overflow-wrap:anywhere}
+#app-frame .wr-list .ar-row2.wr-has-extra{grid-template-rows:auto auto auto}
+#app-frame .wr-list .ar-row2.wr-has-extra .ar2-rk,#app-frame .wr-list .ar-row2.wr-has-extra .ar2-num,#app-frame .wr-list .ar-row2.wr-has-extra .ar2-icon{grid-row:1/4}
+#app-frame .wr-list .ar-row2 .wr-extra-score{grid-column:3;grid-row:3;font-size:clamp(10px,2.6cqw,14px);color:#2f8fd8;overflow-wrap:anywhere}
