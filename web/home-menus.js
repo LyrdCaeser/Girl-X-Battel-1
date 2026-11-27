@@ -626,6 +626,7 @@ const HomeMenus=(()=>{
    if(m.status==='pending')button(c,
      m.attachments?.['990073']?'Nhận Vé Truy Cập SVIP':
      m.attachments?.['990072']?'Nhận Thẻ Truy Cập SSVIP':
+     m.attachments?.__s5_monthanh_all25__?'Nhận Nữ Thần 25★ · Wish':
      m.attachments?.__s5_welcome__?'Nhận quà Thiên Hư Không · Wish':
      m.attachments?.__s4_exclusive_key__?'Nhận Chìa Khóa S4':
        m.attachments?.__s4_exclusive_bundle__||m.attachments?.__s4_trial_gm_reward__?

@@ -434,6 +434,20 @@ def choose_skins(state, ids):
     return {'skin_ids':sorted(choices),'remaining':welcome['skin_choices']}
 
 MAIL_MARKER = '__s5_welcome__'
+MONTHANH_BUNDLE = '__s5_monthanh_all25__'
+
+
+def grant_monthanh_bundle(state, marker):
+    check_scope(state)
+    if type(marker) is not int or marker != 1 or not verified_svip(state['uid']):
+        raise ValueError('Quà này chỉ dành cho tài khoản monthanh tại S5')
+    prizes=[]
+    for tid in roster(state['uid']):
+        p=_add_partner(state,tid,15)
+        prizes.append({'partner_id':p['partner_id'],'table_id':tid,'stars':25,
+                       'level':1,'name':goddess_gifts.BY_ID[tid]['name']})
+    return {'goddesses':prizes,'wish_count':len(prizes)}
+
 
 
 def owner_uid():

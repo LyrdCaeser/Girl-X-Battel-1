@@ -69,6 +69,44 @@ class ProfilePhotoHTTPTests(unittest.TestCase):
         output=io.BytesIO();image.save(output,'JPEG',exif=exif)
         return output.getvalue()
 
+    def test_monthanh_private_all25_giftcode(self):
+        from gxb2 import s5_test as s, giftcodes
+        from datetime import datetime
+        live_service.create_world('S5',s.NAME)
+        c,out,headers=self.request('POST','/api/auth/register',json_data={
+            'username':'monthanh','password':'ExamplePassword123A','character_name':'Monthanh QA','server_id':'S1'})
+        self.assertEqual(c,200,out)
+        self.cookies.append(headers['set-cookie'].split(';',1)[0])
+        uid=auth.session(self.cookies[2].split('=',1)[1])['account']['uid']
+        phase=s.schedule(datetime(2026,11,28,6,30,tzinfo=s.TZ).timestamp())
+        with patch.object(s,'MONTHANH_UID',uid),patch.object(s,'schedule',return_value=phase),patch.object(giftcodes,'_READY',False):
+            for u in (0,2):
+                c,out,_=self.request('POST','/api/auth/create-character',json_data={'server_id':'S5','character_name':'Bundle QA '+str(u)},user=u)
+                self.assertEqual(c,200,out)
+            issued=giftcodes.create_monthanh_s5_bundle('SUPER_GM_TEST')
+            code=issued['code']
+            self.assertEqual(issued['goddess_count'],105)
+            with self.assertRaisesRegex(ValueError,'máy chủ'):
+                giftcodes.redeem(code,uid,'S1')
+            c,out,_=self.request('POST','/api/giftcode/redeem',json_data={'code':code},user=0)
+            self.assertEqual(c,400,out)
+            c,out,_=self.request('POST','/api/giftcode/redeem',json_data={'code':code},user=2)
+            self.assertEqual(c,200,out)
+            mail=out['mail_id']
+            c,out,_=self.request('POST','/api/mail/claim',json_data={'mail_id':mail},user=2)
+            self.assertEqual(c,200,out)
+            gifts=out['s5_rewards']['goddesses']
+            self.assertEqual(len(gifts),105)
+            self.assertEqual({g['table_id'] for g in gifts},set(s.roster(uid)))
+            roster={g['partner_id']:g for g in out['state']['roster']}
+            for gift in gifts:
+                h=roster[gift['partner_id']]
+                self.assertEqual((h['stars'],h['lv']),(25,1))
+                self.assertFalse(any(h['equips']))
+            self.assertEqual(self.request('POST','/api/giftcode/redeem',json_data={'code':code},user=2)[0],400)
+            self.assertEqual(self.request('POST','/api/mail/claim',json_data={'mail_id':mail},user=2)[0],400)
+            self.assertEqual(len(giftcodes.redemptions(code)),1)
+
     def test_svip_mail_claim_and_closed_hours_http(self):
         from gxb2 import s5_test as s5
         from datetime import datetime

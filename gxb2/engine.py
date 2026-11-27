@@ -719,6 +719,11 @@ class Engine:
                     if int(s5_marker)!=1: raise GameError('Gói S5 không hợp lệ')
                     s5_test.ensure_open(server_id,uid=uid)
                     s5_rewards = s5_test.grant_welcome(state,self.now())
+                monthanh_bundle=inventory.pop(s5_test.MONTHANH_BUNDLE,None)
+                if monthanh_bundle is not None:
+                    if s5_rewards is not None:raise GameError('Thư chứa hai gói S5 không hợp lệ')
+                    s5_test.ensure_open(server_id,uid=uid)
+                    s5_rewards=s5_test.grant_monthanh_bundle(state,monthanh_bundle)
                 s4_marker = inventory.pop('__s4_exclusive_bundle__', None)
                 s4_trial_reward = inventory.pop('__s4_trial_gm_reward__', None)
                 if s4_marker is not None and s4_trial_reward is not None:

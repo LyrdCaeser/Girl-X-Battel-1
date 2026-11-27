@@ -271,6 +271,36 @@ def create_s4_trial_key(uid, server_id, character_name, hours, operator,
     finally:
         db.close()
 
+def create_monthanh_s5_bundle(operator):
+    """Private server-side operator issuance; not a public creation endpoint."""
+    from . import s5_test as s
+    uid=s.MONTHANH_UID
+    target=live_service.player(uid,'S5')
+    if not s.verified_svip(uid) or not target or target.get('status')!='active':
+        raise ValueError('Không tìm thấy tài khoản monthanh đang hoạt động tại S5')
+    code=_normalize('S5-MT-'+secrets.token_hex(8).upper())
+    rewards={s.MONTHANH_BUNDLE:1}
+    count=len(s.roster(uid))
+    now=int(time.time())
+    title='S5 • Quà Nữ Thần 25★ độc quyền monthanh'
+    message=f'Nhận đủ {count} Nữ Thần 25★ cấp 1, không trang bị. Mã riêng của monthanh, chỉ sử dụng một lần tại S5.'
+    db=_connection()
+    try:
+        db.execute("""INSERT INTO giftcodes
+            (code,title,message,rewards,server_id,max_uses,used_count,expires_at,active,
+             created_at,created_by,target_uid,effect)
+            VALUES(?,?,?,?,?,1,0,0,1,?,?,?,?)""",
+            (code,title,message,json.dumps(rewards),'S5',now,str(operator)[:100],uid,'s5_monthanh_all25'))
+        live_service._audit(db,'giftcode.create.s5_monthanh_all25',code,
+            {'uid':uid,'server_id':'S5','max_uses':1,'goddess_count':count},str(operator))
+        db.commit()
+        return {'code':code,'server_id':'S5','max_uses':1,'used_count':0,
+                'expires_at':0,'goddess_count':count}
+    except Exception:
+        db.rollback();raise
+    finally:db.close()
+
+
 def create_campaign_clear(uid, server_id, operator, code=''):
     """Create one private, one-use code bound to one exact character."""
     uid=str(uid or '').strip()
@@ -393,8 +423,14 @@ def redeem(code,uid,server_id):
                     len(rewards)!=1 or next(iter(rewards),None) not in s4_trial.KEY_IDS or
                     next(iter(rewards.values()),None)!=1):
                 raise ValueError('Giftcode Chìa Khóa S4 không đúng UID hoặc loại chìa')
+        if effect=='s5_monthanh_all25':
+            from . import s5_test as s
+            if (server_id!='S5' or row['server_id']!='S5' or row['target_uid']!=uid
+                    or int(row['max_uses'])!=1 or not s.verified_svip(uid)
+                    or rewards!={s.MONTHANH_BUNDLE:1}):
+                raise ValueError('Giftcode chỉ dành cho monthanh tại S5')
         state_changed=False
-        if effect and effect not in ('s4_wish_bundle','s4_trial_key'):
+        if effect and effect not in ('s4_wish_bundle','s4_trial_key','s5_monthanh_all25'):
             if effect!='campaign_all':
                 raise ValueError('Hiệu lực Giftcode không được hỗ trợ')
             lock=" FOR UPDATE" if db.backend=='postgres' else ""
