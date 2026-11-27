@@ -65,13 +65,12 @@ const Dates=(()=>{
  function stopVoice(){try{audio?.pause();audio=null;if(window.speechSynthesis)window.speechSynthesis.cancel();utterance=null;}catch{}}
  function play(sound,text){if(text&&text!=='-1')bubble=typeof GxbVi!=='undefined'?GxbVi.t(text):text;try{stopVoice();voiceVolume=typeof GxbAudio!=='undefined'?GxbAudio.volume('voice')/100:voiceVolume;if(String(sound||'').startsWith('tts:')){if(!window.speechSynthesis||!window.SpeechSynthesisUtterance)return;utterance=new SpeechSynthesisUtterance(bubble);utterance.lang='vi-VN';utterance.rate=.92;utterance.pitch=1.08;utterance.volume=voiceVolume;const voices=window.speechSynthesis.getVoices();utterance.voice=voices.find(v=>String(v.lang).toLowerCase().startsWith('vi'))||null;utterance.onend=utterance.onerror=()=>{utterance=null;};window.speechSynthesis.speak(utterance);return;}if(sound){audio=new Audio('/assets/voices/'+sound+'.mp3');audio.volume=voiceVolume;audio.play().catch(()=>{});}}catch{}}
  function allLines(h){
-  // Upgraded/reissued girls and skins share their canonical Goddess's voice.
-  // Resolve the native host chain before declaring the sound/dialogue missing.
+  // Use the actual character and its canonical host IDs. Numeric suffixes
+  // are not identities: Maia 755010 collides with Frexie 55010.
   const id=Number(h.table_id),hostIds=typeof hostChain==='function'?hostChain(id):[id];
   for(const n of [...new Set([id,...hostIds])]){
-    for(const key of [String(n),String(n%100000),String(n%10000+50000)]){
-      if(data.dialogs[key]?.length)return data.dialogs[key];
-    }
+    const lines=data.dialogs[String(n)];
+    if(lines?.length)return lines;
   }
   return [];
  }
