@@ -141,7 +141,7 @@
 #s5-rewards-dialog .s5-rewards-header h2{font-size:clamp(17px,4.6vw,24px);margin:0;color:white;text-shadow:0 1px 3px #275d91;line-height:1.3}
 #s5-rewards-dialog button{font:inherit;box-sizing:border-box;cursor:pointer;margin:0;min-width:0;max-width:100%;text-transform:none}
 #s5-rewards-dialog .s5-close{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:32px;height:32px;padding:0;line-height:1;font-size:29px;font-weight:800;color:#fff;background:transparent;border:0;text-shadow:0 1px 3px #285981}
-#s5-rewards-dialog .s5-rewards-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;padding:8px 8px 4px;flex:none}
+#s5-rewards-dialog .s5-rewards-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;padding:8px 8px 4px;flex:none}
 #s5-rewards-dialog .s5-tab{background:linear-gradient(#fff,#e0e9f5);border:1px solid #9bb7d5;border-radius:7px;padding:9px 4px;color:#355477;font-size:clamp(11px,3.4vw,14px);font-weight:800;white-space:normal;line-height:1.25}
 #s5-rewards-dialog .s5-tab.active{background:linear-gradient(#71bdf0,#3982ca);color:white;border-color:#397fbf;box-shadow:inset 0 1px 0 #a6d8fa}
 #s5-rewards-dialog .s5-rewards-body{min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;padding:8px 10px 12px}
@@ -180,3 +180,5 @@
 #s5-rewards-dialog .s5-job{font-size:12px;color:#516e94;font-weight:700}
 #s5-rewards-dialog .s5-gear-icons{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:2px;width:100%}
 #s5-rewards-dialog .s5-gear-icons img{width:100%;aspect-ratio:1;object-fit:contain;min-width:0}
+
+#s5-rewards-dialog .s5-advanced-icons{grid-template-columns:repeat(4,minmax(0,1fr))}

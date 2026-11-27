@@ -781,6 +781,7 @@ class Engine:
             hosts=welcome.get('hosts',{})
             kits=welcome.get('kits',{})
             gear_claimed=welcome.get('gear_claimed',{})
+            advanced_claimed=welcome.get('advanced_claimed',{})
             have=skins.collected(st)
             from . import equipment
             gear_sets={str(job):s5_test.gear_for_job(job) for job in range(1,6)}
@@ -789,6 +790,8 @@ class Engine:
                     'hosts':[{'partner_id':p['partner_id'],'name':goddess_gifts.BY_ID[p['table_id']]['name'],
                               'stars':10+int(p.get('awake',0)),
                               'job':equipment.job_of(p),'gear_claimed':str(p['table_id']) in gear_claimed,
+                              'advanced_claimed':str(p['table_id']) in advanced_claimed,
+                              'advanced':s5_test.advanced_plan(p), 'level':p['lv'],
                               'kit_claimed':f"{p['table_id']}:{11+int(p.get('awake',0))}" in kits}
                              for p in st['partners'] if hosts.get(str(p['table_id']))==p['partner_id']],
                     'skins':[{'id':sid,'name':skins.SKINS[sid]['name']} for sid in s5_test.skin_catalog(st['uid'])
@@ -806,6 +809,8 @@ class Engine:
                     out=s5_test.grant_kit(st,data.get('partner_id'))
                 elif data.get('action')=='gear':
                     out=s5_test.grant_gear(st,data.get('partner_id'))
+                elif data.get('action')=='advanced':
+                    out=s5_test.grant_advanced(st,data.get('partner_id'))
                 elif data.get('action')=='skins':
                     out=s5_test.choose_skins(st,data.get('ids'))
                 else:

@@ -17,7 +17,7 @@ ordinary=next(g for g in catalog if g['stars']==10 and g['group']==1 and str(g['
 cosmos=next(g for g in catalog if g['stars']==10 and g['group']==7 and str(g['id']) in avatars)
 sonia=next(g for g in catalog if g['id']==758001)
 rows=[ordinary,cosmos,sonia]
-hosts=[dict(partner_id=i+1,name=g['name'],stars=n,kit_claimed=False,job=g['job'],gear_claimed=False) for i,(g,n) in enumerate(zip(rows,(10,14,24)))]
+hosts=[dict(partner_id=i+1,name=g['name'],stars=n,kit_claimed=False,job=g['job'],gear_claimed=False,advanced_claimed=False,level=200,advanced=dict(souls=[5100020,5203106,5203206,5203306,5203406],treasure=5750,antique=67963,elite_display=5,min_level=200)) for i,(g,n) in enumerate(zip(rows,(10,14,24)))]
 roster=[dict(partner_id=i+1,table_id=g['id'],name=g['name'],group=g['group'],stars=n,equips=[0]*7) for i,(g,n) in enumerate(zip(rows,(10,14,24)))]
 gear_sets={str(j):[1000*slot+100*j+69 for slot in (1,2,3,4)] for j in range(1,6)}
 fixture=dict(claimed=True,remaining=1,hosts=hosts,gear_sets=gear_sets,skins=[dict(id=7001,name='Trang phục 1'),dict(id=7002,name='Trang phục 2')])
@@ -28,8 +28,8 @@ const el=(tag,text,cls)=>node(tag,cls,text);
 let pending=false;let calls=[];let failGear="";
 const cardIds=new Set(),artIds=new Set(),skinAvatarIds=new Set(),skinCardIds=new Set([7001,7002]);
 const artId=id=>id,detailImage=id=>'/assets/skins/'+id+'.png';
-const itemPicture=item=>'/assets/item-icons/'+item.icon+'.png';
-const api=async(path,req)=>{if(path==='/api/state')return state;if(req){calls.push(req);if(req.action==='gear'&&failGear==='before'){failGear='';throw Object.assign(new Error('network'),{responseUncertain:true});}if(req.action==='kit')fixture.hosts.find(h=>h.partner_id===req.partner_id).kit_claimed=true;else if(req.action==='gear')fixture.hosts.find(h=>h.partner_id===req.partner_id).gear_claimed=true;else {fixture.remaining-=req.ids.length;fixture.skins=fixture.skins.filter(s=>!req.ids.includes(s.id));}if(req.action==='gear'&&failGear==='after'){failGear='';throw Object.assign(new Error('network'),{responseUncertain:true});}return {state};}return fixture;};
+const itemPicture=item=>item.icon.startsWith('soul_equip_')?'/assets/souls/'+item.icon+'.png':item.icon.startsWith('artfact_')?'/assets/equipment/'+item.icon+'.png':'/assets/item-icons/'+item.icon+'.png';
+const api=async(path,req)=>{if(path==='/api/state')return state;if(req){calls.push(req);if(req.action==='gear'&&failGear==='before'){failGear='';throw Object.assign(new Error('network'),{responseUncertain:true});}if(req.action==='kit')fixture.hosts.find(h=>h.partner_id===req.partner_id).kit_claimed=true;else if(req.action==='gear')fixture.hosts.find(h=>h.partner_id===req.partner_id).gear_claimed=true;else if(req.action==='advanced')fixture.hosts.find(h=>h.partner_id===req.partner_id).advanced_claimed=true;else {fixture.remaining-=req.ids.length;fixture.skins=fixture.skins.filter(s=>!req.ids.includes(s.id));}if(req.action==='gear'&&failGear==='after'){failGear='';throw Object.assign(new Error('network'),{responseUncertain:true});}return {state};}return fixture;};
 const GirlUI=(()=>{const el=(tag,cls,text)=>node(tag,cls,text);const img=(src,cls,alt='')=>{const i=el('img',cls);i.src=src;i.alt=alt;return i};"""+stars+""";return {stars};})();
 """
 with sync_playwright() as p:
@@ -87,6 +87,13 @@ with sync_playwright() as p:
         page.wait_for_function("document.querySelector('.s5-rewards-status').textContent.includes('đồng bộ lại')")
         assert page.locator('.s5-reward-card').nth(1).is_disabled()
         assert page.evaluate('calls.length')==5
+        page.locator('.s5-tab').nth(3).click()
+        assert page.locator('.s5-advanced-icons img').count()==21
+        page.locator('.s5-advanced-icons img').evaluate_all("es=>es.forEach(e=>e.loading='eager')")
+        page.wait_for_function("Array.from(document.querySelectorAll('.s5-advanced-icons img')).every(i=>i.complete&&i.naturalWidth>0)",timeout=5000)
+        page.locator('.s5-reward-card').first.click()
+        page.wait_for_function("document.querySelector('.s5-reward-card')?.disabled")
+        assert page.evaluate('calls[5].action')=='advanced'
         page.locator('.s5-close').click()
         page.locator('#s5-rewards-dialog').wait_for(state='detached')
         assert not errors,errors

@@ -206,6 +206,114 @@ def grant_gear(state, partner_id):
     return {'partner_id':partner_id,'job':job,'gear':gear}
 
 
+# Native equipment tables contain no character-specific soul restrictions.
+# Select complete sets by combat role and the original Station antique advice.
+_ADVANCED_ROLE = {
+    1: (5100020, 3, 5750, (2,6,12,4), (3,4,8,14,6)),
+    2: (5100021, 4, 5753, (1,7,8,3), (1,2,9,10,5)),
+    3: (5100023, 5, 5756, (1,5,7,3), (1,2,7,9,5)),
+    4: (5100023, 4, 5766, (1,5,8,3), (1,2,7,10,5)),
+    5: (5100018, 9, 5768, (2,10,12,9), (3,4,11,12,14)),
+}
+
+
+def advanced_plan(host):
+    from . import equipment, souls
+    from .engine import EXSKILL, RESONATE
+    tid=int(host['table_id'])
+    row=equipment.PARTNERS[str(tid)]
+    job=equipment.job_of(host)
+    central,group,treasure,_,_=_ADVANCED_ROLE[job]
+    if tid==SONIA: central,group,treasure=5100021,4,5766
+    stones=[next(r['id'] for r in souls.E2.values()
+                 if r['group']==group and r['pos']==slot and r['star']==6)
+            for slot in range(2,6)]
+    antique=_recommended_antique(tid,job)
+    return {'souls':[central,*stones], 'treasure':treasure,'antique':antique,
+            'elite_max':int(RESONATE['max'] if int(row['group'])==7 else EXSKILL['max']),
+            'elite_display':10 if int(row['group'])==7 else int(EXSKILL['max']),
+            'min_level':max(souls.OPEN_LV,equipment.TREASURE_OPEN)}
+
+
+def _recommended_antique(tid,job):
+    from . import equipment
+    rows=_station_girls()
+    match=next((r for r in rows if tid in r.get('ids',[])),{})
+    candidates=[r for r in equipment.EQUIP.values() if r['pos']==6]
+    for advice in match.get('artifacts',[]):
+        base=equipment.EQUIP.get(int(advice['id']),{})
+        family=[r for r in candidates if r.get('name')==base.get('name')]
+        if family:
+            return max(family,key=lambda r:(r['item_lv'],r.get('qlt',0),r['id']))['id']
+    # No Station recommendation for Sonia: role-appropriate maximum antique.
+    return {1:67963,2:67903,3:67843,4:67423,5:67963}[job]
+
+
+from functools import lru_cache
+
+@lru_cache(maxsize=1)
+def _station_girls():
+    from pathlib import Path
+    root=Path(__file__).resolve().parents[1]
+    return tuple(json.loads((root/'web/assets/station/station.json').read_text())['girls'].values())
+
+
+def grant_advanced(state,partner_id):
+    from . import equipment,souls
+    check_scope(state)
+    welcome=state.get('s5_welcome') or {}
+    if type(partner_id) is not int:
+        raise ValueError('Chọn nữ thần hợp lệ')
+    host=next((p for p in state['partners'] if p['partner_id']==partner_id),None)
+    if not host or welcome.get('hosts',{}).get(str(host['table_id']))!=partner_id:
+        raise ValueError('Chỉ cấp quà cho nữ thần quà S5')
+    key=str(host['table_id'])
+    claimed=welcome.setdefault('advanced_claimed',{})
+    if key in claimed: raise ValueError('Nữ thần này đã nhận quà nâng cao')
+    plan=advanced_plan(host)
+    if int(host.get('lv',0))<plan['min_level']:
+        raise ValueError('Hãy nâng nữ thần lên cấp '+str(plan['min_level'])+' để mở đủ ô trang bị Linh Hồn.')
+    inventory=souls.store(state)['items']
+    if len(inventory)+5>souls.LIMIT:
+        raise ValueError('Túi Trang Bị Linh Hồn cần ít nhất 5 chỗ trống')
+    job=equipment.job_of(host)
+    _,_,_,stone_buffs,central_buffs=_ADVANCED_ROLE[job]
+    ids=[]
+    for tid in plan['souls']:
+        sid=souls.new_soul(state,tid)
+        rec=inventory[sid]
+        if rec['kind']==1:
+            rec['awake']=int(souls.E1[str(tid)]['max_star'])-1
+            rec['lv']=souls.max_lv(rec)
+            rec['attrs']=list(central_buffs[:souls.EX_NUM1[souls.star(rec)-1]])
+        else:
+            row=souls.E2[str(tid)]
+            rec['awake']=int(row['max_qlt'])-1
+            rec['lv']=souls.max_lv(rec);rec['exp']=0
+            bases=[int(x) for x in str(row['base']).split('|')]
+            rec['main']=next((b for b in stone_buffs if b in bases),bases[0])
+            rec['attrs']=[f"{b}#{max(souls.EX_VALUE)}" for b in stone_buffs]
+            rec['ex_attrs']=[]
+        ids.append(int(sid))
+    # Return previous soul pieces intact and equip all five new pieces.
+    souls.release(state,host)
+    for sid in ids:
+        souls.action(state,{'action':'equip','partner_id':partner_id,'soul_id':sid})
+    slots=equipment.equips_of(host)
+    # Bound treasures cannot be returned to the bag. Retain an existing max-tier
+    # treasure rather than destroy the user's already-maxed roll.
+    if equipment.EQUIP.get(slots[4],{}).get('item_lv',0)<equipment.EQUIP[plan['treasure']]['item_lv']:
+        slots[4]=plan['treasure']
+        host.pop('tmp_treasure',None)
+    if slots[5]:equipment.add(state,slots[5],1)
+    slots[5]=plan['antique']
+    old=(list(host.get('ex_skills') or [])+[0]*4)[:4]
+    host['ex_skills']=[max(int(v),plan['elite_max']) for v in old]
+    claimed[key]=True
+    return {'partner_id':partner_id,'souls':ids,'treasure':slots[4],
+            'antique':slots[5],'elite':host['ex_skills']}
+
+
 def allow_skin_gift(sender_server,recipient_server):
     a,b=str(sender_server or '').upper(),str(recipient_server or '').upper()
     if 'S5' in (a,b) and a!=b:

@@ -99,6 +99,27 @@ class ProfilePhotoHTTPTests(unittest.TestCase):
             engine=self.pool.get(account['uid'],'S5','Gear QA')
             for item in s5_test.gear_for_job(h['job']):
                 self.assertEqual(engine._load()['items'][str(item)],1)
+            advanced={'action':'advanced','partner_id':pid}
+            c,out,_=self.request('POST','/api/s5/rewards',json_data=advanced,user=0)
+            self.assertEqual(c,400,out)
+            with engine.lock:
+                engine.db.execute('BEGIN IMMEDIATE')
+                st=engine._load()
+                hero=next(p for p in st['partners'] if p['partner_id']==pid)
+                hero['lv']=200
+                engine._save_profile(st);engine.db.commit()
+            c,out,_=self.request('POST','/api/s5/rewards',json_data=advanced,user=0)
+            self.assertEqual(c,200,out)
+            self.assertEqual(len(out['result']['souls']),5)
+            self.assertEqual(out['result']['elite'],[h['advanced']['elite_max']]*4)
+            hero=next(p for p in out['state']['roster'] if p['partner_id']==pid)
+            self.assertEqual(hero['souls'],out['result']['souls'])
+            self.assertTrue(all(hero['equips'][4:6]))
+            c,info,_=self.request('GET','/api/s5/rewards',user=0)
+            self.assertEqual(c,200,info)
+            self.assertTrue(next(x for x in info['hosts'] if x['partner_id']==pid)['advanced_claimed'])
+            self.assertEqual(self.request('POST','/api/s5/rewards',json_data=advanced,user=0)[0],400)
+
 
     def test_s5_full_cosmetics_and_photo_upload_are_scoped(self):
         from gxb2 import s5_test

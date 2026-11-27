@@ -98,6 +98,37 @@ class S5CoreTests(unittest.TestCase):
                         owned={i:{'table_id':t,'awake':aw} for i,(t,aw) in enumerate(plan['materials'],1)}
                         self.assertEqual(len(e.match_materials(owned,list(owned),recipe['material'],recipe['group'])),len(owned))
 
+    def test_advanced_reward_all_native_goddesses(self):
+        from gxb2 import equipment,souls
+        for uid in ('ordinary',s5.MONTHANH_UID):
+            st=self.state(uid);s5.grant_welcome(st,1795740000)
+            hosts=[p for p in st['partners'] if st['s5_welcome']['hosts'].get(str(p['table_id']))==p['partner_id']]
+            for p in hosts:
+                pid=p['partner_id']
+                with self.assertRaises(ValueError):s5.grant_advanced(st,pid)
+                p['lv']=200
+                plan=s5.advanced_plan(p)
+                before=list(p['equips'])
+                result=s5.grant_advanced(st,pid)
+                self.assertEqual(p['souls'],result['souls'])
+                self.assertEqual(p['equips'][:4],before[:4])
+                self.assertEqual(p['ex_skills'],[plan['elite_max']]*4)
+                self.assertEqual(p['equips'][4:6],[plan['treasure'],plan['antique']])
+                self.assertEqual(equipment.EQUIP[plan['treasure']]['item_lv'],max(equipment.TIERS))
+                self.assertFalse(equipment.EQUIP[plan['antique']].get('artifact_next'))
+                records=[souls.store(st)['items'][str(i)] for i in p['souls']]
+                self.assertEqual(len(records),5)
+                self.assertEqual({souls.E2[str(r['table_id'])]['group'] for r in records[1:]}, {souls.E2[str(plan['souls'][1])]['group']})
+                for r in records:
+                    self.assertEqual(r['lv'],souls.max_lv(r))
+                    self.assertEqual(souls.star(r),6)
+                    self.assertEqual(r['owner'],pid)
+                self.assertEqual(p['soul_infos'],souls.infos(st,p))
+                with self.assertRaises(ValueError):s5.grant_advanced(st,pid)
+            self.assertEqual(len(st['s5_welcome']['advanced_claimed']),len(hosts))
+            st['server_id']='S1'
+            with self.assertRaises(ValueError):s5.grant_advanced(st,hosts[0]['partner_id'])
+
     def test_job_gear_reward_once_for_existing_character(self):
         from gxb2 import equipment
         state=self.state()
