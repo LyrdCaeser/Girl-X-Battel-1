@@ -3322,16 +3322,16 @@ class Engine:
 
     def validate_formation(self, state, formation):
         if not isinstance(formation, list) or not 1 <= len(formation) <= 6:
-            raise GameError('Selecciona entre una y seis integrantes')
+            raise GameError('Hãy chọn từ 1 đến 6 Nữ Thần')
         owned = {v['partner_id'] for v in state['partners']}
         seen_ids, seen_positions = set(), set()
         out = []
         for slot in formation:
-            if not isinstance(slot, dict): raise GameError('Formación inválida')
+            if not isinstance(slot, dict): raise GameError('Đội hình không hợp lệ')
             pid = integer(slot.get('partner_id'), 'partner_id', 1)
             pos = integer(slot.get('pos'), 'pos', 1, 6)
             if pid not in owned or pid in seen_ids or pos in seen_positions:
-                raise GameError('Formación con integrante o posición inválida o duplicada')
+                raise GameError('Nữ Thần hoặc vị trí không hợp lệ hoặc bị trùng')
             seen_ids.add(pid); seen_positions.add(pos)
             out.append({'partner_id': pid, 'pos': pos})
         return sorted(out, key=lambda x: x['pos'])
