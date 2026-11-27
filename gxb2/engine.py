@@ -117,6 +117,29 @@ def item_pairs(text):
         result[item_id] = result.get(item_id, 0) + int(value)
     return result
 
+# S5 is a lineup-testing world. 10 billion EXP Juice should cover the
+# full 105-goddess roster rather than a single extended-level character.
+S5_LEVEL_COST_DIVISOR = 200
+
+
+def partner_level_cost(state, level):
+    raw = item_pairs(TABLES['exp_partner'][str(level)]['cost'])
+    scaled = {k: local_config.scale_cost(v) for k, v in raw.items()}
+    if state.get('server_id') == 'S5':
+        scaled = {k: (v + S5_LEVEL_COST_DIVISOR - 1) // S5_LEVEL_COST_DIVISOR
+                  if k in (1, 9) else v for k, v in scaled.items()}
+    return scaled
+
+
+def partner_level_exp_total(state, level):
+    # Refunds must follow the same S5 price schedule as the actual level-up,
+    # rather than returning 65% of the undiscounted original table.
+    if state.get('server_id') == 'S5':
+        return sum(partner_level_cost(state, lv).get(9, 0)
+                   for lv in range(2, int(level) + 1))
+    return int(str(TABLES['exp_partner'][str(level)]['all_exp']).split('#')[1])
+
+
 def quiz_reward_pairs(text):
     result = {}
     for part in str(text).split('|'):
@@ -1181,8 +1204,7 @@ class Engine:
                     stage = TABLES['exp_partner'].get(target)
                     if not stage:
                         break
-                    raw = item_pairs(stage.get('cost') or '')
-                    cost = {str(k): local_config.scale_cost(n) for k, n in raw.items()}
+                    cost = {str(k): n for k, n in partner_level_cost(state, int(target)).items()}
                     if not cost or any(int(state['items'].get(k, 0)) < n for k, n in cost.items()):
                         break
                     for key, n in cost.items():
@@ -1531,7 +1553,7 @@ class Engine:
         state['roster'] = []
         for partner in state['partners']:
             row = TABLES['partner'][str(partner['table_id'])]
-            cost = {k: local_config.scale_cost(v) for k, v in item_pairs(TABLES['exp_partner'][str(partner['lv'] + 1)]['cost']).items()} if partner['lv'] < self.level_cap(partner) else {}
+            cost = partner_level_cost(state, partner['lv'] + 1) if partner['lv'] < self.level_cap(partner) else {}
             stars = int(row['max_star']) + int(partner.get('awake', 0))
             grade, max_grade = int(partner.get('grade', 0)), int(row.get('max_grade') or 0)
             awake = (COMPOSE_BY_SOURCE.get(int(partner['table_id'])) if stars in (4, 5) and not int(partner.get('awake', 0)) else None) or ASCENSION.get(f"{partner['table_id']}:{stars+1}") or local_promotion.recipe(partner) or self.awake_recipe(partner)
@@ -3140,7 +3162,7 @@ class Engine:
             if named_count: give(base_id, named_count)
             if not returns: give(host['table_id'])
 
-        exp = int(str(TABLES['exp_partner'][str(host['lv'])]['all_exp']).split('#')[1])
+        exp = partner_level_exp_total(state, host['lv'])
         ratio = float(rule.get('exp') or 0.65)
         items = {}
         if exp and ratio: items['9'] = math.ceil(exp * ratio)
@@ -3200,7 +3222,7 @@ class Engine:
                     rec = (ASCENSION.get(f"{g['table_id']}:{int(row['max_star']) + i + 1}")
                            or self.awake_recipe({**g, 'awake': i}) or {})
                     add('10', math.floor(int((rec.get('cost') or {}).get('10', 0)) * 0.7))
-            add('9', math.floor(0.65 * int(str(TABLES['exp_partner'][str(g['lv'])]['all_exp']).split('#')[1])))
+            add('9', math.floor(0.65 * partner_level_exp_total(state, g['lv'])))
         return got, six
 
     def altar_unlimited(self, state):
@@ -3723,8 +3745,8 @@ class Engine:
             if end > self.level_cap(partner): raise GameError('Se alcanzó el límite de nivel de este prototipo')
             costs = {}
             for level in range(partner['lv']+1, end+1):
-                for key, value in item_pairs(TABLES['exp_partner'][str(level)]['cost']).items():
-                    costs[key] = costs.get(key, 0) + local_config.scale_cost(value)
+                for key, value in partner_level_cost(state, level).items():
+                    costs[key] = costs.get(key, 0) + value
             for key, value in costs.items():
                 if state['items'].get(str(key), 0) < value: raise GameError('No hay suficientes recursos')
             for key, value in costs.items(): state['items'][str(key)] -= value

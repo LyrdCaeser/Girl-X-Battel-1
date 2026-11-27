@@ -69,6 +69,46 @@ class ProfilePhotoHTTPTests(unittest.TestCase):
         output=io.BytesIO();image.save(output,'JPEG',exif=exif)
         return output.getvalue()
 
+    def test_s5_level_cost_budget_and_http(self):
+        from gxb2 import s5_test as s, goddess_gifts
+        from gxb2.engine import partner_level_cost,partner_level_exp_total
+        from datetime import datetime
+        live_service.create_world('S5',s.NAME)
+        phase=s.schedule(datetime(2026,11,28,6,30,tzinfo=s.TZ).timestamp())
+        with patch.object(s,'schedule',return_value=phase):
+            c,out,_=self.request('POST','/api/auth/create-character',json_data={'server_id':'S5','character_name':'Level QA'},user=0)
+            self.assertEqual(c,200,out)
+            uid=auth.session(self.cookies[0].split('=',1)[1])['account']['uid']
+            engine=self.pool.get(uid,'S5','Level QA')
+            with engine.lock:
+                engine.db.execute('BEGIN IMMEDIATE')
+                profile=engine._load()
+                gifted=goddess_gifts.grant(profile,{'girl_id':755013,'stars':25,'level':1},engine.level_cap)
+                pid=gifted['partner_id']
+                profile['items'].update({'1':10**10,'9':10**10,'10':10**8})
+                engine._save_profile(profile);engine.db.commit()
+            c,st,_=self.request('GET','/api/state',user=0)
+            self.assertEqual(c,200,st)
+            hero=next(g for g in st['roster'] if g['partner_id']==pid)
+            self.assertEqual(hero['next_cost'],{str(k):v for k,v in partner_level_cost(st,2).items()})
+            c,out,_=self.request('POST','/api/action',json_data={'message':'PARTNER_LEVUP','data':{'partner_id':pid,'incr_lv':10}},user=0)
+            self.assertEqual(c,200,out)
+            self.assertEqual(next(g for g in out['state']['roster'] if g['partner_id']==pid)['lv'],11)
+            self.assertEqual(st['items']['9']-out['state']['items']['9'],partner_level_exp_total(st,11))
+            c,out,_=self.request('POST','/api/girls/level-max',json_data={'partner_id':pid},user=0)
+            self.assertEqual(c,200,out)
+            self.assertEqual(out['to_level'],666)
+            for k in (1,9):
+                expected=sum(partner_level_cost(st,lv).get(k,0) for lv in range(2,667))
+                self.assertEqual(st['items'][str(k)]-out['state']['items'][str(k)],expected)
+                self.assertLess(expected*105,10**10)
+            self.assertEqual(partner_level_exp_total(st,666),78232260)
+            for world in ('S1','S2','S3','S4'):
+                self.assertEqual(partner_level_exp_total({'server_id':world},666),15646388208)
+            saved=engine._load()
+            rewards,_=engine.altar_returns(saved,[pid])
+            self.assertLessEqual(rewards.get('9',0),partner_level_exp_total(st,666))
+
     def test_monthanh_private_all25_giftcode(self):
         from gxb2 import s5_test as s, giftcodes
         from datetime import datetime
