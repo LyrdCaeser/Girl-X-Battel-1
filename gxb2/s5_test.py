@@ -7,7 +7,7 @@ import os, time, json, hashlib
 from . import goddess_gifts, s4_exclusive, skins, local_config
 
 WORLD = 'S5'
-NAME = 'S5 • Thiên Hư Không'
+NAME = 'S5 • Thiên Hư Không - Limited'
 TZ = ZoneInfo('Asia/Ho_Chi_Minh')
 DAYS = (0, 5)  # Monday, Saturday
 WINDOWS = ((6, 9), (20, 23))

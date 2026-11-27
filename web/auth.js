@@ -12,7 +12,7 @@ window.GxbAuth=(()=>{
       let note=select.parentElement?.querySelector('.auth-s5-note');
       if(!note){note=el('div','auth-s4-cycle-note auth-s5-note');select.insertAdjacentElement('afterend',note);}
       note.hidden=select.value!=='S5';
-      if(!note.hidden)note.textContent='S5 • Thiên Hư Không · '+text+' · T2/T7 06–09h, 20–23h';
+      if(!note.hidden)note.textContent='S5 • Thiên Hư Không - Limited · '+text+' · T2/T7 06–09h, 20–23h';
     }
     const active=session?.account?.server_id==='S5';
     if(active&&s5Cycle&&(s5Cycle.phase==='locked'||!s5Seconds())&&!s5Kicked){s5Kicked=true;s5Badge?.remove();s5Badge=null;show();}
@@ -169,7 +169,7 @@ window.GxbAuth=(()=>{
     const select=document.createElement('select');select.id=id;
     for(const w of worlds.filter(x=>x.status!=='closed')){
       const special=w.server_id==='S4';
-      const label=w.name+' · '+w.server_id+(special?' · VIP 15 / Dùng thử':w.server_id==='S5'?' · Test miễn phí':'')+
+      const label=(w.server_id==='S5'?'S5 • Thiên Hư Không - Limited':w.name+' · '+w.server_id+(special?' · VIP 15 / Dùng thử':''))+
         (w.status==='maintenance'?' · Bảo trì':'');
       const option=el('option','',label);
       option.value=w.server_id;option.disabled=w.status!=='online';select.append(option);
