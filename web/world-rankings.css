@@ -27,3 +27,10 @@ html.gxb-desktop #app-frame .home-stage .home-rankings{left:39%;width:12%;height
 #app-frame .wr-list .ar2-points{grid-column:4;grid-row:2;font-size:clamp(11px,3.1cqw,18px);overflow-wrap:anywhere}
 .wr-footer{display:grid;grid-template-columns:1fr 100px;align-items:center;gap:4px}
 .wr-updated{font-size:11px}
+
+/* Cross-world tab uses the same native button and rank-row artwork. */
+.wr-tabs .wr-cross-tab{grid-column:1/-1}
+#app-frame .wr-list.wr-cross .ar-row2{grid-template-rows:auto auto auto}
+#app-frame .wr-list.wr-cross .ar2-rk,#app-frame .wr-list.wr-cross .ar2-num,#app-frame .wr-list.wr-cross .ar2-icon{grid-row:1/4}
+#app-frame .wr-list.wr-cross .ar2-server{display:flex;grid-column:3;grid-row:3;justify-self:start;min-width:38px;padding:2px 5px;gap:3px;font-size:11px}
+#app-frame .wr-list.wr-cross .ar2-server img{width:12px;height:auto}

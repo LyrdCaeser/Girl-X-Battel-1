@@ -35,7 +35,11 @@ try:
     trigger.click()
     page.locator('.world-rank-win .ar-row2').first.wait_for(timeout=12000)
     assert page.locator('.world-rank-win .ar-row2').count()==2
-    assert page.locator('.wr-tabs button').count()==6
+    assert page.locator('.wr-tabs button').count()==7
+    page.locator('.wr-tabs').get_by_role('button',name='Liên Server',exact=True).click()
+    page.wait_for_function("document.querySelector('.wr-status')?.textContent.startsWith('Liên Server · S1–S3')")
+    assert page.locator('.wr-cross .ar2-server').first.is_visible()
+    assert page.locator('.wr-cross .ar2-server b').first.inner_text()=='S1'
     page.locator('.wr-tabs').get_by_role('button',name='Chiến Dịch',exact=True).click()
     page.wait_for_function("document.querySelector('.wr-list .ar2-plabel')?.textContent==='Ải đã vượt'")
     page.locator('.wr-tabs').get_by_role('button',name='Các Hệ',exact=True).click()

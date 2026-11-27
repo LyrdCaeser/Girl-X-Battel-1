@@ -2,6 +2,7 @@
 // Original common window + original ArenaWindowItem rows and game button sprites.
 const WorldRankings=(()=>{
  const modes=[['power','Lực Chiến'],['level','Cấp Độ'],['campaign','Chiến Dịch'],['guild','Bang Hội'],['tower','Tháp Thử Thách Học Viện'],['faction','Các Hệ']];
+ const crossWorlds=['S1','S2','S3'];
  const factions=[[1,'U Linh Ma'],[2,'Nhân Tộc'],[3,'Ma Thú'],[4,'Tinh Linh'],[6,'Ánh Sáng'],[5,'Bóng Tối'],[7,'Vũ Trụ'],[8,'Hỗn Độn']];
  const el=(tag,cls,txt)=>{const x=document.createElement(tag);if(cls)x.className=cls;if(txt!==undefined)x.textContent=txt;return x;};
  let panel=null,mode='power',group=1,seq=0;
@@ -13,13 +14,15 @@ const WorldRankings=(()=>{
   if(!panel)return;
   panel.tabs.replaceChildren();
   for(const [id,name] of modes)panel.tabs.append(button(name,()=>select(id),id===mode));
+  if(crossWorlds.includes(state.server_id)){const b=button('Liên Server',()=>select('cross'),mode==='cross');b.classList.add('wr-cross-tab');panel.tabs.append(b);}
+  panel.list.classList.toggle('wr-cross',mode==='cross');
   panel.groups.replaceChildren();panel.groups.hidden=mode!=='faction';
   if(mode==='faction')factions.forEach(([id,name])=>{
    const b=button('',()=>select('faction',id),group===id);
    b.setAttribute('aria-label','Hệ '+name);b.title='Hệ '+name;
    const icon=el('img');icon.src='/assets/factions/group'+id+'.png';icon.alt='';b.append(icon);panel.groups.append(b);
   });
-  panel.note.textContent=mode==='faction'?'Tổng lực chiến của tối đa 6 nữ thần mạnh nhất thuộc hệ đã chọn.':mode==='guild'?'Xếp theo tổng lực chiến đội hình chính của thành viên đang hoạt động.':mode==='campaign'?'Xếp theo ải Chiến Dịch cao nhất đã vượt.':mode==='tower'?'Xếp theo tầng Tháp Thử Thách Học Viện cao nhất đã vượt.':'';
+  panel.note.textContent=mode==='cross'?'Xếp theo lực chiến đội hình chính toàn S1–S3. Không tính S4 và S5.':mode==='faction'?'Tổng lực chiến của tối đa 6 nữ thần mạnh nhất thuộc hệ đã chọn.':mode==='guild'?'Xếp theo tổng lực chiến đội hình chính của thành viên đang hoạt động.':mode==='campaign'?'Xếp theo ải Chiến Dịch cao nhất đã vượt.':mode==='tower'?'Xếp theo tầng Tháp Thử Thách Học Viện cao nhất đã vượt.':'';
  }
  async function load(clear=false){
   const p=panel;if(!p||!active(p))return;
@@ -39,7 +42,7 @@ const WorldRankings=(()=>{
    }
    if(!result.ranking.length)p.list.append(el('p','ar-empty','Chưa có người chơi phù hợp.'));
    p.list.scrollTop=top;
-   p.status.textContent=result.server_id+' · '+result.total+' '+(mode==='guild'?'Bang Hội':'người chơi')+' · Hạng của bạn: '+(result.my_rank??'Chưa xếp hạng');
+   p.status.textContent=(result.scope==='cross'?'Liên Server · S1–S3':result.server_id)+' · '+result.total+' '+(mode==='guild'?'Bang Hội':'người chơi')+' · Hạng của bạn: '+(result.my_rank??'Chưa xếp hạng');
    p.updated.textContent='Cập nhật '+new Date(result.server_time*1000).toLocaleTimeString('vi-VN');
   }catch(e){if(active(p)&&token===seq)p.status.textContent='Không tải được BXH. '+(p.list.children.length?'Đang giữ kết quả lần trước.':'Vui lòng thử lại.');}
   finally{if(token===seq)p.pending=false;}

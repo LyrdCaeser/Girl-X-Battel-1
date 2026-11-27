@@ -23,6 +23,8 @@ class PvPHttpSessionTests(unittest.TestCase):
         self.tmp=tempfile.TemporaryDirectory(prefix='gxb3-http-two-sessions-')
         self.addCleanup(self.tmp.cleanup)
         root=Path(self.tmp.name)
+        social_cache=patch.object(live_service,'_social_schema_ready',set())
+        social_cache.start();self.addCleanup(social_cache.stop)
         connect=database.connect
         for module, path, kind in ((auth,root/'test_auth.sqlite3','auth'),
                                    (live_service,root/'test_live.sqlite3','live')):
@@ -130,6 +132,42 @@ class PvPHttpSessionTests(unittest.TestCase):
         board=self.call('GET','/api/world-rankings?mode=tower')
         self.assertEqual(board['ranking'][0]['score'],100)
         self.assertEqual(board['my_rank'],1)
+
+    def test_cross_world_rankings_include_only_public_worlds(self):
+        from gxb2 import world_rankings
+        st=self.call('GET','/api/state',user=0)
+        uid=st['uid']
+        saved=self.pool.get(uid,'S1',st['name'])._load()
+        for world in ('S2','S3','S4','S5'):
+            live_service.create_world(world,'Rank QA '+world)
+            live_service.register_player(uid,world,'Rank QA '+world)
+        db=live_service._db()
+        try:
+            live_service._ensure_social_tables(db)
+            for world in ('S1','S2','S3','S4','S5'):
+                db.execute("INSERT INTO player_profiles(uid,server_id,data,updated_at) VALUES(?,?,?,?) ON CONFLICT(uid,server_id) DO UPDATE SET data=excluded.data",(uid,world,json.dumps(saved),1))
+            db.commit()
+        finally:db.close()
+        self.assertEqual(self.request('GET','/api/world-rankings?mode=cross')[0],401)
+        board=self.call('GET','/api/world-rankings?mode=cross&server_id=S5')
+        self.assertEqual(board['worlds'],['S1','S2','S3'])
+        self.assertEqual(board['scope'],'cross')
+        self.assertEqual(board['total'],3)
+        self.assertEqual({r['server_id'] for r in board['ranking']},{'S1','S2','S3'})
+        self.assertEqual([r['server_id'] for r in board['ranking'] if r['me']],['S1'])
+        self.assertTrue(all(r['score']==r['power'] for r in board['ranking']))
+        self.assertEqual(board['my_rank'],next(r['rank'] for r in board['ranking'] if r['me']))
+        for world in ('S1','S2','S3','S4','S5'):
+            local=world_rankings.ranking(world,uid)
+            self.assertEqual(local['scope'],'local')
+            self.assertEqual(local['total'],1)
+            self.assertEqual(local['ranking'][0]['server_id'],world)
+            if world in ('S4','S5'):
+                with self.assertRaises(ValueError):world_rankings.ranking(world,uid,'cross')
+            else:
+                cross=world_rankings.ranking(world,uid,'cross')
+                self.assertEqual([r['server_id'] for r in cross['ranking'] if r['me']],[world])
+                self.assertEqual([(r['server_id'],r['score'],r['rank']) for r in cross['ranking']],[(r['server_id'],r['score'],r['rank']) for r in board['ranking']])
 
     def test_authenticated_guild_presence(self):
         first=self.call('GET','/api/state',user=0)
