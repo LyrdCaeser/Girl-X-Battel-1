@@ -288,9 +288,9 @@ def ensure_welcome(uid, server_id, name):
 
 def restrict_route(path):
     # PvP is authorized separately by mode and exact character identity.
-    return (path.startswith(('/api/guild-war/','/api/order/','/api/giftskin/','/api/skin-shop/','/api/giftcode/'))
-            or path in ('/api/friends/gift','/api/friends/marriage',
-                        '/api/profile/photo/upload','/api/profile/photo/delete'))
+    # Social gifts/marriage use UID + server_id for both characters.
+    # Personal photo uploads retain their account-wide 24h quota.
+    return path.startswith(('/api/guild-war/','/api/order/','/api/giftskin/','/api/skin-shop/','/api/giftcode/'))
 
 
 def enforce_roster(state):

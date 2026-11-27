@@ -1213,6 +1213,11 @@ class Engine:
         corresponding Girl (or a released avatar variant of that Girl) is owned.
         The currently equipped cosmetic remains valid for legacy saves.
         """
+        # Test-world cosmetic entitlement is virtual: no collection items,
+        # power or ownership are granted to other worlds or to the goddess roster.
+        if state.get('server_id') == 'S5':
+            return {key: sorted(set(PROFILE_CATALOG.get(key, [])))
+                    for key in ('heads', 'partners', 'frames')}
         got = collection_mod.owned_ids(state)
         heads = {'head_1001'}
         frames = set()

@@ -69,6 +69,38 @@ class ProfilePhotoHTTPTests(unittest.TestCase):
         output=io.BytesIO();image.save(output,'JPEG',exif=exif)
         return output.getvalue()
 
+    def test_s5_full_cosmetics_and_photo_upload_are_scoped(self):
+        from gxb2 import s5_test
+        from gxb2.engine import PROFILE_CATALOG
+        from datetime import datetime
+        phase=s5_test.schedule(datetime(2026,11,28,6,30,tzinfo=s5_test.TZ).timestamp())
+        live_service.create_world('S5',s5_test.NAME)
+        with patch.object(s5_test,'schedule',return_value=phase):
+            code,payload,_=self.request('POST','/api/auth/create-character',json_data={'server_id':'S5','character_name':'Photo S5'},user=0)
+            self.assertEqual(code,200,payload)
+            code,state,_=self.request('GET','/api/state',user=0)
+            self.assertEqual(code,200,state)
+            self.assertEqual(state['server_id'],'S5')
+            for category in ('heads','frames','partners'):
+                self.assertEqual(set(state['profile_unlocks'][category]),set(PROFILE_CATALOG[category]))
+            self.assertNotIn('758001',{str(p['table_id']) for p in state['partners']})
+            for avatar in ('head_1002',PROFILE_CATALOG['partners'][-1]):
+                c,out,_=self.request('POST','/api/profile',json_data={'avatar':avatar,'frame':'frame_8001'},user=0)
+                self.assertEqual(c,200,out)
+                self.assertEqual(out['state']['profile']['avatar'],avatar)
+            c,out,_=self.request('POST','/api/profile/photo/upload',raw=self.png(),ctype='image/jpeg',user=0)
+            self.assertEqual(c,200,out);key=out['avatar']
+            self.assertEqual(self.request('GET','/api/profile/photo/'+key+'.webp')[0],200)
+            self.assertEqual(self.request('POST','/api/profile/photo/delete',user=0)[0],200)
+            self.assertEqual(self.request('POST','/api/profile/photo/upload',raw=self.png(),ctype='image/jpeg',user=0)[0],429)
+            self.assertEqual(self.request('POST','/api/auth/switch-server',json_data={'server_id':'S1'},user=0)[0],200)
+            c,normal,_=self.request('GET','/api/state',user=0)
+            self.assertEqual(c,200,normal)
+            self.assertNotIn('head_1002',normal['profile_unlocks']['heads'])
+            self.assertNotIn('frame_8001',normal['profile_unlocks']['frames'])
+            self.assertEqual(normal['profile']['avatar'],'head_1001')
+            self.assertEqual(self.request('POST','/api/profile',json_data={'avatar':'head_1002'},user=0)[0],400)
+
     def test_authenticated_upload_renders_public_reencoded_photo_and_locks_owner(self):
         original=self.png()
         code,_,_=self.request('POST','/api/profile/photo/upload',raw=original,ctype='image/jpeg')

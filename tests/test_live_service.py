@@ -124,6 +124,39 @@ class LiveServiceTests(unittest.TestCase):
 
 
 
+    def test_s5_friend_gift_and_marriage_do_not_touch_other_worlds(self):
+        import json
+        ls=live_service
+        ls.create_world("S5","Test")
+        for uid,world in (("A1","S1"),("B1","S1"),("A1","S5"),("B1","S5"),("C1","S1")):
+            ls.register_player(uid,world,uid+" "+world)
+        for world in ("S1","S5"):
+            ls.friend_action("A1",world,"request","B1")
+            ls.friend_action("B1",world,"accept","A1")
+        db=ls._db();ls._ensure_social_tables(db)
+        for world in ("S1","S5"):
+            for uid in ("A1","B1"):
+                state={"items":{"1":2000000,"45":1},"social_affection":{"B1" if uid=="A1" else "A1":11900}}
+                db.execute("INSERT INTO player_profiles(uid,server_id,data,updated_at) VALUES(?,?,?,?)",(uid,world,json.dumps(state),1))
+        db.commit();db.close()
+        gift=ls.friend_gift("A1","S5","B1","1",1000000)
+        self.assertEqual(gift["affection"],12000)
+        with self.assertRaises(ValueError):ls.friend_gift("A1","S5","C1","1",1)
+        with self.assertRaises(ValueError):ls.marriage_action("A1","S5","C1","propose")
+        self.assertEqual(ls.marriage_action("A1","S5","B1","propose")["marriage"]["status"],"pending")
+        self.assertEqual(ls.marriage_action("B1","S5","A1","accept")["marriage"]["status"],"married")
+        db=ls._db()
+        def saved(uid,world):
+            return json.loads(db.execute("SELECT data FROM player_profiles WHERE uid=? AND server_id=?",(uid,world)).fetchone()["data"])
+        self.assertEqual(saved("A1","S5")["spouse_uid"],"B1")
+        self.assertEqual(saved("A1","S5")["items"]["45"],0)
+        self.assertEqual(saved("B1","S5")["items"]["1"],3000000)
+        for uid in ("A1","B1"):
+            normal=saved(uid,"S1")
+            self.assertNotIn("spouse_uid",normal)
+            self.assertEqual(normal["items"],{"1":2000000,"45":1})
+        db.close()
+
     def test_friend_profile_gift_limit_and_marriage_transaction(self):
         import json
         live_service.register_player("A1", "S1", "Anh")

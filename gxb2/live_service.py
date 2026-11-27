@@ -2852,6 +2852,12 @@ def friend_gift(uid, server_id, target_uid, item_id, quantity):
     with _lock:
         db = _db(); _ensure_social_tables(db); db.execute("BEGIN IMMEDIATE")
         try:
+            if server_id == 'S5':
+                participants = db.execute(
+                    "SELECT uid FROM players WHERE server_id=? AND status='active' AND uid IN (?,?)",
+                    (server_id,uid,target_uid)).fetchall()
+                if len(participants)!=2:
+                    raise ValueError("Cả hai nhân vật phải đang hoạt động tại S5.")
             if not _are_friends(db, uid, target_uid, server_id):
                 raise ValueError("Chỉ có thể tặng vật phẩm cho Bạn Bè.")
             # Lock the sender before counting recent transfers so simultaneous
@@ -2925,6 +2931,12 @@ def marriage_action(uid, server_id, target_uid, action):
     with _lock:
         db = _db(); _ensure_social_tables(db); db.execute("BEGIN IMMEDIATE")
         try:
+            if server_id == 'S5':
+                participants = db.execute(
+                    "SELECT uid FROM players WHERE server_id=? AND status='active' AND uid IN (?,?)",
+                    (server_id,uid,target_uid)).fetchall()
+                if len(participants)!=2:
+                    raise ValueError("Cả hai nhân vật phải đang hoạt động tại S5.")
             if not _are_friends(db, uid, target_uid, server_id):
                 raise ValueError("Hai người phải là Bạn Bè.")
             row = db.execute("""SELECT proposer_uid,status FROM player_marriages

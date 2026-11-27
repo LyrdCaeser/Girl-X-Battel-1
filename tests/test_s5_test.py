@@ -100,10 +100,11 @@ class S5CoreTests(unittest.TestCase):
 
     def test_isolation_rules(self):
         for route in ('/api/giftskin/crystal',
-                      '/api/giftcode/redeem','/api/order/create','/api/friends/gift',
+                      '/api/giftcode/redeem','/api/order/create',
                       '/api/guild-war/battle'):
             self.assertTrue(s5.restrict_route(route))
-        for route in ('/api/friends/duel','/api/pvp/status','/api/pvp/challenge','/api/events/stream'):
+        for route in ('/api/friends/duel','/api/pvp/status','/api/pvp/challenge','/api/events/stream',
+                      '/api/friends/gift','/api/friends/marriage','/api/profile/photo/upload','/api/profile/photo/delete'):
             self.assertFalse(s5.restrict_route(route))
         state=self.state()
         state['partners'].append({'table_id':s5.SONIA})
