@@ -7,7 +7,7 @@ window.GxbAuth=(()=>{
   async function syncS5(){if(s5Busy)return;s5Busy=true;try{setS5(await request('/api/s5/cycle'));}catch(_){}finally{s5Busy=false;}}
   function tickS5(){
     if(!worlds.some(w=>w.server_id==='S5'))return;
-    const text=s5Cycle?(s5Cycle.phase==='open'?'Đóng sau ':'Mở sau ')+s4Clock(s5Seconds()):'Đang đồng bộ…';
+    const text=s5Cycle?(s5Cycle.early_access?'SSVIP · Truy cập sớm':(s5Cycle.phase==='open'?'Đóng sau ':'Mở sau ')+s4Clock(s5Seconds())):'Đang đồng bộ…';
     for(const select of document.querySelectorAll('#auth-login-server,#auth-reg-server,#auth-account-server')){
       let note=select.parentElement?.querySelector('.auth-s5-note');
       if(!note){note=el('div','auth-s4-cycle-note auth-s5-note');select.insertAdjacentElement('afterend',note);}
@@ -15,7 +15,7 @@ window.GxbAuth=(()=>{
       if(!note.hidden)note.textContent='S5 • Thiên Hư Không - Limited · '+text+' · T2/T7 06–09h, 20–23h';
     }
     const active=session?.account?.server_id==='S5';
-    if(active&&s5Cycle&&(s5Cycle.phase==='locked'||!s5Seconds())&&!s5Kicked){s5Kicked=true;s5Badge?.remove();s5Badge=null;show();}
+    if(active&&s5Cycle&&!s5Cycle.early_access&&(s5Cycle.phase==='locked'||!s5Seconds())&&!s5Kicked){s5Kicked=true;s5Badge?.remove();s5Badge=null;show();}
     if(active&&!s5Kicked&&!overlay){
       if(!s5Badge){s5Badge=el('div','auth-s4-countdown');document.body.append(s5Badge);}
       s5Badge.textContent='S5 · '+text;
@@ -178,6 +178,7 @@ window.GxbAuth=(()=>{
       selectorNote(select);
       updateS4Clock();tickS5();
       if(select.value==='S4')void syncS4Cycle();
+      if(select.value==='S5')void syncS5();
     });
     queueMicrotask(()=>{selectorNote(select);tickS5();});
     return select;
@@ -288,7 +289,7 @@ window.GxbAuth=(()=>{
       }
       if(data.s4_trial){s4Trial=data.s4_trial;s4TrialSyncedAt=performance.now();}
       if(!data.authenticated){show();return false;}
-      if(session?.account?.server_id==='S5'&&s5Cycle?.phase==='locked'){s5Kicked=true;show();return false;}
+      if(session?.account?.server_id==='S5'&&s5Cycle?.phase==='locked'&&!s5Cycle?.early_access){s5Kicked=true;show();return false;}
       if(session?.account?.server_id==='S4'&&session?.s4_access_expired){
         s4Kicked=true;s4KickedReason='trial_expired';show();return false;
       }

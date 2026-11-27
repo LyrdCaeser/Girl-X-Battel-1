@@ -11,6 +11,35 @@ class S5CoreTests(unittest.TestCase):
         state.update(uid=uid,server_id='S5')
         return state
 
+    def test_owner_early_card(self):
+        from gxb2 import auth,live_service
+        from tempfile import TemporaryDirectory
+        from pathlib import Path
+        with TemporaryDirectory() as td,patch.object(auth,'DB_PATH',Path(td)/'auth.sqlite3'),patch.object(live_service,'DB_PATH',Path(td)/'live.sqlite3'):
+            db=auth._db()
+            db.execute("INSERT INTO accounts(uid,username,email,password_hash,salt,status,created_at,last_login) VALUES(?,?,?,?,?,?,?,?)",
+                       ('owner-fixture','ownerqa','owner@example.test','hash','salt','active',1,1))
+            db.commit();db.close()
+            live_service.register_player('owner-fixture','S1','Owner QA')
+            closed=datetime(2026,11,27,12,tzinfo=s5.TZ).timestamp()
+            with patch.dict('os.environ',{'GXB3_OWNER_UID':'owner-fixture','GXB3_OWNER_EMAIL':'owner@example.test'}):
+                self.assertFalse(s5.early_access('owner-fixture'))
+                with self.assertRaises(ValueError):s5.ensure_open('S5',closed,uid='owner-fixture')
+                with self.assertRaises(ValueError):s5.issue_early_card(s5.MONTHANH_UID)
+                self.assertTrue(s5.issue_early_card('owner-fixture')['issued'])
+                self.assertFalse(s5.issue_early_card('owner-fixture')['issued'])
+                self.assertFalse(s5.early_access('owner-fixture'))
+                live_service.claim_mail(s5.early_mail_id('owner-fixture'),'owner-fixture','S1')
+                self.assertTrue(s5.early_access('owner-fixture'))
+                self.assertTrue(s5.access_cycle(closed,'owner-fixture')['access_allowed'])
+                self.assertEqual(s5.access_cycle(closed,'owner-fixture')['phase'],'locked')
+                s5.ensure_open('S5',closed,uid='owner-fixture')
+                for uid in (None,s5.MONTHANH_UID,'regular'):
+                    self.assertFalse(s5.access_cycle(closed,uid)['access_allowed'])
+                    with self.assertRaises(ValueError):s5.ensure_open('S5',closed,uid=uid)
+                with patch.dict('os.environ',{'GXB3_OWNER_EMAIL':'different@example.test'}):
+                    self.assertFalse(s5.early_access('owner-fixture'))
+
     def test_schedule(self):
         for day in (23,28):
             for h,m,expected in [(5,59,'locked'),(6,0,'open'),(8,59,'open'),(9,0,'locked'),

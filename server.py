@@ -277,8 +277,8 @@ class HTTPHandler(BaseHTTPRequestHandler):
                     self.send(403,{'error':'S5 chỉ mở Đấu Trường Đơn và Đấu Trường Đội. Đấu Trường Liên Server đã khóa.','code':'S5_CROSS_LOCKED'})
                     return None
 
-            phase=s5_test.schedule(time.time())
-            if phase['phase']=='locked':
+            phase=s5_test.access_cycle(time.time(),ctx['account']['uid'])
+            if not phase['access_allowed']:
                 self.send(423,{'error':'S5 đã đóng. Hãy chuyển về máy chủ thường.','code':'S5_LOCKED','s5_cycle':phase})
                 return None
             if s5_test.restrict_route(urlparse(self.path).path):
@@ -382,7 +382,7 @@ class HTTPHandler(BaseHTTPRequestHandler):
         last_payload=None
         for _ in range(20):
             try:
-                if account['server_id']=='S5' and s5_test.schedule(time.time())['phase']!='open':
+                if account['server_id']=='S5' and not s5_test.access_cycle(time.time(),account['uid'])['access_allowed']:
                     break
                 if account['server_id']=='S4':
                     phase=s4_exclusive.cycle()
@@ -449,7 +449,8 @@ class HTTPHandler(BaseHTTPRequestHandler):
             except Exception:
                 return self.send(503,{'ready':False,'database':database.backend_name()})
         if path == '/api/s5/cycle':
-            return self.send(200,s5_test.schedule(time.time()))
+            ctx=self.auth_context()
+            return self.send(200,s5_test.access_cycle(time.time(),ctx['account']['uid'] if ctx else None),headers={'Cache-Control':'private, no-store'})
         if path == '/api/s4/cycle':
             return self.send(200, s4_exclusive.cycle())
         if path == '/api/s4/trial':
@@ -472,7 +473,7 @@ class HTTPHandler(BaseHTTPRequestHandler):
                                    'worlds': live_service.worlds(),
                                    'is_super_gm': self.is_super_gm(),
                                    's4_cycle': s4_exclusive.cycle(),
-                                   's5_cycle': s5_test.schedule(time.time()),
+                                   's5_cycle': s5_test.access_cycle(time.time(),ctx['account']['uid'] if ctx else None),
                                    's4_trial':trial})
         if path == '/api/auth/sessions':
             ctx = self.require_auth()

@@ -275,7 +275,7 @@ def login(username, password, server_id="S1", remote="", user_agent=""):
         if world["status"] == "closed":
             db.close(); raise ValueError("Server đã đóng")
         try:
-            s5_test.ensure_open(server_id)
+            s5_test.ensure_open(server_id,uid=row["uid"])
         except ValueError:
             db.close()
             raise
@@ -346,7 +346,7 @@ def switch_server(token, server_id):
     current = session(token)
     if not current: raise ValueError("Phiên đăng nhập đã hết hạn")
     server_id = str(server_id or "").strip().upper()
-    s5_test.ensure_open(server_id)
+    s5_test.ensure_open(server_id,uid=current["account"]["uid"])
     if server_id == "S4":
         from . import s4_exclusive
         s4_exclusive.ensure_open(server_id)
@@ -374,7 +374,7 @@ def create_character(token, server_id, character_name):
     if not current: raise ValueError("Phiên đăng nhập đã hết hạn")
     uid = current["account"]["uid"]
     server_id = str(server_id or "").strip().upper()
-    s5_test.ensure_open(server_id)
+    s5_test.ensure_open(server_id,uid=current["account"]["uid"])
     if server_id == "S4":
         from . import s4_exclusive
         s4_exclusive.ensure_open(server_id)

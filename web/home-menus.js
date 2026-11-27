@@ -534,6 +534,7 @@ const HomeMenus=(()=>{
    const items=Object.entries(m.attachments||{}).filter(([id,count])=>/^[0-9]+$/.test(id)&&Number(count)>0);
    if(items.length)rewards(c,items.map(([id,count])=>id+'#'+count).join('|'));
    if(m.status==='pending')button(c,
+     m.attachments?.['990072']?'Nhận Thẻ Truy Cập SSVIP':
      m.attachments?.__s5_welcome__?'Nhận quà Thiên Hư Không · Wish':
      m.attachments?.__s4_exclusive_key__?'Nhận Chìa Khóa S4':
        m.attachments?.__s4_exclusive_bundle__||m.attachments?.__s4_trial_gm_reward__?

@@ -21,6 +21,9 @@ RESOURCES = {
 }
 SKIN_CHOICES = 10
 SKIN_BOX = "990071"
+EARLY_CARD = "990072"
+EARLY_NAME = "S5▪︎ THẺ TRUY CẬP SSVIP SỚM"
+EARLY_OPERATOR = "S5-OWNER-EARLY"
 
 
 def schedule(now):
@@ -196,11 +199,74 @@ def choose_skins(state, ids):
 MAIL_MARKER = '__s5_welcome__'
 
 
-def ensure_open(server_id, now=None):
+def owner_uid():
+    return os.environ.get('GXB3_OWNER_UID','GXB3-00000001').strip()
+
+
+def early_mail_id(uid):
+    return 'S5-SSVIP-'+hashlib.sha256(str(uid).encode()).hexdigest()[:24].upper()
+
+
+def verified_owner(uid):
+    if not owner_uid() or str(uid)!=owner_uid():
+        return False
+    from . import auth
+    email=os.environ.get('GXB3_OWNER_EMAIL','trieuquangholuxury@gmail.com').strip().casefold()
+    if not email:return False
+    db=auth._db()
+    try:
+        row=db.execute("SELECT email,status FROM accounts WHERE uid=?",(str(uid),)).fetchone()
+        return bool(row and row['status']=='active' and str(row['email'] or '').strip().casefold()==email)
+    finally:db.close()
+
+
+def early_access(uid):
+    if not verified_owner(uid):return False
+    from . import live_service
+    db=live_service._db()
+    try:
+        row=db.execute("SELECT attachments FROM mail WHERE id=? AND uid=? AND server_id<>'S5' AND status='claimed' AND operator=?",
+                       (early_mail_id(uid),str(uid),EARLY_OPERATOR)).fetchone()
+        return bool(row and json.loads(row['attachments'])=={EARLY_CARD:1})
+    finally:db.close()
+
+
+def access_cycle(now,uid=None):
+    info=schedule(now)
+    early=early_access(uid)
+    return {**info,'early_access':early,'access_allowed':early or info['phase']=='open'}
+
+
+def ensure_open(server_id, now=None, *, uid=None):
     if str(server_id).upper() == WORLD:
-        info = schedule(time.time() if now is None else now)
-        if info['phase'] != 'open':
+        info = access_cycle(time.time() if now is None else now,uid)
+        if not info['access_allowed']:
             raise ValueError('S5 đang đóng. Mở thứ Hai và thứ Bảy, 06:00–09:00 và 20:00–23:00 (giờ Việt Nam).')
+
+
+def issue_early_card(uid):
+    """Issue exactly one owner-bound card to an existing active normal character."""
+    if not verified_owner(uid):raise ValueError('Chỉ SUPER GM chính thức được nhận thẻ')
+    from . import live_service
+    db=live_service._db()
+    try:
+        db.execute('BEGIN IMMEDIATE')
+        player=db.execute("SELECT server_id,character_name FROM players WHERE uid=? AND status='active' AND server_id IN ('S1','S2','S3') ORDER BY CASE WHEN server_id='S1' THEN 0 ELSE 1 END,server_id LIMIT 1",(str(uid),)).fetchone()
+        if not player:raise ValueError('Không tìm thấy nhân vật quản trị đang hoạt động')
+        mid=early_mail_id(uid)
+        cur=db.execute("""INSERT INTO mail(id,uid,server_id,character_name,title,body,attachments,status,created_at,operator)
+            VALUES(?,?,?,?,?,?,?,'pending',?,?) ON CONFLICT(id) DO NOTHING""",
+            (mid,str(uid),player['server_id'],player['character_name'],EARLY_NAME,
+             'Thẻ dành riêng cho SUPER GM. Nhận đính kèm để mở quyền vào S5 ngoài lịch công khai. Không tiêu hao, không chuyển nhượng. Các giới hạn liên server vẫn giữ nguyên.',
+             json.dumps({EARLY_CARD:1}),int(time.time()),EARLY_OPERATOR))
+        if cur.rowcount:live_service._audit(db,'s5.early_card.issue',mid,{'uid':str(uid),'server_id':player['server_id']},EARLY_OPERATOR)
+        row=db.execute("SELECT server_id,status FROM mail WHERE id=? AND uid=? AND operator=?",(mid,str(uid),EARLY_OPERATOR)).fetchone()
+        if not row:raise ValueError('Bản ghi thẻ không hợp lệ')
+        db.commit()
+        return {'server_id':row['server_id'],'status':row['status'],'issued':bool(cur.rowcount)}
+    except Exception:
+        db.rollback();raise
+    finally:db.close()
 
 
 def ensure_welcome(uid, server_id, name):

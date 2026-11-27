@@ -717,7 +717,7 @@ class Engine:
                 s5_rewards = None
                 if s5_marker is not None:
                     if int(s5_marker)!=1: raise GameError('Gói S5 không hợp lệ')
-                    s5_test.ensure_open(server_id)
+                    s5_test.ensure_open(server_id,uid=uid)
                     s5_rewards = s5_test.grant_welcome(state,self.now())
                 s4_marker = inventory.pop('__s4_exclusive_bundle__', None)
                 s4_trial_reward = inventory.pop('__s4_trial_gm_reward__', None)
@@ -748,6 +748,12 @@ class Engine:
                     # VIP access still checks the UID-scoped claimed Neon mail,
                     # not a client-editable item count.
                     state.setdefault('items', {})['990004'] = 1
+                early_card=inventory.pop(s5_test.EARLY_CARD,None)
+                if early_card is not None:
+                    if (str(mail_id)!=s5_test.early_mail_id(uid) or server_id=='S5'
+                            or int(early_card)!=1 or not s5_test.verified_owner(uid)):
+                        raise GameError('Thẻ SSVIP chỉ dành cho SUPER GM chính thức')
+                    state.setdefault('items',{})[s5_test.EARLY_CARD]=1
                 for item_id, amount in inventory.items():
                     state['items'][str(item_id)] = int(state['items'].get(str(item_id), 0)) + int(amount)
                 # Neon: insert VIP15 key mail into the same atomic transaction
@@ -790,7 +796,7 @@ class Engine:
             try:
                 st=self._load()
                 s5_test.check_scope(st)
-                s5_test.ensure_open('S5')
+                s5_test.ensure_open('S5',uid=st['uid'])
                 if data.get('action')=='kit':
                     out=s5_test.grant_kit(st,data.get('partner_id'))
                 elif data.get('action')=='skins':
@@ -835,7 +841,7 @@ class Engine:
                     if str(item_id)==s5_test.SKIN_BOX:
                         if open_all or str(count)!='1':
                             raise ValueError('Mỗi hộp chọn một trang phục')
-                        s5_test.ensure_open('S5')
+                        s5_test.ensure_open('S5',uid=state.get('uid'))
                         selected=s5_test.choose_skins(state,[int(reward_id or 0)])
                         trial=None
                         rewards={str(sid):1 for sid in selected['skin_ids']}
