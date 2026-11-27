@@ -69,6 +69,37 @@ class ProfilePhotoHTTPTests(unittest.TestCase):
         output=io.BytesIO();image.save(output,'JPEG',exif=exif)
         return output.getvalue()
 
+    def test_s5_gear_claim_real_http_and_replay(self):
+        from gxb2 import s5_test,equipment
+        from datetime import datetime
+        phase=s5_test.schedule(datetime(2026,11,28,6,30,tzinfo=s5_test.TZ).timestamp())
+        live_service.create_world('S5',s5_test.NAME)
+        with patch.object(s5_test,'schedule',return_value=phase):
+            c,out,_=self.request('POST','/api/auth/create-character',json_data={'server_id':'S5','character_name':'Gear QA'},user=0)
+            self.assertEqual(c,200,out)
+            c,st,_=self.request('GET','/api/state',user=0)
+            self.assertEqual(c,200,st)
+            mid=next(m['id'] for m in st['mail_info'] if m['attachments'].get(s5_test.MAIL_MARKER))
+            c,out,_=self.request('POST','/api/mail/claim',json_data={'mail_id':mid},user=0)
+            self.assertEqual(c,200,out)
+            c,info,_=self.request('GET','/api/s5/rewards',user=0)
+            self.assertEqual(c,200,info)
+            h=info['hosts'][0];pid=h['partner_id']
+            req={'action':'gear','partner_id':pid}
+            c,out,_=self.request('POST','/api/s5/rewards',json_data=req,user=0)
+            self.assertEqual(c,200,out)
+            self.assertEqual(out['result']['gear'],s5_test.gear_for_job(h['job']))
+            c,info,_=self.request('GET','/api/s5/rewards',user=0)
+            self.assertEqual(c,200,info)
+            self.assertTrue(next(x for x in info['hosts'] if x['partner_id']==pid)['gear_claimed'])
+            c,out,_=self.request('POST','/api/s5/rewards',json_data=req,user=0)
+            self.assertEqual(c,400,out)
+            self.assertIn('đã nhận',out['error'])
+            account=auth.session(self.cookies[0].split('=',1)[1])['account']
+            engine=self.pool.get(account['uid'],'S5','Gear QA')
+            for item in s5_test.gear_for_job(h['job']):
+                self.assertEqual(engine._load()['items'][str(item)],1)
+
     def test_s5_full_cosmetics_and_photo_upload_are_scoped(self):
         from gxb2 import s5_test
         from gxb2.engine import PROFILE_CATALOG

@@ -25,11 +25,11 @@ html='<!doctype html><html><head><meta name="viewport" content="width=device-wid
 setup="""
 const node=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e};
 const el=(tag,text,cls)=>node(tag,cls,text);
-let pending=false;let calls=[];
+let pending=false;let calls=[];let failGear="";
 const cardIds=new Set(),artIds=new Set(),skinAvatarIds=new Set(),skinCardIds=new Set([7001,7002]);
 const artId=id=>id,detailImage=id=>'/assets/skins/'+id+'.png';
 const itemPicture=item=>'/assets/item-icons/'+item.icon+'.png';
-const api=async(path,req)=>{if(req){calls.push(req);if(req.action==='kit')fixture.hosts.find(h=>h.partner_id===req.partner_id).kit_claimed=true;else if(req.action==='gear')fixture.hosts.find(h=>h.partner_id===req.partner_id).gear_claimed=true;else {fixture.remaining-=req.ids.length;fixture.skins=fixture.skins.filter(s=>!req.ids.includes(s.id));}return {state};}return fixture;};
+const api=async(path,req)=>{if(path==='/api/state')return state;if(req){calls.push(req);if(req.action==='gear'&&failGear==='before'){failGear='';throw Object.assign(new Error('network'),{responseUncertain:true});}if(req.action==='kit')fixture.hosts.find(h=>h.partner_id===req.partner_id).kit_claimed=true;else if(req.action==='gear')fixture.hosts.find(h=>h.partner_id===req.partner_id).gear_claimed=true;else {fixture.remaining-=req.ids.length;fixture.skins=fixture.skins.filter(s=>!req.ids.includes(s.id));}if(req.action==='gear'&&failGear==='after'){failGear='';throw Object.assign(new Error('network'),{responseUncertain:true});}return {state};}return fixture;};
 const GirlUI=(()=>{const el=(tag,cls,text)=>node(tag,cls,text);const img=(src,cls,alt='')=>{const i=el('img',cls);i.src=src;i.alt=alt;return i};"""+stars+""";return {stars};})();
 """
 with sync_playwright() as p:
@@ -77,6 +77,16 @@ with sync_playwright() as p:
         page.wait_for_function("document.querySelector('.s5-reward-card')?.disabled")
         assert page.evaluate('calls[2].action')=='gear'
         assert page.locator('.s5-reward-card').first.inner_text().find('Đã nhận trang bị')>=0
+        page.evaluate("failGear='before'")
+        page.locator('.s5-reward-card').nth(1).click()
+        page.wait_for_function("document.querySelector('.s5-rewards-status').textContent.includes('Chưa ghi nhận')")
+        assert not page.locator('.s5-reward-card').nth(1).is_disabled()
+        assert page.evaluate('calls.length')==4
+        page.evaluate("failGear='after'")
+        page.locator('.s5-reward-card').nth(1).click()
+        page.wait_for_function("document.querySelector('.s5-rewards-status').textContent.includes('đồng bộ lại')")
+        assert page.locator('.s5-reward-card').nth(1).is_disabled()
+        assert page.evaluate('calls.length')==5
         page.locator('.s5-close').click()
         page.locator('#s5-rewards-dialog').wait_for(state='detached')
         assert not errors,errors

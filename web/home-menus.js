@@ -456,7 +456,22 @@ const HomeMenus=(()=>{
     if(!dialog.isConnected)return;
     say(req.action==='kit'?'Đã nhận nguyên liệu. Vào Nữ Thần để thức tỉnh.':req.action==='gear'?'Đã nhận 4 trang bị đúng nghề vào Túi Đồ.':'Đã nhận trang phục.');
     const scroll=body.scrollTop;await load();body.scrollTop=scroll;
-   }catch(e){if(dialog.isConnected)say(e.message||'Không thể nhận quà.',true);}
+   }catch(e){
+    if(dialog.isConnected&&e.responseUncertain){
+     // A response can disappear after the transaction commits. Read saved
+     // status before allowing the next click; never replay the POST blindly.
+     try{
+      const fresh=await api('/api/s5/rewards');
+      const saved=fresh.hosts.find(h=>Number(h.partner_id)===Number(req.partner_id));
+      const received=req.action==='gear'?!!saved?.gear_claimed:req.action==='kit'?!!saved?.kit_claimed:req.action==='skins'?req.ids.every(id=>!fresh.skins.some(s=>Number(s.id)===Number(id))):false;
+      if(received){
+       state=await api('/api/state');if(req.action==='skins')chosen.clear();
+      }
+      if(dialog.isConnected){const scroll=body.scrollTop;info=fresh;draw();body.scrollTop=scroll;
+       say(received?'Quà đã được nhận. Dữ liệu đã đồng bộ lại.':'Kết nối vừa bị gián đoạn. Chưa ghi nhận quà, bạn có thể bấm nhận lại.',!received);}
+     }catch(_){if(dialog.isConnected)say('Chưa xác minh được kết quả nhận quà. Đóng và mở lại Quà S5 khi kết nối ổn định.',true);}
+    }else if(dialog.isConnected)say(e.message||'Không thể nhận quà.',true);
+   }
    finally{working=false;pending=false;if(dialog.isConnected)syncButtons();}
   }
   function draw(){
