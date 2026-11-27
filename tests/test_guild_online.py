@@ -16,6 +16,31 @@ class GuildAndSeasonTests(unittest.TestCase):
         live_service.DB_PATH = self.old
         self.tmp.cleanup()
 
+    def test_guild_members_use_real_presence_and_level_per_world(self):
+        from unittest.mock import patch
+        for world in ('S1','S2','S3','S4','S5'):
+            if world != 'S1': live_service.create_world(world,'Presence '+world)
+            for uid,lv in [('GL-P',400),('GM-P',76)]:
+                live_service.register_player(uid,world,uid)
+                with patch.object(live_service.time,'time',return_value=1000):
+                    live_service.touch_presence(uid,world,uid,lv,123456)
+            guild=live_service.create_world_guild('GL-P',world,'GL-P','Presence Test','',1)
+            live_service.apply_world_guild('GM-P',world,'GM-P',guild['id'],1)
+            live_service.review_guild_application('GL-P',world,'GM-P',True)
+            with patch.object(live_service.time,'time',return_value=1300):
+                live_service.heartbeat_presence('GL-P',world,'GL-P')
+                members={m['uid']:m for m in live_service.guild_for_player('GL-P',world)['members']}
+                self.assertEqual(members['GL-P']['level'],400)
+                self.assertEqual(members['GM-P']['level'],76)
+                self.assertEqual(members['GL-P']['power'],123456)
+                self.assertTrue(members['GL-P']['online'])
+                self.assertFalse(members['GM-P']['online'])
+                self.assertEqual(members['GM-P']['last_seen'],1000)
+                live_service.heartbeat_presence('GM-P',world,'GM-P')
+                self.assertTrue(all(m['online'] for m in live_service.guild_for_player('GL-P',world)['members']))
+            with patch.object(live_service.time,'time',return_value=1421):
+                self.assertFalse(any(m['online'] for m in live_service.guild_for_player('GL-P',world)['members']))
+
     def test_guild_application_roles_chat_and_mail(self):
         for uid, name, power in [("L1","Leader",2000),("D1","Deputy",1800),("M1","Member",1500)]:
             live_service.register_player(uid, "S1", name)

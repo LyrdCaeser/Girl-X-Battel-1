@@ -87,6 +87,27 @@ class PvPHttpSessionTests(unittest.TestCase):
         self.assertEqual(self.call('GET',f'/api/pvp/status?mode={mode}',user=1)['pvp']['match']['id'],mid)
         return mid
 
+    def test_authenticated_guild_presence(self):
+        first=self.call('GET','/api/state',user=0)
+        second=self.call('GET','/api/state',user=1)
+        guild=live_service.create_world_guild(first['uid'],'S1',first['name'],'Presence HTTP','',0)
+        live_service.apply_world_guild(second['uid'],'S1',second['name'],guild['id'],0)
+        live_service.review_guild_application(first['uid'],'S1',second['uid'],True)
+        db=live_service._db()
+        try:
+            db.execute('UPDATE presence SET last_seen=1 WHERE server_id=?',('S1',))
+            db.commit()
+        finally:db.close()
+        self.assertEqual(self.request('GET','/api/presence/heartbeat')[0],401)
+        self.assertEqual(self.request('GET','/api/world-guild/members')[0],401)
+        members=self.call('GET','/api/world-guild/members',user=0)['members']
+        self.assertEqual([m['online'] for m in members],[True,False])
+        self.assertEqual([m['level'] for m in members],[first['level'],second['level']])
+        self.call('GET','/api/presence/heartbeat',user=1)
+        members=self.call('GET','/api/world-guild/members',user=0)['members']
+        self.assertTrue(all(m['online'] for m in members))
+        self.assertEqual(self.call('GET','/api/world-guild/members',user=2)['members'],[])
+
     def test_friend_duel_same_world_no_rank_or_ticket_cost(self):
         from gxb2 import s5_test as s
         from datetime import datetime

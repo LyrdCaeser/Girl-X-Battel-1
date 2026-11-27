@@ -1460,3 +1460,13 @@ window.GxbStartGame=()=>Promise.all([api('/api/state'),api('/assets/avatars.json
  '990071':{id:990071,name:'Hộp Trang Phục Tự Chọn • Thiên Hư Không',description:'Chọn một trang phục nữ thần chưa sở hữu. Chỉ dùng tại S5.',icon:'',quality:6,category:2,type:27},
  '940061':{id:940061,name:'Mảnh Lyr Sonia',description:'Tích đủ 100 mảnh để triệu hồi Lyr Sonia 10★.',icon:'partner_avatar_758001',quality:10,category:3,type:3}};itemIcons=new Set(itemImages);girlDetails={...details,[String(chaos.id)]:{job:chaos.job,quote:'Giữa trật tự và hư vô, ta sẽ viết lại vận mệnh của các vì sao.',stats:{base_hp:13680,base_atk:1056,base_arm:60,base_spd:312,grow_hp:1368,grow_atk:105.6,grow_arm:6,grow_spd:2},skills:chaos.skills.map(x=>({id:x.id,name:x.name,icon:'skill_icon_'+x.id,levels:x.levels,type:x.type}))}};graduateRecipes={...recipes,...ascensions,...localPromotions};battleMapIds=new Set(maps);girlsCatalog=catalog;galleryCatalog=[...catalog].sort((a,b)=>Number(b.skins.length>0)-Number(a.skins.length>0)||b.stars-a.stars||a.name.localeCompare(b.name));installHomeIcons();await composeHomeAtlas();selectedStage=Math.min(state.next_stage,30);loadFormation();showView('home');render();}).catch(e=>error("Could not load the backend: "+e.message));
 (window.GxbAuthReady||Promise.resolve(true)).then(ok=>{if(ok)window.GxbStartGame();});
+// Foreground presence is independent of battles and page transitions.
+let presenceHeartbeatBusy=false;
+async function refreshGamePresence(){
+ if(presenceHeartbeatBusy||document.hidden||!state?.uid||!state?.server_id||developerMode)return;
+ presenceHeartbeatBusy=true;
+ try{await api('/api/presence/heartbeat');}catch(e){/* session or network may be unavailable */}
+ finally{presenceHeartbeatBusy=false;}
+}
+setInterval(refreshGamePresence,30000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshGamePresence();});

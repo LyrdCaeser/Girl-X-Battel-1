@@ -408,6 +408,24 @@ def touch_presence(uid, server_id, character_name, level=1, power=0):
     return {"uid":uid,"server_id":server_id,"last_seen":now}
 
 
+def heartbeat_presence(uid, server_id, character_name):
+    """Authenticated foreground heartbeat; never accept client level/power."""
+    now=int(time.time())
+    with _lock:
+        db=_db()
+        try:
+            db.execute("""INSERT INTO presence(uid,server_id,character_name,last_seen)
+                          VALUES(?,?,?,?)
+                          ON CONFLICT(uid,server_id) DO UPDATE SET
+                            character_name=excluded.character_name,last_seen=excluded.last_seen""",
+                       (str(uid),str(server_id).upper(),str(character_name),now))
+            db.commit()
+            return {'server_time':now}
+        except Exception:
+            db.rollback();raise
+        finally:db.close()
+
+
 def online_players(server_id="", max_age=120):
     cutoff=int(time.time())-max(15,int(max_age))
     with _lock:
@@ -689,14 +707,25 @@ def guild_for_player(uid, server_id):
                         else "'head_1001' AS avatar")
         profile_join = (" LEFT JOIN player_profiles pp ON pp.uid=m.uid AND pp.server_id=m.server_id"
                         if db.backend == 'postgres' else "")
-        members=db.execute("""SELECT m.uid,m.server_id,m.character_name,m.role,m.power,
-                                   m.contribution,m.joined_at,m.last_seen,""" + avatar_field + """
-                              FROM world_guild_members m""" + profile_join + """
-                              WHERE m.guild_id=?
+        members=db.execute("""SELECT m.uid,m.server_id,COALESCE(p.character_name,m.character_name) AS character_name,
+                                   m.role,COALESCE(l.power,m.power) AS power,l.level AS level,
+                                   m.contribution,m.joined_at,COALESCE(pr.last_seen,0) AS last_seen,
+                                   p.status AS player_status,""" + avatar_field + """
+                              FROM world_guild_members m
+                              LEFT JOIN players p ON p.uid=m.uid AND p.server_id=m.server_id
+                              LEFT JOIN leaderboard l ON l.uid=m.uid AND l.server_id=m.server_id
+                              LEFT JOIN presence pr ON pr.uid=m.uid AND pr.server_id=m.server_id""" + profile_join + """
+                              WHERE m.guild_id=? AND m.server_id=?
                               ORDER BY CASE m.role WHEN 'leader' THEN 0 WHEN 'deputy' THEN 1 ELSE 2 END,
-                                       m.contribution DESC,m.power DESC,m.joined_at""",
-                           (int(out["id"]),)).fetchall()
-        out["members"]=[dict(r) for r in members]
+                                       m.contribution DESC,COALESCE(l.power,m.power) DESC,m.joined_at""",
+                           (int(out["id"]),server_id)).fetchall()
+        now=int(time.time())
+        out["server_time"]=now
+        out["members"]=[]
+        for row in members:
+            member=dict(row)
+            member["online"]=member.pop("player_status")=="active" and int(member["last_seen"] or 0)>=now-120
+            out["members"].append(member)
         out["member_count"]=len(out["members"])
         db.close(); return out
 

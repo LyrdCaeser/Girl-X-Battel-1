@@ -221,3 +221,5 @@ img.gd2-abs{object-fit:fill}img.gd2-fit{object-fit:contain}.gd2-abs.flip,.gd2-ar
 .gd2-request-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 #app-frame .gd2-requests-win .gd2-request-actions .gd2-btn{position:static;transform:none;width:100%;min-width:0;height:42px;margin:0;box-sizing:border-box;font-size:14px;border-width:9px;border-image-width:9px;line-height:1.15}
 .gd2-request-empty{text-align:center;padding:10px;color:#66798d}
+
+.gd2-mseen.gd2-online{color:#22824b;font-weight:700}.gd2-mseen.gd2-offline{color:#777e91}

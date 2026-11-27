@@ -80,16 +80,16 @@ const Guild=(()=>{
   return h;
  }
  function people(g){return (g.members||[]).map((m,i)=>({i,me:String(m.uid)===String(state.uid),uid:m.uid,
-    name:m.character_name,level:String(m.uid)===String(state.uid)?state.level:'—',job:m.role==='leader'?3:m.role==='deputy'?2:1,
-    online:Date.now()/1000-Number(m.last_seen||0)<120,power:Number(m.power||0),contribution:Number(m.contribution||0),role:m.role,avatar:m.avatar||'head_1001'}));}
+    name:m.character_name,level:m.level??(String(m.uid)===String(state.uid)?state.level:'—'),job:m.role==='leader'?3:m.role==='deputy'?2:1,
+    online:m.online===true,last_seen:Number(m.last_seen||0),power:Number(m.power||0),contribution:Number(m.contribution||0),role:m.role,avatar:m.avatar||'head_1001'}));}
  const seen2=p=>p.online?'Trực tuyến':'Ngoại tuyến';
- function memberRow(p){const r=el('div','gd2-mrow');r.append(avatar(p),el('span','gd2-mlv',String(p.level)),el('b','gd2-mname',p.name),el('small','gd2-mjob',T('GUILD_JOB'+p.job,p.job===3?'Leader':p.job===2?'Deputy Leader':'Members')),img(S('guild_war_fight'),'gd2-mwar'),el('span','gd2-mseen',seen2(p)));return r;}
+ function memberRow(p){const r=el('div','gd2-mrow');r.dataset.memberUid=p.uid;const presence=el('span','gd2-mseen '+(p.online?'gd2-online':'gd2-offline'),seen2(p));presence.title=p.online?'Đang trực tuyến':p.last_seen?'Online lần cuối: '+new Date(p.last_seen*1000).toLocaleString('vi-VN'):'Chưa có thời điểm online';r.append(avatar(p),el('span','gd2-mlv',String(p.level)),el('b','gd2-mname',p.name),el('small','gd2-mjob',T('GUILD_JOB'+p.job,p.job===3?'Bang Chủ':p.job===2?'Phó Bang':'Thành Viên')),img(S('guild_war_fight'),'gd2-mwar'),presence);return r;}
 
  // ---- Office (guild_window.prefab) ----
  function office(st,g){frame(st,'Văn Phòng Bang Hội',963,0,()=>help('Office',["Điểm danh mỗi ngày để nhận Xu Bang Hội và EXP.","Điểm danh mỗi ngày để cùng Bang Hội phát triển.",""]));
   pic(st,'guild_bg03',0,278,668,306);box(st,'gd2-w24 gd2-veil',0,312,660,210);
   pic(st,A('guild_flag_'+g.flag),-216,336,107,116,'gd2-fit');text(st,g.name,-216,242,'gd2-gname');
-  const rows=[['ID Bang Hội:',String(g.id),1],['Máy chủ:',g.server_id||state.server_id||'—',0],['Thành viên:',g.members.length+'/'+g.capacity,1],['Tình trạng:','Trực tuyến',0],['Tổng lực chiến:',fmt(g.members.reduce((n,m)=>n+Number(m.power||0),0)),1],['Cấp Bang Hội:','Lv. '+g.level,0]];
+  const rows=[['ID Bang Hội:',String(g.id),1],['Máy chủ:',g.server_id||state.server_id||'—',0],['Thành viên:',g.members.length+'/'+g.capacity,1],['Tình trạng:',g.members.some(m=>m.online===true)?'Trực tuyến':'Ngoại tuyến',0],['Tổng lực chiến:',fmt(g.members.reduce((n,m)=>n+Number(m.power||0),0)),1],['Cấp Bang Hội:','Lv. '+g.level,0]];
   rows.forEach(([k,v,blue],i)=>{const y=388-25*i;if(i%2===0)box(st,'gd2-strip',111.5,y,400,24);text(st,k,-85,y,'gd2-k','l');text(st,v,308,y,'gd2-v'+(blue?' blue':''),'r');});
   text(st,'Lv.'+g.level,-82,228,'gd2-glv','l',90);const bar=box(st,'gd2-exp',150,228,316,28);const f=el('i');f.style.width=(g.next_exp?Math.min(100,100*(g.exp-g.base_exp)/(g.next_exp-g.base_exp)):100)+'%';bar.append(f);bar.title=g.next_exp?fmt(g.exp)+' / '+fmt(g.next_exp)+' EXP':fmt(g.exp)+' EXP · MAX';
   const nt=box(st,'gd2-w14 gd2-notice',0,132,658,122);nt.textContent=g.notice||T('GUILD_TEXT01','Our leader is so lazy! No messages yet~');pic(st,'chat_transl',303,94,40,43);
@@ -600,5 +600,29 @@ const Guild=(()=>{
   shell(b);
  }
 
+ let presenceBusy=false;
+ async function refreshMemberPresence(){
+  if(presenceBusy||onlineBusy||document.hidden||view!=='guild'||!onlineData?.guild)return;
+  const identity=state.uid+'|'+state.server_id,guildId=onlineData.guild.id;
+  presenceBusy=true;
+  try{
+   const fresh=await api('/api/world-guild/members');
+   if(view!=='guild'||identity!==state.uid+'|'+state.server_id||guildId!==onlineData?.guild?.id)return;
+   if(String(fresh.guild_id)!==String(guildId))return;
+   onlineData.guild.members=fresh.members;
+   onlineData.guild.member_count=fresh.members.length;
+   const members=new Map(people(nativeGuild()).map(p=>[String(p.uid),p]));
+   // Do not close open review/member dialogs or interrupt other guild actions.
+   for(const row of root().querySelectorAll('[data-member-uid]')){
+    const p=members.get(row.dataset.memberUid);if(!p)continue;
+    const lv=row.querySelector('.gd2-mlv'),seen=row.querySelector('.gd2-mseen');
+    if(lv)lv.textContent=String(p.level);
+    if(seen){seen.textContent=seen2(p);seen.classList.toggle('gd2-online',p.online);seen.classList.toggle('gd2-offline',!p.online);seen.title=p.online?'Đang trực tuyến':p.last_seen?'Online lần cuối: '+new Date(p.last_seen*1000).toLocaleString('vi-VN'):'Chưa có thời điểm online';}
+   }
+   if(onlineSection==='office'&&!root().querySelector('.gs-overlay')&&!onlineBusy)renderNativeOnlineGuild();
+  }catch(e){/* Keep last confirmed data on a temporary connection failure. */}
+  finally{presenceBusy=false;}
+ }
+ setInterval(refreshMemberPresence,15000);
  return {handles,open,openOnline,render};
 })();

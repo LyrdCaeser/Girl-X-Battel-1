@@ -621,8 +621,17 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                 'messages': live_service.chat_messages(
                     account['uid'], account['server_id'], channel, target)
             })
+        if path == '/api/presence/heartbeat':
+            ctx=self.auth_context();account=ctx['account']
+            return self.send(200,live_service.heartbeat_presence(account['uid'],account['server_id'],ctx['character_name']))
+        if path == '/api/world-guild/members':
+            ctx=self.auth_context();account=ctx['account']
+            live_service.heartbeat_presence(account['uid'],account['server_id'],ctx['character_name'])
+            guild=live_service.guild_for_player(account['uid'],account['server_id'])
+            return self.send(200,{'guild_id':guild['id'] if guild else None,'members':guild['members'] if guild else [],'server_time':int(time.time())})
         if path == '/api/world-guild':
             ctx = self.auth_context(); account = ctx['account']
+            live_service.heartbeat_presence(account['uid'],account['server_id'],ctx['character_name'])
             guild = live_service.guild_for_player(account['uid'], account['server_id'])
             if guild:
                 guild['activity'] = live_service.guild_activity_snapshot(account['uid'], account['server_id'])
