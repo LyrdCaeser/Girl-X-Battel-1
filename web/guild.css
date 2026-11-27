@@ -208,3 +208,16 @@ img.gd2-abs{object-fit:fill}img.gd2-fit{object-fit:contain}.gd2-abs.flip,.gd2-ar
 
 .gd2-create{z-index:8;overflow:auto;padding:20px 24px;box-sizing:border-box;background:linear-gradient(#f8fbff,#e3edf8);border:3px solid #91a9c5;border-radius:12px;box-shadow:inset 0 0 0 2px #fff}
 .gd2-create h3{text-align:center;color:#405b82;margin:8px 0 12px}.gd2-create .gd-input{width:100%;box-sizing:border-box;margin:6px 0}.gd2-create textarea{min-height:100px}
+
+/* Application review is a flowing list, not an absolute-positioned prefab member row. */
+#app-frame .gs-overlay>.gs-win.gd2-requests-win{width:min(94%,520px);overflow:visible;min-height:0}
+#app-frame .gd2-requests-win .gs-win-bar{overflow:visible}
+#app-frame .gd2-requests-win .gs-win-body{display:flex;flex-direction:column;min-height:0;max-height:min(60dvh,560px);overflow:auto;gap:8px;padding:10px 6px}
+.gd2-requests-win .gd2-request-count{font-weight:700;color:#435c80}
+.gd2-request-list{display:grid;gap:8px;min-width:0}
+.gd2-request-row{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;padding:10px;border:1px solid #b9c9db;border-radius:8px;background:#fff}
+.gd2-request-meta{display:grid;gap:3px;min-width:0;overflow-wrap:anywhere;color:#344d73}
+.gd2-request-meta small{color:#66798d;font-size:12px}
+.gd2-request-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+#app-frame .gd2-requests-win .gd2-request-actions .gd2-btn{position:static;transform:none;width:100%;min-width:0;height:42px;margin:0;box-sizing:border-box;font-size:14px;border-width:9px;border-image-width:9px;line-height:1.15}
+.gd2-request-empty{text-align:center;padding:10px;color:#66798d}

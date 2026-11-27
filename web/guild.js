@@ -308,14 +308,28 @@ const Guild=(()=>{
   body.append(btn('gd2-btn blue','Trò Chuyện Bang Hội',nativeGuildChat));
  }
  function nativeGuildRequests(){
-  const g=nativeGuild();const {body}=GirlUI.win({title:'Đơn Xin Gia Nhập',cls:'gd2-ask'});
+  const g=nativeGuild();const {body}=GirlUI.win({title:'Đơn Xin Gia Nhập',cls:'gd2-ask gd2-requests-win'});
   if(!['leader','deputy'].includes(g?.role)){body.append(el('p','','Chỉ Bang Chủ và Phó Bang có quyền duyệt.'));return;}
-  for(const a of onlineData?.applications||[]){const row=el('div','gd2-mrow');row.append(el('b','gd2-mname',a.character_name),el('small','','LC '+fmt(a.power)));
-   row.append(btn('gd2-btn blue','Duyệt',()=>onlineRequest('/api/world-guild/manage',{action:'review',target_uid:a.uid,approve:true})),
-              btn('gd2-btn white','Từ chối',()=>onlineRequest('/api/world-guild/manage',{action:'review',target_uid:a.uid,approve:false})));
-   body.append(row);
+  const applications=onlineData?.applications||[];
+  body.append(el('p','gd2-request-count',applications.length+' đơn đang chờ duyệt'));
+  const list=el('div','gd2-request-list');body.append(list);
+  let reviewing=false;
+  for(const a of applications){
+   const row=el('div','gd2-request-row'),meta=el('div','gd2-request-meta'),actions=el('div','gd2-request-actions');
+   meta.append(el('b','',a.character_name),el('small','','Lực chiến: '+fmt(a.power)));
+   async function review(approve){
+    if(reviewing||onlineBusy)return;
+    reviewing=true;list.querySelectorAll('button').forEach(b=>b.disabled=true);
+    const result=await onlineRequest('/api/world-guild/manage',{action:'review',target_uid:a.uid,approve});
+    if(view==='guild'&&nativeGuild()){
+     if(result){nativeGuildRequests();toast(approve?'Đã duyệt '+a.character_name+' vào Bang Hội.':'Đã từ chối đơn của '+a.character_name+'.');}
+     else{nativeGuildRequests();toast(note||'Không thể xử lý đơn. Vui lòng thử lại.');}
+    }
+   }
+   actions.append(btn('gd2-btn blue','Duyệt',()=>review(true)),btn('gd2-btn white','Từ chối',()=>review(false)));
+   row.append(meta,actions);list.append(row);
   }
-  if(!onlineData?.applications?.length)body.append(el('p','','Không có đơn đang chờ.'));
+  if(!applications.length)list.append(el('p','gd2-request-empty','Không có đơn đang chờ.'));
  }
  function nativeGuildMail(){
   const g=nativeGuild(),{body,close:c}=GirlUI.win({title:'Gửi Thư Bang Hội',cls:'gd2-ask'});
