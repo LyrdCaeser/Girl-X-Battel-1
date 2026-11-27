@@ -1,0 +1,3 @@
+html.gxb-ios-app,html.gxb-ios-app body{overscroll-behavior:none;-webkit-text-size-adjust:100%}
+html.gxb-ios-app #app-frame{box-sizing:border-box}
+html.gxb-ios-app input,html.gxb-ios-app textarea,html.gxb-ios-app select{font-size:max(16px,1em)}

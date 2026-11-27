@@ -69,6 +69,47 @@ class PvPHttpSessionTests(unittest.TestCase):
         self.assertEqual(status,200,f'{method} {path}: HTTP {status}: {payload}')
         return payload
 
+    def test_ios_exclusive_gateway(self):
+        from gxb2 import ios_web
+        iphone='Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148'
+        android='Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/130 Mobile Safari/537.36'
+        def req(method,path,ua=iphone,body=None,cookie='',origin=None):
+            headers={'User-Agent':ua}
+            if body is not None:headers['Content-Type']='application/json'
+            if cookie:headers['Cookie']=cookie
+            if origin:headers['Origin']=origin
+            conn=http.client.HTTPConnection('127.0.0.1',self.port,timeout=20)
+            try:
+                conn.request(method,path,None if body is None else json.dumps(body),headers)
+                res=conn.getresponse()
+                return res.status,res.read(),{k.lower():v for k,v in res.getheaders()}
+            finally:conn.close()
+        self.assertEqual(req('GET','/ios-gateway/',android)[0],403)
+        self.assertEqual(req('GET','/ios-gateway/api/auth/me',android)[0],403)
+        code,body,h=req('GET','/ios-gateway/')
+        self.assertEqual(code,200);self.assertIn(b'ios-manifest.webmanifest',body)
+        self.assertEqual(h['cache-control'],'no-store')
+        self.assertEqual(req('GET','/ios-gateway/play')[0],302)
+        self.assertEqual(req('GET','/ios-gateway/api/state')[0],403)
+        self.assertEqual(req('POST','/ios-gateway/ios-launch',body={'standalone':False,'touch':5},origin=ios_web.ORIGIN)[0],403)
+        self.assertEqual(req('POST','/ios-gateway/ios-launch',body={'standalone':True,'touch':5},origin='https://wrong.example')[0],403)
+        code,body,h=req('POST','/ios-gateway/ios-launch',body={'standalone':True,'touch':5},origin=ios_web.ORIGIN)
+        self.assertEqual(code,200)
+        cookie=h['set-cookie'].split(';',1)[0]
+        self.assertIn('HttpOnly',h['set-cookie']);self.assertIn('Secure',h['set-cookie'])
+        code,body,h=req('GET','/ios-gateway/play',cookie=cookie)
+        self.assertEqual(code,200);self.assertIn(b'viewport-fit=cover',body);self.assertIn(b'/ios-launch.js',body)
+        self.assertIn('microphone=(self)',h['permissions-policy'])
+        self.assertEqual(req('GET','/ios-gateway/play',android,cookie=cookie)[0],403)
+        self.assertEqual(req('GET','/ios-gateway/app.js',cookie=cookie)[0],200)
+        self.assertEqual(req('GET','/ios-gateway/api/state',cookie=cookie)[0],401)
+        cookie+='; '+self.tokens[0]
+        code,body,h=req('GET','/ios-gateway/api/state',cookie=cookie)
+        self.assertEqual(code,200);self.assertEqual(json.loads(body)['server_id'],'S1')
+        self.assertEqual(req('POST','/ios-gateway/api/pvp/live-status',body={},cookie=cookie,origin=ios_web.ORIGIN)[0],200)
+        self.assertEqual(req('POST','/api/pvp/live-status',body={},cookie=self.tokens[0],origin=ios_web.ORIGIN)[0],403)
+        self.assertEqual(req('GET','/',android)[0],200)
+
     def ready_match(self,mode):
         status=self.call('GET',f'/api/pvp/status?mode={mode}',user=0)
         rival=next(row for row in status['candidates'] if row['character_name']=='PvP Tester 1')

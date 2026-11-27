@@ -24,6 +24,7 @@ from gxb2.dress import catalog as dress_catalog
 from gxb2.skins import catalog as skins_catalog
 from gxb2.souls import catalog as souls_catalog
 from gxb2 import protocol as p, local_promotion, local_config, world_live_config, topup, live_service, auth, database, gm_catalog, giftcodes, studio_sso, skin_store, skin_bank, skin_gifts, owner_recovery, profile_photos, s4_exclusive, s4_gm, s4_trial, s4_trial_gm_gifts, s5_test
+from gxb2 import ios_web
 from gxb2.player_engines import PlayerEnginePool
 from gxb2.battle import simulate as simulate_battle, ONLINE_BATTLE_ID, normalize_online_seed
 from gxb2.security import FixedWindowRateLimiter, DEFAULT_LIMITS, env_bool, validate_production_config
@@ -340,7 +341,7 @@ class HTTPHandler(BaseHTTPRequestHandler):
              request_path.startswith('/localization/') or
              request_path.lower().endswith(('.js', '.css', '.json', '.png', '.webp', '.jpg', '.jpeg', '.gif', '.svg', '.woff', '.woff2', '.mp3', '.ogg')))
         )
-        self.send_header('Cache-Control', 'public, max-age=3600' if static_cacheable else 'no-store')
+        self.send_header('Cache-Control', ('private, max-age=3600' if static_cacheable and request_path not in ('/ios-launch.js','/ios-install.css','/ios-game.css') else 'no-store') if getattr(self,'_ios_gateway',False) else ('public, max-age=3600' if static_cacheable else 'no-store'))
         self.send_header('X-Content-Type-Options', 'nosniff')
         self.send_header('Referrer-Policy', 'same-origin')
         self.send_header('Permissions-Policy', 'camera=(), microphone=(self), geolocation=()' if request_path == '/' and content_type.startswith('text/html') else 'camera=(), microphone=(), geolocation=()')
@@ -431,11 +432,66 @@ class HTTPHandler(BaseHTTPRequestHandler):
                 time.sleep(2)
         self.close_connection=True
 
+    def ios_gateway(self):
+        # Only the dedicated rewrite path is gated. Normal game URLs remain unchanged.
+        self._ios_gateway = False
+        parsed = urlparse(self.path)
+        if not parsed.path.startswith(ios_web.PREFIX + '/'):
+            return False
+        self._ios_gateway = True
+        path = parsed.path[len(ios_web.PREFIX):]
+        self.path = path + ('?' + parsed.query if parsed.query else '')
+        ua = self.headers.get('User-Agent', '')
+        if not ios_web.candidate(ua):
+            self.close_connection = True
+            return self.send(403, 'Phiên bản GXB 3 iOS chỉ dành cho iPhone và iPad.', 'text/plain; charset=utf-8') or True
+        if self.command == 'GET':
+            if path == '/':
+                return self.send(200, (ROOT/'web/ios-install.html').read_bytes(), 'text/html; charset=utf-8') or True
+            if path == '/ios-manifest.webmanifest':
+                manifest = {'id':'/', 'name':'Nữ Thần Chiến Đấu – GXB 3 iOS', 'short_name':'GXB 3',
+                    'start_url':'/', 'scope':'/', 'display':'standalone', 'orientation':'portrait',
+                    'background_color':'#172845', 'theme_color':'#172845',
+                    'icons':[{'src':'/ios-icon.png','sizes':'180x180','type':'image/png'}]}
+                return self.send(200,json.dumps(manifest),'application/manifest+json; charset=utf-8') or True
+            if path == '/ios-icon.png':
+                return self.send(200,(ROOT/'clients/ios-web/icon.png').read_bytes(),'image/png') or True
+            if path in ('/ios-launch.js','/ios-install.css','/ios-game.css'):
+                return self.send(200,(ROOT/'web'/path[1:]).read_bytes(),
+                    'application/javascript; charset=utf-8' if path.endswith('.js') else 'text/css; charset=utf-8') or True
+        if self.command == 'POST' and path == '/ios-launch':
+            try:
+                if self.headers.get('Origin') != ios_web.ORIGIN: raise ValueError()
+                data=self.read_body()
+                if data.get('standalone') is not True or not isinstance(data.get('touch'),int) or data['touch']<1: raise ValueError()
+                token=ios_web.mint(ua)
+                return self.send(200,{'ok':True},headers={'Set-Cookie':f'{ios_web.COOKIE}={token}; Path=/; Max-Age={ios_web.TTL}; HttpOnly; Secure; SameSite=Lax'}) or True
+            except Exception:
+                self.close_connection=True
+                return self.send(403,{'error':'Chỉ mở từ ứng dụng iOS đã cài'}) or True
+        cookies=SimpleCookie()
+        try: cookies.load(self.headers.get('Cookie',''))
+        except Exception: pass
+        token=cookies.get(ios_web.COOKIE)
+        if not token or not ios_web.valid(ua,token.value):
+            self.close_connection=True
+            if path=='/play' and self.command=='GET':
+                return self.send(302,'',headers={'Location':'/'}) or True
+            return self.send(403,{'error':'Hãy mở GXB 3 từ màn hình chính'}) or True
+        if path=='/play' and self.command=='GET':
+            html=(ROOT/'web/index.html').read_text()
+            html=html.replace('<head>','<head><script src="/ios-launch.js"></script><link rel="manifest" href="/ios-manifest.webmanifest"><link rel="apple-touch-icon" href="/ios-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="stylesheet" href="/ios-game.css">',1)
+            html=html.replace('width=device-width,initial-scale=1','width=device-width,initial-scale=1,viewport-fit=cover',1)
+            self.path='/'
+            return self.send(200,html,'text/html; charset=utf-8') or True
+        return False
+
     def do_GET(self):
         # BaseHTTPRequestHandler reuses this object for HTTP/1.1 keep-alive.
         # Never carry an authenticated account into the next request: its Cookie
         # may have changed, or the session may have been revoked elsewhere.
         self._auth_context = None
+        if self.ios_gateway(): return
         if self.reject_unauthorized_admin_mode():
             return
         parsed = urlparse(self.path)
@@ -1152,6 +1208,7 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
     def do_POST(self):
         # Authentication context is request-scoped, not connection-scoped.
         self._auth_context = None
+        if self.ios_gateway(): return
         if self.reject_unauthorized_admin_mode():
             return
         origin = self.headers.get('Origin')
@@ -1160,6 +1217,7 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                    f'http://{host}', f'https://{host}'}
         if getattr(self.server, 'public_origin', ''):
             allowed.add(self.server.public_origin.rstrip('/'))
+        if getattr(self,'_ios_gateway',False): allowed.add(ios_web.ORIGIN)
         if origin and origin not in allowed: return self.send(403, {'error': 'Nguồn truy cập không được phép'})
         try:
             path = urlparse(self.path).path

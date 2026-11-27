@@ -57,3 +57,6 @@ web/assets/battle-fx/sonia_chaos_collapse/** -filter -diff -merge -text
 # Exact small owner-provided Lyr Sonia clock artwork (73 KB); store as a
 # normal Git blob so Production updates work without the exhausted LFS quota.
 web/assets/original-ui/sonia_clock_ornate_20261123.webp -filter -diff -merge -text
+
+# Small iOS web app icon is a regular Git blob.
+clients/ios-web/icon.png -filter -diff -merge -text
