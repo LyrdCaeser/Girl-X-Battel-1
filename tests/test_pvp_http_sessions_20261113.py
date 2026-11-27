@@ -87,6 +87,46 @@ class PvPHttpSessionTests(unittest.TestCase):
         self.assertEqual(self.call('GET',f'/api/pvp/status?mode={mode}',user=1)['pvp']['match']['id'],mid)
         return mid
 
+    def test_friend_duel_same_world_no_rank_or_ticket_cost(self):
+        from gxb2 import s5_test as s
+        from datetime import datetime
+        live_service.create_world('S5',s.NAME)
+        phase=s.schedule(datetime(2026,11,28,6,30,tzinfo=s.TZ).timestamp())
+        with patch.object(s,'schedule',return_value=phase):
+            for world in ('S1','S5'):
+                if world=='S5':
+                    for i in (0,1):
+                        self.call('POST','/api/auth/create-character',{'server_id':'S5','character_name':'Friend QA '+str(i)},i)
+                states=[self.call('GET','/api/state',user=i) for i in (0,1)]
+                uid_a,uid_b=[st['uid'] for st in states]
+                # SQLite fixtures have separate engine/live stores; mirror the
+                # profiles as the production PostgreSQL adapter normally does.
+                db=live_service._db()
+                try:
+                    live_service._ensure_social_tables(db)
+                    for uid in (uid_a,uid_b):
+                        player=live_service.player(uid,world)
+                        engine=self.pool.get(uid,world,player['character_name'])
+                        db.execute("INSERT INTO player_profiles(uid,server_id,data,updated_at) VALUES(?,?,?,?) ON CONFLICT(uid,server_id) DO UPDATE SET data=excluded.data",
+                                   (uid,world,json.dumps(engine._load()),1))
+                    db.commit()
+                finally:db.close()
+
+                self.assertNotEqual(self.request('POST','/api/friends/duel',{'target_uid':uid_b},0)[0],200)
+                self.call('POST','/api/friends/action',{'action':'request','target_uid':uid_b},0)
+                self.call('POST','/api/friends/action',{'action':'accept','target_uid':uid_a},1)
+                for i,target in ((0,uid_b),(1,uid_a)):
+                    out=self.call('POST','/api/friends/duel',{'target_uid':target},i)
+                    self.assertTrue(out['report']['frames'])
+                    self.assertTrue(out['report']['display_units'])
+                    self.assertTrue(out['report']['map_asset'])
+                for i in (0,1):
+                    after=self.call('GET','/api/state',user=i)
+                    self.assertEqual(after['items'],states[i]['items'])
+                    self.assertEqual(after['formation'],states[i]['formation'])
+                self.assertFalse(self.call('POST','/api/pvp/live-status',{},0)['matches'])
+                self.assertNotEqual(self.request('POST','/api/friends/duel',{'target_uid':uid_a},0)[0],200)
+
     def test_decline_cancel_expire_invites(self):
         rival=next(row for row in self.call('GET','/api/pvp/status?mode=arena',user=0)['candidates'] if row['character_name']=='PvP Tester 1')
         req={'mode':'arena','target_uid':rival['uid'],'target_server':rival['server_id']}

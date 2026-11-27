@@ -1831,7 +1831,6 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                         match_id, account['uid'], round_index, winner_uid, round_report)
                 final = None
                 if stored.get('series', {}).get('complete'):
-                    import secrets
                     from gxb2 import arena3v3 as arena3v3_rules
                     completed = stored['series']; winner_uid = completed['winner_uid']
                     canonical_series = live_service.pvp_arena3v3_series_record(match_id)
