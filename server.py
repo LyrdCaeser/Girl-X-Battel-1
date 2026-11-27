@@ -1051,6 +1051,8 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                 return self.send(200, (folder/filename).read_bytes(), 'application/json; charset=utf-8' if filename.endswith('.json') else 'image/png')
         # The S4 entitlement crest must stay same-origin (not the optional
         # static CDN), so it remains available immediately upon release.
+        if path == '/s5-ssvip-card.svg':
+            return self.send(200, (ROOT/'web/s5-ssvip-card.svg').read_bytes(), 'image/svg+xml')
         if path == '/s4-exclusive-key.svg':
             return self.send(200, (ROOT/'web/assets/ui/s4-exclusive-key.svg').read_bytes(),
                              'image/svg+xml')
