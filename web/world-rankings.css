@@ -11,6 +11,9 @@ html.gxb-desktop #app-frame .home-stage .home-left.home-live-events{width:min(54
 #app-frame .home-stage .home-live-events>button small{white-space:normal;overflow-wrap:anywhere;max-width:100%;line-height:1.05}
 #app-frame .home-stage .home-live-events>.home-timed-event .home-original,
 #app-frame .home-stage .home-live-events>.home-rankings .home-original{width:46px!important;height:48px!important;padding:5px;box-sizing:border-box}
+/* Match the visible art and label baseline of the original 46x48 shortcut frame. */
+#app-frame .home-stage .home-live-events>.gd-home{width:100%;padding:0;justify-items:center;align-content:start}
+#app-frame .home-stage .home-live-events>.gd-home>img{width:46px!important;height:48px!important;box-sizing:border-box;padding:5px;object-fit:contain;display:block;margin:0}
 #app-frame .world-rank-win{--u:clamp(.44px,.13vw,.92px);width:min(97%,670px)!important;max-height:90dvh!important;overflow:visible!important}
 #app-frame .world-rank-win .gs-win-body{display:flex;flex-direction:column;min-height:0;max-height:76dvh;overflow:auto;padding:6px;gap:6px}
 .world-rank-win .wr-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}

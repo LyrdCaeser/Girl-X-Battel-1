@@ -37,6 +37,13 @@ try:
     diary_box=diary.bounding_box()
     event_icon=event.locator('.home-original').bounding_box()
     rank_icon=trigger.locator('.home-original').bounding_box()
+    for item in page.locator('.home-live-events>.gd-home').all():
+     icon=item.locator('img').bounding_box()
+     assert abs(icon['width']-event_icon['width'])<=1 and abs(icon['height']-event_icon['height'])<=1,(w,icon,event_icon)
+     assert abs(icon['y']-rank_icon['y'])<=1,(w,icon,rank_icon)
+     assert item.locator('small').bounding_box()['y']>=icon['y']+icon['height']-1
+    print('PASS native shortcut icon geometry',w,flush=True)
+
     print('Lobby geometry',w,h,box,diary_box,event_icon,rank_icon,flush=True)
     assert abs(box['y']-diary_box['y'])<=1
     assert abs(rank_icon['width']-event_icon['width'])<=1 and abs(rank_icon['height']-event_icon['height'])<=1
