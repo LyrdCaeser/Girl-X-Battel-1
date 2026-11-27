@@ -151,6 +151,29 @@ class S5CoreTests(unittest.TestCase):
                         owned={i:{'table_id':t,'awake':aw} for i,(t,aw) in enumerate(plan['materials'],1)}
                         self.assertEqual(len(e.match_materials(owned,list(owned),recipe['material'],recipe['group'])),len(owned))
 
+    def test_s5_treasure_selection_scope_and_confirmation(self):
+        from gxb2 import equipment as e
+        from copy import deepcopy
+        st=self.state();s5.grant_welcome(st,1795740000)
+        hero,other=st['partners'][:2];pid=hero['partner_id']
+        e.equips_of(hero)[4]=5108;hero['tmp_treasure']=5102
+        saved=deepcopy(other);bag=deepcopy(st['items'])
+        req={'action':'treasure_select','partner_id':pid,'item_id':5756}
+        with self.assertRaises(ValueError):e.action(st,req)
+        self.assertEqual(hero['equips'][4],5108)
+        self.assertEqual(e.action(st,{**req,'item_id':5101})['treasure'],5101)
+        self.assertNotIn('tmp_treasure',hero)
+        self.assertEqual(e.action(st,{**req,'confirm_level_change':True})['treasure'],5756)
+        self.assertEqual(e.action(st,{**req,'item_id':5753})['treasure'],5753)
+        for bad in (1,True,999999):
+            with self.assertRaises(ValueError):e.action(st,{**req,'item_id':bad,'confirm_level_change':True})
+        self.assertEqual(other,saved)
+        self.assertEqual(st['items'],bag)
+        for world in ('S1','S2','S3','S4'):
+            st['server_id']=world
+            with self.assertRaises(ValueError):e.action(st,{**req,'confirm_level_change':True})
+        self.assertEqual(hero['equips'][4],5753)
+
     def test_advanced_duplicate_selection_and_transfer(self):
         from gxb2 import equipment
         from copy import deepcopy

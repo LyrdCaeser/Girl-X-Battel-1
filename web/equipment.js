@@ -130,7 +130,12 @@ const Equipment=(()=>{
  function tip(hero,s,id){const r=row(id);const {body,close}=W({title:SLOT_TITLE[s],cls:'eq-tip'});
   body.append(el('b','eq-tip-name',displayName(r)));const top=el('div','eq-tip-top');top.append(icon(id));body.append(top);lines(body,id,hero);
   const acts=el('div','gs-btns');
-  if(s===5){btn(acts,'Đổi',()=>{close();treasureWin(hero,'exchange');},false,'gs-btn');btn(acts,'Nâng cấp',()=>{close();treasureWin(hero,'up');},!r.treasure_upgrade,'gs-btn');}
+  if(s===5){
+   acts.classList.add('eq-treasure-buttons');
+   btn(acts,'Sửa Thuộc Tính',()=>{close();treasureWin(hero,'exchange');},false,'gs-btn');
+   btn(acts,'Nâng cấp',()=>{close();treasureWin(hero,'up');},!r.treasure_upgrade,'gs-btn');
+   if(state.server_id==='S5')btn(acts,'Chọn Bảo Vật Khác',()=>{close();chooseTreasure(hero);},false,'gs-btn eq-select-other');
+  }
   else{btn(acts,'Tháo',()=>{close();send({action:'unequip',partner_id:hero.partner_id,slot:s});},false,'gs-btn red');
    if(s===6&&r.artifact_next)btn(acts,'Nâng cấp',()=>{close();openArtifact(id,hero.partner_id);},false,'gs-btn');
    btn(acts,'Thay thế',()=>{close();choose(hero,s);},!bagFor(s,hero).length,'gs-btn');}
@@ -144,12 +149,46 @@ const Equipment=(()=>{
   body.append(grid,info);paint();
   if(s<=4){const f=el('div','gs-btns');btn(f,"Xưởng Rèn",()=>{close();openSmithy(s,'detail');},false,'gs-btn white');body.append(f);}}
  // crystal (treasure): unlock, Exchange (treasure_change_window: new random attribute) and Lv. Up (treasure_up_window)
- function treasureWin(hero,mode){const eq=(hero.equips||[])[4];const title=mode==='up'?'Nâng cấp Bảo Vật':mode==='exchange'?'Đổi thuộc tính Bảo Vật':'Bảo Vật';const {body,close}=W({title,cls:'eq-treasure'});if(typeof ImgGuides!=='undefined'){const h=btn(body,'?',()=>ImgGuides.open('treasure_guide'),false,'ig-native-question');h.setAttribute('aria-label',"Hướng dẫn Bảo Vật");}
-  if(!eq){body.append(el('p','',"Bảo Vật mở miễn phí từ cấp "+treasureLevel()+". Thuộc tính được chọn ngẫu nhiên."));const a=el('div','gs-btns');btn(a,'Mở khóa',()=>{close();send({action:'treasure_on',partner_id:hero.partner_id},r=>"Đã nhận: "+displayName(row(r.treasure)));},hero.lv<treasureLevel(),'gs-btn');body.append(a);return;}
+ function chooseTreasure(hero){
+  if(state.server_id!=='S5')return;
+  const current=Number(hero.equips?.[4]||0),old=row(current),all=Object.values(data.items).filter(r=>r.pos===5);
+  const levels=[...new Set(all.map(r=>r.item_lv))].sort((a,b)=>b-a);
+  const {body,close}=W({title:'Chọn Bảo Vật Khác',cls:'eq-treasure-select'});
+  body.append(el('p','eq-select-note','Đặc quyền S5: chọn miễn phí Bảo Vật và thuộc tính theo dữ liệu gốc. Không ảnh hưởng nữ thần khác.'));
+  const levelRow=el('label','eq-select-level','Cấp Bảo Vật');
+  const select=el('select');select.setAttribute('aria-label','Cấp Bảo Vật');
+  for(const lv of levels){const example=all.find(r=>r.item_lv===lv),o=el('option','',displayName(example)+' · Cấp '+lv+(lv===levels[0]?' (Tối đa)':''));o.value=String(lv);select.append(o);}
+  select.value=String(old?.item_lv||levels[0]);levelRow.append(select);body.append(levelRow);
+  const grid=el('div','eq-select-grid'),info=el('div','eq-select-info');body.append(grid,info);
+  let picked=0,confirmed=false;
+  function paint(){
+   info.replaceChildren();if(!picked){info.append(el('p','detail-note','Chọn một Bảo Vật để xem thuộc tính.'));return;}
+   const r=row(picked),different=!!old&&old.item_lv!==r.item_lv;
+   info.append(el('strong','',displayName(r)+' · Cấp '+r.item_lv));lines(info,picked,hero);
+   if(hero.tmp_treasure)info.append(el('p','eq-select-note','Lượt sửa thuộc tính chưa lưu sẽ bị bỏ khi chọn.'));
+   if(different){const label=el('label','eq-select-confirm'),check=el('input');check.type='checkbox';check.checked=confirmed;
+    label.append(check,el('span','','Xác nhận đổi cấp '+old.item_lv+' → '+r.item_lv));check.onchange=()=>{confirmed=check.checked;apply.disabled=!confirmed||pending;};info.append(label);}
+   const actions=el('div','gs-btns');
+   const apply=btn(actions,picked===current?'Đang sử dụng':'Chọn Bảo Vật',()=>{close();send({action:'treasure_select',partner_id:hero.partner_id,item_id:picked,confirm_level_change:confirmed},x=>'Đã chọn '+displayName(row(x.treasure))+' · Cấp '+row(x.treasure).item_lv);},picked===current||(different&&!confirmed),'gs-btn');
+   info.append(actions);
+  }
+  function draw(){picked=0;confirmed=false;grid.replaceChildren();
+   const seen=new Set();
+   for(const r of all.filter(r=>r.item_lv===Number(select.value)).sort((a,b)=>(b.id===current)-(a.id===current)||a.id-b.id)){
+    const key=JSON.stringify([r.name,r.base1,r.base2,r.base3,r.base4]);if(seen.has(key))continue;seen.add(key);
+    const b=el('button','eq-select-card');b.type='button';b.append(icon(r.id),el('strong','',displayName(r)),el('small','','Cấp '+r.item_lv));lines(b,r.id,hero);
+    if(r.id===current)b.append(el('small','eq-select-active','Đang dùng'));
+    b.onclick=()=>{picked=r.id;confirmed=false;grid.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));paint();};grid.append(b);
+   }paint();
+  }
+  select.onchange=draw;draw();
+ }
+ function treasureWin(hero,mode){const eq=(hero.equips||[])[4];const title=mode==='up'?'Nâng cấp Bảo Vật':mode==='exchange'?'Sửa Thuộc Tính':'Bảo Vật';const {body,close}=W({title,cls:'eq-treasure'});if(typeof ImgGuides!=='undefined'){const h=btn(body,'?',()=>ImgGuides.open('treasure_guide'),false,'ig-native-question');h.setAttribute('aria-label',"Hướng dẫn Bảo Vật");}
+  if(!eq){body.append(el('p','',"Bảo Vật mở miễn phí từ cấp "+treasureLevel()+". Thuộc tính được chọn ngẫu nhiên."));const a=el('div','gs-btns');btn(a,'Mở khóa',()=>{close();send({action:'treasure_on',partner_id:hero.partner_id},r=>"Đã nhận: "+displayName(row(r.treasure)));},hero.lv<treasureLevel(),'gs-btn');if(state.server_id==='S5')btn(a,'Chọn Bảo Vật Khác',()=>{close();chooseTreasure(hero);},false,'gs-btn');body.append(a);return;}
   const r=row(eq),cur=el('div','eq-current');cur.append(icon(eq));const inf=el('div');inf.append(el('strong','',displayName(r)+" · Cấp "+r.item_lv));lines(inf,eq,hero);cur.append(inf);body.append(cur);
   if(hero.tmp_treasure){const pre=el('div','eq-current eq-preview');pre.append(icon(hero.tmp_treasure));const pi=el('div');pi.append(el('strong','',"Mới: "+displayName(row(hero.tmp_treasure))));lines(pi,hero.tmp_treasure,hero);pre.append(pi);body.append(pre);const b=el('div','gs-btns');btn(b,'Bỏ qua',()=>{close();send({action:'treasure_discard',partner_id:hero.partner_id});},false,'gs-btn white');btn(b,"Lưu",()=>{close();send({action:'treasure_save',partner_id:hero.partner_id});},false,'gs-btn');body.append(b);return;}
   const box=el('div','eq-actions');
-  if(mode==='exchange'){const rf=el('div','eq-action');rf.append(el('b','',"Đổi ngẫu nhiên thuộc tính, giữ nguyên cấp"));cost(rf,r.treasure_refresh);body.append(rf);const a=el('div','gs-btns');btn(a,'Đổi',()=>{close();return send({action:'treasure_refresh',partner_id:hero.partner_id},()=>{setTimeout(()=>treasureWin(state.roster.find(h=>h.partner_id===hero.partner_id),'exchange'),0);return '';});},!affordable(r.treasure_refresh),'gs-btn');body.append(a);return;}
+  if(mode==='exchange'){const rf=el('div','eq-action');rf.append(el('b','',"Đổi ngẫu nhiên thuộc tính, giữ nguyên cấp"));cost(rf,r.treasure_refresh);body.append(rf);const a=el('div','gs-btns');btn(a,'Sửa Thuộc Tính',()=>{close();return send({action:'treasure_refresh',partner_id:hero.partner_id},()=>{setTimeout(()=>treasureWin(state.roster.find(h=>h.partner_id===hero.partner_id),'exchange'),0);return '';});},!affordable(r.treasure_refresh),'gs-btn');body.append(a);return;}
   if(!r.treasure_upgrade){body.append(el('p','detail-note',"Bảo Vật đã đạt cấp tối đa."));return;}
   const up=el('div','eq-action');up.append(el('b','',"Nâng cấp (thuộc tính ngẫu nhiên)"));cost(up,r.treasure_upgrade);btn(up,'Nâng cấp',()=>{close();send({action:'treasure_upgrade',partner_id:hero.partner_id},x=>"Mới: "+displayName(row(x.treasure)));},!affordable(r.treasure_upgrade),'gs-btn');box.append(up);
   const [target,extra]=String(r.treasure_lock_up||'').split('|');if(target&&row(target)){const lk=el('div','eq-action');lk.append(el('b','',"Nâng cấp và giữ thuộc tính → "+displayName(row(target))));const total=pairs(r.treasure_upgrade).map(([k,v])=>[k,Number(v)+Number(pairs(extra).find(([x])=>x===k)?.[1]||0)]);for(const [k,v]of pairs(extra))if(!total.some(([x])=>x===k))total.push([k,Number(v)]);const txt=total.map(([k,v])=>k+'#'+v).join('|');cost(lk,txt);btn(lk,'Nâng cấp',()=>{close();send({action:'treasure_upgrade',partner_id:hero.partner_id,lock:true});},!affordable(txt),'gs-btn');box.append(lk);}

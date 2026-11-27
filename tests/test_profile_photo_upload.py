@@ -146,6 +146,18 @@ class ProfilePhotoHTTPTests(unittest.TestCase):
             self.assertEqual(c,200,quick)
             self.assertEqual(quick['equipped'],ids)
             self.assertEqual(next(p for p in quick['state']['roster'] if p['partner_id']==pid)['souls'],ids)
+            req={'action':'treasure_select','partner_id':pid,'item_id':5101}
+            self.assertEqual(self.request('POST','/api/equipment/action',json_data=req,user=0)[0],400)
+            c,out,_=self.request('POST','/api/equipment/action',json_data={**req,'confirm_level_change':True},user=0)
+            self.assertEqual(c,200,out)
+            self.assertEqual(out['treasure'],5101)
+            c,out,_=self.request('POST','/api/equipment/action',json_data={**req,'item_id':5756,'confirm_level_change':True},user=0)
+            self.assertEqual(c,200,out)
+            self.assertEqual(out['treasure'],5756)
+            c,st,_=self.request('GET','/api/state',user=0)
+            self.assertEqual(c,200,st)
+            self.assertEqual(next(p for p in st['roster'] if p['partner_id']==pid)['equips'][4],5756)
+
 
 
 

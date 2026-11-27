@@ -38,7 +38,7 @@ def pairs(text):
 
 def number(value, label, low=0, high=2**31 - 1):
     if isinstance(value, bool) or not isinstance(value, int) or not low <= value <= high:
-        raise ValueError(f'{label} inválido')
+        raise ValueError(f'{label} không hợp lệ')
     return value
 
 
@@ -236,6 +236,23 @@ def action(state, request, level=None):
         if back:
             add(state, EXCESS_ID, back)
         result.update(upgraded=nxt, returned=back)
+    elif kind == 'treasure_select':
+        if state.get('server_id') != 'S5':
+            raise ValueError('Chọn trực tiếp Bảo Vật chỉ dành cho S5')
+        if not partner:
+            raise ValueError('Không tìm thấy nữ thần')
+        item = number(request.get('item_id'), 'Bảo Vật', 1)
+        row = EQUIP.get(item)
+        if not row or row['pos'] != 5 or item not in TIERS.get(row['item_lv'], ()):
+            raise ValueError('Bảo Vật không hợp lệ')
+        if int(partner.get('lv',0)) < 1:
+            raise ValueError('Nữ thần chưa mở khóa Bảo Vật')
+        current = EQUIP.get(slots[4], {})
+        if current and current['item_lv'] != row['item_lv'] and request.get('confirm_level_change') is not True:
+            raise ValueError('Hãy xác nhận thay đổi cấp Bảo Vật')
+        slots[4] = item
+        partner.pop('tmp_treasure', None)
+        result['treasure'] = item
     elif kind in ('treasure_on', 'treasure_upgrade', 'treasure_refresh', 'treasure_save', 'treasure_discard'):
         if not partner:
             raise ValueError('Không tìm thấy nữ thần')
