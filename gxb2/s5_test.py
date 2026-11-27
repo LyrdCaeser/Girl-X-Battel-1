@@ -24,6 +24,10 @@ SKIN_BOX = "990071"
 EARLY_CARD = "990072"
 EARLY_NAME = "S5▪︎ THẺ TRUY CẬP SSVIP SỚM"
 EARLY_OPERATOR = "S5-OWNER-EARLY"
+SVIP_CARD = "990073"
+SVIP_NAME = "S5▪︎ VÉ TRUY CẬP HẠN GIỜ SVIP"
+SVIP_OPERATOR = "S5-MONTHANH-SVIP"
+SVIP_END = int(datetime(2026,12,28,6,0,tzinfo=TZ).timestamp())
 
 
 def schedule(now):
@@ -307,9 +311,39 @@ def grant_advanced(state,partner_id):
     slots[5]=plan['antique']
     old=(list(host.get('ex_skills') or [])+[0]*4)[:4]
     host['ex_skills']=[max(int(v),plan['elite_max']) for v in old]
+    welcome.setdefault("advanced_soul_ids",{})[key]=ids
     claimed[key]=True
     return {'partner_id':partner_id,'souls':ids,'treasure':slots[4],
             'antique':slots[5],'elite':host['ex_skills']}
+
+
+def quick_souls(state, host):
+    from . import souls
+    check_scope(state)
+    pid=int(host['partner_id'])
+    welcome=state.get('s5_welcome') or {}
+    key=str(host['table_id'])
+    if welcome.get('hosts',{}).get(key)!=pid or not welcome.get('advanced_claimed',{}).get(key):
+        raise ValueError('Hãy nhận Quà Nâng Cao cho nữ thần này trước.')
+    saved=welcome.setdefault('advanced_soul_ids',{})
+    preferred=saved.get(key,[])
+    reserved={int(sid) for k,ids in saved.items() if k!=key for sid in ids}
+    items=souls.store(state)['items']
+    plan=advanced_plan(host)['souls']
+    chosen=[]
+    for i,tid in enumerate(plan):
+        candidates=[(int(sid),r) for sid,r in items.items()
+                    if int(r['table_id'])==tid and int(r.get('owner') or 0) in (0,pid)
+                    and int(sid) not in reserved and souls.star(r)==6 and r['lv']==souls.max_lv(r)]
+        if not candidates:
+            raise ValueError('Chưa đủ bộ Linh Hồn đúng nữ thần trong túi. Hãy tháo món đang dùng ở nữ thần khác nếu cần.')
+        want=preferred[i] if i<len(preferred) else 0
+        sid,_=max(candidates,key=lambda pair:(pair[0]==want,int(pair[1].get('owner') or 0)==pid,-pair[0]))
+        chosen.append(sid)
+    for sid in chosen:
+        souls.action(state,{'action':'equip','partner_id':pid,'soul_id':sid})
+    saved[key]=chosen
+    return {'equipped':chosen}
 
 
 def allow_skin_gift(sender_server,recipient_server):
@@ -377,10 +411,61 @@ def early_access(uid):
     finally:db.close()
 
 
+def svip_mail_id(uid):
+    return 'S5-SVIP-'+hashlib.sha256(str(uid).encode()).hexdigest()[:24].upper()
+
+
+def verified_svip(uid):
+    if str(uid)!=MONTHANH_UID:return False
+    from . import auth
+    db=auth._db()
+    try:
+        row=db.execute("SELECT username,status FROM accounts WHERE uid=?",(str(uid),)).fetchone()
+        return bool(row and row['status']=='active' and str(row['username']).casefold()=='monthanh')
+    finally:db.close()
+
+
+def svip_access(now,uid):
+    if float(now)>=SVIP_END or not verified_svip(uid):return False
+    from . import live_service
+    db=live_service._db()
+    try:
+        row=db.execute("SELECT attachments FROM mail WHERE id=? AND uid=? AND server_id<>'S5' AND status='claimed' AND operator=?",
+                       (svip_mail_id(uid),str(uid),SVIP_OPERATOR)).fetchone()
+        return bool(row and json.loads(row['attachments'])=={SVIP_CARD:1})
+    finally:db.close()
+
+
+def issue_svip_card(uid):
+    if not verified_svip(uid):raise ValueError('Vé chỉ dành cho tài khoản monthanh')
+    if time.time()>=SVIP_END:raise ValueError('Vé đã hết hạn')
+    from . import live_service
+    db=live_service._db()
+    try:
+        db.execute('BEGIN IMMEDIATE')
+        player=db.execute("SELECT server_id,character_name FROM players WHERE uid=? AND status='active' AND server_id IN ('S1','S2','S3') ORDER BY CASE WHEN server_id='S1' THEN 0 ELSE 1 END,server_id LIMIT 1",(str(uid),)).fetchone()
+        if not player:raise ValueError('Không tìm thấy nhân vật nhận vé')
+        mid=svip_mail_id(uid)
+        cur=db.execute("""INSERT INTO mail(id,uid,server_id,character_name,title,body,attachments,status,created_at,operator)
+            VALUES(?,?,?,?,?,?,?,'pending',?,?) ON CONFLICT(id) DO NOTHING""",
+            (mid,str(uid),player['server_id'],player['character_name'],SVIP_NAME,
+             'Vé riêng cho monthanh. Nhận thư để vào S5 ngoài lịch công khai đến 06:00 ngày 28/12/2026 (giờ Việt Nam). Không chuyển nhượng. Hết hạn trở về lịch S5 bình thường.',
+             json.dumps({SVIP_CARD:1}),int(time.time()),SVIP_OPERATOR))
+        if cur.rowcount:live_service._audit(db,'s5.svip_card.issue',mid,{'uid':str(uid),'server_id':player['server_id'],'expires_at':SVIP_END},SVIP_OPERATOR)
+        row=db.execute("SELECT server_id,status FROM mail WHERE id=? AND uid=? AND operator=?",(mid,str(uid),SVIP_OPERATOR)).fetchone()
+        if not row:raise ValueError('Bản ghi vé không hợp lệ')
+        db.commit()
+        return {'server_id':row['server_id'],'status':row['status'],'issued':bool(cur.rowcount)}
+    except Exception:
+        db.rollback();raise
+    finally:db.close()
+
+
 def access_cycle(now,uid=None):
     info=schedule(now)
     early=early_access(uid)
-    return {**info,'early_access':early,'access_allowed':early or info['phase']=='open'}
+    timed=svip_access(now,uid)
+    return {**info,'early_access':early,'svip_access':timed,'svip_end':SVIP_END if timed else None,'access_allowed':early or timed or info['phase']=='open'}
 
 
 def ensure_open(server_id, now=None, *, uid=None):

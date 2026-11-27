@@ -40,6 +40,58 @@ class S5CoreTests(unittest.TestCase):
                 with patch.dict('os.environ',{'GXB3_OWNER_EMAIL':'different@example.test'}):
                     self.assertFalse(s5.early_access('owner-fixture'))
 
+    def test_monthanh_svip_exact_expiry_and_binding(self):
+        from gxb2 import auth,live_service
+        from tempfile import TemporaryDirectory
+        from pathlib import Path
+        with TemporaryDirectory() as td,patch.object(auth,'DB_PATH',Path(td)/'auth.sqlite3'),patch.object(live_service,'DB_PATH',Path(td)/'live.sqlite3'):
+            uid=s5.MONTHANH_UID
+            db=auth._db()
+            db.execute("INSERT INTO accounts(uid,username,email,password_hash,salt,status,created_at,last_login) VALUES(?,?,?,?,?,?,?,?)",
+                       (uid,'monthanh','monthanh@example.test','hash','salt','active',1,1))
+            db.commit();db.close()
+            live_service.register_player(uid,'S1','Monthanh QA')
+            closed=datetime(2026,11,27,12,tzinfo=s5.TZ).timestamp()
+            with patch.object(s5.time,'time',return_value=closed):
+                self.assertTrue(s5.issue_svip_card(uid)['issued'])
+                self.assertFalse(s5.issue_svip_card(uid)['issued'])
+                self.assertFalse(s5.svip_access(closed,uid))
+                with self.assertRaises(ValueError):s5.issue_svip_card('other')
+                live_service.claim_mail(s5.svip_mail_id(uid),uid,'S1')
+                self.assertTrue(s5.access_cycle(closed,uid)['access_allowed'])
+                self.assertFalse(s5.access_cycle(closed,'other')['access_allowed'])
+                self.assertTrue(s5.svip_access(s5.SVIP_END-1,uid))
+                self.assertFalse(s5.svip_access(s5.SVIP_END,uid))
+                self.assertEqual(s5.access_cycle(s5.SVIP_END,uid)['phase'],'open')
+                self.assertFalse(s5.access_cycle(s5.SVIP_END+3*3600,uid)['access_allowed'])
+                s5.ensure_open('S5',closed,uid=uid)
+                with self.assertRaises(ValueError):s5.ensure_open('S5',s5.SVIP_END+3*3600,uid=uid)
+
+    def test_quick_souls_restore_owned_set_without_stealing(self):
+        from gxb2 import souls
+        st=self.state();s5.grant_welcome(st,1795740000)
+        hosts=[p for p in st['partners'] if st['s5_welcome']['hosts'].get(str(p['table_id']))==p['partner_id']]
+        a,b=hosts[:2];aid=a['partner_id'];bid=b['partner_id']
+        first=s5.grant_advanced(st,aid)['souls']
+        second=s5.grant_advanced(st,bid)['souls']
+        count=len(souls.store(st)['items'])
+        souls.release(st,a)
+        self.assertEqual(souls.action(st,{'action':'quick_equip','partner_id':aid})['equipped'],first)
+        self.assertEqual(b['souls'],second)
+        self.assertEqual(len(souls.store(st)['items']),count)
+        self.assertEqual(souls.action(st,{'action':'quick_equip','partner_id':aid})['equipped'],first)
+        souls.action(st,{'action':'equip','partner_id':bid,'soul_id':first[0]})
+        before=list(a['souls'])
+        with self.assertRaises(souls.SoulError):souls.action(st,{'action':'quick_equip','partner_id':aid})
+        self.assertEqual(a['souls'],before)
+        self.assertIn(first[0],b['souls'])
+        # Legacy reward issued before serial tracking can be recovered.
+        souls.release(st,b);souls.release(st,a)
+        st['s5_welcome']['advanced_soul_ids'].pop(str(a['table_id']))
+        self.assertEqual(souls.action(st,{'action':'quick_equip','partner_id':aid})['equipped'],first)
+        st['server_id']='S1'
+        with self.assertRaises(souls.SoulError):souls.action(st,{'action':'quick_equip','partner_id':aid})
+
     def test_schedule(self):
         for day in (23,28):
             for h,m,expected in [(5,59,'locked'),(6,0,'open'),(8,59,'open'),(9,0,'locked'),

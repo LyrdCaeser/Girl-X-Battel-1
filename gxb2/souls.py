@@ -177,6 +177,10 @@ def action(state, request, rng=None):
         rec = items.get(str(request.get('soul_id')))
         if not rec: raise SoulError('Không tìm thấy Trang Bị Linh Hồn')
         return rec
+    if act == 'quick_equip':
+        from . import s5_test
+        try: return s5_test.quick_souls(state,partner())
+        except ValueError as exc: raise SoulError(str(exc)) from None
     if act == 'receive_inventory_gear':
         # Older rewards also exist as stackable item IDs. Claiming them is
         # explicit: the original item stack is debited once and replaced by

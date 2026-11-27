@@ -115,11 +115,17 @@ const Souls=(()=>{
   try{await refreshInventory(pid);}catch(e){GirlUI.toast('Chưa đồng bộ được Trang Bị Linh Hồn: '+e.message);}
   sel=slot||sel;filter=0;tab='overview';paint(pid);
  }
- function paint(pid){const hero=state.roster.find(h=>h.partner_id===pid);if(!hero)return;const {body,win}=GirlUI.win({title:'Trang Bị Linh Hồn',cls:'ag-win',help:'Nữ Thần từ cấp 200 có thể sử dụng Trang Bị Linh Hồn. Ô vuông giữa là Bảo Vật Linh Hồn, bốn ô tròn là Đá Linh Hồn. Trang bị đủ bốn viên cùng bộ sẽ kích hoạt kỹ năng bộ.'});
+ function paint(pid){const hero=state.roster.find(h=>h.partner_id===pid);if(!hero)return;const {body,win}=GirlUI.win({title:'Trang Bị Linh Hồn',cls:'ag-win',help:(state.server_id==='S5'?'Nữ Thần từ cấp 1':'Nữ Thần từ cấp 200')+' có thể sử dụng Trang Bị Linh Hồn. Ô vuông giữa là Bảo Vật Linh Hồn, bốn ô tròn là Đá Linh Hồn. Trang bị đủ bốn viên cùng bộ sẽ kích hoạt kỹ năng bộ.'});
   const souls=(hero.souls||[]).concat([0,0,0,0,0]).slice(0,5);
   const top=el('div','ag-top');top.append(img(A('soul_equip_bg_lx'),'ag-bg'));
   souls.forEach((sid,i)=>{const r=sid&&rec(sid);const b=btn('ag-slot s'+(i+1)+(sel===i+1?' on':''),'',()=>{sel=i+1;filter=0;if(tab==='overview')tab='replace';paint(pid);});if(r)b.append(i?round(r):icon(r));else b.append(el('span','ag-plus','+'));top.append(b);});
-  top.append(btn('gs-btn red ag-drop','Unequip',()=>act({action:'unequip',partner_id:pid},()=>paint(pid)),!souls.some(Boolean)));body.append(top);
+  const drop=btn('gs-btn red ag-drop','Unequip',()=>act({action:'unequip',partner_id:pid},()=>paint(pid)),!souls.some(Boolean));
+  if(state.server_id==='S5'){
+   const bar=el('div','ag-s5-actions');drop.classList.remove('ag-drop');
+   const quick=btn('gs-btn','Trang Bị Nhanh',async()=>{quick.disabled=true;try{await act({action:'quick_equip',partner_id:pid},()=>paint(pid));}finally{quick.disabled=false;}});
+   bar.append(drop,quick);top.append(bar);
+  }else top.append(drop);
+  body.append(top);
   const nav=el('div','ag-tabs');for(const [k,label]of [['overview','Overview'],['replace','Replace'],['plan','Plan']])nav.append(btn('ag-tab'+(tab===k?' on':''),label,()=>{tab=k;paint(pid);}));body.append(nav);
   const box=el('div','ag-content');body.append(box);
   if(tab==='overview')overview(box,souls);

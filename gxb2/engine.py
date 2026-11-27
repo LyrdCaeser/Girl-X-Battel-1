@@ -754,6 +754,13 @@ class Engine:
                             or int(early_card)!=1 or not s5_test.verified_owner(uid)):
                         raise GameError('Thẻ SSVIP chỉ dành cho SUPER GM chính thức')
                     state.setdefault('items',{})[s5_test.EARLY_CARD]=1
+                svip_card=inventory.pop(s5_test.SVIP_CARD,None)
+                if svip_card is not None:
+                    if (str(mail_id)!=s5_test.svip_mail_id(uid) or server_id=='S5'
+                            or int(svip_card)!=1 or not s5_test.verified_svip(uid)
+                            or time.time()>=s5_test.SVIP_END):
+                        raise GameError('Vé SVIP không hợp lệ hoặc đã hết hạn')
+                    state.setdefault('items',{})[s5_test.SVIP_CARD]=1
                 for item_id, amount in inventory.items():
                     state['items'][str(item_id)] = int(state['items'].get(str(item_id), 0)) + int(amount)
                 # Neon: insert VIP15 key mail into the same atomic transaction

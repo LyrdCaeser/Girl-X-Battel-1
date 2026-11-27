@@ -69,6 +69,33 @@ class ProfilePhotoHTTPTests(unittest.TestCase):
         output=io.BytesIO();image.save(output,'JPEG',exif=exif)
         return output.getvalue()
 
+    def test_svip_mail_claim_and_closed_hours_http(self):
+        from gxb2 import s5_test as s5
+        from datetime import datetime
+        live_service.create_world('S5',s5.NAME)
+        c,out,headers=self.request('POST','/api/auth/register',json_data={
+            'username':'monthanh','password':'ExamplePassword123A','character_name':'SVIP QA','server_id':'S1'})
+        self.assertEqual(c,200,out)
+        self.cookies.append(headers['set-cookie'].split(';',1)[0])
+        uid=auth.session(self.cookies[-1].split('=',1)[1])['account']['uid']
+        closed=datetime(2026,11,27,12,tzinfo=s5.TZ).timestamp()
+        with patch.object(s5,'MONTHANH_UID',uid),patch.object(s5.time,'time',return_value=closed):
+            self.assertTrue(s5.issue_svip_card(uid)['issued'])
+            c,cycle,_=self.request('GET','/api/s5/cycle',user=2)
+            self.assertFalse(cycle['access_allowed'])
+            c,out,_=self.request('POST','/api/mail/claim',json_data={'mail_id':s5.svip_mail_id(uid)},user=2)
+            self.assertEqual(c,200,out)
+            c,cycle,_=self.request('GET','/api/s5/cycle',user=2)
+            self.assertTrue(cycle['svip_access']);self.assertEqual(cycle['svip_end'],s5.SVIP_END)
+            c,out,_=self.request('POST','/api/auth/create-character',json_data={'server_id':'S5','character_name':'SVIP S5'},user=2)
+            self.assertEqual(c,200,out)
+            self.assertEqual(self.request('GET','/api/state',user=2)[0],200)
+            self.assertFalse(self.request('GET','/api/s5/cycle',user=0)[1]['access_allowed'])
+            db=auth._db();db.execute('UPDATE sessions SET expires_at=?',(s5.SVIP_END+86400,));db.commit();db.close()
+            with patch.object(s5.time,'time',return_value=s5.SVIP_END+10800):
+                self.assertFalse(self.request('GET','/api/s5/cycle',user=2)[1]['svip_access'])
+                self.assertEqual(self.request('GET','/api/state',user=2)[0],423)
+
     def test_s5_gear_claim_real_http_and_replay(self):
         from gxb2 import s5_test,equipment
         from datetime import datetime
@@ -113,6 +140,13 @@ class ProfilePhotoHTTPTests(unittest.TestCase):
             self.assertEqual(c,200,info)
             self.assertTrue(next(x for x in info['hosts'] if x['partner_id']==pid)['advanced_claimed'])
             self.assertEqual(self.request('POST','/api/s5/rewards',json_data=advanced,user=0)[0],400)
+            ids=hero['souls']
+            self.assertEqual(self.request('POST','/api/souls/action',json_data={'action':'unequip','partner_id':pid},user=0)[0],200)
+            c,quick,_=self.request('POST','/api/souls/action',json_data={'action':'quick_equip','partner_id':pid},user=0)
+            self.assertEqual(c,200,quick)
+            self.assertEqual(quick['equipped'],ids)
+            self.assertEqual(next(p for p in quick['state']['roster'] if p['partner_id']==pid)['souls'],ids)
+
 
 
     def test_s5_full_cosmetics_and_photo_upload_are_scoped(self):
