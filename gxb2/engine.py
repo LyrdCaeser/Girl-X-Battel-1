@@ -404,6 +404,29 @@ class Engine:
         newbie_camp.observe(state, self.missions_probe(dict(state)), player_level(state), self.now())
         self.db.execute('UPDATE profile SET data=? WHERE id=1', (json.dumps(state, ensure_ascii=False),))
 
+    def sync_main_formation(self, state, formation):
+        """Explicit main Save: campaign, shared PvP defense, and 3v3 Team 1."""
+        clean = self.validate_formation(state, formation)
+        # Preserve valid members and positions of teams 2/3. A goddess may
+        # only occupy one team, so the explicitly selected main team wins.
+        stored = state.get('arena3v3') or {}
+        raw = stored.get('teams', [])
+        old = self._arena3v3_recovery_draft({**state, 'arena3v3': {'teams': [[], *raw[1:3]] if isinstance(raw, list) else []}})
+        used = {slot['partner_id'] for slot in clean}
+        teams = [copy.deepcopy(clean)]
+        for row in old[1:]:
+            kept = [slot for slot in row if slot['partner_id'] not in used]
+            used.update(slot['partner_id'] for slot in kept)
+            teams.append(kept)
+        state['formation'] = clean
+        state['pvp_defense'] = copy.deepcopy(clean)
+        if 'arena3v3' not in state:
+            # Saving a lineup is not opening the arena. Defer its original
+            # one-time ticket reward until the first arena visit.
+            state['arena3v3'] = {'sync_pending_open': True}
+        state['arena3v3']['teams'] = teams
+        return clean
+
     def pvp_defense_formation(self):
         """Return the separately saved ArenaFormationWindow defence team."""
         with self.lock:
@@ -520,8 +543,9 @@ class Engine:
             self.db.execute('BEGIN IMMEDIATE')
             try:
                 state = self._load()
-                if 'arena3v3' not in state:
-                    state['arena3v3'] = {'teams': []}
+                if 'arena3v3' not in state or state['arena3v3'].get('sync_pending_open'):
+                    arena_state = state.setdefault('arena3v3', {'teams': []})
+                    arena_state.pop('sync_pending_open', None)
                     for item_id, amount in arena3v3.OPEN.items():
                         key = str(item_id)
                         state.setdefault('items', {})[key] = int(state['items'].get(key, 0)) + int(amount)
@@ -3719,7 +3743,7 @@ class Engine:
                     (p.MIDS['ITEM_CHANGE'], 'item_change_res', self.backpack(state)),
                     (p.MIDS['GET_SLOT_INFO'], 'get_slot_info_res', self.slot_info(state))], None
         if name == 'SET_HANG_TEAM':
-            state['formation'] = self.validate_formation(state, request.get('partners'))
+            self.sync_main_formation(state, request.get('partners'))
             return response({'hang_team': state['formation']})
         if name == 'STAGE_HANG':
             stage = integer(request.get('stage_id'), 'stage_id', 1)

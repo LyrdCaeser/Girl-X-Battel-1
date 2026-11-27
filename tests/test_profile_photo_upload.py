@@ -69,6 +69,45 @@ class ProfilePhotoHTTPTests(unittest.TestCase):
         output=io.BytesIO();image.save(output,'JPEG',exif=exif)
         return output.getvalue()
 
+    def test_main_formation_save_sync_http(self):
+        from gxb2 import s5_test as s
+        from datetime import datetime
+        live_service.create_world('S5',s.NAME)
+        phase=s.schedule(datetime(2026,11,28,6,30,tzinfo=s.TZ).timestamp())
+        with patch.object(s,'schedule',return_value=phase):
+            for world in ('S1','S5'):
+                if world=='S5':
+                    c,out,_=self.request('POST','/api/auth/create-character',json_data={'server_id':'S5','character_name':'Formation QA'},user=0)
+                    self.assertEqual(c,200,out)
+                c,st,_=self.request('GET','/api/state',user=0)
+                self.assertEqual(c,200,st)
+                self.assertEqual(st['server_id'],world)
+                a,b,d=[h['partner_id'] for h in st['roster'][:3]]
+                teams=[[{'partner_id':a,'pos':1}],[{'partner_id':b,'pos':2}],[{'partner_id':d,'pos':3}]]
+                c,out,_=self.request('POST','/api/pvp/arena3v3/teams',json_data={'teams':teams},user=0)
+                self.assertEqual(c,200,out)
+                main=[{'partner_id':a,'pos':6}]
+                c,out,_=self.request('POST','/api/action',json_data={'message':'SET_HANG_TEAM','data':{'partners':main}},user=0)
+                self.assertEqual(c,200,out)
+                self.assertEqual(out['state']['formation'],main)
+                expected=[main,*teams[1:]]
+                self.assertEqual(out['state']['arena3v3_info']['teams'],expected)
+                c,pvp,_=self.request('GET','/api/pvp/status?mode=arena',user=0)
+                self.assertEqual(c,200,pvp)
+                self.assertEqual(pvp['defense'],main)
+                c,pvp,_=self.request('GET','/api/pvp/status?mode=arena3v3',user=0)
+                self.assertEqual(c,200,pvp)
+                self.assertEqual(pvp['arena3v3']['teams'],expected)
+                if world=='S1':
+                    c,pvp,_=self.request('GET','/api/pvp/status?mode=cross',user=0)
+                    self.assertEqual(c,200,pvp)
+                    self.assertEqual(pvp['defense'],main)
+                c,out,_=self.request('POST','/api/action',json_data={'message':'SET_HANG_TEAM','data':{'partners':[{'partner_id':9999999,'pos':1}]}},user=0)
+                self.assertEqual(c,400,out)
+                c,st,_=self.request('GET','/api/state',user=0)
+                self.assertEqual(c,200,st)
+                self.assertEqual(st['formation'],main)
+
     def test_s5_level_cost_budget_and_http(self):
         from gxb2 import s5_test as s, goddess_gifts
         from gxb2.engine import partner_level_cost,partner_level_exp_total

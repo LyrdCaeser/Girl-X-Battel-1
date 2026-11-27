@@ -802,6 +802,11 @@ async function action(message,data){if(busy)return;busy=true;error('');render();
  summonWaitStop?.();
  state=res.state;
  if(message==='SET_HANG_TEAM'||message==='MAP_FIGHT')loadFormation();
+ if(message==='SET_HANG_TEAM'&&typeof GirlUI!=='undefined'){
+  const teams=state.arena3v3_info?.teams||[];
+  const ready=teams.length===3&&teams.every(t=>t.length>0);
+  GirlUI.toast('Đã lưu Chiến Dịch, Đấu Trường Đơn'+(state.server_id==='S5'?'':', Liên Server')+' và Đội 1.'+(ready?'':' Hãy bổ sung Đội 2 và 3 nếu còn trống.'));
+ }
  if(message==='MAP_FIGHT'){
   const report=res._report||await api('/api/battle/'+state.last_battle.id);
   if(flow){if(storyPre&&typeof StoryPlayer!=='undefined'){try{await StoryPlayer.play(storyPre);}catch(e){visualFailure('campaign-story-pre',e);}api('/api/story/action',{action:'seen',plot:storyPre}).catch(()=>{});}try{await CampaignFlow.sweep();}catch(e){visualFailure('campaign-sweep',e);}}
