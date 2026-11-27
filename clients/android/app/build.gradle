@@ -10,7 +10,7 @@ android {
         applicationId "com.quangho.goddess.battle"
         minSdk 26
         targetSdk 35
-        versionCode 200367
+        versionCode 200368
         versionName "2.6.5"
     }
 

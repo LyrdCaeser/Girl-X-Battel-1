@@ -9,13 +9,14 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 VERSION = "2.6.5"
 VERSION_CODE = "200367"
+ANDROID_VERSION_CODE = "200368"
 
 def require(condition: bool, message: str) -> None:
     if not condition:
         raise SystemExit("RELEASE VERSION CHECK FAILED: " + message)
 
 android = (ROOT / "clients/android/app/build.gradle").read_text(encoding="utf-8")
-require(re.search(rf"versionCode\s+{VERSION_CODE}\b", android) is not None, "Android versionCode")
+require(re.search(rf"versionCode\s+{ANDROID_VERSION_CODE}\b", android) is not None, "Android versionCode")
 require(re.search(rf'versionName\s+"{re.escape(VERSION)}"', android) is not None, "Android versionName")
 
 with (ROOT / "clients/ios/Info.plist").open("rb") as stream:
@@ -52,4 +53,4 @@ workflow = (ROOT / ".github/workflows/gxb3-clients.yml").read_text(encoding="utf
 require("2.6.5" in workflow and "200367" in workflow, "Build workflow version labels")
 require("publish-release:" in workflow and "tag=\"v2.6.5\"" in workflow, "Versioned production release publishing")
 
-print(f"PASS: Android, Windows, iOS IPA and iOS Web Clip use Version Name {VERSION} / VersionCode {VERSION_CODE}; HD portrait assets are present.")
+print(f"PASS: Android, Windows, iOS IPA and iOS Web Clip use Version Name {VERSION} / Android VersionCode {ANDROID_VERSION_CODE}, iOS {VERSION_CODE}; HD portrait assets are present.")

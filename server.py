@@ -343,7 +343,7 @@ class HTTPHandler(BaseHTTPRequestHandler):
         self.send_header('Cache-Control', 'public, max-age=3600' if static_cacheable else 'no-store')
         self.send_header('X-Content-Type-Options', 'nosniff')
         self.send_header('Referrer-Policy', 'same-origin')
-        self.send_header('Permissions-Policy', 'camera=(), microphone=(), geolocation=()')
+        self.send_header('Permissions-Policy', 'camera=(), microphone=(self), geolocation=()' if request_path == '/' and content_type.startswith('text/html') else 'camera=(), microphone=(), geolocation=()')
         asset_origin = ''
         configured_asset_base = os.environ.get('GXB_ASSET_BASE_URL', '').strip().rstrip('/')
         if configured_asset_base:
@@ -1058,6 +1058,18 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
         if path == '/s4-exclusive-key.svg':
             return self.send(200, (ROOT/'web/assets/ui/s4-exclusive-key.svg').read_bytes(),
                              'image/svg+xml')
+        # Immutable voice-capable Android build, checked on every download.
+        if path == '/download/GXB3-Android-2.6.5-Voice-200368.apk':
+            package = ROOT / 'releases/GXB3-Android-2.6.5-Voice-200368.apk'
+            if not package.is_file():
+                return self.send(404, {'error':'Chưa có APK để tải'})
+            payload = package.read_bytes()
+            digest = hashlib.sha256(payload).hexdigest()
+            if digest != 'c3a1c3d8eb400432861118a8afa1cb49ca144a165c8f6d222c52c0f79d9ce4bd':
+                return self.send(503, {'error':'Không thể xác minh APK'})
+            return self.send(200, payload, 'application/vnd.android.package-archive',
+                             headers={'Content-Disposition':'attachment; filename="GXB3-Android-2.6.5-Voice-200368.apk"',
+                                      'X-APK-SHA256':digest})
         # Single immutable Android Wish-recorder RC package, verified by SHA256.
         # No generic file exposure, no directory traversal and no client data.
         if path == '/download/GXB3-S4-Wish-Recorder-2.6.5.apk':

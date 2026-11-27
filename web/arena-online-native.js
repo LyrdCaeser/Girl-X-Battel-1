@@ -625,7 +625,7 @@ const NativeOnlineArenas=(()=>{
   finally{livePlaying=false;}
  }
  let comms=null;
- function stopComms(){const c=comms;if(!c)return;comms=null;c.closed=true;c.stream?.getTracks().forEach(t=>t.stop());if(c.recorder?.state==='recording')c.recorder.stop();c.audio?.pause();c.root.remove();}
+ function stopComms(){const c=comms;if(!c)return;comms=null;c.closed=true;c.stream?.getTracks().forEach(t=>t.stop());if(c.recorder?.state==='recording')c.recorder.stop();c.audio?.pause();if(c.audioUrl)URL.revokeObjectURL(c.audioUrl);c.root.remove();}
  function startComms(m){
   stopComms();const root=el('div','pvp-bubble');const panel=el('div','pvp-bubble-panel');panel.hidden=true;
   const button=(label,fn)=>{const b=el('button','',label);b.type='button';b.onclick=fn;return b;};
@@ -648,13 +648,13 @@ const NativeOnlineArenas=(()=>{
      const rec=new MediaRecorder(c.stream,type?{mimeType:type,audioBitsPerSecond:16000}:{audioBitsPerSecond:16000});c.recorder=rec;
      rec.ondataavailable=async e=>{if(c.closed||!e.data.size||!c.stream)return;
       try{const bytes=new Uint8Array(await e.data.arrayBuffer());if(bytes.length>36000)return;let raw='';for(const b of bytes)raw+=String.fromCharCode(b);
-       const mime=e.data.type.toLowerCase().replace(/;\s*/g,';');await send('audio',{audio:btoa(raw),mime});}catch(err){status.textContent='Kênh micro bị gián đoạn';}};
+       const rawMime=(e.data.type||rec.mimeType).toLowerCase().replace(/;\s*/g,';');const mime=rawMime.startsWith('audio/mp4')?'audio/mp4':rawMime;ingest(await send('audio',{audio:btoa(raw),mime}));}catch(err){status.textContent='Kênh micro bị gián đoạn';}};
      rec.onstop=()=>{if(c.stream&&!c.closed)chunk();};rec.start();setTimeout(()=>{if(rec.state==='recording')rec.stop();},1200);
     }chunk();
    }catch(e){c.stream?.getTracks().forEach(t=>t.stop());c.stream=null;mic.classList.remove('on');root.classList.remove('mic-on');toggle.title='Trò chuyện trong trận';status.textContent='Không mở được Mic: '+(e.message||'chưa cấp quyền');}finally{mic.disabled=false;}
   });
-  const speaker=button('🔊 Loa',()=>{c.speaker=!c.speaker;speaker.classList.toggle('on',c.speaker);if(!c.speaker){c.queue=[];c.audio?.pause();c.audio=null;}status.textContent=c.speaker?'Loa đối phương đã bật':'Loa đối phương đã tắt';});
-  function audioNext(){if(c.closed||!c.speaker||c.audio||!c.queue.length)return;const e=c.queue.shift();const audio=new Audio('data:'+e.mime+';base64,'+e.audio);c.audio=audio;const done=()=>{if(c.audio===audio)c.audio=null;audioNext();};audio.onended=done;audio.onerror=done;audio.play().catch(()=>{status.textContent='Chạm Loa để bật lại âm thanh';done();});}
+  const speaker=button('🔊 Loa',()=>{c.speaker=!c.speaker;speaker.classList.toggle('on',c.speaker);if(!c.speaker){c.queue=[];c.audio?.pause();c.audio=null;if(c.audioUrl){URL.revokeObjectURL(c.audioUrl);c.audioUrl=null;}}status.textContent=c.speaker?'Loa đối phương đã bật':'Loa đối phương đã tắt';});
+  function audioNext(){if(c.closed||!c.speaker||c.audio||!c.queue.length)return;const e=c.queue.shift();const bytes=Uint8Array.from(atob(e.audio),x=>x.charCodeAt(0));const url=URL.createObjectURL(new Blob([bytes],{type:e.mime}));const audio=new Audio(url);c.audio=audio;c.audioUrl=url;const done=()=>{URL.revokeObjectURL(url);if(c.audio===audio){c.audio=null;c.audioUrl=null;}audioNext();};audio.onended=done;audio.onerror=done;audio.play().catch(()=>{status.textContent='Chạm Loa để bật lại âm thanh';done();});}
   function ingest(r){for(const e of r.events||[]){if(e.id<=c.after)continue;if(e.kind==='text'){messages.append(el('p','',(e.uid===own()?'Bạn':String(m.player_a)===own()?m.name_b:m.name_a)+': '+e.text));while(messages.children.length>40)messages.firstChild.remove();messages.scrollTop=messages.scrollHeight;if(panel.hidden)toggle.classList.add('on');}
    else if(c.speaker&&e.audio){c.queue.push(e);if(c.queue.length>3)c.queue.shift();audioNext();}c.after=e.id;}c.after=Math.max(c.after,Number(r.after)||0);}
   form.append(input,button('Gửi',()=>{}));form.lastChild.type='submit';form.onsubmit=async e=>{e.preventDefault();const text=input.value.trim();if(!text)return;try{ingest(await send('text',{text}));input.value='';}catch(err){status.textContent=err.message;}};

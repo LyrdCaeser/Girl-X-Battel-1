@@ -16,8 +16,8 @@ const showView=v=>{view=v;for(const id of ['arena-view','arena3v3-view','event-b
 const Arena={chrome:()=>{},rankRow:()=>document.createElement('div'),inspect:()=>{}};
 const GirlUI={notice:x=>window.notices.push(x),toast:x=>window.notices.push(x),stars:()=>document.createElement('span')};
 const portrait=()=>document.createElement('span'),Shops={open:()=>{}},Arena3v3={open:()=>{}};
-window.notices=[];window.played=[];window.audioPackets=0;
-const NativeAudio=window.Audio;window.Audio=function(src){if(src.startsWith('data:audio/'))window.audioPackets++;return new NativeAudio(src);};
+window.notices=[];window.played=[];window.audioPackets=0;window.audioPlayed=0;
+const NativeAudio=window.Audio;window.Audio=function(src){const a=new NativeAudio(src);if(src.startsWith('blob:')){window.audioPackets++;a.addEventListener('playing',()=>window.audioPlayed++);}return a;};
 async function watchEventBattle(data,origin,label){showView('event-battle');window.played.push({time:Date.now(),frames:data.report.frames.length,win:data.report.isWin,live:data.livePvP});await new Promise(r=>setTimeout(r,18000));}
 """
 try:
@@ -30,7 +30,7 @@ try:
    name,value=case.tokens[i].split('=',1)
    ctx.add_cookies([{'name':name,'value':value,'url':base}])
    page=ctx.new_page()
-   page.route(base+'/qa',lambda r:r.fulfill(status=200,content_type='text/html',body=html))
+   page.route(base+'/qa',lambda r:r.fulfill(status=200,content_type='text/html',body=html,headers={'Permissions-Policy':'camera=(), microphone=(self), geolocation=()','Content-Security-Policy':"media-src 'self' blob:"}))
    page.goto(base+'/qa')
    page.add_style_tag(content=(root/'arena3v3.css').read_text())
    page.add_script_tag(content=setup+(root/'arena-online-native.js').read_text())
@@ -56,7 +56,10 @@ try:
   b.locator('.pvp-bubble-messages').get_by_text('Xin chào trong trận',exact=False).wait_for(timeout=6000)
   b.get_by_role('button',name='🔊 Loa',exact=True).click()
   a.get_by_role('button',name='🎙 Mic',exact=True).click()
-  b.wait_for_function('window.audioPackets>0',timeout=10000)
+  b.wait_for_function('window.audioPlayed>0',timeout=10000)
+  a.get_by_role('button',name='🔊 Loa',exact=True).click()
+  b.get_by_role('button',name='🎙 Mic',exact=True).click()
+  a.wait_for_function('window.audioPlayed>0',timeout=10000)
   a.evaluate("NativeOnlineArenas.stopComms()")
   assert a.locator('.pvp-bubble').count()==0
   print('PASS two browser contexts, real HTTP invite/accept, same battle frames, text and fake-device microphone relay; start delta ms:',abs(t1['time']-t2['time']),flush=True)

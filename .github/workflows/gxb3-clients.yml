@@ -31,7 +31,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Validate all four release formats use version 2.6.5 / code 200367
+      - name: Validate release formats use version 2.6.5 / Android code 200368
         run: python clients/tools/verify_client_version.py
       - name: Check production URL (informational)
         shell: pwsh
@@ -104,7 +104,7 @@ jobs:
           src="clients/android/app/build/outputs/apk/release/app-release.apk"
           test -s "$src"
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose "$src"
-          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$src" | grep -F "versionCode='200367' versionName='2.6.5'"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$src" | grep -F "versionCode='200368' versionName='2.6.5'"
           cp "$src" NuThanChienDau-GXB3-Android-2.6.5.apk
           ls -lh NuThanChienDau-GXB3-Android-2.6.5.apk
       - uses: actions/upload-artifact@v4
@@ -188,7 +188,7 @@ jobs:
           test -s NuThanChienDau-GXB3-iOS-2.6.5.mobileconfig
           sha256sum *.exe *.apk *.ipa *.mobileconfig > SHA256SUMS.txt
           cat > PHIEN_BAN.txt <<'TXT'
-          GXB 3 · Version Name 2.6.5 · VersionCode 200367
+          GXB 3 · Version Name 2.6.5 · Android VersionCode 200368 · iOS 200367
           Android APK: Android 8+ (RC/debug signature; see HUONG_DAN.txt)
           Windows EXE: Windows x64, WebView2
           iOS IPA: unsigned developer build; Apple signing is required to install as an app
