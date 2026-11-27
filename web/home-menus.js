@@ -477,7 +477,7 @@ const HomeMenus=(()=>{
   function draw(){
    if(!dialog.isConnected)return;
    nav.replaceChildren();body.replaceChildren();
-   for(const [key,label] of [['girls','Nguyên liệu thức tỉnh'],['skins','Trang phục tự chọn · '+info.remaining],['gear','Trang bị đúng nghề'],['advanced','Quà nâng cao']]){
+   for(const [key,label] of [['girls','Nguyên liệu thức tỉnh'],['skins','Trang phục tự chọn · '+info.remaining],['gear','Trang bị cao cấp'],['advanced','Quà nâng cao']]){
     const b=el('button',label,'s5-tab'+(active===key?' active':''));b.type='button';b.setAttribute('aria-pressed',String(active===key));b.onclick=()=>{active=key;draw();};nav.append(b);
    }
    if(!info.claimed){body.append(el('p','Hãy nhận thư quà S5 trước.','s5-empty'));return;}
