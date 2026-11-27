@@ -959,52 +959,56 @@ def challenge_pvp(uid, server_id, character_name, mode, target_uid, target_serve
     if (target_uid,target_server) not in valid: raise ValueError("Đối thủ không còn nằm trong danh sách phù hợp")
     now=int(time.time())
     with _lock:
-        db=_db(); db.execute("BEGIN IMMEDIATE")
-        if consent:
-            # Expired invitations never reserve either player's slot.
-            db.execute("UPDATE pvp_matches SET status='expired',resolved_at=? WHERE status='invited' AND created_at<?",(now,now-60))
-            db.execute("UPDATE pvp_matches SET status='expired',resolved_at=? WHERE challenge_uid LIKE 'LIVE:%' AND status IN ('ready','active') AND created_at<? AND NOT EXISTS (SELECT 1 FROM pvp_match_peers pp WHERE pp.match_id=pvp_matches.id AND pp.last_seen>=?)",(now,now-900,now-30))
-            existing=db.execute("""SELECT * FROM pvp_matches WHERE challenge_uid LIKE 'LIVE:%'
-              AND status IN ('invited','ready','active') AND
-              ((player_a=? AND server_a=?) OR (player_b=? AND server_b=?) OR
-               (player_a=? AND server_a=?) OR (player_b=? AND server_b=?)) LIMIT 1""",
-              (uid,server_id,uid,server_id,target_uid,target_server,target_uid,target_server)).fetchone()
-            if existing:
-                if existing['player_a']==uid and existing['server_a']==server_id and existing['player_b']==target_uid and existing['server_b']==target_server:
-                    out={"status":"invited" if existing['status']=='invited' else 'matched',"match":_public_pvp_match(existing)}
-                    db.commit();db.close();return out
-                db.rollback();db.close();raise ValueError('Một trong hai người đang có lời mời hoặc trận đấu khác')
-        old=db.execute("""SELECT id FROM pvp_matches WHERE challenge_uid=? AND COALESCE(NULLIF(server_a,''),server_id)=? AND mode=? AND status IN ('ready','active')
-                          ORDER BY created_at DESC LIMIT 1""",(uid,server_id,mode)).fetchone()
-        if old and not consent:
-            row=db.execute("SELECT * FROM pvp_matches WHERE id=?",(old["id"],)).fetchone()
-            out={"status":"matched","match":_public_pvp_match(row)}; db.commit(); db.close(); return out
-        db.execute("DELETE FROM pvp_queue WHERE uid=? AND server_id=?",(uid,server_id))
-        season=pvp_season_id(mode,server_id)
-        target=db.execute("""SELECT p.character_name,
-                                    COALESCE(NULLIF(r.power,0),l.power,0) AS power
-                             FROM players p
-                             LEFT JOIN leaderboard l ON l.uid=p.uid AND l.server_id=p.server_id
-                             LEFT JOIN pvp_ratings r ON r.uid=p.uid AND r.server_id=p.server_id
-                                  AND r.mode=? AND r.season_id=?
-                             WHERE p.uid=? AND p.server_id=? AND p.status='active'""",
-                          (mode,season,target_uid,target_server)).fetchone()
-        if not target: db.rollback(); db.close(); raise ValueError("Đối thủ không còn hoạt động")
-        match_id="PVP-"+uuid.uuid4().hex[:16].upper(); seed=normalize_online_seed(uuid.uuid4().int)
-        match_server="CROSS" if mode=="cross" else server_id
-        db.execute("""INSERT INTO pvp_matches(
-                      id,mode,server_id,server_a,server_b,player_a,player_b,name_a,name_b,power_a,power_b,
-                      status,winner_uid,created_at,resolved_at,seed,snapshot_a,snapshot_b,battle_report,
-                      rating_delta_a,rating_delta_b,challenge_uid)
-                      VALUES(?,?,?,?,?,?,?,?,?,?,?,?,'',?,0,?,'{}','{}','{}',0,0,?)""",
-                   (match_id,mode,match_server,server_id,target_server,uid,target_uid,character_name,
-                    target["character_name"],max(0,int(power)),int(target["power"]),"invited" if consent else "active",now,seed,"LIVE:"+uid if consent else uid))
-        if mode=="arena3v3":
-            db.execute("""INSERT INTO pvp_arena3v3_series(match_id,paid_a,paid_b,rounds,updated_at)
-                          VALUES(?,0,1,'[]',?)""",(match_id,now))
-        _audit(db,"pvp.challenge",match_id,{"mode":mode,"target":target_uid,"target_server":target_server},"SYSTEM")
-        row=db.execute("SELECT * FROM pvp_matches WHERE id=?",(match_id,)).fetchone()
-        db.commit(); out={"status":"invited" if consent else "matched","match":_public_pvp_match(row)}; db.close(); return out
+        db=_db()
+        try:
+            db.execute("BEGIN IMMEDIATE")
+            if consent:
+                # Expired invitations never reserve either player's slot.
+                db.execute("UPDATE pvp_matches SET status='expired',resolved_at=? WHERE status='invited' AND created_at<?",(now,now-60))
+                db.execute("UPDATE pvp_matches SET status='expired',resolved_at=? WHERE substr(challenge_uid,1,5)='LIVE:' AND status IN ('ready','active') AND created_at<? AND NOT EXISTS (SELECT 1 FROM pvp_match_peers pp WHERE pp.match_id=pvp_matches.id AND pp.last_seen>=?)",(now,now-900,now-30))
+                existing=db.execute("""SELECT * FROM pvp_matches WHERE substr(challenge_uid,1,5)='LIVE:'
+                  AND status IN ('invited','ready','active') AND
+                  ((player_a=? AND server_a=?) OR (player_b=? AND server_b=?) OR
+                   (player_a=? AND server_a=?) OR (player_b=? AND server_b=?)) LIMIT 1""",
+                  (uid,server_id,uid,server_id,target_uid,target_server,target_uid,target_server)).fetchone()
+                if existing:
+                    if existing['player_a']==uid and existing['server_a']==server_id and existing['player_b']==target_uid and existing['server_b']==target_server:
+                        out={"status":"invited" if existing['status']=='invited' else 'matched',"match":_public_pvp_match(existing)}
+                        db.commit();db.close();return out
+                    db.rollback();db.close();raise ValueError('Một trong hai người đang có lời mời hoặc trận đấu khác')
+            old=db.execute("""SELECT id FROM pvp_matches WHERE challenge_uid=? AND COALESCE(NULLIF(server_a,''),server_id)=? AND mode=? AND status IN ('ready','active')
+                              ORDER BY created_at DESC LIMIT 1""",(uid,server_id,mode)).fetchone()
+            if old and not consent:
+                row=db.execute("SELECT * FROM pvp_matches WHERE id=?",(old["id"],)).fetchone()
+                out={"status":"matched","match":_public_pvp_match(row)}; db.commit(); db.close(); return out
+            db.execute("DELETE FROM pvp_queue WHERE uid=? AND server_id=?",(uid,server_id))
+            season=pvp_season_id(mode,server_id)
+            target=db.execute("""SELECT p.character_name,
+                                        COALESCE(NULLIF(r.power,0),l.power,0) AS power
+                                 FROM players p
+                                 LEFT JOIN leaderboard l ON l.uid=p.uid AND l.server_id=p.server_id
+                                 LEFT JOIN pvp_ratings r ON r.uid=p.uid AND r.server_id=p.server_id
+                                      AND r.mode=? AND r.season_id=?
+                                 WHERE p.uid=? AND p.server_id=? AND p.status='active'""",
+                              (mode,season,target_uid,target_server)).fetchone()
+            if not target: db.rollback(); db.close(); raise ValueError("Đối thủ không còn hoạt động")
+            match_id="PVP-"+uuid.uuid4().hex[:16].upper(); seed=normalize_online_seed(uuid.uuid4().int)
+            match_server="CROSS" if mode=="cross" else server_id
+            db.execute("""INSERT INTO pvp_matches(
+                          id,mode,server_id,server_a,server_b,player_a,player_b,name_a,name_b,power_a,power_b,
+                          status,winner_uid,created_at,resolved_at,seed,snapshot_a,snapshot_b,battle_report,
+                          rating_delta_a,rating_delta_b,challenge_uid)
+                          VALUES(?,?,?,?,?,?,?,?,?,?,?,?,'',?,0,?,'{}','{}','{}',0,0,?)""",
+                       (match_id,mode,match_server,server_id,target_server,uid,target_uid,character_name,
+                        target["character_name"],max(0,int(power)),int(target["power"]),"invited" if consent else "active",now,seed,"LIVE:"+uid if consent else uid))
+            if mode=="arena3v3":
+                db.execute("""INSERT INTO pvp_arena3v3_series(match_id,paid_a,paid_b,rounds,updated_at)
+                              VALUES(?,0,1,'[]',?)""",(match_id,now))
+            _audit(db,"pvp.challenge",match_id,{"mode":mode,"target":target_uid,"target_server":target_server},"SYSTEM")
+            row=db.execute("SELECT * FROM pvp_matches WHERE id=?",(match_id,)).fetchone()
+            db.commit(); out={"status":"invited" if consent else "matched","match":_public_pvp_match(row)}; db.close(); return out
+        finally:
+            db.close()
 
 
 def answer_live_invite(match_id, uid, server_id, action):
@@ -1037,7 +1041,7 @@ def live_invite_status(uid, server_id):
     with _lock:
         db=_db()
         try:
-            rows=db.execute("""SELECT id,mode,server_id,server_a,server_b,player_a,player_b,name_a,name_b,power_a,power_b,status,winner_uid,created_at,resolved_at,rating_delta_a,rating_delta_b,challenge_uid FROM pvp_matches WHERE challenge_uid LIKE 'LIVE:%'
+            rows=db.execute("""SELECT id,mode,server_id,server_a,server_b,player_a,player_b,name_a,name_b,power_a,power_b,status,winner_uid,created_at,resolved_at,rating_delta_a,rating_delta_b,challenge_uid FROM pvp_matches WHERE substr(challenge_uid,1,5)='LIVE:'
               AND ((player_a=? AND server_a=?) OR (player_b=? AND server_b=?))
               AND ((status='invited' AND created_at>=?) OR status IN ('ready','active')
                OR (status IN ('finished','declined','cancelled') AND resolved_at>=?))
@@ -1068,27 +1072,30 @@ def pvp_status(uid, server_id, mode=""):
     uid=str(uid or '').strip(); server_id=str(server_id or '').strip().upper(); mode=str(mode or '').lower()
     with _lock:
         db=_db()
-        if mode:
-            match=db.execute("""SELECT * FROM pvp_matches
-                                WHERE ((COALESCE(challenge_uid,'')<>'' AND challenge_uid=? AND COALESCE(NULLIF(server_a,''),server_id)=?)
-                                    OR ((COALESCE(challenge_uid,'')='' OR challenge_uid LIKE 'LIVE:%') AND ((player_a=? AND COALESCE(NULLIF(server_a,''),server_id)=?) OR (player_b=? AND COALESCE(NULLIF(server_b,''),server_id)=?)))) AND mode=?
-                                  AND status IN ('ready','active')
-                                ORDER BY created_at DESC LIMIT 1""",(uid,server_id,uid,server_id,uid,server_id,mode)).fetchone()
-        else:
-            match=db.execute("""SELECT * FROM pvp_matches
-                                WHERE ((COALESCE(challenge_uid,'')<>'' AND challenge_uid=? AND COALESCE(NULLIF(server_a,''),server_id)=?)
-                                    OR ((COALESCE(challenge_uid,'')='' OR challenge_uid LIKE 'LIVE:%') AND ((player_a=? AND COALESCE(NULLIF(server_a,''),server_id)=?) OR (player_b=? AND COALESCE(NULLIF(server_b,''),server_id)=?))))
-                                  AND status IN ('ready','active')
-                                ORDER BY created_at DESC LIMIT 1""",(uid,server_id,uid,server_id,uid,server_id)).fetchone()
-        if match:
-            out={"status":"matched","match":_public_pvp_match(match)}
-        else:
+        try:
             if mode:
-                q=db.execute("SELECT * FROM pvp_queue WHERE uid=? AND server_id=? AND mode=?",(uid,server_id,mode)).fetchone()
+                match=db.execute("""SELECT * FROM pvp_matches
+                                    WHERE ((COALESCE(challenge_uid,'')<>'' AND challenge_uid=? AND COALESCE(NULLIF(server_a,''),server_id)=?)
+                                        OR ((COALESCE(challenge_uid,'')='' OR substr(challenge_uid,1,5)='LIVE:') AND ((player_a=? AND COALESCE(NULLIF(server_a,''),server_id)=?) OR (player_b=? AND COALESCE(NULLIF(server_b,''),server_id)=?)))) AND mode=?
+                                      AND status IN ('ready','active')
+                                    ORDER BY created_at DESC LIMIT 1""",(uid,server_id,uid,server_id,uid,server_id,mode)).fetchone()
             else:
-                q=db.execute("SELECT * FROM pvp_queue WHERE uid=? AND server_id=? ORDER BY joined_at DESC LIMIT 1",(uid,server_id)).fetchone()
-            out={"status":"waiting","queue":dict(q)} if q else {"status":"idle"}
-        db.close(); return out
+                match=db.execute("""SELECT * FROM pvp_matches
+                                    WHERE ((COALESCE(challenge_uid,'')<>'' AND challenge_uid=? AND COALESCE(NULLIF(server_a,''),server_id)=?)
+                                        OR ((COALESCE(challenge_uid,'')='' OR substr(challenge_uid,1,5)='LIVE:') AND ((player_a=? AND COALESCE(NULLIF(server_a,''),server_id)=?) OR (player_b=? AND COALESCE(NULLIF(server_b,''),server_id)=?))))
+                                      AND status IN ('ready','active')
+                                    ORDER BY created_at DESC LIMIT 1""",(uid,server_id,uid,server_id,uid,server_id)).fetchone()
+            if match:
+                out={"status":"matched","match":_public_pvp_match(match)}
+            else:
+                if mode:
+                    q=db.execute("SELECT * FROM pvp_queue WHERE uid=? AND server_id=? AND mode=?",(uid,server_id,mode)).fetchone()
+                else:
+                    q=db.execute("SELECT * FROM pvp_queue WHERE uid=? AND server_id=? ORDER BY joined_at DESC LIMIT 1",(uid,server_id)).fetchone()
+                out={"status":"waiting","queue":dict(q)} if q else {"status":"idle"}
+            db.close(); return out
+        finally:
+            db.close()
 
 
 def activate_pvp_match(match_id, uid):
