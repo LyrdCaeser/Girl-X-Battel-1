@@ -3204,11 +3204,20 @@ class Engine:
             add('9', math.floor(0.65 * int(str(TABLES['exp_partner'][str(g['lv'])]['all_exp']).split('#')[1])))
         return got, six
 
+    def altar_unlimited(self, state):
+        # Only the authenticated, verified SUPER GM owner; never trust a
+        # request flag, VIP level, local developer mode or client-supplied UID.
+        if not self.identity or self.identity != (str(state.get('uid')), str(state.get('server_id','')).upper()):
+            return False
+        from . import s5_test
+        return s5_test.verified_owner(self.identity[0])
+
     def altar_preview(self, request):
         with self.lock:
             state = self._load()
         got, six = self.altar_returns(state, (request or {}).get('partner_ids'))
-        return {'items': got, 'six': six, 'six_left': 5 - int((state.get('altar') or {}).get('six', 0) if (state.get('altar') or {}).get('day') == clock.day(self.now()) else 0)}
+        unlimited = self.altar_unlimited(state)
+        return {'items': got, 'six': six, 'unlimited': unlimited, 'six_left': None if unlimited else max(0, 5 - int((state.get('altar') or {}).get('six', 0) if (state.get('altar') or {}).get('day') == clock.day(self.now()) else 0))}
 
     @staticmethod
     def awake25_identity(row):
@@ -3855,7 +3864,7 @@ class Engine:
             got, six = self.altar_returns(state, ids)
             day = clock.day(self.now()); alt = state.setdefault('altar', {})
             if alt.get('day') != day: alt.update(day=day, six=0)
-            if six and alt['six'] + six > 5: raise GameError('Mỗi ngày chỉ được phân giải tối đa 5 Nữ Thần thường từ 6★ trở lên')
+            if six and alt['six'] + six > 5 and not self.altar_unlimited(state): raise GameError('Mỗi ngày chỉ được phân giải tối đa 5 Nữ Thần thường từ 6★ trở lên')
             alt['six'] += six
             owned = {g['partner_id']: g for g in state['partners']}
             for pid in ids: equipment.release(state, owned[pid])

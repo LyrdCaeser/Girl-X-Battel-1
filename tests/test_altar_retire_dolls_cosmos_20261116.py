@@ -112,6 +112,41 @@ class AltarDollsCosmosTests(unittest.TestCase):
         self.assertTrue(set(ids).isdisjoint(
             x['partner_id'] for x in self.state['partners']))
 
+    def test_verified_admin_unlimited_daily_but_preserves_safety(self):
+        from unittest.mock import patch
+        from gxb2 import s5_test, clock
+        uid='owner-test'
+        self.engine.identity=(uid,'S5')
+        self.state.update(uid=uid,server_id='S5')
+        self.state['altar']={'day':clock.day(self.engine.now()),'six':5}
+        with patch.object(s5_test,'verified_owner',side_effect=lambda x:x==uid):
+            for world in ('S1','S2','S3','S4','S5'):
+                self.engine.identity=(uid,world)
+                self.state['server_id']=world
+                ids=[self.add(651001) for _ in range(12)]
+                self.assertTrue(self.engine.altar_unlimited(self.state))
+                with patch.object(self.engine,'_load',return_value=self.state):
+                    preview=self.engine.altar_preview({'partner_ids':ids})
+                    self.assertTrue(preview['unlimited'])
+                    self.assertIsNone(preview['six_left'])
+                self.engine._dispatch('DECOMPOSE_PARTNERS',{'partner_ids':ids},self.state)
+                self.assertTrue(set(ids).isdisjoint(x['partner_id'] for x in self.state['partners']))
+            self.assertEqual(self.state['altar']['six'],65)
+            locked=self.add(651001,flags=[1])
+            with self.assertRaises(GameError):
+                self.engine._dispatch('DECOMPOSE_PARTNERS',{'partner_ids':[locked]},self.state)
+            ids=[self.add(651001) for _ in range(13)]
+            with self.assertRaises(GameError):
+                self.engine._dispatch('DECOMPOSE_PARTNERS',{'partner_ids':ids},self.state)
+            self.engine.identity=('ordinary','S5')
+            self.assertFalse(self.engine.altar_unlimited(self.state))
+            self.state['uid']='ordinary'
+            with self.assertRaises(GameError):
+                self.engine._dispatch('DECOMPOSE_PARTNERS',{'partner_ids':ids[:1],'admin':True},self.state)
+            self.engine.identity=None
+            self.state['uid']=uid
+            self.assertFalse(self.engine.altar_unlimited(self.state))
+
     def test_regular_six_star_remains_limited_after_five(self):
         from gxb2 import clock
         regular = self.add(651001)
