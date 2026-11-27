@@ -148,7 +148,7 @@ async function composeHomeAtlas(){
  for(let i=0;i<pixels.data.length;i+=4)pixels.data[i+3]=mask.data[i];ctx.putImageData(pixels,0,0);
  const url=c.toDataURL('image/png');for(const e of document.querySelectorAll('.home-sprite'))e.style.backgroundImage=`url(${url})`;
 }
-function renderHome(){const heroes=[null,42001,43001];const id=heroes[homeHeroIndex%heroes.length];
+function renderHome(){if(typeof LobbyEvents!=='undefined')LobbyEvents.sync();const heroes=[null,42001,43001];const id=heroes[homeHeroIndex%heroes.length];
  const chosen=typeof Wallpaper!=='undefined'&&Wallpaper.activeId?Wallpaper.activeId(homeHeroIndex):null;
  if(typeof LobbyDialogue!=='undefined')LobbyDialogue.sync(chosen?(Wallpaper.voiceId(chosen)||null):id);
  {const wp=typeof Wallpaper!=='undefined'&&Wallpaper.heroSrc(homeHeroIndex,chosen);const hero=$('home-hero');const picture=wp||(id?'/assets/hero-'+id+'.png':'');

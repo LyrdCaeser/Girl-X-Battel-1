@@ -603,6 +603,10 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
             return self.send(200, {'server_id': account['server_id'],
                                    'ranking': live_service.soul_land_ranking(
                                        account['server_id'], account['uid'])})
+        if path == '/api/lobby/events':
+            from gxb2 import game_calendar
+            account=self.auth_context()['account']
+            return self.send(200,game_calendar.lobby_snapshot(account['server_id']))
         if path == '/api/world-rankings':
             from gxb2 import world_rankings
             account=self.auth_context()['account']

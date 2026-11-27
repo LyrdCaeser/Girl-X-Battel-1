@@ -489,5 +489,62 @@ const EventsHub=(()=>{
 
  function openPoint(id,from){tab='ex';selected=id;pinnedId=id;soniaView=null;open(from);}
  function openOriginalEvent(id,from){const entry={166:'ex',167:'ex',191:'ex',279:'ex'};tab=entry[id]||'ex';selected=id;pinnedId=id;soniaView=null;open(from);}
- return {open,openPoint,openOriginalEvent,render};
+ function openSonia(kind,from){
+  tab='ex';pinnedId=null;selected=null;open(from);soniaView=kind;message='';soniaDraws=[];soniaClockIndex=-1;soniaClockSpinning=false;render();
+  if(kind==='shards'&&!pending&&state.sonia_festival_info?.wheel?.first_discount?.needs_draw){soniaDiscountSpinning=true;send({action:'sonia_discount_draw'});}
+ }
+
+ return {open,openPoint,openOriginalEvent,openSonia,render};
+})();
+
+
+// Live lobby: only server-scheduled events, bounded display and no archived fallback.
+const LobbyEvents=(()=>{
+ let identity='',snapshot=null,received=0,busy=false,sequence=0,lastFetch=-Infinity,wasHome=false;
+ const identityOf=()=>state?.uid&&state?.server_id?state.uid+'|'+state.server_id:'';
+ const now=()=>snapshot?snapshot.now+(performance.now()-received)/1000:0;
+ const host=()=>document.querySelector('.home-live-events');
+ function paint(){
+  const root=host();if(!root)return;
+  const active=(snapshot?.events||[]).filter(e=>e.start<=now()&&now()<e.end).slice(0,6);
+  const signature=active.map(e=>e.key+':'+e.end).join('|');
+  if(root.dataset.eventSignature===signature)return;
+  root.dataset.eventSignature=signature;
+  root.querySelectorAll('.home-timed-event').forEach(b=>b.remove());
+  for(const e of active){
+   const b=document.createElement('button');b.type='button';b.className='home-timed-event';b.dataset.eventKey=e.key;b.dataset.eventEnd=e.end;b.title=e.title;
+   const frame=document.createElement('span');frame.className='home-original';
+   const icon=document.createElement('img');icon.className='home-original-icon';icon.src=e.icon;icon.alt='';
+   const label=document.createElement('small');label.textContent=e.title;frame.append(icon);b.append(frame,label);
+   b.onclick=()=>{
+    if(identityOf()!==identity||now()>=e.end){paint();refresh(true);return;}
+    if(e.festival)EventsHub.openSonia(e.festival,'home');else EventsHub.openOriginalEvent(e.id,'home');
+   };
+   root.append(b);
+  }
+ }
+ function sync(){
+  const key=identityOf();
+  if(key!==identity){identity=key;snapshot=null;sequence++;busy=false;lastFetch=-Infinity;wasHome=false;paint();}
+  const home=view==='home'&&!document.hidden;
+  if(home){paint();if(!wasHome)refresh(true);else if(performance.now()-lastFetch>=15000)refresh();}
+  wasHome=home;
+ }
+ async function refresh(force=false){
+  if(!identity||view!=='home'||document.hidden||busy||(!force&&performance.now()-lastFetch<15000))return;
+  const key=identity,token=++sequence;busy=true;lastFetch=performance.now();
+  try{
+   const data=await api('/api/lobby/events');
+   if(token!==sequence||identityOf()!==key||data.server_id!==state.server_id)return;
+   snapshot=data;received=performance.now();
+   // Keep existing season resets while refreshing authoritative calendar windows.
+   const extra=(state.calendar_info?.resets||[]).filter(r=>!['day','week','month'].includes(r.key)&&r.at>data.now);
+   state.calendar_info={...data.calendar,resets:[...data.calendar.resets,...extra].sort((a,b)=>a.at-b.at)};
+   if(state.sonia_festival_info)state.sonia_festival_info.events=data.sonia;
+   paint();
+  }catch(e){paint();}finally{if(token===sequence)busy=false;}
+ }
+ setInterval(sync,1000);
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden){wasHome=false;sync();}});
+ return {sync};
 })();

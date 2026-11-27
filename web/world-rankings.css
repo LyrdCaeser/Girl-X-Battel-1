@@ -1,7 +1,16 @@
 /* Only geometry is new; frame, button, row and medal artwork are the native assets. */
-/* Third shortcut column, anchored to the existing two-column grid.
-   Same icon container and label styling as the Event shortcut. */
-#app-frame .home-stage .home-left>.home-rankings{position:absolute;left:calc(100% + 5px);top:0;width:calc((100% - 5px)/2);z-index:5;min-width:0}
+/* One flowing grid: same original icon frames, no absolute-positioned event slots. */
+#app-frame .home-stage .home-left.home-live-events,
+html.gxb-mobile #app-frame .home-stage .home-left.home-live-events{
+ display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;
+ width:54%!important;max-width:54%!important;gap:5px!important;align-items:start;
+}
+html.gxb-desktop #app-frame .home-stage .home-left.home-live-events{width:min(54%,360px)!important;max-width:360px!important}
+#app-frame .home-stage .home-live-events>.home-rankings{position:relative;left:auto;top:auto;width:auto;min-width:0}
+#app-frame .home-stage .home-live-events>button{min-width:0;max-width:100%;height:68px!important;min-height:0!important}
+#app-frame .home-stage .home-live-events>button small{white-space:normal;overflow-wrap:anywhere;max-width:100%;line-height:1.05}
+#app-frame .home-stage .home-live-events>.home-timed-event .home-original,
+#app-frame .home-stage .home-live-events>.home-rankings .home-original{width:46px!important;height:48px!important;padding:5px;box-sizing:border-box}
 #app-frame .world-rank-win{--u:clamp(.44px,.13vw,.92px);width:min(97%,670px)!important;max-height:90dvh!important;overflow:visible!important}
 #app-frame .world-rank-win .gs-win-body{display:flex;flex-direction:column;min-height:0;max-height:76dvh;overflow:auto;padding:6px;gap:6px}
 .world-rank-win .wr-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}

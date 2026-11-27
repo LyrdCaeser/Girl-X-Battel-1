@@ -161,3 +161,35 @@ def snapshot(now=None, resets=(), server_id='S1'):
     return {'now': now, 'periods': p, 'always': list(ALWAYS), 'events': cur, 'next': nxt,
             'scheduled': sorted(set(WEEKLY) | set(MONTHLY)),
             'resets': sorted(base + [r for r in resets if r.get('at', 0) > now], key=lambda r: r['at'])}
+
+
+def lobby_snapshot(server_id, now=None):
+    """Only currently playable timed shortcuts; never advertise archived events."""
+    from . import sonia_festival
+    now = int(time.time() if now is None else now)
+    cal = snapshot(now, server_id=server_id)
+    rows = []
+    featured = cal.get('featured_today') if cal.get('exclusive_s4') else None
+    for event in cal['events']:
+        if not event['start'] <= now < event['end']:
+            continue
+        if featured and event['id'] not in featured['ids']:
+            continue
+        art = 'icon_' + ACTS[event['id']]['icon'] + '.png'
+        if not (ROOT / 'web/assets/events' / art).is_file():
+            continue
+        rows.append(dict(event, title=str(event['title']).replace('\\n',' ').replace('\n',' '), key='event:'+str(event['id']),
+                         icon='/assets/events/'+art,
+                         end=min(event['end'], featured['end']) if featured else event['end'],
+                         priority=1))
+    for kind, title, art in (
+        ('stars','Lễ Hội Thức Tỉnh','/assets/girl-ui/potentiality_nametag_star_max.png'),
+        ('shards','Vòng Quay Kim Đồng Hồ','/assets/events/icon_activity_clock.png'),
+        ('missions','Chinh Phục Nhiệm Vụ','/assets/factions/8.png')):
+        if sonia_festival.active(now, kind) and (ROOT / 'web' / art.lstrip('/')).is_file():
+            rows.append(dict(key='sonia:'+kind, festival=kind, title=title, icon=art,
+                             start=sonia_festival.START,end=sonia_festival.ENDS[kind],priority=0))
+    rows.sort(key=lambda r:(r['priority'],r['end'],r['key']))
+    return {'server_id':server_id,'now':now,'events':rows,'calendar':cal,
+            'sonia':{k:{'start':sonia_festival.START,'end':v,
+                        'active':sonia_festival.active(now,k)} for k,v in sonia_festival.ENDS.items()}}
