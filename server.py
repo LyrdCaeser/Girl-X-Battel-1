@@ -270,6 +270,13 @@ class HTTPHandler(BaseHTTPRequestHandler):
             self.send(401, {'error': 'AUTH_REQUIRED'})
             return None
         if ctx['account']['server_id'] == 'S5':
+            parsed=urlparse(self.path)
+            if parsed.path.startswith('/api/pvp/') or parsed.path=='/api/events/stream':
+                mode=(parse_qs(parsed.query).get('mode') or ['arena'])[0].strip().lower()
+                if mode not in ('arena','arena3v3'):
+                    self.send(403,{'error':'S5 chỉ mở Đấu Trường Đơn và Đấu Trường Đội. Đấu Trường Liên Server đã khóa.','code':'S5_CROSS_LOCKED'})
+                    return None
+
             phase=s5_test.schedule(time.time())
             if phase['phase']=='locked':
                 self.send(423,{'error':'S5 đã đóng. Hãy chuyển về máy chủ thường.','code':'S5_LOCKED','s5_cycle':phase})
@@ -375,6 +382,8 @@ class HTTPHandler(BaseHTTPRequestHandler):
         last_payload=None
         for _ in range(20):
             try:
+                if account['server_id']=='S5' and s5_test.schedule(time.time())['phase']!='open':
+                    break
                 if account['server_id']=='S4':
                     phase=s4_exclusive.cycle()
                     if s4_exclusive.access_mode(account['uid'])=='none':
@@ -661,7 +670,7 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                     'candidates': live_service.pvp_candidates(account['uid'], account['server_id'], mode, 20),
                     'season': live_service.pvp_season_window(mode, account['server_id']),
                     'season_reward': live_service.pvp_season_claim_status(account['uid'], account['server_id'], mode),
-                    'history': live_service.pvp_history(account['uid'], 20),
+                    'history': live_service.pvp_history(account['uid'], 20,account['server_id']),
                     'defense': self.engine.pvp_defense_formation(),
                 }
                 if mode == 'arena3v3':
@@ -684,7 +693,7 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
             target_uid = str((query.get('uid') or [''])[0]).strip()
             target_server = str((query.get('server_id') or [account['server_id']])[0]).strip().upper()
             mode = str((query.get('mode') or ['arena'])[0]).strip().lower()
-            if target_server=='S5':
+            if 'S5' in (target_server,account['server_id']) and (target_server!=account['server_id'] or mode not in ('arena','arena3v3')):
                 return self.send(403,{'error':'Hồ sơ PvP S5 được cách ly'})
             if not target_uid or target_uid == str(account['uid']):
                 raise ValueError('Đối thủ không hợp lệ')
@@ -1287,6 +1296,18 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                 return self.send(200,owner_recovery.emergency_account(self.session_token(),data),headers={'Cache-Control':'private, no-store'})
             if not self.require_auth():
                 return
+            if path.startswith('/api/pvp/'):
+                account=self.auth_context()['account']
+                if account['server_id']=='S5' and str(data.get('mode') or 'arena').strip().lower() not in ('arena','arena3v3'):
+                    return self.send(403,{'error':'Đấu Trường Liên Server không mở tại S5','code':'S5_CROSS_LOCKED'})
+                # Match-bound operations include ticket payment, battle, result,
+                # heartbeat, replay and series. Check current character on every call.
+                if path.startswith('/api/pvp/match/') or path in (
+                        '/api/pvp/arena3v3/pay','/api/pvp/arena3v3/round','/api/pvp/arena3v3/replay'):
+                    try:
+                        live_service.require_pvp_match_world(data.get('match_id'),account['uid'],account['server_id'])
+                    except ValueError as exc:
+                        return self.send(403,{'error':str(exc)})
             if path == '/api/s5/rewards':
                 return self.send(200,self.engine.s5_rewards_action(data))
             if path == '/api/friends/action':

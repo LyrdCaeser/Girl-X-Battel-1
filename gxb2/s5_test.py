@@ -16,7 +16,7 @@ MONTHANH_UID = 'GB3-854365013'
 RESOURCES = {
     '1': 1_000_000_000, '9': 1_000_000_000,
     '10': 10_000_000, '417': 10_000_000, '173': 10_000_000,
-    '44': 500_000, '198': 10_000_000, '199': 10_000_000,
+    '34': 10_000, '44': 500_000, '198': 10_000_000, '199': 10_000_000,
     '359': 5_000_000, '360': 5_000_000, '26': 1_000_000, '27': 1_000_000,
 }
 SKIN_CHOICES = 10
@@ -221,10 +221,9 @@ def ensure_welcome(uid, server_id, name):
 
 
 def restrict_route(path):
-    # Ranked match identifiers and settlements currently use account UID across
-    # worlds. Keep S5 out of that subsystem until per-world IDs are supported.
-    return (path.startswith(('/api/pvp/','/api/guild-war/','/api/order/','/api/giftskin/','/api/skin-shop/','/api/giftcode/'))
-            or path in ('/api/events/stream','/api/friends/gift','/api/friends/marriage',
+    # PvP is authorized separately by mode and exact character identity.
+    return (path.startswith(('/api/guild-war/','/api/order/','/api/giftskin/','/api/skin-shop/','/api/giftcode/'))
+            or path in ('/api/friends/gift','/api/friends/marriage',
                         '/api/profile/photo/upload','/api/profile/photo/delete'))
 
 

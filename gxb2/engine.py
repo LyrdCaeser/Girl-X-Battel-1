@@ -664,7 +664,7 @@ class Engine:
                     live_db.execute('BEGIN IMMEDIATE')
                 else:
                     live_db = self.db.borrowed_live_transaction()
-                progress = live_service.mark_pvp_arena3v3_paid(live_db, match_id, uid)
+                progress = live_service.mark_pvp_arena3v3_paid(live_db, match_id, uid, state.get("server_id"))
                 current = int(state.setdefault('items', {}).get('34', 0))
                 if progress.get('newly_paid'):
                     if current < arena3v3.COST:

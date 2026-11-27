@@ -70,11 +70,12 @@ class S5CoreTests(unittest.TestCase):
                         self.assertEqual(len(e.match_materials(owned,list(owned),recipe['material'],recipe['group'])),len(owned))
 
     def test_isolation_rules(self):
-        for route in ('/api/pvp/status','/api/pvp/challenge','/api/giftskin/crystal',
+        for route in ('/api/giftskin/crystal',
                       '/api/giftcode/redeem','/api/order/create','/api/friends/gift',
-                      '/api/guild-war/battle','/api/events/stream'):
+                      '/api/guild-war/battle'):
             self.assertTrue(s5.restrict_route(route))
-        self.assertFalse(s5.restrict_route('/api/friends/duel'))
+        for route in ('/api/friends/duel','/api/pvp/status','/api/pvp/challenge','/api/events/stream'):
+            self.assertFalse(s5.restrict_route(route))
         state=self.state()
         state['partners'].append({'table_id':s5.SONIA})
         with self.assertRaises(ValueError):s5.enforce_roster(state)
@@ -90,8 +91,51 @@ class S5CoreTests(unittest.TestCase):
             self.assertNotIn('C',[p['uid'] for p in live_service.pvp_candidates('A','S1','cross')])
             self.assertNotIn('C',[p['uid'] for p in live_service.pvp_rating_board('cross')])
             with self.assertRaises(ValueError):live_service.challenge_pvp('A','S1','Alpha','cross','C','S5')
-            with self.assertRaises(ValueError):live_service.enqueue_pvp('C','S5','Charlie','arena')
+            with self.assertRaises(ValueError):live_service.enqueue_pvp('C','S5','Charlie','cross')
             with self.assertRaises(ValueError):auth.verify_gift_recipient('GB3-123456789','Charlie','S5')
+
+    def test_s5_local_pvp_and_character_scope(self):
+        from gxb2 import live_service as ls
+        import tempfile
+        from pathlib import Path
+        with tempfile.TemporaryDirectory() as td,patch.object(ls,'DB_PATH',Path(td)/'live.sqlite3'):
+            ls.create_world('S5',s5.NAME)
+            for uid,world in [('A','S1'),('B','S1'),('A','S5'),('B','S5'),('C','S5')]:
+                ls.register_player(uid,world,uid+' '+world)
+            ordinary=ls.challenge_pvp('A','S1','A S1','arena','B','S1')['match']
+            self.assertEqual(ls.pvp_status('A','S5','arena')['status'],'idle')
+            for mode in ('arena','arena3v3'):
+                board=ls.pvp_rating_board(mode,server_id='S5')
+                self.assertEqual({p['uid'] for p in board},{'A','B','C'})
+                self.assertTrue(all(p['server_id']=='S5' for p in board))
+                self.assertEqual({p['uid'] for p in ls.pvp_candidates('A','S5',mode)},{'B','C'})
+                match=ls.challenge_pvp('A','S5','A S5',mode,'B','S5')['match']
+                self.assertEqual(match['mode'],mode)
+                self.assertNotEqual(match['id'],ordinary['id'])
+                self.assertEqual(ls.pvp_status('A','S5',mode)['match']['id'],match['id'])
+                ls.require_pvp_match_world(match['id'],'A','S5')
+                ls.require_pvp_match_world(match['id'],'B','S5')
+                with self.assertRaises(ValueError):ls.require_pvp_match_world(match['id'],'A','S1')
+                with self.assertRaises(ValueError):ls.require_pvp_match_world(match['id'],'C','S5')
+                with self.assertRaises(ValueError):ls.require_pvp_match_world(ordinary['id'],'A','S5')
+                if mode=='arena':
+                    ls.finish_authoritative_pvp(match['id'],'A',{'uid':'A','server_id':'S5'}, {'uid':'B','server_id':'S5'}, {'isWin':1})
+                else:
+                    from gxb2 import arena3v3
+                    # A native reward item selected by the original reward table.
+                    item=str(arena3v3.DATA['dropbox'][0]['item']).split('#')[0]
+                    report={'isWin':1,'arena3v3':{'player_rewards':{u:{'reward':{item:1}} for u in ('A','B')}}}
+                    ls.finish_authoritative_pvp(match['id'],'A',{'uid':'A','server_id':'S5'},{'uid':'B','server_id':'S5'},report)
+                    self.assertTrue(ls.mailbox('A','S5'))
+                    self.assertFalse(ls.mailbox('A','S1'))
+                self.assertEqual(ls.pvp_rating('A','S5',mode)['matches'],1)
+                self.assertEqual(ls.pvp_rating('A','S1',mode)['matches'],0)
+            self.assertEqual(len(ls.pvp_history('A',20,'S5')),2)
+            self.assertEqual(len(ls.pvp_history('A',20,'S1')),1)
+            self.assertEqual(ls.pvp_status('A','S1','arena')['match']['id'],ordinary['id'])
+            with self.assertRaises(ValueError):ls.pvp_candidates('A','S5','cross')
+            with self.assertRaises(ValueError):ls.challenge_pvp('A','S5','A S5','cross','B','S1')
+            with self.assertRaises(ValueError):ls.challenge_pvp('A','S1','A S1','cross','C','S5')
 
     def test_kit_and_skin_choices(self):
         state=self.state();s5.grant_welcome(state,1795740000)

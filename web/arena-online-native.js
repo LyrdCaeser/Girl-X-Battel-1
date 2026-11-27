@@ -32,6 +32,7 @@ const NativeOnlineArenas=(()=>{
  },5000);}
  async function open(which='arena',from='home'){
   if(!state?.items){GirlUI.notice('Hồ sơ người chơi đang tải. Vui lòng thử lại.',{title:'Đấu Trường'});return;}
+  if(which==='cross'&&state?.server_id==='S5'){GirlUI.notice('Đấu Trường Liên Server không mở tại Thiên Hư Không. Bạn vẫn có thể chơi Đấu Trường Đơn và Đấu Trường Đội.',{title:'S5 • Thiên Hư Không'});return;}
   mode=['arena','cross','arena3v3'].includes(which)?which:'arena';origin=from||view||'home';
   data=null;panel='';note='';lastMatchResult=null;draft=null;teamIndex=0;defenseDraft=null;defensePos=1;attackDraft=null;attackPos=1;stop();
   root();showView(activeView());render();await refresh();beginPoll();
