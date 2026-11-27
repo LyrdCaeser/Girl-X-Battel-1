@@ -23,7 +23,7 @@ from gxb2.story import catalog as story_catalog
 from gxb2.dress import catalog as dress_catalog
 from gxb2.skins import catalog as skins_catalog
 from gxb2.souls import catalog as souls_catalog
-from gxb2 import protocol as p, local_promotion, local_config, world_live_config, topup, live_service, auth, database, gm_catalog, giftcodes, studio_sso, skin_store, skin_bank, skin_gifts, owner_recovery, profile_photos, s4_exclusive, s4_gm, s4_trial, s4_trial_gm_gifts
+from gxb2 import protocol as p, local_promotion, local_config, world_live_config, topup, live_service, auth, database, gm_catalog, giftcodes, studio_sso, skin_store, skin_bank, skin_gifts, owner_recovery, profile_photos, s4_exclusive, s4_gm, s4_trial, s4_trial_gm_gifts, s5_test
 from gxb2.player_engines import PlayerEnginePool
 from gxb2.battle import simulate as simulate_battle, ONLINE_BATTLE_ID, normalize_online_seed
 from gxb2.security import FixedWindowRateLimiter, DEFAULT_LIMITS, env_bool, validate_production_config
@@ -269,6 +269,14 @@ class HTTPHandler(BaseHTTPRequestHandler):
         if not ctx:
             self.send(401, {'error': 'AUTH_REQUIRED'})
             return None
+        if ctx['account']['server_id'] == 'S5':
+            phase=s5_test.schedule(time.time())
+            if phase['phase']=='locked':
+                self.send(423,{'error':'S5 đã đóng. Hãy chuyển về máy chủ thường.','code':'S5_LOCKED','s5_cycle':phase})
+                return None
+            if s5_test.restrict_route(urlparse(self.path).path):
+                self.send(403,{'error':'Tính năng này tạm khóa tại S5 để cách ly máy chủ thử nghiệm. Có thể So Tài với bạn bè cùng S5.'})
+                return None
         if ctx['account']['server_id'] == 'S4':
             if ctx.get('s4_access_expired'):
                 self.send(423, {
@@ -431,6 +439,8 @@ class HTTPHandler(BaseHTTPRequestHandler):
                 return self.send(200,{'ready':True,'database':database.backend_name(),'worlds':len(worlds)})
             except Exception:
                 return self.send(503,{'ready':False,'database':database.backend_name()})
+        if path == '/api/s5/cycle':
+            return self.send(200,s5_test.schedule(time.time()))
         if path == '/api/s4/cycle':
             return self.send(200, s4_exclusive.cycle())
         if path == '/api/s4/trial':
@@ -453,6 +463,7 @@ class HTTPHandler(BaseHTTPRequestHandler):
                                    'worlds': live_service.worlds(),
                                    'is_super_gm': self.is_super_gm(),
                                    's4_cycle': s4_exclusive.cycle(),
+                                   's5_cycle': s5_test.schedule(time.time()),
                                    's4_trial':trial})
         if path == '/api/auth/sessions':
             ctx = self.require_auth()
@@ -550,6 +561,9 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
             ctx=self.auth_context()
             mode=(parse_qs(parsed.query).get('mode') or ['arena'])[0]
             return self.send_sse(ctx,mode)
+        if path == '/api/s5/rewards':
+            if self.auth_context()['account']['server_id']!='S5': return self.send(403,{'error':'Chỉ dành cho S5'})
+            return self.send(200,self.engine.s5_rewards_status())
         if path == '/api/mail':
             ctx = self.auth_context(); account = ctx['account']
             return self.send(200, {'mail_info': live_service.mailbox(
@@ -670,6 +684,8 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
             target_uid = str((query.get('uid') or [''])[0]).strip()
             target_server = str((query.get('server_id') or [account['server_id']])[0]).strip().upper()
             mode = str((query.get('mode') or ['arena'])[0]).strip().lower()
+            if target_server=='S5':
+                return self.send(403,{'error':'Hồ sơ PvP S5 được cách ly'})
             if not target_uid or target_uid == str(account['uid']):
                 raise ValueError('Đối thủ không hợp lệ')
             target = live_service.player(target_uid, target_server)
@@ -1271,6 +1287,8 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                 return self.send(200,owner_recovery.emergency_account(self.session_token(),data),headers={'Cache-Control':'private, no-store'})
             if not self.require_auth():
                 return
+            if path == '/api/s5/rewards':
+                return self.send(200,self.engine.s5_rewards_action(data))
             if path == '/api/friends/action':
                 ctx = self.auth_context(); account = ctx['account']
                 return self.send(200, live_service.friend_action(

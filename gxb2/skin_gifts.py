@@ -162,6 +162,7 @@ def view_recipient(sender_uid, recipient_uid, recipient_name, recipient_server):
 def create_bank(sender_uid, sender_server, recipient_uid, recipient_name, recipient_server, skin_id):
     sender_uid = str(sender_uid or "")
     sender_server = str(sender_server or "").upper()
+    if sender_server=="S5": raise ValueError("Không chuyển quà từ S5")
     sender = live_service.player(sender_uid, sender_server)
     if not sender or sender.get("status") != "active":
         raise ValueError("Phiên người tặng không hợp lệ")

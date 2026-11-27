@@ -318,6 +318,10 @@ class Engine:
             if changed:
                 self._save_profile(state)
                 self.db.commit()
+        if str(server_id).upper() == 'S5' and not getattr(self,'_s5_mail_checked',False):
+            from . import s5_test
+            s5_test.ensure_welcome(uid,'S5',character_name)
+            self._s5_mail_checked=True
         if str(server_id).upper() == 'S4':
             # Rewards are delivered on S4 entry, even if the S4 character
             # was created AFTER the source-world key was consumed.
@@ -369,6 +373,9 @@ class Engine:
         return simulate(*args, **kwargs)
 
     def _save_profile(self, state):
+        if state.get('server_id')=='S5':
+            from . import s5_test
+            s5_test.enforce_roster(state)
         probe = dict(state)
         growth_diary.observe(state, self.missions_probe(probe), player_level(state))
         newbie_camp.observe(state, self.missions_probe(dict(state)), player_level(state), self.now())
@@ -705,6 +712,13 @@ class Engine:
                     db=live_db)
                 inventory = dict(attachments)
                 special_gift = inventory.pop('__gxb3_goddess__', None)
+                from . import s5_test
+                s5_marker = inventory.pop(s5_test.MAIL_MARKER,None)
+                s5_rewards = None
+                if s5_marker is not None:
+                    if int(s5_marker)!=1: raise GameError('Gói S5 không hợp lệ')
+                    s5_test.ensure_open(server_id)
+                    s5_rewards = s5_test.grant_welcome(state,self.now())
                 s4_marker = inventory.pop('__s4_exclusive_bundle__', None)
                 s4_trial_reward = inventory.pop('__s4_trial_gm_reward__', None)
                 if s4_marker is not None and s4_trial_reward is not None:
@@ -750,7 +764,45 @@ class Engine:
             # Only issue after the paid VIP reward has been committed.
             s4_exclusive.ensure_key_mail(state)
         return {'state': self.snapshot(), 'attachments': attachments,
-                'goddess': gifted, 's4_rewards': s4_rewards}
+                'goddess': gifted, 's4_rewards': s4_rewards, 's5_rewards': s5_rewards}
+
+    def s5_rewards_status(self):
+        from . import s5_test, goddess_gifts, skins
+        with self.lock:
+            st=self._load()
+            s5_test.check_scope(st)
+            welcome=st.get('s5_welcome') or {}
+            hosts=welcome.get('hosts',{})
+            kits=welcome.get('kits',{})
+            have=skins.collected(st)
+            return {'claimed':bool(welcome),'remaining':int(welcome.get('skin_choices',0)),
+                    'hosts':[{'partner_id':p['partner_id'],'name':goddess_gifts.BY_ID[p['table_id']]['name'],
+                              'stars':10+int(p.get('awake',0)),
+                              'kit_claimed':f"{p['table_id']}:{11+int(p.get('awake',0))}" in kits}
+                             for p in st['partners'] if hosts.get(str(p['table_id']))==p['partner_id']],
+                    'skins':[{'id':sid,'name':skins.SKINS[sid]['name']} for sid in s5_test.skin_catalog(st['uid'])
+                             if sid not in have]}
+
+    def s5_rewards_action(self, data):
+        from . import s5_test
+        with self.lock:
+            self.db.execute('BEGIN IMMEDIATE')
+            try:
+                st=self._load()
+                s5_test.check_scope(st)
+                s5_test.ensure_open('S5')
+                if data.get('action')=='kit':
+                    out=s5_test.grant_kit(st,data.get('partner_id'))
+                elif data.get('action')=='skins':
+                    out=s5_test.choose_skins(st,data.get('ids'))
+                else:
+                    raise GameError('Thao tác quà S5 không hợp lệ')
+                self._save_profile(st)
+                self.db.commit()
+            except Exception:
+                self.db.rollback()
+                raise
+        return {'result':out,'state':self.snapshot()}
 
     def s4_wish_replay(self):
         """Read-only replay; rewards can never be claimed by playing a video."""
@@ -759,19 +811,35 @@ class Engine:
             return s4_exclusive.replay_payload(self._load())
 
     def bag_use_options(self, item_id):
-        from . import bag_use
+        from . import bag_use, s5_test
+        if str(item_id)==s5_test.SKIN_BOX:
+            with self.lock:
+                st=self._load()
+                s5_test.check_scope(st)
+                have=skins.collected(st)
+                return {'usable':True,'kind':'choice','item_id':s5_test.SKIN_BOX,
+                    'max_per_use':1,'open_all_threshold':999999999,
+                    'choices':[bag_use._choice_option(sid,1,bag_use._catalog())
+                               for sid in s5_test.skin_catalog(st['uid']) if sid not in have]}
         return bag_use.describe(item_id)
 
     def use_bag_item(self, item_id, reward_id=None, count=1, open_all=False):
         """Server-authoritative original game reward rules; never trust client data."""
-        from . import bag_use, s4_trial
+        from . import bag_use, s4_trial, s5_test
         with self.lock:
             self.db.execute('BEGIN IMMEDIATE')
             try:
                 state = self._load()
                 try:
                     used_count = int(state.get('items', {}).get(str(int(item_id)), 0)) if open_all else int(count)
-                    if s4_trial.hours_for(item_id) is not None:
+                    if str(item_id)==s5_test.SKIN_BOX:
+                        if open_all or str(count)!='1':
+                            raise ValueError('Mỗi hộp chọn một trang phục')
+                        s5_test.ensure_open('S5')
+                        selected=s5_test.choose_skins(state,[int(reward_id or 0)])
+                        trial=None
+                        rewards={str(sid):1 for sid in selected['skin_ids']}
+                    elif s4_trial.hours_for(item_id) is not None:
                         if (open_all or str(count)!='1' or reward_id not in (None,'',0)):
                             raise ValueError('Mỗi lần chỉ được dùng một Chìa Khóa S4')
                         if isinstance(self.db, ScopedPostgresPlayerDB) and self.db._tx is not None:
@@ -2531,6 +2599,7 @@ class Engine:
                 state = self._load()
                 sender = str(state.get("uid") or "")
                 world = str(state.get("server_id") or "").upper()
+                if world=="S5": raise GameError("Không chuyển quà từ S5")
                 if sender != self.db.uid or world != self.db.server_id:
                     raise GameError("Phiên người tặng không hợp lệ")
                 live_db = self.db.borrowed_live_transaction()
@@ -3451,6 +3520,11 @@ class Engine:
         if name == 'SUMMON':
             summon_id = integer(request.get('summon_id'), 'summon_id', 1)
             if summon_id in chaos_summon.SUMMONS:
+                if state.get('server_id')=='S5':
+                    from . import s5_test
+                    if not s5_test.sonia_allowed(state.get('uid')):
+                        raise GameError('Lyr Sonia chỉ dành cho tài khoản được cấp quyền tại S5')
+
                 rows, total = self.summon_pool(10002, state.get('server_id', 'S1'))
 
                 def fallback_draw():

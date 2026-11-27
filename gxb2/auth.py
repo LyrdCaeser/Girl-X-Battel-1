@@ -8,7 +8,7 @@ import threading
 import time
 from pathlib import Path
 
-from . import live_service, database
+from . import live_service, database, s5_test
 
 ROOT = Path(__file__).resolve().parents[1]
 DB_PATH = ROOT / "state" / "auth.sqlite3"
@@ -116,6 +116,8 @@ def verify_gift_recipient(public_uid, character_name, server_id, sender_uid=""):
     public_uid = str(public_uid or "").strip().upper()
     character_name = str(character_name or "").strip()
     server_id = str(server_id or "").strip().upper()
+    if server_id == 'S5':
+        raise ValueError("Không tặng trang phục sang máy chủ thử nghiệm")
     if not PUBLIC_UID_RE.fullmatch(public_uid) or not character_name or len(character_name)>40:
         raise ValueError("Nhập đúng UID GB3-9 số và tên nhân vật nhận quà")
     with _lock:
@@ -203,6 +205,7 @@ def register(username, password, character_name, server_id="S1", email="", user_
     email = _clean_email(email)
     character_name = str(character_name or "").strip()
     server_id = str(server_id or "S1").strip().upper()
+    s5_test.ensure_open(server_id)
     if server_id == "S4":
         raise ValueError("Hãy đăng ký nhân vật tại máy chủ thường, nhận hoặc sử dụng Chìa Khóa S4 rồi tạo nhân vật S4.")
     if not 2 <= len(character_name) <= 20 or any(ord(c) < 32 for c in character_name):
@@ -271,6 +274,11 @@ def login(username, password, server_id="S1", remote="", user_agent=""):
             db.close(); raise ValueError("Server không tồn tại")
         if world["status"] == "closed":
             db.close(); raise ValueError("Server đã đóng")
+        try:
+            s5_test.ensure_open(server_id)
+        except ValueError:
+            db.close()
+            raise
         player = live_service.player(row["uid"], server_id)
         if server_id == "S4":
             from . import s4_exclusive
@@ -338,6 +346,7 @@ def switch_server(token, server_id):
     current = session(token)
     if not current: raise ValueError("Phiên đăng nhập đã hết hạn")
     server_id = str(server_id or "").strip().upper()
+    s5_test.ensure_open(server_id)
     if server_id == "S4":
         from . import s4_exclusive
         s4_exclusive.ensure_open(server_id)
@@ -365,6 +374,7 @@ def create_character(token, server_id, character_name):
     if not current: raise ValueError("Phiên đăng nhập đã hết hạn")
     uid = current["account"]["uid"]
     server_id = str(server_id or "").strip().upper()
+    s5_test.ensure_open(server_id)
     if server_id == "S4":
         from . import s4_exclusive
         s4_exclusive.ensure_open(server_id)

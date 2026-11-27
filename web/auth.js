@@ -1,6 +1,27 @@
 'use strict';
 window.GxbAuth=(()=>{
   let overlay=null,session=null,worlds=[],isSuperGM=false;
+  let s5Cycle=null,s5Synced=0,s5Busy=false,s5Kicked=false,s5Badge=null;
+  const s5Seconds=()=>s5Cycle?Math.max(0,Math.ceil(s5Cycle.phase_end-s5Cycle.server_now-(performance.now()-s5Synced)/1000)):0;
+  function setS5(info){if(info?.server_id==='S5'){s5Cycle=info;s5Synced=performance.now();}}
+  async function syncS5(){if(s5Busy)return;s5Busy=true;try{setS5(await request('/api/s5/cycle'));}catch(_){}finally{s5Busy=false;}}
+  function tickS5(){
+    if(!worlds.some(w=>w.server_id==='S5'))return;
+    const text=s5Cycle?(s5Cycle.phase==='open'?'Đóng sau ':'Mở sau ')+s4Clock(s5Seconds()):'Đang đồng bộ…';
+    for(const select of document.querySelectorAll('#auth-login-server,#auth-reg-server,#auth-account-server')){
+      let note=select.parentElement?.querySelector('.auth-s5-note');
+      if(!note){note=el('div','auth-s4-cycle-note auth-s5-note');select.insertAdjacentElement('afterend',note);}
+      note.hidden=select.value!=='S5';
+      if(!note.hidden)note.textContent='S5 • Thiên Hư Không · '+text+' · T2/T7 06–09h, 20–23h';
+    }
+    const active=session?.account?.server_id==='S5';
+    if(active&&s5Cycle&&(s5Cycle.phase==='locked'||!s5Seconds())&&!s5Kicked){s5Kicked=true;s5Badge?.remove();s5Badge=null;show();}
+    if(active&&!s5Kicked&&!overlay){
+      if(!s5Badge){s5Badge=el('div','auth-s4-countdown');document.body.append(s5Badge);}
+      s5Badge.textContent='S5 · '+text;
+    }else{s5Badge?.remove();s5Badge=null;}
+    if(s5Cycle&&!s5Seconds())void syncS5();
+  }
   let s4Cycle=null,s4SyncedAt=0,s4PollBusy=false,s4Kicked=false,s4Badge=null;
   let s4Trial=null,s4TrialSyncedAt=0,s4TrialPollBusy=false,s4KickedReason='';
   const s4Time=()=>s4Cycle?Math.max(0,Math.ceil(Number(s4Cycle.phase_end)-(
@@ -148,17 +169,17 @@ window.GxbAuth=(()=>{
     const select=document.createElement('select');select.id=id;
     for(const w of worlds.filter(x=>x.status!=='closed')){
       const special=w.server_id==='S4';
-      const label=w.name+' · '+w.server_id+(special?' · VIP 15 / Dùng thử':'')+
+      const label=w.name+' · '+w.server_id+(special?' · VIP 15 / Dùng thử':w.server_id==='S5'?' · Test miễn phí':'')+
         (w.status==='maintenance'?' · Bảo trì':'');
       const option=el('option','',label);
       option.value=w.server_id;option.disabled=w.status!=='online';select.append(option);
     }
     select.addEventListener('change',()=>{
       selectorNote(select);
-      updateS4Clock();
+      updateS4Clock();tickS5();
       if(select.value==='S4')void syncS4Cycle();
     });
-    queueMicrotask(()=>selectorNote(select));
+    queueMicrotask(()=>{selectorNote(select);tickS5();});
     return select;
   }
   function field(parent,label,id,type='text',placeholder=''){
@@ -181,7 +202,8 @@ window.GxbAuth=(()=>{
       pass.autocomplete='current-password';
       const saved=remembered();if(saved)user.value=saved.username;
       const wl=el('label','auth-field','Máy Chủ');const world=worldSelect('auth-login-server');
-      if(s4Kicked&&session?.account?.server_id==='S4')world.value='S4';
+      if(s5Kicked)world.value='S5';
+      else if(s4Kicked&&session?.account?.server_id==='S4')world.value='S4';
       else if(saved&&Array.from(world.options).some(x=>x.value===saved.server_id&&!x.disabled))world.value=saved.server_id;
       wl.append(world);body.append(wl);selectorNote(world);
       const saveLabel=el('label','auth-remember');const save=document.createElement('input');
@@ -211,6 +233,15 @@ window.GxbAuth=(()=>{
         };
         body.append(leave);
       }
+      if(s5Kicked){
+        status.textContent='S5 đã đóng. Chọn máy chủ thường để tiếp tục chơi.';
+        const leave=el('button','auth-s4-switch','Chuyển máy chủ thường');
+        leave.type='button';leave.onclick=async()=>{if(world.value==='S5')return;
+          try{await request('/api/auth/switch-server',{server_id:world.value});location.reload();}
+          catch(e){status.textContent=e.message;}};
+        body.append(leave);
+      }
+      tickS5();
       updateS4Clock();
       pass.onkeydown=e=>{if(e.key==='Enter')submit.click();};
     }
@@ -251,11 +282,13 @@ window.GxbAuth=(()=>{
   async function init(){
     try{
       const data=await request('/api/auth/me');worlds=data.worlds||[];session=data.session||null;isSuperGM=!!data.is_super_gm;
+      setS5(data.s5_cycle);
       if(data.s4_cycle?.server_id==='S4'){
         s4Cycle=data.s4_cycle;s4SyncedAt=performance.now();
       }
       if(data.s4_trial){s4Trial=data.s4_trial;s4TrialSyncedAt=performance.now();}
       if(!data.authenticated){show();return false;}
+      if(session?.account?.server_id==='S5'&&s5Cycle?.phase==='locked'){s5Kicked=true;show();return false;}
       if(session?.account?.server_id==='S4'&&session?.s4_access_expired){
         s4Kicked=true;s4KickedReason='trial_expired';show();return false;
       }
@@ -317,6 +350,7 @@ window.GxbAuth=(()=>{
 
   window.GxbAuthReady=init();
   startS4Timers();
+  setInterval(tickS5,1000);setInterval(()=>{if(worlds.some(w=>w.server_id==='S5'))void syncS5();},15000);
   return{request,session:()=>session,isSuperGM:()=>isSuperGM,worlds:()=>worlds,
          kickToServerLobby,refreshS4Cycle:syncS4Cycle,refreshS4Trial:syncS4Trial,
          logout:async()=>{await request('/api/auth/logout',{});location.reload();}};

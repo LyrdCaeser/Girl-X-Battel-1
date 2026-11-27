@@ -1,10 +1,9 @@
-"""S5 test-world reward core. Not registered as a live world until isolation QA.
-All callers must supply an authenticated, transaction-locked S5 profile.
-No HTTP endpoints, SQL mutations, or automatic production grants in this module.
+"""S5 test-world reward core and deterministic welcome mail.
+All reward callers must supply an authenticated, transaction-locked S5 profile.
 """
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
-import os
+import os, time, json, hashlib
 from . import goddess_gifts, s4_exclusive, skins, local_config
 
 WORLD = 'S5'
@@ -21,6 +20,7 @@ RESOURCES = {
     '359': 5_000_000, '360': 5_000_000, '26': 1_000_000, '27': 1_000_000,
 }
 SKIN_CHOICES = 10
+SKIN_BOX = "990071"
 
 
 def schedule(now):
@@ -145,6 +145,7 @@ def grant_welcome(state, now):
         hosts[str(tid)] = p['partner_id']
         prizes.append({'partner_id':p['partner_id'],'table_id':tid,'stars':10,'level':1,
                        'name':goddess_gifts.BY_ID[tid]['name']})
+    items[SKIN_BOX] = SKIN_CHOICES
     state['s5_welcome'] = {'hosts':hosts,'kits':{},'skin_choices':SKIN_CHOICES}
     return {'goddesses':prizes,'wish_count':len(prizes),'skin_choices':SKIN_CHOICES}
 
@@ -179,7 +180,7 @@ def skin_catalog(uid):
 def choose_skins(state, ids):
     check_scope(state)
     welcome=state.get('s5_welcome') or {}
-    left=int(welcome.get('skin_choices',0))
+    left=min(int(welcome.get('skin_choices',0)),int(state.get('items',{}).get(SKIN_BOX,0)))
     if not isinstance(ids,list) or not ids or any(type(x) is not int for x in ids):
         raise ValueError('Chọn trang phục hợp lệ')
     choices=set(ids)
@@ -189,4 +190,45 @@ def choose_skins(state, ids):
         raise ValueError('Trang phục trùng, không hợp lệ hoặc vượt số lượt chọn')
     state['skins']['collected']=sorted(have|choices)
     welcome['skin_choices']=left-len(choices)
+    state['items'][SKIN_BOX]=welcome['skin_choices']
     return {'skin_ids':sorted(choices),'remaining':welcome['skin_choices']}
+
+MAIL_MARKER = '__s5_welcome__'
+
+
+def ensure_open(server_id, now=None):
+    if str(server_id).upper() == WORLD:
+        info = schedule(time.time() if now is None else now)
+        if info['phase'] != 'open':
+            raise ValueError('S5 đang đóng. Mở thứ Hai và thứ Bảy, 06:00–09:00 và 20:00–23:00 (giờ Việt Nam).')
+
+
+def ensure_welcome(uid, server_id, name):
+    if server_id != WORLD:
+        return
+    from . import live_service
+    mid = 'S5-WELCOME-' + hashlib.sha256(str(uid).encode()).hexdigest()[:24]
+    db = live_service._db()
+    try:
+        db.execute("""INSERT INTO mail(id,uid,server_id,character_name,title,body,attachments,status,created_at,operator)
+            VALUES(?,?,?,?,?,?,?,'pending',?,'S5-TEST') ON CONFLICT(id) DO NOTHING""",
+            (mid,uid,WORLD,name,'Thiên Hư Không • Quà thử đội hình',
+             'Nhận toàn bộ nữ thần 10★ cấp 1, tài nguyên, tiến trình tối đa và 10 lượt chọn trang phục. Tự thức tỉnh lên 25★.',
+             json.dumps({MAIL_MARKER:1}),int(time.time())))
+        db.commit()
+    finally:
+        db.close()
+
+
+def restrict_route(path):
+    # Ranked match identifiers and settlements currently use account UID across
+    # worlds. Keep S5 out of that subsystem until per-world IDs are supported.
+    return (path.startswith(('/api/pvp/','/api/guild-war/','/api/order/','/api/giftskin/','/api/skin-shop/','/api/giftcode/'))
+            or path in ('/api/events/stream','/api/friends/gift','/api/friends/marriage',
+                        '/api/profile/photo/upload','/api/profile/photo/delete'))
+
+
+def enforce_roster(state):
+    if state.get('server_id') == WORLD and not sonia_allowed(state.get('uid')):
+        if any(int(p.get('table_id',0)) == SONIA for p in state.get('partners',[])):
+            raise ValueError('Lyr Sonia chỉ dành cho tài khoản được cấp quyền tại S5')

@@ -393,14 +393,14 @@ const HomeMenus=(()=>{
  async function claimServerMail(mailId){
   if(pending)return;
   pending=true;message='';
-  let celebration=null,goddessWish=null;
+  let celebration=null,goddessWish=null,s5Wish=null;
   try{
    const result=await api('/api/mail/claim',{mail_id:mailId});
    if(result?.state)state=result.state;
    mailLastRefresh=Date.now();if(window.GameAssistant)GameAssistant.updateHome();
-   celebration=result?.s4_rewards||null;
+   celebration=result?.s4_rewards||null;s5Wish=result?.s5_rewards||null;
    goddessWish=result?.goddess||null;
-   message=goddessWish?'Đã nhận Nữ Thần. Mở màn Triệu Hồi Wish!':
+   message=s5Wish?'Đã nhận quà Thiên Hư Không!':goddessWish?'Đã nhận Nữ Thần. Mở màn Triệu Hồi Wish!':
      celebration
      ? 'Quà độc quyền S4 đã được nhận. Đang mở hiệu ứng Wish!'
      : result?.attachments?.__s4_exclusive_key__
@@ -408,7 +408,8 @@ const HomeMenus=(()=>{
        : 'Đã nhận vật phẩm đính kèm.';
   }catch(e){message=e.message||'Không thể nhận thư.';}
   finally{pending=false;render();}
-  if(goddessWish)await revealGmGoddessWish(goddessWish);
+  if(s5Wish)await (typeof SummonAnim!=='undefined'?SummonAnim:null)?.playS4Rewards(s5Wish.goddesses.map(g=>({...g,star:g.stars})),[],{manual:true});
+  else if(goddessWish)await revealGmGoddessWish(goddessWish);
   else if(celebration)await revealS4Bundle(celebration);
  }
  async function markServerMailRead(){
@@ -421,6 +422,51 @@ const HomeMenus=(()=>{
    if(view==='home-systems'&&root==='mail'&&tab==='server')render();
   }catch(_){}
  }
+ async function openS5Rewards(){
+  if(pending)return;
+  let dialog=document.getElementById('s5-rewards-dialog');
+  if(dialog)dialog.remove();
+  dialog=el('dialog');dialog.id='s5-rewards-dialog';
+  dialog.style.cssText='width:min(680px,92vw);max-height:85vh;overflow:auto;color:#eef2ff;background:#162039;border:1px solid #63769c;border-radius:12px;padding:16px';
+  const close=el('button','Đóng');close.onclick=()=>dialog.close();dialog.append(close);
+  const content=el('div');dialog.append(content);document.body.append(dialog);
+  dialog.addEventListener('close',()=>dialog.remove());dialog.showModal();
+  async function load(){
+   content.replaceChildren(el('p','Đang tải…'));
+   try{
+    const info=await api('/api/s5/rewards');
+    content.replaceChildren(el('h2','Quà Thiên Hư Không'));
+    if(!info.claimed){content.append(el('p','Hãy nhận thư quà S5 trước.'));return;}
+    content.append(el('h3','Nguyên liệu thức tỉnh'));
+    const search=el('input');search.placeholder='Tìm nữ thần';content.append(search);
+    const list=el('div');content.append(list);
+    function renderHosts(){
+     list.replaceChildren();
+     for(const h of info.hosts.filter(x=>x.stars<25&&!x.kit_claimed&&x.name.toLowerCase().includes(search.value.toLowerCase()))){
+      button(list,h.name+' · '+h.stars+'★ → '+(h.stars+1)+'★',async()=>{
+       if(pending)return;pending=true;
+       try{const r=await api('/api/s5/rewards',{action:'kit',partner_id:h.partner_id});state=r.state;pending=false;await load();}catch(e){alert(e.message);}finally{pending=false;}
+      });
+     }
+    }
+    search.oninput=renderHosts;renderHosts();
+    content.append(el('h3','Hộp Trang Phục Tự Chọn · còn '+info.remaining+' lượt'));
+    if(info.remaining>0){
+     const filter=el('input');filter.placeholder='Tìm trang phục';content.append(filter);
+     const grid=el('div');content.append(grid);
+     const chosen=new Set();
+     const confirm=el('button','Nhận trang phục đã chọn');
+     function draw(){grid.replaceChildren();for(const skin of info.skins.filter(x=>x.name.toLowerCase().includes(filter.value.toLowerCase()))){
+      const label=el('label');label.style.cssText='display:flex;gap:8px;padding:6px;align-items:center';
+      const cb=el('input');cb.type='checkbox';cb.checked=chosen.has(skin.id);cb.onchange=()=>{if(cb.checked&&chosen.size>=info.remaining){cb.checked=false;return;}if(cb.checked)chosen.add(skin.id);else chosen.delete(skin.id);confirm.textContent='Nhận '+chosen.size+' trang phục';};label.append(cb,document.createTextNode(skin.name));grid.append(label);
+     }}
+     filter.oninput=draw;draw();content.append(confirm);
+     confirm.onclick=async()=>{if(pending||!chosen.size)return;pending=true;try{const r=await api('/api/s5/rewards',{action:'skins',ids:[...chosen]});state=r.state;pending=false;await load();}catch(e){alert(e.message);}finally{pending=false;}};
+    }
+   }catch(e){content.replaceChildren(el('p',e.message));}
+  }
+  await load();
+ }
  function serverMail(parent){
   const tools=el('div',undefined,'hm-mail-tools');
   const gift=el('div',undefined,'hm-giftcode-entry'),code=el('input');
@@ -429,10 +475,11 @@ const HomeMenus=(()=>{
   code.addEventListener('input',()=>{giftcodeTyped=code.value.toUpperCase();});
   code.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();giftcodeTyped=code.value;redeemGiftcode();}});
   gift.append(code);button(gift,giftcodeBusy?'Đang đổi…':'Đổi mã',()=>{giftcodeTyped=code.value;redeemGiftcode();},giftcodeBusy);
-  tools.append(gift);
+  if(state?.server_id!=='S5')tools.append(gift);
+  else button(tools,'Quà S5 · Nguyên liệu & Hộp Trang Phục',openS5Rewards);
   if(state?.server_id==='S4' && typeof WishRecorder!=='undefined')
    WishRecorder.mount(parent);
-  button(tools,'Mở trang Giftcode',openGiftcode);
+  if(state?.server_id!=='S5')button(tools,'Mở trang Giftcode',openGiftcode);
   button(tools,mailRefreshBusy?'Đang làm mới…':'↻ Làm mới',()=>refreshServerMail(false),mailRefreshBusy);
   parent.append(tools);
   if(!mailRefreshBusy&&Date.now()-mailLastRefresh>4000)queueMicrotask(()=>refreshServerMail(true));
@@ -487,6 +534,7 @@ const HomeMenus=(()=>{
    const items=Object.entries(m.attachments||{}).filter(([id,count])=>/^[0-9]+$/.test(id)&&Number(count)>0);
    if(items.length)rewards(c,items.map(([id,count])=>id+'#'+count).join('|'));
    if(m.status==='pending')button(c,
+     m.attachments?.__s5_welcome__?'Nhận quà Thiên Hư Không · Wish':
      m.attachments?.__s4_exclusive_key__?'Nhận Chìa Khóa S4':
        m.attachments?.__s4_exclusive_bundle__||m.attachments?.__s4_trial_gm_reward__?
         'Nhận Quà S4 & Triệu Hồi Wish':goddess?

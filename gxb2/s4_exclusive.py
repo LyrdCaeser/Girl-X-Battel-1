@@ -90,7 +90,7 @@ def paid_exp_in_other_worlds(uid):
         conn = database.connect(ROOT / 'state/live_service.sqlite3', 'live')
         try:
             rows = conn.execute(
-                "SELECT data FROM player_profiles WHERE uid=? AND server_id<>?",
+                "SELECT data FROM player_profiles WHERE uid=? AND server_id<>? AND server_id<>'S5'",
                 (uid, WORLD)
             ).fetchall()
         finally:
@@ -99,7 +99,7 @@ def paid_exp_in_other_worlds(uid):
         folder = ROOT / "state" / "players" / uid
         if folder.is_dir():
             for path in folder.glob("S*.sqlite3"):
-                if path.stem.upper() == WORLD:
+                if path.stem.upper() in (WORLD, "S5"):
                     continue
                 try:
                     with sqlite3.connect(f"file:{path}?mode=ro", uri=True) as db:
@@ -202,7 +202,7 @@ def ensure_key_mail(state, db=None):
     uid = str(state.get("uid") or "").strip()
     server_id = str(state.get("server_id") or "").upper()
     name = str(state.get("name") or "").strip()
-    if not uid or not server_id or server_id == WORLD or not name:
+    if not uid or not server_id or server_id in (WORLD, "S5") or not name:
         return False
     if vip.level_for(vip.exp(state)) < REQUIRED_VIP:
         return False

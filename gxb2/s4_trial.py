@@ -35,7 +35,7 @@ def _all_other_profiles(uid):
         db = database.connect(ROOT/'state/live_service.sqlite3', 'live')
         try:
             rows = db.execute(
-                "SELECT data FROM player_profiles WHERE uid=? AND server_id<>?",
+                "SELECT data FROM player_profiles WHERE uid=? AND server_id<>? AND server_id<>'S5'",
                 (uid, WORLD)).fetchall()
             return [r['data'] for r in rows]
         finally:
@@ -44,7 +44,7 @@ def _all_other_profiles(uid):
     folder = ROOT/'state'/'players'/uid
     if folder.is_dir():
         for path in folder.glob('S*.sqlite3'):
-            if path.stem.upper() == WORLD:
+            if path.stem.upper() in (WORLD, "S5"):
                 continue
             try:
                 with sqlite3.connect(f'file:{path}?mode=ro',uri=True) as db:
@@ -61,7 +61,7 @@ def _expires_from(raw, uid):
         state = json.loads(raw) if isinstance(raw,str) else raw
         if not isinstance(state,dict) or state.get('uid') not in (None,uid):
             return 0
-        if str(state.get('server_id') or '').upper() == WORLD:
+        if str(state.get('server_id') or '').upper() in (WORLD,'S5'):
             return 0
         return max(0,int(state.get('s4_trial_expires_at') or 0))
     except (ValueError,TypeError,KeyError):
@@ -135,7 +135,7 @@ def activate(state,item_id,now=None):
         raise ValueError('Chìa Khóa S4 không hợp lệ')
     uid=str(state.get('uid') or '').strip()
     source=str(state.get('server_id') or '').strip().upper()
-    if not uid or not source or source==WORLD:
+    if not uid or not source or source in (WORLD,"S5"):
         raise ValueError('Chìa Khóa S4 chỉ kích hoạt từ máy chủ thường')
     count=int(state.get('items',{}).get(item_id,0))
     if count<1:

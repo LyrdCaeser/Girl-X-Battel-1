@@ -837,6 +837,7 @@ def pvp_match_internal(match_id, uid):
 
 
 def enqueue_pvp(uid, server_id, character_name, mode, power=0):
+    if str(server_id).upper()=='S5': raise ValueError('Đấu trường xếp hạng S5 tạm khóa')
     uid=str(uid or '').strip(); server_id=str(server_id or '').strip().upper()
     character_name=str(character_name or '').strip()
     mode=str(mode or 'arena').strip().lower()
@@ -864,7 +865,7 @@ def enqueue_pvp(uid, server_id, character_name, mode, power=0):
                    (uid,server_id,character_name,mode,power,now))
         if mode=="cross":
             opponent=db.execute(_for_update(db, """SELECT * FROM pvp_queue
-                                           WHERE mode=? AND status='waiting' AND uid<>? AND server_id<>?
+                                           WHERE mode=? AND status='waiting' AND uid<>? AND server_id<>? AND server_id<>'S5'
                                            ORDER BY ABS(power-?),joined_at LIMIT 1""", skip_locked=True),
                                         (mode,uid,server_id,power)).fetchone()
         else:
@@ -897,9 +898,10 @@ def enqueue_pvp(uid, server_id, character_name, mode, power=0):
 
 
 def pvp_candidates(uid, server_id, mode, limit=20):
+    if str(server_id).upper()=='S5': raise ValueError('Đấu trường xếp hạng S5 tạm khóa')
     uid=str(uid); server_id=str(server_id).upper(); mode=str(mode or "arena").lower()
     own=pvp_rating(uid,server_id,mode); rating=int(own.get("rating",1000))
-    scope="p.server_id<>?" if mode=="cross" else "p.server_id=?"
+    scope="p.server_id<>? AND p.server_id<>'S5'" if mode=="cross" else "p.server_id=?"
     avatar_expr=("COALESCE(NULLIF(pp.data::jsonb #>> '{profile,avatar}', ''), 'head_1001')"
                  if database.POSTGRES else "'head_1001'")
     frame_expr=("COALESCE(NULLIF(pp.data::jsonb #>> '{profile,frame}', ''), 'frame_8007')"
@@ -931,6 +933,7 @@ def pvp_candidates(uid, server_id, mode, limit=20):
         out=[dict(r) for r in rows]; db.close(); return out
 
 def challenge_pvp(uid, server_id, character_name, mode, target_uid, target_server, power=0):
+    if str(server_id).upper()=='S5': raise ValueError('Đấu trường xếp hạng S5 tạm khóa')
     uid=str(uid); server_id=str(server_id).upper(); mode=str(mode or "arena").lower()
     target_uid=str(target_uid); target_server=str(target_server).upper()
     if mode not in ("arena","cross","arena3v3"): raise ValueError("Chế độ PvP không hợp lệ")
@@ -1367,7 +1370,7 @@ def pvp_rating_board(mode, season_id=None, limit=100, server_id=None):
     mode=str(mode or "arena").lower()
     season_id=season_id or pvp_season_id(mode,server_id or "S1")
     limit=max(1,min(500,int(limit)))
-    scope=""; scope_params=()
+    scope=" AND p.server_id<>'S5'"; scope_params=()
     if server_id:
         scope=" AND p.server_id=?"; scope_params=(str(server_id).upper(),)
     avatar_expr = ("COALESCE(NULLIF(pp.data::jsonb #>> '{profile,avatar}', ''), 'head_1001') AS avatar"

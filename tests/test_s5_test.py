@@ -69,6 +69,30 @@ class S5CoreTests(unittest.TestCase):
                         owned={i:{'table_id':t,'awake':aw} for i,(t,aw) in enumerate(plan['materials'],1)}
                         self.assertEqual(len(e.match_materials(owned,list(owned),recipe['material'],recipe['group'])),len(owned))
 
+    def test_isolation_rules(self):
+        for route in ('/api/pvp/status','/api/pvp/challenge','/api/giftskin/crystal',
+                      '/api/giftcode/redeem','/api/order/create','/api/friends/gift',
+                      '/api/guild-war/battle','/api/events/stream'):
+            self.assertTrue(s5.restrict_route(route))
+        self.assertFalse(s5.restrict_route('/api/friends/duel'))
+        state=self.state()
+        state['partners'].append({'table_id':s5.SONIA})
+        with self.assertRaises(ValueError):s5.enforce_roster(state)
+        state['server_id']='S1';s5.enforce_roster(state)
+        from gxb2 import live_service,auth
+        import tempfile
+        from pathlib import Path
+        with tempfile.TemporaryDirectory() as td, patch.object(live_service,'DB_PATH',Path(td)/'live.sqlite3'):
+            live_service.create_world('S2','Second')
+            live_service.create_world('S5',s5.NAME)
+            for uid,world in [('A','S1'),('B','S2'),('C','S5')]:
+                live_service.register_player(uid,world,uid+' Test')
+            self.assertNotIn('C',[p['uid'] for p in live_service.pvp_candidates('A','S1','cross')])
+            self.assertNotIn('C',[p['uid'] for p in live_service.pvp_rating_board('cross')])
+            with self.assertRaises(ValueError):live_service.challenge_pvp('A','S1','Alpha','cross','C','S5')
+            with self.assertRaises(ValueError):live_service.enqueue_pvp('C','S5','Charlie','arena')
+            with self.assertRaises(ValueError):auth.verify_gift_recipient('GB3-123456789','Charlie','S5')
+
     def test_kit_and_skin_choices(self):
         state=self.state();s5.grant_welcome(state,1795740000)
         tid=next(iter(s5.roster(state['uid'])))
