@@ -17,9 +17,10 @@ ordinary=next(g for g in catalog if g['stars']==10 and g['group']==1 and str(g['
 cosmos=next(g for g in catalog if g['stars']==10 and g['group']==7 and str(g['id']) in avatars)
 sonia=next(g for g in catalog if g['id']==758001)
 rows=[ordinary,cosmos,sonia]
-hosts=[dict(partner_id=i+1,name=g['name'],stars=n,kit_claimed=False) for i,(g,n) in enumerate(zip(rows,(10,14,24)))]
+hosts=[dict(partner_id=i+1,name=g['name'],stars=n,kit_claimed=False,job=g['job'],gear_claimed=False) for i,(g,n) in enumerate(zip(rows,(10,14,24)))]
 roster=[dict(partner_id=i+1,table_id=g['id'],name=g['name'],group=g['group'],stars=n,equips=[0]*7) for i,(g,n) in enumerate(zip(rows,(10,14,24)))]
-fixture=dict(claimed=True,remaining=1,hosts=hosts,skins=[dict(id=7001,name='Trang phục 1'),dict(id=7002,name='Trang phục 2')])
+gear_sets={str(j):[1000*slot+100*j+69 for slot in (1,2,3,4)] for j in range(1,6)}
+fixture=dict(claimed=True,remaining=1,hosts=hosts,gear_sets=gear_sets,skins=[dict(id=7001,name='Trang phục 1'),dict(id=7002,name='Trang phục 2')])
 html='<!doctype html><html><head><meta name="viewport" content="width=device-width, initial-scale=1">'+''.join('<link rel="stylesheet" href="/'+f+'">' for f in ('style.css','home-menus.css','girl-ui.css','hero-glow.css','mobile-layout.css','desktop-layout.css'))+'</head><body></body></html>'
 setup="""
 const node=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e};
@@ -27,7 +28,8 @@ const el=(tag,text,cls)=>node(tag,cls,text);
 let pending=false;let calls=[];
 const cardIds=new Set(),artIds=new Set(),skinAvatarIds=new Set(),skinCardIds=new Set([7001,7002]);
 const artId=id=>id,detailImage=id=>'/assets/skins/'+id+'.png';
-const api=async(path,req)=>{if(req){calls.push(req);if(req.action==='kit')fixture.hosts.find(h=>h.partner_id===req.partner_id).kit_claimed=true;else {fixture.remaining-=req.ids.length;fixture.skins=fixture.skins.filter(s=>!req.ids.includes(s.id));}return {state};}return fixture;};
+const itemPicture=item=>'/assets/item-icons/'+item.icon+'.png';
+const api=async(path,req)=>{if(req){calls.push(req);if(req.action==='kit')fixture.hosts.find(h=>h.partner_id===req.partner_id).kit_claimed=true;else if(req.action==='gear')fixture.hosts.find(h=>h.partner_id===req.partner_id).gear_claimed=true;else {fixture.remaining-=req.ids.length;fixture.skins=fixture.skins.filter(s=>!req.ids.includes(s.id));}return {state};}return fixture;};
 const GirlUI=(()=>{const el=(tag,cls,text)=>node(tag,cls,text);const img=(src,cls,alt='')=>{const i=el('img',cls);i.src=src;i.alt=alt;return i};"""+stars+""";return {stars};})();
 """
 with sync_playwright() as p:
@@ -43,7 +45,7 @@ with sync_playwright() as p:
             else:r.fulfill(status=404,body='')
         page.route('http://qa.invalid/**',route)
         page.goto('http://qa.invalid/',wait_until='load')
-        page.add_script_tag(content='const avatars='+json.dumps(avatars)+';const girlsCatalog='+json.dumps(rows)+';let state='+json.dumps(dict(roster=roster))+';const fixture='+json.dumps(fixture)+';'+setup+portrait+js+';openS5Rewards();')
+        page.add_script_tag(content='const itemCatalog='+json.dumps(json.loads((ROOT/'assets/items-catalog.json').read_text()))+';const avatars='+json.dumps(avatars)+';const girlsCatalog='+json.dumps(rows)+';let state='+json.dumps(dict(roster=roster))+';const fixture='+json.dumps(fixture)+';'+setup+portrait+js+';openS5Rewards();')
         page.locator('.s5-reward-card').first.wait_for()
         page.wait_for_function("Array.from(document.querySelectorAll('.s5-girl-art img,.s5-rank img')).every(i=>i.complete&&i.naturalWidth>0)",timeout=3000)
         assert page.locator('.s5-reward-card').count()==3
@@ -67,6 +69,14 @@ with sync_playwright() as p:
         page.locator('.s5-confirm').click()
         page.wait_for_function("document.querySelector('.s5-tab.active')?.textContent.endsWith('0')")
         assert page.evaluate('calls[1].ids')==[7001]
+        page.locator('.s5-tab').nth(2).click()
+        assert page.locator('.s5-gear-icons img').count()==12
+        page.locator('.s5-gear-icons img').evaluate_all("es=>es.forEach(e=>e.loading='eager')")
+        page.wait_for_function("Array.from(document.querySelectorAll('.s5-gear-icons img')).every(i=>i.complete&&i.naturalWidth>0)",timeout=5000)
+        page.locator('.s5-reward-card').first.click()
+        page.wait_for_function("document.querySelector('.s5-reward-card')?.disabled")
+        assert page.evaluate('calls[2].action')=='gear'
+        assert page.locator('.s5-reward-card').first.inner_text().find('Đã nhận trang bị')>=0
         page.locator('.s5-close').click()
         page.locator('#s5-rewards-dialog').wait_for(state='detached')
         assert not errors,errors

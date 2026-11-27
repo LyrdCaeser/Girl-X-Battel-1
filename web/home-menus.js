@@ -445,7 +445,7 @@ const HomeMenus=(()=>{
   const body=el('div',undefined,'s5-rewards-body'),status=el('p','','s5-rewards-status');status.setAttribute('role','status');
   dialog.append(header,nav,body,status);document.body.append(dialog);
   dialog.addEventListener('close',()=>dialog.remove());dialog.showModal();
-  let info=null,active='girls',searches={girls:'',skins:''},chosen=new Set(),working=false;
+  let info=null,active='girls',searches={girls:'',skins:'',gear:''},chosen=new Set(),working=false;
   function say(text,err=false){status.textContent=text;status.classList.toggle('error',err);}
   function syncButtons(){dialog.querySelectorAll('button[data-s5-action]').forEach(b=>{b.disabled=working||b.dataset.unavailable==='1';});}
   async function claim(req){
@@ -454,7 +454,7 @@ const HomeMenus=(()=>{
     const r=await api('/api/s5/rewards',req);state=r.state;
     if(req.action==='skins')chosen.clear();
     if(!dialog.isConnected)return;
-    say(req.action==='kit'?'Đã nhận nguyên liệu. Vào Nữ Thần để thức tỉnh.':'Đã nhận trang phục.');
+    say(req.action==='kit'?'Đã nhận nguyên liệu. Vào Nữ Thần để thức tỉnh.':req.action==='gear'?'Đã nhận 4 trang bị đúng nghề vào Túi Đồ.':'Đã nhận trang phục.');
     const scroll=body.scrollTop;await load();body.scrollTop=scroll;
    }catch(e){if(dialog.isConnected)say(e.message||'Không thể nhận quà.',true);}
    finally{working=false;pending=false;if(dialog.isConnected)syncButtons();}
@@ -462,30 +462,40 @@ const HomeMenus=(()=>{
   function draw(){
    if(!dialog.isConnected)return;
    nav.replaceChildren();body.replaceChildren();
-   for(const [key,label] of [['girls','Nguyên liệu thức tỉnh'],['skins','Trang phục tự chọn · '+info.remaining]]){
+   for(const [key,label] of [['girls','Nguyên liệu thức tỉnh'],['skins','Trang phục tự chọn · '+info.remaining],['gear','Trang bị đúng nghề']]){
     const b=el('button',label,'s5-tab'+(active===key?' active':''));b.type='button';b.setAttribute('aria-pressed',String(active===key));b.onclick=()=>{active=key;draw();};nav.append(b);
    }
    if(!info.claimed){body.append(el('p','Hãy nhận thư quà S5 trước.','s5-empty'));return;}
-   const hint=active==='girls'?'Chọn nữ thần để nhận nguyên liệu cho mốc sao tiếp theo.':'Chọn trang phục yêu thích. Mỗi trang phục dùng một lượt chọn.';
+   const hint=active==='girls'?'Chọn nữ thần để nhận nguyên liệu cho mốc sao tiếp theo.':active==='gear'?'Chọn nữ thần để nhận một bộ 4 trang bị cấp 25 đúng nghề. Tự trang bị trong mục Nữ Thần.':'Chọn trang phục yêu thích. Mỗi trang phục dùng một lượt chọn.';
    body.append(el('p',hint,'s5-hint'));
-   const search=el('input',undefined,'s5-search');search.type='search';search.placeholder=active==='girls'?'Tìm nữ thần…':'Tìm trang phục…';search.setAttribute('aria-label',search.placeholder);search.value=searches[active];body.append(search);
+   const search=el('input',undefined,'s5-search');search.type='search';search.placeholder=active==='skins'?'Tìm trang phục…':'Tìm nữ thần…';search.setAttribute('aria-label',search.placeholder);search.value=searches[active];body.append(search);
    const grid=el('div',undefined,'s5-rewards-grid '+(active==='skins'?'skins':'girls'));body.append(grid);
    const footer=el('div',undefined,'s5-rewards-footer');
    if(active==='skins')body.append(footer);
    function renderCards(){
     grid.replaceChildren();const q=search.value.trim().toLocaleLowerCase('vi');searches[active]=search.value;
-    if(active==='girls'){
+    if(active!=='skins'){
+     const gearMode=active==='gear';
+     const jobs=['','Chiến Binh','Pháp Sư','Xạ Thủ','Sát Thủ','Linh Mục'];
      const roster=new Map((state.roster||[]).map(g=>[Number(g.partner_id),g]));
      for(const h of info.hosts.filter(x=>x.name.toLocaleLowerCase('vi').includes(q))){
       const hero=roster.get(Number(h.partner_id));if(!hero)continue;
-      const n=Number(h.stars),done=n>=25,unavailable=done||h.kit_claimed;
-      const card=el('button',undefined,'s5-reward-card');card.type='button';card.dataset.s5Action='kit';card.dataset.unavailable=unavailable?'1':'0';card.disabled=working||unavailable;
+      const n=Number(h.stars),done=n>=25,unavailable=gearMode?!!h.gear_claimed:done||h.kit_claimed;
+      const card=el('button',undefined,'s5-reward-card');card.type='button';card.dataset.s5Action=gearMode?'gear':'kit';card.dataset.unavailable=unavailable?'1':'0';card.disabled=working||unavailable;
       card.setAttribute('aria-label',h.name+' · '+n+' sao'+(done?' · Tối đa':' lên '+(n+1)+' sao'));
       const art=el('span',undefined,'s5-girl-art');art.append(portrait(hero.table_id,88,hero));
       if(Number(hero.group)>0){const faction=el('img',undefined,'s5-faction');faction.src='/assets/factions/group'+hero.group+'.png';faction.alt='';art.append(faction);}
       const ranks=el('span',undefined,'s5-ranks');ranks.append(s5StarBadge(n,hero));if(!done)ranks.append(el('span','→','s5-arrow'),s5StarBadge(n+1,hero));
-      card.append(art,el('strong',h.name,'s5-card-name'),ranks,el('span',done?'Đã đạt 25 sao':h.kit_claimed?'Đã nhận nguyên liệu':'Nhận nguyên liệu','s5-card-action'));
-      card.onclick=()=>claim({action:'kit',partner_id:h.partner_id});grid.append(card);
+      card.append(art,el('strong',h.name,'s5-card-name'));
+      if(gearMode){
+       card.append(s5StarBadge(n,hero),el('span',jobs[h.job]||'Trang bị đúng nghề','s5-job'));
+       const items=el('span',undefined,'s5-gear-icons');
+       for(const id of info.gear_sets?.[String(h.job)]||[]){
+        const item=itemCatalog[String(id)],im=el('img');im.alt=item?.name||'Trang bị';im.title=im.alt;im.loading='lazy';if(item)im.src=itemPicture(item);items.append(im);
+       }
+       card.append(items,el('span',h.gear_claimed?'Đã nhận trang bị':'Nhận bộ trang bị','s5-card-action'));
+      }else card.append(ranks,el('span',done?'Đã đạt 25 sao':h.kit_claimed?'Đã nhận nguyên liệu':'Nhận nguyên liệu','s5-card-action'));
+      card.onclick=()=>claim({action:gearMode?'gear':'kit',partner_id:h.partner_id});grid.append(card);
      }
     }else{
      for(const skin of info.skins.filter(x=>x.name.toLocaleLowerCase('vi').includes(q))){
@@ -519,11 +529,11 @@ const HomeMenus=(()=>{
   code.addEventListener('input',()=>{giftcodeTyped=code.value.toUpperCase();});
   code.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();giftcodeTyped=code.value;redeemGiftcode();}});
   gift.append(code);button(gift,giftcodeBusy?'Đang đổi…':'Đổi mã',()=>{giftcodeTyped=code.value;redeemGiftcode();},giftcodeBusy);
-  if(state?.server_id!=='S5')tools.append(gift);
-  else button(tools,'Quà S5 · Nguyên liệu & Hộp Trang Phục',openS5Rewards);
+  tools.append(gift);
+  if(state?.server_id==='S5')button(tools,'Quà S5 · Nguyên liệu, Trang bị & Trang phục',openS5Rewards);
   if(state?.server_id==='S4' && typeof WishRecorder!=='undefined')
    WishRecorder.mount(parent);
-  if(state?.server_id!=='S5')button(tools,'Mở trang Giftcode',openGiftcode);
+  button(tools,'Mở trang Giftcode',openGiftcode);
   button(tools,mailRefreshBusy?'Đang làm mới…':'↻ Làm mới',()=>refreshServerMail(false),mailRefreshBusy);
   parent.append(tools);
   if(!mailRefreshBusy&&Date.now()-mailLastRefresh>4000)queueMicrotask(()=>refreshServerMail(true));

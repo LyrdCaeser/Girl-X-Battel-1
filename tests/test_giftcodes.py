@@ -39,6 +39,19 @@ class GiftcodeStudioTests(unittest.TestCase):
             giftcodes.redeem(code['code'],"GXB-TEST-A","S1")
         self.assertEqual(giftcodes.list_codes()[0]['used_count'],1)
         self.assertEqual(len(giftcodes.redemptions(code['code'])),1)
+    def test_s5_giftcode_delivers_only_to_selected_world(self):
+        live_service.create_world("S5","Test")
+        live_service.register_player("GXB-TEST-A","S5","Alice S5")
+        code=self.issue(server_id="S5")
+        with self.assertRaisesRegex(ValueError,"không áp dụng"):
+            giftcodes.redeem(code["code"],"GXB-TEST-A","S1")
+        result=giftcodes.redeem(code["code"],"GXB-TEST-A","S5")
+        self.assertTrue(result["ok"])
+        self.assertEqual(live_service.mailbox("GXB-TEST-A","S1"),[])
+        self.assertEqual(live_service.mailbox("GXB-TEST-A","S5")[0]["attachments"],{"1":100,"2":25})
+        with self.assertRaisesRegex(ValueError,"đã sử dụng"):
+            giftcodes.redeem(code["code"],"GXB-TEST-A","S5")
+
     def test_private_campaign_clear_code_is_uid_bound_and_has_no_mail(self):
         db=live_service._db()
         try:

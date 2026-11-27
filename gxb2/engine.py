@@ -780,10 +780,15 @@ class Engine:
             welcome=st.get('s5_welcome') or {}
             hosts=welcome.get('hosts',{})
             kits=welcome.get('kits',{})
+            gear_claimed=welcome.get('gear_claimed',{})
             have=skins.collected(st)
+            from . import equipment
+            gear_sets={str(job):s5_test.gear_for_job(job) for job in range(1,6)}
             return {'claimed':bool(welcome),'remaining':int(welcome.get('skin_choices',0)),
+                    'gear_sets':gear_sets,
                     'hosts':[{'partner_id':p['partner_id'],'name':goddess_gifts.BY_ID[p['table_id']]['name'],
                               'stars':10+int(p.get('awake',0)),
+                              'job':equipment.job_of(p),'gear_claimed':str(p['table_id']) in gear_claimed,
                               'kit_claimed':f"{p['table_id']}:{11+int(p.get('awake',0))}" in kits}
                              for p in st['partners'] if hosts.get(str(p['table_id']))==p['partner_id']],
                     'skins':[{'id':sid,'name':skins.SKINS[sid]['name']} for sid in s5_test.skin_catalog(st['uid'])
@@ -799,6 +804,8 @@ class Engine:
                 s5_test.ensure_open('S5',uid=st['uid'])
                 if data.get('action')=='kit':
                     out=s5_test.grant_kit(st,data.get('partner_id'))
+                elif data.get('action')=='gear':
+                    out=s5_test.grant_gear(st,data.get('partner_id'))
                 elif data.get('action')=='skins':
                     out=s5_test.choose_skins(st,data.get('ids'))
                 else:
@@ -2610,7 +2617,8 @@ class Engine:
                 state = self._load()
                 sender = str(state.get("uid") or "")
                 world = str(state.get("server_id") or "").upper()
-                if world=="S5": raise GameError("Không chuyển quà từ S5")
+                from . import s5_test
+                s5_test.allow_skin_gift(world,request.get("recipient_server"))
                 if sender != self.db.uid or world != self.db.server_id:
                     raise GameError("Phiên người tặng không hợp lệ")
                 live_db = self.db.borrowed_live_transaction()
@@ -2632,7 +2640,7 @@ class Engine:
                     self.db.commit()
                     return {"state":self.snapshot(), **receipt}
                 recipient = skin_gifts.verify(sender,request.get("recipient_uid"),
-                    request.get("recipient_name"),request.get("recipient_server"))
+                    request.get("recipient_name"),request.get("recipient_server"),sender_server=world)
                 item, price = skin_gifts.listing_for(request.get("skin_id"),"crystal")
                 if skin_gifts.recipient_has_skin(
                     live_db, recipient["uid"], recipient["server_id"], item["skin_id"]

@@ -73,9 +73,9 @@ def ensure_crystal_receipts(db):
     )""")
 
 
-def verify(sender_uid, recipient_uid, recipient_name, recipient_server):
+def verify(sender_uid, recipient_uid, recipient_name, recipient_server, *, sender_server=""):
     match = auth.verify_gift_recipient(recipient_uid, recipient_name,
-                                      recipient_server, sender_uid)
+                                      recipient_server, sender_uid,sender_server=sender_server)
     return match
 
 
@@ -152,8 +152,8 @@ def recipient_has_skin(db, uid, server_id, skin_id):
 
     return False
 
-def view_recipient(sender_uid, recipient_uid, recipient_name, recipient_server):
-    result = verify(sender_uid, recipient_uid, recipient_name, recipient_server)
+def view_recipient(sender_uid, recipient_uid, recipient_name, recipient_server, *, sender_server=""):
+    result = verify(sender_uid, recipient_uid, recipient_name, recipient_server,sender_server=sender_server)
     # Do not expose the recipient's internal wallet/game UID to the browser.
     return {"verified": True, "display_uid": result["display_uid"],
             "character_name": result["character_name"], "server_id": result["server_id"]}
@@ -162,11 +162,12 @@ def view_recipient(sender_uid, recipient_uid, recipient_name, recipient_server):
 def create_bank(sender_uid, sender_server, recipient_uid, recipient_name, recipient_server, skin_id):
     sender_uid = str(sender_uid or "")
     sender_server = str(sender_server or "").upper()
-    if sender_server=="S5": raise ValueError("Không chuyển quà từ S5")
+    from . import s5_test
+    s5_test.allow_skin_gift(sender_server,recipient_server)
     sender = live_service.player(sender_uid, sender_server)
     if not sender or sender.get("status") != "active":
         raise ValueError("Phiên người tặng không hợp lệ")
-    target = verify(sender_uid, recipient_uid, recipient_name, recipient_server)
+    target = verify(sender_uid, recipient_uid, recipient_name, recipient_server,sender_server=sender_server)
     item, price = listing_for(skin_id, "bank")
     sid = item["skin_id"]
     now = int(time.time())

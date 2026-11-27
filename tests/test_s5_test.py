@@ -98,11 +98,40 @@ class S5CoreTests(unittest.TestCase):
                         owned={i:{'table_id':t,'awake':aw} for i,(t,aw) in enumerate(plan['materials'],1)}
                         self.assertEqual(len(e.match_materials(owned,list(owned),recipe['material'],recipe['group'])),len(owned))
 
+    def test_job_gear_reward_once_for_existing_character(self):
+        from gxb2 import equipment
+        state=self.state()
+        s5.grant_welcome(state,1795740000)
+        jobs=set()
+        for host in list(state['partners']):
+            if state['s5_welcome']['hosts'].get(str(host['table_id']))!=host['partner_id']:
+                continue
+            job=equipment.job_of(host)
+            jobs.add(job)
+            before=dict(state['items'])
+            original=list(host['equips'])
+            out=s5.grant_gear(state,host['partner_id'])
+            self.assertEqual(out['job'],job)
+            self.assertEqual(len(out['gear']),4)
+            self.assertEqual({equipment.EQUIP[i]['pos'] for i in out['gear']},{1,2,3,4})
+            for item in out['gear']:
+                self.assertEqual(equipment.EQUIP[item]['job'],job)
+                self.assertEqual(equipment.EQUIP[item]['item_lv'],25)
+                self.assertEqual(state['items'][str(item)],before.get(str(item),0)+1)
+            self.assertEqual(host['equips'],original)
+            with self.assertRaises(ValueError):s5.grant_gear(state,host['partner_id'])
+        self.assertEqual(jobs,{1,2,3,4,5})
+        state['server_id']='S1'
+        with self.assertRaises(ValueError):s5.grant_gear(state,host['partner_id'])
+        s5.allow_skin_gift('S5','S5')
+        for pair in [('S1','S5'),('S5','S1'),('S5','S4')]:
+            with self.assertRaises(ValueError):s5.allow_skin_gift(*pair)
+
     def test_isolation_rules(self):
         for route in ('/api/giftskin/crystal',
                       '/api/giftcode/redeem','/api/order/create',
                       '/api/guild-war/battle'):
-            self.assertTrue(s5.restrict_route(route))
+            self.assertFalse(s5.restrict_route(route))
         for route in ('/api/friends/duel','/api/pvp/status','/api/pvp/challenge','/api/events/stream',
                       '/api/friends/gift','/api/friends/marriage','/api/profile/photo/upload','/api/profile/photo/delete'):
             self.assertFalse(s5.restrict_route(route))

@@ -111,13 +111,12 @@ def display_uid(internal_uid):
             db.close()
 
 
-def verify_gift_recipient(public_uid, character_name, server_id, sender_uid=""):
+def verify_gift_recipient(public_uid, character_name, server_id, sender_uid="", *, sender_server=""):
     """Verify the exact public UID + character on a real server before gifting."""
     public_uid = str(public_uid or "").strip().upper()
     character_name = str(character_name or "").strip()
     server_id = str(server_id or "").strip().upper()
-    if server_id == 'S5':
-        raise ValueError("Không tặng trang phục sang máy chủ thử nghiệm")
+    s5_test.allow_skin_gift(sender_server,server_id)
     if not PUBLIC_UID_RE.fullmatch(public_uid) or not character_name or len(character_name)>40:
         raise ValueError("Nhập đúng UID GB3-9 số và tên nhân vật nhận quà")
     with _lock:

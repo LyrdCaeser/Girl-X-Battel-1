@@ -172,6 +172,46 @@ def grant_kit(state, partner_id):
     return {'material_ids':mats,'to_star':plan['to_star'],'cost':plan['cost']}
 
 
+def gear_for_job(job):
+    from . import equipment
+    job=int(job)
+    result=[]
+    for slot in (1,2,3,4):
+        candidates=[r for r in equipment.EQUIP.values()
+                    if r['pos']==slot and int(r.get('job') or 0)==job]
+        if not candidates:
+            raise ValueError('Không tìm thấy trang bị đúng nghề')
+        result.append(max(candidates,key=lambda r:(r['item_lv'],r.get('qlt',0),r['id']))['id'])
+    return result
+
+
+def grant_gear(state, partner_id):
+    from . import equipment
+    check_scope(state)
+    welcome=state.get('s5_welcome') or {}
+    if type(partner_id) is not int:
+        raise ValueError('Chọn nữ thần hợp lệ')
+    host=next((p for p in state['partners'] if p['partner_id']==partner_id),None)
+    if not host or welcome.get('hosts',{}).get(str(host['table_id']))!=partner_id:
+        raise ValueError('Chỉ cấp trang bị cho nữ thần quà S5')
+    received=welcome.setdefault('gear_claimed',{})
+    key=str(host['table_id'])
+    if key in received:
+        raise ValueError('Nữ thần này đã nhận bộ trang bị')
+    job=equipment.job_of(host)
+    gear=gear_for_job(job)
+    for item in gear:
+        equipment.add(state,item,1)
+    received[key]=True
+    return {'partner_id':partner_id,'job':job,'gear':gear}
+
+
+def allow_skin_gift(sender_server,recipient_server):
+    a,b=str(sender_server or '').upper(),str(recipient_server or '').upper()
+    if 'S5' in (a,b) and a!=b:
+        raise ValueError('GiftSkin S5 chỉ tặng giữa các nhân vật cùng S5')
+
+
 def skin_catalog(uid):
     # Include lower-star-only wearable skins too (the 25-star roster is
     # not the complete original wearable skin catalog).
@@ -287,10 +327,9 @@ def ensure_welcome(uid, server_id, name):
 
 
 def restrict_route(path):
-    # PvP is authorized separately by mode and exact character identity.
-    # Social gifts/marriage use UID + server_id for both characters.
-    # Personal photo uploads retain their account-wide 24h quota.
-    return path.startswith(('/api/guild-war/','/api/order/','/api/giftskin/','/api/skin-shop/','/api/giftcode/'))
+    # World-local features retain their usual permissions. Cross PvP and
+    # S5-boundary skin transfers are checked at their own authoritative routes.
+    return False
 
 
 def enforce_roster(state):

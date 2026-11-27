@@ -117,6 +117,26 @@ class GiftSkinTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,"kết duyên"):
             skin_gifts.create_bank(sender,world,uid,name,to_world,wedding)
 
+    def test_s5_same_world_giftskin_allowed_and_cross_world_rejected(self):
+        live_service.create_world("S5","Test")
+        sender,_,uid,name,_,sid=self.details()
+        recipient=self.recipient["account"]["uid"]
+        for internal,n in ((sender,"Giver S5"),(recipient,"Receiver S5")):
+            live_service.register_player(internal,"S5",n)
+        db=live_service._db()
+        for internal in (sender,recipient):
+            db.execute("INSERT INTO player_profiles(uid,server_id,data) VALUES(?,?,?)",
+                       (internal,"S5",json.dumps({"skins":{"collected":[]},"items":{},"partners":[]})))
+        db.commit();db.close()
+        self.assertTrue(skin_gifts.view_recipient(sender,uid,"Receiver S5","S5",sender_server="S5")["verified"])
+        for a,b,n in (("S5","S1",name),("S1","S5","Receiver S5")):
+            with self.assertRaisesRegex(ValueError,"cùng S5"):
+                skin_gifts.create_bank(sender,a,uid,n,b,sid)
+        order=skin_gifts.create_bank(sender,"S5",uid,"Receiver S5","S5",sid)
+        skin_gifts.review(order["id"],True,"OWNER")
+        self.assertEqual(live_service.mailbox(recipient,"S1"),[])
+        self.assertEqual(live_service.mailbox(recipient,"S5")[0]["attachments"],{str(sid):1})
+
     def test_bank_gift_remains_pending_until_super_gm_approval(self):
         receipt=skin_gifts.create_bank(*self.details())
         self.assertEqual(receipt["status"],"pending")

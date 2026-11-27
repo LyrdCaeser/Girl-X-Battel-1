@@ -1404,7 +1404,7 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
             if path == '/api/giftskin/verify':
                 a=self.auth_context()['account']
                 return self.send(200,skin_gifts.view_recipient(
-                    a['uid'],data.get('recipient_uid'),data.get('recipient_name'),data.get('recipient_server')))
+                    a['uid'],data.get('recipient_uid'),data.get('recipient_name'),data.get('recipient_server'),sender_server=a['server_id']))
             if path == '/api/giftskin/crystal':
                 return self.send(200,self.engine.gift_skin_crystal(data))
             if path == '/api/giftskin/bank/create':
