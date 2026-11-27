@@ -14,7 +14,7 @@ from pathlib import Path
 from . import database, vip
 
 WORLD = "S4"
-NAME = "S4 • Thời Không Sai Lệch (Độc Quyền)"
+NAME = "S4 • Thời Không Sai Lệch (Độc Quyền) - VIP 15"
 REQUIRED_VIP = 15
 KEY = "__s4_exclusive_bundle__"
 ACCESS_KEY = "__s4_exclusive_key__"

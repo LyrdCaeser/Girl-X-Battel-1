@@ -169,7 +169,7 @@ window.GxbAuth=(()=>{
     const select=document.createElement('select');select.id=id;
     for(const w of worlds.filter(x=>x.status!=='closed')){
       const special=w.server_id==='S4';
-      const label=(w.server_id==='S5'?'S5 • Thiên Hư Không - Limited':w.name+' · '+w.server_id+(special?' · VIP 15 / Dùng thử':''))+
+      const label=(w.server_id==='S5'?'S5 • Thiên Hư Không - Limited':special?'S4 • Thời Không Sai Lệch (Độc Quyền) - VIP 15':w.name+' · '+w.server_id)+
         (w.status==='maintenance'?' · Bảo trì':'');
       const option=el('option','',label);
       option.value=w.server_id;option.disabled=w.status!=='online';select.append(option);
