@@ -60,6 +60,7 @@ class S5CoreTests(unittest.TestCase):
                 live_service.claim_mail(s5.svip_mail_id(uid),uid,'S1')
                 self.assertTrue(s5.access_cycle(closed,uid)['access_allowed'])
                 self.assertFalse(s5.access_cycle(closed,'other')['access_allowed'])
+                self.assertEqual(datetime.fromtimestamp(s5.SVIP_END,s5.TZ).isoformat(),'2026-11-28T06:00:00+07:00')
                 self.assertTrue(s5.svip_access(s5.SVIP_END-1,uid))
                 self.assertFalse(s5.svip_access(s5.SVIP_END,uid))
                 self.assertEqual(s5.access_cycle(s5.SVIP_END,uid)['phase'],'open')

@@ -27,7 +27,7 @@ EARLY_OPERATOR = "S5-OWNER-EARLY"
 SVIP_CARD = "990073"
 SVIP_NAME = "S5▪︎ VÉ TRUY CẬP HẠN GIỜ SVIP"
 SVIP_OPERATOR = "S5-MONTHANH-SVIP"
-SVIP_END = int(datetime(2026,12,28,6,0,tzinfo=TZ).timestamp())
+SVIP_END = int(datetime(2026,11,28,6,0,tzinfo=TZ).timestamp())
 
 
 def schedule(now):
@@ -449,7 +449,7 @@ def issue_svip_card(uid):
         cur=db.execute("""INSERT INTO mail(id,uid,server_id,character_name,title,body,attachments,status,created_at,operator)
             VALUES(?,?,?,?,?,?,?,'pending',?,?) ON CONFLICT(id) DO NOTHING""",
             (mid,str(uid),player['server_id'],player['character_name'],SVIP_NAME,
-             'Vé riêng cho monthanh. Nhận thư để vào S5 ngoài lịch công khai đến 06:00 ngày 28/12/2026 (giờ Việt Nam). Không chuyển nhượng. Hết hạn trở về lịch S5 bình thường.',
+             'Vé riêng cho monthanh. Nhận thư để vào S5 ngoài lịch công khai đến 06:00 ngày 28/11/2026 (giờ Việt Nam). Không chuyển nhượng. Hết hạn trở về lịch S5 bình thường.',
              json.dumps({SVIP_CARD:1}),int(time.time()),SVIP_OPERATOR))
         if cur.rowcount:live_service._audit(db,'s5.svip_card.issue',mid,{'uid':str(uid),'server_id':player['server_id'],'expires_at':SVIP_END},SVIP_OPERATOR)
         row=db.execute("SELECT server_id,status FROM mail WHERE id=? AND uid=? AND operator=?",(mid,str(uid),SVIP_OPERATOR)).fetchone()
