@@ -36,7 +36,7 @@ class AltarDollsCosmosTests(unittest.TestCase):
             rewards, six = self.engine.altar_returns(self.state, [pid])
             expected = {str(k): v for k, v in item_pairs(TABLES['partner'][str(tid)]['decompose']).items()}
             self.assertEqual(rewards, expected, tid)
-            self.assertEqual(six, 0, 'Dolls must not count toward daily quota')
+            self.assertEqual(six, int(TABLES['partner'][str(tid)]['max_star'] >= 6))
             self.state['partners'].pop()
 
     def test_three_playable_cosmos_girls_use_existing_native_10star_recipe(self):
@@ -46,7 +46,7 @@ class AltarDollsCosmosTests(unittest.TestCase):
             pid = self.add(tid)
             rewards, six = self.engine.altar_returns(self.state, [pid])
             self.assertEqual(rewards, native)
-            self.assertEqual(six, 0, 'Cosmos must not count toward daily quota')
+            self.assertEqual(six, 1)
             self.state['partners'].pop()
 
     def test_nonplayable_cosmos_npc_is_not_deletable(self):
@@ -95,22 +95,19 @@ class AltarDollsCosmosTests(unittest.TestCase):
         self.assertEqual(len(self.state['partners']), before)
 
 
-    def test_specials_ignore_fully_used_quota_without_incrementing_it(self):
+    def test_specials_obey_native_daily_quota(self):
         from gxb2 import clock
-        ids = [self.add(tid) for tid in (
-            561001, 561001, 661001, 761001, 757001, 757002, 757003,
-        )]
+        ids = [self.add(tid) for tid in (661001,761001,757001,757002,757003)]
         self.state['altar'] = {'day': clock.day(self.engine.now()), 'six': 5}
         expected, quota = self.engine.altar_returns(self.state, ids)
         self.assertTrue(expected)
-        self.assertEqual(quota, 0)
-        packets, _ = self.engine._dispatch(
-            'DECOMPOSE_PARTNERS', {'partner_ids': ids}, self.state)
-        self.assertTrue(packets)
+        self.assertEqual(quota, 5)
+        with self.assertRaisesRegex(GameError, 'Mỗi ngày'):
+            self.engine._dispatch('DECOMPOSE_PARTNERS', {'partner_ids': ids}, self.state)
         self.assertEqual(self.state['altar']['six'], 5)
-        self.assertEqual(self.state['last_decompose'], expected)
-        self.assertTrue(set(ids).isdisjoint(
-            x['partner_id'] for x in self.state['partners']))
+        self.state['altar']['six'] = 0
+        self.engine._dispatch('DECOMPOSE_PARTNERS', {'partner_ids': ids}, self.state)
+        self.assertEqual(self.state['altar']['six'], 5)
 
     def test_verified_admin_unlimited_daily_but_preserves_safety(self):
         from unittest.mock import patch
@@ -157,18 +154,17 @@ class AltarDollsCosmosTests(unittest.TestCase):
                 'DECOMPOSE_PARTNERS', {'partner_ids': [regular]}, self.state)
         self.assertEqual(count, len(self.state['partners']))
 
-    def test_mixed_batch_counts_only_regular_six_star(self):
+    def test_mixed_batch_counts_all_six_star(self):
         from gxb2 import clock
-        dolls = [self.add(661001) for _ in range(5)]
-        cosmos = self.add(757001)
-        regular = self.add(651001)
-        ids = dolls + [cosmos, regular]
+        ids = [self.add(tid) for tid in (561001,661001,757001,651001)]
         reward, quota = self.engine.altar_returns(self.state, ids)
         self.assertTrue(reward)
-        self.assertEqual(quota, 1)
-        self.state['altar'] = {'day': clock.day(self.engine.now()), 'six': 4}
-        self.engine._dispatch(
-            'DECOMPOSE_PARTNERS', {'partner_ids': ids}, self.state)
+        self.assertEqual(quota, 3)
+        self.state['altar'] = {'day': clock.day(self.engine.now()), 'six': 3}
+        with self.assertRaises(GameError):
+            self.engine._dispatch('DECOMPOSE_PARTNERS', {'partner_ids': ids}, self.state)
+        self.state['altar']['six'] = 2
+        self.engine._dispatch('DECOMPOSE_PARTNERS', {'partner_ids': ids}, self.state)
         self.assertEqual(self.state['altar']['six'], 5)
 
 if __name__ == '__main__':

@@ -3165,7 +3165,7 @@ class Engine:
     def altar_returns(self, state, ids):
         """AltarWindow (Campus → Transfer), Partner:getDecompose: the table's `decompose`, 70 % of the Grade Stones of her grades
         (and of her awakens below 10★) and 65 % of the girl EXP of her level; her gear goes back to the bag on retiring
-        (equipment.release). Returns ({item: n}, number of ordinary 6★+ girls counted toward the daily limit)."""
+        (equipment.release). Returns ({item: n}, number of 6★+ girls counted toward the native daily limit)."""
         if not isinstance(ids, list) or not 1 <= len(ids) <= 12 or len(set(ids)) != len(ids) or any(type(i) is not int for i in ids):
             raise GameError('Chọn từ 1 đến 12 Nữ Thần để phân giải')
         owned = {g['partner_id']: g for g in state['partners']}
@@ -3185,11 +3185,10 @@ class Engine:
             if cosmos and not str(row.get('hero_list') or '').strip():
                 raise GameError('Không thể phân giải nhân vật Vũ Trụ không hợp lệ')
             if pid == pending: raise GameError('Hãy hoàn tất trao đổi Nữ Thần đang chờ trước khi phân giải')
-            # Keep the 5/day quota for ordinary 6★+ girls only.
-            # Dolls (including native 6★/10★) and playable Cosmos are exempt.
-            is_doll = int(g['table_id']) in RETURN['puppets']
+            # Native altar_6up_day_limit applies to every eligible 6★+ unit.
+            # Only the authenticated owner bypasses the quota at dispatch.
             star = int(row['max_star']) + int(g.get('awake', 0))
-            six += int(star >= 6 and not is_doll and not cosmos)
+            six += int(star >= 6)
             decompose = row.get('decompose') or ''
             if cosmos and not decompose:
                 decompose = TABLES['partner']['751001']['decompose']
@@ -3864,7 +3863,7 @@ class Engine:
             got, six = self.altar_returns(state, ids)
             day = clock.day(self.now()); alt = state.setdefault('altar', {})
             if alt.get('day') != day: alt.update(day=day, six=0)
-            if six and alt['six'] + six > 5 and not self.altar_unlimited(state): raise GameError('Mỗi ngày chỉ được phân giải tối đa 5 Nữ Thần thường từ 6★ trở lên')
+            if six and alt['six'] + six > 5 and not self.altar_unlimited(state): raise GameError('Mỗi ngày chỉ được phân giải tối đa 5 Nữ Thần từ 6★ trở lên')
             alt['six'] += six
             owned = {g['partner_id']: g for g in state['partners']}
             for pid in ids: equipment.release(state, owned[pid])
