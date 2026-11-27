@@ -151,6 +151,39 @@ class S5CoreTests(unittest.TestCase):
                         owned={i:{'table_id':t,'awake':aw} for i,(t,aw) in enumerate(plan['materials'],1)}
                         self.assertEqual(len(e.match_materials(owned,list(owned),recipe['material'],recipe['group'])),len(owned))
 
+    def test_advanced_duplicate_selection_and_transfer(self):
+        from gxb2 import equipment
+        from copy import deepcopy
+        st=self.state();s5.grant_welcome(st,1795740000)
+        original=next(p for p in st['partners'] if p['table_id']==755013)
+        other=deepcopy(original);other.update(partner_id=999999,lv=666,awake=15,equips=[0,0,0,0,5108,0,0]);st['partners'].append(other)
+        gift=s5.grant_advanced(st,original['partner_id'])
+        before=list(original['equips']);chisel=st['items']['14']
+        self.assertEqual(chisel,100000)
+        moved=s5.move_advanced_equipment(st,other['partner_id'])
+        self.assertEqual(other['equips'][4:6],before[4:6])
+        self.assertEqual(original['equips'][4:6],[5108,0])
+        self.assertEqual(st['items']['14'],chisel)
+        self.assertEqual(moved['antique'],gift['antique'])
+        with self.assertRaises(ValueError):s5.move_advanced_equipment(st,other['partner_id'])
+        with self.assertRaises(ValueError):s5.grant_advanced(st,other['partner_id'])
+        equipment.action(st,{'action':'unequip','partner_id':other['partner_id'],'slot':6})
+        self.assertEqual(st['items'][str(gift['antique'])],1)
+        equipment.action(st,{'action':'equip','partner_id':other['partner_id'],'item_id':gift['antique']})
+        equipment.action(st,{'action':'treasure_refresh','partner_id':other['partner_id']})
+        self.assertEqual(equipment.EQUIP[other['tmp_treasure']]['item_lv'],23)
+        equipment.action(st,{'action':'treasure_save','partner_id':other['partner_id']})
+        self.assertEqual(equipment.EQUIP[other['equips'][4]]['item_lv'],23)
+        fresh=self.state();s5.grant_welcome(fresh,1795740000)
+        orig=next(p for p in fresh['partners'] if p['table_id']==755013)
+        alt=deepcopy(orig);alt.update(partner_id=999999,lv=666,awake=15);fresh['partners'].append(alt)
+        result=s5.grant_advanced(fresh,999999)
+        self.assertEqual(alt['equips'][4:6],[result['treasure'],result['antique']])
+        self.assertEqual(orig['equips'][4:6],[0,0])
+        self.assertEqual(s5.quick_souls(fresh,alt)['equipped'],result['souls'])
+        fresh['server_id']='S1'
+        with self.assertRaises(ValueError):s5.move_advanced_equipment(fresh,orig['partner_id'])
+
     def test_advanced_reward_all_native_goddesses(self):
         from gxb2 import equipment,souls
         for uid in ('ordinary',s5.MONTHANH_UID):

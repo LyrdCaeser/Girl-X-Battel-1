@@ -467,7 +467,7 @@ const HomeMenus=(()=>{
     const r=await api('/api/s5/rewards',req);state=r.state;
     if(req.action==='skins')chosen.clear();
     if(!dialog.isConnected)return;
-    say(req.action==='kit'?'Đã nhận nguyên liệu. Vào Nữ Thần để thức tỉnh.':req.action==='gear'?'Đã nhận 4 trang bị đúng nghề vào Túi Đồ.':req.action==='advanced'?'Đã trang bị Linh Hồn, Bảo Vật, Cổ Vật và nâng kỹ năng tối đa.':'Đã nhận trang phục.');
+    say(req.action==='kit'?'Đã nhận nguyên liệu. Vào Nữ Thần để thức tỉnh.':req.action==='gear'?'Đã nhận 4 trang bị đúng nghề vào Túi Đồ.':req.action==='move_advanced_equipment'?'Đã chuyển Bảo Vật và Cổ Vật.':req.action==='advanced'?'Đã trang bị Linh Hồn, Bảo Vật, Cổ Vật và nâng kỹ năng tối đa.':'Đã nhận trang phục.');
     const scroll=body.scrollTop;await load();body.scrollTop=scroll;
    }catch(e){
     if(dialog.isConnected&&e.responseUncertain){
@@ -475,8 +475,8 @@ const HomeMenus=(()=>{
      // status before allowing the next click; never replay the POST blindly.
      try{
       const fresh=await api('/api/s5/rewards');
-      const saved=fresh.hosts.find(h=>Number(h.partner_id)===Number(req.partner_id));
-      const received=req.action==='advanced'?!!saved?.advanced_claimed:req.action==='gear'?!!saved?.gear_claimed:req.action==='kit'?!!saved?.kit_claimed:req.action==='skins'?req.ids.every(id=>!fresh.skins.some(s=>Number(s.id)===Number(id))):false;
+      const saved=((req.action==='advanced'||req.action==='move_advanced_equipment')?(fresh.advanced_hosts||fresh.hosts):fresh.hosts).find(h=>Number(h.partner_id)===Number(req.partner_id));
+      const received=req.action==='move_advanced_equipment'?!!saved?.equipment_here:req.action==='advanced'?!!saved?.advanced_claimed:req.action==='gear'?!!saved?.gear_claimed:req.action==='kit'?!!saved?.kit_claimed:req.action==='skins'?req.ids.every(id=>!fresh.skins.some(s=>Number(s.id)===Number(id))):false;
       if(received){
        state=await api('/api/state');if(req.action==='skins')chosen.clear();
       }
@@ -506,9 +506,9 @@ const HomeMenus=(()=>{
      const gearMode=active==='gear',advancedMode=active==='advanced';
      const jobs=['','Chiến Binh','Pháp Sư','Xạ Thủ','Sát Thủ','Linh Mục'];
      const roster=new Map((state.roster||[]).map(g=>[Number(g.partner_id),g]));
-     for(const h of info.hosts.filter(x=>x.name.toLocaleLowerCase('vi').includes(q))){
+     for(const h of (advancedMode?(info.advanced_hosts||info.hosts):info.hosts).filter(x=>x.name.toLocaleLowerCase('vi').includes(q))){
       const hero=roster.get(Number(h.partner_id));if(!hero)continue;
-      const n=Number(h.stars),done=n>=25,unavailable=advancedMode?!!h.advanced_claimed:gearMode?!!h.gear_claimed:done||h.kit_claimed;
+      const n=Number(h.stars),done=n>=25,unavailable=advancedMode?!!h.advanced_claimed&&!h.move_equipment:gearMode?!!h.gear_claimed:done||h.kit_claimed;
       const card=el('button',undefined,'s5-reward-card');card.type='button';card.dataset.s5Action=advancedMode?'advanced':gearMode?'gear':'kit';card.dataset.unavailable=unavailable?'1':'0';card.disabled=working||unavailable;
       card.setAttribute('aria-label',h.name+' · '+n+' sao'+(done?' · Tối đa':' lên '+(n+1)+' sao'));
       const art=el('span',undefined,'s5-girl-art');art.append(portrait(hero.table_id,88,hero));
@@ -516,13 +516,13 @@ const HomeMenus=(()=>{
       const ranks=el('span',undefined,'s5-ranks');ranks.append(s5StarBadge(n,hero));if(!done)ranks.append(el('span','→','s5-arrow'),s5StarBadge(n+1,hero));
       card.append(art,el('strong',h.name,'s5-card-name'));
       if(advancedMode){
-       card.append(s5StarBadge(n,hero),el('span',jobs[h.job]||'','s5-job'));
+       card.append(s5StarBadge(n,hero),el('span','Cấp '+h.level+' · '+(jobs[h.job]||''),'s5-job'));
        const plan=h.advanced||{},items=el('span',undefined,'s5-gear-icons s5-advanced-icons');
        for(const id of [...(plan.souls||[]),plan.treasure,plan.antique]){
         items.append(s5AdvancedItem(id));
        }
        card.append(items,el('span','4 kỹ năng · Lv '+(plan.elite_display||5),'s5-job'),
-         el('span',h.advanced_claimed?'Đã nhận quà':'Nhận quà nâng cao','s5-card-action'));
+         el('span',h.move_equipment?'Chuyển Bảo Vật & Cổ Vật':h.advanced_claimed?(h.equipment_here?'Đã nhận quà':'Đã nhận ở bản khác'):'Nhận quà nâng cao','s5-card-action'));
       }else if(gearMode){
        card.append(s5StarBadge(n,hero),el('span',jobs[h.job]||'Trang bị đúng nghề','s5-job'));
        const items=el('span',undefined,'s5-gear-icons');
@@ -531,7 +531,7 @@ const HomeMenus=(()=>{
        }
        card.append(items,el('span',h.gear_claimed?'Đã nhận trang bị':'Nhận bộ trang bị','s5-card-action'));
       }else card.append(ranks,el('span',done?'Đã đạt 25 sao':h.kit_claimed?'Đã nhận nguyên liệu':'Nhận nguyên liệu','s5-card-action'));
-      card.onclick=()=>claim({action:advancedMode?'advanced':gearMode?'gear':'kit',partner_id:h.partner_id});grid.append(card);
+      card.onclick=()=>{if(advancedMode&&h.move_equipment&&!confirm('Chuyển hai trang bị từ bản nữ thần đã nhận sang bản cấp '+h.level+'? Trang bị hiện tại sẽ đổi chỗ.'))return;return claim({action:advancedMode?(h.move_equipment?'move_advanced_equipment':'advanced'):gearMode?'gear':'kit',partner_id:h.partner_id});};grid.append(card);
      }
     }else{
      for(const skin of info.skins.filter(x=>x.name.toLocaleLowerCase('vi').includes(q))){

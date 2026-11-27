@@ -50,7 +50,7 @@ def add(state, item, n):
     key = str(item)
     left = int(state['items'].get(key, 0)) + n
     if left < 0:
-        raise ValueError('Faltan objetos')
+        raise ValueError('Không đủ vật phẩm')
     if left:
         state['items'][key] = left
     else:
@@ -59,7 +59,7 @@ def add(state, item, n):
 
 def charge(state, cost):
     if any(have(state, k) < n for k, n in cost.items()):
-        raise ValueError('Faltan recursos para esta acción')
+        raise ValueError('Không đủ nguyên liệu để thực hiện')
     for k, n in cost.items():
         add(state, k, -n)
 
@@ -127,37 +127,37 @@ def best_for(state, partner, slot, current):
 
 def action(state, request, level=None):
     if not isinstance(request, dict):
-        raise ValueError('Datos inválidos')
+        raise ValueError('Dữ liệu không hợp lệ')
     kind = request.get('action')
     result = {}
     partner = None
     if 'partner_id' in request:
-        pid = number(request.get('partner_id'), 'Chica', 1)
+        pid = number(request.get('partner_id'), 'Nữ thần', 1)
         partner = next((p for p in state['partners'] if p['partner_id'] == pid), None)
         if not partner:
-            raise ValueError('Chica inexistente')
+            raise ValueError('Không tìm thấy nữ thần')
         slots = equips_of(partner)
 
     if kind == 'equip':
-        item = number(request.get('item_id'), 'Objeto', 1)
+        item = number(request.get('item_id'), 'Vật phẩm', 1)
         row = EQUIP.get(item)
         if not partner or not row or row['pos'] not in GEAR_SLOTS:
-            raise ValueError('Equipo inválido')
+            raise ValueError('Trang bị không hợp lệ')
         if not fits(item, partner):
-            raise ValueError('Esta pieza es de otra clase')
+            raise ValueError('Trang bị không đúng nghề')
         add(state, item, -1)
         if slots[row['pos'] - 1]:
             add(state, slots[row['pos'] - 1], 1)
         slots[row['pos'] - 1] = item
     elif kind == 'unequip':
-        slot = number(request.get('slot'), 'Ranura', 1, 6)
+        slot = number(request.get('slot'), 'Ô trang bị', 1, 6)
         if not partner or slot not in GEAR_SLOTS or not slots[slot - 1]:
-            raise ValueError('Ranura vacía')
+            raise ValueError('Ô trang bị đang trống')
         add(state, slots[slot - 1], 1)
         slots[slot - 1] = 0
     elif kind == 'equip_all':
         if not partner:
-            raise ValueError('Chica inexistente')
+            raise ValueError('Không tìm thấy nữ thần')
         changed = False
         for slot in GEAR_SLOTS:
             best = best_for(state, partner, slot, slots[slot - 1])
@@ -168,23 +168,23 @@ def action(state, request, level=None):
                 slots[slot - 1] = best
                 changed = True
         if not changed:
-            raise ValueError('No hay equipo mejor en la Bolsa')
+            raise ValueError('Không có trang bị tốt hơn trong Túi Đồ')
     elif kind == 'unequip_all':
         if not partner or not any(slots[s - 1] for s in GEAR_SLOTS):
-            raise ValueError('No lleva equipo')
+            raise ValueError('Nữ thần chưa mặc trang bị')
         release(state, partner)
     elif kind == 'forge':
-        item = number(request.get('item_id'), 'Objeto', 1)
-        count = number(request.get('count', 1), 'Cantidad', 1, 100000)
+        item = number(request.get('item_id'), 'Vật phẩm', 1)
+        count = number(request.get('count', 1), 'Số lượng', 1, 100000)
         need = pairs(EQUIP.get(item, {}).get('need_formula'))
         if not need:
-            raise ValueError('Esta pieza no se puede forjar')
+            raise ValueError('Không thể rèn trang bị này')
         charge(state, {k: n * count for k, n in need.items()})
         add(state, item, count)
         result['forged'] = {str(item): count}
     elif kind == 'forge_auto':
         # SmithyWindow:autoCompose — cascades through one slot's chain, cheapest first.
-        pos = number(request.get('pos'), 'Tipo', 1, 4)
+        pos = number(request.get('pos'), 'Loại', 1, 4)
         chain = sorted(i for i, r in EQUIP.items() if r['pos'] == pos and r.get('need_formula'))
         made = {}
         for item in chain:
@@ -199,32 +199,32 @@ def action(state, request, level=None):
                 add(state, item, count)
                 made[str(item)] = count
         if not made:
-            raise ValueError('No hay materiales suficientes para forjar')
+            raise ValueError('Không đủ nguyên liệu để rèn')
         result['forged'] = made
     elif kind == 'artifact_upgrade':
         # ArtifactUpWindow: feed antiques until artifact_upg exp; the piece becomes artifact_next.
-        item = number(request.get('item_id'), 'Antigüedad', 1)
+        item = number(request.get('item_id'), 'Cổ Vật', 1)
         row = EQUIP.get(item)
         if not row or row['pos'] != 6 or not row.get('artifact_next'):
-            raise ValueError('Esta antigüedad no se puede mejorar')
+            raise ValueError('Cổ Vật này đã đạt tối đa hoặc không thể nâng cấp')
         feed = request.get('materials')
         if not isinstance(feed, dict) or not feed:
-            raise ValueError('Elige materiales')
-        feed = {number(int(k), 'Material', 1): number(v, 'Cantidad', 1, 100000) for k, v in feed.items()}
+            raise ValueError('Hãy chọn nguyên liệu')
+        feed = {number(int(k), 'Nguyên liệu', 1): number(v, 'Số lượng', 1, 100000) for k, v in feed.items()}
         equipped = partner is not None and slots[5] == item
         if not equipped:
             feed_self = feed.get(item, 0) + 1
             if have(state, item) < feed_self:
-                raise ValueError('La antigüedad no está en la Bolsa')
+                raise ValueError('Cổ Vật không có trong Túi Đồ')
         exp = 0
         for k, n in feed.items():
             mat = EQUIP.get(k)
             if not mat or mat['pos'] != 6 or not mat.get('artifact_exp'):
-                raise ValueError('Material inválido')
+                raise ValueError('Nguyên liệu không hợp lệ')
             exp += int(mat['artifact_exp']) * n
         need = int(row['artifact_upg'])
         if exp < need:
-            raise ValueError('Experiencia insuficiente')
+            raise ValueError('Không đủ kinh nghiệm')
         charge(state, feed)
         nxt = int(row['artifact_next'])
         if equipped:
@@ -238,20 +238,20 @@ def action(state, request, level=None):
         result.update(upgraded=nxt, returned=back)
     elif kind in ('treasure_on', 'treasure_upgrade', 'treasure_refresh', 'treasure_save', 'treasure_discard'):
         if not partner:
-            raise ValueError('Chica inexistente')
+            raise ValueError('Không tìm thấy nữ thần')
         current = slots[4]
         if kind == 'treasure_on':
             if current:
-                raise ValueError('El tesoro ya está desbloqueado')
-            if int(partner['lv']) < TREASURE_OPEN:
-                raise ValueError(f'Disponible desde el nivel {TREASURE_OPEN}')
+                raise ValueError('Bảo Vật đã được mở khóa')
+            if int(partner['lv']) < (1 if state.get('server_id')=='S5' else TREASURE_OPEN):
+                raise ValueError(f'Mở khóa từ cấp {TREASURE_OPEN}')
             slots[4] = pick(1)
         elif not current:
-            raise ValueError('Desbloquea primero el tesoro')
+            raise ValueError('Hãy mở khóa Bảo Vật trước')
         elif kind == 'treasure_upgrade':
             row = EQUIP[current]
             if not row.get('treasure_upgrade'):
-                raise ValueError('Tesoro al máximo')
+                raise ValueError('Bảo Vật đã đạt cấp tối đa')
             cost = pairs(row['treasure_upgrade'])
             locked = request.get('lock') is True
             if locked:
@@ -266,11 +266,11 @@ def action(state, request, level=None):
             partner['tmp_treasure'] = pick(EQUIP[current]['item_lv'])
         elif kind == 'treasure_save':
             if not partner.get('tmp_treasure'):
-                raise ValueError('No hay atributo nuevo')
+                raise ValueError('Chưa có thuộc tính mới')
             slots[4] = partner.pop('tmp_treasure')
         else:
             partner.pop('tmp_treasure', None)
         result['treasure'] = slots[4]
     else:
-        raise ValueError('Acción de equipo no disponible')
+        raise ValueError('Thao tác trang bị không hợp lệ')
     return result

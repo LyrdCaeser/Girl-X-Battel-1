@@ -80,6 +80,10 @@ const Equipment=(()=>{
   'Crit Resist':'Kháng Bạo Kích','Control Rate':'Tỷ Lệ Khống Chế',
   'DMG vs Ranger':'Sát Thương lên Xạ Thủ','DMG vs Warrior':'Sát Thương lên Chiến Binh'
  };
+ const TREASURE_VI={'Blue Crystal':'Pha Lê Lam','Yellow Crystal':'Pha Lê Vàng','Agate Crystal':'Pha Lê Mã Não','Dragon Jade':'Ngọc Rồng','Nebula Core':'Lõi Tinh Vân','Paradise Crystal':'Pha Lê Thiên Đường','Rune Crystal':'Pha Lê Phù Văn'};
+ const JOB_VI={1:'Chiến Binh',2:'Pháp Sư',3:'Xạ Thủ',4:'Sát Thủ',5:'Linh Mục'};
+ const displayName=r=>r?.pos===5?(TREASURE_VI[r.name]||'Bảo Vật'):r?.pos===6?antiqueName(r.name):r?.name||'Trang bị';
+ const treasureLevel=()=>state.server_id==='S5'?1:data.treasure_open_level;
  const SLOTS=[[1,'Vũ khí','partner_weapon'],[2,'Áo','partner_cloth'],[3,'Phụ kiện','partner_pants'],[4,'Giày','partner_shoes'],[5,'Bảo vật','partner_treasure'],[6,'Cổ vật','partner_artifact']];
  const SMITHY_TABS=[[1,'Vũ khí'],[2,'Áo'],[3,'Phụ kiện'],[4,'Giày']];
  const STAT_KEYS=[['hp','HP','attr_hp_icon'],['atk','ATK','attr_atk_icon'],['arm','DEF','attr_def_icon'],['spd','SPD','attr_spd_icon']];
@@ -92,39 +96,39 @@ const Equipment=(()=>{
  const row=id=>data.items[String(id)];
  const have=id=>Number(state.items[String(id)]||0);
  function pairs(text){return String(text||'').split('|').filter(s=>s.includes('#')).map(s=>s.split('#'));}
- function attrText(key,value,localize=false){const original=data.attr_names[key]||key;const name=localize?(ATTRVI[original]||original):original;const v=Number(value);return name+' +'+(v<1&&v>0||key.endsWith('P')||['zs','fs','yx','ck','ms'].includes(key)?(v*100).toFixed(v*100%1?1:0)+'%':fmt(v));}
+ function attrText(key,value,localize=true){const original=data.attr_names[key]||key;const name=localize?(ATTRVI[original]||original):original;const v=Number(value);return name+' +'+(v<1&&v>0||key.endsWith('P')||['zs','fs','yx','ck','ms'].includes(key)?(v*100).toFixed(v*100%1?1:0)+'%':fmt(v));}
  function icon(id,extra=''){const r=row(id),w=el('span','eq-icon '+extra);w.style.backgroundImage=`url('/assets/ui/quality_${Math.min(r?.qlt||0,7)}.png')`;if(r)w.append(img(data.icons[String(id)]||'/assets/ui/item_bg.png','',r.name));if(r&&r.pos!==5&&r.star){const st=el('span','eq-stars');for(let i=0;i<Math.min(r.star,6);i++)st.append(img('/assets/equipment/equip_star.png'));w.append(st);}return w;}
- function lines(parent,id,partner,localize=false){const r=row(id);if(!r)return;const list=el('ul','eq-lines');for(const k of ['base1','base2','base3','base4'])for(const [a,v]of pairs(r[k]))list.append(el('li','',attrText(a,v,localize)));
-  if(r.act){const ok=partner&&((r.job&&r.job===jobOf(partner))||(r.group&&r.group===groupOf(partner)));const li=el('li','eq-act'+(ok?' on':''),(r.job?'Clase '+data.jobs[r.job]:"Faction "+r.group)+': '+pairs(r.act).map(([a,v])=>attrText(a,v)).join(', '));list.append(li);}
-  if(r.form){const pieces=String(r.form).split('|').map(Number),worn=partner?pieces.filter(p=>partner.equips?.includes(p)).length:0;for(const [n,k]of [[2,'suit1'],[3,'suit2'],[4,'suit3']])if(r[k])list.append(el('li','eq-suit'+(worn>=n?' on':''),'Conjunto '+n+'/4: '+pairs(r[k]).map(([a,v])=>attrText(a,v)).join(', ')));}
-  if(r.suit_skill_names)list.append(el('li','eq-suit',"Set Skill: "+r.suit_skill_names.join(' / ')));
+ function lines(parent,id,partner,localize=true){const r=row(id);if(!r)return;const list=el('ul','eq-lines');for(const k of ['base1','base2','base3','base4'])for(const [a,v]of pairs(r[k]))list.append(el('li','',attrText(a,v,localize)));
+  if(r.act){const ok=partner&&((r.job&&r.job===jobOf(partner))||(r.group&&r.group===groupOf(partner)));const li=el('li','eq-act'+(ok?' on':''),(r.job?'Nghề '+JOB_VI[r.job]:'Hệ '+r.group)+': '+pairs(r.act).map(([a,v])=>attrText(a,v)).join(', '));list.append(li);}
+  if(r.form){const pieces=String(r.form).split('|').map(Number),worn=partner?pieces.filter(p=>partner.equips?.includes(p)).length:0;for(const [n,k]of [[2,'suit1'],[3,'suit2'],[4,'suit3']])if(r[k])list.append(el('li','eq-suit'+(worn>=n?' on':''),'Bộ trang bị '+n+'/4: '+pairs(r[k]).map(([a,v])=>attrText(a,v)).join(', ')));}
+  if(r.suit_skill_names)list.append(el('li','eq-suit',"Kỹ năng bộ: "+r.suit_skill_names.join(' / ')));
   parent.append(list);}
  function jobOf(p){return Number(data.partner_jobs[String(p.table_id)]||0);}
  function groupOf(p){return Number(data.partner_groups[String(p.table_id)]||0);}
- function cost(parent,text,label){const c=el('span','eq-cost');for(const [id,n]of pairs(text)){const ok=have(id)>=Number(n);const s=el('span',ok?'':'short');const src=id==='1'?'/assets/equipment/icon_1.png':id==='2'?'/assets/currency/icon_2_small.png':itemIconSrc(id);if(src)s.append(img(src));s.append(el('b','',fmt(n)));s.title=(itemCatalog[id]?.name||"Item "+id)+" · owned: "+fmt(have(id));c.append(s);}if(label)c.prepend(el('small','',label));parent.append(c);}
+ function cost(parent,text,label){const c=el('span','eq-cost');for(const [id,n]of pairs(text)){const ok=have(id)>=Number(n);const s=el('span',ok?'':'short');const src=id==='1'?'/assets/equipment/icon_1.png':id==='2'?'/assets/currency/icon_2_small.png':itemIconSrc(id);if(src)s.append(img(src));s.append(el('b','',fmt(n)));s.title=(id==='14'?'Đục Pha Lê':id==='1'?'Vàng':itemCatalog[id]?.name||'Vật phẩm')+' · Sở hữu: '+fmt(have(id));c.append(s);}if(label)c.prepend(el('small','',label));parent.append(c);}
  function itemIconSrc(id){const it=itemCatalog[id];if(it&&itemIcons.has(it.icon))return '/assets/item-icons/'+it.icon+'.png';return data.icons[String(id)]||'';}
  function affordable(text){return pairs(text).every(([id,n])=>have(id)>=Number(n));}
- async function send(request,after){if(pending)return;pending=true;message='Guardando…';try{const r=await api('/api/equipment/action',request);state=r.state;message=after?after(r):'';}catch(e){message=e.message;}finally{pending=false;render();if(view==='detail'&&message&&typeof GirlUI!=='undefined')GirlUI.toast(message);}}
+ async function send(request,after){if(pending)return;pending=true;message='Đang lưu…';try{const r=await api('/api/equipment/action',request);state=r.state;message=after?after(r):'';}catch(e){message=e.message;}finally{pending=false;render();if(view==='detail'&&message&&typeof GirlUI!=='undefined')GirlUI.toast(message);}}
  function refresh(){if(view==='detail')renderGirlDetail();if(view==='smithy')renderSmithy();}
  function btn(parent,label,fn,disabled=false,cls='eq-btn'){const b=el('button',cls,label);b.type='button';b.disabled=pending||disabled;b.onclick=fn;parent.append(b);return b;}
 
  // ---- Gear tab (content_2 of partner_detail_window) ----
  // The board only: tapping a filled slot opens item_tips_window (Remove / Replace; the crystal: Exchange / Lv. Up;
  // antiques add Lv. Up), tapping an empty one opens choose_equip_window with the matching gear of the Bag.
- const SLOT_TITLE={1:'Vũ khí',2:'Áo',3:'Phụ kiện',4:'Giày',5:'Pha lê',6:'Cổ vật'};
+ const SLOT_TITLE={1:'Vũ khí',2:'Áo',3:'Phụ kiện',4:'Giày',5:'Bảo Vật',6:'Cổ vật'};
  const W=o=>GirlUI.win(o);
- function gear(hero){const host=$('detail-gear');if(!host)return;for(const c of host.children)if(!c.classList.contains('eq-root'))c.hidden=true;let root=host.querySelector('.eq-root');if(!root){root=el('div','eq-root');host.append(root);}if(!data){root.replaceChildren(el('p','detail-note',"Loading equipment…"));load().then(()=>view==='detail'&&renderGirlDetail());return;}
+ function gear(hero){const host=$('detail-gear');if(!host)return;for(const c of host.children)if(!c.classList.contains('eq-root'))c.hidden=true;let root=host.querySelector('.eq-root');if(!root){root=el('div','eq-root');host.append(root);}if(!data){root.replaceChildren(el('p','detail-note',"Đang tải trang bị…"));load().then(()=>view==='detail'&&renderGirlDetail());return;}
   const eq=(hero.equips||[]).concat([0,0,0,0,0,0,0]).slice(0,7);root.replaceChildren();
   const grid=el('div','eq-board');grid.append(img('/assets/detail/sheet/equip_bg.png','eq-board-bg'),img('/assets/detail/sheet/equip_bg.png','eq-board-bg flip'));
   for(const [s,,art]of SLOTS){const b=el('button','eq-slot s'+s);b.type='button';const id=eq[s-1];
-   if(id&&row(id))b.append(icon(id));else{b.append(img('/assets/detail/sheet/item_icon_bg01.png','eq-empty-bg'),img('/assets/detail/sheet/'+art+'.png','eq-empty'));if(s===5?hero.lv>=data.treasure_open_level:bagFor(s,hero).length)b.append(img('/assets/detail/sheet/icon_add.png','eq-plus'));}
-   b.title=id&&row(id)?row(id).name:SLOT_TITLE[s];b.onclick=()=>{slot=s;message='';if(id&&row(id))tip(hero,s,id);else if(s===5)treasureWin(hero,'unlock');else choose(hero,s);};grid.append(b);}
+   if(id&&row(id))b.append(icon(id));else{b.append(img('/assets/detail/sheet/item_icon_bg01.png','eq-empty-bg'),img('/assets/detail/sheet/'+art+'.png','eq-empty'));if(s===5?hero.lv>=treasureLevel():bagFor(s,hero).length)b.append(img('/assets/detail/sheet/icon_add.png','eq-plus'));}
+   b.title=id&&row(id)?displayName(row(id)):SLOT_TITLE[s];b.onclick=()=>{slot=s;message='';if(id&&row(id))tip(hero,s,id);else if(s===5)treasureWin(hero,'unlock');else choose(hero,s);};grid.append(b);}
   const bar=el('div','eq-main-btns');btn(bar,'Tháo trang bị',()=>send({action:'unequip_all',partner_id:hero.partner_id}),![1,2,3,4,6].some(s=>eq[s-1]),'gs-btn red eq-big');btn(bar,'Trang bị tối ưu',()=>send({action:'equip_all',partner_id:hero.partner_id}),false,'gs-btn eq-big');grid.append(bar);
   root.append(grid);}
  function bagFor(s,hero){return Object.entries(state.items).filter(([id,n])=>Number(n)>0&&row(id)?.pos===s).map(([id,n])=>({id:Number(id),n:Number(n),r:row(id)})).sort((a,b)=>b.r.item_lv-a.r.item_lv||a.id-b.id);}
  // item_tips_window
- function tip(hero,s,id){const r=row(id);const {body,close}=W({plain:true,cls:'eq-tip'});
-  body.append(el('b','eq-tip-name',r.name+(s===5?'':'')));const top=el('div','eq-tip-top');top.append(icon(id));body.append(top);lines(body,id,hero);
+ function tip(hero,s,id){const r=row(id);const {body,close}=W({title:SLOT_TITLE[s],cls:'eq-tip'});
+  body.append(el('b','eq-tip-name',displayName(r)));const top=el('div','eq-tip-top');top.append(icon(id));body.append(top);lines(body,id,hero);
   const acts=el('div','gs-btns');
   if(s===5){btn(acts,'Đổi',()=>{close();treasureWin(hero,'exchange');},false,'gs-btn');btn(acts,'Nâng cấp',()=>{close();treasureWin(hero,'up');},!r.treasure_upgrade,'gs-btn');}
   else{btn(acts,'Tháo',()=>{close();send({action:'unequip',partner_id:hero.partner_id,slot:s});},false,'gs-btn red');
@@ -134,21 +138,21 @@ const Equipment=(()=>{
  // choose_equip_window
  function choose(hero,s){const {body,close}=W({title:SLOT_TITLE[s],cls:'eq-choose'});const mine=jobOf(hero),list=bagFor(s,hero).sort((a,b)=>(Number(b.r.job||0)===mine)-(Number(a.r.job||0)===mine));let pick=null;
   body.append(el('p','eq-choose-label','Chọn trang bị:'));const grid=el('div','eq-choose-grid');const info=el('div','eq-choose-info');
-  const paint=()=>{info.replaceChildren();if(!pick){info.append(el('p','detail-note',list.length?"Tap a piece to view its attributes.":"You have no "+SLOT_TITLE[s].toLowerCase()+" in the Bag."+(s<=4?" Obtain them in Campaign or Forge.":'')));return;}
-   const r=row(pick);info.append(el('b','',r.name));lines(info,pick,hero);const job=Number(r.job||0),bad=job&&jobOf(hero)&&job!==jobOf(hero);const a=el('div','gs-btns');btn(a,bad?'Clase '+data.jobs[job]:'Trang bị',()=>{close();send({action:'equip',partner_id:hero.partner_id,item_id:pick});},!!bad,'gs-btn');info.append(a);};
+  const paint=()=>{info.replaceChildren();if(!pick){info.append(el('p','detail-note',list.length?"Chạm vào trang bị để xem thuộc tính.":"Chưa có "+SLOT_TITLE[s].toLowerCase()+" chưa mặc trong Túi Đồ."+(s<=4?" Có thể nhận từ Chiến Dịch hoặc Xưởng Rèn.":"")));return;}
+   const r=row(pick);info.append(el('b','',displayName(r)));lines(info,pick,hero);const job=Number(r.job||0),bad=job&&jobOf(hero)&&job!==jobOf(hero);const a=el('div','gs-btns');btn(a,bad?'Nghề '+JOB_VI[job]:'Trang bị',()=>{close();send({action:'equip',partner_id:hero.partner_id,item_id:pick});},!!bad,'gs-btn');info.append(a);};
   for(const {id,n}of list){const b=el('button','eq-choose-item');b.type='button';b.append(icon(id));if(n>1)b.append(el('small','',String(n)));b.onclick=()=>{pick=id;grid.querySelectorAll('.on').forEach(x=>x.classList.remove('on'));b.classList.add('on');paint();};grid.append(b);}
   body.append(grid,info);paint();
-  if(s<=4){const f=el('div','gs-btns');btn(f,"Forge",()=>{close();openSmithy(s,'detail');},false,'gs-btn white');body.append(f);}}
+  if(s<=4){const f=el('div','gs-btns');btn(f,"Xưởng Rèn",()=>{close();openSmithy(s,'detail');},false,'gs-btn white');body.append(f);}}
  // crystal (treasure): unlock, Exchange (treasure_change_window: new random attribute) and Lv. Up (treasure_up_window)
- function treasureWin(hero,mode){const eq=(hero.equips||[])[4];const title=mode==='up'?'Nâng cấp':mode==='exchange'?'Đổi':'Crystal';const {body,close}=W({title,cls:'eq-treasure'});if(typeof ImgGuides!=='undefined'){const h=btn(body,'?',()=>ImgGuides.open('treasure_guide'),false,'ig-native-question');h.setAttribute('aria-label',"Crystal Help");}
-  if(!eq){body.append(el('p','',"The Crystal unlocks for free when the Girl reaches level "+data.treasure_open_level+'. Su atributo es aleatorio.'));const a=el('div','gs-btns');btn(a,'Mở khóa',()=>{close();send({action:'treasure_on',partner_id:hero.partner_id},r=>"Obtained: "+row(r.treasure).name);},hero.lv<data.treasure_open_level,'gs-btn');body.append(a);return;}
-  const r=row(eq),cur=el('div','eq-current');cur.append(icon(eq));const inf=el('div');inf.append(el('strong','',r.name+" · Lv. "+r.item_lv));lines(inf,eq,hero);cur.append(inf);body.append(cur);
-  if(hero.tmp_treasure){const pre=el('div','eq-current eq-preview');pre.append(icon(hero.tmp_treasure));const pi=el('div');pi.append(el('strong','',"New: "+row(hero.tmp_treasure).name));lines(pi,hero.tmp_treasure,hero);pre.append(pi);body.append(pre);const b=el('div','gs-btns');btn(b,'Descartar',()=>{close();send({action:'treasure_discard',partner_id:hero.partner_id});},false,'gs-btn white');btn(b,"Save",()=>{close();send({action:'treasure_save',partner_id:hero.partner_id});},false,'gs-btn');body.append(b);return;}
+ function treasureWin(hero,mode){const eq=(hero.equips||[])[4];const title=mode==='up'?'Nâng cấp Bảo Vật':mode==='exchange'?'Đổi thuộc tính Bảo Vật':'Bảo Vật';const {body,close}=W({title,cls:'eq-treasure'});if(typeof ImgGuides!=='undefined'){const h=btn(body,'?',()=>ImgGuides.open('treasure_guide'),false,'ig-native-question');h.setAttribute('aria-label',"Hướng dẫn Bảo Vật");}
+  if(!eq){body.append(el('p','',"Bảo Vật mở miễn phí từ cấp "+treasureLevel()+". Thuộc tính được chọn ngẫu nhiên."));const a=el('div','gs-btns');btn(a,'Mở khóa',()=>{close();send({action:'treasure_on',partner_id:hero.partner_id},r=>"Đã nhận: "+displayName(row(r.treasure)));},hero.lv<treasureLevel(),'gs-btn');body.append(a);return;}
+  const r=row(eq),cur=el('div','eq-current');cur.append(icon(eq));const inf=el('div');inf.append(el('strong','',displayName(r)+" · Cấp "+r.item_lv));lines(inf,eq,hero);cur.append(inf);body.append(cur);
+  if(hero.tmp_treasure){const pre=el('div','eq-current eq-preview');pre.append(icon(hero.tmp_treasure));const pi=el('div');pi.append(el('strong','',"Mới: "+displayName(row(hero.tmp_treasure))));lines(pi,hero.tmp_treasure,hero);pre.append(pi);body.append(pre);const b=el('div','gs-btns');btn(b,'Bỏ qua',()=>{close();send({action:'treasure_discard',partner_id:hero.partner_id});},false,'gs-btn white');btn(b,"Lưu",()=>{close();send({action:'treasure_save',partner_id:hero.partner_id});},false,'gs-btn');body.append(b);return;}
   const box=el('div','eq-actions');
-  if(mode==='exchange'){const rf=el('div','eq-action');rf.append(el('b','',"New random attribute at the same level"));cost(rf,r.treasure_refresh);body.append(rf);const a=el('div','gs-btns');btn(a,'Đổi',()=>send({action:'treasure_refresh',partner_id:hero.partner_id},()=>{setTimeout(()=>treasureWin(state.roster.find(h=>h.partner_id===hero.partner_id),'exchange'),0);return '';}),!affordable(r.treasure_refresh),'gs-btn');body.append(a);return;}
-  if(!r.treasure_upgrade){body.append(el('p','detail-note',"Crystal is at maximum level."));return;}
-  const up=el('div','eq-action');up.append(el('b','',"Level up (random attribute)"));cost(up,r.treasure_upgrade);btn(up,'Nâng cấp',()=>{close();send({action:'treasure_upgrade',partner_id:hero.partner_id},x=>"New: "+row(x.treasure).name);},!affordable(r.treasure_upgrade),'gs-btn');box.append(up);
-  const [target,extra]=String(r.treasure_lock_up||'').split('|');if(target&&row(target)){const lk=el('div','eq-action');lk.append(el('b','',"Upgrade while keeping the attribute → "+row(target).name));const total=pairs(r.treasure_upgrade).map(([k,v])=>[k,Number(v)+Number(pairs(extra).find(([x])=>x===k)?.[1]||0)]);for(const [k,v]of pairs(extra))if(!total.some(([x])=>x===k))total.push([k,Number(v)]);const txt=total.map(([k,v])=>k+'#'+v).join('|');cost(lk,txt);btn(lk,'Nâng cấp',()=>{close();send({action:'treasure_upgrade',partner_id:hero.partner_id,lock:true});},!affordable(txt),'gs-btn');box.append(lk);}
+  if(mode==='exchange'){const rf=el('div','eq-action');rf.append(el('b','',"Đổi ngẫu nhiên thuộc tính, giữ nguyên cấp"));cost(rf,r.treasure_refresh);body.append(rf);const a=el('div','gs-btns');btn(a,'Đổi',()=>{close();return send({action:'treasure_refresh',partner_id:hero.partner_id},()=>{setTimeout(()=>treasureWin(state.roster.find(h=>h.partner_id===hero.partner_id),'exchange'),0);return '';});},!affordable(r.treasure_refresh),'gs-btn');body.append(a);return;}
+  if(!r.treasure_upgrade){body.append(el('p','detail-note',"Bảo Vật đã đạt cấp tối đa."));return;}
+  const up=el('div','eq-action');up.append(el('b','',"Nâng cấp (thuộc tính ngẫu nhiên)"));cost(up,r.treasure_upgrade);btn(up,'Nâng cấp',()=>{close();send({action:'treasure_upgrade',partner_id:hero.partner_id},x=>"Mới: "+displayName(row(x.treasure)));},!affordable(r.treasure_upgrade),'gs-btn');box.append(up);
+  const [target,extra]=String(r.treasure_lock_up||'').split('|');if(target&&row(target)){const lk=el('div','eq-action');lk.append(el('b','',"Nâng cấp và giữ thuộc tính → "+displayName(row(target))));const total=pairs(r.treasure_upgrade).map(([k,v])=>[k,Number(v)+Number(pairs(extra).find(([x])=>x===k)?.[1]||0)]);for(const [k,v]of pairs(extra))if(!total.some(([x])=>x===k))total.push([k,Number(v)]);const txt=total.map(([k,v])=>k+'#'+v).join('|');cost(lk,txt);btn(lk,'Nâng cấp',()=>{close();send({action:'treasure_upgrade',partner_id:hero.partner_id,lock:true});},!affordable(txt),'gs-btn');box.append(lk);}
   body.append(box);}
 
  // ---- Real attributes (HeroAttr) ----

@@ -792,7 +792,22 @@ class Engine:
             have=skins.collected(st)
             from . import equipment
             gear_sets={str(job):s5_test.gear_for_job(job) for job in range(1,6)}
-            return {'claimed':bool(welcome),'remaining':int(welcome.get('skin_choices',0)),
+            advanced_hosts=[]
+            by_id={p['partner_id']:p for p in st['partners']}
+            for p in st['partners']:
+                key=str(p['table_id'])
+                if key not in hosts:continue
+                claimed=key in advanced_claimed
+                owner=s5_test.advanced_equipment_recipient(welcome,key)
+                source=by_id.get(owner)
+                slots=(source or {}).get('equips',[])+[0]*7
+                movable=claimed and owner!=p['partner_id'] and source is not None and source['table_id']==p['table_id'] and equipment.EQUIP.get(slots[4],{}).get('item_lv',0)==max(equipment.TIERS) and bool(slots[5])
+                advanced_hosts.append({'partner_id':p['partner_id'],'name':goddess_gifts.BY_ID[p['table_id']]['name'],
+                    'stars':10+int(p.get('awake',0)),'level':p['lv'],'job':equipment.job_of(p),
+                    'advanced_claimed':claimed,'equipment_here':claimed and owner==p['partner_id'],
+                    'move_equipment':bool(movable),'advanced':s5_test.advanced_plan(p)})
+            advanced_hosts.sort(key=lambda h:(h['name'].casefold(),-h['stars'],-h['level'],h['partner_id']))
+            return {'advanced_hosts':advanced_hosts,'claimed':bool(welcome),'remaining':int(welcome.get('skin_choices',0)),
                     'gear_sets':gear_sets,
                     'hosts':[{'partner_id':p['partner_id'],'name':goddess_gifts.BY_ID[p['table_id']]['name'],
                               'stars':10+int(p.get('awake',0)),
@@ -818,6 +833,8 @@ class Engine:
                     out=s5_test.grant_gear(st,data.get('partner_id'))
                 elif data.get('action')=='advanced':
                     out=s5_test.grant_advanced(st,data.get('partner_id'))
+                elif data.get('action')=='move_advanced_equipment':
+                    out=s5_test.move_advanced_equipment(st,data.get('partner_id'))
                 elif data.get('action')=='skins':
                     out=s5_test.choose_skins(st,data.get('ids'))
                 else:

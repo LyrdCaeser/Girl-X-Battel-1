@@ -262,6 +262,15 @@ def _station_girls():
     return tuple(json.loads((root/'web/assets/station/station.json').read_text())['girls'].values())
 
 
+def grant_treasure_supplies(state):
+    check_scope(state)
+    welcome=state.get('s5_welcome') or {}
+    if not welcome.get('treasure_supplies'):
+        from . import equipment
+        equipment.add(state,14,100_000)
+        welcome['treasure_supplies']=True
+
+
 def grant_advanced(state,partner_id):
     from . import equipment,souls
     check_scope(state)
@@ -269,7 +278,7 @@ def grant_advanced(state,partner_id):
     if type(partner_id) is not int:
         raise ValueError('Chọn nữ thần hợp lệ')
     host=next((p for p in state['partners'] if p['partner_id']==partner_id),None)
-    if not host or welcome.get('hosts',{}).get(str(host['table_id']))!=partner_id:
+    if not host or str(host['table_id']) not in welcome.get('hosts',{}):
         raise ValueError('Chỉ cấp quà cho nữ thần quà S5')
     key=str(host['table_id'])
     claimed=welcome.setdefault('advanced_claimed',{})
@@ -312,9 +321,50 @@ def grant_advanced(state,partner_id):
     old=(list(host.get('ex_skills') or [])+[0]*4)[:4]
     host['ex_skills']=[max(int(v),plan['elite_max']) for v in old]
     welcome.setdefault("advanced_soul_ids",{})[key]=ids
+    welcome.setdefault("advanced_recipient",{})[key]=partner_id
+    welcome.setdefault("advanced_equipment_recipient",{})[key]=partner_id
     claimed[key]=True
+    grant_treasure_supplies(state)
     return {'partner_id':partner_id,'souls':ids,'treasure':slots[4],
             'antique':slots[5],'elite':host['ex_skills']}
+
+
+def advanced_recipient(welcome, key):
+    return welcome.get('advanced_recipient',{}).get(key,welcome.get('hosts',{}).get(key))
+
+
+def advanced_equipment_recipient(welcome, key):
+    return welcome.get('advanced_equipment_recipient',{}).get(key,advanced_recipient(welcome,key))
+
+
+def move_advanced_equipment(state, partner_id):
+    """Move the existing two equipped gifts to another copy, never mint items."""
+    from . import equipment
+    check_scope(state)
+    if type(partner_id) is not int: raise ValueError('Chọn nữ thần hợp lệ')
+    welcome=state.get('s5_welcome') or {}
+    dest=next((p for p in state['partners'] if p['partner_id']==partner_id),None)
+    if not dest: raise ValueError('Không tìm thấy nữ thần')
+    key=str(dest['table_id'])
+    if not welcome.get('advanced_claimed',{}).get(key):
+        raise ValueError('Chưa nhận quà nâng cao')
+    source_id=advanced_equipment_recipient(welcome,key)
+    if source_id==partner_id: raise ValueError('Nữ thần này đã nhận hai trang bị')
+    source=next((p for p in state['partners'] if p['partner_id']==source_id and p['table_id']==dest['table_id']),None)
+    if not source: raise ValueError('Không tìm thấy bản nữ thần đã nhận quà')
+    src=equipment.equips_of(source); dst=equipment.equips_of(dest)
+    if equipment.EQUIP.get(src[4],{}).get('item_lv',0)!=max(equipment.TIERS) or not src[5]:
+        raise ValueError('Bản nữ thần đã nhận cần đang mặc Bảo Vật tối đa và Cổ Vật')
+    if equipment.EQUIP.get(dst[4],{}).get('item_lv',0)>equipment.EQUIP[src[4]]['item_lv']:
+        raise ValueError('Bảo Vật hiện tại đã tốt hơn')
+    src[4:6],dst[4:6]=dst[4:6],src[4:6]
+    # A pending attribute roll belongs to its original treasure.
+    a=source.pop('tmp_treasure',None);b=dest.pop('tmp_treasure',None)
+    if a:dest['tmp_treasure']=a
+    if b:source['tmp_treasure']=b
+    welcome.setdefault('advanced_equipment_recipient',{})[key]=partner_id
+    grant_treasure_supplies(state)
+    return {'partner_id':partner_id,'source_partner_id':source_id,'treasure':dst[4],'antique':dst[5]}
 
 
 def quick_souls(state, host):
@@ -323,7 +373,7 @@ def quick_souls(state, host):
     pid=int(host['partner_id'])
     welcome=state.get('s5_welcome') or {}
     key=str(host['table_id'])
-    if welcome.get('hosts',{}).get(key)!=pid or not welcome.get('advanced_claimed',{}).get(key):
+    if advanced_recipient(welcome,key)!=pid or not welcome.get('advanced_claimed',{}).get(key):
         raise ValueError('Hãy nhận Quà Nâng Cao cho nữ thần này trước.')
     saved=welcome.setdefault('advanced_soul_ids',{})
     preferred=saved.get(key,[])
