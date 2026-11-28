@@ -96,12 +96,16 @@ const SocialArena=(()=>{
   finally{watching=false;}
  }
  async function poll(){
-  if(!active||!same()||busy||watching||document.hidden)return;
-  if(view!=='event-battle'&&(!panel?.win.isConnected||view!=='arena')){active=false;return;}
+  if(!active||!same()){SocialVoice.hide('arena');return;}
+  if(busy||watching||document.hidden)return;
+  if(view!=='event-battle'&&(!panel?.win.isConnected||view!=='arena')){active=false;SocialVoice.hide('arena');return;}
   busy=true;
   try{
    const data=await api('/api/social-arena/status');if(!same())return;
    latest=data;referee=!!data.referee;
+   if(data.voice_enabled&&['preview','ready','running','viewing'].includes(data.match?.status))SocialVoice.show('arena',data.match.id,'Voice Giao Lưu');
+   else SocialVoice.hide('arena');
+
    if(data.match?.status==='viewing'){
     busy=false;await play(data.match,data.server_time);return;
    }

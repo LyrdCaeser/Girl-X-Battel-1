@@ -1,0 +1,15 @@
+#app-frame .social-bar-win .gs-win-body{max-height:75dvh;overflow:auto}
+.social-bar-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px;border-bottom:1px solid #a9c0d9;padding:5px}
+.social-bar-row b{flex:1;min-width:100px}
+.social-bar-row .gs-btn{width:auto!important;min-width:90px}
+.social-bar-create{display:grid;gap:4px}
+.social-bar-create input,.social-bar-create select,.social-bar-compose input{min-width:0;max-width:100%;padding:7px;border:1px solid #a9c0d9;border-radius:4px}
+.social-bar-messages{height:min(42dvh,340px);overflow:auto;background:#f4f7fc;border:1px solid #a9c0d9;padding:6px}
+.social-bar-msg{padding:5px;border-bottom:1px solid #d9e4f2;overflow-wrap:anywhere}
+.social-bar-msg p{margin:3px 0}
+.social-bar-msg img{max-width:100%;max-height:220px;object-fit:contain}
+.social-bar-compose{display:flex;gap:4px;align-items:center}
+.social-bar-compose input{flex:1}
+.social-bar-compose .gs-btn{width:auto!important;min-width:46px}
+.social-bar-error{color:#a92738}
+.social-bar-members{overflow-wrap:anywhere}

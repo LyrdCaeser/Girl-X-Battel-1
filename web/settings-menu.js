@@ -74,7 +74,7 @@ const SettingsMenu=(()=>{
   btn(st,-225,239,202,78,'setting_icon_notice',78,72,T('SETTING_UP_5'),soon(T('SETTING_UP_5'),"Hiện chưa có thông báo mới."));
   btn(st,0,239,202,78,'setting_icon_help',78,72,T('SETTING_UP_6'),()=>help());
   btn(st,225,239,202,78,'setting_icon_enhance',78,72,T('SETTING_UP_7'),()=>openMenu('enhance','settings-menu'));
-  btn(st,-225,141,202,78,'setting_icon_community',78,72,T('SETTING_UP_10'),soon(T('SETTING_UP_10'),"Hiện chưa có hoạt động cộng đồng mới."));
+  btn(st,-225,141,202,78,'setting_icon_community',78,72,state?.social_bar_enabled?'Quán Bar':T('SETTING_UP_10'),state?.social_bar_enabled?()=>SocialBar.open():soon(T('SETTING_UP_10'),"Hiện chưa có hoạt động cộng đồng mới."));
   btn(st,225,141,202,78,'setting_icon_comic',78,72,'Music',jukebox);
   btn(st,0,141,202,78,'setting_icon_gm',78,72,T('CHAT_LABEL_1'),soon(T('CHAT_LABEL_1'),"Hiện chưa có cuộc trò chuyện với QTV."));
   lace(st,50,T('SETTING_UP_2'));
