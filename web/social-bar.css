@@ -36,3 +36,10 @@ html.gxb-mobile #app-frame .home-stage .home-right.has-social-bar>button .home-o
 html.gxb-mobile #app-frame .home-stage .home-right.has-social-bar>button small{
  font-size:clamp(9px,2.5vw,11px)!important;line-height:1.05;
 }
+
+/* Native profile portrait and equipped frame; independent from shared images. */
+.social-bar-msg{display:grid;grid-template-columns:48px minmax(0,1fr);gap:9px;align-items:start}
+.social-bar-content{min-width:0;overflow-wrap:anywhere}
+.social-bar-avatar{display:block;position:relative;width:48px;height:48px;flex:none}
+#app-frame .social-bar-avatar .social-bar-face{position:absolute;inset:4px;width:40px;height:40px;object-fit:cover;border-radius:6px}
+#app-frame .social-bar-avatar .social-bar-frame{position:absolute;inset:0;width:48px;height:48px;object-fit:fill;pointer-events:none}

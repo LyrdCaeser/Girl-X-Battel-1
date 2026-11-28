@@ -43,6 +43,19 @@ const SocialBar=(()=>{
   const r=await call('enter',{room_id:id,password:pw});if(!current())return;
   rid=r.room.id;epoch++;rendered='';roomView(r.room);await poll();
  }
+ function portraitLayer(key,cls,fallback){
+  const image=el('img',cls);image.alt='';image.draggable=false;
+  image.src=profileAsset(key);
+  image.onerror=()=>{image.onerror=null;image.src='/assets/profile/'+fallback+'.png';};
+  return image;
+ }
+ function avatarNode(m){
+  const wrap=el('span','social-bar-avatar');
+  const avatar=/^(?:(?:head|partner_avatar)_\d{4,9}|custom_[0-9a-f]{32})$/.test(m.avatar||'')?m.avatar:'head_1001';
+  const frame=/^frame_\d{4,9}$/.test(m.frame||'')?m.frame:'frame_8007';
+  wrap.append(portraitLayer(avatar,'social-bar-face','head_1001'),portraitLayer(frame,'social-bar-frame','frame_8007'));
+  wrap.dataset.avatar=avatar;wrap.dataset.frame=frame;return wrap;
+ }
  function roomView(room){
   const b=panel.body;b.replaceChildren();
   const top=el('div','social-bar-row');top.append(el('b','',room.name),btn('Rời phòng',async()=>{await leave();await refreshRooms();}));b.append(top);
@@ -64,11 +77,19 @@ const SocialBar=(()=>{
    const data=await call('poll');if(!current()||gen!==epoch)return;
    if(data.voice_enabled)SocialVoice.show('bar',rid,'Voice · '+data.room.name);else SocialVoice.hide('bar');
    membersBox.textContent=data.members.length+'/32 · '+data.members.map(x=>x.name+' ('+x.world+')').join(', ');
-   const fingerprint=data.messages.map(m=>m.id).join('|');if(fingerprint===rendered)return;rendered=fingerprint;
+   const fingerprint=data.messages.map(m=>m.id).join('|');
+   if(fingerprint===rendered){
+    for(const [i,m] of data.messages.entries()){
+     const old=messageBox.children[i]?.querySelector('.social-bar-avatar');
+     if(old&&(old.dataset.avatar!==(m.avatar||'head_1001')||old.dataset.frame!==(m.frame||'frame_8007')))old.replaceWith(avatarNode(m));
+    }
+    return;
+   }
+   rendered=fingerprint;
    messageBox.replaceChildren();
    for(const m of data.messages){
-    const row=el('article','social-bar-msg');row.append(el('b','',m.name+' · '+m.world),el('p','',m.text));
-    if(m.kind==='image'){const load=btn('Xem ảnh',async()=>{try{const r=await call('image',{message_id:m.id});if(!current()||gen!==epoch)return;const i=el('img');i.src='data:image/webp;base64,'+r.image;i.alt='Ảnh chia sẻ';load.replaceWith(i);}catch(e){notice(e);}});row.append(load);}
+    const row=el('article','social-bar-msg'),content=el('div','social-bar-content');content.append(el('b','',m.name+' · '+m.world),el('p','',m.text));row.append(avatarNode(m),content);
+    if(m.kind==='image'){const load=btn('Xem ảnh',async()=>{try{const r=await call('image',{message_id:m.id});if(!current()||gen!==epoch)return;const i=el('img');i.src='data:image/webp;base64,'+r.image;i.alt='Ảnh chia sẻ';load.replaceWith(i);}catch(e){notice(e);}});content.append(load);}
     messageBox.append(row);
    }
    messageBox.scrollTop=messageBox.scrollHeight;

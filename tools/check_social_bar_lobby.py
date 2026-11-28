@@ -1,5 +1,5 @@
 """Check the dedicated home shortcut in real browser sessions, isolated SQLite."""
-import importlib.util,sys
+import importlib.util,sys,json
 from pathlib import Path
 from unittest.mock import patch
 from playwright.sync_api import sync_playwright
@@ -30,6 +30,26 @@ try:
     page.locator('.social-bar-win').get_by_role('button',name='Vào phòng',exact=True).first.click()
     page.locator('.social-bar-compose').wait_for()
     assert page.evaluate("view==='home'")
+    sender=case.call('GET','/api/state',user=1)
+    db=live_service._db()
+    try:
+     live_service._ensure_social_tables(db)
+     db.execute('INSERT INTO player_profiles(uid,server_id,data,updated_at) VALUES(?,?,?,?) ON CONFLICT(uid,server_id) DO UPDATE SET data=excluded.data',(sender['uid'],'S1',json.dumps({'profile':{'avatar':'head_1001','frame':'frame_8001'}}),1));db.commit()
+    finally:db.close()
+    case.call('POST','/api/social-bar/action',{'action':'enter','room_id':'public:CROSS'},1)
+    mid=case.call('POST','/api/social-bar/action',{'action':'send','room_id':'public:CROSS','text':'Avatar QA '+str(w)},1)['message_id']
+    face=page.locator('.social-bar-msg').filter(has_text='Avatar QA '+str(w)).locator('.social-bar-avatar')
+    face.wait_for()
+    page.wait_for_function("Array.from(document.querySelectorAll('.social-bar-avatar img')).every(i=>i.complete&&i.naturalWidth>0)")
+    assert face.get_attribute('data-frame')=='frame_8001'
+    assert face.evaluate("e=>e.getBoundingClientRect().right<=e.nextElementSibling.getBoundingClientRect().left")
+    db=live_service._db()
+    try:
+     db.execute('UPDATE player_profiles SET data=? WHERE uid=? AND server_id=?',(json.dumps({'profile':{'avatar':'head_1001','frame':'frame_8002'}}),sender['uid'],'S1'));db.commit()
+    finally:db.close()
+    page.wait_for_function("Array.from(document.querySelectorAll('.social-bar-msg')).some(e=>e.innerText.includes('Avatar QA "+str(w)+"')&&e.querySelector('.social-bar-avatar')?.dataset.frame==='frame_8002')")
+    print('PASS equipped avatar/frame refresh on existing message',w,flush=True)
+
     page.locator('.social-bar-win .gs-win-x').click()
     page.wait_for_timeout(2300)
     assert not page.locator('.social-bar-win').count()

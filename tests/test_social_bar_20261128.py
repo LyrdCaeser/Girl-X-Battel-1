@@ -1,4 +1,4 @@
-import base64,io,tempfile,unittest
+import base64,io,json,tempfile,unittest
 from pathlib import Path
 from unittest.mock import patch
 from PIL import Image
@@ -10,6 +10,10 @@ class BarTests(unittest.TestCase):
         t=tempfile.TemporaryDirectory();self.addCleanup(t.cleanup)
         path=Path(t.name)/'bar.sqlite'
         p=patch.object(live_service,'_db',lambda:database.connect(path,'live'));p.start();self.addCleanup(p.stop)
+        cache=patch.object(live_service,"_social_schema_ready",set());cache.start();self.addCleanup(cache.stop)
+        db=live_service._db()
+        try:live_service._ensure_social_tables(db)
+        finally:db.close()
         self.now=2000000000
     def test_scope_and_cross_chat(self):
         n=self.now
@@ -55,3 +59,33 @@ class BarTests(unittest.TestCase):
         self.assertEqual(b.poll('A','S1','public:S1',n+10)['members'][0]['name'],'A')
         with self.assertRaises(ValueError):b.poll('A','S1','public:S1',n+56)
         with self.assertRaises(ValueError):b.create('A','S1','QTV','CROSS','gm',now=n)
+
+    def test_portraits_refresh_by_world_for_existing_messages(self):
+        n=self.now;rid='public:CROSS'
+        def profile(world,avatar,frame):
+            db=live_service._db()
+            try:
+                db.execute('INSERT INTO player_profiles(uid,server_id,data,updated_at) VALUES(?,?,?,?) ON CONFLICT(uid,server_id) DO UPDATE SET data=excluded.data',('A',world,json.dumps({'profile':{'avatar':avatar,'frame':frame},'private':'never exposed'}),n))
+                db.commit()
+            finally:db.close()
+        profile('S1','head_1001','frame_8001')
+        profile('S5','head_1002','frame_8002')
+        for w in ('S1','S5'):
+            b.enter('A',w,'A',rid,now=n)
+            b.send('A',w,'A',rid,'Xin chào '+w,now=n)
+        b.enter('B','S2','B',rid,now=n)
+        first=b.poll('B','S2',rid,n+1)
+        by_world={m['world']:m for m in first['messages']}
+        self.assertEqual(by_world['S1']['frame'],'frame_8001')
+        self.assertEqual(by_world['S5']['avatar'],'head_1002')
+        profile('S1','custom_'+'a'*32,'frame_8003')
+        second=b.poll('B','S2',rid,n+2)
+        updated={m['world']:m for m in second['messages']}
+        self.assertEqual(updated['S1']['id'],by_world['S1']['id'])
+        self.assertEqual(updated['S1']['avatar'],'custom_'+'a'*32)
+        self.assertEqual(updated['S1']['frame'],'frame_8003')
+        self.assertEqual(updated['S5'],by_world['S5'])
+        self.assertNotIn('private',str(second))
+        profile('S1','../bad','../bad')
+        row=next(m for m in b.poll('B','S2',rid,n+3)['messages'] if m['world']=='S1')
+        self.assertEqual((row['avatar'],row['frame']),('head_1001','frame_8007'))

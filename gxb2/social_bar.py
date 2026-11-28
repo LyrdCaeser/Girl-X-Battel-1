@@ -7,6 +7,7 @@ import hmac
 import io
 import json
 import os
+import re
 import secrets
 import threading
 import time
@@ -27,6 +28,7 @@ def enabled():
     return os.environ.get('GXB3_SOCIAL_BAR_ENABLED','0')=='1'
 
 def _schema(db):
+    live_service._ensure_social_tables(db)
     statements=(
       """CREATE TABLE IF NOT EXISTS social_bar_rooms(id TEXT PRIMARY KEY, name TEXT NOT NULL, scope TEXT NOT NULL,
         kind TEXT NOT NULL, owner_uid TEXT NOT NULL, owner_world TEXT NOT NULL, password TEXT NOT NULL,
@@ -196,6 +198,28 @@ def send(uid,world,name,rid,text='',image='',reply_to='',now=None):
             VALUES(?,?,?,?,?,?,?,?,?,?)""",(mid,rid,uid,world,name,'image' if encoded else 'text',text,encoded,now,reply_to))
         return mid
 
+def _attach_portraits(db, rows):
+    # Read only public appearance, in one bounded query keyed by character
+    # (account UID + world). Never ship private profile JSON to room clients.
+    keys=sorted({(r['uid'],r['world']) for r in rows})
+    portraits={}
+    if keys:
+        if db.backend=='postgres':
+            fields="data::jsonb->'profile'->>'avatar' AS avatar, data::jsonb->'profile'->>'frame' AS frame"
+        else:
+            fields="json_extract(data,'$.profile.avatar') AS avatar, json_extract(data,'$.profile.frame') AS frame"
+        where=' OR '.join('(uid=? AND server_id=?)' for _ in keys)
+        for r in db.execute('SELECT uid,server_id,'+fields+' FROM player_profiles WHERE '+where,
+                            tuple(v for pair in keys for v in pair)).fetchall():
+            avatar=str(r['avatar'] or '')
+            frame=str(r['frame'] or '')
+            if not re.fullmatch(r'(?:head|partner_avatar)_\d{4,9}|custom_[0-9a-f]{32}',avatar):avatar='head_1001'
+            if not re.fullmatch(r'frame_\d{4,9}',frame):frame='frame_8007'
+            portraits[(r['uid'],r['server_id'])]=(avatar,frame)
+    for row in rows:
+        row['avatar'],row['frame']=portraits.get((row['uid'],row['world']),('head_1001','frame_8007'))
+
+
 def poll(uid,world,rid,now=None):
     now=int(time.time() if now is None else now)
     with transaction() as db:
@@ -207,6 +231,7 @@ def poll(uid,world,rid,now=None):
         members=[dict(x) for x in db.execute('SELECT uid,world,name,mic FROM social_bar_members WHERE room_id=? AND last_seen>? ORDER BY name',(rid,now-TTL)).fetchall()]
         messages=[dict(x) for x in db.execute("""SELECT id,uid,world,name,kind,text,created_at,reply_to
             FROM social_bar_messages WHERE room_id=? AND deleted=0 AND created_at>? ORDER BY created_at DESC,id DESC LIMIT 50""",(rid,now-RETENTION)).fetchall() if x['uid'] not in blocked]
+        _attach_portraits(db,members+messages)
         return {'room':_clean_room(r),'members':members,'messages':list(reversed(messages)),
                 'blocked':list(blocked),'voice_enabled':False,'server_time':now}
 
