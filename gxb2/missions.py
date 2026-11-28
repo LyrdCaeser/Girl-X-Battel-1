@@ -120,8 +120,6 @@ def action(state, request, level, roster, now=None):
         m['ach'][str(tid)] = nxt if nxt and nxt in ACH and nxt <= int(TYPES[tid]['end']) else -1
     else:
         raise ValueError('Acción de misiones no disponible')
-    # Provisional "popularity" (stand-in for VIP EXP until LOCAL-050): 10 per daily task, 25 per trophy.
-    m['totals']['popularity'] = int(m['totals'].get('popularity', 0)) + (10 if kind == 'daily' else 25)
     for k, n in got.items():
         state['items'][k] = int(state['items'].get(k, 0)) + n
     return {'got': got}

@@ -112,3 +112,91 @@
 .dt-c-seal{cursor:pointer}
 .dt-c-vow{border:0;background:none;padding:0;cursor:pointer}.dt-c-vow img{width:100%;height:100%}.dt-c-vow span{position:absolute;left:0;right:0;bottom:calc(-6 * var(--c));text-align:center;font:800 calc(24 * var(--c)) system-ui;color:#fff;-webkit-text-stroke:calc(4 * var(--c)) #b0304a;paint-order:stroke fill}
 .dt-c-frame{position:absolute}.dt-c-frame .wp-home{left:0;top:0;width:100%;height:100%;transform:none}.dt-c-pic img{object-fit:initial}
+
+.dt-c-title-vi{display:grid;place-items:center;margin:0;color:#a54052;font:900 calc(34 * var(--c))/1.05 Georgia,serif;text-align:center;text-shadow:0 calc(2 * var(--c)) #fff}.dt-c-lab-vi{display:grid;place-items:center;color:#a54052;font:italic 800 calc(20 * var(--c)) Georgia,serif}
+.dt-c-hall{border:calc(3 * var(--c)) solid #fff0c8;border-radius:calc(20 * var(--c));background:linear-gradient(#f9be68,#d87586);color:#fff;font:900 calc(19 * var(--c)) system-ui;box-shadow:0 calc(3 * var(--c)) calc(8 * var(--c)) #742b4588}
+.dt-hall-ov{position:absolute;inset:0;z-index:90;display:grid;place-items:center;background:#220b20cc;padding:3%;box-sizing:border-box}.dt-hall{position:relative;width:100%;height:100%;max-height:calc(1240 * var(--u));overflow:hidden;border:4px solid #ffe9b0;border-radius:18px;background:#602f58;box-shadow:0 8px 30px #000a}
+.dt-hall-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.dt-hall-glow{position:absolute;inset:0;background:linear-gradient(#2a123066,transparent 35%,#2a123055)}
+.dt-hall-head{position:absolute;z-index:2;left:5%;right:5%;top:4%;padding:12px;text-align:center;color:#fff8db;text-shadow:0 2px 5px #4b1738;background:#5d294a99;border-radius:18px}.dt-hall-head small{letter-spacing:.24em}.dt-hall-head h2{margin:4px 0;font-size:clamp(22px,5vw,36px)}.dt-hall-head p{margin:0;font-weight:700}
+.dt-hall-art{position:absolute;z-index:1;left:0;right:0;top:16%;bottom:8%;overflow:hidden}.dt-hall-art canvas,.dt-hall-art>img{width:100%!important;height:100%!important;object-fit:contain}
+.dt-hall-actions{position:absolute;z-index:3;left:5%;right:5%;bottom:3%;display:flex;justify-content:center;gap:12px}.dt-hall-actions button{min-width:42%;font-size:16px}
+
+
+/* DatesWindow original PartnerImg uses a 720x1280 coordinate space.
+   An old .dt-art .wp-home { height:auto } made the size-query --u zero
+   and shrunk the portraits to the bottom. Keep the original picture xy/scale,
+   without modifying the home lobby, girl detail or battle drawing. */
+.dates-view .dt-stage .dt-art{
+  position:absolute;inset:0;width:100%;height:100%;
+  max-width:none;overflow:visible;
+}
+.dates-view .dt-stage .dt-art>.wp-home{
+  position:absolute;left:0!important;top:0!important;
+  width:100%!important;height:calc(1280 * var(--u))!important;
+  aspect-ratio:720 / 1280;
+  transform:none!important;container-type:size;
+  --u:calc(100cqw / 720);
+  overflow:hidden;pointer-events:none;
+}
+.dates-view .dt-stage .dt-art>.wp-home .wp-home-pic{
+  max-width:none;object-fit:contain;
+}
+
+.dt-quick-gift{position:absolute!important;display:flex!important;align-items:center;justify-content:center;z-index:3;font-size:calc(23 * var(--u))!important;white-space:nowrap}
+.dt-quick-gift:disabled{opacity:.56;filter:grayscale(.75);cursor:not-allowed}
+
+
+/* Interactive marriage ceremony. Native wedding outfit, original Oath Ring
+   sprite and Senpai outfit chibi; no replacement artwork or Neon writes. */
+.dt-hall-ceremony .dt-hall-head{top:3%;left:3%;right:3%;background:#5d294ab8}
+.dt-hall-ceremony .dt-hall-head h2{font-size:clamp(16px,4vw,25px);white-space:normal}
+.dt-hall-ceremony .dt-hall-art{z-index:1;left:0;right:7%;top:17%;bottom:16%;
+ opacity:0;transform:translate(-20%,6%) scale(.76);
+ transition:transform 2.8s cubic-bezier(.16,.73,.22,1),opacity 1s}
+.dt-hall-ceremony.phase-entrance .dt-hall-art,
+.dt-hall-ceremony.phase-ring-ready .dt-hall-art,
+.dt-hall-ceremony.phase-ring .dt-hall-art,
+.dt-hall-ceremony.phase-hands-ready .dt-hall-art,
+.dt-hall-ceremony.phase-hands .dt-hall-art,
+.dt-hall-ceremony.phase-finished .dt-hall-art{opacity:1;transform:translate(0,0) scale(.94)}
+.dt-hall-ceremony.phase-hands .dt-hall-art,
+.dt-hall-ceremony.phase-finished .dt-hall-art{transform:translate(7%,0) scale(.91)}
+.dt-hall-groom{position:absolute;z-index:2;right:-5%;bottom:15%;width:40%;height:37%;
+ opacity:0;transform:translateX(38%);
+ transition:transform 1.8s ease,opacity 1s;display:flex;align-items:end;justify-content:center;pointer-events:none}
+.dt-hall-groom canvas{display:block;max-width:100%;max-height:100%;object-fit:contain}
+.dt-hall-groom-name{position:absolute;bottom:-10px;left:0;right:0;text-align:center;
+ background:#fff9e9bd;color:#513654;border-radius:12px;font-weight:800;font-size:11px}
+.dt-hall-ceremony.phase-ring-ready .dt-hall-groom,
+.dt-hall-ceremony.phase-ring .dt-hall-groom,
+.dt-hall-ceremony.phase-hands-ready .dt-hall-groom,
+.dt-hall-ceremony.phase-hands .dt-hall-groom,
+.dt-hall-ceremony.phase-finished .dt-hall-groom{opacity:1;transform:translateX(0)}
+.dt-hall-ceremony.phase-hands .dt-hall-groom,
+.dt-hall-ceremony.phase-finished .dt-hall-groom{transform:translateX(-25%)}
+.dt-hall-ring{position:absolute;z-index:4;top:60%;left:29%;width:14%;height:auto;
+ opacity:0;transform:scale(.3) rotate(-20deg);filter:drop-shadow(0 0 12px #fff2ad);
+ transition:transform 1.9s ease,opacity .5s;pointer-events:none}
+.dt-hall-ceremony.phase-ring .dt-hall-ring,
+.dt-hall-ceremony.phase-hands-ready .dt-hall-ring,
+.dt-hall-ceremony.phase-hands .dt-hall-ring,
+.dt-hall-ceremony.phase-finished .dt-hall-ring{
+ opacity:1;transform:translate(155%,-18%) scale(.88) rotate(15deg)}
+.dt-hall-bond{position:absolute;z-index:4;left:16%;right:16%;top:66%;
+ display:grid;place-items:center;gap:3px;opacity:0;transform:scale(.8);
+ transition:opacity .7s,transform .7s;color:#ffeedb;text-shadow:0 2px 4px #4b143f;
+ text-align:center;font-size:12px;font-weight:800;pointer-events:none}
+.dt-hall-bond img{width:36px;height:36px;object-fit:contain}
+.dt-hall-ceremony.phase-hands .dt-hall-bond,
+.dt-hall-ceremony.phase-finished .dt-hall-bond{opacity:1;transform:scale(1)}
+.dt-hall-step{position:absolute;z-index:5;left:4%;right:4%;bottom:11%;
+ margin:0;padding:8px;color:#fff8ec;background:#44243cbd;
+ border-radius:12px;font-size:13px;line-height:1.3;font-weight:750;text-align:center}
+.dt-hall-ceremony .dt-hall-actions{bottom:2%;left:3%;right:3%;gap:5px;flex-wrap:wrap}
+.dt-hall-ceremony .dt-hall-actions button{min-width:0;flex:1;font-size:clamp(11px,2.8vw,14px);padding:8px 2px}
+.dt-hall-ceremony .dt-hall-actions button[hidden]{display:none!important}
+.dt-hall-ceremony .dt-hall-actions button:nth-child(1){flex-basis:100%;max-width:80%;margin:auto}
+@media(prefers-reduced-motion:reduce){
+ .dt-hall-ceremony .dt-hall-art,.dt-hall-ceremony .dt-hall-groom,.dt-hall-ceremony .dt-hall-ring,
+ .dt-hall-ceremony .dt-hall-bond{transition:none}
+}

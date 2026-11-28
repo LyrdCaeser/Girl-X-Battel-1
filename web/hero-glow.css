@@ -9,3 +9,61 @@
 /* Original touch magic sits above windows without intercepting clicks or focus. */
 .game-click-magic{position:fixed!important;inset:auto;margin:0;padding:0;border:0;background:transparent;overflow:visible;transform:translate(-50%,-50%);pointer-events:none!important;z-index:2147483647;display:none}
 .game-click-magic canvas{display:block;width:100%;height:100%;pointer-events:none}
+
+
+/* frame_8080 / frame_maya: align the publisher's animated flower wreath
+   with the blue avatar outline. The Spine content has transparent margins
+   within its 192×192 render target, so a 112% canvas looked undersized.
+   Enlarge only this frame, centred equally on both axes; do not crop avatar. */
+#home-view .home-profile[data-avatar-frame="8080"],
+#profile-view .profile-avatar[data-avatar-frame="8080"],
+#profile-view .profile-preview-avatar[data-avatar-frame="8080"]{
+ overflow:visible!important;
+}
+#home-view .home-profile[data-avatar-frame="8080"]>.home-profile-frame,
+#profile-view .profile-avatar[data-avatar-frame="8080"]>.profile-frame-image,
+#profile-view .profile-preview-avatar[data-avatar-frame="8080"]>#profile-preview-frame{
+ position:absolute!important;top:-6%!important;left:-6%!important;
+ right:auto!important;bottom:auto!important;
+ inset:-6% auto auto -6%!important;width:112%!important;height:112%!important;
+ max-width:none!important;max-height:none!important;object-fit:fill!important;
+ transform:none!important;pointer-events:none!important;
+}
+#home-view .home-profile.hg-profile-animated[data-avatar-frame="8080"]>.hg-glow.hg-profile,
+#profile-view .profile-avatar.hg-profile-animated[data-avatar-frame="8080"]>.hg-glow.hg-profile,
+#profile-view .profile-preview-avatar.hg-profile-animated[data-avatar-frame="8080"]>.hg-glow.hg-profile{
+ position:absolute!important;top:-13%!important;left:-13%!important;
+ right:auto!important;bottom:auto!important;
+ inset:-13% auto auto -13%!important;width:126%!important;height:126%!important;
+ max-width:none!important;max-height:none!important;
+ transform:none!important;object-fit:fill!important;pointer-events:none!important;
+}
+
+/* 8080 purple-floral frame: the actual profile photo must fill the flower
+   wreath's opening. The earlier "contain" artwork left white side gutters
+   (most visible with portrait/vertical uploads). Only this frame uses cover:
+   no changes to original file bytes, other frames, or the flower overlay. */
+#home-view .home-profile[data-avatar-frame="8080"]>.home-profile-portrait{
+  position:absolute!important;
+  inset:3%!important;
+  width:94%!important;height:94%!important;
+  background-size:cover!important;
+  background-position:center 40%!important;
+  background-repeat:no-repeat!important;
+  background-color:#18253b;
+  border-radius:3%!important;
+  box-sizing:border-box!important;
+}
+#profile-view .profile-avatar[data-avatar-frame="8080"]>img:first-child,
+#profile-view .profile-preview-avatar[data-avatar-frame="8080"]>img:first-child{
+  position:absolute!important;
+  inset:3%!important;
+  width:94%!important;height:94%!important;
+  max-width:none!important;max-height:none!important;
+  object-fit:cover!important;
+  object-position:center 40%!important;
+  border-radius:3%!important;
+  box-sizing:border-box!important;
+}
+/* The floral wreath remains the foreground, including when its Spine
+   animation is active, and still allows taps on the underlying avatar. */

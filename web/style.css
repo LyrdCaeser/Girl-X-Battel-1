@@ -262,7 +262,7 @@ body:has(#girls-view:not([hidden])){background:#d4dfeb}#girls-return{margin-righ
 .battlefield{aspect-ratio:9/16!important;background-size:cover!important;isolation:isolate;overflow:hidden}.battlefield .versus{display:none}.chibi-canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}.battlefield .units{z-index:2;pointer-events:none}.battlefield .unit{background:none!important;border:0!important;box-shadow:none!important;padding:0!important;transform:translate(-50%,-50%)!important;width:19%!important}.battlefield .unit.has-chibi>.unit-art,.battlefield .unit.has-chibi>.portrait{visibility:hidden}.battlefield .unit.dead{opacity:.35}.unit-status{position:absolute;top:-14px;left:0;color:#fff;text-shadow:0 1px 2px #244a81;font-size:11px;display:flex;align-items:center}.unit-faction{width:20px;height:20px;position:absolute;left:-12px;top:11px;z-index:3}.battlefield .unit .hp{position:absolute;top:11px;left:0;width:100%;height:11px;border:2px solid #e7eeff;border-radius:2px;background:#284c32;box-shadow:0 1px 3px #13243f}.battlefield .hp i{background:linear-gradient(#4bff68,#0fb824)}.battle-round{position:absolute;top:5%;left:0;width:100%;text-align:center;font-size:clamp(22px,5vw,32px);font-weight:900;color:#ffdd83;text-shadow:1px 2px 1px #795733;z-index:3}.battle-hud{position:absolute;bottom:3%;left:4%;right:4%;display:flex;align-items:center;gap:10px;z-index:4}.battle-progress{height:20px;flex:1;border:3px solid #edf3ff;border-radius:18px;background:#3c466e;box-shadow:0 0 4px #396797;overflow:hidden}.battle-progress i{display:block;width:0;height:100%;background:linear-gradient(#4cddff,#0ca2e9);box-shadow:0 0 8px #9ff;transition:width .2s}.battle-hud button{width:44px;height:44px;background:transparent;border:0;padding:0}.battle-hud button img{width:100%;height:100%;object-fit:contain}.battlefield .unit.active{outline:0!important}.battlefield .unit.has-chibi.attack .unit-art{animation:none}
 .battle-leader{flex:none;border:2px solid white;border-radius:50%;overflow:hidden}.battle-asset-note{display:block;font-size:11px;color:#59697c;padding:6px}.battlefield .unit.has-chibi{height:22%!important}.battlefield .unit .unit-status{top:0}.battlefield .unit .hp{top:24px}.home-right{gap:4px!important}.home-side button small{font-size:11px!important}
 .battlefield .unit .hp{border:0;height:12px;background:transparent url('/assets/original-ui/battle_hp_bar_bg_new.png') center/100% 100% no-repeat;padding:2px;box-shadow:none}.battlefield .hp i{height:8px;border-radius:0;background:url('/assets/original-ui/battle_hp_bar1.png') left center/100% 100% no-repeat}
-.home-left{display:grid!important;grid-template-columns:1fr 1fr;width:36%!important}.home-left button{min-width:0}.home-left button:nth-child(n+3){grid-column:1}.home-left button:nth-child(2) small{white-space:normal;max-width:80px;line-height:1.1}.home-original-icon{filter:drop-shadow(0 2px 1px #30445b55)}
+.home-left{display:grid!important;grid-template-columns:1fr 1fr;width:36%!important}.home-left button{min-width:0}.home-left button:nth-child(2) small{white-space:normal;max-width:80px;line-height:1.1}.home-original-icon{filter:drop-shadow(0 2px 1px #30445b55)}
 
 .developer-mode .home-stage .dev-open{background:#82400c!important;border:1px solid #ffd68a!important;border-radius:6px;padding:4px 8px}.home-stage .dev-open{background:#27455cdd!important;border:1px solid #bbd2e4!important;border-radius:6px;padding:4px 8px}
 
@@ -377,3 +377,126 @@ body:has(#girls-view:not([hidden])){background:#d4dfeb}#girls-return{margin-righ
 #app-frame #tower-view .tn-nav{position:absolute!important;top:auto!important;bottom:0!important}
 .tn-stage .gs-win-body{overflow:visible}.tn-close{right:0;top:0}
 .tn-keep-out{position:absolute;left:28%;top:calc(100 * var(--u));width:calc(171 * var(--u));height:calc(129 * var(--u));object-fit:contain}
+
+.profile-option{position:relative}
+.profile-option.locked{filter:grayscale(.78) brightness(.55);opacity:.7}
+.profile-option.locked img{pointer-events:none}
+.profile-option .profile-lock{position:absolute;right:5px;bottom:5px;width:25px;height:25px;border-radius:50%;display:grid;place-items:center;background:#090b12dd;border:1px solid #ffffff35;font-size:13px}
+
+/* Native currency add affordances, next to the original Gold / Gem counters. */
+#home-view .home-currency .home-currency-add{
+  display:inline-grid;place-items:center;flex:0 0 auto;width:20px;height:20px;
+  padding:0!important;border:1px solid #e8ffff!important;border-radius:6px;
+  background:linear-gradient(#72e1ee,#257cce)!important;color:#fff!important;
+  font-weight:900;font-size:17px;line-height:1;box-shadow:0 2px 0 #1c4b85;
+  text-shadow:0 1px #225c9b;cursor:pointer;pointer-events:auto
+}
+#home-view .home-currency{z-index:6}
+#girl-detail-view #detail-grade-up{margin-left:6px;background:linear-gradient(#ffdf8b,#dc8e30);color:#58310b;border:1px solid #f1c86c}
+#girl-detail-view #detail-grade-up[hidden]{display:none!important}
+
+/* RC7: health stays above the actual displayed Spine bounds, not behind a sprite. */
+.battlefield .unit.hp-head-anchor{
+  height:0!important;transform:translate(-50%,0)!important;
+  pointer-events:none;z-index:4!important;overflow:visible!important
+}
+.battlefield .unit.hp-head-anchor .hp{
+  left:0!important;top:0!important;width:100%!important;
+  margin:0!important;z-index:6!important
+}
+.battlefield .unit.hp-head-anchor .unit-status{
+  top:-22px!important;left:0!important;z-index:6!important
+}
+.battlefield .unit.hp-head-anchor .unit-buffs{
+  position:absolute;top:-40px;left:0;z-index:6
+}
+
+/* Native battle HUD: one HP per living actor, anchored to the Spine actor's
+   top. No persistent ghost HP bars after an enemy is defeated. */
+.battlefield .unit.hp-head-anchor.dead,
+.battlefield .unit.dead .hp,
+.battlefield .unit.dead .unit-status,
+.battlefield .unit.dead .unit-buffs {visibility:hidden!important}
+
+
+/* Capsule artwork is unchanged; only the English title sprites are replaced
+   with Vietnamese labels in the same original panels. No new frame images. */
+#capsule-view{width:min(490px,100%);box-sizing:border-box;overflow-x:clip}
+#capsule-view .capsule-banner{width:calc(100% - 16px);box-sizing:border-box;
+ grid-template-columns:minmax(0,39fr) minmax(0,61fr);overflow:hidden}
+#capsule-view .capsule-banner-art,#capsule-view .capsule-banner-controls{min-width:0;max-width:100%}
+#capsule-view .capsule-banner .capsule-real-title{display:none}
+#capsule-view .capsule-title-vi{display:block;max-width:100%;align-self:start;
+ font:900 clamp(13px,3vw,19px)/1.12 system-ui;color:#2b7a9b;text-shadow:0 1px #fff,1px 1px #fff;
+ overflow-wrap:anywhere}
+#capsule-view .capsule-banner.regular .capsule-title-vi,
+#capsule-view .capsule-banner.bff .capsule-title-vi{order:-1}
+#capsule-view .capsule-banner.advanced .capsule-title-vi{order:-1;align-self:center;color:#a87519}
+#capsule-view .capsule-banner.bff .capsule-title-vi{color:#478a3d}
+#capsule-view .capsule-buttons{min-width:0;grid-template-columns:repeat(2,minmax(0,1fr))}
+#capsule-view .capsule-draw{min-width:0;max-width:100%;white-space:normal;overflow-wrap:anywhere}
+#capsule-view .capsule-egg{box-sizing:border-box;min-width:0;align-items:center;padding:3px 12px;height:66px}
+#capsule-view .capsule-egg-meter{min-width:0}
+#capsule-view .capsule-egg button{display:flex;flex-direction:column;align-items:center;justify-content:center;height:60px;flex:0 0 70px}
+#capsule-view .capsule-egg button:disabled{filter:grayscale(.65);opacity:.7}
+#capsule-view .capsule-banner.advanced{aspect-ratio:auto}
+
+/* Narrower original summon-machine surround on mobile. Preserve all source
+   artwork and controls, but crop the padded outer rim instead of stretching
+   the thick purple/gold frame across the screen. Target <= 5 mm per side. */
+html.gxb-mobile #app-frame #capsule-view{
+ --summon-rim:clamp(8px,3.1vw,5mm);
+ overflow-x:clip;
+}
+html.gxb-mobile #app-frame #capsule-view .capsule-banner{
+ width:calc(100% - 2 * var(--summon-rim));
+ margin-left:var(--summon-rim);
+ margin-right:var(--summon-rim);
+ border-width:2px;
+ box-shadow:0 1px 3px #56677c35;
+}
+html.gxb-mobile #app-frame #capsule-view .capsule-banner::before{
+ background-size:calc(100% + 22px) 100%;
+ background-position:center;
+}
+html.gxb-mobile #app-frame #capsule-view .capsule-banner.wc-banner::before{
+ background-size:calc(100% + 30px) 100%;
+ background-position:center;
+}
+
+/* One native HP+EP HUD. EP is a child of its own HP bar so the bar below
+   stays precisely attached to the actual Spine head-anchor (or fallback
+   non-Spine unit). It is 1px beneath HP, never positioned against the
+   full-height character wrapper. No independent floating energy bars. */
+.battlefield .unit .hp{overflow:visible!important}
+.battlefield .unit .hp>.unit-ep{
+ position:absolute;top:calc(100% + 1px)!important;left:3%!important;
+ width:94%!important;height:5px!important;min-height:5px;
+ border:1px solid #dce5ffcc;border-radius:2px;overflow:hidden;
+ background:#252d57cc;box-shadow:0 1px 2px #14245d80;
+ pointer-events:none;z-index:6
+}
+.battlefield .unit .hp>.unit-ep>i{
+ display:block!important;height:100%!important;width:0;
+ background:url('/assets/original-ui/battle_hp_bar1.png') left center/100% 100% no-repeat!important;
+ filter:hue-rotate(150deg) saturate(.92);
+ transition:width .15s linear
+}
+/* Dead units inherit the same HP visibility state; the EP cannot float
+   on its own after death. */
+.battlefield .unit.dead .unit-ep{visibility:hidden!important}
+
+/* Sonia real shield: yellow layer only while the Lua report confirms
+   shield HP. The native green HP stays unchanged beneath it. */
+.battlefield .unit .hp>i.shield-hp-fill{
+ position:absolute!important;right:2px!important;left:auto!important;
+ top:2px!important;height:8px!important;max-width:calc(100% - 4px);
+ border-radius:1px!important;margin:0!important;padding:0!important;
+ z-index:7!important;pointer-events:none;
+ background:linear-gradient(180deg,#fff8b4 0%,#ffd54a 40%,#e8a61e 100%)!important;
+ box-shadow:0 0 3px #fbc54a88;
+ transition:width .16s linear
+}
+.battlefield .unit.dead .hp>i.shield-hp-fill{
+ width:0!important;visibility:hidden!important
+}

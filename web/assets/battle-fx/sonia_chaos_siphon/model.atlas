@@ -1,0 +1,251 @@
+
+yixienamei_hurt01.webp
+size: 1024,1024
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+tx/hurt01/hurt01_1_28
+  rotate: false
+  xy: 295, 7
+  size: 55, 64
+  orig: 185, 185
+  offset: 65, 46
+  index: -1
+tx/hurt01/hurt01_1_29
+  rotate: false
+  xy: 863, 36
+  size: 124, 102
+  orig: 185, 185
+  offset: 39, 41
+  index: -1
+tx/hurt01/hurt01_1_31
+  rotate: true
+  xy: 163, 6
+  size: 162, 130
+  orig: 185, 185
+  offset: 20, 33
+  index: -1
+tx/hurt01/hurt01_1_33
+  rotate: true
+  xy: 400, 419
+  size: 168, 135
+  orig: 185, 185
+  offset: 17, 29
+  index: -1
+tx/hurt01/hurt01_1_35
+  rotate: false
+  xy: 733, 134
+  size: 126, 134
+  orig: 185, 185
+  offset: 33, 25
+  index: -1
+tx/hurt01/hurt01_1_37
+  rotate: false
+  xy: 821, 411
+  size: 134, 140
+  orig: 185, 185
+  offset: 29, 23
+  index: -1
+tx/hurt01/hurt01_1_39
+  rotate: true
+  xy: 574, 552
+  size: 140, 146
+  orig: 185, 185
+  offset: 26, 21
+  index: -1
+tx/hurt01/hurt01_1_41
+  rotate: true
+  xy: 800, 553
+  size: 146, 149
+  orig: 185, 185
+  offset: 23, 20
+  index: -1
+tx/hurt01/hurt01_1_43
+  rotate: false
+  xy: 369, 234
+  size: 150, 154
+  orig: 185, 185
+  offset: 21, 18
+  index: -1
+tx/hurt01/hurt01_1_45
+  rotate: true
+  xy: 817, 701
+  size: 154, 157
+  orig: 185, 185
+  offset: 19, 17
+  index: -1
+tx/hurt01/hurt01_1_47
+  rotate: false
+  xy: 817, 857
+  size: 157, 158
+  orig: 185, 185
+  offset: 17, 17
+  index: -1
+tx/hurt01/hurt01_1_49
+  rotate: false
+  xy: 2, 8
+  size: 159, 160
+  orig: 185, 185
+  offset: 16, 16
+  index: -1
+tx/hurt01/hurt01_1_51
+  rotate: true
+  xy: 425, 641
+  size: 160, 147
+  orig: 185, 185
+  offset: 16, 15
+  index: -1
+tx/hurt01/hurt01_1_53
+  rotate: false
+  xy: 637, 694
+  size: 161, 140
+  orig: 185, 185
+  offset: 15, 14
+  index: -1
+tx/hurt01/hurt01_1_55
+  rotate: false
+  xy: 537, 408
+  size: 144, 142
+  orig: 185, 185
+  offset: 14, 12
+  index: -1
+tx/hurt01/hurt01_1_57
+  rotate: false
+  xy: 521, 263
+  size: 144, 143
+  orig: 185, 185
+  offset: 14, 11
+  index: -1
+tx/hurt01/hurt01_1_59
+  rotate: false
+  xy: 588, 118
+  size: 143, 143
+  orig: 185, 185
+  offset: 14, 9
+  index: -1
+tx/hurt01/hurt01_1_61
+  rotate: false
+  xy: 683, 409
+  size: 136, 141
+  orig: 185, 185
+  offset: 20, 8
+  index: -1
+tx/hurt01/hurt01_1_63
+  rotate: false
+  xy: 667, 270
+  size: 135, 136
+  orig: 185, 185
+  offset: 21, 6
+  index: -1
+tx/hurt01/hurt01_1_65
+  rotate: false
+  xy: 804, 273
+  size: 134, 134
+  orig: 185, 185
+  offset: 21, 5
+  index: -1
+tx/hurt01/hurt01_1_67
+  rotate: false
+  xy: 861, 140
+  size: 130, 131
+  orig: 185, 185
+  offset: 23, 5
+  index: -1
+tx/hurt01/hurt01_2ad_28
+  rotate: false
+  xy: 2, 375
+  size: 202, 212
+  orig: 243, 243
+  offset: 25, 11
+  index: -1
+tx/hurt01/hurt01_2ad_29
+  rotate: false
+  xy: 2, 589
+  size: 217, 212
+  orig: 243, 243
+  offset: 25, 11
+  index: -1
+tx/hurt01/hurt01_2ad_31
+  rotate: false
+  xy: 2, 803
+  size: 218, 212
+  orig: 243, 243
+  offset: 25, 11
+  index: -1
+tx/hurt01/hurt01_2ad_33
+  rotate: false
+  xy: 222, 803
+  size: 214, 212
+  orig: 243, 243
+  offset: 25, 11
+  index: -1
+tx/hurt01/hurt01_2ad_35
+  rotate: false
+  xy: 221, 589
+  size: 202, 212
+  orig: 243, 243
+  offset: 25, 11
+  index: -1
+tx/hurt01/hurt01_2ad_37
+  rotate: false
+  xy: 438, 812
+  size: 197, 203
+  orig: 243, 243
+  offset: 27, 16
+  index: -1
+tx/hurt01/hurt01_2ad_39
+  rotate: false
+  xy: 2, 170
+  size: 197, 203
+  orig: 243, 243
+  offset: 27, 16
+  index: -1
+tx/hurt01/hurt01_2ad_41
+  rotate: false
+  xy: 206, 390
+  size: 192, 197
+  orig: 243, 243
+  offset: 29, 19
+  index: -1
+tx/hurt01/hurt01_2ad_43
+  rotate: false
+  xy: 637, 836
+  size: 178, 179
+  orig: 243, 243
+  offset: 35, 28
+  index: -1
+tx/hurt01/hurt01_2ad_45
+  rotate: true
+  xy: 206, 237
+  size: 151, 161
+  orig: 243, 243
+  offset: 36, 46
+  index: -1
+tx/hurt01/hurt01_2ad_47
+  rotate: false
+  xy: 295, 73
+  size: 147, 159
+  orig: 243, 243
+  offset: 38, 48
+  index: -1
+tx/hurt01/hurt01_2ad_49
+  rotate: false
+  xy: 444, 75
+  size: 142, 157
+  orig: 243, 243
+  offset: 40, 50
+  index: -1
+tx/hurt01/hurt01_2ad_51
+  rotate: false
+  xy: 588, 2
+  size: 139, 114
+  orig: 243, 243
+  offset: 40, 53
+  index: -1
+tx/hurt01/hurt01_2ad_53
+  rotate: false
+  xy: 733, 18
+  size: 128, 114
+  orig: 243, 243
+  offset: 50, 53
+  index: -1

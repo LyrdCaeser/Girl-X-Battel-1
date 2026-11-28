@@ -15,7 +15,7 @@ Data comes from data/activity_kit.json (tools/extract_activity_kit.py): per acti
 from __future__ import annotations
 import json, re
 from pathlib import Path
-from . import clock, vip, activity_draw
+from . import clock, vip, activity_draw, world_live_config
 
 ROOT = Path(__file__).resolve().parents[1]
 D = json.loads((ROOT / 'data/activity_kit.json').read_text())
@@ -148,11 +148,19 @@ def missions_of(state, eid, s):
 
 
 def snapshot(state, now):
+    from . import game_calendar
     view = json.loads(json.dumps(state)); out = {}
+    season_open={int(x['id']) for x in game_calendar.schedule(now)[1]}
     for eid, ev in EVENTS.items():
+        opened=(str(state.get('server_id') or 'S1').upper()=='S4'
+                or eid not in game_calendar.WEEKLY+game_calendar.MONTHLY
+                or eid in season_open)
         s = data(view, eid, now)
-        out[str(eid)] = {'started': str(eid) in (state.get('act_kit') or {}), 'bought': s['bought'], 'missions': missions_of(view, eid, s) if ev.get('missions') else [],
-                         'supply': supply_of(eid) if s.get('supply_day') != clock.day(now) else {},
+        missions=missions_of(view,eid,s) if ev.get('missions') else []
+        if not opened:
+            missions=[{**row,'can':False} for row in missions]
+        out[str(eid)] = {'started': str(eid) in (state.get('act_kit') or {}), 'bought': s['bought'], 'missions':missions, 'open':opened,
+                         'supply': supply_of(eid) if opened and s.get('supply_day') != clock.day(now) else {},
                          'items': {k: int(view['items'].get(k, 0)) for r in (ev.get('shop') or []) for k in pairs(r['cost'])}, 'currency': currency_of(eid),
                          'spent': int(s['spent'].get(currency_of(eid) or '', 0)), 'unlock_by_spent': eid in UNLOCK_BY_SPENT}
     return out
@@ -163,7 +171,11 @@ def add(state, got):
 
 
 def action(state, request, now):
-    eid = int(request.get('event', 0)); ev = ev_of(eid); s = data(state, eid, now); act = request.get('action')
+    eid = int(request.get('event', 0)); ev = ev_of(eid)
+    from . import game_calendar
+    if str(state.get('server_id') or 'S1').upper()!='S4' and not game_calendar.is_open(eid,now):
+        raise KitError('Sự kiện đang tạm nghỉ. Hẹn gặp bạn trong lần mở kế tiếp!')
+    s = data(state, eid, now); act = request.get('action')
     if act == 'buy':
         rid = int(request.get('id', 0)); times = int(request.get('times', 1))
         row = next((r for r in ev.get('shop') or [] if r['id'] == rid), None)
@@ -171,7 +183,8 @@ def action(state, request, now):
         bought = int(s['bought'].get(str(rid), 0))
         if row['limit'] and bought + times > row['limit']: raise KitError('Límite de compras alcanzado')
         if eid in UNLOCK_BY_SPENT and row.get('unlock', 0) > int(s['spent'].get(currency_of(eid) or '', 0)): raise KitError('Bóveda bloqueada')
-        cost = {k: n * times for k, n in pairs(row['cost']).items()}
+        server_id = str(state.get('server_id') or 'S1').upper()
+        cost = {k: world_live_config.event_shop_cost(n, server_id) * times for k, n in pairs(row['cost']).items()}
         for k, n in cost.items():
             if int(state['items'].get(k, 0)) < n: raise KitError('Faltan recursos')
         for k, n in cost.items():

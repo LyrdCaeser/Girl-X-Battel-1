@@ -1,0 +1,45 @@
+#app-frame .social-bar-win .gs-win-body{max-height:75dvh;overflow:auto}
+.social-bar-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px;border-bottom:1px solid #a9c0d9;padding:5px}
+.social-bar-row b{flex:1;min-width:100px}
+.social-bar-row .gs-btn{width:auto!important;min-width:90px}
+.social-bar-create{display:grid;gap:4px}
+.social-bar-create input,.social-bar-create select,.social-bar-compose input{min-width:0;max-width:100%;padding:7px;border:1px solid #a9c0d9;border-radius:4px}
+.social-bar-messages{height:min(42dvh,340px);overflow:auto;background:#f4f7fc;border:1px solid #a9c0d9;padding:6px}
+.social-bar-msg{padding:5px;border-bottom:1px solid #d9e4f2;overflow-wrap:anywhere}
+.social-bar-msg p{margin:3px 0}
+.social-bar-msg img{max-width:100%;max-height:220px;object-fit:contain}
+.social-bar-compose{display:flex;gap:4px;align-items:center}
+.social-bar-compose input{flex:1}
+.social-bar-compose .gs-btn{width:auto!important;min-width:46px}
+.social-bar-error{color:#a92738}
+.social-bar-members{overflow-wrap:anywhere}
+
+/* Native tavern artwork, dedicated home shortcut, independent of timed events. */
+#app-frame .home-right .home-social-bar[hidden]{display:none!important}
+#app-frame .home-right .home-social-bar .home-original{width:46px!important;height:48px!important;padding:4px;box-sizing:border-box}
+#app-frame .home-right .home-social-bar .home-original-icon{width:100%;height:100%;object-fit:contain}
+#app-frame .home-right .home-social-bar{min-height:0!important}
+
+/* Seven shortcuts fit above the destination row on portrait phones. */
+html.gxb-mobile #app-frame .home-stage .home-right.has-social-bar{
+ display:grid;grid-template-rows:repeat(7,minmax(0,1fr));height:54%;gap:3px!important;
+}
+html.gxb-mobile #app-frame .home-stage .home-right.has-social-bar>button{
+ height:100%!important;min-height:0!important;grid-template-rows:minmax(0,1fr) auto;align-content:stretch;row-gap:1px;overflow:hidden;
+}
+html.gxb-mobile #app-frame .home-stage .home-right.has-social-bar>button .home-original{
+ height:100%!important;max-height:100%;width:min(46px,100%)!important;padding:3px;box-sizing:border-box;
+}
+html.gxb-mobile #app-frame .home-stage .home-right.has-social-bar>button .home-original-icon{
+ max-height:100%;max-width:100%;object-fit:contain;
+}
+html.gxb-mobile #app-frame .home-stage .home-right.has-social-bar>button small{
+ font-size:clamp(9px,2.5vw,11px)!important;line-height:1.05;
+}
+
+/* Native profile portrait and equipped frame; independent from shared images. */
+.social-bar-msg{display:grid;grid-template-columns:48px minmax(0,1fr);gap:9px;align-items:start}
+.social-bar-content{min-width:0;overflow-wrap:anywhere}
+.social-bar-avatar{display:block;position:relative;width:48px;height:48px;flex:none}
+#app-frame .social-bar-avatar .social-bar-face{position:absolute;inset:4px;width:40px;height:40px;object-fit:cover;border-radius:6px}
+#app-frame .social-bar-avatar .social-bar-frame{position:absolute;inset:0;width:48px;height:48px;object-fit:fill;pointer-events:none}

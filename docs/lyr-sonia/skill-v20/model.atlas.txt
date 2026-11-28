@@ -1,0 +1,103 @@
+sonia_halo.webp
+size: 234,398
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+halo
+  rotate: false
+  xy: 0, 0
+  size: 234, 398
+  orig: 234, 398
+  offset: 0, 0
+  index: -1
+
+sonia_right_arm.webp
+size: 234,398
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+right_arm
+  rotate: false
+  xy: 0, 0
+  size: 234, 398
+  orig: 234, 398
+  offset: 0, 0
+  index: -1
+
+sonia_hair_back.webp
+size: 234,398
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+hair_back
+  rotate: false
+  xy: 0, 0
+  size: 234, 398
+  orig: 234, 398
+  offset: 0, 0
+  index: -1
+
+sonia_skirt_left.webp
+size: 234,398
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+skirt_left
+  rotate: false
+  xy: 0, 0
+  size: 234, 398
+  orig: 234, 398
+  offset: 0, 0
+  index: -1
+
+sonia_skirt_right.webp
+size: 234,398
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+skirt_right
+  rotate: false
+  xy: 0, 0
+  size: 234, 398
+  orig: 234, 398
+  offset: 0, 0
+  index: -1
+
+sonia_torso.webp
+size: 234,398
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+torso
+  rotate: false
+  xy: 0, 0
+  size: 234, 398
+  orig: 234, 398
+  offset: 0, 0
+  index: -1
+
+sonia_hips.webp
+size: 234,398
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+hips
+  rotate: false
+  xy: 0, 0
+  size: 234, 398
+  orig: 234, 398
+  offset: 0, 0
+  index: -1
+
+sonia_staff.webp
+size: 234,398
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+staff
+  rotate: false
+  xy: 0, 0
+  size: 234, 398
+  orig: 234, 398
+  offset: 0, 0
+  index: -1

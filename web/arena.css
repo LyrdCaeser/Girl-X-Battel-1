@@ -37,8 +37,8 @@
 .ar-row2{position:relative;flex:none;width:calc(656 * var(--u));height:calc(103 * var(--u));margin:0 auto calc(6 * var(--u));box-sizing:border-box;border:calc(18 * var(--u)) solid transparent;border-image-slice:20 fill;border-image-width:calc(18 * var(--u));border-image-repeat:stretch}
 .ar-row2>*{position:absolute;margin:calc(-18 * var(--u))}
 .ar2-rk{object-fit:contain}.ar2-num{display:flex;align-items:center;justify-content:center;font-size:calc(30 * var(--u));color:#5a4e6e}
-.ar2-icon{border:0;padding:0;background:none;cursor:pointer;border-radius:calc(10 * var(--u));overflow:hidden}.ar2-icon .ar2-av,.ar2-icon .portrait{width:100%!important;height:100%!important;object-fit:cover;display:block}
-.ar2-lv{position:absolute;left:0;bottom:0;min-width:calc(26 * var(--u));padding:0 calc(3 * var(--u));background:#000a;color:#fff;font-size:calc(15 * var(--u));border-top-right-radius:calc(8 * var(--u));text-align:center}
+.ar2-icon{position:relative;border:0;padding:0;background:none;cursor:pointer;border-radius:calc(10 * var(--u));overflow:visible}.ar2-icon .ar2-av,.ar2-icon .portrait{position:absolute;z-index:1;inset:7%;width:86%!important;height:86%!important;object-fit:cover;display:block;border-radius:calc(8 * var(--u))}.ar2-icon .ar2-frame{position:absolute;z-index:2;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none}
+.ar2-lv{position:absolute;z-index:3;left:0;bottom:0;min-width:calc(26 * var(--u));padding:0 calc(3 * var(--u));background:#000a;color:#fff;font-size:calc(15 * var(--u));border-top-right-radius:calc(8 * var(--u));text-align:center}
 .ar2-name{font-size:calc(22 * var(--u));color:#4b4a6e;white-space:nowrap;max-width:calc(260 * var(--u));overflow:hidden;text-overflow:ellipsis}
 .ar2-power{display:flex;align-items:center;gap:calc(4 * var(--u));color:#d88d2c;font-size:calc(21 * var(--u))}.ar2-power img{width:calc(34 * var(--u))}
 .ar2-server{display:flex;align-items:center;justify-content:center;gap:calc(8 * var(--u));background:center/100% 100% no-repeat;color:#4f7fb6;font-size:calc(17 * var(--u))}.ar2-server img{width:calc(26 * var(--u))}
@@ -49,12 +49,158 @@
 .ar-top-res img{width:calc(40 * var(--u))}.ar-top-res b{flex:1;text-align:center;font-size:calc(22 * var(--u));color:#43506e}
 .ar-top-back{border:0;background:none;padding:0;width:calc(80 * var(--u));cursor:pointer}.ar-top-back img{width:100%}
 .ar-stage .ar-nav{position:absolute!important;left:0;right:0;bottom:0;z-index:6}
-.ar-inspect{max-width:92%}.ar-ins-head{display:flex;align-items:center;gap:12px;padding-right:30px}.ar-ins-head .ar2-icon{position:relative;width:64px;height:64px;flex:none}
+.ar-inspect{max-width:92%;overflow:hidden}.ar-ins-head{display:flex;align-items:center;gap:12px;padding-right:30px}.ar-ins-head .ar2-icon{position:relative;width:64px;height:64px;flex:none}
 .ar-ins-head div{display:grid}.ar-ins-head b{font-size:18px;color:#4b4a6e}.ar-ins-head small{color:#8a7e9a}
-.ar-ins-def{display:flex;align-items:center;justify-content:space-between;margin:10px 0 6px;padding:6px 10px;background:#eef2fb;border-radius:8px}.ar-ins-def .ar2-power{font-size:16px}.ar-ins-def .ar2-power img{width:24px}
-.ar-ins-team{display:flex;align-items:center;gap:6px;margin:6px 0}.ar-ins-n{width:18px;color:#5d6db0}
+.ar-ins-def{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px;margin:10px 0 6px;padding:6px 10px;background:#eef2fb;border-radius:8px;overflow:hidden}
+.ar-ins-def .ar2-power{position:static!important;display:flex;align-items:center;justify-content:flex-end;min-width:0;margin:0!important;font-size:calc(18 * var(--u));white-space:nowrap}.ar-ins-def .ar2-power img{flex:none;width:calc(24 * var(--u))}
+.ar-ins-def .ar2-power b{overflow:visible;text-overflow:clip;white-space:nowrap}
+.ar-ins-teams{max-width:100%;max-height:calc(245 * var(--u));overflow:auto;padding:0 0 calc(8 * var(--u));overscroll-behavior:contain;touch-action:pan-x pan-y;scrollbar-width:thin;scrollbar-color:#709ed0 #dce8f5}
+.ar-ins-team{display:flex;align-items:center;gap:6px;width:max-content;min-width:100%;margin:6px 0}.ar-ins-n{width:18px;flex:none;color:#5d6db0}
 .ar-ins-slot{position:relative;width:56px;height:56px;border-radius:8px;background:#e7ecf6;overflow:hidden}.ar-ins-slot .portrait{width:100%!important;height:100%!important}
 .ar-ins-slot small{position:absolute;left:0;bottom:0;background:#000a;color:#fff;font-size:10px;padding:0 3px;border-top-right-radius:6px}
+.ar-ins-stars{position:absolute;left:1px;right:1px;top:1px;display:flex;align-items:center;justify-content:flex-end;min-height:18px;pointer-events:none;overflow:visible}
+.ar-ins-stars .gu-stars{display:inline-flex;align-items:center;justify-content:center;gap:0;max-width:100%;overflow:visible}
+.ar-ins-stars .gu-star{width:10px;height:10px;flex:none;object-fit:contain}
+.ar-ins-stars .gu-emblem{width:auto;height:18px;max-width:42px;object-fit:contain;display:block}
+.ar-ins-stars .gu-emblem-num{font-size:9px;color:#fff5c4;text-shadow:0 1px 2px #171627}
+.ar-ins-signature,.ar-ins-score{margin:0;text-align:center;color:#6a5a78;font-size:calc(18 * var(--u))}
+.ar-opponent-avatar[role=button],.ar-opponent-info[role=button]{cursor:pointer}
 .ar-row2{border-image-slice:30 19 fill;width:min(calc(656 * var(--u)),100%)}
 .ar-rank-list{overflow-x:hidden}
 .ar-rank-list{scrollbar-width:none}.ar-rank-list::-webkit-scrollbar{display:none}
+
+/* Owner badge always shows the uploaded public PROFILE avatar, not first Girl. */
+.ar-me-icon{position:absolute;overflow:visible}.ar-me-icon .ar-own-avatar{position:relative;z-index:1;display:block;width:86%;height:86%;object-fit:cover;border-radius:calc(10 * var(--u))}.ar-me-icon .ar-own-frame{position:absolute;z-index:2;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none}
+
+.ar-opponents{display:grid;gap:calc(10 * var(--u));max-height:calc(690 * var(--u));overflow:auto}
+.ar-opponent{display:grid;grid-template-columns:calc(70 * var(--u)) 1fr auto;align-items:center;gap:calc(12 * var(--u));padding:calc(10 * var(--u));border:calc(2 * var(--u)) solid #aac4df;border-radius:calc(14 * var(--u));background:#eef8ff}
+.ar-opponent-avatar{position:relative;justify-self:center;width:calc(58 * var(--u));height:calc(58 * var(--u));overflow:visible;border:0;border-radius:calc(9 * var(--u))}.ar-opponent-avatar-image{position:absolute;z-index:1;inset:7%;width:86%;height:86%;object-fit:cover;border-radius:calc(7 * var(--u))}.ar-opponent-avatar-frame{position:absolute;z-index:2;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none}
+.ar-opponent-info{display:grid;gap:calc(2 * var(--u));min-width:0}.ar-opponent-info b{font-size:calc(23 * var(--u));overflow:hidden;text-overflow:ellipsis}.ar-opponent-info small{font-size:calc(18 * var(--u));color:#536a82}
+
+/* Mobile portrait 20:9+: original native scene was only 1280 prefab units
+   tall. It left 180–250 CSS pixels of solid blue below the bottom navigation.
+   Fill the viewport with the ORIGINAL arena backdrop instead of a flat color.
+   Leave desktop geometry and the 720-unit coordinate grid intact. */
+@media(max-width:720px){
+ html.gxb-mobile #app-frame .arena-view{
+  height:100%;min-height:100%;overflow:hidden;
+ }
+ html.gxb-mobile #app-frame .arena-view .ar-stage{
+  height:100%;min-height:calc(1280 * var(--u));
+ }
+ html.gxb-mobile #app-frame .arena-view .ar-stage>.ar-bg{
+  left:0!important;top:0!important;width:100%!important;height:100%!important;
+  object-fit:cover;object-position:center center;
+ }
+ html.gxb-mobile #app-frame .arena-view .ar-stage>.ar-nav{
+  bottom:0!important;
+ }
+}
+
+
+/* Original ArenaWindow frame, shared across all live Arena, 3v3 and
+   cross-server modes. Both the ranking and player information panel use
+   the same original arena_bg 9-slice rather than a plain gradient. */
+.arena-view .ar-rank,
+.arena-view .ar-detail{
+  box-sizing:border-box;
+  border:calc(26 * var(--u)) solid transparent;
+  border-image-source:url('/assets/arena/arena_bg.png');
+  border-image-slice:30 fill;
+  border-image-width:calc(26 * var(--u));
+  border-image-repeat:stretch;
+}
+.arena-view .ar-detail{
+  background:none;
+  border-radius:0;
+  box-shadow:none;
+}
+
+
+/* MOBILE ONLY: use the extra portrait-height room to put the native owner
+   frame directly above the bottom menu. PC remains on original coordinates.
+   All three online modes share NativeOnlineArenas.render(). */
+@media(max-width:720px){
+ html.gxb-mobile #app-frame .arena-view .ar-stage{
+   --ar-bottom-nav-h:calc(120 * var(--u));
+   --ar-owner-bottom:calc(132 * var(--u));
+   --ar-owner-height:calc(190 * var(--u));
+ }
+ html.gxb-mobile #app-frame .arena-view .ar-stage>.ar-nav{
+   height:var(--ar-bottom-nav-h)!important;
+   min-height:0!important;
+ }
+ html.gxb-mobile #app-frame .arena-view .ar-stage>.ar-detail{
+   top:auto!important;bottom:var(--ar-owner-bottom)!important;
+   height:var(--ar-owner-height)!important;
+ }
+ html.gxb-mobile #app-frame .arena-view .ar-stage>.ar-me-icon{
+   top:auto!important;bottom:calc(216 * var(--u))!important;
+   left:calc(26 * var(--u))!important;
+   width:calc(96 * var(--u))!important;height:calc(96 * var(--u))!important;
+ }
+ html.gxb-mobile #app-frame .arena-view .ar-stage>.ar-power{
+   top:auto!important;bottom:calc(225 * var(--u))!important;
+   left:calc(133 * var(--u))!important;
+   height:calc(56 * var(--u))!important;
+ }
+ html.gxb-mobile #app-frame .arena-view .ar-stage>.ar-stat{
+   top:auto!important;height:calc(27 * var(--u))!important;
+ }
+ html.gxb-mobile #app-frame .arena-view .ar-stage>.ar-stat-rank{
+   bottom:calc(187 * var(--u))!important;
+ }
+ html.gxb-mobile #app-frame .arena-view .ar-stage>.ar-stat-score{
+   bottom:calc(149 * var(--u))!important;
+ }
+ html.gxb-mobile #app-frame .arena-view .ar-stage>.ar-deco{
+   top:auto!important;bottom:calc(138 * var(--u))!important;
+   height:calc(145 * var(--u))!important;
+ }
+ html.gxb-mobile #app-frame .arena-view .ar-stage>.ar-res{
+   top:auto!important;bottom:calc(273 * var(--u))!important;
+   height:calc(32 * var(--u))!important;
+ }
+ html.gxb-mobile #app-frame .arena-view .ar-stage>.ar-fight{
+   top:auto!important;bottom:calc(160 * var(--u))!important;
+   height:calc(73 * var(--u))!important;
+ }
+ html.gxb-mobile #app-frame .arena-view .ar-stage>.ar-side{
+   top:auto!important;height:calc(48 * var(--u))!important;
+   font-size:calc(21 * var(--u));
+ }
+ html.gxb-mobile #app-frame .arena-view .ar-stage>.ar-side-arena_award_s{
+   bottom:calc(262 * var(--u))!important;
+ }
+ html.gxb-mobile #app-frame .arena-view .ar-stage>.ar-side-arena_record{
+   bottom:calc(208 * var(--u))!important;
+ }
+ html.gxb-mobile #app-frame .arena-view .ar-stage>.ar-side-arena_defence{
+   bottom:calc(154 * var(--u))!important;
+ }
+ html.gxb-mobile #app-frame .arena-view .ar-stage>.ar-note{
+   top:auto!important;bottom:calc(335 * var(--u))!important;
+ }
+}
+
+
+/* MOBILE ONLY: the leaderboard keeps its original top/header and extends
+   DOWN to the owner card instead of stopping at the 1280px prefab boundary.
+   Gap: ranking bottom 334u / card top (132u+190u)=322u => 12u. */
+@media(max-width:720px){
+ html.gxb-mobile #app-frame .arena-view .ar-stage>.ar-rank{
+   top:calc(228.5 * var(--u))!important;
+   bottom:calc(334 * var(--u))!important;
+   height:auto!important;
+   min-height:0!important;
+   max-height:none!important;
+   overflow:hidden;
+ }
+ html.gxb-mobile #app-frame .arena-view .ar-stage>.ar-rank .ar-rank-list{
+   box-sizing:border-box;
+   height:100%;
+   min-height:0;
+   overflow-y:auto;
+   overflow-x:hidden;
+ }
+}

@@ -18,3 +18,45 @@
 *.bin filter=lfs diff=lfs merge=lfs -text
 *.so filter=lfs diff=lfs merge=lfs -text
 *.dylib filter=lfs diff=lfs merge=lfs -text
+
+# Branded client icon is committed as a regular small JPEG (not an LFS pointer).
+# Prevent Git LFS from misidentifying it on customer/VPS checkouts.
+clients/icons/gxb3-icon.jpg -filter -diff -merge -text
+# Official portal favicon is the identical small JPEG, not a Git LFS object.
+giftcode-studio/favicon.jpg -filter -diff -merge -text
+
+# The 69,972-byte login promotion WebP was committed as a normal Git blob.
+# Keep it out of LFS to prevent checkout warnings on the VPS and client builds.
+web/assets/login/gxb3-wedding-promo.webp -filter -diff -merge -text
+
+# Lyr Sonia release art stays as ordinary Git blobs while the repository LFS
+# quota is unavailable. These paths are intentionally scoped to this goddess.
+web/assets/avatar-hd/portraits/758001.webp -filter -diff -merge -text
+web/assets/cards/partner_card_758001.png -filter -diff -merge -text
+web/assets/chaos/** -filter -diff -merge -text
+web/assets/characters/758001.png -filter -diff -merge -text
+web/assets/chibis/lyr_sonia/** -filter -diff -merge -text
+web/assets/factions/8.png -filter -diff -merge -text
+web/assets/factions/group8.png -filter -diff -merge -text
+web/assets/pictures/758001.webp -filter -diff -merge -text
+web/assets/skills/skill_icon_758001*.png -filter -diff -merge -text
+
+# Keep the approved tiny Sonia pose atlas available without Git LFS.
+docs/lyr-sonia/pose_3q_v18/model.atlas -filter -diff -merge -text
+# Small Hệ Hỗn Độn skin-panel icon uses a regular Git blob, as do Sonia images.
+web/assets/skins/ui/img_group8.png -filter -diff -merge -text
+# Small approved Sonia shard portrait stored directly in Git.
+web/assets/item-icons/partner_avatar_758001.png -filter -diff -merge -text
+
+# Sonia Chaos skill FX are small recolored Spine copies in ordinary Git.
+web/assets/battle-fx/sonia_chaos_orb/** -filter -diff -merge -text
+web/assets/battle-fx/sonia_chaos_siphon/** -filter -diff -merge -text
+web/assets/battle-fx/sonia_chaos_guard/** -filter -diff -merge -text
+web/assets/battle-fx/sonia_chaos_collapse/** -filter -diff -merge -text
+
+# Exact small owner-provided Lyr Sonia clock artwork (73 KB); store as a
+# normal Git blob so Production updates work without the exhausted LFS quota.
+web/assets/original-ui/sonia_clock_ornate_20261123.webp -filter -diff -merge -text
+
+# Small iOS web app icon is a regular Git blob.
+clients/ios-web/icon.png -filter -diff -merge -text

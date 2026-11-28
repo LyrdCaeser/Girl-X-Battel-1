@@ -106,9 +106,54 @@ def is_open(eid, now):
     return eid in [e['id'] for e in schedule(now)[1]]
 
 
-def snapshot(now=None, resets=()):
+
+S4_LAUNCH = datetime.datetime(2026, 11, 18, 0, 0,
+                              tzinfo=datetime.timezone(datetime.timedelta(hours=7)))
+S4_WINDOW_DAYS = 30
+
+
+def s4_exclusive_schedule(now):
+    """All original playable events open; deterministic 30-day randomized
+    featured calendar (Asia/Ho_Chi_Minh) changes every day, not per request.
+    This rotates *spotlights*, never removes the event or its progress.
+    """
+    seed_day = (datetime.datetime.fromtimestamp(now, datetime.timezone(datetime.timedelta(hours=7)))
+                .date() - S4_LAUNCH.date()).days
+    cycle = max(0, seed_day // S4_WINDOW_DAYS)
+    first_day = S4_LAUNCH + datetime.timedelta(days=cycle * S4_WINDOW_DAYS)
+    pool = sorted(set(WEEKLY) | set(MONTHLY))
+    features = []
+    for d in range(S4_WINDOW_DAYS):
+        day = first_day + datetime.timedelta(days=d)
+        picked = random.Random(f"S4-EXCLUSIVE-{cycle}-{d}").sample(pool, min(3, len(pool)))
+        features.append({'day': day.date().isoformat(),
+                         'start': int(day.timestamp()),
+                         'end': int((day+datetime.timedelta(days=1)).timestamp()),
+                         'ids': picked,
+                         'names': [str(ACTS.get(i,{}).get('title') or i).replace('\\n',' ') for i in picked]})
+    return features, int(first_day.timestamp()), int((first_day+datetime.timedelta(days=S4_WINDOW_DAYS)).timestamp())
+
+
+def s4_snapshot(now, resets):
+    out = snapshot(now, resets, 'S1')
+    days, begin, end = s4_exclusive_schedule(now)
+    ids = sorted(set(WEEKLY) | set(MONTHLY))
+    out['events'] = [
+        {'id': i, 'kind': 'exclusive', 'start': begin, 'end': end,
+         'title': str(ACTS.get(i, {}).get('title') or i).replace('\\n', ' ')}
+        for i in ids]
+    out['next'] = []
+    out['always'] = sorted(set(ALWAYS) | set(ids))
+    out['exclusive_s4'] = True
+    out['featured_30_days'] = days
+    out['featured_today'] = next((d for d in days if d['start'] <= now < d['end']), days[0])
+    return out
+
+def snapshot(now=None, resets=(), server_id='S1'):
     """`resets`: extra countdowns gathered by the engine ([{'key', 'label', 'at'}]: seasons, stores…)."""
     now = int(time.time()) if now is None else now
+    if str(server_id).upper() == 'S4':
+        return s4_snapshot(now, resets)
     p, cur, nxt = schedule(now)
     base = [{'key': 'day', 'label': 'Daily reset (Daily Tasks, free draws, Hearts)', 'at': p['day']['end']},
             {'key': 'week', 'label': 'Weekly reset (weekly tasks, stores, weekly events)', 'at': p['week']['end']},
@@ -116,3 +161,35 @@ def snapshot(now=None, resets=()):
     return {'now': now, 'periods': p, 'always': list(ALWAYS), 'events': cur, 'next': nxt,
             'scheduled': sorted(set(WEEKLY) | set(MONTHLY)),
             'resets': sorted(base + [r for r in resets if r.get('at', 0) > now], key=lambda r: r['at'])}
+
+
+def lobby_snapshot(server_id, now=None):
+    """Only currently playable timed shortcuts; never advertise archived events."""
+    from . import sonia_festival
+    now = int(time.time() if now is None else now)
+    cal = snapshot(now, server_id=server_id)
+    rows = []
+    featured = cal.get('featured_today') if cal.get('exclusive_s4') else None
+    for event in cal['events']:
+        if not event['start'] <= now < event['end']:
+            continue
+        if featured and event['id'] not in featured['ids']:
+            continue
+        art = 'icon_' + ACTS[event['id']]['icon'] + '.png'
+        if not (ROOT / 'web/assets/events' / art).is_file():
+            continue
+        rows.append(dict(event, title=str(event['title']).replace('\\n',' ').replace('\n',' '), key='event:'+str(event['id']),
+                         icon='/assets/events/'+art,
+                         end=min(event['end'], featured['end']) if featured else event['end'],
+                         priority=1))
+    for kind, title, art in (
+        ('stars','Lễ Hội Thức Tỉnh','/assets/girl-ui/potentiality_nametag_star_max.png'),
+        ('shards','Vòng Quay Kim Đồng Hồ','/assets/events/icon_activity_clock.png'),
+        ('missions','Chinh Phục Nhiệm Vụ','/assets/factions/8.png')):
+        if sonia_festival.active(now, kind) and (ROOT / 'web' / art.lstrip('/')).is_file():
+            rows.append(dict(key='sonia:'+kind, festival=kind, title=title, icon=art,
+                             start=sonia_festival.START,end=sonia_festival.ENDS[kind],priority=0))
+    rows.sort(key=lambda r:(r['priority'],r['end'],r['key']))
+    return {'server_id':server_id,'now':now,'events':rows,'calendar':cal,
+            'sonia':{k:{'start':sonia_festival.START,'end':v,
+                        'active':sonia_festival.active(now,k)} for k,v in sonia_festival.ENDS.items()}}

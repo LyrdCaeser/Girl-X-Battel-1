@@ -1,0 +1,106 @@
+{
+  "schema": "gxb3.character.approved_blueprint.v1",
+  "status": "QA_ONLY_NOT_IN_GAME",
+  "character": {
+    "name": "Lyr Sonia",
+    "faction": {
+      "id": 8,
+      "name": "Hệ Hỗn Độn",
+      "icon_asset": "PENDING_APPROVED_IMAGE_INTEGRATION"
+    },
+    "job": {
+      "id": 3,
+      "name": "Pháp Sư"
+    },
+    "visual": {
+      "spine_version": "3.6.37",
+      "directions": [
+        "front",
+        "front_right_45",
+        "right_90",
+        "back",
+        "left_90",
+        "front_left_45"
+      ],
+      "true_direction_art_required": true
+    }
+  },
+  "skills": {
+    "mechanics_approved": false,
+    "icon_layout_reference": "Nymphaea four-skill display",
+    "slots": [
+      {
+        "slot": "active",
+        "field": "act_skill_id",
+        "name": "Tinh Liên Hỏa Ấn",
+        "id": null,
+        "effects": "visual_only",
+        "source_fx": [
+          "lianhua_hurt02",
+          "yixienamei_hurt02",
+          "monika_hurt03"
+        ],
+        "hit_time_seconds": 1.12
+      },
+      {
+        "slot": "passive_1",
+        "field": "pas_skill1_id",
+        "name": null,
+        "id": null,
+        "effects": null
+      },
+      {
+        "slot": "passive_2",
+        "field": "pas_skill2_id",
+        "name": null,
+        "id": null,
+        "effects": null
+      },
+      {
+        "slot": "passive_3",
+        "field": "pas_skill3_id",
+        "name": null,
+        "id": null,
+        "effects": null
+      }
+    ]
+  },
+  "combat": {
+    "formation_position_fixed": true,
+    "allowed_clips": [
+      "idle",
+      "attack",
+      "skill",
+      "hurt",
+      "dead"
+    ],
+    "forbid_clips_in_combat": [
+      "move",
+      "run"
+    ],
+    "death": {
+      "trigger": "hp_zero",
+      "animation": "dead",
+      "after_animation": "remove_from_battlefield",
+      "leave_corpse": false,
+      "resurrect_only_by_gameplay_rules": true
+    },
+    "facing": {
+      "use_direction_art": true,
+      "mirror_only_not_equivalent_to_turning": true
+    }
+  },
+  "integration": {
+    "enabled": false,
+    "create_player_items": false,
+    "mutate_neon": false,
+    "migrate_existing_data": false,
+    "required_gates": [
+      "approved_passive_effects",
+      "unique_skill_ids_and_icons",
+      "group8_end_to_end_compatibility",
+      "spine_6_directions_combat_qa",
+      "real_android_performance_qa"
+    ]
+  }
+}

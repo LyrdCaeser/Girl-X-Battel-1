@@ -1,4 +1,4 @@
-"""Bots: simulated players for everything that needed other people (rankings, comments, chat).
+"""Legacy simulated rankings and chat (not used by Soul Land).
 
 LOCAL (LOCAL-085): there is no server and no other player. The 50 persistent rivals of Junior Varsity (gxb2/arena.ladder: the
 15 original robots + NPC rivals) are reused as a stable cast. Everything here is deterministic (hash of bot, topic and day),
@@ -29,7 +29,7 @@ def cast():
 
 
 # kind → (maximum score, days for the strongest bot to reach its ceiling, label)
-KINDS = {'soul_land': (150, 40, 'Stages'), 'shrine': (2_000_000, 30, 'Points'), 'cafeteria': (60, 7, 'Orders'),
+KINDS = {'shrine': (2_000_000, 30, 'Points'), 'cafeteria': (60, 7, 'Orders'),
          'guild_boss': (5_000_000_000, 20, 'Damage'), 'tower': (1500, 120, 'Floor')}
 
 
@@ -96,10 +96,9 @@ def snapshot(state, level, now=None):
     """Leaderboards and chat for the engine snapshot (read only)."""
     now = int(time.time()) if now is None else now
     name = state.get('name') or 'You'
-    land = sum(int(f.get('cleared') and f['cleared'] - f['first'] + 1 or 0) for f in ((state.get('soul_land_info') or {}).get('forts') or []))
     shrine = sum(int(r.get('best') or 0) for r in ((state.get('shrine_info') or {}).get('routes') or []))
     orders = int(((state.get('missions') or {}).get('totals') or {}).get('guild_orders', 0))
     tower = int((state.get('tower') or {}).get('max_stage', 0) or 0)
-    return {'ranks': {'soul_land': rank('soul_land', land, name, level, now), 'shrine': rank('shrine', shrine, name, level, now),
+    return {'ranks': {'shrine': rank('shrine', shrine, name, level, now),
                       'cafeteria': rank('cafeteria', orders, name, level, now, top=20), 'tower': rank('tower', tower, name, level, now)},
             'chat': {c: chat(c, now) for c in CHAT}}

@@ -1,0 +1,32 @@
+{
+  "starting_resources": {
+    "1": 10000,
+    "2": 0,
+    "3": 0,
+    "9": 5000,
+    "11": 100,
+    "12": 1000,
+    "33": 10,
+    "36": 10
+  },
+  "starter_girls": [41001, 42001, 43001],
+  "summon_rate": {
+    "star_multiplier": {
+      "1": 1.0,
+      "2": 1.0,
+      "3": 1.0,
+      "4": 1.0,
+      "5": 1.0,
+      "6": 1.0
+    }
+  },
+  "shop": {
+    "price_multiplier": 1.0
+  },
+  "rewards": {
+    "multiplier": 1.0
+  },
+  "progression": {
+    "cost_multiplier": 1.0
+  }
+}

@@ -11,7 +11,7 @@ BOXES={}
 for row in DATA['dropbox'].values():BOXES.setdefault(int(row['dropbox_id']),[]).append(row)
 
 def number(v,label,low=1,high=2**31-1):
-    if type(v) is not int or not low<=v<=high:raise ValueError(f'{label}: valor inválido')
+    if type(v) is not int or not low<=v<=high:raise ValueError(f'{label}: giá trị không hợp lệ')
     return v
 
 def pairs(text):
@@ -22,7 +22,7 @@ def pairs(text):
     return out
 
 def charge(state,cost):
-    if any(int(state['items'].get(k,0))<n for k,n in cost.items()):raise ValueError('Faltan recursos')
+    if any(int(state['items'].get(k,0))<n for k,n in cost.items()):raise ValueError('Không đủ nguyên liệu hoặc tiền tệ')
     for k,n in cost.items():state['items'][k]=int(state['items'].get(k,0))-n
 
 def grant(state,awards):
@@ -51,8 +51,13 @@ def is_locked(partner):
     return any(int(v or 0) for v in flags) or any(partner.get(k,0) for k in ('lock_flags','lock_flag','locked'))
 
 def eligible(partner):
-    row=PARTNERS[str(partner['table_id'])]
-    return (str(partner['table_id']) in DATA['partner_replace'] and int(row['group']) in (1,2,3,4)
+    table_id = str(partner.get('table_id', ''))
+    row = PARTNERS.get(table_id)
+    # Special summons (e.g. Lyr Sonia) are valid owned girls but are not
+    # entries in the original Prophet Replacement table.
+    if row is None or table_id not in DATA['partner_replace']:
+        return False
+    return (int(row['group']) in (1,2,3,4)
             and int(row['max_star'])+int(partner.get('awake',0)) in (4,5)
             and not is_locked(partner))
 
@@ -155,19 +160,19 @@ def dispatch(state,name,request,now=None,developer=False,rng=None):
     if name in ('GET_SHOP_INFO','REFRESH_SHOP','BUY_SHOP_ITEM'):
         return lucky_dispatch(state,name,request,now,developer,rng)
     if name in ('PROPHET_REPLACE','PROPHET_REPLACE_SAVE'):
-        pid=number(request.get('partner_id'),'Chica');partner=next((p for p in state['partners'] if p['partner_id']==pid),None)
-        if not partner:raise ValueError('Chica inexistente')
+        pid=number(request.get('partner_id'),'Nữ Thần');partner=next((p for p in state['partners'] if p['partner_id']==pid),None)
+        if not partner:raise ValueError('Không tìm thấy Nữ Thần')
         pending=state.get('exchange')
         if name=='PROPHET_REPLACE':
-            if pending:raise ValueError('Guarda o descarta primero el intercambio pendiente')
-            if not eligible(partner):raise ValueError('Exchange admite chicas desbloqueadas 4★/5★ de Ghost/Human/Monster/Fairy')
+            if pending:raise ValueError('Hãy lưu hoặc hủy lần Hoán Đổi đang chờ trước')
+            if not eligible(partner):raise ValueError('Chỉ có thể Hoán Đổi Nữ Thần 4★/5★ chưa khóa thuộc Hệ U Linh Ma, Hệ Nhân Tộc, Hệ Ma Thú hoặc Hệ Tinh Linh')
             pool=replacement_pool(partner)
             chosen=int(str(pick(pool,rng)['item']).split('#')[0])
             charge(state,pairs(DATA['partner_replace'][str(partner['table_id'])]['cost']))
             state['exchange']={'partner_id':pid,'replace_id':chosen,'source_id':partner['table_id']}
             return {'partner_id':pid,'replace_id':chosen}
-        save=number(request.get('is_save'),'Guardar',0,1)
-        if not pending or pending['partner_id']!=pid or pending['source_id']!=partner['table_id']:raise ValueError('No hay intercambio pendiente para esta chica')
+        save=number(request.get('is_save'),'Lưu',0,1)
+        if not pending or pending['partner_id']!=pid or pending['source_id']!=partner['table_id']:raise ValueError('Nữ Thần này không có lượt Hoán Đổi đang chờ')
         if save:
             partner['table_id']=pending['replace_id']
             equips=(list(partner.get('equips') or [])+[0]*7)[:7];equips[6]=0;partner['equips']=equips

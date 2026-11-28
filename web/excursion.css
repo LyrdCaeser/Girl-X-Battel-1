@@ -1,5 +1,5 @@
 /* Excursion (explore_window 720×1280) and Explore adventure popups. --u = one prefab pixel. */
-.excursion-view{container-type:inline-size;--u:calc(100cqw / 720);position:relative;background:#6c9b5a;overflow:hidden}
+.excursion-view{container-type:inline-size;--u:calc(100cqw / 720);position:relative;width:100%!important;min-width:100%;height:100%;background:#6c9b5a;overflow:hidden}
 .excursion-view[hidden]{display:none}
 .ex-top{position:absolute;left:0;right:0;top:0;z-index:5;display:flex;align-items:center;gap:6px;padding:6px 8px;background:linear-gradient(#f7f5fcee,#bfd9f2dd)}
 .ex-cur{flex:1;position:relative;display:flex;align-items:center;gap:4px;background:#fff;border-radius:16px;padding:1px 8px 1px 2px;font-weight:bold;font-size:13px}.ex-cur img{width:26px;height:26px}
@@ -109,3 +109,5 @@
 .ex-gslot{aspect-ratio:1;border-radius:8px;background:#e7ecf6;display:grid;place-items:center;overflow:hidden}.ex-gslot .portrait{width:100%!important;height:100%!important}
 .ex-grandom{display:flex;align-items:center;gap:6px;margin-top:8px;font-weight:bold;color:#4b5472}
 .ex-ev-want{position:absolute;right:30%;top:40%;width:52px;height:46px;border-radius:50%;background:#fffffff2;box-shadow:0 2px 6px #0004;display:grid;place-items:center;z-index:2}.ex-ev-want img{width:34px}
+
+.ex-static{position:absolute;z-index:0;object-fit:contain;pointer-events:none}.ex-static.main{left:calc(18 * var(--u));top:calc(278 * var(--u));width:calc(248 * var(--u))}.ex-static.store{left:calc(126 * var(--u));top:calc(627 * var(--u));width:calc(229 * var(--u))}.ex-static.tree{left:calc(430 * var(--u));top:calc(402 * var(--u));width:calc(256 * var(--u))}.ex-canvas{z-index:1}.ex-hot{z-index:2}

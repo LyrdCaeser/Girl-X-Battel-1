@@ -1,0 +1,22 @@
+/* Preserve original 641x253 quiz art proportions on Mobile.
+   Desktop styles remain separate and unchanged. */
+@media(max-width:720px){
+  #daily-quiz-view .daily-quiz-category{
+    width:100%;height:auto;min-height:0;aspect-ratio:641/253;
+    background-size:100% 100%;background-position:center;
+  }
+  #daily-quiz-view .daily-quiz-category>span{
+    left:47%;right:3%;top:16%;
+  }
+  #daily-quiz-view .daily-quiz-category strong{
+    font-weight:900;color:#1662a6;text-shadow:0 1px #fff,0 0 3px #fff;
+  }
+  #daily-quiz-view .daily-quiz-category small,
+  #daily-quiz-view .daily-quiz-category em{
+    font-weight:800;color:#405777;text-shadow:0 1px #fff;
+  }
+  #daily-quiz-view .daily-quiz-banner{
+    background-size:cover;
+    background-position:center;
+  }
+}

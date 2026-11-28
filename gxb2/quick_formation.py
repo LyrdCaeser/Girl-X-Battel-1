@@ -4,7 +4,7 @@ After campaign stage 8-5 (QUICK_FORMATION_TEXT18) the player owns 3 preset lineu
 position, gear (weapon / clothes / accessory / shoes / antique) and Limit-Break potentials, without touching the current
 team. "Set" applies a preset: the battle formation becomes it, each girl gets its saved potentials, and the saved gear is
 moved onto her (from the bag or from the girl wearing it; a piece that is gone is skipped and reported). Names are
-editable (6 characters at most). Local rule (LOCAL-048): only the 3 free presets (the gem price of more is not in the
+editable (Tên tối đa 6 ký tự). Local rule (LOCAL-048): only the 3 free presets (the gem price of more is not in the
 client), and girls in a preset are not protected from being consumed."""
 from __future__ import annotations
 from . import equipment
@@ -29,26 +29,26 @@ def snapshot(state, developer=False):
 
 
 def action(state, request, developer=False):
-    if not snapshot(state, developer)['open']: raise QuickError('Available after passing Stage 8-5 in Campaign')
+    if not snapshot(state, developer)['open']: raise QuickError('Mở sau khi vượt Chiến Dịch 8-5')
     q = data(state); idx = int(request.get('index') or 0)
-    if not 0 <= idx < SLOTS: raise QuickError('Alineación inválida')
+    if not 0 <= idx < SLOTS: raise QuickError('Đội hình không hợp lệ')
     owned = {p['partner_id']: p for p in state['partners']}
     act = request.get('action')
     if act == 'save':
         team = request.get('team')
         if team is None: team = state.get('formation') or []
-        if not isinstance(team, list) or len(team) > 6: raise QuickError('Formación inválida')
+        if not isinstance(team, list) or len(team) > 6: raise QuickError('Đội hình không hợp lệ')
         out, seen = [], set()
         for slot in team:
             pid, pos = int(slot.get('partner_id') or 0), int(slot.get('pos') or 0)
-            if pid not in owned or pid in seen or not 1 <= pos <= 6: raise QuickError('Chica o posición inválida')
+            if pid not in owned or pid in seen or not 1 <= pos <= 6: raise QuickError('Nữ Thần hoặc vị trí không hợp lệ')
             seen.add(pid); p = owned[pid]
             out.append({'partner_id': pid, 'pos': pos, 'equips': list(equipment.equips_of(p)), 'potentials': list(p.get('potentials') or [])})
         q[idx]['team'] = sorted(out, key=lambda x: x['pos'])
         return {'lineup': q[idx]}
     if act == 'rename':
         name = str(request.get('name') or '').strip()
-        if not name or len(name) > 6: raise QuickError('6 characters at most')
+        if not name or len(name) > 6: raise QuickError('Tên tối đa 6 ký tự')
         q[idx]['name'] = name
         return {}
     if act == 'clear':
@@ -56,7 +56,7 @@ def action(state, request, developer=False):
         return {}
     if act == 'set':
         team = [t for t in q[idx]['team'] if t['partner_id'] in owned]
-        if not team: raise QuickError('You need to preset this lineup first')
+        if not team: raise QuickError('Hãy lưu đội hình này trước')
         missing = []
         for t in team:
             p = owned[t['partner_id']]; slots = equipment.equips_of(p)
@@ -77,4 +77,4 @@ def action(state, request, developer=False):
                 slots[s - 1] = want
         state['formation'] = [{'partner_id': t['partner_id'], 'pos': t['pos']} for t in team]
         return {'missing': missing}
-    raise QuickError('Acción de alineación desconocida')
+    raise QuickError('Thao tác đội hình không hợp lệ')

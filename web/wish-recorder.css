@@ -1,0 +1,29 @@
+/* S4 Wish recorder control; independent of PC/mobile game design dimensions. */
+.gxb-wish-record-controls{
+  display:grid;grid-template-columns:minmax(105px,auto) 1fr;
+  gap:8px;align-items:center;margin:8px 4px;padding:9px 11px;
+  border:1px solid #8ea8ce;border-radius:12px;
+  background:linear-gradient(120deg,#fdfcff,#e5f2ff);
+  box-shadow:0 2px 7px #25365320;
+}
+.gxb-wish-record-controls small{color:#3a5071;font-size:12px;line-height:1.4}
+.gxb-wish-record-action{
+  background:linear-gradient(#59bafa,#2b77cc);color:#fff;
+  border:1px solid #7abff0;border-radius:12px;padding:9px 13px;
+  font:700 14px/1.2 inherit;min-height:42px;cursor:pointer;
+}
+.gxb-wish-record-action:disabled{opacity:.7;cursor:wait}
+.gxb-wish-record-widget{
+  position:absolute;z-index:2147483000;top:calc(70px + env(safe-area-inset-top,0px));
+  left:50%;transform:translateX(-50%);
+  width:max-content;max-width:92%;display:flex;gap:8px;align-items:center;
+  padding:5px 9px;border:1px solid #fed6c0;
+  border-radius:30px;background:#1e263ce8;color:#fff;
+  box-shadow:0 6px 18px #0007;font-size:12px;
+}
+.gxb-wish-record-widget .gxb-wish-record-label{color:#ffbcb7;white-space:nowrap;font-weight:800}
+.gxb-wish-record-widget .gxb-wish-record-action{font-size:12px;min-height:32px;padding:5px 9px}
+@media(max-width:400px){
+ .gxb-wish-record-controls{grid-template-columns:1fr;gap:5px}
+ .gxb-wish-record-controls small{font-size:11px}
+}

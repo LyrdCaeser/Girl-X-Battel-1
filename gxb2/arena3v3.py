@@ -117,6 +117,27 @@ def board_row(r, a, level):
             'avatar': r['avatar'], 'power': sum(arena.power(t) for t in teams), 'teams': teams}
 
 
+def online_snapshot(state):
+    """Safe compatibility payload for online 3v3, never a fake/NPC ladder.
+
+    Real ranks, wins, season rewards, rivals and battle history are served
+    only by authenticated /api/pvp/status?mode=arena3v3 from the live DB.
+    This read-only projection also supports partial legacy/new 3v3 saves:
+    it never silently migrates, resets stored lineups, or grants tickets.
+    """
+    a=state.get('arena3v3') or {}
+    teams=a.get('teams') if isinstance(a.get('teams'), list) else []
+    return {
+        'opened':'arena3v3' in state,
+        'online_only':True,
+        'tickets':int(state.get('items',{}).get(TICKET,0)),
+        'cost':COST,
+        'teams':teams,
+        'score':None,'rank':None,'board':[],'enemies':[],'records':[],
+        'season_end':0,'wins':None,'fights':None,
+    }
+
+
 def snapshot(state, level, now=None):
     now = int(time.time()) if now is None else now
     if 'arena3v3' not in state:

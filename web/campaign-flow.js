@@ -31,18 +31,26 @@ const CampaignFlow=(()=>{
   setTimeout(mid,2500);});}
  // --- hero icons (HeroIcon: avatar, hero_frame halves, faction, level, stars) -------------------------------------------
  function heroIcon(h,cls='cf-hero'){const g=girlsCatalog.find(x=>x.id===h.table_id);const w=el('div',cls);const star=Number(h.stars)||g?.stars||1;
-  const av=img('/assets/profile/partner_avatar_'+h.table_id+'.png','cf-av');av.onerror=()=>{const a2=typeof artId==='function'?artId(h.table_id):h.table_id;if(av.dataset.f){av.onerror=null;av.src='/assets/cards/partner_card_'+a2+'.png';return;}av.dataset.f=1;av.src='/assets/profile/partner_avatar_'+a2+'.png';};
+  const av=typeof portrait==='function'?portrait(h.table_id,96):img('/assets/ui/item_bg.png');av.classList.add('cf-av');
   w.append(av,img(R('hero_frame'),'cf-frame l'),img(R('hero_frame'),'cf-frame r'));
   if(g?.group){const b=el('span','cf-group');b.append(img(R('img_group'+g.group)));w.append(b);}
-  w.append(el('b','cf-lv',String(h.lv||1)));const st=el('span','cf-stars'+(star>5?' red':''));const n=star>5?Math.min(4,star-5):star;for(let i=0;i<n;i++)st.append(img(R(star>5?'star_red':'star')));w.append(st);w.title=h.name||g?.name||'';return w;}
+  w.append(el('b','cf-lv',String(h.lv||1)));
+  // Use the SAME original star artwork/Limit Break emblem as the Girl detail,
+  // instead of truncating every 9–25★ girl to four red stars (= false 9★).
+  const st=el('span','cf-stars'+(star>5?' red':''));
+  if(typeof GirlUI!=='undefined')st.append(GirlUI.stars(star,'card'));
+  else if(star>=10)st.append(el('b','cf-star-count',star+'★'));
+  else for(let i=0;i<(star>5?star-5:star);i++)st.append(img(R(star>5?'star_red':'star')));
+  st.setAttribute('aria-label',star+'★');st.title=star+'★';w.append(st);
+  w.title=(h.name||g?.name||'')+' · '+star+'★';return w;}
  let servants=null;
  // BattleFormationWindow → Servant: choose the Servant that fights with the team (home_systems.selected_pet), or none.
  async function pickServant(){if(!servants)servants=await api('/assets/servants.json').catch(()=>({pets:{}}));const hs=state.home_systems||{};
-  return new Promise(res=>{const {body,close,win}=GirlUI.win({title:'Servant',cls:'cf-sv',stack:true});const grid=el('div','cf-sv-grid');
+  return new Promise(res=>{const {body,close,win}=GirlUI.win({title:'Linh Thú',cls:'cf-sv',stack:true});const grid=el('div','cf-sv-grid');
    const choose=async id=>{try{const r=await api('/api/home/action',{action:'pet_select',id});state=r.state;}catch(e){GirlUI.toast(e.message);}close();res();};
-   for(const p of Object.values(servants.pets).sort((a,b)=>a.id-b.id)){const mine=hs.pets?.[String(p.id)];const c=btn('cf-sv-card'+(mine?'':' locked')+(hs.selected_pet===p.id?' on':''),'',()=>mine?choose(p.id):GirlUI.toast("You do not own "+p.name+" (Menu → Servant)."));
+   for(const p of Object.values(servants.pets).sort((a,b)=>a.id-b.id)){const mine=hs.pets?.[String(p.id)];const c=btn('cf-sv-card'+(mine?'':' locked')+(hs.selected_pet===p.id?' on':''),'',()=>mine?choose(p.id):GirlUI.toast("Bạn chưa sở hữu "+p.name+" (Menu → Linh Thú)."));
     c.append(img('/assets/servant/'+p.avatar+Math.min(4,mine?.grade||1)+'.png'),el('b','',p.name),el('small','',mine?'Lv. '+(mine.lv||1):'🔒'));grid.append(c);}
-   body.append(grid);if(hs.selected_pet)body.append(btn('gs-btn white',"No Servant",()=>choose(0)));
+   body.append(grid);if(hs.selected_pet)body.append(btn('gs-btn white',"Không dùng Linh Thú",()=>choose(0)));
    const obs=new MutationObserver(()=>{if(!win.isConnected){obs.disconnect();res();}});obs.observe(document.body,{childList:true,subtree:true});});}
  let powers={};const power=h=>Number(powers[h.partner_id]||0);
  // Shared picker: `slots` = positions offered ([1..6] battle, [1..3] hang), `front` = how many of them are front row.
@@ -50,19 +58,19 @@ const CampaignFlow=(()=>{
    const pick=new Map();for(const f of initial||[]){if(slots.includes(f.pos)&&state.roster.some(h=>h.partner_id===f.partner_id))pick.set(f.pos,f.partner_id);}let faction=0;
    const top=el('div','cf-form-top');const grid=el('div','cf-form-grid');const filter=el('div','cf-form-filter');
    const draw=()=>{top.replaceChildren();const pw=el('div','cf-power');pw.append(img('/assets/campaign/arena_sword.png','cf-power-icon'),el('b','',number([...pick.values()].reduce((a,id)=>a+power(state.roster.find(h=>h.partner_id===id)||{}),0))));
-     if(servant){const cur=state.home_systems?.selected_pet;const sb=btn('gs-btn cf-servant','',()=>pickServant().then(draw));if(cur&&servants?.pets?.[cur]){const g=state.home_systems.pets[String(cur)]?.grade||1;sb.append(img('/assets/servant/'+servants.pets[cur].avatar+Math.min(4,g)+'.png','cf-sv-mini'));}sb.append(el('span','','🐾 Servant'));pw.append(sb);}top.append(pw);
-     for(const [label,pos] of [['Front',slots.slice(0,front)],['Back',slots.slice(front)]]){const row=el('div','cf-row');row.append(el('span','cf-row-label',label));
+     if(servant){const cur=state.home_systems?.selected_pet;const sb=btn('gs-btn cf-servant','',()=>pickServant().then(draw));if(cur&&servants?.pets?.[cur]){const g=state.home_systems.pets[String(cur)]?.grade||1;sb.append(img('/assets/servant/'+servants.pets[cur].avatar+Math.min(4,g)+'.png','cf-sv-mini'));}sb.append(el('span','','🐾 Linh Thú'));pw.append(sb);}top.append(pw);
+     for(const [label,pos] of [['Hàng Trước',slots.slice(0,front)],['Hàng Sau',slots.slice(front)]]){const row=el('div','cf-row');row.append(el('span','cf-row-label',label));
       for(const p of pos){const slot=el('button','cf-slot');slot.type='button';const id=pick.get(p);const h=id&&state.roster.find(x=>x.partner_id===id);if(h){slot.append(heroIcon(h));slot.onclick=()=>{pick.delete(p);draw();};}row.append(slot);}top.append(row);}
      if(note)top.append(el('p','cf-note',note));
-     top.append(btn('gs-btn cf-start',confirm,()=>{if(!pick.size){GirlUI.toast("Choose at least one Girl");return;}finished=true;close();res([...pick].map(([pos,partner_id])=>({partner_id,pos})).sort((a,b)=>a.pos-b.pos));}));
+     top.append(btn('gs-btn cf-start',confirm,()=>{if(!pick.size){GirlUI.toast("Hãy chọn ít nhất một Nữ Thần");return;}finished=true;close();res([...pick].map(([pos,partner_id])=>({partner_id,pos})).sort((a,b)=>a.pos-b.pos));}));
      grid.replaceChildren();const chosen=new Set(pick.values());
      const list=[...state.roster].filter(h=>!faction||girlsCatalog.find(g=>g.id===h.table_id)?.group===faction).sort((a,b)=>chosen.has(b.partner_id)-chosen.has(a.partner_id)||(b.lv||0)-(a.lv||0)||(b.stars||0)-(a.stars||0));
-     for(const h of list){const c=heroIcon(h,'cf-hero pick'+(chosen.has(h.partner_id)?' on':''));c.onclick=()=>{const at=[...pick].find(([,id])=>id===h.partner_id);if(at){pick.delete(at[0]);draw();return;}const free=slots.find(p=>!pick.has(p));if(free===undefined){GirlUI.toast("The lineup is full");return;}pick.set(free,h.partner_id);draw();};grid.append(c);}};
+     for(const h of list){const c=heroIcon(h,'cf-hero pick'+(chosen.has(h.partner_id)?' on':''));c.onclick=()=>{const at=[...pick].find(([,id])=>id===h.partner_id);if(at){pick.delete(at[0]);draw();return;}const free=slots.find(p=>!pick.has(p));if(free===undefined){GirlUI.toast("Đội hình đã đủ vị trí");return;}pick.set(free,h.partner_id);draw();};grid.append(c);}};
    for(let f=1;f<=6;f++){const b=btn('cf-fbtn','',()=>{faction=faction===f?0:f;filter.querySelectorAll('.cf-fbtn').forEach((x,i)=>x.classList.toggle('on',faction===i+1));draw();});b.append(img(R('img_group'+f)));filter.append(b);}
    body.append(top,filter,grid);draw();if(servant&&!servants)api('/assets/servants.json').then(d=>{servants=d;if(win.isConnected)draw();}).catch(()=>{});api('/api/partners/power').then(p=>{powers=p||{};if(win.isConnected)draw();}).catch(()=>{});
    const obs=new MutationObserver(()=>{if(!win.isConnected){obs.disconnect();if(!finished)res(null);}});obs.observe(document.body,{childList:true,subtree:true});});}
- function formation(){return picker({title:'Battle',slots:[1,2,3,4,5,6],front:2,initial:state.formation,confirm:'Battle Start',servant:true});}
- async function hangTeam(){const team=await picker({title:'Auto-Battle',slots:[1,2,3],front:1,initial:hangList(),confirm:'Save Team',note:"Girls patrolling the stage (up to 3). This does not change your battle lineup."});
+ function formation(){return picker({title:'Đội Hình Chiến Đấu',slots:[1,2,3,4,5,6],front:2,initial:state.formation,confirm:'Bắt Đầu Chiến Đấu',servant:true});}
+ async function hangTeam(){const team=await picker({title:'Đội Hình Treo Máy',slots:[1,2,3],front:1,initial:hangList(),confirm:'Lưu Đội Hình',note:"Girls patrolling the stage (up to 3). This does not change your battle lineup."});
   if(!team)return;try{const r=await api('/api/campaign/hang-team',{partners:team});state=r.state;GirlUI.toast("Patrol lineup saved");if(typeof render==='function')render();}catch(e){GirlUI.toast(e.message);}}
  function hangList(){const own=h=>state.roster.some(x=>x.partner_id===h.partner_id);const t=(state.campaign_hang||[]).filter(own);return t.length?t:(state.formation||[]).filter(own).slice(0,3).map((f,i)=>({partner_id:f.partner_id,pos:i+1}));}
  // --- CampaignStageDetailWindow --------------------------------------------------------------------------------------------

@@ -1,0 +1,166 @@
+model.png
+size: 2048,2048
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+hair_back
+  rotate: false
+  xy: 4, 4
+  size: 465, 634
+  orig: 465, 634
+  offset: 0, 0
+  index: -1
+beam_ray
+  rotate: false
+  xy: 473, 4
+  size: 220, 560
+  orig: 220, 560
+  offset: 0, 0
+  index: -1
+head
+  rotate: false
+  xy: 697, 4
+  size: 275, 377
+  orig: 275, 377
+  offset: 0, 0
+  index: -1
+ring_aura
+  rotate: false
+  xy: 976, 4
+  size: 360, 360
+  orig: 360, 360
+  offset: 0, 0
+  index: -1
+star_core
+  rotate: false
+  xy: 1340, 4
+  size: 320, 320
+  orig: 320, 320
+  offset: 0, 0
+  index: -1
+meteor_streak
+  rotate: false
+  xy: 1664, 4
+  size: 110, 320
+  orig: 110, 320
+  offset: 0, 0
+  index: -1
+skirt_left
+  rotate: false
+  xy: 1778, 4
+  size: 217, 281
+  orig: 217, 281
+  offset: 0, 0
+  index: -1
+petal_sparkle
+  rotate: false
+  xy: 4, 642
+  size: 380, 280
+  orig: 380, 280
+  offset: 0, 0
+  index: -1
+hair_flower
+  rotate: false
+  xy: 388, 642
+  size: 189, 279
+  orig: 189, 279
+  offset: 0, 0
+  index: -1
+skirt_right
+  rotate: false
+  xy: 581, 642
+  size: 63, 267
+  orig: 63, 267
+  offset: 0, 0
+  index: -1
+leg_left
+  rotate: false
+  xy: 648, 642
+  size: 82, 238
+  orig: 82, 238
+  offset: 0, 0
+  index: -1
+leg_right
+  rotate: false
+  xy: 734, 642
+  size: 85, 233
+  orig: 85, 233
+  offset: 0, 0
+  index: -1
+dead_approved
+  rotate: false
+  xy: 823, 642
+  size: 404, 222
+  orig: 404, 222
+  offset: 0, 0
+  index: -1
+arm_left
+  rotate: false
+  xy: 1231, 642
+  size: 119, 193
+  orig: 119, 193
+  offset: 0, 0
+  index: -1
+hair_front_l
+  rotate: false
+  xy: 1354, 642
+  size: 109, 180
+  orig: 109, 180
+  offset: 0, 0
+  index: -1
+arm_right
+  rotate: false
+  xy: 1467, 642
+  size: 76, 170
+  orig: 76, 170
+  offset: 0, 0
+  index: -1
+hair_front_r
+  rotate: false
+  xy: 1547, 642
+  size: 83, 164
+  orig: 83, 164
+  offset: 0, 0
+  index: -1
+halo
+  rotate: false
+  xy: 1634, 642
+  size: 410, 152
+  orig: 410, 152
+  offset: 0, 0
+  index: -1
+torso
+  rotate: false
+  xy: 4, 926
+  size: 139, 141
+  orig: 139, 141
+  offset: 0, 0
+  index: -1
+hips
+  rotate: false
+  xy: 147, 926
+  size: 149, 128
+  orig: 149, 128
+  offset: 0, 0
+  index: -1
+magic_orb
+  rotate: false
+  xy: 300, 926
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+eyes_closed
+  rotate: false
+  xy: 400, 926
+  size: 161, 63
+  orig: 161, 63
+  offset: 0, 0
+  index: -1
+eyes_open
+  rotate: false
+  xy: 565, 926
+  size: 161, 63
+  orig: 161, 63
+  offset: 0, 0
+  index: -1

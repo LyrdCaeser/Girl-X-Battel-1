@@ -1,1 +1,423 @@
-{"machine":[{"id":1,"pos":[1,1,1],"weight":80,"basic":"58#8","super":"305#8"},{"id":2,"pos":[2,2,2],"weight":80,"basic":"58#7","super":"305#7"},{"id":3,"pos":[3,3,3],"weight":80,"basic":"58#6","super":"305#6"},{"id":4,"pos":[1,1,2],"weight":85,"basic":"58#5","super":"305#5"},{"id":5,"pos":[1,2,1],"weight":85,"basic":"58#5","super":"305#5"},{"id":6,"pos":[1,1,3],"weight":85,"basic":"58#5","super":"305#5"},{"id":7,"pos":[1,3,1],"weight":85,"basic":"58#5","super":"305#5"},{"id":8,"pos":[3,1,1],"weight":85,"basic":"58#5","super":"305#5"},{"id":9,"pos":[2,1,1],"weight":85,"basic":"58#5","super":"305#5"},{"id":10,"pos":[2,2,1],"weight":90,"basic":"58#4","super":"305#4"},{"id":11,"pos":[2,1,2],"weight":90,"basic":"58#4","super":"305#4"},{"id":12,"pos":[1,2,2],"weight":90,"basic":"58#4","super":"305#4"},{"id":13,"pos":[2,2,3],"weight":90,"basic":"58#4","super":"305#4"},{"id":14,"pos":[2,3,2],"weight":90,"basic":"58#4","super":"305#4"},{"id":15,"pos":[3,2,2],"weight":90,"basic":"58#4","super":"305#4"},{"id":16,"pos":[3,3,1],"weight":100,"basic":"58#3","super":"305#3"},{"id":17,"pos":[3,1,3],"weight":100,"basic":"58#3","super":"305#3"},{"id":18,"pos":[1,3,3],"weight":100,"basic":"58#3","super":"305#3"},{"id":19,"pos":[3,3,2],"weight":100,"basic":"58#3","super":"305#3"},{"id":20,"pos":[3,2,3],"weight":100,"basic":"58#3","super":"305#3"},{"id":21,"pos":[2,3,3],"weight":100,"basic":"58#3","super":"305#3"},{"id":22,"pos":[1,2,3],"weight":120,"basic":"","super":""},{"id":23,"pos":[1,3,2],"weight":120,"basic":"","super":""},{"id":24,"pos":[2,1,3],"weight":120,"basic":"","super":""},{"id":25,"pos":[2,3,1],"weight":120,"basic":"","super":""},{"id":26,"pos":[3,1,2],"weight":120,"basic":"","super":""},{"id":27,"pos":[3,2,1],"weight":120,"basic":"","super":""}],"heads":{"1":{"basic":"head_wy","super":"head_ssx"},"2":{"basic":"head_wc","super":"head_jx"},"3":{"basic":"head_adh","super":"head_ce"}},"awards":[{"need":40,"awards":"36#10|2#200"},{"need":150,"awards":"93#1|20#10"},{"need":300,"awards":"940005#50|940006#50"},{"need":600,"awards":"4101067#1|4102007#1"},{"need":900,"awards":"4501002#1|4201042#40"},{"need":1200,"awards":"4104023#1|4101008#1"},{"need":1300,"awards":"4901001#1|420#5"},{"need":1400,"awards":"4402015#1|6000#6000"},{"need":1600,"awards":"4101010#1|448#1"},{"need":1800,"awards":"940059#100|4206001#150"},{"need":2000,"awards":"5100020#1|417#6000"},{"need":2200,"awards":"6791#1|6000#12000"},{"need":2400,"awards":"4901001#3|418#300"},{"need":2800,"awards":"5100021#1|417#6000"},{"need":3200,"awards":"6791#1|4206001#300"}],"misc":{"activity_jackpot_energy_initial":"57#15","activity_jackpot_energy_cd":14400,"activity_jackpot_energy_add":1,"activity_jackpot_energy_limit":20,"activity_jackpot_energy_bet_num":"1|2|5|10","activity_jackpot_draw":"57#5","activity_jackpot_unlock":"40","activity_jackpot_exchange_item":58,"activity_jackpot_transfer":"58#1|305#1"},"text":{"ACTIVITY_JACKPOT_POINT_HELP":"You will get 1 point for each Energy consumed. Rewards will be issued via Mail when you acquire the required number of points!","ACTIVITY_JACKPOT_POINT_LIST":"Consume {1} Energy","ACTIVITY_JACKPOT_HELP_TEXT":"1. Use Jackpot Energy (5 energy for each spin) to spin Basic Jackpot and Super Jackpot for item rewards Jackpot Points or Super Jackpot Points. If two or more of the same girl is displayed in the result Jackpot Points or Super Jackpot Points will be rewarded based on which Jackpot you were spinning from. If all of the girls displayed in the result are different a random item reward will be given.|2. You can choose the amount of Jackpot Energy you want to use before each spin. If you choose to consume multiple times of Jackpot Energy in the next spin the reward for the spin will thus be multiplied.|3. Super Jackpot will be unlocked after acquiring Advanced Access or spinning the Basic Jackpot 40 times.|4. Jackpot Points and Super Jackpot Points can be used to draw from Basic Draw and Super Draw respectively. After getting all the rewards of Basic Draw/Super Draw the rewards of Basic Draw/Super Draw will be reset.|5. Additional rewards will also be granted based on the amount of Jackpot Energy you consumed in the event.|6. Advanced Access will be removed after the event ends.|7. After the event ends any remaining Jackpot Energy Jackpot Points and Super Jackpot Points will be removed from your account and changed into Coins. Jackpot Energy will be transformed into 25K Coins each Jackpot Points will be transformed into 25K Coins each and Super Jackpot Points will be transformed into 50K Coins each. The Coins will be sent via Mail.","ACTIVITY_JACKPOT_ENERGY_USE":"Use x {1}","ACTIVITY_JACKPOT_ENERGY_USE_TIPS":"You will get the reward {1} times","ACTIVITY_JACKPOT_ENERGY_RESUME":"Recover 1 Energy：","ACTIVITY_JACKPOT_ENERGY_FULL":"Energy is full","ACTIVITY_JACKPOT_ENERGY_NOT_ENOUGH":"Insufficient Energy","ACTIVITY_JACKPOT_MACHINE1":"Basic Jackpot","ACTIVITY_JACKPOT_MACHINE2":"Super Jackpot","ACTIVITY_JACKPOT_TIPS":"Purchase Advanced Access or spin the Basic Jackpot {1} time(s) (every 5 Jackpot Energy consumed will count as 1 spin) to unlock Super Jackpot.","ACTIVITY_JACKPOT_GIFTBAG_TITLE":"Jackpot Support Pack","ACTIVITY_JACKPOT_GIFTBAG_TEXT01":"Special Offer","ACTIVITY_JACKPOT_GIFTBAG_TEXT02":"Standard Packs","ACTIVITY_JACKPOT_SHOW_TITLE":"Rewards","ACTIVITY_JACKPOT_SHOW_TEXT01":"Lucky Rewards","ACTIVITY_JACKPOT_SHOW_TEXT02":"Normal Rewards","ACTIVITY_JACKPOT_EXCHANGE_TITLE":"Exchange Points","ACTIVITY_JACKPOT_AWARDS":"Consume {1} Jackpot Energy","ACTIVITY_JACKPOT_DRAW_HELP":"1. Lucky Draw is separated into Basic Draw and Super Draw. Jackpot Points and Super Jackpot Points can be used to draw from Basic Draw and Super Draw respectively. Once all rewards from Basic Draw or Super Draw are claimed the limit for claiming the rewards will be reset.|2. After Advanced Access is acquired Jackpot Points can be exchanged to Super Jackpot Points at the rate of 1:1.|3. After the event ends any remaining Jackpot Points and Super Jackpot Points will be removed from your account and changed into Coins. Jackpot Points will be transformed into 25K Coins each and Super Jackpot Points will be transformed into 50K Coins each. The Coins will be sent via Mail.","ACTIVITY_JACKPOT_TEXT01":"Exclusive Pack","ACTIVITY_JACKPOT_TEXT02":"Congratulations you've unlocked Super Jackpot! Tap \"Go\" to check it out!","ACTIVITY_JACKPOT_UPDATE_BUTTON":"Go","ACTIVITY_JACKPOT_EXCHANGE_TIPS":"Senpai you've acquired the Advanced Access do you want to exchange your Jackpot Points for Super Jackpot Points now?","ACTIVITY_JACKPOT_EXCHANGE_BUTTON01":"Continue","ACTIVITY_JACKPOT_EXCHANGE_BUTTON02":"Exchange","ACTIVITY_JACKPOT_WARN":"Super Jackpot unlocked do you need to stop this spin and move to Super Jack Spot?","ACTIVITY_JACKPOT_WARN_BUTTON01":"No I don't","ACTIVITY_JACKPOT_WARN_BUTTON02":"Yes I do","ACTIVITY_JACKPOT_MACHINE_GIFTBAG_BUY_TITLE":"Bulk Purchase","ACTIVITY_JACKPOT_MACHINE_GIFTBAG_BUY_TEXT":"Select purchase quantity","ACTIVITY_JACKPOT_MACHINE_TITLE":"Auto Pull","ACTIVITY_JACKPOT_MACHINE_TEXT":"Select Quantity"}}
+{
+  "machine": [
+    {
+      "id": 1,
+      "pos": [
+        1,
+        1,
+        1
+      ],
+      "weight": 80,
+      "basic": "58#8",
+      "super": "305#8"
+    },
+    {
+      "id": 2,
+      "pos": [
+        2,
+        2,
+        2
+      ],
+      "weight": 80,
+      "basic": "58#7",
+      "super": "305#7"
+    },
+    {
+      "id": 3,
+      "pos": [
+        3,
+        3,
+        3
+      ],
+      "weight": 80,
+      "basic": "58#6",
+      "super": "305#6"
+    },
+    {
+      "id": 4,
+      "pos": [
+        1,
+        1,
+        2
+      ],
+      "weight": 85,
+      "basic": "58#5",
+      "super": "305#5"
+    },
+    {
+      "id": 5,
+      "pos": [
+        1,
+        2,
+        1
+      ],
+      "weight": 85,
+      "basic": "58#5",
+      "super": "305#5"
+    },
+    {
+      "id": 6,
+      "pos": [
+        1,
+        1,
+        3
+      ],
+      "weight": 85,
+      "basic": "58#5",
+      "super": "305#5"
+    },
+    {
+      "id": 7,
+      "pos": [
+        1,
+        3,
+        1
+      ],
+      "weight": 85,
+      "basic": "58#5",
+      "super": "305#5"
+    },
+    {
+      "id": 8,
+      "pos": [
+        3,
+        1,
+        1
+      ],
+      "weight": 85,
+      "basic": "58#5",
+      "super": "305#5"
+    },
+    {
+      "id": 9,
+      "pos": [
+        2,
+        1,
+        1
+      ],
+      "weight": 85,
+      "basic": "58#5",
+      "super": "305#5"
+    },
+    {
+      "id": 10,
+      "pos": [
+        2,
+        2,
+        1
+      ],
+      "weight": 90,
+      "basic": "58#4",
+      "super": "305#4"
+    },
+    {
+      "id": 11,
+      "pos": [
+        2,
+        1,
+        2
+      ],
+      "weight": 90,
+      "basic": "58#4",
+      "super": "305#4"
+    },
+    {
+      "id": 12,
+      "pos": [
+        1,
+        2,
+        2
+      ],
+      "weight": 90,
+      "basic": "58#4",
+      "super": "305#4"
+    },
+    {
+      "id": 13,
+      "pos": [
+        2,
+        2,
+        3
+      ],
+      "weight": 90,
+      "basic": "58#4",
+      "super": "305#4"
+    },
+    {
+      "id": 14,
+      "pos": [
+        2,
+        3,
+        2
+      ],
+      "weight": 90,
+      "basic": "58#4",
+      "super": "305#4"
+    },
+    {
+      "id": 15,
+      "pos": [
+        3,
+        2,
+        2
+      ],
+      "weight": 90,
+      "basic": "58#4",
+      "super": "305#4"
+    },
+    {
+      "id": 16,
+      "pos": [
+        3,
+        3,
+        1
+      ],
+      "weight": 100,
+      "basic": "58#3",
+      "super": "305#3"
+    },
+    {
+      "id": 17,
+      "pos": [
+        3,
+        1,
+        3
+      ],
+      "weight": 100,
+      "basic": "58#3",
+      "super": "305#3"
+    },
+    {
+      "id": 18,
+      "pos": [
+        1,
+        3,
+        3
+      ],
+      "weight": 100,
+      "basic": "58#3",
+      "super": "305#3"
+    },
+    {
+      "id": 19,
+      "pos": [
+        3,
+        3,
+        2
+      ],
+      "weight": 100,
+      "basic": "58#3",
+      "super": "305#3"
+    },
+    {
+      "id": 20,
+      "pos": [
+        3,
+        2,
+        3
+      ],
+      "weight": 100,
+      "basic": "58#3",
+      "super": "305#3"
+    },
+    {
+      "id": 21,
+      "pos": [
+        2,
+        3,
+        3
+      ],
+      "weight": 100,
+      "basic": "58#3",
+      "super": "305#3"
+    },
+    {
+      "id": 22,
+      "pos": [
+        1,
+        2,
+        3
+      ],
+      "weight": 120,
+      "basic": "",
+      "super": ""
+    },
+    {
+      "id": 23,
+      "pos": [
+        1,
+        3,
+        2
+      ],
+      "weight": 120,
+      "basic": "",
+      "super": ""
+    },
+    {
+      "id": 24,
+      "pos": [
+        2,
+        1,
+        3
+      ],
+      "weight": 120,
+      "basic": "",
+      "super": ""
+    },
+    {
+      "id": 25,
+      "pos": [
+        2,
+        3,
+        1
+      ],
+      "weight": 120,
+      "basic": "",
+      "super": ""
+    },
+    {
+      "id": 26,
+      "pos": [
+        3,
+        1,
+        2
+      ],
+      "weight": 120,
+      "basic": "",
+      "super": ""
+    },
+    {
+      "id": 27,
+      "pos": [
+        3,
+        2,
+        1
+      ],
+      "weight": 120,
+      "basic": "",
+      "super": ""
+    }
+  ],
+  "heads": {
+    "1": {
+      "basic": "head_wy",
+      "super": "head_ssx"
+    },
+    "2": {
+      "basic": "head_wc",
+      "super": "head_jx"
+    },
+    "3": {
+      "basic": "head_adh",
+      "super": "head_ce"
+    }
+  },
+  "awards": [
+    {
+      "need": 40,
+      "awards": "36#10|2#200"
+    },
+    {
+      "need": 150,
+      "awards": "93#1|20#10"
+    },
+    {
+      "need": 300,
+      "awards": "940005#50|940006#50"
+    },
+    {
+      "need": 600,
+      "awards": "4101067#1|4102007#1"
+    },
+    {
+      "need": 900,
+      "awards": "4501002#1|4201042#40"
+    },
+    {
+      "need": 1200,
+      "awards": "4104023#1|4101008#1"
+    },
+    {
+      "need": 1300,
+      "awards": "4901001#1|420#5"
+    },
+    {
+      "need": 1400,
+      "awards": "4402015#1|6000#6000"
+    },
+    {
+      "need": 1600,
+      "awards": "4101010#1|448#1"
+    },
+    {
+      "need": 1800,
+      "awards": "940059#100|4206001#150"
+    },
+    {
+      "need": 2000,
+      "awards": "5100020#1|417#6000"
+    },
+    {
+      "need": 2200,
+      "awards": "6791#1|6000#12000"
+    },
+    {
+      "need": 2400,
+      "awards": "4901001#3|418#300"
+    },
+    {
+      "need": 2800,
+      "awards": "5100021#1|417#6000"
+    },
+    {
+      "need": 3200,
+      "awards": "6791#1|4206001#300"
+    }
+  ],
+  "misc": {
+    "activity_jackpot_energy_initial": "57#15",
+    "activity_jackpot_energy_cd": 14400,
+    "activity_jackpot_energy_add": 1,
+    "activity_jackpot_energy_limit": 20,
+    "activity_jackpot_energy_bet_num": "1|2|5|10",
+    "activity_jackpot_draw": "57#5",
+    "activity_jackpot_unlock": "40",
+    "activity_jackpot_exchange_item": 58,
+    "activity_jackpot_transfer": "58#1|305#1"
+  },
+  "text": {
+    "ACTIVITY_JACKPOT_POINT_HELP": "Mỗi Năng Lượng đã tiêu hao cộng 1 điểm. Khi đạt mốc, phần thưởng sẽ được gửi qua Thư.",
+    "ACTIVITY_JACKPOT_POINT_LIST": "Tiêu hao {1} Năng Lượng",
+    "ACTIVITY_JACKPOT_HELP_TEXT": "1. Dùng Năng Lượng Độc Đắc để quay chế độ Cơ Bản hoặc Siêu Cấp. Khi có ít nhất hai Nữ Thần giống nhau, bạn nhận điểm tương ứng; nếu cả ba khác nhau, nhận vật phẩm ngẫu nhiên.|2. Có thể điều chỉnh số Năng Lượng dùng trước khi quay để nhân phần thưởng.|3. Mở chế độ Siêu Cấp bằng quyền truy cập nâng cao hoặc sau 40 lần quay Cơ Bản.|4. Dùng Điểm Độc Đắc để quay thưởng ở quầy tương ứng.|5. Nhận thêm thưởng theo tổng Năng Lượng đã tiêu hao.|6. Quyền truy cập nâng cao sẽ hết hiệu lực khi sự kiện kết thúc.|7. Năng Lượng và Điểm còn lại sẽ được quy đổi thành Vàng và gửi qua Thư khi sự kiện kết thúc.",
+    "ACTIVITY_JACKPOT_ENERGY_USE": "Dùng ×{1}",
+    "ACTIVITY_JACKPOT_ENERGY_USE_TIPS": "Bạn sẽ nhận phần thưởng gấp {1} lần",
+    "ACTIVITY_JACKPOT_ENERGY_RESUME": "Hồi 1 Năng Lượng:",
+    "ACTIVITY_JACKPOT_ENERGY_FULL": "Năng Lượng đã đầy",
+    "ACTIVITY_JACKPOT_ENERGY_NOT_ENOUGH": "Không đủ Năng Lượng",
+    "ACTIVITY_JACKPOT_MACHINE1": "Độc Đắc Cơ Bản",
+    "ACTIVITY_JACKPOT_MACHINE2": "Độc Đắc Siêu Cấp",
+    "ACTIVITY_JACKPOT_TIPS": "Mua quyền truy cập nâng cao hoặc quay Độc Đắc Cơ Bản {1} lần để mở Siêu Cấp (mỗi 5 Năng Lượng được tính là 1 lượt).",
+    "ACTIVITY_JACKPOT_GIFTBAG_TITLE": "Gói Hỗ Trợ Độc Đắc",
+    "ACTIVITY_JACKPOT_GIFTBAG_TEXT01": "Ưu Đãi Đặc Biệt",
+    "ACTIVITY_JACKPOT_GIFTBAG_TEXT02": "Gói Tiêu Chuẩn",
+    "ACTIVITY_JACKPOT_SHOW_TITLE": "Phần Thưởng",
+    "ACTIVITY_JACKPOT_SHOW_TEXT01": "Phần Thưởng May Mắn",
+    "ACTIVITY_JACKPOT_SHOW_TEXT02": "Phần Thưởng Thông Thường",
+    "ACTIVITY_JACKPOT_EXCHANGE_TITLE": "Đổi Điểm",
+    "ACTIVITY_JACKPOT_AWARDS": "Tiêu hao {1} Năng Lượng Độc Đắc",
+    "ACTIVITY_JACKPOT_DRAW_HELP": "1. Quay thưởng được chia thành Cơ Bản và Siêu Cấp.|2. Dùng điểm của chế độ tương ứng để quay.|3. Khi nhận hết phần thưởng của một vòng quay, phần thưởng sẽ được đặt lại để tham gia tiếp.",
+    "ACTIVITY_JACKPOT_TEXT01": "Gói Độc Quyền",
+    "ACTIVITY_JACKPOT_TEXT02": "Chúc mừng! Bạn đã mở Độc Đắc Siêu Cấp. Nhấn Đến để xem ngay!",
+    "ACTIVITY_JACKPOT_UPDATE_BUTTON": "Đến",
+    "ACTIVITY_JACKPOT_EXCHANGE_TIPS": "Bạn đã mở quyền truy cập nâng cao. Đổi Điểm Độc Đắc Cơ Bản thành Điểm Siêu Cấp ngay?",
+    "ACTIVITY_JACKPOT_EXCHANGE_BUTTON01": "Tiếp Tục",
+    "ACTIVITY_JACKPOT_EXCHANGE_BUTTON02": "Đổi Thưởng",
+    "ACTIVITY_JACKPOT_WARN": "Đã mở Độc Đắc Siêu Cấp. Bạn muốn dừng lượt quay hiện tại để chuyển sang Siêu Cấp?",
+    "ACTIVITY_JACKPOT_WARN_BUTTON01": "Không",
+    "ACTIVITY_JACKPOT_WARN_BUTTON02": "Có",
+    "ACTIVITY_JACKPOT_MACHINE_GIFTBAG_BUY_TITLE": "Mua Số Lượng Lớn",
+    "ACTIVITY_JACKPOT_MACHINE_GIFTBAG_BUY_TEXT": "Chọn Số Lượng Mua",
+    "ACTIVITY_JACKPOT_MACHINE_TITLE": "Tự Động Quay",
+    "ACTIVITY_JACKPOT_MACHINE_TEXT": "Chọn Số Lượng"
+  }
+}

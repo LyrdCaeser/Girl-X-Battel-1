@@ -172,11 +172,11 @@ def action(state, request, level, roster=(), now=None, rng=secrets.randbelow):
         got = {}
         for n in todo:
             row = next((r for r in LEVELS if r['lv'] == n), None)
-            if not row or n > lv: raise BookError('Nivel del Book no alcanzado')
-            if n in b['free']: raise BookError('Ya reclamado')
+            if not row or n > lv: raise BookError('Chưa đạt cấp Sách yêu cầu')
+            if n in b['free']: raise BookError('Phần thưởng đã được nhận')
             for k, v in tr(pairs(row['free']), b['season']).items(): got[k] = got.get(k, 0) + v
             b['free'].append(n)
-        if not got: raise BookError('No hay recompensas para reclamar')
+        if not got: raise BookError('Không có phần thưởng để nhận')
         grant(state, got); return {'got': got}
     if act == 'buy_level':
         n = max(1, int(request.get('num', 1)))
@@ -186,7 +186,7 @@ def action(state, request, level, roster=(), now=None, rng=secrets.randbelow):
         for i in range(n):
             row = next(r for r in LEVELS if r['lv'] == lv + i)
             for k, v in pairs(row['gems_dct' if discount else 'gems']).items(): cost[k] = cost.get(k, 0) + v
-        if any(int(state['items'].get(k, 0)) < v for k, v in cost.items()): raise BookError('Faltan gemas')
+        if any(int(state['items'].get(k, 0)) < v for k, v in cost.items()): raise BookError('Không đủ Kim Cương')
         for k, v in cost.items(): state['items'][k] = int(state['items'][k]) - v
         # "After upgrading your Book level with Gems your Current Pages will remain": the level's threshold is added
         into = b['pages'] - next(r['need'] for r in LEVELS if r['lv'] == lv)
@@ -194,20 +194,20 @@ def action(state, request, level, roster=(), now=None, rng=secrets.randbelow):
         return {'cost': cost}
     if act == 'task':
         mid = int(request.get('id', 0)); m = MISSIONS.get(mid)
-        if not m or m['lv'] > level or m['bp'] > lv: raise BookError('Tarea no disponible')
+        if not m or m['lv'] > level or m['bp'] > lv: raise BookError('Nhiệm vụ chưa mở')
         key = claim_key(m, now, b)
-        if key in b['claimed']: raise BookError('Ya reclamada')
-        if progress(state, b, mid, now, roster) < m['need']: raise BookError('Tarea sin completar')
+        if key in b['claimed']: raise BookError('Nhiệm vụ đã nhận thưởng')
+        if progress(state, b, mid, now, roster) < m['need']: raise BookError('Nhiệm vụ chưa hoàn thành')
         got = tr(pairs(m['award']), b['season']); pages = pairs(m['pages']).get(PAGES, 0)
         grant(state, got); b['pages'] += pages; b['claimed'][key] = 1
         return {'got': got, 'pages': pages, 'level': level_of(b['pages'])}
     if act == 'buy':
         rid = int(request.get('id', 0)); row = SHOP.get(rid); n = max(1, int(request.get('num', 1)))
-        if not row: raise BookError('Artículo inexistente')
+        if not row: raise BookError('Vật phẩm đổi thưởng không tồn tại')
         bought = int(b['shop'].get(str(rid), 0))
-        if bought + n > row['limit']: raise BookError('Límite de compra alcanzado')
+        if bought + n > row['limit']: raise BookError('Đã đạt giới hạn mua')
         cost = {k: v * n for k, v in tr(pairs(row['cost']), b['season']).items()}
-        if any(int(state['items'].get(k, 0)) < v for k, v in cost.items()): raise BookError('No tienes suficiente moneda de la temporada')
+        if any(int(state['items'].get(k, 0)) < v for k, v in cost.items()): raise BookError('Không đủ tiền tệ mùa giải')
         for k, v in cost.items(): state['items'][k] = int(state['items'][k]) - v
         got = {k: v * n for k, v in tr(pairs(row['item']), b['season']).items()}
         grant(state, got); b['shop'][str(rid)] = bought + n
@@ -215,7 +215,7 @@ def action(state, request, level, roster=(), now=None, rng=secrets.randbelow):
     if act == 'draw':
         n = max(1, min(10, int(request.get('num', 1))))
         cost = {k: v * n for k, v in tr(pairs(D['lottery_cost']), b['season']).items()}
-        if any(int(state['items'].get(k, 0)) < v for k, v in cost.items()): raise BookError('No tienes suficiente moneda de la temporada')
+        if any(int(state['items'].get(k, 0)) < v for k, v in cost.items()): raise BookError('Không đủ tiền tệ mùa giải')
         for k, v in cost.items(): state['items'][k] = int(state['items'][k]) - v
         rows = [r for r in DROP.values() if int(r['weight']) > 0]; total = sum(int(r['weight']) for r in rows)
         got = {}
@@ -227,7 +227,7 @@ def action(state, request, level, roster=(), now=None, rng=secrets.randbelow):
                     for k, v in tr(pairs(r['item']), b['season']).items(): got[k] = got.get(k, 0) + v
                     break
         grant(state, got); return {'got': got}
-    raise BookError('Acción del Fantasy Book desconocida')
+    raise BookError('Thao tác Sách Kỳ Ảo không hợp lệ')
 
 
 def odds():

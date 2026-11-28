@@ -164,7 +164,7 @@ def pay(items, cost):
     cost = {k: n for k, n in cost.items() if k != '0' and n > 0}  # '0#0' = free (1-3★ speed-up)
     for k, n in cost.items():
         if int(items.get(k, 0)) < n:
-            raise ValueError('Faltan ' + ('gemas' if k == '2' else f'objetos {k}'))
+            raise ValueError('Không đủ ' + ('Kim Cương' if k == '2' else f'vật phẩm {k}'))
     for k, n in cost.items():
         items[k] = int(items[k]) - n
 
@@ -180,9 +180,9 @@ def action(state, request, now=None, rng=secrets.randbelow):
     if kind == 'scroll':
         sid = int(request.get('index', 1))
         if sid not in SCROLLS:
-            raise ValueError('Pergamino no válido')
+            raise ValueError('Vé Thực Tập không hợp lệ')
         if len(h['missions']) >= MAX:
-            raise ValueError(DATA['text'].get('PUB_MISSION_LIMIT_TIPS', 'Too many Internship quests'))
+            raise ValueError('Số nhiệm vụ Thực Tập đã đạt giới hạn')
         pay(items, pairs(SCROLLS[sid]['cost']))
         rates = [(int(k), int(v)) for k, v in (x.split('#') for x in str(SCROLLS[sid]['rate']).split('|'))]
         star = weighted(rates, lambda r: r[1], rng)[0]
@@ -191,7 +191,7 @@ def action(state, request, now=None, rng=secrets.randbelow):
     if kind == 'refresh':
         todo = [m for m in h['missions'] if not m['end'] and not m['locked']]
         if not todo:
-            raise ValueError('No hay encargos para refrescar')
+            raise ValueError('Không có nhiệm vụ để làm mới')
         cost = {k: n * len(todo) for k, n in pairs(DATA['misc']['pub_mission_refresh_cost']).items()}
         pay(items, cost)
         for m in todo:
@@ -202,40 +202,40 @@ def action(state, request, now=None, rng=secrets.randbelow):
         return result
     m = next((x for x in h['missions'] if x['id'] == int(request.get('mission', 0))), None)
     if not m:
-        raise ValueError('Encargo no disponible')
+        raise ValueError('Nhiệm vụ không tồn tại')
     row = MISSIONS[m['table_id']]
     if kind == 'lock':
         m['locked'] = not m['locked']
     elif kind == 'start':
         if m['end']:
-            raise ValueError('Ese encargo ya está en marcha')
+            raise ValueError('Nhiệm vụ này đã bắt đầu')
         pids = [int(p) for p in request.get('partners') or []]
         owned = {p['partner_id'] for p in state['partners']}
         if len(pids) != int(row['partner_num']) or len(set(pids)) != len(pids) or any(p not in owned for p in pids):
-            raise ValueError(f"Este encargo necesita {row['partner_num']} chicas")
+            raise ValueError(f"Nhiệm vụ cần {row['partner_num']} Nữ Thần")
         if set(pids) & busy(h):
-            raise ValueError('Cada chica solo puede hacer una prácticas a la vez')
+            raise ValueError('Mỗi Nữ Thần chỉ có thể thực hiện một nhiệm vụ Thực Tập cùng lúc')
         if not fits(state, m, pids):
-            raise ValueError('Las chicas no cumplen las condiciones del encargo')
+            raise ValueError('Các Nữ Thần chưa đáp ứng điều kiện nhiệm vụ')
         m['partners'] = pids
         m['end'] = now + int(row['mission_time'])
     elif kind == 'cancel':
         if not m['end'] or now >= m['end']:
-            raise ValueError('Solo se cancela un encargo en marcha')
+            raise ValueError('Chỉ có thể hủy nhiệm vụ đang thực hiện')
         m['partners'] = []; m['end'] = 0
     elif kind == 'speed':
         if not m['end'] or now >= m['end']:
-            raise ValueError('Ese encargo no está en marcha')
+            raise ValueError('Nhiệm vụ này chưa bắt đầu')
         pay(items, pairs(row['speedup_cost']))
         m['end'] = now
     elif kind == 'complete':
         if not m['end'] or now < m['end']:
-            raise ValueError('Aún no ha terminado')
+            raise ValueError('Nhiệm vụ chưa hoàn thành')
         got = m.get('award') or roll(row['award_dropbox_id'], rng)
         for k, n in got.items():
             items[k] = int(items.get(k, 0)) + n
         h['missions'].remove(m)
         result.update(got=got, star=int(row['star']))
     else:
-        raise ValueError('Acción de Internship no disponible')
+        raise ValueError('Thao tác Thực Tập không hợp lệ')
     return result

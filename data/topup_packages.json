@@ -1,0 +1,113 @@
+{
+  "packages": [
+    {
+      "id": "GEMS_5000",
+      "name": "Gói 5.000 Kim Cương",
+      "price_label": "600.000 VNĐ",
+      "reward": {
+        "2": 5000,
+        "999999991": 125000
+      },
+      "manual_reward": false,
+      "enabled": true
+    },
+    {
+      "id": "GEMS_2500",
+      "name": "Gói 2.500 Kim Cương",
+      "price_label": "300.000 VNĐ",
+      "reward": {
+        "2": 2500,
+        "999999991": 62500
+      },
+      "manual_reward": false,
+      "enabled": true
+    },
+    {
+      "id": "GEMS_1000",
+      "name": "Gói 1.000 Kim Cương",
+      "price_label": "120.000 VNĐ",
+      "reward": {
+        "2": 1000,
+        "999999991": 25000
+      },
+      "manual_reward": false,
+      "enabled": true
+    },
+    {
+      "id": "GEMS_500",
+      "name": "Gói 500 Kim Cương",
+      "price_label": "60.000 VNĐ",
+      "reward": {
+        "2": 500,
+        "999999991": 12500
+      },
+      "manual_reward": false,
+      "enabled": true
+    },
+    {
+      "id": "GEMS_250",
+      "name": "Gói 250 Kim Cương",
+      "price_label": "30.000 VNĐ",
+      "reward": {
+        "2": 250,
+        "999999991": 6250
+      },
+      "manual_reward": false,
+      "enabled": true
+    },
+    {
+      "id": "MINI_MONTHLY_CARD",
+      "name": "Thẻ Tháng Nhỏ",
+      "price_label": "Liên hệ Zalo để xác nhận giá",
+      "reward": {
+        "999999991": 250
+      },
+      "manual_reward": true,
+      "enabled": true
+    },
+    {
+      "id": "WEEKLY_CARD",
+      "name": "Thẻ Tuần",
+      "price_label": "Liên hệ Zalo để xác nhận giá",
+      "reward": {
+        "999999991": 50
+      },
+      "manual_reward": true,
+      "enabled": true
+    },
+    {
+      "id": "MONTHLY_CARD",
+      "name": "Thẻ Tháng",
+      "price_label": "Liên hệ Zalo để xác nhận giá",
+      "reward": {
+        "999999991": 750
+      },
+      "manual_reward": true,
+      "enabled": true
+    },
+    {
+      "id": "WEEKLY_GIFT",
+      "name": "Gói Quà Hằng Tuần",
+      "price_label": "Liên hệ Zalo để xác nhận giá",
+      "reward": {},
+      "manual_reward": true,
+      "enabled": true
+    },
+    {
+      "id": "MONTHLY_GIFT",
+      "name": "Gói Quà Hằng Tháng",
+      "price_label": "Liên hệ Zalo để xác nhận giá",
+      "reward": {},
+      "manual_reward": true,
+      "enabled": true
+    },
+    {
+      "id": "CUSTOM",
+      "name": "Gói tùy chọn",
+      "price_label": "Liên hệ Zalo",
+      "reward": {},
+      "manual_reward": true,
+      "enabled": true
+    }
+  ]
+}

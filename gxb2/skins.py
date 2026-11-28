@@ -14,6 +14,7 @@ where to get each skin ("Method") is the Skin Shop when it is sold there, otherw
 from __future__ import annotations
 import copy, json
 from pathlib import Path
+from . import local_config
 
 DATA = json.loads((Path(__file__).resolve().parents[1] / 'data/skins.json').read_text())
 SKINS = {int(k): v for k, v in DATA['skins'].items()}
@@ -26,9 +27,13 @@ def saved(state):
 
 
 def collected(state):
-    """Skins owned at some point: in the bag or worn (Yume Collection keeps them)."""
+    """Permanent ownership entitlement, migrated from historical collection, bag or wear.
+
+    Never consume this entitlement when dressing a different copy of the girl.
+    The legacy bag item counts are left intact for compatible old saves/mail.
+    """
     s = saved(state)
-    have = set(s['collected'])
+    have = {int(x) for x in s['collected'] if str(x).isdigit() and int(x) in SKINS}
     for k, n in state.get('items', {}).items():
         if k.isdigit() and int(k) in SKINS and int(n) > 0:
             have.add(int(k))
@@ -75,39 +80,29 @@ def action(state, request):
     if kind == 'equip':
         skin = int(request.get('skin', 0))
         if skin not in SKINS or not fits(skin, partner):
-            raise ValueError('Esta skin no es de esta chica')
-        if int(items.get(str(skin), 0)) < 1:
-            raise ValueError('No tienes esta skin (Amount: 0)')
+            raise ValueError('Trang phục không thuộc Nữ Thần này')
+        # All copies share account-wide perpetual skin entitlement.
+        # The skin is not a consumable/equip item any more.
+        if skin not in collected(state):
+            raise ValueError('Bạn chưa mở khóa vĩnh viễn trang phục này')
         slots = equips_of(partner)
-        if slots[6]:
-            items[str(slots[6])] = int(items.get(str(slots[6]), 0)) + 1
-        items[str(skin)] = int(items[str(skin)]) - 1
         slots[6] = skin
         partner['show_skin'] = 1
-        collected(state)
         return {}
     if kind == 'unequip':
         slots = equips_of(partner)
         if not slots[6]:
-            raise ValueError('No lleva ninguna skin')
-        items[str(slots[6])] = int(items.get(str(slots[6]), 0)) + 1
+            raise ValueError('Nữ Thần chưa mặc trang phục')
+        collected(state)  # migrate any old worn-only skin before clearing slot
         slots[6] = 0
         return {}
     if kind == 'show':
         partner['show_skin'] = 0 if int(partner.get('show_skin', 1) or 0) else 1
         return {}
     if kind == 'buy':
-        # Skin Store (SkinDetailBuyWindow, SHOP_SKIN): shop_skin rows sell one skin for Costume Tickets (item 74)
-        skin = int(request.get('skin', 0)); row = SKINS.get(skin)
-        if not row or not row.get('shop'):
-            raise ValueError('Esta skin no se vende en la Skin Store')
-        ck, cn = str(row['shop']).split('#')[:2]; cn = int(cn)
-        if int(items.get(ck, 0)) < cn:
-            raise ValueError('Not enough Costume Tickets')
-        items[ck] = int(items[ck]) - cn
-        items[str(skin)] = int(items.get(str(skin), 0)) + 1
-        collected(state)
-        return {'got': {str(skin): 1}}
+        # Server-owned live price and source wedding check, never client supplied price.
+        from . import skin_store
+        return skin_store.purchase(state, request.get('skin'), request.get('payment', 'ticket'))
     raise ValueError('Acción de skins no disponible')
 
 
@@ -118,11 +113,12 @@ def snapshot(state):
     items = view.get('items', {})
     got = [e for e in DATA['effects'] if pts >= e['point']]
     nxt = DATA['effects'][len(got)] if len(got) < len(DATA['effects']) else None
-    return {'owned': {str(k): int(n) for k, n in items.items() if k.isdigit() and int(k) in SKINS and int(n) > 0},
+    return {'owned': {str(sid): 1 for sid in sorted(have)},
             'collected': sorted(have), 'points': pts, 'tier': tier(pts), 'total': len(SKINS),
             'level': len(got), 'next_point': nxt['point'] if nxt else None, 'theme_claimed': view.get('skins', {}).get('theme_claimed', {})}
 
 
 def catalog():
-    return {'skins': {str(k): {f: v[f] for f in ('name', 'qlt', 'attrs', 'partners', 'shop', 'points', 'rarity')} for k, v in SKINS.items()},
+    from . import skin_store
+    return {'skins': {str(k): {**{f: v[f] for f in ('name', 'qlt', 'attrs', 'partners', 'shop', 'points', 'rarity')}, 'is_wedding': skin_store.is_wedding(k)} for k, v in SKINS.items()},
             'effects': DATA['effects'], 'themes': DATA['themes']}

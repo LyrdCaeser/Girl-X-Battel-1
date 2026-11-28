@@ -1,1 +1,280 @@
-{"lands":[{"id":1,"drop":[{"awards":"1#500000","weight":200},{"awards":"9#500000","weight":200},{"awards":"10#375","weight":200},{"awards":"14#375","weight":200},{"awards":"417#100","weight":75},{"awards":"426#100","weight":75},{"awards":"419#2","weight":50}]},{"id":2,"drop":[{"awards":"1#500000","weight":225},{"awards":"9#500000","weight":225},{"awards":"10#375","weight":200},{"awards":"14#375","weight":200},{"awards":"4#500","weight":75},{"awards":"6000#50","weight":75}]},{"id":3,"drop":[{"awards":"1#500000","weight":225},{"awards":"9#500000","weight":225},{"awards":"10#375","weight":200},{"awards":"14#375","weight":200},{"awards":"198#500","weight":75},{"awards":"199#100","weight":75}]},{"id":4,"drop":[{"awards":"1#500000","weight":225},{"awards":"9#500000","weight":225},{"awards":"10#375","weight":225},{"awards":"14#375","weight":225},{"awards":"325#500","weight":50},{"awards":"326#10","weight":50}]},{"id":5,"drop":[{"awards":"1#500000","weight":225},{"awards":"9#500000","weight":225},{"awards":"10#375","weight":225},{"awards":"14#375","weight":225},{"awards":"360#1000","weight":50},{"awards":"359#100","weight":50}]}],"chests":[{"id":1,"awards":"412#1|411#30","weight":30},{"id":2,"awards":"413#1|411#60","weight":25},{"id":3,"awards":"414#1|411#80","weight":20},{"id":4,"awards":"415#1|411#100","weight":15},{"id":5,"awards":"416#1|411#120","weight":10}],"collection":[{"id":1,"item":412,"need":1,"awards":"1#3000000"},{"id":2,"item":413,"need":1,"awards":"9#3000000"},{"id":3,"item":414,"need":1,"awards":"10#3000"},{"id":4,"item":415,"need":1,"awards":"423#5"},{"id":5,"item":416,"need":1,"awards":"36#10"}],"misc":{"activity_pirate_explore_cost":"410#1","activity_pirate_explore_is_drop":"20|80","activity_pirate_explore_dropbox_guarantee":"9","activity_pirate_drop_awards":"411#20","activity_pirate_giftbag_free_awards":"2#500|410#25|36#10|4201042#3","activity_pirate_shop_unlock_item":"411"},"text":{"ACTIVITY_PIRATE_TEXT01":"Story Progress","ACTIVITY_PIRATE_TEXT02":"Server Pack","ACTIVITY_PIRATE_TEXT03":"Collection Progress","ACTIVITY_PIRATE_TEXT04":"Story Progress","ACTIVITY_PIRATE_TEXT05":"Raid","ACTIVITY_PIRATE_TEXT06":"Go","ACTIVITY_PIRATE_HELP":"1. During the event you can trigger stories by tapping on the Girls' avatars on the event page. The story you trigger could be part of the main event story or a side story.|2. There're 5 locations available to check: Sea Lord's Palace Coastal Waters Open Sea The Beach and Abyssal Palace. After you complete all the main event stories in a location Raid feature will become available for the location.|3. All players will be able to claim a free reward after Story Progress reaches the requirement.|4. 1 Voyager Compass will be consumed for each Raid. You will get a fixed (according to your current location) reward 20 Pirate Coins and have a 20%% chance to get an additional random chest reward for each Raid.|5. You will get random types of chests as random rewards. Each type of Chest will provide you a different number of Pirate Coins:|Wooden Chest: 30 Pirate Coins|Iron Chest: 60 Pirate Coins|Silver Chest: 80 Pirate Coins|Gold Chest: 100 Pirate Coins|Platinum Chest: 120 Pirate Coins|6. You can review the completed main event stories in \"Review\".|7. Once the event ends the remaining \"Voyager Compasses\" and \"Pirate Coins\" will automatically be recycled into Coins at a rate of 500k per Voyager Compass and 1000 per Pirate Coin.","ACTIVITY_PIRATE_SHOP_TEXT01":"Collection Reward","ACTIVITY_PIRATE_SHOP_TEXT02":"Locked","ACTIVITY_PIRATE_SHOP_TEXT03":"Secret Vault","ACTIVITY_PIRATE_SHOP_TEXT04":"Confirm to exchange with {1} Pirate Coins?","ACTIVITY_PIRATE_SHOP_TEXT05":"1. You can obtain Pirate Coins by Raiding in the event: Deep Sea Treasures.|2. Pirate Coins can be used to exchange rewards in the event: Palace Vaults.|3. Larger vaults will be unlocked after you consume a certain number of Pirate Coins.|4. You can view your current collection progress and reward details of the reward chests on the Collection Reward page.|5. All rewards claimable on the Collection Reward page can be claimed once only.","ACTIVITY_PIRATE_PLACE1":"Sea Lord's Palace","ACTIVITY_PIRATE_PLACE3":"Coastal Waters","ACTIVITY_PIRATE_PLACE4":"Open Sea","ACTIVITY_PIRATE_PLACE2":"The Beach","ACTIVITY_PIRATE_PLACE5":"Abyssal Palace","ACTIVITY_PIRATE_SHOP_TEXT06":"(Pirate Coins consumed: [c][fdc97d]{1}/{2}[-][/c])","ACTIVITY_PIRATE_TEXT07":"Review","ACTIVITY_PIRATE_TEXT08":"Reward for each Raid","ACTIVITY_PIRATE_TEXT09":"Reward","ACTIVITY_PIRATE_TEXT10":"Chest","ACTIVITY_PIRATE_TEXT11":"Select quantity","ACTIVITY_PIRATE_TEXT12":"Guaranteed [c][db7224]Chest[-][/c] in [c][db7224]{1}[-][/c] Raid(s)","ACTIVITY_PIRATE_SHOP_TEXT13":"{1}-Raid","ACTIVITY_PIRATE_BOX1":"Battered Vault","ACTIVITY_PIRATE_BOX2":"Unguarded Vault","ACTIVITY_PIRATE_BOX3":"Locked Vault","ACTIVITY_PIRATE_BOX4":"Double-Locked Vault","ACTIVITY_PIRATE_BOX5":"Fortified Vault","ACTIVITY_PIRATE_BOX6":"Secret Vault","ACTIVITY_PIRATE_TEXT13":"Confirm to consume {1} Voyager Compasses and Raid in {2}?","ACTIVITY_PIRATE_TEXT14":"This Reward is still locked!","ACTIVITY_PIRATE_TEXT15":"Claim"},"names":{"1":"Coin","4":"Guild Coin","9":"EXP Juice","10":"Lunch Box","14":"Crystal Chisel","6000":"Afterglow","198":"Standard File","199":"Exclusive File","325":"Fantasy Dust","326":"Fantasy Talisman","359":"Brilliant Sphere","360":"Tarnished Sphere","410":"Voyager Compass","411":"Pirate Coin","412":"Wooden Chest","413":"Iron Chest","414":"Silver Chest","415":"Gold Chest","416":"Platinum Chest","417":"Soul Gem","419":"Soul Dice","426":"Soul Essence"}}
+{
+  "lands": [
+    {
+      "id": 1,
+      "drop": [
+        {
+          "awards": "1#500000",
+          "weight": 200
+        },
+        {
+          "awards": "9#500000",
+          "weight": 200
+        },
+        {
+          "awards": "10#375",
+          "weight": 200
+        },
+        {
+          "awards": "14#375",
+          "weight": 200
+        },
+        {
+          "awards": "417#100",
+          "weight": 75
+        },
+        {
+          "awards": "426#100",
+          "weight": 75
+        },
+        {
+          "awards": "419#2",
+          "weight": 50
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "drop": [
+        {
+          "awards": "1#500000",
+          "weight": 225
+        },
+        {
+          "awards": "9#500000",
+          "weight": 225
+        },
+        {
+          "awards": "10#375",
+          "weight": 200
+        },
+        {
+          "awards": "14#375",
+          "weight": 200
+        },
+        {
+          "awards": "4#500",
+          "weight": 75
+        },
+        {
+          "awards": "6000#50",
+          "weight": 75
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "drop": [
+        {
+          "awards": "1#500000",
+          "weight": 225
+        },
+        {
+          "awards": "9#500000",
+          "weight": 225
+        },
+        {
+          "awards": "10#375",
+          "weight": 200
+        },
+        {
+          "awards": "14#375",
+          "weight": 200
+        },
+        {
+          "awards": "198#500",
+          "weight": 75
+        },
+        {
+          "awards": "199#100",
+          "weight": 75
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "drop": [
+        {
+          "awards": "1#500000",
+          "weight": 225
+        },
+        {
+          "awards": "9#500000",
+          "weight": 225
+        },
+        {
+          "awards": "10#375",
+          "weight": 225
+        },
+        {
+          "awards": "14#375",
+          "weight": 225
+        },
+        {
+          "awards": "325#500",
+          "weight": 50
+        },
+        {
+          "awards": "326#10",
+          "weight": 50
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "drop": [
+        {
+          "awards": "1#500000",
+          "weight": 225
+        },
+        {
+          "awards": "9#500000",
+          "weight": 225
+        },
+        {
+          "awards": "10#375",
+          "weight": 225
+        },
+        {
+          "awards": "14#375",
+          "weight": 225
+        },
+        {
+          "awards": "360#1000",
+          "weight": 50
+        },
+        {
+          "awards": "359#100",
+          "weight": 50
+        }
+      ]
+    }
+  ],
+  "chests": [
+    {
+      "id": 1,
+      "awards": "412#1|411#30",
+      "weight": 30
+    },
+    {
+      "id": 2,
+      "awards": "413#1|411#60",
+      "weight": 25
+    },
+    {
+      "id": 3,
+      "awards": "414#1|411#80",
+      "weight": 20
+    },
+    {
+      "id": 4,
+      "awards": "415#1|411#100",
+      "weight": 15
+    },
+    {
+      "id": 5,
+      "awards": "416#1|411#120",
+      "weight": 10
+    }
+  ],
+  "collection": [
+    {
+      "id": 1,
+      "item": 412,
+      "need": 1,
+      "awards": "1#3000000"
+    },
+    {
+      "id": 2,
+      "item": 413,
+      "need": 1,
+      "awards": "9#3000000"
+    },
+    {
+      "id": 3,
+      "item": 414,
+      "need": 1,
+      "awards": "10#3000"
+    },
+    {
+      "id": 4,
+      "item": 415,
+      "need": 1,
+      "awards": "423#5"
+    },
+    {
+      "id": 5,
+      "item": 416,
+      "need": 1,
+      "awards": "36#10"
+    }
+  ],
+  "misc": {
+    "activity_pirate_explore_cost": "410#1",
+    "activity_pirate_explore_is_drop": "20|80",
+    "activity_pirate_explore_dropbox_guarantee": "9",
+    "activity_pirate_drop_awards": "411#20",
+    "activity_pirate_giftbag_free_awards": "2#500|410#25|36#10|4201042#3",
+    "activity_pirate_shop_unlock_item": "411"
+  },
+  "text": {
+    "ACTIVITY_PIRATE_TEXT01": "Tiến Độ Cốt Truyện",
+    "ACTIVITY_PIRATE_TEXT02": "Gói Quà Máy Chủ",
+    "ACTIVITY_PIRATE_TEXT03": "Tiến Độ Sưu Tập",
+    "ACTIVITY_PIRATE_TEXT04": "Tiến Độ Cốt Truyện",
+    "ACTIVITY_PIRATE_TEXT05": "Đột Kích",
+    "ACTIVITY_PIRATE_TEXT06": "Đến",
+    "ACTIVITY_PIRATE_HELP": "1. Chạm ảnh Nữ Thần để khám phá cốt truyện chính và ngoại truyện.|2. Có 5 khu vực: Cung Điện Hải Vương, Vùng Nước Ven Bờ, Biển Khơi, Bãi Biển và Cung Điện Vực Sâu.|3. Hoàn thành mốc cốt truyện để nhận phần thưởng miễn phí.|4. Mỗi lần đột kích tiêu hao 1 La Bàn Hải Trình, nhận thưởng cố định, 20 Xu Hải Tặc và cơ hội nhận rương ngẫu nhiên.|5. Rương Gỗ nhận 30 xu, Rương Sắt 60 xu, Rương Bạc 80 xu, Rương Vàng 100 xu, Rương Bạch Kim 120 xu.|6. Có thể xem lại các cốt truyện đã hoàn thành.|7. Khi sự kiện kết thúc, la bàn và Xu Hải Tặc còn lại được quy đổi thành Vàng, gửi qua Thư.",
+    "ACTIVITY_PIRATE_SHOP_TEXT01": "Thưởng Sưu Tập",
+    "ACTIVITY_PIRATE_SHOP_TEXT02": "Chưa Mở Khóa",
+    "ACTIVITY_PIRATE_SHOP_TEXT03": "Kho Bí Mật",
+    "ACTIVITY_PIRATE_SHOP_TEXT04": "Dùng {1} Xu Hải Tặc để đổi thưởng?",
+    "ACTIVITY_PIRATE_SHOP_TEXT05": "1. Thu thập Xu Hải Tặc bằng cách đột kích trong sự kiện Kho Báu Biển Sâu.|2. Dùng Xu Hải Tặc để đổi thưởng trong Kho Báu Hoàng Cung.|3. Kho cấp cao được mở theo tổng Xu Hải Tặc đã tiêu.|4. Xem tiến độ sưu tập và thưởng từ rương tại trang Thưởng Sưu Tập.|5. Mỗi mốc thưởng sưu tập chỉ nhận một lần.",
+    "ACTIVITY_PIRATE_PLACE1": "Cung Điện Hải Vương",
+    "ACTIVITY_PIRATE_PLACE3": "Vùng Nước Ven Bờ",
+    "ACTIVITY_PIRATE_PLACE4": "Biển Khơi",
+    "ACTIVITY_PIRATE_PLACE2": "Bãi Biển",
+    "ACTIVITY_PIRATE_PLACE5": "Cung Điện Vực Sâu",
+    "ACTIVITY_PIRATE_SHOP_TEXT06": "Xu Hải Tặc đã dùng: {1}/{2}",
+    "ACTIVITY_PIRATE_TEXT07": "Xem Lại",
+    "ACTIVITY_PIRATE_TEXT08": "Thưởng Mỗi Lần Đột Kích",
+    "ACTIVITY_PIRATE_TEXT09": "Phần Thưởng",
+    "ACTIVITY_PIRATE_TEXT10": "Rương",
+    "ACTIVITY_PIRATE_TEXT11": "Chọn Số Lượng",
+    "ACTIVITY_PIRATE_TEXT12": "Bảo đảm nhận Rương sau {1} lần đột kích",
+    "ACTIVITY_PIRATE_SHOP_TEXT13": "{1} - Đột Kích",
+    "ACTIVITY_PIRATE_BOX1": "Kho Cũ Kỹ",
+    "ACTIVITY_PIRATE_BOX2": "Kho Không Người Canh",
+    "ACTIVITY_PIRATE_BOX3": "Kho Bị Khóa",
+    "ACTIVITY_PIRATE_BOX4": "Kho Hai Lớp Khóa",
+    "ACTIVITY_PIRATE_BOX5": "Kho Phòng Thủ Kiên Cố",
+    "ACTIVITY_PIRATE_BOX6": "Kho Bí Mật",
+    "ACTIVITY_PIRATE_TEXT13": "Tiêu hao {1} La Bàn Hải Trình để đột kích {2}?",
+    "ACTIVITY_PIRATE_TEXT14": "Phần thưởng này chưa được mở khóa!",
+    "ACTIVITY_PIRATE_TEXT15": "Nhận"
+  },
+  "names": {
+    "1": "Coin",
+    "4": "Guild Coin",
+    "9": "EXP Juice",
+    "10": "Lunch Box",
+    "14": "Crystal Chisel",
+    "198": "Standard File",
+    "199": "Exclusive File",
+    "325": "Fantasy Dust",
+    "326": "Fantasy Talisman",
+    "359": "Brilliant Sphere",
+    "360": "Tarnished Sphere",
+    "410": "Voyager Compass",
+    "411": "Pirate Coin",
+    "412": "Wooden Chest",
+    "413": "Iron Chest",
+    "414": "Silver Chest",
+    "415": "Gold Chest",
+    "416": "Platinum Chest",
+    "417": "Soul Gem",
+    "419": "Soul Dice",
+    "426": "Soul Essence",
+    "6000": "Afterglow"
+  }
+}

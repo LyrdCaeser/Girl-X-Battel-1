@@ -1,10 +1,13 @@
 /* Shopping Street / Market / stores. --u = one prefab pixel of the 720×1280 design. */
-.shops-view{container-type:inline-size;--u:calc(100cqw / 720);position:relative;background:#2b2a36;overflow:hidden;color:#fff}
+/* Fit the original 720x1280 ShopWindow to BOTH available width and height.
+   Width-only scaling created a 2437px-tall, clipped store on 1440x900 PCs.
+   Keep the original prefab aspect ratio on phones and landscape desktop. */
+.shops-view{container-type:size;--u:min(calc(100cqw / 720),calc(100cqh / 1280));position:relative;display:block;width:100%;height:100%;min-height:0;background:#2b2a36;overflow:hidden;color:#fff}
 .shops-view[hidden]{display:none}
-.sh-stage{position:relative;height:calc(1280 * var(--u));overflow:hidden}
+.sh-stage{position:relative;width:100%;height:calc(1280 * var(--u));overflow:hidden;min-width:0;min-height:0}
 .sh-stage>*{position:absolute}
 .sh-map-bg,.sh-scene{object-fit:cover;pointer-events:none}
-.sh-top{position:absolute;left:0;right:0;top:0;z-index:5;display:flex;align-items:center;gap:calc(10 * var(--u));padding:calc(12 * var(--u)) calc(16 * var(--u));background:linear-gradient(rgba(20,24,40,.75),rgba(20,24,40,0))}
+.sh-top{position:absolute;left:50%;right:auto;transform:translateX(-50%);width:calc(720 * var(--u));box-sizing:border-box;top:0;z-index:5;display:flex;align-items:center;gap:calc(10 * var(--u));padding:calc(12 * var(--u)) calc(16 * var(--u));background:linear-gradient(rgba(20,24,40,.75),rgba(20,24,40,0))}
 .sh-top h1{margin:0 auto 0 0;font-size:calc(34 * var(--u));text-shadow:0 2px 3px #0008}
 .sh-cur{display:flex;align-items:center;gap:calc(4 * var(--u));background:#0007;border-radius:calc(20 * var(--u));padding:calc(3 * var(--u)) calc(12 * var(--u)) calc(3 * var(--u)) calc(4 * var(--u));font-size:calc(22 * var(--u))}
 .sh-cur img{width:calc(34 * var(--u));height:calc(34 * var(--u));object-fit:contain}
@@ -30,3 +33,17 @@
 .sh-tab.on{color:#fff}.sh-tab img{width:calc(30 * var(--u));height:calc(30 * var(--u));object-fit:contain}.sh-tab:disabled{opacity:.5;cursor:not-allowed}.sh-tab span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sh-groups{display:flex;gap:calc(8 * var(--u));align-items:center;justify-content:center}.sh-group{height:calc(62 * var(--u));min-width:calc(62 * var(--u));border:0;border-radius:calc(31 * var(--u));background:#0007;color:#fff;font-weight:bold;font-size:calc(20 * var(--u));cursor:pointer;padding:0 calc(8 * var(--u))}.sh-group.on{background:#4a90d9}.sh-group img{height:calc(52 * var(--u))}
 .sh-locked{z-index:4!important}.sh-note,.sh-locked{margin:0;display:grid;place-items:center;background:#000a;border-radius:calc(14 * var(--u));font-size:calc(24 * var(--u));font-weight:bold;color:#ffd0d0}
+
+@media (max-width:800px){.shops-view{container-type:inline-size;--u:calc(100cqw / 720)}}
+
+/* Mobile-only: the global mobile-native img{max-width:100%} was clamping
+   1559-prefab-pixel scene artwork to the 720-wide stage while the CSS left
+   offset remained -419.5px. This made only the LEFT 300px visible and exposed
+   the solid dark fallback on the RIGHT. Preserve the original large art. */
+html.gxb-mobile #app-frame .shops-view .sh-scene,
+html.gxb-mobile #app-frame .shops-view .sh-map-bg {
+  max-width:none;
+  max-height:none;
+  min-width:0;
+  object-fit:cover;
+}

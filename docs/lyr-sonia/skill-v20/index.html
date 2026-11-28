@@ -1,0 +1,37 @@
+<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Lyr Sonia — Spine Skill + VFX · QA riêng</title>
+<style>
+:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#10101d;color:#f6edff;font:14px system-ui,sans-serif}main{max-width:820px;margin:auto;padding:12px 14px 28px}h1{font-size:22px;margin:7px 0 4px;text-align:center}.subtitle,.note{text-align:center;color:#c5b7d4;line-height:1.55;font-size:12px}.stage{width:min(100%,600px);margin:12px auto;border:1px solid #8067a9;background:#18142e;border-radius:14px;overflow:hidden;aspect-ratio:3/4}.stage canvas{width:100%;height:100%;display:block}button,select,input{font:inherit}button,select{border:1px solid #9280ad;border-radius:9px;background:#3a2b59;color:white;padding:10px;min-height:44px;cursor:pointer}button:disabled{opacity:.4;cursor:wait}.controls{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;align-items:center;max-width:650px;margin:10px auto}.controls input{width:min(100%,250px)}#status{min-height:38px;text-align:center;color:#d9c6ff;font-size:13px}.hint{max-width:650px;text-align:left;margin:auto;background:#252139;border-radius:10px;padding:12px;line-height:1.6}#metrics{font-variant-numeric:tabular-nums;font-size:12px;color:#b8eecc;text-align:center;margin:6px auto}.warning{color:#ffdaab}body[data-failed] .stage{border-color:#dc9c9c}
+</style></head><body><main>
+<h1>Lyr Sonia · Tinh Liên Hỏa Ấn · Góc ¾ phải · QA v2.0</h1><p class="subtitle">Pose chiến đấu ¾ phải đã duyệt + hiệu ứng Nymphaea / Izanami / Monica · Chỉ phục vụ kiểm thử</p>
+<p style="color:#d8c8f0">Bản QA hiệu ứng 7 nhịp trên tư thế ¾ phải · Rig Skill phân lớp thử nghiệm 8 mảnh · Trượng gốc chuyển động với tay, phép phát từ đầu trượng.</p><div class="stage" id="screen"></div>
+<div class="controls"><button id="play" disabled>▶ Phát lại Skill</button><button id="stop" disabled>■ Dừng</button><button id="flip" disabled>⇄ Đảo phe</button><select id="profile" aria-label="Chất lượng"><option value="desktop">PC — Đầy đủ (7/7)</option><option value="mobile">Mobile — Đầy đủ (7/7, atlas tối ưu)</option></select></div>
+<div class="controls"><label>Khung hình <input id="seek" type="range" min="0" max="1800" step="10" value="0" disabled></label><span id="time">0 / 1.800 ms</span></div>
+<div id="metrics">Đang khởi tạo WebGL…</div><p id="status" role="status">Đang kiểm tra và tải bộ xương Lyr Sonia và tài nguyên Spine gốc…</p>
+<p class="hint"><b>Bản thử nghiệm Spine thật (không GIF). PC và Mobile cùng đủ hiệu ứng và cùng mục tiêu. Trang tự dừng tại mốc trúng đòn 1,12 giây để bé xem, nhấn Phát lại để xem cả chiêu.</b> Không có UID, tài khoản, sát thương, phần thưởng hay API ghi dữ liệu. PC và Mobile đều hiển thị tối đa hai lớp hiệu ứng; Mobile vẫn tải ba nguồn gốc với một lớp một lúc. Hiệu ứng phía mục tiêu được cắt vùng để không phủ lên mặt Lyr Sonia. Hoạt ảnh Skill của Sonia còn cần chỉnh chất lượng mỹ thuật trước khi cho vào Production.</p>
+</main>
+<script src="/vendor/pixi.min.js"></script><script src="/vendor/pixi-spine.js"></script><script src="skill-qa.js?v=20"></script>
+<script>
+(async()=>{
+ const $=id=>document.getElementById(id),state={ready:false,frames:[]};window.__QA_RESULT=state;
+ let view;
+ const onStatus=m=>{state.frame=m.frame;state.live=m.live;state.profile=m.profile;state.renderer=m.renderer;state.fps=m.fps;$('metrics').textContent=m.renderer+' · '+m.profile+' · '+m.frame+' ms · '+m.live.length+' lớp VFX'+(m.fps?' · '+m.fps+' FPS':'');$('seek').value=String(m.frame);$('time').textContent=m.frame+' / 1.800 ms';};
+ try{
+  const response=await fetch('fx.json',{cache:'no-store'});
+  if(!response.ok)throw Error('Không tải được manifest');
+  const data=await response.json();
+  view=await LyrSoniaQA.createQA({PIXI,manifest:data,mount:$('screen'),status:onStatus});
+  const mobile=/Android|iPhone|iPad/i.test(navigator.userAgent)||matchMedia('(max-width:650px)').matches;
+  if(mobile)$('profile').value='mobile';
+  const result=await view.prepare($('profile').value);
+  state.ready=true;state.loaded=result.loaded;state.actor=true;state.errors=[];
+  $('status').textContent='Đã tải Skill v2.0 · Đủ hiệu ứng PC/Mobile · Đứng tại chỗ, nhấn Phát lại để xem toàn chiêu. Đã tải '+(result.loaded-1)+' nguồn VFX · Có thể xem và chỉnh thời điểm';
+  for(const id of ['play','stop','flip','seek'])$(id).disabled=false;
+  $('profile').onchange=async e=>{try{$('play').disabled=true;await view.prepare(e.target.value);$('status').textContent='Đã chuyển chế độ '+e.target.value;}catch(err){$('status').textContent=err.message;}finally{$('play').disabled=false;}};
+  $('play').onclick=()=>view.play();$('stop').onclick=()=>view.stop();$('flip').onclick=()=>view.flip();$('seek').oninput=e=>view.seek(Number(e.target.value));
+  const at=Number(new URLSearchParams(location.search).get('t'));
+  if(new URLSearchParams(location.search).get('mirror')==='1')view.flip();
+  if(new URLSearchParams(location.search).has('t')&&Number.isFinite(at)&&at>=0&&at<=1800)view.seek(at);
+  addEventListener('pagehide',()=>view.close(),{once:true});
+ }catch(err){state.errors=[String(err.message||err)];document.body.dataset.failed='true';$('metrics').textContent='Không đạt';$('status').textContent='Chưa tải được model/hiệu ứng: '+(err.message||err);console.error(err);}
+})();
+</script></body></html>

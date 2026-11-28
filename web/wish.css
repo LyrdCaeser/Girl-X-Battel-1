@@ -37,3 +37,50 @@
 .wc-info b{display:block;font-size:15px;color:#4b3d66;margin-bottom:4px}
 .wc-rbar{position:relative;height:16px;border-radius:9px;background:#d8d2e6;overflow:hidden;max-width:220px}.wc-rbar i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(#ffe083,#f0b528)}.wc-rbar span{position:relative;display:block;text-align:center;font:800 11px/16px system-ui;color:#3a2d4d}
 .wc-chips{display:flex;gap:6px}.wc-chip{position:relative;width:46px;height:46px;border-radius:8px;background:#efe9fa;display:grid;place-items:center}.wc-chip img{max-width:40px;max-height:40px}.wc-chip b{position:absolute;right:2px;bottom:0;font:800 11px system-ui;color:#fff;text-shadow:0 0 2px #000,0 0 2px #000}
+
+/* Original animated chibi sits on the centre of the Wish Capsule machine.
+   The full portrait is only a fallback for devices without WebGL. */
+.wc-art .wc-chibi{position:absolute;inset:6% 0 4%;display:grid;place-items:center;overflow:visible;pointer-events:none;z-index:2}
+.wc-art .wc-chibi canvas{display:block;max-width:100%;max-height:100%;width:100%!important;height:100%!important;object-fit:contain}
+.wc-art .wc-girl.wc-fallback{left:0;bottom:2%;width:100%;height:92%;object-fit:contain;object-position:bottom center}
+.wc-art .wc-girl.wc-fallback[hidden]{display:none}
+.wc-art .wc-name{z-index:3;left:50%;transform:translateX(-50%);white-space:nowrap;max-width:94%;text-overflow:ellipsis;overflow:hidden}
+
+/* Third Capsule page: restrained Chaos art with real controls over the quiet right side. */
+.capsule-banner.chaos-banner{min-height:300px;border-color:#8f83bd;background:#11152b;overflow:hidden}
+.chaos-banner:before{display:none}
+.chaos-art{position:relative;min-height:300px;padding:0!important;background-position:center;background-size:cover;background-repeat:no-repeat}
+.capsule-banner .chaos-controls{position:relative;z-index:2;align-content:center;gap:7px;padding:22px 28px 26px;background:linear-gradient(90deg,rgba(13,17,38,.12),rgba(13,17,38,.86) 18%,rgba(13,17,38,.96));color:#f4efff}
+.chaos-kicker{color:#b9addd;font:800 11px/1.2 system-ui;letter-spacing:.12em;text-transform:uppercase}
+.chaos-title{margin:0;color:#fff;font:900 27px/1.05 system-ui;text-shadow:0 2px 6px #090b18}
+.chaos-copy{max-width:260px;margin:0;color:#d7d0ea;font:600 12px/1.35 system-ui}
+.chaos-ticket{display:grid;grid-template-columns:30px 1fr auto;align-items:center;gap:7px;margin:5px 0 2px;padding:7px 10px;border:1px solid rgba(201,190,236,.35);border-radius:10px;background:rgba(22,25,55,.82)}
+.chaos-ticket img{width:30px;height:30px;object-fit:contain}.chaos-ticket span{font:700 12px system-ui}.chaos-ticket b{font:900 17px system-ui;color:#fff}
+.chaos-buttons{grid-template-columns:repeat(3,minmax(0,1fr))}
+.chaos-buttons .capsule-draw{min-width:0;background-image:url('/assets/capsule/button-blue.png');font-size:12px}
+.chaos-buttons .capsule-draw strong{display:flex;align-items:center;justify-content:center;gap:3px}
+@media(max-width:640px){
+ .chaos-art{min-height:220px;background-position:33% center}
+ .capsule-banner .chaos-controls{padding:14px 20px 24px}
+ .chaos-title{font-size:22px}.chaos-copy{font-size:11px}
+}
+/* Wish detail control: the in-game ≡ opens real, per-server probabilities. */
+#capsule-view .wc-odds-button{
+ position:absolute;z-index:10;top:8px;right:9px;left:auto;
+ width:34px;height:34px;padding:0;border:2px solid #fff9;border-radius:9px;
+ background:linear-gradient(165deg,#8daefa,#3867c6);color:white;
+ font:900 24px/30px system-ui;box-shadow:0 2px 6px #0007;cursor:pointer;
+}
+.wc-odds-window .wc-odds-stars{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:10px 0}
+.wc-odds-window .wc-odds-tier,.wc-odds-window .wc-odds-row{
+ display:flex;justify-content:space-between;gap:8px;align-items:center;padding:8px;
+ border:1px solid #d4c9eb;border-radius:9px;background:#f5effb;color:#584b7e;
+}
+.wc-odds-window .wc-odds-tier span{color:#9d4d91;font-weight:900}
+.wc-odds-window .wc-odds-list{max-height:42vh;overflow:auto;display:grid;gap:4px}
+.wc-odds-window .wc-odds-row{font-size:12px;min-width:0}
+.wc-odds-window .wc-odds-row span{min-width:0;flex:1}
+.wc-odds-window .wc-odds-row b{color:#9c4a86;white-space:nowrap}
+.wc-odds-window .wc-odds-row small{white-space:nowrap}
+.wc-odds-window .wc-odds-hero{display:flex;align-items:center;gap:10px}
+.wc-odds-window .wc-odds-hero img{width:68px;height:91px;object-fit:cover;border-radius:7px}

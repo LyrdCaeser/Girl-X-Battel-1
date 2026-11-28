@@ -1,0 +1,12 @@
+lyr_sonia_battle_3q_right.webp
+size: 234,398
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+three_quarter_right
+  rotate: false
+  xy: 0, 0
+  size: 234, 398
+  orig: 234, 398
+  offset: 0, 0
+  index: -1

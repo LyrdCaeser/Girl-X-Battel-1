@@ -11,6 +11,7 @@ purchase limit (30) is per day. The event is always available."""
 from __future__ import annotations
 import json, secrets
 from pathlib import Path
+from . import local_config
 from . import missions as daily
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -75,7 +76,7 @@ def action(state, request, now, rng=None):
     if act == 'buy':
         n = max(1, int(request.get('num') or 1))
         if s['buy'] + n > D['limit']: raise PumpkinError('Límite de compra alcanzado')
-        cost = {k: v * n for k, v in pairs(D['buy']) if k != DAGGER}
+        cost = {k: local_config.shop_cost(v) * n for k, v in pairs(D['buy']) if k != DAGGER}
         if any(int(state['items'].get(k, 0)) < v for k, v in cost.items()): raise PumpkinError('Faltan gemas')
         for k, v in cost.items(): state['items'][k] = int(state['items'][k]) - v
         state['items'][DAGGER] = int(state['items'].get(DAGGER, 0)) + n; s['buy'] += n

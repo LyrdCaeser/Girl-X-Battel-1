@@ -1,0 +1,7 @@
+{
+  "version": 2,
+  "rewrites": [
+    {"source":"/","destination":"https://180-93-111-99.sslip.io/ios-gateway/"},
+    {"source":"/:path*","destination":"https://180-93-111-99.sslip.io/ios-gateway/:path*"}
+  ]
+}

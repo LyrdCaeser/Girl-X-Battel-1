@@ -1,0 +1,78 @@
+{
+  "id": 758001,
+  "name": "Lyr Sonia",
+  "faction": {
+    "id": 8,
+    "name": "Hệ Hỗn Độn",
+    "icon": "/assets/factions/8.png"
+  },
+  "job": "Pháp Sư",
+  "native_star": 10,
+  "max_star": 25,
+  "ticket": {
+    "id": 940060,
+    "name": "Vé Lyr Sonia",
+    "icon": "/assets/factions/8.png"
+  },
+  "banner": "/assets/chaos/lyr_sonia_banner.png",
+  "summons": [
+    {
+      "id": 27,
+      "count": 1
+    },
+    {
+      "id": 28,
+      "count": 5
+    },
+    {
+      "id": 29,
+      "count": 10
+    }
+  ],
+  "skills": [
+    {
+      "id": 75800101,
+      "name": "Tinh Cầu Hỗn Mang",
+      "type": "Kỹ Năng Chủ Động",
+      "icon": "/assets/chaos/skill_icon_75800101.png",
+      "levels": [
+        "Gây 180% Công Sát Thương Phép lên toàn bộ địch; đặt 1 tầng Ấn Hỗn Độn lên mỗi mục tiêu. Có 40% cơ hội cướp 40 Tốc Độ của địch trong 2 hiệp, 25% cơ hội trói bằng xích Promethea trong 1 hiệp; đồng thời nhận thêm Khiên Hỗn Độn bằng 200% Công. Phóng Độc phóng tối đa 5 dao vào 5 kẻ địch ngẫu nhiên, mỗi dao gây 65% Công. Mục tiêu trúng độc mất 2% HP mỗi lượt trong 3 lượt; ở tốc độ thường, độc phát tác cách nhau ít nhất 5 giây.",
+        "Gây 220% Công Sát Thương Phép lên toàn bộ địch; đặt 2 tầng Ấn Hỗn Độn lên mỗi mục tiêu. Có 40% cơ hội cướp 40 Tốc Độ của địch trong 2 hiệp, 25% cơ hội trói bằng xích Promethea trong 1 hiệp; đồng thời nhận thêm Khiên Hỗn Độn bằng 200% Công. Phóng Độc phóng tối đa 5 dao vào 5 kẻ địch ngẫu nhiên, mỗi dao gây 65% Công. Mục tiêu trúng độc mất 2% HP mỗi lượt trong 3 lượt; ở tốc độ thường, độc phát tác cách nhau ít nhất 5 giây.",
+        "Gây 260% Công Sát Thương Phép lên toàn bộ địch; đặt 2 tầng Ấn Hỗn Độn không thể giải trừ lên mỗi mục tiêu, đồng thời tăng 25% Sát Thương Kỹ Năng cho Sonia trong 2 hiệp. Có 40% cơ hội cướp 40 Tốc Độ của địch trong 2 hiệp, 25% cơ hội trói bằng xích Promethea trong 1 hiệp; đồng thời nhận thêm Khiên Hỗn Độn bằng 200% Công. Phóng Độc phóng tối đa 5 dao vào 5 kẻ địch ngẫu nhiên, mỗi dao gây 65% Công. Mục tiêu trúng độc mất 2% HP mỗi lượt trong 3 lượt; ở tốc độ thường, độc phát tác cách nhau ít nhất 5 giây."
+      ]
+    },
+    {
+      "id": 75800102,
+      "name": "Nghịch Lưu Ma Lực",
+      "type": "Kỹ Năng Bị Động I",
+      "icon": "/assets/chaos/skill_icon_75800102.png",
+      "levels": [
+        "Đánh thường gây 100% Công Sát Thương Phép lên 3 mục tiêu; hút 10 Năng Lượng từ mỗi mục tiêu và hồi 20 Năng Lượng cho Sonia. Khi đánh thường, có 18% cơ hội khiến mục tiêu bị cấm lượt trong 1 hiệp.",
+        "Đánh thường gây 115% Công Sát Thương Phép lên 3 mục tiêu; hút 15 Năng Lượng từ mỗi mục tiêu và hồi 30 Năng Lượng cho Sonia. Khi đánh thường, có 18% cơ hội khiến mục tiêu bị cấm lượt trong 1 hiệp.",
+        "Đánh thường gây 130% Công Sát Thương Phép lên 3 mục tiêu; hút 20 Năng Lượng từ mỗi mục tiêu, hồi 40 Năng Lượng cho Sonia và đặt thêm 1 tầng Ấn Hỗn Độn lên mục tiêu có Công cao nhất. Khi đánh thường, có 18% cơ hội khiến mục tiêu bị cấm lượt trong 1 hiệp."
+      ]
+    },
+    {
+      "id": 75800103,
+      "name": "Vòng Luân Hư Vô",
+      "type": "Kỹ Năng Bị Động II",
+      "icon": "/assets/chaos/skill_icon_75800103.png",
+      "levels": [
+        "Nhận Khiên Hư Vô bằng 350% Công và 60% Kháng Khống Chế; khi khiên vỡ hồi 40 Năng Lượng. Khiên phủ ánh vàng lên thanh máu; ánh vàng tan đi khi khiên bị phá.",
+        "Nhận Khiên Hư Vô bằng 480% Công và 80% Kháng Khống Chế; khi khiên vỡ hồi 60 Năng Lượng. Khiên phủ ánh vàng lên thanh máu; ánh vàng tan đi khi khiên bị phá.",
+        "Nhận Khiên Hư Vô bằng 600% Công và 100% Miễn Khống Chế cứng; khi khiên vỡ hồi 80 Năng Lượng và tăng 30 Tốc Độ trong 2 hiệp. Khiên phủ ánh vàng lên thanh máu; ánh vàng tan đi khi khiên bị phá."
+      ]
+    },
+    {
+      "id": 75800104,
+      "name": "Quy Luật Sụp Đổ",
+      "type": "Kỹ Năng Bị Động III",
+      "icon": "/assets/chaos/skill_icon_75800104.png",
+      "levels": [
+        "Đủ 6 tầng Ấn: tiêu hao toàn bộ, gây 180% Công Sát Thương Phép toàn địch và 60% tỷ lệ cơ bản gây Choáng 1 hiệp.",
+        "Đủ 5 tầng Ấn: tiêu hao toàn bộ, gây 220% Công cộng thêm 20% Công mỗi tầng Ấn và 80% tỷ lệ cơ bản gây Choáng 1 hiệp.",
+        "Đủ 4 tầng Ấn: tiêu hao toàn bộ, gây 260% Công cộng thêm 30% Công mỗi tầng Ấn và 100% tỷ lệ cơ bản gây Choáng 1 hiệp; tối đa 1 lần mỗi hiệp."
+      ]
+    }
+  ]
+}
