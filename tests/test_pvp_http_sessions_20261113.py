@@ -69,6 +69,22 @@ class PvPHttpSessionTests(unittest.TestCase):
         self.assertEqual(status,200,f'{method} {path}: HTTP {status}: {payload}')
         return payload
 
+    def test_social_bar_authenticated_http(self):
+        from gxb2 import social_bar as b
+        self.assertEqual(self.request('GET','/api/social-bar/rooms',user=0)[0],404)
+        with patch.object(b,'enabled',return_value=True):
+            self.assertEqual(self.request('GET','/api/social-bar/rooms')[0],401)
+            rooms=self.call('GET','/api/social-bar/rooms',user=0)['rooms']
+            self.assertTrue(any(r['scope']=='CROSS' for r in rooms))
+            rid=self.call('POST','/api/social-bar/action',{'action':'create','name':'Test','scope':'CROSS','kind':'private','password':'abcd'},0)['room_id']
+            self.assertEqual(self.request('POST','/api/social-bar/action',{'action':'enter','room_id':rid,'password':'wrong'},1)[0],400)
+            for i in (0,1):self.call('POST','/api/social-bar/action',{'action':'enter','room_id':rid,'password':'abcd'},i)
+            mid=self.call('POST','/api/social-bar/action',{'action':'send','room_id':rid,'text':'Hello'},0)['message_id']
+            snapshot=self.call('POST','/api/social-bar/action',{'action':'poll','room_id':rid},1)
+            self.assertEqual(snapshot['messages'][0]['id'],mid)
+            self.assertFalse(snapshot['voice_enabled'])
+            self.assertEqual(self.request('POST','/api/social-bar/action',{'action':'poll','room_id':rid},2)[0],400)
+
     def test_social_arena_four_authenticated_sessions(self):
         from gxb2 import social_arena as a, s5_test as s
         from types import SimpleNamespace

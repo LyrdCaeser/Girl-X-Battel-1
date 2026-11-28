@@ -627,6 +627,12 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
             ctx=self.auth_context()
             mode=(parse_qs(parsed.query).get('mode') or ['arena'])[0]
             return self.send_sse(ctx,mode)
+        if path == '/api/social-bar/rooms':
+            from gxb2 import social_bar as bar
+            if not bar.enabled():return self.send(404,{'error':'Quán Bar chưa mở'})
+            account=self.auth_context()['account']
+            try:return self.send(200,{'rooms':bar.rooms(account['uid'],account['server_id']),'voice_enabled':False})
+            except ValueError as exc:return self.send(400,{'error':str(exc)})
         if path == '/api/social-arena/status':
             from gxb2 import social_arena as tournament
             account=self.auth_context()['account']
@@ -1421,6 +1427,27 @@ dt{{color:#9caed6}}dd{{margin:0;font-weight:700}}a{{text-decoration:none;color:w
                         live_service.require_pvp_match_world(data.get('match_id'),account['uid'],account['server_id'])
                     except ValueError as exc:
                         return self.send(403,{'error':str(exc)})
+            if path == '/api/social-bar/action':
+                from gxb2 import social_bar as bar
+                if not bar.enabled():return self.send(404,{'error':'Quán Bar chưa mở'})
+                ctx=self.auth_context();account=ctx['account']
+                uid,world,name=account['uid'],account['server_id'],ctx['character_name']
+                admin=self.is_super_gm()
+                action=str(data.get('action') or '');rid=str(data.get('room_id') or '')
+                if len(rid)>64:return self.send(400,{'error':'Phòng không hợp lệ'})
+                if action=='send' and not self.rate_limit_player('world_chat'):return
+                if action in ('create','enter','manage') and not self.rate_limit_player('pvp_queue'):return
+                if action=='create':
+                    result={'room_id':bar.create(uid,world,data.get('name'),data.get('scope'),data.get('kind'),data.get('password',''),admin)}
+                elif action=='enter':result={'room':bar.enter(uid,world,name,rid,data.get('password',''),admin)}
+                elif action=='leave':bar.leave(uid,world,rid);result={'ok':True}
+                elif action=='poll':result=bar.poll(uid,world,rid)
+                elif action=='send':result={'message_id':bar.send(uid,world,name,rid,data.get('text',''),data.get('image',''),data.get('reply_to',''))}
+                elif action=='image':result={'image':bar.image(uid,world,rid,str(data.get('message_id','')))}
+                elif action=='manage':
+                    result=bar.action(uid,world,rid,str(data.get('kind','')),str(data.get('target','')),str(data.get('target_world','')),str(data.get('message_id','')),str(data.get('reason','')),admin)
+                else:return self.send(400,{'error':'Thao tác không hợp lệ'})
+                return self.send(200,result)
             if path in ('/api/social-arena/action','/api/admin/social-arena'):
                 from gxb2 import social_arena as tournament
                 from gxb2.pvp_render import for_viewer
