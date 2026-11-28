@@ -1,0 +1,14 @@
+#app-frame .social-arena-win .gs-win-body{max-height:75dvh;overflow:auto}
+.social-score{text-align:center;font-size:18px;color:#344f79}
+.social-lineups{display:grid;gap:6px}
+.social-lineup{padding:6px;border:1px solid #a9c0d9;border-radius:6px;background:#eff5fc}
+.social-lineup[data-side=B]{border-color:#d8aaa9;background:#fff4f2}
+.social-lineup>b,.social-lineup>small{display:block;color:#344f79}
+.social-girls{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:2px}
+.social-girl{display:grid;justify-items:center;min-width:0;font-size:10px}
+.social-girl .portrait{max-width:100%}
+.social-girl .gu-stars{max-width:100%}
+.social-ranks{max-height:36dvh;overflow:auto}
+.social-history{display:grid;gap:4px;padding:6px;border-bottom:1px solid #a9c0d9}
+
+.ar-stage .social-arena-entry{position:absolute;font-size:calc(26 * var(--u));padding:0;line-height:1.1;z-index:4}

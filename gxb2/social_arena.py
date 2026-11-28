@@ -4,9 +4,11 @@ No writes to regular arena, inventory, or player profiles. Not exposed until
 the tournament UI, authenticated integration and referee controls pass QA.
 """
 import json
+import os
 import random
 import secrets
 import time
+import threading
 from datetime import datetime
 from zoneinfo import ZoneInfo
 from contextlib import contextmanager
@@ -27,6 +29,11 @@ ACCEPT_TTL=20
 PREVIEW=5
 BEGIN_TTL=25
 rng=random.SystemRandom()
+_schema_lock=threading.RLock()
+_schema_ready=set()
+
+def enabled():
+    return os.environ.get("GXB3_SOCIAL_ARENA_ENABLED","0")=="1"
 
 def phase(now):
     return 'waiting' if now<START else 'open' if now<QUEUE_END else 'closing' if now<END else 'closed'
@@ -87,14 +94,19 @@ def _schema(db):
 def transaction(event=EVENT):
     db=live_service._db()
     try:
-        _schema(db)
+        with _schema_lock:
+            if db.identity not in _schema_ready:
+                _schema(db)
+                _schema_ready.add(db.identity)
         db.execute('BEGIN IMMEDIATE')
         db.execute("INSERT INTO social_arena_events(id,state) VALUES(?,?) ON CONFLICT(id) DO NOTHING",
                    (event,json.dumps({'players':{},'queue':{},'matches':{},'closed':False})))
         row=db.execute(live_service._for_update(db,'SELECT state FROM social_arena_events WHERE id=?'),(event,)).fetchone()
         state=json.loads(row['state'])
+        before=json.dumps(state,separators=(',',':'))
         yield state,db
-        db.execute('UPDATE social_arena_events SET state=? WHERE id=?',(json.dumps(state,separators=(',',':')),event))
+        after=json.dumps(state,separators=(',',':'))
+        if after!=before:db.execute('UPDATE social_arena_events SET state=? WHERE id=?',(after,event))
         db.commit()
     except Exception:
         db.rollback()
@@ -105,13 +117,31 @@ def _record(state,uid,name):
     return state['players'].setdefault(uid,{'uid':uid,'name':name,'points':INITIAL,'wins':0,'losses':0,'draws':0,'achieved_at':0})
 
 def _active(state,uid):
-    return next((m for m in state['matches'].values() if uid in m['uids'] and m['status'] in ('accept','preview','ready','running')),None)
+    return next((m for m in state['matches'].values() if uid in m['uids'] and m['status'] in ('accept','preview','ready','running','viewing')),None)
+
+def _settle(state,m,now):
+    if m['status']!='viewing':return
+    points=m['score']
+    for i,u in enumerate(m['uids']):
+        p=state['players'][u];side=i//2
+        d=0 if points[0]==points[1] else DELTA if points[side]>points[1-side] else -DELTA
+        p['points']=max(0,p['points']+d)
+        p['wins' if d>0 else 'losses' if d<0 else 'draws']+=1
+        p['achieved_at']=now
+    m.update(status='finished',finished_at=now)
+    m.pop('snapshots',None)
+
+def _next_view(state,m,now):
+    if m['round_no']==0:
+        m.update(round_no=1,watched=[],play_at=now+5,deadline=now+5+m['view_limits'][1])
+    else:_settle(state,m,now)
 
 def _cleanup(state,now):
     for uid,q in list(state['queue'].items()):
         if now-q['at']>QUEUE_TTL or now>=QUEUE_END:
             state['queue'].pop(uid)
     for m in state['matches'].values():
+        if m['status']=='viewing' and now>=m['deadline']:_next_view(state,m,now)
         if (m['status'] in ('accept','preview','ready') and now>=min(m['deadline'],END)) or (m['status']=='running' and now-m['running_at']>90):
             m['status']='cancelled'
             m.pop('snapshots',None)
@@ -126,6 +156,7 @@ def join(uid,name,snap,*,world,admin=False,now=None):
         _cleanup(state,now)
         if state['closed']:raise ValueError('Giải đấu đã đóng')
         p=_record(state,uid,name)
+        p.update(name=name,power=int(snap.get('power',0)),level=int(snap.get('level',1)),avatar=snap.get('avatar'),frame=snap.get('frame'))
         if p['points']<=0 or p.get('disqualified'):raise ValueError('Bạn đã bị loại khỏi giải')
         existing=_active(state,uid)
         if existing:return existing['id']
@@ -177,12 +208,13 @@ def cancel(uid,mid=None,*,now=None):
 
 def resolve(uid,mid,battle_id,*,now=None):
     """One worker owns the simulation; commits results once after both reports."""
+    real_clock=now is None
     now=int(time.time() if now is None else now)
     with transaction() as (state,db):
         _cleanup(state,now)
         m=state['matches'].get(mid)
         if not m or uid not in m['uids']:raise ValueError('Bạn không thuộc trận')
-        if m['status'] in ('finished','running'):return m['status']
+        if m['status'] in ('finished','running','viewing'):return m['status']
         if m['status']!='ready' or now>=END:raise ValueError('Chưa đủ bốn người sẵn sàng hoặc đã hết giờ')
         m['status']='running';m['running_at']=now
         uids=list(m['uids']);snaps=m['snapshots'];seed=m['seed']
@@ -195,21 +227,31 @@ def resolve(uid,mid,battle_id,*,now=None):
             for i,r in enumerate(reports):
                 db.execute('INSERT INTO social_arena_reports(event_id,match_id,round_no,report) VALUES(?,?,?,?)',
                            (EVENT,mid,i,json.dumps(r,separators=(',',':'))))
-            for i,u in enumerate(uids):
-                p=state['players'][u];side=i//2
-                d=0 if points[0]==points[1] else DELTA if points[side]>points[1-side] else -DELTA
-                p['points']=max(0,p['points']+d)
-                p['wins' if d>0 else 'losses' if d<0 else 'draws']+=1
-                p['achieved_at']=now
-            m.update(status='finished',score=points,finished_at=now)
+            t=int(time.time() if real_clock else now)
+            limits=[max(30,min(900,len(r['frames'])*3+30)) for r in reports]
+            m.update(status='viewing',score=points,round_no=0,watched=[],play_at=t+5,
+                     deadline=t+5+limits[0],view_limits=limits)
             m.pop('snapshots',None)
-            return 'finished'
+            return 'viewing'
     except Exception:
         with transaction() as (state,db):
             m=state['matches'][mid]
             if m['status']=='running':
                 m['status']='cancelled';m.pop('snapshots',None)
         raise
+
+def watched(uid,mid,round_no,*,now=None):
+    now=int(time.time() if now is None else now)
+    with transaction() as (state,db):
+        _cleanup(state,now)
+        m=state['matches'].get(mid)
+        if not m or uid not in m['uids']:raise ValueError('Bạn không thuộc trận')
+        if m['status']=='finished':return 'finished'
+        if m['status']!='viewing' or int(round_no)!=m['round_no']:return m['status']
+        if now<m['play_at']:raise ValueError('Lượt đấu chưa bắt đầu')
+        if uid not in m['watched']:m['watched'].append(uid)
+        if len(m['watched'])==4:_next_view(state,m,now)
+        return m['status']
 
 def status(uid,*,now=None):
     now=int(time.time() if now is None else now)
@@ -218,24 +260,31 @@ def status(uid,*,now=None):
         p=state['players'].get(uid)
         m=_active(state,uid)
         # Refresh only a caller who actually entered the queue.
-        if uid in state['queue']:state['queue'][uid]['at']=now
-        board=sorted(state['players'].values(),key=lambda p:(-p['points'],-p['wins'],-p['wins']/max(1,p['wins']+p['losses']+p['draws']),p['achieved_at'],p['uid']))
-        result={'event':EVENT,'phase':phase(now),'server_time':now,'queued':uid in state['queue'],
+        if uid in state['queue'] and now-state['queue'][uid]['at']>=10:state['queue'][uid]['at']=now
+        board=eligible_board(state)
+        result={'event':EVENT,'phase':'closed' if state['closed'] else phase(now),'server_time':now,'queued':uid in state['queue'],
                 'queue_count':len(state['queue']),'me':p,'board':[dict(x,rank=i) for i,x in enumerate(board,1)],
                 'match':None}
         if m:
-            result['match']={k:v for k,v in m.items() if k not in ('snapshots','seed')}
+            result['match']={k:v for k,v in m.items() if k not in ('snapshots','seed','score','view_limits')}
             if m['status'] in ('preview','ready','running'):
+                from .engine import TABLES
                 result['match']['formations']=[{'uid':u,'name':m['snapshots'][u].get('name'),
-                    'power':m['snapshots'][u].get('power'),'team':[{k:g.get(k) for k in ('table_id','level','awake','pos','skin_id')} for g in m['snapshots'][u]['team']]} for u in m['uids']]
+                    'power':m['snapshots'][u].get('power'),'team':[{
+                        'table_id':int(g['table_id']),'level':int(g.get('lv') or g.get('level') or 1),
+                        'stars':int(TABLES['partner'][str(g['table_id'])]['max_star'])+int(g.get('awake',0)),
+                        'group':int(TABLES['partner'][str(g['table_id'])]['group']),
+                        'pos':g['pos'],'skin_id':g.get('skin_id',0)
+                    } for g in m['snapshots'][u]['team']]} for u in m['uids']]
         result['history']=[{k:v for k,v in x.items() if k not in ('snapshots','seed')} for x in state['matches'].values() if uid in x['uids'] and x['status'] in ('finished','cancelled')][-20:]
         return result
 
-def replay(uid,mid,round_no):
+def replay(uid,mid,round_no,*,referee=False):
     if round_no not in (0,1):raise ValueError('Lượt không hợp lệ')
     with transaction() as (state,db):
         m=state['matches'].get(mid)
-        if not m or uid not in m['uids'] or m['status']!='finished':raise ValueError('Không có quyền xem trận')
+        if not m or (uid not in m['uids'] and not referee) or m['status'] not in ('viewing','finished'):raise ValueError('Không có quyền xem trận')
+        if m['status']=='viewing' and round_no>m['round_no']:raise ValueError('Lượt này chưa mở')
         row=db.execute('SELECT report FROM social_arena_reports WHERE event_id=? AND match_id=? AND round_no=?',(EVENT,mid,round_no)).fetchone()
         return json.loads(row['report'])
 
@@ -271,7 +320,7 @@ def referee(action, *, authorized, now=None, target=None):
             if m:m['status']='cancelled';m.pop('snapshots',None)
         elif action=='finalize':
             if now<END:raise ValueError('Chỉ chốt sau khi hết giờ')
-            if any(m['status'] in ('accept','preview','ready','running') for m in state['matches'].values()):
+            if any(m['status'] in ('accept','preview','ready','running','viewing') for m in state['matches'].values()):
                 raise ValueError('Còn trận chưa kết thúc')
             state['closed']=True
             if not state.get('final'):

@@ -69,6 +69,43 @@ class PvPHttpSessionTests(unittest.TestCase):
         self.assertEqual(status,200,f'{method} {path}: HTTP {status}: {payload}')
         return payload
 
+    def test_social_arena_four_authenticated_sessions(self):
+        from gxb2 import social_arena as a, s5_test as s
+        from types import SimpleNamespace
+        self.assertEqual(self.request('GET','/api/social-arena/status',user=0)[0],404)
+        status,payload,headers=self.request('POST','/api/auth/register',{'username':'HttpTestPlayer3','password':'ExamplePassword123A','character_name':'PvP Tester 3','server_id':'S1'})
+        self.assertEqual(status,200,payload)
+        self.tokens.append(headers['set-cookie'].split(';',1)[0])
+        live_service.create_world('S5',s.NAME)
+        phase=s.schedule(a.START+60)
+        now=[a.START+60]
+        with patch.object(a,'enabled',return_value=True),patch.object(a,'time',SimpleNamespace(time=lambda:now[0])),patch.object(s,'schedule',return_value=phase):
+            self.assertEqual(self.request('GET','/api/social-arena/status',user=0)[0],404)
+            self.assertEqual(self.request('GET','/api/admin/social-arena',user=0)[0],403)
+            for i in range(4):
+                self.call('POST','/api/auth/create-character',{'server_id':'S5','character_name':'Giao Luu '+str(i)},i)
+            for i in range(4):
+                self.call('POST','/api/social-arena/action',{'action':'join'},i)
+            states=[self.call('GET','/api/social-arena/status',user=i) for i in range(4)]
+            ids={st['match']['id'] for st in states}
+            self.assertEqual(len(ids),1);mid=ids.pop()
+            for i in range(4): self.call('POST','/api/social-arena/action',{'action':'accept','match_id':mid},i)
+            self.assertEqual(len(self.call('GET','/api/social-arena/status',user=0)['match']['formations']),4)
+            self.assertEqual(self.request('POST','/api/social-arena/action',{'action':'begin','match_id':mid},0)[0],400)
+            now[0]+=6
+            for i in range(4):self.call('POST','/api/social-arena/action',{'action':'begin','match_id':mid},i)
+            self.assertEqual(self.request('POST','/api/social-arena/action',{'action':'replay','match_id':mid,'round_no':1},0)[0],400)
+            for r in (0,1):
+                now[0]+=5
+                reports=[self.call('POST','/api/social-arena/action',{'action':'replay','match_id':mid,'round_no':r},i) for i in range(4)]
+                self.assertTrue(all(x==reports[0] for x in reports))
+                self.assertTrue(reports[0]['report']['frames'])
+                for i in range(4):self.call('POST','/api/social-arena/action',{'action':'watched','match_id':mid,'round_no':r},i)
+            boards=[self.call('GET','/api/social-arena/status',user=i)['board'] for i in range(4)]
+            self.assertEqual(len(boards[0]),4)
+            self.assertTrue(all(b==boards[0] for b in boards))
+            self.assertEqual(self.request('POST','/api/admin/social-arena',{'action':'close'},0)[0],403)
+
     def test_ios_exclusive_gateway(self):
         from gxb2 import ios_web
         iphone='Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148'

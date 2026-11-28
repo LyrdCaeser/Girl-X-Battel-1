@@ -28,11 +28,16 @@ class TournamentTests(unittest.TestCase):
         with self.assertRaises(ValueError):a.begin(uids[0],mid,now=self.now+5)
         for u in uids:a.begin(u,mid,now=self.now+6)
         return mid
+    def finish_viewing(self,users,mid):
+        for i,t in ((0,self.now+12),(1,self.now+17)):
+            for u in users:a.watched(u,mid,i,now=t)
     def test_real_engine_two_rounds_and_idempotent_settlement(self):
         users=['P1','P2','P3','P4']
         mid=self.ready(users)
         with self.assertRaises(ValueError):a.resolve('intruder',mid,ONLINE_BATTLE_ID,now=self.now+7)
-        self.assertEqual(a.resolve(users[0],mid,ONLINE_BATTLE_ID,now=self.now+7),'finished')
+        self.assertEqual(a.resolve(users[0],mid,ONLINE_BATTLE_ID,now=self.now+7),'viewing')
+        with self.assertRaises(ValueError):a.replay(users[0],mid,1)
+        self.finish_viewing(users,mid)
         reports=[a.replay(uids,mid,i) for i,uids in enumerate(users[:2])]
         self.assertTrue(all(r['frames'] and 0<int(r['total_round'])<=20 for r in reports))
         score=a.match_points(reports)
@@ -51,7 +56,7 @@ class TournamentTests(unittest.TestCase):
         self.join('P1')
         self.assertFalse(a.status('P1',now=self.now+a.QUEUE_TTL+1)['queued'])
     def test_score_draw_and_elimination(self):
-        def report(h1,h2):return {'total_round':20,'end_status':[{'pos':1,'hp':h1},{'pos':7,'hp':h2}]}
+        def report(h1,h2):return {'frames':[],'total_round':20,'end_status':[{'pos':1,'hp':h1},{'pos':7,'hp':h2}]}
         win=report(100,0);draw=report(5,5);loss=report(0,100)
         self.assertEqual(a.match_points([win,draw]),[2,1])
         self.assertEqual(a.match_points([draw,draw]),[2,2])
@@ -64,6 +69,7 @@ class TournamentTests(unittest.TestCase):
             for u in losers:state['players'][u]['points']=20
         with patch.object(a,'simulate_pair',return_value=win):
             a.resolve(users[0],mid,ONLINE_BATTLE_ID,now=self.now+7)
+        self.finish_viewing(users,mid)
         for u in losers:
             self.assertEqual(a.status(u,now=self.now+8)['me']['points'],0)
             with self.assertRaises(ValueError):self.join(u)
@@ -72,9 +78,10 @@ class TournamentTests(unittest.TestCase):
         mid=self.ready(users)
         with self.assertRaises(PermissionError):a.referee('close',authorized=False)
         with self.assertRaises(ValueError):a.referee('finalize',authorized=True,now=self.now+7)
-        report={'total_round':20,'end_status':[{'pos':1,'hp':100},{'pos':7,'hp':0}]}
+        report={'frames':[],'total_round':20,'end_status':[{'pos':1,'hp':100},{'pos':7,'hp':0}]}
         with patch.object(a,'simulate_pair',return_value=report):
             a.resolve(users[0],mid,ONLINE_BATTLE_ID,now=self.now+7)
+        self.finish_viewing(users,mid)
         final=a.referee('finalize',authorized=True,now=a.END)['final']
         self.assertEqual(len(final),4)
         uid=final[0]['uid']
@@ -92,3 +99,11 @@ class TournamentTests(unittest.TestCase):
             self.assertEqual(row['uid'],uid)
             self.assertEqual(row['server_id'],'S1')
         finally:db.close()
+
+    def test_early_open_one_day_only_when_enabled(self):
+        from gxb2 import s5_test
+        with patch.dict('os.environ',{'GXB3_SOCIAL_ARENA_ENABLED':'0'}):
+            self.assertEqual(s5_test.schedule(a.stamp(19,30))['phase'],'locked')
+        with patch.dict('os.environ',{'GXB3_SOCIAL_ARENA_ENABLED':'1'}):
+            self.assertEqual(s5_test.schedule(a.stamp(19,30))['phase'],'open')
+            self.assertEqual(s5_test.schedule(a.stamp(19,30)+7*86400)['phase'],'locked')

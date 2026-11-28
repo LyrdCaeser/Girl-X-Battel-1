@@ -45,8 +45,58 @@ window.AdminPanel=(()=>{
   }
   async function refreshDashboard(){dash=await api('/api/admin/dashboard');}
   function show(id){active=id;for(const b of root.querySelectorAll('.admin-tab'))b.classList.toggle('on',b.dataset.tab===id);render();if(root)root.scrollTop=0;}
+  function syncSocialTab(){
+    if(!root)return;
+    const nav=root.querySelector('.admin-nav'),old=nav.querySelector('[data-tab="socialarena"]');
+    if(dash?.social_arena_enabled&&!old){const b=btn('Giao Lưu S5',()=>show('socialarena'),'admin-tab');b.dataset.tab='socialarena';nav.append(b);}
+    if(!dash?.social_arena_enabled&&old){old.remove();if(active==='socialarena')active='overview';}
+  }
   function render(){const body=document.getElementById('admin-body');if(!body)return;body.replaceChildren();
-    const fn={overview:renderOverview,mail:renderMail,currency:renderCurrency,items:renderItems,shards:renderShards,goddess:renderGoddessGift,s4trial:renderS4TrialGift,orders:renderOrders,players:renderPlayers,worlds:renderWorlds,tools:renderTools,config:renderConfig,audit:renderAudit}[active]||renderOverview;fn(body);
+    const fn={socialarena:renderSocialArena,overview:renderOverview,mail:renderMail,currency:renderCurrency,items:renderItems,shards:renderShards,goddess:renderGoddessGift,s4trial:renderS4TrialGift,orders:renderOrders,players:renderPlayers,worlds:renderWorlds,tools:renderTools,config:renderConfig,audit:renderAudit}[active]||renderOverview;fn(body);
+  }
+  async function renderSocialArena(body){
+    const panel=card('Quản Lý Đấu Trường Giao Lưu S5');body.append(panel);
+    renderGmKeyGate(panel,'gm-social-key');
+    const content=el('div');panel.append(content);
+    try{
+      const data=await api('/api/admin/social-arena');
+      if(active!=='socialarena'||!content.isConnected)return;
+      const call=async(action,target)=>{try{await gmAction('/api/admin/social-arena',{action,target});status('Đã cập nhật giải giao lưu.');render();}catch(e){status(e.message,false);}};
+      content.append(el('p','admin-note',(data.closed?'Đã đóng ghép trận':'Chưa khóa ghép trận')+' · '+data.queue.length+' người đang chờ'));
+      for(const [label,action] of [['Mở ghép trận','open'],['Đóng ghép trận','close'],['Chốt Top 1–5','finalize']])content.append(btn(label,()=>call(action),'primary'));
+      const board=card('BXH Giao Lưu độc lập');
+      for(const p of data.board){const r=el('div','admin-row');r.append(el('b','',p.rank+'. '+p.name+' · '+p.points+' điểm'),el('small','',p.wins+' thắng · '+p.losses+' thua · '+p.draws+' hòa'),btn('Loại',async()=>{if(await GirlUI.confirm('Loại '+p.name+' khỏi kỳ giao lưu?'))call('disqualify',p.uid);},'danger'));board.append(r);}
+      content.append(board);
+      const matches=card('Trận đấu thật');
+      for(const m of [...data.matches].reverse().slice(0,50)){
+        const row=el('div','admin-row');row.append(el('b','',m.id.slice(0,8)+' · '+m.status));
+        if(m.score)row.append(el('span','',m.score.join(' – ')));
+        if(!['finished','cancelled'].includes(m.status))row.append(btn('Hủy trận',async()=>{if(await GirlUI.confirm('Hủy trận và không tính điểm?'))call('cancel',m.id);},'danger'));
+        if(['viewing','finished'].includes(m.status))for(const i of [0,1])row.append(btn('Xem lượt '+(i+1),async()=>{
+          try{const r=await api('/api/admin/social-arena',{action:'replay',match_id:m.id,round_no:i});close();await watchEventBattle({report:r.report},'home','Trọng tài · Giao Lưu');}catch(e){status(e.message,false);}
+        }));
+        matches.append(row);
+      }content.append(matches);
+      const prize=card('Phát thưởng Top 1–5');content.append(prize);
+      if(!data.final.length){prize.append(el('p','admin-note','Chưa chốt bảng xếp hạng.'));return;}
+      const rank=el('select'),world=el('select');
+      for(const r of data.final){const option=el('option','',r.rank+'. '+r.name+' · '+r.points+' điểm');option.value=r.rank;rank.append(option);}
+      const characters=()=>{world.replaceChildren();const uid=data.final.find(x=>String(x.rank)===rank.value)?.uid;for(const p of dash?.players||[])if(p.uid===uid&&['S1','S2','S3'].includes(p.server_id)&&p.status==='active'){const option=el('option','',p.character_name+' · '+p.server_id);option.value=p.server_id;world.append(option);}};
+      rank.onchange=characters;characters();prize.append(rank,world);
+      const title=field(prize,'Tiêu đề thư','gm-social-title');title.value='Quà Đấu Trường Giao Lưu';
+      const desc=textarea(prize,'Nội dung thư','gm-social-body');
+      const search=el('input');search.placeholder='Tìm tên vật phẩm';prize.append(search);
+      const list=el('div','admin-gift-grid'),basket=el('div','admin-basket');prize.append(list,basket);
+      const rewards={};
+      const drawBasket=()=>{basket.replaceChildren();for(const [id,q] of Object.entries(rewards)){const item=[...(giftCatalog?.items||[]),...(giftCatalog?.shards||[])].find(x=>String(x.id)===id);basket.append(el('p','',(item?.name||id)+' × '+q),btn('Bỏ',()=>{delete rewards[id];drawBasket();}));}};
+      const draw=()=>{list.replaceChildren();const q=search.value.toLowerCase();for(const item of [...(giftCatalog?.items||[]),...(giftCatalog?.shards||[])].filter(x=>!q||x.name.toLowerCase().includes(q)||String(x.id).includes(q)).slice(0,24)){const tile=el('article','admin-gift-card');tile.append(giftPic(item.image,item.name),el('b','',item.name));const qty=el('input');qty.type='number';qty.min=1;qty.max=2000000;qty.value=1;tile.append(qty,btn('Chọn',()=>{try{rewards[item.id]=amount(qty.value);drawBasket();}catch(e){status(e.message,false);}}));list.append(tile);}};
+      search.oninput=draw;draw();
+      prize.append(btn('Gửi phần thưởng',async()=>{
+        if(!world.value||!Object.keys(rewards).length){status('Chọn nhân vật và quà trước khi gửi.',false);return;}
+        if(!await GirlUI.confirm('Gửi quà Top '+rank.value+' về '+world.value+'?'))return;
+        try{const result=await gmAction('/api/admin/social-arena',{action:'award',rank:Number(rank.value),server_id:world.value,attachments:rewards,title:title.value,body:desc.value});status(result.already_sent?'Hạng này đã nhận thư trước đó.':'Đã gửi thư '+result.mail_id);render();}catch(e){status(e.message,false);}
+      },'primary'));
+    }catch(e){content.append(el('p','admin-note',e.message));}
   }
   function renderOverview(body){
     const grid=el('div','admin-grid');
@@ -925,7 +975,7 @@ window.AdminPanel=(()=>{
   function renderGame(){if(typeof window.render==='function')window.render();}
   function renderAudit(body){const c=card('Audit Log');const list=el('div','admin-list');for(const a of dash?.audit||[]){const row=el('article','admin-row');const info=el('div','admin-row-main');info.append(el('b','',a.action),el('span','',a.target),el('small','',new Date(a.at*1000).toLocaleString()+' · '+a.operator));row.append(info);list.append(row);}c.append(list);body.append(c);}
   const val=id=>document.getElementById(id)?.value?.trim()||'';
-  async function load(){try{ensure();[cfg,dash,topupCfg,giftCatalog]=await Promise.all([api('/api/admin/config'),api('/api/admin/dashboard'),api('/api/admin/topup-packages'),api('/api/admin/gift-catalog')]);show(active);status('Hệ Thống QTV đã sẵn sàng.');}catch(e){status(e.message,false);}}
+  async function load(){try{ensure();[cfg,dash,topupCfg,giftCatalog]=await Promise.all([api('/api/admin/config'),api('/api/admin/dashboard'),api('/api/admin/topup-packages'),api('/api/admin/gift-catalog')]);syncSocialTab();show(active);status('Hệ Thống QTV đã sẵn sàng.');}catch(e){status(e.message,false);}}
   async function open(){ensure();root.hidden=false;await load();}
   function close(){giftBasket={};if(root)root.hidden=true;showView('home');}
   async function logout(){giftKey='';developerMode=false;adminKey='';sessionStorage.setItem('gxb2-developer','0');sessionStorage.removeItem('gxb2-admin-key');if(root)root.hidden=true;state=await api('/api/state');loadFormation();showView('home');renderGame();}

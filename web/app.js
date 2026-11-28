@@ -1213,6 +1213,12 @@ async function replay(report,options={}){
  if(bb)bossShow(bb.before+bb.dealt);round.textContent='Hiệp '+(report.frames.at(-1)?.round||1);if(event&&view!=='event-battle')return;
  // Let the final attack/death Spine clip finish before revealing the outcome.
  if(!skip)await new Promise(resolve=>setTimeout(resolve,Math.max(350,900/battleSpeed)));
+ if(options.tournament){
+  const [a,b]=options.roundScore||[0,0];
+  el('title').textContent=(a===b?'Hòa':a>b?'Đội A thắng':'Đội B thắng')+' · '+label;
+  el('line').textContent='Điểm lượt đấu: '+a+' – '+b+' · Đang chờ các thành viên';
+  el('skip').hidden=true;if(event)$('event-battle-continue').hidden=true;return;
+ }
  const win=report.isWin===1;el('title').textContent=(win?"Chiến Thắng":"Thất Bại")+' · '+label;el('line').textContent=event?(options.practice?"Practice without rewards or spending "+(options.costLabel||"attempts")+'.':win?"Rewards saved.":"Upgrade your team and try again."):(win?"Đã lưu tiến độ. Tiếp tục hoặc nâng cấp đội hình.":"Hãy đổi đội hình hoặc tăng cấp Nữ Thần.");el('skip').hidden=true;
  const rewards=event?options.rewards||{}:state.last_battle?.rewards||{};
  if(event){dailyQuizAwards(el('rewards'),rewards);for(const child of el('rewards').children)child.classList.add('reward');$('event-battle-continue').hidden=false;}
@@ -1223,7 +1229,7 @@ function dailyQuizItemName(id){return id==='1'?"Vàng":(typeof GxbBagVi!=="undef
 function dailyQuizItemImage(id){if(id==='1')return '/assets/currency/icon_1_small.png';const item=itemCatalog[id];return item?itemPicture(item):'';}
 function dailyQuizAwards(target,rewards){target.replaceChildren();for(const [id,amount] of Object.entries(rewards||{})){const chip=node('span');const src=dailyQuizItemImage(id);if(src){const img=node('img');img.src=src;img.alt='';chip.append(img);}chip.append(node('b','',number(amount)+' '+dailyQuizItemName(id)));target.append(chip);}if(!target.childElementCount)target.append(node('span','', "No rewards"));
 }
-async function watchEventBattle(data,origin,label){if(!data.report)return;eventBattleOrigin=origin;$('event-battle-heading').textContent=label;showView('event-battle');await replay(data.report,{event:true,label,rewards:data.rewards,practice:data.practice,livePvP:!!data.livePvP,costLabel:origin==='tower'?"Tokens":"attempts"});}
+async function watchEventBattle(data,origin,label){if(!data.report)return;eventBattleOrigin=origin;$('event-battle-heading').textContent=label;showView('event-battle');await replay(data.report,{event:true,label,rewards:data.rewards,practice:data.practice,livePvP:!!data.livePvP,tournament:!!data.tournament,roundScore:data.roundScore,costLabel:origin==='tower'?"Tokens":"attempts"});}
 function renderDailyQuiz(){
  const event=state.daily_quiz;if(!event)return;
  $('daily-quiz-gold').textContent=number(state.items['1']);

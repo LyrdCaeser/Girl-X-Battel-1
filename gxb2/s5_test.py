@@ -36,7 +36,11 @@ def schedule(now):
         day = (local + timedelta(days=offset)).date()
         if day.weekday() not in DAYS:
             continue
-        for start, end in WINDOWS:
+        windows=WINDOWS
+        # One-off preparation window only when the tournament is released.
+        if day.isoformat()=='2026-11-28' and os.environ.get('GXB3_SOCIAL_ARENA_ENABLED')=='1':
+            windows=((6,9),(19,23))
+        for start, end in windows:
             a = datetime(day.year, day.month, day.day, start, tzinfo=TZ)
             b = a.replace(hour=end)
             if a <= local < b:

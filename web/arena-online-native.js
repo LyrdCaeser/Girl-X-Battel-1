@@ -217,6 +217,11 @@ const NativeOnlineArenas=(()=>{
   if(mode==='arena'){
    const team=center(el('button','ar-3v3-entry'),-248,450,166,59);team.type='button';team.append(img(A('btn_arena_3v3')));
    team.onclick=()=>Arena3v3.open('arena');st.append(team);
+   if(data?.social_arena_enabled&&typeof SocialArena!=='undefined'){
+    const social=center(el('button','gs-btn social-arena-entry','Giao Lưu'),-10,450,225,59);
+    social.type='button';social.onclick=()=>SocialArena.open();st.append(social);
+   }
+
   }
  }
  function render(){
@@ -225,7 +230,7 @@ const NativeOnlineArenas=(()=>{
   // The opponent inspector is an intentional modal owned by Arena.inspect().
   // Any in-flight status response, heartbeat or global state repaint must wait
   // until the player closes it instead of replacing the whole Arena stage.
-  if(target.querySelector('.ar-inspect'))return;
+  if(target.querySelector('.ar-inspect,.social-arena-win'))return;
   target.replaceChildren();const stage=el('div','ar-stage');target.append(stage);
   const scene=mode==='cross'?'/assets/menus/arena-cross.png':A(mode==='arena3v3'?'arena_3v3_scene':'arena_scene');
   stage.append(center(img(scene,'ar-bg'),0,5,1457,1457));
