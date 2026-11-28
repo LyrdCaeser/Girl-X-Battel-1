@@ -4,16 +4,17 @@ const SocialBar=(()=>{
  const el=(tag,cls,t)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(t!==undefined)e.textContent=t;return e;};
  const btn=(t,fn)=>{const e=el('button','gs-btn',t);e.type='button';e.onclick=fn;return e;};
  const endpoint='/api/social-bar/action';
- let panel=null,identity='',rid='',scope='',busy=false,voice=false,rooms=[],messageBox=null,membersBox=null,entry=null,error=null,rendered='',epoch=0;
+ let panel=null,identity='',origin='',rid='',scope='',busy=false,voice=false,rooms=[],messageBox=null,membersBox=null,entry=null,error=null,rendered='',epoch=0;
  const call=(action,opts={})=>api(endpoint,{action,room_id:rid,...opts});
- const current=()=>panel?.win.isConnected&&identity===state?.uid+'|'+state?.server_id&&view==='settings-menu';
+ const current=()=>panel?.win.isConnected&&identity===state?.uid+'|'+state?.server_id&&view===origin;
  const notice=e=>{if(error)error.textContent=e?.message||String(e);};
  async function leave(){
   const old=rid;rid='';epoch++;SocialVoice.hide('bar');
   if(old)await api(endpoint,{action:'leave',room_id:old}).catch(()=>{});
  }
  async function open(){
-  await leave();identity=state.uid+'|'+state.server_id;scope=state.server_id;
+  if(!state?.social_bar_enabled||!['home','settings-menu'].includes(view))return;
+  await leave();identity=state.uid+'|'+state.server_id;origin=view;scope=state.server_id;
   panel=GirlUI.win({title:'Quán Bar',cls:'social-bar-win world-rank-win'});
   await refreshRooms();
  }
